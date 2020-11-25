@@ -3,11 +3,13 @@
  */
 package net.minecraft.item;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.BundleTooltipData;
+import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -16,8 +18,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ClickType;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.collection.DefaultedList;
@@ -38,32 +44,40 @@ extends Item {
     }
 
     @Override
-    public boolean onStackClicked(ItemStack stack, ItemStack otherStack, ClickType clickType, PlayerInventory playerInventory) {
-        if (clickType == ClickType.RIGHT) {
-            BundleItem.addToBundle(stack, otherStack);
-            return true;
+    public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+        if (clickType != ClickType.RIGHT) {
+            return false;
         }
-        return super.onStackClicked(stack, otherStack, clickType, playerInventory);
+        ItemStack itemStack = slot.getStack();
+        if (itemStack.isEmpty()) {
+            BundleItem.method_32759(stack).ifPresent(itemStack2 -> BundleItem.addToBundle(stack, slot.method_32756((ItemStack)itemStack2)));
+        } else if (itemStack.getItem().hasStoredInventory()) {
+            int i = (64 - BundleItem.getBundleOccupancy(stack)) / BundleItem.getItemOccupancy(itemStack);
+            BundleItem.addToBundle(stack, slot.method_32753(itemStack.getCount(), i, playerInventory.player));
+        }
+        return true;
     }
 
     @Override
-    public boolean onClicked(ItemStack stack, ItemStack otherStack, ClickType clickType, PlayerInventory playerInventory) {
-        if (clickType == ClickType.RIGHT) {
-            if (otherStack.isEmpty()) {
-                BundleItem.emptyBundle(stack, playerInventory);
-            } else {
-                BundleItem.addToBundle(stack, otherStack);
-            }
-            return true;
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+        if (clickType != ClickType.RIGHT || !slot.method_32754(playerInventory.player)) {
+            return false;
         }
-        return super.onClicked(stack, otherStack, clickType, playerInventory);
+        if (otherStack.isEmpty()) {
+            BundleItem.method_32759(stack).ifPresent(playerInventory::setCursorStack);
+        } else {
+            otherStack.decrement(BundleItem.addToBundle(stack, otherStack));
+        }
+        return true;
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        BundleItem.emptyBundle(itemStack, user.getInventory());
-        return TypedActionResult.success(itemStack);
+        if (BundleItem.method_32757(itemStack, user)) {
+            return TypedActionResult.success(itemStack, world.isClient());
+        }
+        return TypedActionResult.fail(itemStack);
     }
 
     @Override
@@ -85,9 +99,9 @@ extends Item {
         return ITEM_BAR_COLOR;
     }
 
-    private static void addToBundle(ItemStack bundle, ItemStack stack) {
-        if (!stack.getItem().hasStoredInventory()) {
-            return;
+    private static int addToBundle(ItemStack bundle, ItemStack stack) {
+        if (stack.isEmpty() || !stack.getItem().hasStoredInventory()) {
+            return 0;
         }
         CompoundTag compoundTag = bundle.getOrCreateTag();
         if (!compoundTag.contains("Items")) {
@@ -97,7 +111,7 @@ extends Item {
         int j = BundleItem.getItemOccupancy(stack);
         int k = Math.min(stack.getCount(), (64 - i) / j);
         if (k == 0) {
-            return;
+            return 0;
         }
         ListTag listTag = compoundTag.getList("Items", 10);
         Optional<CompoundTag> optional = BundleItem.method_32344(stack, listTag);
@@ -106,14 +120,16 @@ extends Item {
             ItemStack itemStack = ItemStack.fromTag(compoundTag2);
             itemStack.increment(k);
             itemStack.toTag(compoundTag2);
+            listTag.remove(compoundTag2);
+            listTag.add(0, compoundTag2);
         } else {
             ItemStack itemStack2 = stack.copy();
             itemStack2.setCount(k);
             CompoundTag compoundTag3 = new CompoundTag();
             itemStack2.toTag(compoundTag3);
-            listTag.add(compoundTag3);
+            listTag.add(0, compoundTag3);
         }
-        stack.decrement(k);
+        return k;
     }
 
     private static Optional<CompoundTag> method_32344(ItemStack itemStack, ListTag listTag) {
@@ -134,13 +150,37 @@ extends Item {
         return BundleItem.method_32345(stack).mapToInt(itemStack -> BundleItem.getItemOccupancy(itemStack) * itemStack.getCount()).sum();
     }
 
-    private static void emptyBundle(ItemStack stack2, PlayerInventory playerInventory) {
-        BundleItem.method_32345(stack2).forEach(stack -> {
-            if (playerInventory.player instanceof ServerPlayerEntity || playerInventory.player.isCreative()) {
-                playerInventory.offerOrDrop((ItemStack)stack);
+    private static Optional<ItemStack> method_32759(ItemStack itemStack) {
+        CompoundTag compoundTag = itemStack.getOrCreateTag();
+        if (!compoundTag.contains("Items")) {
+            return Optional.empty();
+        }
+        ListTag listTag = compoundTag.getList("Items", 10);
+        if (listTag.isEmpty()) {
+            return Optional.empty();
+        }
+        boolean i = false;
+        CompoundTag compoundTag2 = listTag.getCompound(0);
+        ItemStack itemStack2 = ItemStack.fromTag(compoundTag2);
+        listTag.remove(0);
+        return Optional.of(itemStack2);
+    }
+
+    private static boolean method_32757(ItemStack itemStack, PlayerEntity playerEntity) {
+        CompoundTag compoundTag = itemStack.getOrCreateTag();
+        if (!compoundTag.contains("Items")) {
+            return false;
+        }
+        if (playerEntity instanceof ServerPlayerEntity) {
+            ListTag listTag = compoundTag.getList("Items", 10);
+            for (int i = 0; i < listTag.size(); ++i) {
+                CompoundTag compoundTag2 = listTag.getCompound(i);
+                ItemStack itemStack2 = ItemStack.fromTag(compoundTag2);
+                playerEntity.dropItem(itemStack2, true);
             }
-        });
-        stack2.removeSubTag("Items");
+        }
+        itemStack.removeSubTag("Items");
+        return true;
     }
 
     private static Stream<ItemStack> method_32345(ItemStack itemStack) {
@@ -149,7 +189,7 @@ extends Item {
             return Stream.empty();
         }
         ListTag listTag = compoundTag.getList("Items", 10);
-        return listTag.stream().map(tag -> ItemStack.fromTag((CompoundTag)tag));
+        return listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromTag);
     }
 
     @Override
@@ -158,6 +198,14 @@ extends Item {
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         BundleItem.method_32345(stack).forEach(defaultedList::add);
         return Optional.of(new BundleTooltipData(defaultedList, BundleItem.getBundleOccupancy(stack) < 64));
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+        if (context.isAdvanced()) {
+            tooltip.add(new TranslatableText("item.minecraft.bundle.fullness", BundleItem.getBundleOccupancy(stack), 64).formatted(Formatting.GRAY));
+        }
     }
 }
 

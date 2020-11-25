@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5697;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -18,7 +19,6 @@ import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
 import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
-import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckStingersFeatureRenderer;
@@ -27,7 +27,6 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
@@ -43,6 +42,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class PlayerEntityRenderer
@@ -50,7 +50,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
     public PlayerEntityRenderer(EntityRendererFactory.Context ctx, boolean slim) {
         super(ctx, new PlayerEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM : EntityModelLayers.PLAYER), slim), 0.5f);
         this.addFeature(new ArmorFeatureRenderer(this, new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_INNER_ARMOR : EntityModelLayers.PLAYER_INNER_ARMOR)), new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR))));
-        this.addFeature(new HeldItemFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
+        this.addFeature(new class_5697<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
         this.addFeature(new StuckArrowsFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(ctx, this));
         this.addFeature(new Deadmau5FeatureRenderer(this));
         this.addFeature(new CapeFeatureRenderer(this));
@@ -189,7 +189,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             float j = (float)abstractClientPlayerEntity.getRoll() + h;
             float k = MathHelper.clamp(j * j / 100.0f, 0.0f, 1.0f);
             if (!abstractClientPlayerEntity.isUsingRiptide()) {
-                matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(k * (-90.0f - abstractClientPlayerEntity.pitch)));
+                matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(k * (-90.0f - abstractClientPlayerEntity.pitch)));
             }
             Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
             Vec3d vec3d2 = abstractClientPlayerEntity.getVelocity();
@@ -198,13 +198,13 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
             if (d > 0.0 && e > 0.0) {
                 double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
                 double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion((float)(Math.signum(m) * Math.acos(l))));
+                matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float)(Math.signum(m) * Math.acos(l))));
             }
         } else if (i > 0.0f) {
             super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
             float j = abstractClientPlayerEntity.isTouchingWater() ? -90.0f - abstractClientPlayerEntity.pitch : -90.0f;
             float k = MathHelper.lerp(i, 0.0f, j);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(k));
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(k));
             if (abstractClientPlayerEntity.isInSwimmingPose()) {
                 matrixStack.translate(0.0, -1.0, 0.3f);
             }

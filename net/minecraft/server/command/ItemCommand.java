@@ -72,12 +72,12 @@ public class ItemCommand {
     private static int executeEntityModify(ServerCommandSource source, Collection<? extends Entity> targets, int slot, LootFunction modifier) throws CommandSyntaxException {
         HashMap<Entity, ItemStack> map = Maps.newHashMapWithExpectedSize(targets.size());
         for (Entity entity : targets) {
+            ItemStack itemStack;
             class_5630 lv;
             if (entity instanceof ServerPlayerEntity) {
                 ((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
             }
-            if ((lv = entity.method_32318(slot)) == class_5630.field_27860) continue;
-            ItemStack itemStack = ItemCommand.method_32715(source, modifier, lv.method_32327());
+            if ((lv = entity.method_32318(slot)) == class_5630.field_27860 || !lv.method_32332(itemStack = ItemCommand.method_32715(source, modifier, lv.method_32327().copy()))) continue;
             map.put(entity, itemStack);
             if (!(entity instanceof ServerPlayerEntity)) continue;
             ((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();

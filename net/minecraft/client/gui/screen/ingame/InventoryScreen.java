@@ -15,7 +15,6 @@ import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -25,6 +24,7 @@ import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class InventoryScreen
@@ -117,8 +117,8 @@ implements RecipeBookProvider {
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.translate(0.0, 0.0, 1000.0);
         matrixStack.scale(size, size, size);
-        Quaternion quaternion = Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f);
-        Quaternion quaternion2 = Vector3f.POSITIVE_X.getDegreesQuaternion(g * 20.0f);
+        Quaternion quaternion = Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f);
+        Quaternion quaternion2 = Vec3f.POSITIVE_X.getDegreesQuaternion(g * 20.0f);
         quaternion.hamiltonProduct(quaternion2);
         matrixStack.multiply(quaternion);
         float h = entity.bodyYaw;

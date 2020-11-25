@@ -139,7 +139,6 @@ CommandOutput {
     protected int ridingCooldown;
     @Nullable
     private Entity vehicle;
-    public boolean teleporting;
     public World world;
     public double prevX;
     public double prevY;
@@ -831,7 +830,7 @@ CommandOutput {
             this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
             this.field_26994 = this.age;
         }
-        BlockSoundGroup blockSoundGroup = (blockState = this.world.getBlockState(pos.up())).isIn(BlockTags.SNOW_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
+        BlockSoundGroup blockSoundGroup = (blockState = this.world.getBlockState(pos.up())).isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
         this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15f, blockSoundGroup.getPitch());
     }
 
@@ -1074,10 +1073,6 @@ CommandOutput {
             return this.world.getBrightness(mutable);
         }
         return 0.0f;
-    }
-
-    public void setWorld(World world) {
-        this.world = world;
     }
 
     public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
@@ -1525,7 +1520,7 @@ CommandOutput {
         }
         float f = 0.1f;
         float g = this.dimensions.width * 0.8f;
-        Box box = Box.method_30048(g, 0.1f, g).offset(this.getX(), this.getEyeY(), this.getZ());
+        Box box = Box.of(g, 0.1f, g).offset(this.getX(), this.getEyeY(), this.getZ());
         return this.world.getBlockCollisions(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos)).findAny().isPresent();
     }
 

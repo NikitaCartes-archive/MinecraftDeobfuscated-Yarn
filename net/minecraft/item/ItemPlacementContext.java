@@ -54,6 +54,10 @@ extends ItemUsageContext {
         return Direction.getEntityFacingOrder(this.getPlayer())[0];
     }
 
+    public Direction method_32760() {
+        return Direction.method_32801(this.getPlayer(), Direction.Axis.Y);
+    }
+
     public Direction[] getPlacementDirections() {
         int i;
         Direction[] directions = Direction.getEntityFacingOrder(this.getPlayer());

@@ -187,10 +187,9 @@ implements ScreenHandlerListener {
     public int pingMilliseconds;
     public boolean notInAnyWorld;
 
-    public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile, ServerPlayerInteractionManager interactionManager) {
+    public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile) {
         super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
-        interactionManager.player = this;
-        this.interactionManager = interactionManager;
+        this.interactionManager = server.method_32816(this);
         this.server = server;
         this.statHandler = server.getPlayerManager().createStatHandler(this);
         this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
@@ -242,13 +241,6 @@ implements ScreenHandlerListener {
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
-        if (tag.contains("playerGameType", 99)) {
-            if (this.getServer().shouldForceGameMode()) {
-                this.interactionManager.setGameMode(this.getServer().getDefaultGameMode(), GameMode.NOT_SET);
-            } else {
-                this.interactionManager.setGameMode(GameMode.byId(tag.getInt("playerGameType")), tag.contains("previousPlayerGameType", 3) ? GameMode.byId(tag.getInt("previousPlayerGameType")) : GameMode.NOT_SET);
-            }
-        }
         if (tag.contains("enteredNetherPosition", 10)) {
             CompoundTag compoundTag = tag.getCompound("enteredNetherPosition");
             this.enteredNetherPos = new Vec3d(compoundTag.getDouble("x"), compoundTag.getDouble("y"), compoundTag.getDouble("z"));
@@ -273,8 +265,7 @@ implements ScreenHandlerListener {
     @Override
     public void writeCustomDataToTag(CompoundTag tag2) {
         super.writeCustomDataToTag(tag2);
-        tag2.putInt("playerGameType", this.interactionManager.getGameMode().getId());
-        tag2.putInt("previousPlayerGameType", this.interactionManager.getPreviousGameMode().getId());
+        this.gameModeToTag(tag2);
         tag2.putBoolean("seenCredits", this.seenCredits);
         if (this.enteredNetherPos != null) {
             CompoundTag compoundTag = new CompoundTag();
@@ -612,13 +603,12 @@ implements ScreenHandlerListener {
             }
             serverWorld.getProfiler().pop();
             serverWorld.getProfiler().push("placing");
-            this.setWorld(destination);
+            this.method_32747(destination);
             destination.onPlayerChangeDimension(this);
             this.setRotation(teleportTarget.yaw, teleportTarget.pitch);
             this.refreshPositionAfterTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z);
             serverWorld.getProfiler().pop();
             this.worldChanged(serverWorld);
-            this.interactionManager.setWorld(destination);
             this.networkHandler.sendPacket(new PlayerAbilitiesS2CPacket(this.getAbilities()));
             playerManager.sendWorldInfo(this, destination);
             playerManager.sendPlayerStatus(this);
@@ -1019,6 +1009,7 @@ implements ScreenHandlerListener {
     }
 
     public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive) {
+        this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
         if (alive) {
             this.getInventory().clone(oldPlayer.getInventory());
             this.setHealth(oldPlayer.getHealth());
@@ -1111,9 +1102,10 @@ implements ScreenHandlerListener {
         return (ServerWorld)this.world;
     }
 
-    @Override
-    public void setGameMode(GameMode gameMode) {
-        this.interactionManager.setGameMode(gameMode);
+    public boolean changeGameMode(GameMode gameMode) {
+        if (!this.interactionManager.changeGameMode(gameMode)) {
+            return false;
+        }
         this.networkHandler.sendPacket(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.GAME_MODE_CHANGED, gameMode.getId()));
         if (gameMode == GameMode.SPECTATOR) {
             this.dropShoulderEntities();
@@ -1123,6 +1115,7 @@ implements ScreenHandlerListener {
         }
         this.sendAbilitiesUpdate();
         this.markEffectsDirty();
+        return true;
     }
 
     @Override
@@ -1282,11 +1275,10 @@ implements ScreenHandlerListener {
             serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
             this.unsetRemoved();
             this.refreshPositionAndAngles(x, y, z, yaw, pitch);
-            this.setWorld(targetWorld);
+            this.method_32747(targetWorld);
             targetWorld.onPlayerTeleport(this);
             this.worldChanged(serverWorld);
             this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
-            this.interactionManager.setWorld(targetWorld);
             this.server.getPlayerManager().sendWorldInfo(this, targetWorld);
             this.server.getPlayerManager().sendPlayerStatus(this);
         }
@@ -1377,6 +1369,44 @@ implements ScreenHandlerListener {
     @Nullable
     public TextStream getTextStream() {
         return this.textStream;
+    }
+
+    public void method_32747(ServerWorld serverWorld) {
+        this.world = serverWorld;
+        this.interactionManager.setWorld(serverWorld);
+    }
+
+    @Nullable
+    private static GameMode gameModeFromTag(@Nullable CompoundTag tag, String key) {
+        return tag != null && tag.contains(key, 99) ? GameMode.byId(tag.getInt(key)) : null;
+    }
+
+    /**
+     * Returns the server game mode the player should be set to, namely the forced game mode.
+     * 
+     * <p>If the forced game mode is not set, returns the {@code backupGameMode} if not {@code null},
+     * or the server's default game mode otherwise.
+     * 
+     * @see MinecraftServer#getForcedGameMode
+     */
+    private GameMode getServerGameMode(@Nullable GameMode backupGameMode) {
+        GameMode gameMode = this.server.getForcedGameMode();
+        if (gameMode != null) {
+            return gameMode;
+        }
+        return backupGameMode != null ? backupGameMode : this.server.getDefaultGameMode();
+    }
+
+    public void setGameMode(@Nullable CompoundTag tag) {
+        this.interactionManager.setGameMode(this.getServerGameMode(ServerPlayerEntity.gameModeFromTag(tag, "playerGameType")), ServerPlayerEntity.gameModeFromTag(tag, "previousPlayerGameType"));
+    }
+
+    private void gameModeToTag(CompoundTag tag) {
+        tag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
+        GameMode gameMode = this.interactionManager.getPreviousGameMode();
+        if (gameMode != null) {
+            tag.putInt("previousPlayerGameType", gameMode.getId());
+        }
     }
 }
 

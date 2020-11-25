@@ -224,7 +224,7 @@ implements ScreenHandlerProvider<T> {
                 HandledScreen.fill(matrices, i, j, i + 16, j + 16, -2130706433);
             }
             RenderSystem.enableDepthTest();
-            this.itemRenderer.renderInGuiWithOverrides(this.client.player, itemStack, i, j);
+            this.itemRenderer.renderInGuiWithOverrides(this.client.player, itemStack, i, j, slot.x + slot.y * this.backgroundWidth);
             this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, i, j, string);
         }
         this.itemRenderer.zOffset = 0.0f;

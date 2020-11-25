@@ -19,7 +19,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -32,6 +31,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantmentScreen
@@ -56,7 +56,7 @@ extends HandledScreen<EnchantmentScreenHandler> {
     @Override
     protected void init() {
         super.init();
-        this.BOOK_MODEL = new BookModel(this.client.method_31974().getModelPart(EntityModelLayers.BOOK));
+        this.BOOK_MODEL = new BookModel(this.client.getEntityModelLoader().getModelPart(EntityModelLayers.BOOK));
     }
 
     @Override
@@ -102,13 +102,13 @@ extends HandledScreen<EnchantmentScreenHandler> {
         matrices.translate(0.0, 3.3f, 1984.0);
         float f = 5.0f;
         matrices.scale(5.0f, 5.0f, 5.0f);
-        matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(20.0f));
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(20.0f));
         float g = MathHelper.lerp(delta, this.pageTurningSpeed, this.nextPageTurningSpeed);
         matrices.translate((1.0f - g) * 0.2f, (1.0f - g) * 0.1f, (1.0f - g) * 0.25f);
         float h = -(1.0f - g) * 90.0f - 90.0f;
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
-        matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0f));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f));
         float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25f;
         float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75f;
         l = (l - (float)MathHelper.fastFloor(l)) * 1.6f - 0.3f;

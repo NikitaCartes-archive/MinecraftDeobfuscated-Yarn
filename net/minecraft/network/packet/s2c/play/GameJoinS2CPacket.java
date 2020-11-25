@@ -17,6 +17,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
+import org.jetbrains.annotations.Nullable;
 
 public class GameJoinS2CPacket
 implements Packet<ClientPlayPacketListener> {
@@ -24,6 +25,7 @@ implements Packet<ClientPlayPacketListener> {
     private long sha256Seed;
     private boolean hardcore;
     private GameMode gameMode;
+    @Nullable
     private GameMode previousGameMode;
     private Set<RegistryKey<World>> dimensionIds;
     private DynamicRegistryManager.Impl registryManager;
@@ -39,7 +41,7 @@ implements Packet<ClientPlayPacketListener> {
     public GameJoinS2CPacket() {
     }
 
-    public GameJoinS2CPacket(int playerEntityId, GameMode gameMode, GameMode previousGameMode, long sha256Seed, boolean hardcore, Set<RegistryKey<World>> dimensionIds, DynamicRegistryManager.Impl registryManager, DimensionType dimensionType, RegistryKey<World> dimensionId, int maxPlayers, int chunkLoadDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld) {
+    public GameJoinS2CPacket(int playerEntityId, GameMode gameMode, @Nullable GameMode previousGameMode, long sha256Seed, boolean hardcore, Set<RegistryKey<World>> dimensionIds, DynamicRegistryManager.Impl registryManager, DimensionType dimensionType, RegistryKey<World> dimensionId, int maxPlayers, int chunkLoadDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld) {
         this.playerEntityId = playerEntityId;
         this.dimensionIds = dimensionIds;
         this.registryManager = registryManager;
@@ -62,7 +64,7 @@ implements Packet<ClientPlayPacketListener> {
         this.playerEntityId = buf.readInt();
         this.hardcore = buf.readBoolean();
         this.gameMode = GameMode.byId(buf.readByte());
-        this.previousGameMode = GameMode.byId(buf.readByte());
+        this.previousGameMode = GameMode.getOrNull(buf.readByte());
         int i = buf.readVarInt();
         this.dimensionIds = Sets.newHashSet();
         for (int j = 0; j < i; ++j) {
@@ -85,7 +87,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeInt(this.playerEntityId);
         buf.writeBoolean(this.hardcore);
         buf.writeByte(this.gameMode.getId());
-        buf.writeByte(this.previousGameMode.getId());
+        buf.writeByte(GameMode.getId(this.previousGameMode));
         buf.writeVarInt(this.dimensionIds.size());
         for (RegistryKey<World> registryKey : this.dimensionIds) {
             buf.writeIdentifier(registryKey.getValue());

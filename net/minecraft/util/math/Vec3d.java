@@ -6,13 +6,16 @@ package net.minecraft.util.math;
 import java.util.EnumSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.Vec2f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
 
+/**
+ * An immutable vector composed of 3 doubles.
+ */
 public class Vec3d
 implements Position {
     public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
@@ -50,7 +53,7 @@ implements Position {
         this.z = z;
     }
 
-    public Vec3d(Vector3f vec) {
+    public Vec3d(Vec3f vec) {
         this(vec.getX(), vec.getY(), vec.getZ());
     }
 

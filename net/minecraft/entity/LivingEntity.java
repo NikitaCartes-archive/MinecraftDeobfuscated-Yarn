@@ -114,6 +114,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -213,6 +214,7 @@ extends Entity {
     protected int roll;
     private BlockPos lastBlockPos;
     private Optional<BlockPos> climbingPos = Optional.empty();
+    @Nullable
     private DamageSource lastDamageSource;
     private long lastDamageTime;
     protected int riptideTicks;
@@ -1162,7 +1164,7 @@ extends Entity {
 
     protected void dropXp() {
         if (this.world instanceof ServerWorld && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-            ExperienceOrbEntity.method_31493((ServerWorld)this.world, this.getPos(), this.getCurrentExperience(this.attackingPlayer));
+            ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), this.getCurrentExperience(this.attackingPlayer));
         }
     }
 
@@ -1452,22 +1454,19 @@ extends Entity {
             case 57: {
                 DamageSource damageSource;
                 SoundEvent soundEvent;
-                boolean bl = status == 33;
-                boolean bl2 = status == 36;
-                boolean bl3 = status == 37;
-                boolean bl4 = status == 44;
-                boolean bl5 = status == 57;
                 this.limbDistance = 1.5f;
                 this.timeUntilRegen = 20;
                 this.hurtTime = this.maxHurtTime = 10;
                 this.knockbackVelocity = 0.0f;
-                if (bl) {
+                if (status == 33) {
                     this.playSound(SoundEvents.ENCHANT_THORNS_HIT, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
                 }
-                if ((soundEvent = this.getHurtSound(damageSource = bl3 ? DamageSource.ON_FIRE : (bl2 ? DamageSource.DROWN : (bl4 ? DamageSource.SWEET_BERRY_BUSH : (bl5 ? DamageSource.FREEZE : DamageSource.GENERIC))))) != null) {
+                if ((soundEvent = this.getHurtSound(damageSource = status == 37 ? DamageSource.ON_FIRE : (status == 36 ? DamageSource.DROWN : (status == 44 ? DamageSource.SWEET_BERRY_BUSH : (status == 57 ? DamageSource.FREEZE : DamageSource.GENERIC))))) != null) {
                     this.playSound(soundEvent, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
                 }
                 this.damage(DamageSource.GENERIC, 0.0f);
+                this.lastDamageSource = damageSource;
+                this.lastDamageTime = this.world.getTime();
                 break;
             }
             case 3: {
@@ -2938,7 +2937,10 @@ extends Entity {
 
     @Override
     public boolean canFreeze() {
-        return !this.isSpectator();
+        if (this.isSpectator()) {
+            return false;
+        }
+        return !this.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.CHEST).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.LEGS).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
     }
 }
 

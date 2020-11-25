@@ -12,13 +12,13 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class ExperienceOrbEntityRenderer
@@ -55,7 +55,7 @@ extends EntityRenderer<ExperienceOrbEntity> {
         int u = (int)((MathHelper.sin(r + 4.1887903f) + 1.0f) * 0.1f * 255.0f);
         matrixStack.translate(0.0, 0.1f, 0.0);
         matrixStack.multiply(this.dispatcher.getRotation());
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         float v = 0.3f;
         matrixStack.scale(0.3f, 0.3f, 0.3f);
         VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(LAYER);

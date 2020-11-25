@@ -49,12 +49,12 @@ extends ChunkManager {
         return this.lightingProvider;
     }
 
-    private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int y) {
+    private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int z) {
         if (chunk == null) {
             return false;
         }
         ChunkPos chunkPos = chunk.getPos();
-        return chunkPos.x == x && chunkPos.z == y;
+        return chunkPos.x == x && chunkPos.z == z;
     }
 
     public void unload(int chunkX, int chunkZ) {

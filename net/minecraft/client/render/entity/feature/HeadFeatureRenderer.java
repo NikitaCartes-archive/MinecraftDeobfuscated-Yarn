@@ -22,7 +22,6 @@ import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
@@ -33,6 +32,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(value=EnvType.CLIENT)
@@ -98,16 +98,20 @@ extends FeatureRenderer<T, M> {
             RenderLayer renderLayer = SkullBlockEntityRenderer.method_3578(skullType, gameProfile);
             SkullBlockEntityRenderer.method_32161(null, 180.0f, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
         } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
-            m = 0.625f;
-            matrixStack.translate(0.0, -0.25, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
-            matrixStack.scale(0.625f, -0.625f, -0.625f);
-            if (bl) {
-                matrixStack.translate(0.0, 0.1875, 0.0);
-            }
+            HeadFeatureRenderer.method_32798(matrixStack, bl);
             MinecraftClient.getInstance().getHeldItemRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
         }
         matrixStack.pop();
+    }
+
+    public static void method_32798(MatrixStack matrixStack, boolean bl) {
+        float f = 0.625f;
+        matrixStack.translate(0.0, -0.25, 0.0);
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrixStack.scale(0.625f, -0.625f, -0.625f);
+        if (bl) {
+            matrixStack.translate(0.0, 0.1875, 0.0);
+        }
     }
 }
 

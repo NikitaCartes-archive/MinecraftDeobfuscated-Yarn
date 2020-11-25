@@ -45,7 +45,7 @@ extends ThrownItemEntity {
         if (this.world instanceof ServerWorld) {
             this.world.syncWorldEvent(2002, this.getBlockPos(), PotionUtil.getColor(Potions.WATER));
             int i = 3 + this.world.random.nextInt(5) + this.world.random.nextInt(5);
-            ExperienceOrbEntity.method_31493((ServerWorld)this.world, this.getPos(), i);
+            ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), i);
             this.discard();
         }
     }

@@ -11,9 +11,9 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.MobSpawnerLogic;
 
 @Environment(value=EnvType.CLIENT)
@@ -35,9 +35,9 @@ implements BlockEntityRenderer<MobSpawnerBlockEntity> {
                 g /= h;
             }
             matrixStack.translate(0.0, 0.4f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)MathHelper.lerp((double)f, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0f));
+            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)MathHelper.lerp((double)f, mobSpawnerLogic.method_8279(), mobSpawnerLogic.method_8278()) * 10.0f));
             matrixStack.translate(0.0, -0.2f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-30.0f));
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-30.0f));
             matrixStack.scale(g, g, g);
             MinecraftClient.getInstance().getEntityRenderDispatcher().render(entity, 0.0, 0.0, 0.0, 0.0f, f, matrixStack, vertexConsumerProvider, i);
         }

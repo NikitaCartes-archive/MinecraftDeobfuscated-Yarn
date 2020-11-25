@@ -66,7 +66,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class CreateWorldScreen
 extends Screen {
-    private static final Logger field_25480 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
     private static final Text ENTER_SEED_TEXT = new TranslatableText("selectWorld.enterSeed");
     private static final Text SEED_INFO_TEXT = new TranslatableText("selectWorld.seedInfo");
@@ -364,7 +364,7 @@ extends Screen {
             try {
                 this.field_25477 = Files.createTempDirectory("mcworld-", new FileAttribute[0]);
             } catch (IOException iOException) {
-                field_25480.warn("Failed to create temporary dir", (Throwable)iOException);
+                LOGGER.warn("Failed to create temporary dir", (Throwable)iOException);
                 SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
                 this.method_30297();
             }
@@ -390,7 +390,7 @@ extends Screen {
         this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
         ServerResourceManager.reload(resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), this.client).handle((serverResourceManager, throwable) -> {
             if (throwable != null) {
-                field_25480.warn("Failed to validate datapack", (Throwable)throwable);
+                LOGGER.warn("Failed to validate datapack", (Throwable)throwable);
                 this.client.send(() -> this.client.openScreen(new ConfirmScreen(bl -> {
                     if (bl) {
                         this.method_29694();
@@ -418,11 +418,11 @@ extends Screen {
                     try {
                         Files.delete(path);
                     } catch (IOException iOException) {
-                        field_25480.warn("Failed to remove temporary file {}", path, (Object)iOException);
+                        LOGGER.warn("Failed to remove temporary file {}", path, (Object)iOException);
                     }
                 });
             } catch (IOException iOException) {
-                field_25480.warn("Failed to list temporary dir {}", (Object)this.field_25477);
+                LOGGER.warn("Failed to list temporary dir {}", (Object)this.field_25477);
             }
             this.field_25477 = null;
         }
@@ -432,7 +432,7 @@ extends Screen {
         try {
             Util.relativeCopy(path, path2, path3);
         } catch (IOException iOException) {
-            field_25480.warn("Failed to copy datapack file from {} to {}", (Object)path3, (Object)path2);
+            LOGGER.warn("Failed to copy datapack file from {} to {}", (Object)path3, (Object)path2);
             throw new WorldCreationException(iOException);
         }
     }
@@ -445,7 +445,7 @@ extends Screen {
                 Files.createDirectories(path3, new FileAttribute[0]);
                 stream.filter(path -> !path.equals(this.field_25477)).forEach(path2 -> CreateWorldScreen.method_29687(this.field_25477, path3, path2));
             } catch (IOException | WorldCreationException exception) {
-                field_25480.warn("Failed to copy datapacks to world {}", (Object)this.saveDirectoryName, (Object)exception);
+                LOGGER.warn("Failed to copy datapacks to world {}", (Object)this.saveDirectoryName, (Object)exception);
                 SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
                 this.method_30297();
                 return false;
@@ -464,7 +464,7 @@ extends Screen {
                     try {
                         path3 = Files.createTempDirectory("mcworld-", new FileAttribute[0]);
                     } catch (IOException iOException) {
-                        field_25480.warn("Failed to create temporary dir");
+                        LOGGER.warn("Failed to create temporary dir");
                         throw new WorldCreationException(iOException);
                     }
                     mutableObject.setValue(path3);
@@ -472,7 +472,7 @@ extends Screen {
                 CreateWorldScreen.method_29687(path, path3, path2);
             });
         } catch (IOException | WorldCreationException exception) {
-            field_25480.warn("Failed to copy datapacks from world {}", (Object)path, (Object)exception);
+            LOGGER.warn("Failed to copy datapacks from world {}", (Object)path, (Object)exception);
             SystemToast.addPackCopyFailure(minecraftClient, path.toString());
             return null;
         }

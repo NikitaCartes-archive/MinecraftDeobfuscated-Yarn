@@ -8,7 +8,6 @@ import net.minecraft.network.packet.c2s.play.PlayerActionC2SPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.network.ServerPlayerInteractionManager;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -25,8 +24,8 @@ extends ServerPlayerInteractionManager {
     private int reminderTicks;
     private int tick;
 
-    public DemoServerPlayerInteractionManager(ServerWorld serverWorld) {
-        super(serverWorld);
+    public DemoServerPlayerInteractionManager(ServerPlayerEntity serverPlayerEntity) {
+        super(serverPlayerEntity);
     }
 
     @Override

@@ -31,13 +31,13 @@ import net.minecraft.client.sound.Source;
 import net.minecraft.client.sound.StaticSound;
 import net.minecraft.client.sound.TickableSoundInstance;
 import net.minecraft.client.sound.WeightedSoundSet;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -386,11 +386,11 @@ public class SoundSystem {
             return;
         }
         Vec3d vec3d = camera.getPos();
-        Vector3f vector3f = camera.getHorizontalPlane();
-        Vector3f vector3f2 = camera.getVerticalPlane();
+        Vec3f vec3f = camera.getHorizontalPlane();
+        Vec3f vec3f2 = camera.getVerticalPlane();
         this.taskQueue.execute(() -> {
             this.listener.setPosition(vec3d);
-            this.listener.setOrientation(vector3f, vector3f2);
+            this.listener.setOrientation(vec3f, vec3f2);
         });
     }
 

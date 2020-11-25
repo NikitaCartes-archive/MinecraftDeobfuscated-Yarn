@@ -188,14 +188,6 @@ implements Angerable {
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
-            return false;
-        }
-        return super.damage(source, amount);
-    }
-
-    @Override
     protected SoundEvent getAmbientSound() {
         return this.hasAngerTime() ? SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_ANGRY : SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_AMBIENT;
     }

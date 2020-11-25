@@ -30,6 +30,7 @@ import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.block.enums.StairShape;
+import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
@@ -687,6 +688,24 @@ public class BlockStateModelGenerator {
         this.method_32229(Blocks.AMETHYST_CLUSTER);
     }
 
+    private void method_32802() {
+        this.registerItemModel(Blocks.POINTED_DRIPSTONE.asItem());
+        BlockStateVariantMap.DoubleProperty<Direction, Thickness> doubleProperty = BlockStateVariantMap.create(Properties.VERTICAL_DIRECTION, Properties.THICKNESS);
+        for (Thickness thickness : Thickness.values()) {
+            doubleProperty.register(Direction.UP, thickness, this.method_32803(Direction.UP, thickness));
+        }
+        for (Thickness thickness : Thickness.values()) {
+            doubleProperty.register(Direction.DOWN, thickness, this.method_32803(Direction.DOWN, thickness));
+        }
+        this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.POINTED_DRIPSTONE).coordinate(doubleProperty));
+    }
+
+    private BlockStateVariant method_32803(Direction direction, Thickness thickness) {
+        String string = "_" + direction.asString() + "_" + thickness.asString();
+        Texture texture = Texture.cross(Texture.getSubId(Blocks.POINTED_DRIPSTONE, string));
+        return BlockStateVariant.create().put(VariantSettings.MODEL, Models.POINTED_DRIPSTONE.upload(Blocks.POINTED_DRIPSTONE, string, texture, this.modelCollector));
+    }
+
     private void registerNetherrackBottomCustomTop(Block block) {
         Texture texture = new Texture().put(TextureKey.BOTTOM, Texture.getId(Blocks.NETHERRACK)).put(TextureKey.TOP, Texture.getId(block)).put(TextureKey.SIDE, Texture.getSubId(block, "_side"));
         this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, Models.CUBE_BOTTOM_TOP.upload(block, texture, this.modelCollector)));
@@ -1206,6 +1225,7 @@ public class BlockStateModelGenerator {
         this.registerSingleton(Blocks.BUDDING_AMETHYST, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.CALCITE, TexturedModel.CUBE_ALL);
         this.registerSingleton(Blocks.TUFF, TexturedModel.CUBE_ALL);
+        this.registerSingleton(Blocks.DRIPSTONE_BLOCK, TexturedModel.CUBE_ALL);
         this.registerSimpleCubeAll(Blocks.COPPER_ORE);
         this.registerSimpleCubeAll(Blocks.COPPER_BLOCK);
         this.registerSimpleCubeAll(Blocks.LIGHTLY_WEATHERED_COPPER_BLOCK);
@@ -1427,6 +1447,7 @@ public class BlockStateModelGenerator {
         this.registerFlowerPotPlant(Blocks.RED_MUSHROOM, Blocks.POTTED_RED_MUSHROOM, TintType.NOT_TINTED);
         this.registerFlowerPotPlant(Blocks.BROWN_MUSHROOM, Blocks.POTTED_BROWN_MUSHROOM, TintType.NOT_TINTED);
         this.registerFlowerPotPlant(Blocks.DEAD_BUSH, Blocks.POTTED_DEAD_BUSH, TintType.NOT_TINTED);
+        this.method_32802();
         this.registerMushroomBlock(Blocks.BROWN_MUSHROOM_BLOCK);
         this.registerMushroomBlock(Blocks.RED_MUSHROOM_BLOCK);
         this.registerMushroomBlock(Blocks.MUSHROOM_STEM);

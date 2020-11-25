@@ -7,11 +7,11 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,11 +20,11 @@ public final class AffineTransformation {
     private final Matrix4f matrix;
     private boolean initialized;
     @Nullable
-    private Vector3f translation;
+    private Vec3f translation;
     @Nullable
     private Quaternion rotation2;
     @Nullable
-    private Vector3f scale;
+    private Vec3f scale;
     @Nullable
     private Quaternion rotation1;
     private static final AffineTransformation IDENTITY = Util.make(() -> {
@@ -39,11 +39,11 @@ public final class AffineTransformation {
         this.matrix = matrix == null ? AffineTransformation.IDENTITY.matrix : matrix;
     }
 
-    public AffineTransformation(@Nullable Vector3f translation, @Nullable Quaternion rotation2, @Nullable Vector3f scale, @Nullable Quaternion rotation1) {
+    public AffineTransformation(@Nullable Vec3f translation, @Nullable Quaternion rotation2, @Nullable Vec3f scale, @Nullable Quaternion rotation1) {
         this.matrix = AffineTransformation.setup(translation, rotation2, scale, rotation1);
-        this.translation = translation != null ? translation : new Vector3f();
+        this.translation = translation != null ? translation : new Vec3f();
         this.rotation2 = rotation2 != null ? rotation2 : Quaternion.IDENTITY.copy();
-        this.scale = scale != null ? scale : new Vector3f(1.0f, 1.0f, 1.0f);
+        this.scale = scale != null ? scale : new Vec3f(1.0f, 1.0f, 1.0f);
         this.rotation1 = rotation1 != null ? rotation1 : Quaternion.IDENTITY.copy();
         this.initialized = true;
     }
@@ -72,8 +72,8 @@ public final class AffineTransformation {
 
     private void init() {
         if (!this.initialized) {
-            Pair<Matrix3f, Vector3f> pair = AffineTransformation.getLinearTransformationAndTranslationFromAffine(this.matrix);
-            Triple<Quaternion, Vector3f, Quaternion> triple = pair.getFirst().decomposeLinearTransformation();
+            Pair<Matrix3f, Vec3f> pair = AffineTransformation.getLinearTransformationAndTranslationFromAffine(this.matrix);
+            Triple<Quaternion, Vec3f, Quaternion> triple = pair.getFirst().decomposeLinearTransformation();
             this.translation = pair.getSecond();
             this.rotation2 = triple.getLeft();
             this.scale = triple.getMiddle();
@@ -82,7 +82,7 @@ public final class AffineTransformation {
         }
     }
 
-    private static Matrix4f setup(@Nullable Vector3f translation, @Nullable Quaternion rotation2, @Nullable Vector3f scale, @Nullable Quaternion rotation1) {
+    private static Matrix4f setup(@Nullable Vec3f translation, @Nullable Quaternion rotation2, @Nullable Vec3f scale, @Nullable Quaternion rotation1) {
         Matrix4f matrix4f = new Matrix4f();
         matrix4f.loadIdentity();
         if (rotation2 != null) {
@@ -102,11 +102,11 @@ public final class AffineTransformation {
         return matrix4f;
     }
 
-    public static Pair<Matrix3f, Vector3f> getLinearTransformationAndTranslationFromAffine(Matrix4f affineTransform) {
+    public static Pair<Matrix3f, Vec3f> getLinearTransformationAndTranslationFromAffine(Matrix4f affineTransform) {
         affineTransform.multiply(1.0f / affineTransform.a33);
-        Vector3f vector3f = new Vector3f(affineTransform.a03, affineTransform.a13, affineTransform.a23);
+        Vec3f vec3f = new Vec3f(affineTransform.a03, affineTransform.a13, affineTransform.a23);
         Matrix3f matrix3f = new Matrix3f(affineTransform);
-        return Pair.of(matrix3f, vector3f);
+        return Pair.of(matrix3f, vec3f);
     }
 
     public Matrix4f getMatrix() {

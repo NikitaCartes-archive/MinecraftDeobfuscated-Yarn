@@ -99,10 +99,10 @@ implements ReloadableResourceManager {
     }
 
     @Override
-    public Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate) {
+    public Collection<Identifier> findResources(String startingPath, Predicate<String> pathPredicate) {
         HashSet<Identifier> set = Sets.newHashSet();
         for (NamespaceResourceManager namespaceResourceManager : this.namespaceManagers.values()) {
-            set.addAll(namespaceResourceManager.findResources(resourceType, pathPredicate));
+            set.addAll(namespaceResourceManager.findResources(startingPath, pathPredicate));
         }
         ArrayList<Identifier> list = Lists.newArrayList(set);
         Collections.sort(list);

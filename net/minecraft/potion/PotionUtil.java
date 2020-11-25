@@ -30,7 +30,7 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class PotionUtil {
-    private static final Text field_25817 = new TranslatableText("effect.none").formatted(Formatting.GRAY);
+    private static final Text NONE_TEXT = new TranslatableText("effect.none").formatted(Formatting.GRAY);
 
     public static List<StatusEffectInstance> getPotionEffects(ItemStack stack) {
         return PotionUtil.getPotionEffects(stack.getTag());
@@ -150,7 +150,7 @@ public class PotionUtil {
         List<StatusEffectInstance> list2 = PotionUtil.getPotionEffects(stack);
         ArrayList<Pair<EntityAttribute, EntityAttributeModifier>> list3 = Lists.newArrayList();
         if (list2.isEmpty()) {
-            list.add(field_25817);
+            list.add(NONE_TEXT);
         } else {
             for (StatusEffectInstance statusEffectInstance : list2) {
                 TranslatableText mutableText = new TranslatableText(statusEffectInstance.getTranslationKey());

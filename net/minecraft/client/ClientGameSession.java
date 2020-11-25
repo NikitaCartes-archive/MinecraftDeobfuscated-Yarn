@@ -21,13 +21,13 @@ implements GameSession {
     private final String gameMode;
     private final UUID sessionId;
 
-    public ClientGameSession(ClientWorld clientWorld, ClientPlayerEntity clientPlayerEntity, ClientPlayNetworkHandler clientPlayNetworkHandler) {
-        this.playerCount = clientPlayNetworkHandler.getPlayerList().size();
-        this.remoteServer = !clientPlayNetworkHandler.getConnection().isLocal();
-        this.difficulty = clientWorld.getDifficulty().getName();
-        PlayerListEntry playerListEntry = clientPlayNetworkHandler.getPlayerListEntry(clientPlayerEntity.getUuid());
+    public ClientGameSession(ClientWorld world, ClientPlayerEntity player, ClientPlayNetworkHandler networkHandler) {
+        this.playerCount = networkHandler.getPlayerList().size();
+        this.remoteServer = !networkHandler.getConnection().isLocal();
+        this.difficulty = world.getDifficulty().getName();
+        PlayerListEntry playerListEntry = networkHandler.getPlayerListEntry(player.getUuid());
         this.gameMode = playerListEntry != null ? playerListEntry.getGameMode().getName() : "unknown";
-        this.sessionId = clientPlayNetworkHandler.getSessionId();
+        this.sessionId = networkHandler.getSessionId();
     }
 
     @Override

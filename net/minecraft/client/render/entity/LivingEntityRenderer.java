@@ -21,7 +21,6 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LivingEntity;
@@ -31,6 +30,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -151,7 +151,7 @@ implements FeatureRendererContext<T, M> {
      * Returns the packed overlay color for an entity, determined by its death progress and whether it is flashing.
      */
     public static int getOverlay(LivingEntity entity, float whiteOverlayProgress) {
-        return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.method_32692(entity.hurtTime > 0 || entity.deathTime > 0, entity.getRecentDamageSource()));
+        return OverlayTexture.packUv(OverlayTexture.getU(whiteOverlayProgress), OverlayTexture.getV(entity.hurtTime > 0 || entity.deathTime > 0));
     }
 
     protected boolean isVisible(T entity) {
@@ -192,26 +192,26 @@ implements FeatureRendererContext<T, M> {
             bodyYaw += (float)(Math.cos((double)((LivingEntity)entity).age * 3.25) * Math.PI * (double)0.4f);
         }
         if ((entityPose = ((Entity)entity).getPose()) != EntityPose.SLEEPING) {
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - bodyYaw));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - bodyYaw));
         }
         if (((LivingEntity)entity).deathTime > 0) {
             float f = ((float)((LivingEntity)entity).deathTime + tickDelta - 1.0f) / 20.0f * 1.6f;
             if ((f = MathHelper.sqrt(f)) > 1.0f) {
                 f = 1.0f;
             }
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * this.getLyingAngle(entity)));
         } else if (((LivingEntity)entity).isUsingRiptide()) {
-            matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((LivingEntity)entity).pitch));
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)entity).age + tickDelta) * -75.0f));
+            matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f - ((LivingEntity)entity).pitch));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(((float)((LivingEntity)entity).age + tickDelta) * -75.0f));
         } else if (entityPose == EntityPose.SLEEPING) {
             Direction direction = ((LivingEntity)entity).getSleepingDirection();
             float g = direction != null ? LivingEntityRenderer.getYaw(direction) : bodyYaw;
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(g));
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(g));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(this.getLyingAngle(entity)));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(270.0f));
         } else if ((((Entity)entity).hasCustomName() || entity instanceof PlayerEntity) && ("Dinnerbone".equals(string = Formatting.strip(((Entity)entity).getName().getString())) || "Grumm".equals(string)) && (!(entity instanceof PlayerEntity) || ((PlayerEntity)entity).isPartVisible(PlayerModelPart.CAPE))) {
             matrices.translate(0.0, ((Entity)entity).getHeight() + 0.1f, 0.0);
-            matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         }
     }
 

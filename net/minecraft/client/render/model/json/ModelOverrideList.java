@@ -48,12 +48,12 @@ public class ModelOverrideList {
     }
 
     @Nullable
-    public BakedModel apply(BakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+    public BakedModel apply(BakedModel model, ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int i) {
         if (!this.overrides.isEmpty()) {
-            for (int i = 0; i < this.overrides.size(); ++i) {
-                ModelOverride modelOverride = this.overrides.get(i);
-                if (!modelOverride.matches(stack, world, entity)) continue;
-                BakedModel bakedModel = this.models.get(i);
+            for (int j = 0; j < this.overrides.size(); ++j) {
+                ModelOverride modelOverride = this.overrides.get(j);
+                if (!modelOverride.matches(stack, world, entity, i)) continue;
+                BakedModel bakedModel = this.models.get(j);
                 if (bakedModel == null) {
                     return model;
                 }

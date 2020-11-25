@@ -724,6 +724,9 @@ extends LivingEntity {
         if (damageSource.isFire()) {
             return !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
         }
+        if (damageSource == DamageSource.FREEZE) {
+            return !this.world.getGameRules().getBoolean(GameRules.FREEZE_DAMAGE);
+        }
         return false;
     }
 
@@ -1544,9 +1547,6 @@ extends LivingEntity {
     public void sendAbilitiesUpdate() {
     }
 
-    public void setGameMode(GameMode gameMode) {
-    }
-
     @Override
     public Text getName() {
         return new LiteralText(this.gameProfile.getName());
@@ -1889,11 +1889,6 @@ extends LivingEntity {
     @Environment(value=EnvType.CLIENT)
     public boolean isUsingSpyglass() {
         return this.isUsingItem() && this.getActiveItem().isOf(Items.SPYGLASS);
-    }
-
-    @Override
-    public boolean canFreeze() {
-        return super.canFreeze() && !this.isCreative();
     }
 
     public static enum SleepFailureReason {

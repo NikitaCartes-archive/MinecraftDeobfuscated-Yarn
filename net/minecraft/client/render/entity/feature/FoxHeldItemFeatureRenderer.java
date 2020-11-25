@@ -12,10 +12,10 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.FoxEntityModel;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class FoxHeldItemFeatureRenderer
@@ -37,9 +37,9 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         }
         matrixStack.translate(((FoxEntityModel)this.getContextModel()).head.pivotX / 16.0f, ((FoxEntityModel)this.getContextModel()).head.pivotY / 16.0f, ((FoxEntityModel)this.getContextModel()).head.pivotZ / 16.0f);
         m = foxEntity.getHeadRoll(h);
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(m));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(l));
+        matrixStack.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(m));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(k));
+        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(l));
         if (foxEntity.isBaby()) {
             if (bl) {
                 matrixStack.translate(0.4f, 0.26f, 0.15f);
@@ -51,9 +51,9 @@ extends FeatureRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         } else {
             matrixStack.translate(0.06f, 0.27f, -0.5);
         }
-        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
         if (bl) {
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
+            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
         }
         ItemStack itemStack = foxEntity.getEquippedStack(EquipmentSlot.MAINHAND);
         MinecraftClient.getInstance().getHeldItemRenderer().renderItem(foxEntity, itemStack, ModelTransformation.Mode.GROUND, false, matrixStack, vertexConsumerProvider, i);

@@ -39,7 +39,7 @@ extends SpriteBillboardParticle {
 
     protected CrackParticle(ClientWorld world, double x, double y, double z, ItemStack stack) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
-        this.setSprite(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(stack, world, null).getSprite());
+        this.setSprite(MinecraftClient.getInstance().getItemRenderer().getHeldItemModel(stack, world, null, 0).getSprite());
         this.gravityStrength = 1.0f;
         this.scale /= 2.0f;
         this.sampleU = this.random.nextFloat() * 3.0f;

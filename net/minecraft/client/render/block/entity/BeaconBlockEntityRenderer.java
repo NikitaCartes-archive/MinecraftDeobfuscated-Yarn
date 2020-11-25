@@ -14,11 +14,11 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class BeaconBlockEntityRenderer
@@ -55,7 +55,7 @@ implements BlockEntityRenderer<BeaconBlockEntity> {
         float r = fs[1];
         float s = fs[2];
         matrixStack.push();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(n * 2.25f - 45.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(n * 2.25f - 45.0f));
         float t = 0.0f;
         float u = h;
         float v = h;

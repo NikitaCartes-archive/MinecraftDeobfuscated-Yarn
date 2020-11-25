@@ -12,6 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public interface ModelPredicateProvider {
-    public float call(ItemStack var1, @Nullable ClientWorld var2, @Nullable LivingEntity var3);
+    public float call(ItemStack var1, @Nullable ClientWorld var2, @Nullable LivingEntity var3, int var4);
 }
 

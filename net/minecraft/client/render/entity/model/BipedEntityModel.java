@@ -163,7 +163,12 @@ ModelWithHead {
             this.leftArm.pivotY = 2.0f;
             this.rightArm.pivotY = 2.0f;
         }
-        CrossbowPosing.method_29350(this.rightArm, this.leftArm, h);
+        if (this.rightArmPose != ArmPose.SPYGLASS) {
+            CrossbowPosing.method_29350(this.rightArm, h, 1.0f);
+        }
+        if (this.leftArmPose != ArmPose.SPYGLASS) {
+            CrossbowPosing.method_29350(this.leftArm, h, -1.0f);
+        }
         if (this.leaningPitch > 0.0f) {
             float o;
             float n;
@@ -171,29 +176,31 @@ ModelWithHead {
             Arm arm = this.getPreferredArm(livingEntity);
             float m = arm == Arm.RIGHT && this.handSwingProgress > 0.0f ? 0.0f : this.leaningPitch;
             float f2 = n = arm == Arm.LEFT && this.handSwingProgress > 0.0f ? 0.0f : this.leaningPitch;
-            if (l < 14.0f) {
-                this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 0.0f);
-                this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 0.0f);
-                this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float)Math.PI);
-                this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
-                this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, (float)Math.PI + 1.8707964f * this.method_2807(l) / this.method_2807(14.0f));
-                this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float)Math.PI - 1.8707964f * this.method_2807(l) / this.method_2807(14.0f));
-            } else if (l >= 14.0f && l < 22.0f) {
-                o = (l - 14.0f) / 8.0f;
-                this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 1.5707964f * o);
-                this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 1.5707964f * o);
-                this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float)Math.PI);
-                this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
-                this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, 5.012389f - 1.8707964f * o);
-                this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, 1.2707963f + 1.8707964f * o);
-            } else if (l >= 22.0f && l < 26.0f) {
-                o = (l - 22.0f) / 4.0f;
-                this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 1.5707964f - 1.5707964f * o);
-                this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 1.5707964f - 1.5707964f * o);
-                this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float)Math.PI);
-                this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
-                this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, (float)Math.PI);
-                this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float)Math.PI);
+            if (!((LivingEntity)livingEntity).isUsingItem()) {
+                if (l < 14.0f) {
+                    this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 0.0f);
+                    this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 0.0f);
+                    this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float)Math.PI);
+                    this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
+                    this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, (float)Math.PI + 1.8707964f * this.method_2807(l) / this.method_2807(14.0f));
+                    this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float)Math.PI - 1.8707964f * this.method_2807(l) / this.method_2807(14.0f));
+                } else if (l >= 14.0f && l < 22.0f) {
+                    o = (l - 14.0f) / 8.0f;
+                    this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 1.5707964f * o);
+                    this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 1.5707964f * o);
+                    this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float)Math.PI);
+                    this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
+                    this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, 5.012389f - 1.8707964f * o);
+                    this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, 1.2707963f + 1.8707964f * o);
+                } else if (l >= 22.0f && l < 26.0f) {
+                    o = (l - 22.0f) / 4.0f;
+                    this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 1.5707964f - 1.5707964f * o);
+                    this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 1.5707964f - 1.5707964f * o);
+                    this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float)Math.PI);
+                    this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float)Math.PI);
+                    this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, (float)Math.PI);
+                    this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float)Math.PI);
+                }
             }
             o = 0.3f;
             float p = 0.33333334f;
@@ -240,8 +247,8 @@ ModelWithHead {
                 break;
             }
             case SPYGLASS: {
-                this.rightArm.pitch = MathHelper.clamp(this.head.pitch + CrossbowPosing.method_31978(this.rightArm), -2.4f, 3.3f);
-                this.rightArm.yaw = MathHelper.clamp(this.head.yaw + -0.7853982f, -1.1f, 0.0f);
+                this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (((Entity)livingEntity).isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
+                this.rightArm.yaw = this.head.yaw - 0.2617994f;
             }
         }
     }
@@ -283,8 +290,8 @@ ModelWithHead {
                 break;
             }
             case SPYGLASS: {
-                this.leftArm.pitch = CrossbowPosing.method_31978(this.leftArm);
-                this.leftArm.yaw = 0.7853982f;
+                this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622f - (((Entity)livingEntity).isInSneakingPose() ? 0.2617994f : 0.0f), -2.4f, 3.3f);
+                this.leftArm.yaw = this.head.yaw + 0.2617994f;
             }
         }
     }

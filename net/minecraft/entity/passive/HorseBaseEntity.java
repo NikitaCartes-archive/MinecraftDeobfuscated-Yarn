@@ -934,9 +934,6 @@ Saddleable {
         int j = i - 400;
         if (j >= 0 && j < 2 && j < this.items.size()) {
             if (j == 0) {
-                if (!this.hasArmorSlot()) {
-                    return class_5630.field_27860;
-                }
                 return this.method_32335(j, itemStack -> itemStack.isEmpty() || itemStack.isOf(Items.SADDLE));
             }
             if (j == 1) {

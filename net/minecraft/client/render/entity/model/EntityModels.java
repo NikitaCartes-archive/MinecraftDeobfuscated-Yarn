@@ -4,13 +4,11 @@
 package net.minecraft.client.render.entity.model;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
@@ -103,7 +101,7 @@ public class EntityModels {
     private static final Dilation ARMOR_DILATION = new Dilation(1.0f);
     private static final Dilation HAT_DILATION = new Dilation(0.5f);
 
-    public static Map<EntityModelLayer, ModelPart> getModels() {
+    public static Map<EntityModelLayer, TexturedModelData> getModels() {
         ImmutableMap.Builder<EntityModelLayer, TexturedModelData> builder = ImmutableMap.builder();
         TexturedModelData texturedModelData = TexturedModelData.of(BipedEntityModel.getModelData(Dilation.NONE, 0.0f), 64, 64);
         TexturedModelData texturedModelData2 = TexturedModelData.of(BipedEntityModel.getModelData(ARMOR_DILATION, 0.0f), 64, 32);
@@ -281,12 +279,12 @@ public class EntityModels {
         }
         TexturedModelData texturedModelData20 = SignBlockEntityRenderer.getTexturedModelData();
         SignType.stream().forEach(signType -> builder.put(EntityModelLayers.createSign(signType), texturedModelData20));
-        ImmutableMap immutableMap = builder.build();
+        ImmutableMap<EntityModelLayer, TexturedModelData> immutableMap = builder.build();
         List list = EntityModelLayers.getLayers().filter(entityModelLayer -> !immutableMap.containsKey(entityModelLayer)).collect(Collectors.toList());
         if (!list.isEmpty()) {
             throw new IllegalStateException("Missing layer definitions: " + list);
         }
-        return Maps.transformValues(immutableMap, TexturedModelData::createModel);
+        return immutableMap;
     }
 }
 

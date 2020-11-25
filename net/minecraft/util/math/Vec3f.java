@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.util.math;
+package net.minecraft.util.math;
 
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
 import net.fabricmc.api.EnvType;
@@ -11,27 +11,30 @@ import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
 
-public final class Vector3f {
-    public static Vector3f NEGATIVE_X = new Vector3f(-1.0f, 0.0f, 0.0f);
-    public static Vector3f POSITIVE_X = new Vector3f(1.0f, 0.0f, 0.0f);
-    public static Vector3f NEGATIVE_Y = new Vector3f(0.0f, -1.0f, 0.0f);
-    public static Vector3f POSITIVE_Y = new Vector3f(0.0f, 1.0f, 0.0f);
-    public static Vector3f NEGATIVE_Z = new Vector3f(0.0f, 0.0f, -1.0f);
-    public static Vector3f POSITIVE_Z = new Vector3f(0.0f, 0.0f, 1.0f);
+/**
+ * A mutable vector composed of 3 floats.
+ */
+public final class Vec3f {
+    public static Vec3f NEGATIVE_X = new Vec3f(-1.0f, 0.0f, 0.0f);
+    public static Vec3f POSITIVE_X = new Vec3f(1.0f, 0.0f, 0.0f);
+    public static Vec3f NEGATIVE_Y = new Vec3f(0.0f, -1.0f, 0.0f);
+    public static Vec3f POSITIVE_Y = new Vec3f(0.0f, 1.0f, 0.0f);
+    public static Vec3f NEGATIVE_Z = new Vec3f(0.0f, 0.0f, -1.0f);
+    public static Vec3f POSITIVE_Z = new Vec3f(0.0f, 0.0f, 1.0f);
     private float x;
     private float y;
     private float z;
 
-    public Vector3f() {
+    public Vec3f() {
     }
 
-    public Vector3f(float x, float y, float z) {
+    public Vec3f(float x, float y, float z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
-    public Vector3f(Vec3d other) {
+    public Vec3f(Vec3d other) {
         this((float)other.x, (float)other.y, (float)other.z);
     }
 
@@ -42,14 +45,14 @@ public final class Vector3f {
         if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        Vector3f vector3f = (Vector3f)o;
-        if (Float.compare(vector3f.x, this.x) != 0) {
+        Vec3f vec3f = (Vec3f)o;
+        if (Float.compare(vec3f.x, this.x) != 0) {
             return false;
         }
-        if (Float.compare(vector3f.y, this.y) != 0) {
+        if (Float.compare(vec3f.y, this.y) != 0) {
             return false;
         }
-        return Float.compare(vector3f.z, this.z) == 0;
+        return Float.compare(vec3f.z, this.z) == 0;
     }
 
     public int hashCode() {
@@ -106,21 +109,21 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void add(Vector3f vector) {
+    public void add(Vec3f vector) {
         this.x += vector.x;
         this.y += vector.y;
         this.z += vector.z;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void subtract(Vector3f other) {
+    public void subtract(Vec3f other) {
         this.x -= other.x;
         this.y -= other.y;
         this.z -= other.z;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float dot(Vector3f other) {
+    public float dot(Vec3f other) {
         return this.x * other.x + this.y * other.y + this.z * other.z;
     }
 
@@ -138,7 +141,7 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void cross(Vector3f vector) {
+    public void cross(Vec3f vector) {
         float f = this.x;
         float g = this.y;
         float h = this.z;
@@ -170,7 +173,7 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void lerp(Vector3f vector, float delta) {
+    public void lerp(Vec3f vector, float delta) {
         float f = 1.0f - delta;
         this.x = this.x * f + vector.x * delta;
         this.y = this.y * f + vector.y * delta;
@@ -188,8 +191,8 @@ public final class Vector3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Vector3f copy() {
-        return new Vector3f(this.x, this.y, this.z);
+    public Vec3f copy() {
+        return new Vec3f(this.x, this.y, this.z);
     }
 
     @Environment(value=EnvType.CLIENT)

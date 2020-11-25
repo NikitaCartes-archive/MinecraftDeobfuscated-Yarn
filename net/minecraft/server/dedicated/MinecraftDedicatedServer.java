@@ -126,7 +126,6 @@ implements DedicatedServer {
         this.setFlightEnabled(serverPropertiesHandler.allowFlight);
         this.setResourcePack(serverPropertiesHandler.resourcePack, this.createResourcePackHash());
         this.setMotd(serverPropertiesHandler.motd);
-        this.setForceGameMode(serverPropertiesHandler.forceGameMode);
         super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
         this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
         this.saveProperties.setGameMode(serverPropertiesHandler.gameMode);
@@ -363,11 +362,6 @@ implements DedicatedServer {
     }
 
     @Override
-    public boolean openToLan(GameMode gameMode, boolean cheatsAllowed, int port) {
-        return false;
-    }
-
-    @Override
     public boolean areCommandBlocksEnabled() {
         return this.getProperties().enableCommandBlock;
     }
@@ -550,6 +544,12 @@ implements DedicatedServer {
     @Override
     public boolean requireResourcePack() {
         return this.propertiesLoader.getPropertiesHandler().requireResourcePack;
+    }
+
+    @Override
+    @Nullable
+    public GameMode getForcedGameMode() {
+        return this.propertiesLoader.getPropertiesHandler().forceGameMode ? this.saveProperties.getGameMode() : null;
     }
 
     @Override

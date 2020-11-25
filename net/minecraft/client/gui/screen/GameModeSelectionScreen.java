@@ -13,6 +13,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.InputUtil;
@@ -44,12 +45,12 @@ extends Screen {
     }
 
     private net.minecraft.world.GameMode method_30106() {
-        net.minecraft.world.GameMode gameMode = MinecraftClient.getInstance().interactionManager.getCurrentGameMode();
-        net.minecraft.world.GameMode gameMode2 = MinecraftClient.getInstance().interactionManager.getPreviousGameMode();
-        if (gameMode2 == net.minecraft.world.GameMode.NOT_SET) {
-            gameMode2 = gameMode == net.minecraft.world.GameMode.CREATIVE ? net.minecraft.world.GameMode.SURVIVAL : net.minecraft.world.GameMode.CREATIVE;
+        ClientPlayerInteractionManager clientPlayerInteractionManager = MinecraftClient.getInstance().interactionManager;
+        net.minecraft.world.GameMode gameMode = clientPlayerInteractionManager.getPreviousGameMode();
+        if (gameMode != null) {
+            return gameMode;
         }
-        return gameMode2;
+        return clientPlayerInteractionManager.getCurrentGameMode() == net.minecraft.world.GameMode.CREATIVE ? net.minecraft.world.GameMode.SURVIVAL : net.minecraft.world.GameMode.CREATIVE;
     }
 
     @Override

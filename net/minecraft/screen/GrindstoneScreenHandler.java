@@ -73,7 +73,7 @@ extends ScreenHandler {
             public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
                 context.run((world, blockPos) -> {
                     if (world instanceof ServerWorld) {
-                        ExperienceOrbEntity.method_31493((ServerWorld)world, Vec3d.ofCenter(blockPos), this.getExperience((World)world));
+                        ExperienceOrbEntity.spawn((ServerWorld)world, Vec3d.ofCenter(blockPos), this.getExperience((World)world));
                     }
                     world.syncWorldEvent(1042, (BlockPos)blockPos, 0);
                 });

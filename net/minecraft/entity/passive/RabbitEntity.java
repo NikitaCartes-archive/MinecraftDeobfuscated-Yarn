@@ -289,14 +289,6 @@ extends AnimalEntity {
         return this.getRabbitType() == 99 ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
     }
 
-    @Override
-    public boolean damage(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
-            return false;
-        }
-        return super.damage(source, amount);
-    }
-
     private static boolean method_6614(ItemStack itemStack) {
         return itemStack.isOf(Items.CARROT) || itemStack.isOf(Items.GOLDEN_CARROT) || itemStack.isOf(Blocks.DANDELION.asItem());
     }

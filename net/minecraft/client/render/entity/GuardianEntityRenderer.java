@@ -16,7 +16,6 @@ import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.GuardianEntity;
 import net.minecraft.util.Identifier;
@@ -25,6 +24,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class GuardianEntityRenderer
@@ -80,8 +80,8 @@ extends MobEntityRenderer<GuardianEntity, GuardianEntityModel> {
             vec3d3 = vec3d3.normalize();
             float n = (float)Math.acos(vec3d3.y);
             float o = (float)Math.atan2(vec3d3.z, vec3d3.x);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f));
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f));
+            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((1.5707964f - o) * 57.295776f));
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(n * 57.295776f));
             boolean p = true;
             float q = j * 0.05f * -1.5f;
             float r = h * h;

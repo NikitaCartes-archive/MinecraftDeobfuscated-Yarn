@@ -21,9 +21,9 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class TridentRiptideFeatureRenderer<T extends LivingEntity>
@@ -53,7 +53,7 @@ extends FeatureRenderer<T, PlayerEntityModel<T>> {
         for (int m = 0; m < 3; ++m) {
             matrixStack.push();
             float n = j * (float)(-(45 + m * 5));
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(n));
+            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(n));
             float o = 0.75f * (float)m;
             matrixStack.scale(o, o, o);
             matrixStack.translate(0.0, -0.2f + 0.6f * (float)m, 0.0);

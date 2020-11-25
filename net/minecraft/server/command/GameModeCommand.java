@@ -21,7 +21,6 @@ public class GameModeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("gamemode").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
         for (GameMode gameMode : GameMode.values()) {
-            if (gameMode == GameMode.NOT_SET) continue;
             literalArgumentBuilder.then(((LiteralArgumentBuilder)CommandManager.literal(gameMode.getName()).executes(commandContext -> GameModeCommand.execute(commandContext, Collections.singleton(((ServerCommandSource)commandContext.getSource()).getPlayer()), gameMode))).then(CommandManager.argument("target", EntityArgumentType.players()).executes(commandContext -> GameModeCommand.execute(commandContext, EntityArgumentType.getPlayers(commandContext, "target"), gameMode))));
         }
         dispatcher.register(literalArgumentBuilder);
@@ -42,8 +41,7 @@ public class GameModeCommand {
     private static int execute(CommandContext<ServerCommandSource> context, Collection<ServerPlayerEntity> targets, GameMode gameMode) {
         int i = 0;
         for (ServerPlayerEntity serverPlayerEntity : targets) {
-            if (serverPlayerEntity.interactionManager.getGameMode() == gameMode) continue;
-            serverPlayerEntity.setGameMode(gameMode);
+            if (!serverPlayerEntity.changeGameMode(gameMode)) continue;
             GameModeCommand.setGameMode(context.getSource(), serverPlayerEntity, gameMode);
             ++i;
         }

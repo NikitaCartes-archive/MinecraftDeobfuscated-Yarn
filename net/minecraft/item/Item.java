@@ -32,6 +32,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -200,11 +201,11 @@ implements ItemConvertible {
         return MathHelper.hsvToRgb(f / 3.0f, 1.0f, 1.0f);
     }
 
-    public boolean onStackClicked(ItemStack stack, ItemStack otherStack, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
         return false;
     }
 
-    public boolean onClicked(ItemStack stack, ItemStack otherStack, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
         return false;
     }
 

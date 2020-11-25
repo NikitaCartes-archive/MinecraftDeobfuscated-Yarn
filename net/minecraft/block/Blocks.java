@@ -131,6 +131,7 @@ import net.minecraft.block.PistonBlock;
 import net.minecraft.block.PistonExtensionBlock;
 import net.minecraft.block.PistonHeadBlock;
 import net.minecraft.block.PlayerSkullBlock;
+import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.PotatoesBlock;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.PoweredRailBlock;
@@ -1073,6 +1074,8 @@ public class Blocks {
     public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB = Blocks.register("waxed_lightly_weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_LIGHTLY_WEATHERED_CUT_COPPER).requiresTool()));
     public static final Block WAXED_CUT_COPPER_SLAB = Blocks.register("waxed_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_CUT_COPPER).requiresTool()));
     public static final Block LIGHTNING_ROD = Blocks.register("lightning_rod", new LightningRodBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER).nonOpaque()));
+    public static final Block POINTED_DRIPSTONE = Blocks.register("pointed_dripstone", new PointedDripstoneBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.BROWN_TERRACOTTA).nonOpaque().sounds(BlockSoundGroup.POINTED_DRIPSTONE).ticksRandomly().strength(1.5f, 3.0f)));
+    public static final Block DRIPSTONE_BLOCK = Blocks.register("dripstone_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.BROWN_TERRACOTTA).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5f, 1.0f)));
 
     private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
         return blockState -> blockState.get(Properties.LIT) != false ? litLevel : 0;

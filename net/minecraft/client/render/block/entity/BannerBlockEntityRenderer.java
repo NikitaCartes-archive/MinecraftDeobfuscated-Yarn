@@ -28,10 +28,10 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class BannerBlockEntityRenderer
@@ -77,12 +77,12 @@ implements BlockEntityRenderer<BannerBlockEntity> {
             if (blockState.getBlock() instanceof BannerBlock) {
                 matrixStack.translate(0.5, 0.5, 0.5);
                 h = (float)(-blockState.get(BannerBlock.ROTATION).intValue() * 360) / 16.0f;
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+                matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
                 this.pillar.visible = true;
             } else {
                 matrixStack.translate(0.5, -0.1666666716337204, 0.5);
                 h = -blockState.get(WallBannerBlock.FACING).asRotation();
-                matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+                matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
                 matrixStack.translate(0.0, -0.3125, -0.4375);
                 this.pillar.visible = false;
             }

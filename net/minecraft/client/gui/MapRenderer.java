@@ -16,13 +16,13 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.item.map.MapIcon;
 import net.minecraft.item.map.MapState;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -111,7 +111,7 @@ implements AutoCloseable {
                 if (bl && !mapIcon.isAlwaysRendered()) continue;
                 matrixStack.push();
                 matrixStack.translate(0.0f + (float)mapIcon.getX() / 2.0f + 64.0f, 0.0f + (float)mapIcon.getZ() / 2.0f + 64.0f, -0.02f);
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)(mapIcon.getRotation() * 360) / 16.0f));
+                matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)(mapIcon.getRotation() * 360) / 16.0f));
                 matrixStack.scale(4.0f, 4.0f, 3.0f);
                 matrixStack.translate(-0.125, 0.125, 0.0);
                 byte b = mapIcon.getTypeId();

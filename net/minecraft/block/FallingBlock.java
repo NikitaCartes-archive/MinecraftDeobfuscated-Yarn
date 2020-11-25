@@ -9,6 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.LandingBlock;
 import net.minecraft.block.Material;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -22,7 +23,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class FallingBlock
-extends Block {
+extends Block
+implements LandingBlock {
     public FallingBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
@@ -61,12 +63,6 @@ extends Block {
     public static boolean canFallThrough(BlockState state) {
         Material material = state.getMaterial();
         return state.isAir() || state.isIn(BlockTags.FIRE) || material.isLiquid() || material.isReplaceable();
-    }
-
-    public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
-    }
-
-    public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
     }
 
     @Override

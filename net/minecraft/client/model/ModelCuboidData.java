@@ -8,15 +8,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.Vector2f;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public final class ModelCuboidData {
     @Nullable
     private final String name;
-    private final Vector3f offset;
-    private final Vector3f dimensions;
+    private final Vec3f offset;
+    private final Vec3f dimensions;
     private final Dilation extraSize;
     private final boolean mirror;
     private final Vector2f textureUV;
@@ -25,8 +25,8 @@ public final class ModelCuboidData {
     protected ModelCuboidData(@Nullable String name, float textureX, float textureY, float offsetX, float offsetY, float offsetZ, float sizeX, float sizeY, float sizeZ, Dilation extra, boolean mirror, float textureScaleX, float textureScaleY) {
         this.name = name;
         this.textureUV = new Vector2f(textureX, textureY);
-        this.offset = new Vector3f(offsetX, offsetY, offsetZ);
-        this.dimensions = new Vector3f(sizeX, sizeY, sizeZ);
+        this.offset = new Vec3f(offsetX, offsetY, offsetZ);
+        this.dimensions = new Vec3f(sizeX, sizeY, sizeZ);
         this.extraSize = extra;
         this.mirror = mirror;
         this.textureScale = new Vector2f(textureScaleX, textureScaleY);

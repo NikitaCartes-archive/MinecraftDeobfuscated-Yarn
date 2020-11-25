@@ -19,8 +19,8 @@ public class SpriteAtlasManager
 implements AutoCloseable {
     private final Map<Identifier, SpriteAtlasTexture> atlases;
 
-    public SpriteAtlasManager(Collection<SpriteAtlasTexture> collection) {
-        this.atlases = collection.stream().collect(Collectors.toMap(SpriteAtlasTexture::getId, Function.identity()));
+    public SpriteAtlasManager(Collection<SpriteAtlasTexture> atlases) {
+        this.atlases = atlases.stream().collect(Collectors.toMap(SpriteAtlasTexture::getId, Function.identity()));
     }
 
     public SpriteAtlasTexture getAtlas(Identifier id) {

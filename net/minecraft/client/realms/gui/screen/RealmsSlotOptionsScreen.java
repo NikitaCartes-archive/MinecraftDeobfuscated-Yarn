@@ -8,7 +8,6 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.screen.world.GameModeSelection;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.SliderWidget;
@@ -24,12 +23,13 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsSlotOptionsScreen
 extends RealmsScreen {
     public static final List<Difficulty> DIFFICULTIES = ImmutableList.of(Difficulty.PEACEFUL, Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD);
-    public static final List<GameModeSelection> GAME_MODES = ImmutableList.of(GameModeSelection.SURVIVAL, GameModeSelection.CREATIVE, GameModeSelection.ADVENTURE);
+    public static final List<GameMode> GAME_MODES = ImmutableList.of(GameMode.SURVIVAL, GameMode.CREATIVE, GameMode.ADVENTURE);
     private static final Text field_26516 = new TranslatableText("mco.configure.world.edit.slot.name");
     private static final Text field_27942 = new TranslatableText("mco.configure.world.spawnProtection");
     private TextFieldWidget nameEdit;
@@ -40,7 +40,7 @@ extends RealmsScreen {
     private final RealmsServer.WorldType worldType;
     private final int activeSlot;
     private Difficulty field_27943;
-    private GameModeSelection gameModeIndex;
+    private GameMode gameModeIndex;
     private boolean pvp;
     private boolean spawnNPCs;
     private boolean spawnAnimals;
@@ -124,8 +124,8 @@ extends RealmsScreen {
         CyclingButtonWidget<Boolean> cyclingButtonWidget3 = this.addButton(CyclingButtonWidget.method_32613(this.pvp).build(i, RealmsSlotOptionsScreen.row(1), this.column2_x, 20, new TranslatableText("mco.configure.world.pvp"), (cyclingButtonWidget, boolean_) -> {
             this.pvp = boolean_;
         }));
-        this.addButton(CyclingButtonWidget.method_32606(GameModeSelection::getName).method_32624((GameModeSelection[])GameModeSelection.values()).value(this.gameModeIndex).build(this.column1_x, RealmsSlotOptionsScreen.row(3), this.column2_x, 20, new TranslatableText("selectWorld.gameMode"), (cyclingButtonWidget, gameModeSelection) -> {
-            this.gameModeIndex = gameModeSelection;
+        this.addButton(CyclingButtonWidget.method_32606(GameMode::getSimpleTranslatableName).method_32620(GAME_MODES).value(this.gameModeIndex).build(this.column1_x, RealmsSlotOptionsScreen.row(3), this.column2_x, 20, new TranslatableText("selectWorld.gameMode"), (cyclingButtonWidget, gameMode) -> {
+            this.gameModeIndex = gameMode;
         }));
         CyclingButtonWidget<Boolean> cyclingButtonWidget22 = this.addButton(CyclingButtonWidget.method_32613(this.spawnAnimals).build(i, RealmsSlotOptionsScreen.row(3), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnAnimals"), (cyclingButtonWidget, boolean_) -> {
             this.spawnAnimals = boolean_;

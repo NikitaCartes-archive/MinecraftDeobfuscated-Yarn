@@ -71,14 +71,6 @@ implements Monster {
     }
 
     @Override
-    public boolean damage(DamageSource source, float amount) {
-        if (this.isInvulnerableTo(source)) {
-            return false;
-        }
-        return super.damage(source, amount);
-    }
-
-    @Override
     protected SoundEvent getHurtSound(DamageSource source) {
         return SoundEvents.ENTITY_HOSTILE_HURT;
     }

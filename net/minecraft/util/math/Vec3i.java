@@ -14,6 +14,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
 import org.jetbrains.annotations.Unmodifiable;
 
+/**
+ * A publicly read-only but mutable vector composed of 3 integers.
+ */
 @Unmodifiable
 public class Vec3i
 implements Comparable<Vec3i> {

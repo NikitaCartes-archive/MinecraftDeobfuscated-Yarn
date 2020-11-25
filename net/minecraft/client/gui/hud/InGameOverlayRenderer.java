@@ -18,13 +18,13 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.ModelLoader;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
@@ -142,7 +142,7 @@ public class InGameOverlayRenderer {
             float v = 0.5f;
             float w = -0.5f;
             matrixStack.translate((float)(-(r * 2 - 1)) * 0.24f, -0.3f, 0.0);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion((float)(r * 2 - 1) * 10.0f));
+            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((float)(r * 2 - 1) * 10.0f));
             Matrix4f matrix4f = matrixStack.peek().getModel();
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
             bufferBuilder.vertex(matrix4f, -0.5f, -0.5f, -0.5f).color(1.0f, 1.0f, 1.0f, 0.9f).texture(n, p).next();

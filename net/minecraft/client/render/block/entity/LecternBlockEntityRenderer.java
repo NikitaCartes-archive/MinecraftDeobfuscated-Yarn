@@ -17,7 +17,7 @@ import net.minecraft.client.render.block.entity.EnchantingTableBlockEntityRender
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class LecternBlockEntityRenderer
@@ -37,8 +37,8 @@ implements BlockEntityRenderer<LecternBlockEntity> {
         matrixStack.push();
         matrixStack.translate(0.5, 1.0625, 0.5);
         float g = blockState.get(LecternBlock.FACING).rotateYClockwise().asRotation();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-g));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(67.5f));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-g));
+        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(67.5f));
         matrixStack.translate(0.0, -0.125, 0.0);
         this.book.setPageAngles(0.0f, 0.1f, 0.9f, 1.2f);
         VertexConsumer vertexConsumer = EnchantingTableBlockEntityRenderer.BOOK_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);

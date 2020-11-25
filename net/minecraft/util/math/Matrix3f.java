@@ -6,10 +6,10 @@ package net.minecraft.util.math;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.tuple.Triple;
 
 public final class Matrix3f {
@@ -202,7 +202,7 @@ public final class Matrix3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Triple<Quaternion, Vector3f, Quaternion> decomposeLinearTransformation() {
+    public Triple<Quaternion, Vec3f, Quaternion> decomposeLinearTransformation() {
         Quaternion quaternion = Quaternion.IDENTITY.copy();
         Quaternion quaternion2 = Quaternion.IDENTITY.copy();
         Matrix3f matrix3f = this.copy();
@@ -268,8 +268,8 @@ public final class Matrix3f {
         matrix3f5.multiply(matrix3f4);
         f = 1.0f / f;
         quaternion.scale((float)Math.sqrt(f));
-        Vector3f vector3f = new Vector3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
-        return Triple.of(quaternion, vector3f, quaternion2);
+        Vec3f vec3f = new Vec3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
+        return Triple.of(quaternion, vec3f, quaternion2);
     }
 
     public boolean equals(Object object) {

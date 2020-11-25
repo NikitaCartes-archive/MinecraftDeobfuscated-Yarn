@@ -455,9 +455,9 @@ extends DrawableHelper {
 
     protected void renderHotbar(float tickDelta, MatrixStack matrices) {
         float f;
+        int p;
         int o;
         int n;
-        int m;
         PlayerEntity playerEntity = this.getCameraPlayer();
         if (playerEntity == null) {
             return;
@@ -484,30 +484,31 @@ extends DrawableHelper {
         RenderSystem.enableRescaleNormal();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        for (m = 0; m < 9; ++m) {
-            n = i - 90 + m * 20 + 2;
-            o = this.scaledHeight - 16 - 3;
-            this.renderHotbarItem(n, o, tickDelta, playerEntity, playerEntity.getInventory().main.get(m));
+        int m = 1;
+        for (n = 0; n < 9; ++n) {
+            o = i - 90 + n * 20 + 2;
+            p = this.scaledHeight - 16 - 3;
+            this.renderHotbarItem(o, p, tickDelta, playerEntity, playerEntity.getInventory().main.get(n), m++);
         }
         if (!itemStack.isEmpty()) {
-            m = this.scaledHeight - 16 - 3;
+            n = this.scaledHeight - 16 - 3;
             if (arm == Arm.LEFT) {
-                this.renderHotbarItem(i - 91 - 26, m, tickDelta, playerEntity, itemStack);
+                this.renderHotbarItem(i - 91 - 26, n, tickDelta, playerEntity, itemStack, m++);
             } else {
-                this.renderHotbarItem(i + 91 + 10, m, tickDelta, playerEntity, itemStack);
+                this.renderHotbarItem(i + 91 + 10, n, tickDelta, playerEntity, itemStack, m++);
             }
         }
         if (this.client.options.attackIndicator == AttackIndicator.HOTBAR && (f = this.client.player.getAttackCooldownProgress(0.0f)) < 1.0f) {
-            n = this.scaledHeight - 20;
-            o = i + 91 + 6;
+            o = this.scaledHeight - 20;
+            p = i + 91 + 6;
             if (arm == Arm.RIGHT) {
-                o = i - 91 - 22;
+                p = i - 91 - 22;
             }
             this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
-            int p = (int)(f * 19.0f);
+            int q = (int)(f * 19.0f);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.drawTexture(matrices, o, n, 0, 94, 18, 18);
-            this.drawTexture(matrices, o, n + 18 - p, 18, 112 - p, 18, p);
+            this.drawTexture(matrices, p, o, 0, 94, 18, 18);
+            this.drawTexture(matrices, p, o + 18 - q, 18, 112 - q, 18, q);
         }
         RenderSystem.disableRescaleNormal();
         RenderSystem.disableBlend();
@@ -1001,7 +1002,7 @@ extends DrawableHelper {
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
-    private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack) {
+    private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int i) {
         if (stack.isEmpty()) {
             return;
         }
@@ -1013,7 +1014,7 @@ extends DrawableHelper {
             RenderSystem.scalef(1.0f / g, (g + 1.0f) / 2.0f, 1.0f);
             RenderSystem.translatef(-(x + 8), -(y + 12), 0.0f);
         }
-        this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y);
+        this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, i);
         if (f > 0.0f) {
             RenderSystem.popMatrix();
         }

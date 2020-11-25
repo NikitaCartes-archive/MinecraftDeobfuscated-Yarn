@@ -1009,13 +1009,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             int i = Math.min(this.getMaxTrackDistance(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
             boolean bl2 = bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(player);
             if (bl) {
-                ChunkPos chunkPos;
-                ChunkHolder chunkHolder;
-                boolean bl22 = this.entity.teleporting;
-                if (!bl22 && (chunkHolder = ThreadedAnvilChunkStorage.this.getChunkHolder((chunkPos = this.entity.getChunkPos()).toLong())) != null && chunkHolder.getWorldChunk() != null) {
-                    boolean bl3 = bl22 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, player, false) <= ThreadedAnvilChunkStorage.this.watchDistance;
-                }
-                if (bl22 && this.playersTracking.add(player.networkHandler)) {
+                if (this.playersTracking.add(player.networkHandler)) {
                     this.entry.startTracking(player);
                 }
             } else if (this.playersTracking.remove(player.networkHandler)) {

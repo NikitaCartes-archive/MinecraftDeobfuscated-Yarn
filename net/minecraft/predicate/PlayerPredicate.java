@@ -36,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
 public class PlayerPredicate {
     public static final PlayerPredicate ANY = new Builder().build();
     private final NumberRange.IntRange experienceLevel;
+    @Nullable
     private final GameMode gamemode;
     private final Map<Stat<?>, NumberRange.IntRange> stats;
     private final Object2BooleanMap<Identifier> recipes;
@@ -55,7 +56,7 @@ public class PlayerPredicate {
         return new AdvancementCriteriaPredicate(object2BooleanMap);
     }
 
-    private PlayerPredicate(NumberRange.IntRange experienceLevel, GameMode gamemode, Map<Stat<?>, NumberRange.IntRange> stats, Object2BooleanMap<Identifier> recipes, Map<Identifier, AdvancementPredicate> advancements) {
+    private PlayerPredicate(NumberRange.IntRange experienceLevel, @Nullable GameMode gamemode, Map<Stat<?>, NumberRange.IntRange> stats, Object2BooleanMap<Identifier> recipes, Map<Identifier, AdvancementPredicate> advancements) {
         this.experienceLevel = experienceLevel;
         this.gamemode = gamemode;
         this.stats = stats;
@@ -74,7 +75,7 @@ public class PlayerPredicate {
         if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
             return false;
         }
-        if (this.gamemode != GameMode.NOT_SET && this.gamemode != serverPlayerEntity.interactionManager.getGameMode()) {
+        if (this.gamemode != serverPlayerEntity.interactionManager.getGameMode()) {
             return false;
         }
         ServerStatHandler statHandler = serverPlayerEntity.getStatHandler();
@@ -107,7 +108,7 @@ public class PlayerPredicate {
         JsonObject jsonObject = JsonHelper.asObject(json, "player");
         NumberRange.IntRange intRange = NumberRange.IntRange.fromJson(jsonObject.get("level"));
         String string = JsonHelper.getString(jsonObject, "gamemode", "");
-        GameMode gameMode = GameMode.byName(string, GameMode.NOT_SET);
+        GameMode gameMode = GameMode.byName(string, null);
         HashMap<Stat<?>, NumberRange.IntRange> map = Maps.newHashMap();
         JsonArray jsonArray = JsonHelper.getArray(jsonObject, "stats", null);
         if (jsonArray != null) {
@@ -161,7 +162,7 @@ public class PlayerPredicate {
         }
         JsonObject jsonObject = new JsonObject();
         jsonObject.add("level", this.experienceLevel.toJson());
-        if (this.gamemode != GameMode.NOT_SET) {
+        if (this.gamemode != null) {
             jsonObject.addProperty("gamemode", this.gamemode.getName());
         }
         if (!this.stats.isEmpty()) {
@@ -190,7 +191,8 @@ public class PlayerPredicate {
 
     public static class Builder {
         private NumberRange.IntRange experienceLevel = NumberRange.IntRange.ANY;
-        private GameMode gamemode = GameMode.NOT_SET;
+        @Nullable
+        private GameMode gamemode;
         private final Map<Stat<?>, NumberRange.IntRange> stats = Maps.newHashMap();
         private final Object2BooleanMap<Identifier> recipes = new Object2BooleanOpenHashMap<Identifier>();
         private final Map<Identifier, AdvancementPredicate> advancements = Maps.newHashMap();

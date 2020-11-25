@@ -476,7 +476,7 @@ RecipeInputProvider {
         if (g != 0.0f && Math.random() < (double)g) {
             ++j;
         }
-        ExperienceOrbEntity.method_31493(serverWorld, vec3d, j);
+        ExperienceOrbEntity.spawn(serverWorld, vec3d, j);
     }
 
     @Override

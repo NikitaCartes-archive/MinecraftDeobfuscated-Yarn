@@ -1142,6 +1142,8 @@ public class Items {
     public static final Item WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item LIGHTNING_ROD = Items.register(Blocks.LIGHTNING_ROD, ItemGroup.REDSTONE);
     public static final Item POWDER_SNOW_BUCKET = Items.register("powder_snow_bucket", (Item)new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
+    public static final Item field_28042 = Items.register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
+    public static final Item field_28043 = Items.register(Blocks.DRIPSTONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

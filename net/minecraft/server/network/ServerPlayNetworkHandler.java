@@ -1225,7 +1225,7 @@ ServerPlayPacketListener {
                 }
                 this.player = this.server.getPlayerManager().respawnPlayer(this.player, false);
                 if (!this.server.isHardcore()) break;
-                this.player.setGameMode(GameMode.SPECTATOR);
+                this.player.changeGameMode(GameMode.SPECTATOR);
                 this.player.getServerWorld().getGameRules().get(GameRules.SPECTATORS_GENERATE_CHUNKS).set(false, this.server);
                 break;
             }

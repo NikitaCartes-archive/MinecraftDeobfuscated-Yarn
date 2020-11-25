@@ -3,6 +3,7 @@
  */
 package net.minecraft.server.integrated;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.GameProfileRepository;
@@ -35,6 +36,7 @@ import net.minecraft.world.SaveProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class IntegratedServer
@@ -43,6 +45,8 @@ extends MinecraftServer {
     private final MinecraftClient client;
     private boolean paused;
     private int lanPort = -1;
+    @Nullable
+    private GameMode field_28075;
     private LanServerPinger lanPinger;
     private UUID localPlayerUuid;
 
@@ -156,14 +160,14 @@ extends MinecraftServer {
     }
 
     @Override
-    public boolean openToLan(GameMode gameMode, boolean cheatsAllowed, int port) {
+    public boolean openToLan(@Nullable GameMode gameMode, boolean cheatsAllowed, int port) {
         try {
             this.getNetworkIo().bind(null, port);
             LOGGER.info("Started serving on {}", (Object)port);
             this.lanPort = port;
             this.lanPinger = new LanServerPinger(this.getServerMotd(), port + "");
             this.lanPinger.start();
-            this.getPlayerManager().setGameMode(gameMode);
+            this.field_28075 = gameMode;
             this.getPlayerManager().setCheatsAllowed(cheatsAllowed);
             int i = this.getPermissionLevel(this.client.player.getGameProfile());
             this.client.player.setClientPermissionLevel(i);
@@ -214,7 +218,7 @@ extends MinecraftServer {
     @Override
     public void setDefaultGameMode(GameMode gameMode) {
         super.setDefaultGameMode(gameMode);
-        this.getPlayerManager().setGameMode(gameMode);
+        this.field_28075 = null;
     }
 
     @Override
@@ -249,6 +253,15 @@ extends MinecraftServer {
     @Override
     public boolean syncChunkWrites() {
         return this.client.options.syncChunkWrites;
+    }
+
+    @Override
+    @Nullable
+    public GameMode getForcedGameMode() {
+        if (this.isRemote()) {
+            return MoreObjects.firstNonNull(this.field_28075, this.saveProperties.getGameMode());
+        }
+        return null;
     }
 }
 

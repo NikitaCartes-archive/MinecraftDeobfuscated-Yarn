@@ -33,14 +33,14 @@ implements AutoCloseable {
     private final BlockModels blockModelCache;
     private final TextureManager textureManager;
     private final BlockColors colorMap;
-    private int mipmap;
+    private int mipmapLevels;
     private BakedModel missingModel;
     private Object2IntMap<BlockState> stateLookup;
 
     public BakedModelManager(TextureManager textureManager, BlockColors colorMap, int mipmap) {
         this.textureManager = textureManager;
         this.colorMap = colorMap;
-        this.mipmap = mipmap;
+        this.mipmapLevels = mipmap;
         this.blockModelCache = new BlockModels(this);
     }
 
@@ -59,7 +59,7 @@ implements AutoCloseable {
     @Override
     protected ModelLoader prepare(ResourceManager resourceManager, Profiler profiler) {
         profiler.startTick();
-        ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmap);
+        ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
         profiler.endTick();
         return modelLoader;
     }
@@ -95,8 +95,8 @@ implements AutoCloseable {
         return true;
     }
 
-    public SpriteAtlasTexture method_24153(Identifier identifier) {
-        return this.atlasManager.getAtlas(identifier);
+    public SpriteAtlasTexture getAtlas(Identifier id) {
+        return this.atlasManager.getAtlas(id);
     }
 
     @Override
@@ -106,8 +106,8 @@ implements AutoCloseable {
         }
     }
 
-    public void resetMipmapLevels(int i) {
-        this.mipmap = i;
+    public void setMipmapLevels(int mipmapLevels) {
+        this.mipmapLevels = mipmapLevels;
     }
 
     @Override

@@ -70,7 +70,7 @@ extends GameOptionsScreen {
     @Override
     public void removed() {
         if (this.gameOptions.mipmapLevels != this.mipmapLevels) {
-            this.client.resetMipmapLevels(this.gameOptions.mipmapLevels);
+            this.client.setMipmapLevels(this.gameOptions.mipmapLevels);
             this.client.reloadResourcesConcurrently();
         }
         super.removed();

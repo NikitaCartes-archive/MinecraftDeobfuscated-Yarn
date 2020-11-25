@@ -27,13 +27,15 @@ import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 
 public class ServerPlayerInteractionManager {
     private static final Logger LOGGER = LogManager.getLogger();
-    public ServerWorld world;
-    public ServerPlayerEntity player;
-    private GameMode gameMode = GameMode.NOT_SET;
-    private GameMode previousGameMode = GameMode.NOT_SET;
+    protected ServerWorld world;
+    protected final ServerPlayerEntity player;
+    private GameMode gameMode = GameMode.DEFAULT;
+    @Nullable
+    private GameMode previousGameMode;
     private boolean mining;
     private int startMiningTime;
     private BlockPos miningPos = BlockPos.ORIGIN;
@@ -43,15 +45,25 @@ public class ServerPlayerInteractionManager {
     private int failedStartMiningTime;
     private int blockBreakingProgress = -1;
 
-    public ServerPlayerInteractionManager(ServerWorld world) {
-        this.world = world;
+    public ServerPlayerInteractionManager(ServerPlayerEntity serverPlayerEntity) {
+        this.player = serverPlayerEntity;
+        this.world = serverPlayerEntity.getServerWorld();
     }
 
-    public void setGameMode(GameMode gameMode) {
-        this.setGameMode(gameMode, gameMode != this.gameMode ? this.gameMode : this.previousGameMode);
+    /**
+     * Checks if current game mode is different to {@code gameMode}, and change it if so.
+     * 
+     * @return whether the current game mode has been changed
+     */
+    public boolean changeGameMode(GameMode gameMode) {
+        if (gameMode == this.gameMode) {
+            return false;
+        }
+        this.setGameMode(gameMode, this.gameMode);
+        return true;
     }
 
-    public void setGameMode(GameMode gameMode, GameMode previousGameMode) {
+    protected void setGameMode(GameMode gameMode, @Nullable GameMode previousGameMode) {
         this.previousGameMode = previousGameMode;
         this.gameMode = gameMode;
         gameMode.setAbilities(this.player.getAbilities());
@@ -64,6 +76,7 @@ public class ServerPlayerInteractionManager {
         return this.gameMode;
     }
 
+    @Nullable
     public GameMode getPreviousGameMode() {
         return this.previousGameMode;
     }
@@ -74,13 +87,6 @@ public class ServerPlayerInteractionManager {
 
     public boolean isCreative() {
         return this.gameMode.isCreative();
-    }
-
-    public void setGameModeIfNotPresent(GameMode gameMode) {
-        if (this.gameMode == GameMode.NOT_SET) {
-            this.gameMode = gameMode;
-        }
-        this.setGameMode(this.gameMode);
     }
 
     public void update() {

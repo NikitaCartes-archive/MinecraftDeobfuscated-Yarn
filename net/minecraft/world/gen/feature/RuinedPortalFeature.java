@@ -23,6 +23,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.BlockView;
@@ -55,7 +56,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         int l;
         int k;
         if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
-            k = bl ? RuinedPortalFeature.choose(random, 32, 100) : (random.nextFloat() < 0.5f ? RuinedPortalFeature.choose(random, 27, 29) : RuinedPortalFeature.choose(random, 29, 100));
+            k = bl ? MathHelper.method_32751(random, 32, 100) : (random.nextFloat() < 0.5f ? MathHelper.method_32751(random, 27, 29) : MathHelper.method_32751(random, 29, 100));
         } else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN) {
             l = i - j;
             k = RuinedPortalFeature.choosePlacementHeight(random, 70, l);
@@ -63,7 +64,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             l = i - j;
             k = RuinedPortalFeature.choosePlacementHeight(random, 15, l);
         } else {
-            k = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED ? i - j + RuinedPortalFeature.choose(random, 2, 8) : i;
+            k = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED ? i - j + MathHelper.method_32751(random, 2, 8) : i;
         }
         ImmutableList<BlockPos> list = ImmutableList.of(new BlockPos(blockBox.minX, 0, blockBox.minZ), new BlockPos(blockBox.maxX, 0, blockBox.minZ), new BlockPos(blockBox.minX, 0, blockBox.maxZ), new BlockPos(blockBox.maxX, 0, blockBox.maxZ));
         List list2 = list.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ())).collect(Collectors.toList());
@@ -81,13 +82,9 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         return m;
     }
 
-    private static int choose(Random random, int min, int max) {
-        return random.nextInt(max - min + 1) + min;
-    }
-
     private static int choosePlacementHeight(Random random, int min, int max) {
         if (min < max) {
-            return RuinedPortalFeature.choose(random, min, max);
+            return MathHelper.method_32751(random, min, max);
         }
         return max;
     }

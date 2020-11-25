@@ -11,7 +11,6 @@ import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.world.GameMode;
 
 @Environment(value=EnvType.CLIENT)
 public class OpenInventoryTutorialStepHandler
@@ -29,7 +28,7 @@ implements TutorialStepHandler {
     @Override
     public void tick() {
         ++this.ticks;
-        if (this.manager.getGameMode() != GameMode.SURVIVAL) {
+        if (!this.manager.isInSurvival()) {
             this.manager.setStep(TutorialStep.NONE);
             return;
         }

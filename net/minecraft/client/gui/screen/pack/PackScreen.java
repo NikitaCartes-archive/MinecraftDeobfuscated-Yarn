@@ -147,25 +147,25 @@ extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    protected static void method_29669(MinecraftClient minecraftClient, List<Path> list, Path path) {
+    protected static void copyPacks(MinecraftClient client, List<Path> srcPaths, Path destPath) {
         MutableBoolean mutableBoolean = new MutableBoolean();
-        list.forEach(path2 -> {
-            try (Stream<Path> stream = Files.walk(path2, new FileVisitOption[0]);){
-                stream.forEach(path3 -> {
+        srcPaths.forEach(src -> {
+            try (Stream<Path> stream = Files.walk(src, new FileVisitOption[0]);){
+                stream.forEach(toCopy -> {
                     try {
-                        Util.relativeCopy(path2.getParent(), path, path3);
+                        Util.relativeCopy(src.getParent(), destPath, toCopy);
                     } catch (IOException iOException) {
-                        LOGGER.warn("Failed to copy datapack file  from {} to {}", path3, (Object)path, (Object)iOException);
+                        LOGGER.warn("Failed to copy datapack file  from {} to {}", toCopy, (Object)destPath, (Object)iOException);
                         mutableBoolean.setTrue();
                     }
                 });
             } catch (IOException iOException) {
-                LOGGER.warn("Failed to copy datapack file from {} to {}", path2, (Object)path);
+                LOGGER.warn("Failed to copy datapack file from {} to {}", src, (Object)destPath);
                 mutableBoolean.setTrue();
             }
         });
         if (mutableBoolean.isTrue()) {
-            SystemToast.addPackCopyFailure(minecraftClient, path.toString());
+            SystemToast.addPackCopyFailure(client, destPath.toString());
         }
     }
 
@@ -174,7 +174,7 @@ extends Screen {
         String string = paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
         this.client.openScreen(new ConfirmScreen(bl -> {
             if (bl) {
-                PackScreen.method_29669(this.client, paths, this.file.toPath());
+                PackScreen.copyPacks(this.client, paths, this.file.toPath());
                 this.refresh();
             }
             this.client.openScreen(this);

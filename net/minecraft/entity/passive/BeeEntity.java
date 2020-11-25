@@ -567,7 +567,6 @@ Flutterer {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        Entity entity = source.getAttacker();
         if (!this.world.isClient) {
             this.pollinateGoal.cancel();
         }

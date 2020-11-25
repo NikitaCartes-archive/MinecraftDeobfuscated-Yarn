@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class OptimizeWorldScreen
 extends Screen {
-    private static final Logger field_25482 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private static final Object2IntMap<RegistryKey<World>> DIMENSION_COLORS = Util.make(new Object2IntOpenCustomHashMap(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
         object2IntOpenCustomHashMap.put(World.OVERWORLD, -13408734);
         object2IntOpenCustomHashMap.put(World.NETHER, -10075085);
@@ -57,7 +57,7 @@ extends Screen {
             OptimizeWorldScreen optimizeWorldScreen = new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
             return optimizeWorldScreen;
         } catch (Exception exception) {
-            field_25482.warn("Failed to load datapacks, can't optimize world", (Throwable)exception);
+            LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)exception);
             return null;
         }
     }

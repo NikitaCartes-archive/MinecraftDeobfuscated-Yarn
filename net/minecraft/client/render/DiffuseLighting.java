@@ -6,16 +6,16 @@ package net.minecraft.client.render;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class DiffuseLighting {
-    private static final Vector3f field_24426 = Util.make(new Vector3f(0.2f, 1.0f, -0.7f), Vector3f::normalize);
-    private static final Vector3f field_24427 = Util.make(new Vector3f(-0.2f, 1.0f, 0.7f), Vector3f::normalize);
-    private static final Vector3f field_24428 = Util.make(new Vector3f(0.2f, 1.0f, -0.7f), Vector3f::normalize);
-    private static final Vector3f field_24429 = Util.make(new Vector3f(-0.2f, -1.0f, 0.7f), Vector3f::normalize);
+    private static final Vec3f field_24426 = Util.make(new Vec3f(0.2f, 1.0f, -0.7f), Vec3f::normalize);
+    private static final Vec3f field_24427 = Util.make(new Vec3f(-0.2f, 1.0f, 0.7f), Vec3f::normalize);
+    private static final Vec3f field_24428 = Util.make(new Vec3f(0.2f, 1.0f, -0.7f), Vec3f::normalize);
+    private static final Vec3f field_24429 = Util.make(new Vec3f(-0.2f, -1.0f, 0.7f), Vec3f::normalize);
 
     public static void enable() {
         RenderSystem.enableLighting();

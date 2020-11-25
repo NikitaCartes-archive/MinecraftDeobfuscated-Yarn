@@ -479,7 +479,7 @@ implements Monster {
         }
         if (this.world instanceof ServerWorld) {
             if (this.ticksSinceDeath > 150 && this.ticksSinceDeath % 5 == 0 && bl) {
-                ExperienceOrbEntity.method_31493((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.08f));
+                ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.08f));
             }
             if (this.ticksSinceDeath == 1 && !this.isSilent()) {
                 this.world.syncGlobalEvent(1028, this.getBlockPos(), 0);
@@ -490,7 +490,7 @@ implements Monster {
         this.bodyYaw = this.yaw;
         if (this.ticksSinceDeath == 200 && this.world instanceof ServerWorld) {
             if (bl) {
-                ExperienceOrbEntity.method_31493((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.2f));
+                ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.2f));
             }
             if (this.fight != null) {
                 this.fight.dragonKilled(this);

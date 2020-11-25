@@ -65,6 +65,8 @@ public class BlockSoundGroup {
     public static final BlockSoundGroup LARGE_AMETHYST_BUD = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_LARGE_AMETHYST_BUD_BREAK, SoundEvents.BLOCK_AMETHYST_CLUSTER_STEP, SoundEvents.BLOCK_LARGE_AMETHYST_BUD_PLACE, SoundEvents.BLOCK_AMETHYST_CLUSTER_HIT, SoundEvents.BLOCK_AMETHYST_CLUSTER_FALL);
     public static final BlockSoundGroup TUFF = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_TUFF_BREAK, SoundEvents.BLOCK_TUFF_STEP, SoundEvents.BLOCK_TUFF_PLACE, SoundEvents.BLOCK_TUFF_HIT, SoundEvents.BLOCK_TUFF_FALL);
     public static final BlockSoundGroup CALCITE = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_CALCITE_BREAK, SoundEvents.BLOCK_CALCITE_STEP, SoundEvents.BLOCK_CALCITE_PLACE, SoundEvents.BLOCK_CALCITE_HIT, SoundEvents.BLOCK_CALCITE_FALL);
+    public static final BlockSoundGroup DRIPSTONE_BLOCK = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_DRIPSTONE_BLOCK_BREAK, SoundEvents.BLOCK_DRIPSTONE_BLOCK_STEP, SoundEvents.BLOCK_DRIPSTONE_BLOCK_PLACE, SoundEvents.BLOCK_DRIPSTONE_BLOCK_HIT, SoundEvents.BLOCK_DRIPSTONE_BLOCK_FALL);
+    public static final BlockSoundGroup POINTED_DRIPSTONE = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_POINTED_DRIPSTONE_BREAK, SoundEvents.BLOCK_POINTED_DRIPSTONE_STEP, SoundEvents.BLOCK_POINTED_DRIPSTONE_PLACE, SoundEvents.BLOCK_POINTED_DRIPSTONE_HIT, SoundEvents.BLOCK_POINTED_DRIPSTONE_FALL);
     public static final BlockSoundGroup COPPER = new BlockSoundGroup(1.0f, 1.0f, SoundEvents.BLOCK_COPPER_BREAK, SoundEvents.BLOCK_COPPER_STEP, SoundEvents.BLOCK_COPPER_PLACE, SoundEvents.BLOCK_COPPER_HIT, SoundEvents.BLOCK_COPPER_FALL);
     public final float volume;
     public final float pitch;

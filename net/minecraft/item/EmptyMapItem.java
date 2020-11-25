@@ -30,7 +30,7 @@ extends NetworkSyncedItem {
             itemStack.decrement(1);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
-        user.playSound(SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, 1.0f, 1.0f);
+        user.world.playSoundFromEntity(null, user, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, user.getSoundCategory(), 1.0f, 1.0f);
         ItemStack itemStack2 = FilledMapItem.createMap(world, user.getBlockX(), user.getBlockZ(), (byte)0, true, false);
         if (itemStack.isEmpty()) {
             return TypedActionResult.consume(itemStack2);

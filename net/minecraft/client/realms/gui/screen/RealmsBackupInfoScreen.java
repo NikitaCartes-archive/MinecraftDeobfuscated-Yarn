@@ -89,7 +89,7 @@ extends RealmsScreen {
 
     private Text gameModeMetadata(String value) {
         try {
-            return RealmsSlotOptionsScreen.GAME_MODES.get(Integer.parseInt(value)).getName();
+            return RealmsSlotOptionsScreen.GAME_MODES.get(Integer.parseInt(value)).getSimpleTranslatableName();
         } catch (Exception exception) {
             return field_27937;
         }

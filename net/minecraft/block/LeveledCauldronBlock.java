@@ -13,6 +13,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CauldronBlock;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -32,6 +34,15 @@ extends AbstractCauldronBlock {
         super(settings, behaviorMap);
         this.precipitationPredicate = precipitationPredicate;
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LEVEL, 1));
+    }
+
+    public boolean method_32766(BlockState blockState) {
+        return blockState.get(LEVEL) == 3;
+    }
+
+    @Override
+    protected boolean method_32765(Fluid fluid) {
+        return fluid == Fluids.WATER && this.precipitationPredicate == RAIN_PREDICATE;
     }
 
     @Override
@@ -68,6 +79,15 @@ extends AbstractCauldronBlock {
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(LEVEL);
+    }
+
+    @Override
+    protected void method_32764(BlockState blockState, World world, BlockPos blockPos, Fluid fluid) {
+        if (this.method_32766(blockState)) {
+            return;
+        }
+        world.setBlockState(blockPos, (BlockState)blockState.with(LEVEL, blockState.get(LEVEL) + 1));
+        world.syncWorldEvent(1047, blockPos, 0);
     }
 }
 

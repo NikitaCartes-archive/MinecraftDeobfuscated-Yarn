@@ -16,11 +16,11 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.chunk.Chunk;
 
@@ -50,13 +50,13 @@ implements DebugRenderer.Renderer {
                 for (Map.Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
                     Heightmap.Type type = entry.getKey();
                     ChunkPos chunkPos = chunk.getPos();
-                    Vector3f vector3f = this.method_27037(type);
+                    Vec3f vec3f = this.method_27037(type);
                     for (int k = 0; k < 16; ++k) {
                         for (int l = 0; l < 16; ++l) {
                             int m = ChunkSectionPos.method_32205(chunkPos.x, k);
                             int n = ChunkSectionPos.method_32205(chunkPos.z, l);
                             float f = (float)((double)((float)worldAccess.getTopY(type, m, n) + (float)type.ordinal() * 0.09375f) - cameraY);
-                            WorldRenderer.drawBox(bufferBuilder, (double)((float)m + 0.25f) - cameraX, f, (double)((float)n + 0.25f) - cameraZ, (double)((float)m + 0.75f) - cameraX, f + 0.09375f, (double)((float)n + 0.75f) - cameraZ, vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0f);
+                            WorldRenderer.drawBox(bufferBuilder, (double)((float)m + 0.25f) - cameraX, f, (double)((float)n + 0.25f) - cameraZ, (double)((float)m + 0.75f) - cameraX, f + 0.09375f, (double)((float)n + 0.75f) - cameraZ, vec3f.getX(), vec3f.getY(), vec3f.getZ(), 1.0f);
                         }
                     }
                 }
@@ -67,28 +67,28 @@ implements DebugRenderer.Renderer {
         RenderSystem.popMatrix();
     }
 
-    private Vector3f method_27037(Heightmap.Type type) {
+    private Vec3f method_27037(Heightmap.Type type) {
         switch (type) {
             case WORLD_SURFACE_WG: {
-                return new Vector3f(1.0f, 1.0f, 0.0f);
+                return new Vec3f(1.0f, 1.0f, 0.0f);
             }
             case OCEAN_FLOOR_WG: {
-                return new Vector3f(1.0f, 0.0f, 1.0f);
+                return new Vec3f(1.0f, 0.0f, 1.0f);
             }
             case WORLD_SURFACE: {
-                return new Vector3f(0.0f, 0.7f, 0.0f);
+                return new Vec3f(0.0f, 0.7f, 0.0f);
             }
             case OCEAN_FLOOR: {
-                return new Vector3f(0.0f, 0.0f, 0.5f);
+                return new Vec3f(0.0f, 0.0f, 0.5f);
             }
             case MOTION_BLOCKING: {
-                return new Vector3f(0.0f, 0.3f, 0.3f);
+                return new Vec3f(0.0f, 0.3f, 0.3f);
             }
             case MOTION_BLOCKING_NO_LEAVES: {
-                return new Vector3f(0.0f, 0.5f, 0.5f);
+                return new Vec3f(0.0f, 0.5f, 0.5f);
             }
         }
-        return new Vector3f(0.0f, 0.0f, 0.0f);
+        return new Vec3f(0.0f, 0.0f, 0.0f);
     }
 }
 

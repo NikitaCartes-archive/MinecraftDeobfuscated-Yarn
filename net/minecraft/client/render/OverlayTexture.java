@@ -8,37 +8,31 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.entity.damage.DamageSource;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class OverlayTexture
 implements AutoCloseable {
     public static final int DEFAULT_UV = OverlayTexture.packUv(0, 10);
-    private final NativeImageBackedTexture texture = new NativeImageBackedTexture(24, 24, false);
+    private final NativeImageBackedTexture texture = new NativeImageBackedTexture(16, 16, false);
 
     public OverlayTexture() {
         NativeImage nativeImage = this.texture.getImage();
-        for (int i = 0; i < 24; ++i) {
-            for (int j = 0; j < 24; ++j) {
+        for (int i = 0; i < 16; ++i) {
+            for (int j = 0; j < 16; ++j) {
                 if (i < 8) {
                     nativeImage.setPixelColor(j, i, -1308622593);
                     continue;
                 }
-                if (i < 16) {
-                    int k = (int)((1.0f - (float)j / 15.0f * 0.75f) * 255.0f);
-                    nativeImage.setPixelColor(j, i, k << 24 | 0xFFFFFF);
-                    continue;
-                }
-                nativeImage.setPixelColor(j, i, -1291911168);
+                int k = (int)((1.0f - (float)j / 15.0f * 0.75f) * 255.0f);
+                nativeImage.setPixelColor(j, i, k << 24 | 0xFFFFFF);
             }
         }
         RenderSystem.activeTexture(33985);
         this.texture.bindTexture();
         RenderSystem.matrixMode(5890);
         RenderSystem.loadIdentity();
-        float f = 0.04347826f;
-        RenderSystem.scalef(0.04347826f, 0.04347826f, 0.04347826f);
+        float f = 0.06666667f;
+        RenderSystem.scalef(0.06666667f, 0.06666667f, 0.06666667f);
         RenderSystem.matrixMode(5888);
         this.texture.bindTexture();
         nativeImage.upload(0, 0, 0, 0, 0, nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
@@ -51,22 +45,15 @@ implements AutoCloseable {
     }
 
     public void setupOverlayColor() {
-        RenderSystem.setupOverlayColor(this.texture::getGlId, 24);
+        RenderSystem.setupOverlayColor(this.texture::getGlId, 16);
     }
 
     public static int getU(float whiteOverlayProgress) {
-        return (int)(whiteOverlayProgress * 23.0f);
+        return (int)(whiteOverlayProgress * 15.0f);
     }
 
     public static int getV(boolean hurt) {
-        return OverlayTexture.method_32692(hurt, null);
-    }
-
-    public static int method_32692(boolean bl, @Nullable DamageSource damageSource) {
-        if (bl) {
-            return damageSource == DamageSource.FREEZE ? 19 : 3;
-        }
-        return 10;
+        return hurt ? 3 : 10;
     }
 
     public static int packUv(int u, int v) {
