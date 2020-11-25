@@ -219,7 +219,7 @@ public class EntitySelectorOptions {
 					}
 
 					for(GameMode gameModexx : GameMode.values()) {
-						if (gameModexx != GameMode.NOT_SET && gameModexx.getName().toLowerCase(Locale.ROOT).startsWith(stringxx)) {
+						if (gameModexx.getName().toLowerCase(Locale.ROOT).startsWith(stringxx)) {
 							if (bl2) {
 								suggestionsBuilder.suggest('!' + gameModexx.getName());
 							}
@@ -239,8 +239,8 @@ public class EntitySelectorOptions {
 					throw INAPPLICABLE_OPTION_EXCEPTION.createWithContext(entitySelectorReader.getReader(), "gamemode");
 				} else {
 					String string = entitySelectorReader.getReader().readUnquotedString();
-					GameMode gameMode = GameMode.byName(string, GameMode.NOT_SET);
-					if (gameMode == GameMode.NOT_SET) {
+					GameMode gameMode = GameMode.byName(string, null);
+					if (gameMode == null) {
 						entitySelectorReader.getReader().setCursor(i);
 						throw INVALID_MODE_EXCEPTION.createWithContext(entitySelectorReader.getReader(), string);
 					} else {

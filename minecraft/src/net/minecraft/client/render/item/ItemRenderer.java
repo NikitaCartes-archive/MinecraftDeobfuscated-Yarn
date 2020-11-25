@@ -208,7 +208,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 	}
 
-	public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity) {
+	public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int i) {
 		BakedModel bakedModel;
 		if (stack.isOf(Items.TRIDENT)) {
 			bakedModel = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
@@ -217,14 +217,14 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		}
 
 		ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
-		BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity);
+		BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity, i);
 		return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
 	}
 
 	public void renderItem(
-		ItemStack stack, ModelTransformation.Mode transformationType, int light, int overlay, MatrixStack matrices, VertexConsumerProvider vertexConsumers
+		ItemStack stack, ModelTransformation.Mode transformationType, int light, int overlay, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int i
 	) {
-		this.renderItem(null, stack, transformationType, false, matrices, vertexConsumers, null, light, overlay);
+		this.renderItem(null, stack, transformationType, false, matrices, vertexConsumers, null, light, overlay, i);
 	}
 
 	public void renderItem(
@@ -236,16 +236,17 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		VertexConsumerProvider vertexConsumers,
 		@Nullable World world,
 		int light,
-		int overlay
+		int overlay,
+		int i
 	) {
 		if (!item.isEmpty()) {
-			BakedModel bakedModel = this.getHeldItemModel(item, world, entity);
+			BakedModel bakedModel = this.getHeldItemModel(item, world, entity, i);
 			this.renderItem(item, renderMode, leftHanded, matrices, vertexConsumers, light, overlay, bakedModel);
 		}
 	}
 
 	public void renderGuiItemIcon(ItemStack stack, int x, int y) {
-		this.renderGuiItemModel(stack, x, y, this.getHeldItemModel(stack, null, null));
+		this.renderGuiItemModel(stack, x, y, this.getHeldItemModel(stack, null, null, 0));
 	}
 
 	protected void renderGuiItemModel(ItemStack stack, int x, int y, BakedModel model) {
@@ -286,14 +287,18 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	 * for calculating model overrides.
 	 */
 	public void renderInGuiWithOverrides(ItemStack stack, int x, int y) {
-		this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y);
+		this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, 0);
+	}
+
+	public void method_32797(ItemStack itemStack, int i, int j, int k) {
+		this.innerRenderInGui(MinecraftClient.getInstance().player, itemStack, i, j, k);
 	}
 
 	/**
 	 * Renders an item in a GUI without an attached entity.
 	 */
 	public void renderInGui(ItemStack stack, int x, int y) {
-		this.innerRenderInGui(null, stack, x, y);
+		this.innerRenderInGui(null, stack, x, y, 0);
 	}
 
 	/**
@@ -301,18 +306,18 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	 * 
 	 * <p>The entity is used to calculate model overrides for the item.
 	 */
-	public void renderInGuiWithOverrides(LivingEntity entity, ItemStack stack, int x, int y) {
-		this.innerRenderInGui(entity, stack, x, y);
+	public void renderInGuiWithOverrides(LivingEntity entity, ItemStack stack, int x, int y, int i) {
+		this.innerRenderInGui(entity, stack, x, y, i);
 	}
 
-	private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y) {
+	private void innerRenderInGui(@Nullable LivingEntity entity, ItemStack itemStack, int x, int y, int i) {
 		if (!itemStack.isEmpty()) {
 			this.zOffset += 50.0F;
 
 			try {
-				this.renderGuiItemModel(itemStack, x, y, this.getHeldItemModel(itemStack, null, entity));
-			} catch (Throwable var8) {
-				CrashReport crashReport = CrashReport.create(var8, "Rendering item");
+				this.renderGuiItemModel(itemStack, x, y, this.getHeldItemModel(itemStack, null, entity, i));
+			} catch (Throwable var9) {
+				CrashReport crashReport = CrashReport.create(var9, "Rendering item");
 				CrashReportSection crashReportSection = crashReport.addElement("Item being rendered");
 				crashReportSection.add("Item Type", (CrashCallable<String>)(() -> String.valueOf(itemStack.getItem())));
 				crashReportSection.add("Item Damage", (CrashCallable<String>)(() -> String.valueOf(itemStack.getDamage())));

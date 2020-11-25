@@ -141,7 +141,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		this.setFlightEnabled(serverPropertiesHandler.allowFlight);
 		this.setResourcePack(serverPropertiesHandler.resourcePack, this.createResourcePackHash());
 		this.setMotd(serverPropertiesHandler.motd);
-		this.setForceGameMode(serverPropertiesHandler.forceGameMode);
 		super.setPlayerIdleTimeout(serverPropertiesHandler.playerIdleTimeout.get());
 		this.setEnforceWhitelist(serverPropertiesHandler.enforceWhitelist);
 		this.saveProperties.setGameMode(serverPropertiesHandler.gameMode);
@@ -394,11 +393,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public boolean openToLan(GameMode gameMode, boolean cheatsAllowed, int port) {
-		return false;
-	}
-
-	@Override
 	public boolean areCommandBlocksEnabled() {
 		return this.getProperties().enableCommandBlock;
 	}
@@ -589,5 +583,11 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	@Override
 	public boolean requireResourcePack() {
 		return this.propertiesLoader.getPropertiesHandler().requireResourcePack;
+	}
+
+	@Nullable
+	@Override
+	public GameMode getForcedGameMode() {
+		return this.propertiesLoader.getPropertiesHandler().forceGameMode ? this.saveProperties.getGameMode() : null;
 	}
 }

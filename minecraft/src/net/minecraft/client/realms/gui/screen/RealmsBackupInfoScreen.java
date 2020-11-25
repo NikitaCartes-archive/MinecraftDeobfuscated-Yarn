@@ -8,7 +8,6 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.screen.world.GameModeSelection;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.dto.Backup;
@@ -16,6 +15,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class RealmsBackupInfoScreen extends RealmsScreen {
@@ -86,7 +86,7 @@ public class RealmsBackupInfoScreen extends RealmsScreen {
 
 	private Text gameModeMetadata(String value) {
 		try {
-			return ((GameModeSelection)RealmsSlotOptionsScreen.GAME_MODES.get(Integer.parseInt(value))).getName();
+			return ((GameMode)RealmsSlotOptionsScreen.GAME_MODES.get(Integer.parseInt(value))).getSimpleTranslatableName();
 		} catch (Exception var3) {
 			return field_27937;
 		}

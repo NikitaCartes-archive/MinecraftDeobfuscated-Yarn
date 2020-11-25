@@ -66,7 +66,7 @@ public class SignEditScreen extends Screen {
 		);
 		BlockState blockState = this.sign.getCachedState();
 		this.field_27390 = SignBlockEntityRenderer.method_32155(blockState.getBlock());
-		this.model = SignBlockEntityRenderer.method_32157(this.client.method_31974(), this.field_27390);
+		this.model = SignBlockEntityRenderer.method_32157(this.client.getEntityModelLoader(), this.field_27390);
 	}
 
 	@Override

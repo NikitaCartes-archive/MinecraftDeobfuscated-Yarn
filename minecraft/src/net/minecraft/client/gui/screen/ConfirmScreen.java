@@ -22,12 +22,12 @@ public class ConfirmScreen extends Screen {
 		this(callback, title, message, ScreenTexts.YES, ScreenTexts.NO);
 	}
 
-	public ConfirmScreen(BooleanConsumer callback, Text title, Text message, Text text, Text text2) {
+	public ConfirmScreen(BooleanConsumer callback, Text title, Text message, Text yesTranslated, Text noTranslated) {
 		super(title);
 		this.callback = callback;
 		this.message = message;
-		this.yesTranslated = text;
-		this.noTranslated = text2;
+		this.yesTranslated = yesTranslated;
+		this.noTranslated = noTranslated;
 	}
 
 	@Override

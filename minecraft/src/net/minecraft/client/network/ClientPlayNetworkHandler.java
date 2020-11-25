@@ -358,8 +358,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.openScreen(new DownloadingTerrainScreen());
 		this.client.player.setReducedDebugInfo(packet.hasReducedDebugInfo());
 		this.client.player.setShowsDeathScreen(packet.showsDeathScreen());
-		this.client.interactionManager.setGameMode(packet.getGameMode());
-		this.client.interactionManager.setPreviousGameMode(packet.getPreviousGameMode());
+		this.client.interactionManager.method_32790(packet.getGameMode(), packet.getPreviousGameMode());
 		this.client.options.onPlayerModelPartChange();
 		this.connection
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
@@ -934,8 +933,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.client.openScreen(null);
 		}
 
-		this.client.interactionManager.setGameMode(packet.getGameMode());
-		this.client.interactionManager.setPreviousGameMode(packet.getPreviousGameMode());
+		this.client.interactionManager.method_32790(packet.getGameMode(), packet.getPreviousGameMode());
 	}
 
 	@Override

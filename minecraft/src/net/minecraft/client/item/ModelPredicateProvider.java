@@ -9,5 +9,5 @@ import net.minecraft.item.ItemStack;
 
 @Environment(EnvType.CLIENT)
 public interface ModelPredicateProvider {
-	float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity);
+	float call(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int i);
 }

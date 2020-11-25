@@ -156,19 +156,19 @@ public class PackScreen extends Screen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	protected static void method_29669(MinecraftClient minecraftClient, List<Path> list, Path path) {
+	protected static void copyPacks(MinecraftClient client, List<Path> srcPaths, Path destPath) {
 		MutableBoolean mutableBoolean = new MutableBoolean();
-		list.forEach(path2 -> {
+		srcPaths.forEach(src -> {
 			try {
-				Stream<Path> stream = Files.walk(path2);
+				Stream<Path> stream = Files.walk(src);
 				Throwable var4 = null;
 
 				try {
-					stream.forEach(path3 -> {
+					stream.forEach(toCopy -> {
 						try {
-							Util.relativeCopy(path2.getParent(), path, path3);
+							Util.relativeCopy(src.getParent(), destPath, toCopy);
 						} catch (IOException var5) {
-							LOGGER.warn("Failed to copy datapack file  from {} to {}", path3, path, var5);
+							LOGGER.warn("Failed to copy datapack file  from {} to {}", toCopy, destPath, var5);
 							mutableBoolean.setTrue();
 						}
 					});
@@ -189,12 +189,12 @@ public class PackScreen extends Screen {
 					}
 				}
 			} catch (IOException var16) {
-				LOGGER.warn("Failed to copy datapack file from {} to {}", path2, path);
+				LOGGER.warn("Failed to copy datapack file from {} to {}", src, destPath);
 				mutableBoolean.setTrue();
 			}
 		});
 		if (mutableBoolean.isTrue()) {
-			SystemToast.addPackCopyFailure(minecraftClient, path.toString());
+			SystemToast.addPackCopyFailure(client, destPath.toString());
 		}
 	}
 
@@ -203,7 +203,7 @@ public class PackScreen extends Screen {
 		String string = (String)paths.stream().map(Path::getFileName).map(Path::toString).collect(Collectors.joining(", "));
 		this.client.openScreen(new ConfirmScreen(bl -> {
 			if (bl) {
-				method_29669(this.client, paths, this.file.toPath());
+				copyPacks(this.client, paths, this.file.toPath());
 				this.refresh();
 			}
 

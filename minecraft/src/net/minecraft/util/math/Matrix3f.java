@@ -3,7 +3,6 @@ package net.minecraft.util.math;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import org.apache.commons.lang3.tuple.Triple;
 
 public final class Matrix3f {
@@ -11,15 +10,15 @@ public final class Matrix3f {
 	private static final float COS_PI_OVER_EIGHT = (float)Math.cos(Math.PI / 8);
 	private static final float SIN_PI_OVER_EIGHT = (float)Math.sin(Math.PI / 8);
 	private static final float SQRT_HALF = 1.0F / (float)Math.sqrt(2.0);
-	public float a00;
-	public float a01;
-	public float a02;
-	public float a10;
-	public float a11;
-	public float a12;
-	public float a20;
-	public float a21;
-	public float a22;
+	protected float a00;
+	protected float a01;
+	protected float a02;
+	protected float a10;
+	protected float a11;
+	protected float a12;
+	protected float a20;
+	protected float a21;
+	protected float a22;
 
 	public Matrix3f() {
 	}
@@ -194,7 +193,7 @@ public final class Matrix3f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Triple<Quaternion, Vector3f, Quaternion> decomposeLinearTransformation() {
+	public Triple<Quaternion, Vec3f, Quaternion> decomposeLinearTransformation() {
 		Quaternion quaternion = Quaternion.IDENTITY.copy();
 		Quaternion quaternion2 = Quaternion.IDENTITY.copy();
 		Matrix3f matrix3f = this.copy();
@@ -262,8 +261,8 @@ public final class Matrix3f {
 		matrix3f5.multiply(matrix3f4);
 		f = 1.0F / f;
 		quaternion.scale((float)Math.sqrt((double)f));
-		Vector3f vector3f = new Vector3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
-		return Triple.of(quaternion, vector3f, quaternion2);
+		Vec3f vec3f = new Vec3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
+		return Triple.of(quaternion, vec3f, quaternion2);
 	}
 
 	public boolean equals(Object object) {

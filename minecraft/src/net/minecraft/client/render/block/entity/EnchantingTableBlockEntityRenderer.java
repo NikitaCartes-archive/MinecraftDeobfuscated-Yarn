@@ -11,9 +11,9 @@ import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class EnchantingTableBlockEntityRenderer implements BlockEntityRenderer<EnchantingTableBlockEntity> {
@@ -44,8 +44,8 @@ public class EnchantingTableBlockEntityRenderer implements BlockEntityRenderer<E
 		}
 
 		float k = enchantingTableBlockEntity.field_11963 + h * f;
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(-k));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(80.0F));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(-k));
+		matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(80.0F));
 		float l = MathHelper.lerp(f, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);
 		float m = MathHelper.fractionalPart(l + 0.25F) * 1.6F - 0.3F;
 		float n = MathHelper.fractionalPart(l + 0.75F) * 1.6F - 0.3F;

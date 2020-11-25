@@ -85,6 +85,10 @@ public class ParticleTypes {
 	public static final DefaultParticleType WHITE_ASH = register("white_ash", false);
 	public static final DefaultParticleType SMALL_FLAME = register("small_flame", false);
 	public static final DefaultParticleType SNOWFLAKE = register("snowflake", false);
+	public static final DefaultParticleType DRIPPING_DRIPSTONE_LAVA = register("dripping_dripstone_lava", false);
+	public static final DefaultParticleType FALLING_DRIPSTONE_LAVA = register("falling_dripstone_lava", false);
+	public static final DefaultParticleType DRIPPING_DRIPSTONE_WATER = register("dripping_dripstone_water", false);
+	public static final DefaultParticleType FALLING_DRIPSTONE_WATER = register("falling_dripstone_water", false);
 	public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
 	private static DefaultParticleType register(String name, boolean alwaysShow) {

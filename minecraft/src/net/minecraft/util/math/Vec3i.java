@@ -8,6 +8,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
 
+/**
+ * A publicly read-only but mutable vector composed of 3 integers.
+ */
 @Immutable
 public class Vec3i implements Comparable<Vec3i> {
 	public static final Codec<Vec3i> CODEC = Codec.INT_STREAM

@@ -6,10 +6,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.TntEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class TntEntityRenderer extends EntityRenderer<TntEntity> {
@@ -31,9 +31,9 @@ public class TntEntityRenderer extends EntityRenderer<TntEntity> {
 			matrixStack.scale(k, k, k);
 		}
 
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
 		matrixStack.translate(-0.5, -0.5, 0.5);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
 		TntMinecartEntityRenderer.renderFlashingBlock(Blocks.TNT.getDefaultState(), matrixStack, vertexConsumerProvider, i, j / 5 % 2 == 0);
 		matrixStack.pop();
 		super.render(tntEntity, f, g, matrixStack, vertexConsumerProvider, i);

@@ -5,10 +5,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.WitchEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends VillagerHeldItemFeatureRenderer<T, WitchEntityModel<T>> {
@@ -26,9 +26,9 @@ public class WitchHeldItemFeatureRenderer<T extends LivingEntity> extends Villag
 			this.getContextModel().getHead().rotate(matrixStack);
 			this.getContextModel().getNose().rotate(matrixStack);
 			matrixStack.translate(0.0625, 0.25, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(140.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(10.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(140.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(10.0F));
 			matrixStack.translate(0.0, -0.4F, 0.4F);
 		}
 

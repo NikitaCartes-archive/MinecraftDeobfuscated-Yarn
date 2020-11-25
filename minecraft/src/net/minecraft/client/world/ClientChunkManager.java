@@ -43,12 +43,12 @@ public class ClientChunkManager extends ChunkManager {
 		return this.lightingProvider;
 	}
 
-	private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int y) {
+	private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int z) {
 		if (chunk == null) {
 			return false;
 		} else {
 			ChunkPos chunkPos = chunk.getPos();
-			return chunkPos.x == x && chunkPos.z == y;
+			return chunkPos.x == x && chunkPos.z == z;
 		}
 	}
 

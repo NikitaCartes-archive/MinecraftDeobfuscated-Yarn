@@ -16,6 +16,7 @@ import net.minecraft.block.enums.RailShape;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.block.enums.StructureBlockMode;
+import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
@@ -417,4 +418,6 @@ public class Properties {
 	 * A property that specifies the size of bamboo leaves.
 	 */
 	public static final EnumProperty<BambooLeaves> BAMBOO_LEAVES = EnumProperty.of("leaves", BambooLeaves.class);
+	public static final DirectionProperty VERTICAL_DIRECTION = DirectionProperty.of("vertical_direction", Direction.UP, Direction.DOWN);
+	public static final EnumProperty<Thickness> THICKNESS = EnumProperty.of("thickness", Thickness.class);
 }

@@ -14,20 +14,20 @@ import java.util.Map.Entry;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ModelElement {
-	public final Vector3f from;
-	public final Vector3f to;
+	public final Vec3f from;
+	public final Vec3f to;
 	public final Map<Direction, ModelElementFace> faces;
 	public final ModelRotation rotation;
 	public final boolean shade;
 
-	public ModelElement(Vector3f from, Vector3f to, Map<Direction, ModelElementFace> faces, @Nullable ModelRotation rotation, boolean shade) {
+	public ModelElement(Vec3f from, Vec3f to, Map<Direction, ModelElementFace> faces, @Nullable ModelRotation rotation, boolean shade) {
 		this.from = from;
 		this.to = to;
 		this.faces = faces;
@@ -68,15 +68,15 @@ public class ModelElement {
 
 		public ModelElement deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			JsonObject jsonObject = jsonElement.getAsJsonObject();
-			Vector3f vector3f = this.deserializeFrom(jsonObject);
-			Vector3f vector3f2 = this.deserializeTo(jsonObject);
+			Vec3f vec3f = this.deserializeFrom(jsonObject);
+			Vec3f vec3f2 = this.deserializeTo(jsonObject);
 			ModelRotation modelRotation = this.deserializeRotation(jsonObject);
 			Map<Direction, ModelElementFace> map = this.deserializeFacesValidating(jsonDeserializationContext, jsonObject);
 			if (jsonObject.has("shade") && !JsonHelper.hasBoolean(jsonObject, "shade")) {
 				throw new JsonParseException("Expected shade to be a Boolean");
 			} else {
 				boolean bl = JsonHelper.getBoolean(jsonObject, "shade", true);
-				return new ModelElement(vector3f, vector3f2, map, modelRotation, bl);
+				return new ModelElement(vec3f, vec3f2, map, modelRotation, bl);
 			}
 		}
 
@@ -85,12 +85,12 @@ public class ModelElement {
 			ModelRotation modelRotation = null;
 			if (object.has("rotation")) {
 				JsonObject jsonObject = JsonHelper.getObject(object, "rotation");
-				Vector3f vector3f = this.deserializeVec3f(jsonObject, "origin");
-				vector3f.scale(0.0625F);
+				Vec3f vec3f = this.deserializeVec3f(jsonObject, "origin");
+				vec3f.scale(0.0625F);
 				Direction.Axis axis = this.deserializeAxis(jsonObject);
 				float f = this.deserializeRotationAngle(jsonObject);
 				boolean bl = JsonHelper.getBoolean(jsonObject, "rescale", false);
-				modelRotation = new ModelRotation(vector3f, axis, f, bl);
+				modelRotation = new ModelRotation(vec3f, axis, f, bl);
 			}
 
 			return modelRotation;
@@ -145,35 +145,35 @@ public class ModelElement {
 			}
 		}
 
-		private Vector3f deserializeTo(JsonObject object) {
-			Vector3f vector3f = this.deserializeVec3f(object, "to");
-			if (!(vector3f.getX() < -16.0F)
-				&& !(vector3f.getY() < -16.0F)
-				&& !(vector3f.getZ() < -16.0F)
-				&& !(vector3f.getX() > 32.0F)
-				&& !(vector3f.getY() > 32.0F)
-				&& !(vector3f.getZ() > 32.0F)) {
-				return vector3f;
+		private Vec3f deserializeTo(JsonObject object) {
+			Vec3f vec3f = this.deserializeVec3f(object, "to");
+			if (!(vec3f.getX() < -16.0F)
+				&& !(vec3f.getY() < -16.0F)
+				&& !(vec3f.getZ() < -16.0F)
+				&& !(vec3f.getX() > 32.0F)
+				&& !(vec3f.getY() > 32.0F)
+				&& !(vec3f.getZ() > 32.0F)) {
+				return vec3f;
 			} else {
-				throw new JsonParseException("'to' specifier exceeds the allowed boundaries: " + vector3f);
+				throw new JsonParseException("'to' specifier exceeds the allowed boundaries: " + vec3f);
 			}
 		}
 
-		private Vector3f deserializeFrom(JsonObject object) {
-			Vector3f vector3f = this.deserializeVec3f(object, "from");
-			if (!(vector3f.getX() < -16.0F)
-				&& !(vector3f.getY() < -16.0F)
-				&& !(vector3f.getZ() < -16.0F)
-				&& !(vector3f.getX() > 32.0F)
-				&& !(vector3f.getY() > 32.0F)
-				&& !(vector3f.getZ() > 32.0F)) {
-				return vector3f;
+		private Vec3f deserializeFrom(JsonObject object) {
+			Vec3f vec3f = this.deserializeVec3f(object, "from");
+			if (!(vec3f.getX() < -16.0F)
+				&& !(vec3f.getY() < -16.0F)
+				&& !(vec3f.getZ() < -16.0F)
+				&& !(vec3f.getX() > 32.0F)
+				&& !(vec3f.getY() > 32.0F)
+				&& !(vec3f.getZ() > 32.0F)) {
+				return vec3f;
 			} else {
-				throw new JsonParseException("'from' specifier exceeds the allowed boundaries: " + vector3f);
+				throw new JsonParseException("'from' specifier exceeds the allowed boundaries: " + vec3f);
 			}
 		}
 
-		private Vector3f deserializeVec3f(JsonObject object, String name) {
+		private Vec3f deserializeVec3f(JsonObject object, String name) {
 			JsonArray jsonArray = JsonHelper.getArray(object, name);
 			if (jsonArray.size() != 3) {
 				throw new JsonParseException("Expected 3 " + name + " values, found: " + jsonArray.size());
@@ -184,7 +184,7 @@ public class ModelElement {
 					fs[i] = JsonHelper.asFloat(jsonArray.get(i), name + "[" + i + "]");
 				}
 
-				return new Vector3f(fs[0], fs[1], fs[2]);
+				return new Vec3f(fs[0], fs[1], fs[2]);
 			}
 		}
 	}

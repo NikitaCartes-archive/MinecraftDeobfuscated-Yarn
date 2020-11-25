@@ -10,6 +10,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConcretePowderBlock;
 import net.minecraft.block.FallingBlock;
+import net.minecraft.block.LandingBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
@@ -147,8 +148,8 @@ public class FallingBlockEntity extends Entity {
 								}
 
 								if (this.world.setBlockState(blockPos, this.block, 3)) {
-									if (block instanceof FallingBlock) {
-										((FallingBlock)block).onLanding(this.world, blockPos, this.block, blockState, this);
+									if (block instanceof LandingBlock) {
+										((LandingBlock)block).onLanding(this.world, blockPos, this.block, blockState, this);
 									}
 
 									if (this.blockEntityData != null && this.block.hasBlockEntity()) {
@@ -168,13 +169,15 @@ public class FallingBlockEntity extends Entity {
 										}
 									}
 								} else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+									this.method_32752(block, blockPos);
 									this.dropItem(block);
 								}
 							} else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
+								this.method_32752(block, blockPos);
 								this.dropItem(block);
 							}
-						} else if (block instanceof FallingBlock) {
-							((FallingBlock)block).onDestroyedOnLanding(this.world, blockPos, this);
+						} else {
+							this.method_32752(block, blockPos);
 						}
 					}
 				} else if (!this.world.isClient
@@ -191,6 +194,12 @@ public class FallingBlockEntity extends Entity {
 			}
 
 			this.setVelocity(this.getVelocity().multiply(0.98));
+		}
+	}
+
+	public void method_32752(Block block, BlockPos blockPos) {
+		if (block instanceof LandingBlock) {
+			((LandingBlock)block).onDestroyedOnLanding(this.world, blockPos, this);
 		}
 	}
 

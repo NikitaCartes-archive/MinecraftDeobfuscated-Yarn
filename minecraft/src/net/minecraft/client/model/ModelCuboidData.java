@@ -5,14 +5,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.Vector2f;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public final class ModelCuboidData {
 	@Nullable
 	private final String name;
-	private final Vector3f offset;
-	private final Vector3f dimensions;
+	private final Vec3f offset;
+	private final Vec3f dimensions;
 	private final Dilation extraSize;
 	private final boolean mirror;
 	private final Vector2f textureUV;
@@ -35,8 +35,8 @@ public final class ModelCuboidData {
 	) {
 		this.name = name;
 		this.textureUV = new Vector2f(textureX, textureY);
-		this.offset = new Vector3f(offsetX, offsetY, offsetZ);
-		this.dimensions = new Vector3f(sizeX, sizeY, sizeZ);
+		this.offset = new Vec3f(offsetX, offsetY, offsetZ);
+		this.dimensions = new Vec3f(sizeX, sizeY, sizeZ);
 		this.extraSize = extra;
 		this.mirror = mirror;
 		this.textureScale = new Vector2f(textureScaleX, textureScaleY);

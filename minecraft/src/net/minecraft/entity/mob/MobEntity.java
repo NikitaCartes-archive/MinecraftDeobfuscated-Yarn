@@ -1172,11 +1172,6 @@ public abstract class MobEntity extends LivingEntity {
 
 	public void detachLeash(boolean sendPacket, boolean dropItem) {
 		if (this.holdingEntity != null) {
-			this.teleporting = false;
-			if (!(this.holdingEntity instanceof PlayerEntity)) {
-				this.holdingEntity.teleporting = false;
-			}
-
 			this.holdingEntity = null;
 			this.leashTag = null;
 			if (!this.world.isClient && dropItem) {
@@ -1209,11 +1204,6 @@ public abstract class MobEntity extends LivingEntity {
 	public void attachLeash(Entity entity, boolean sendPacket) {
 		this.holdingEntity = entity;
 		this.leashTag = null;
-		this.teleporting = true;
-		if (!(this.holdingEntity instanceof PlayerEntity)) {
-			this.holdingEntity.teleporting = true;
-		}
-
 		if (!this.world.isClient && sendPacket && this.world instanceof ServerWorld) {
 			((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityAttachS2CPacket(this, this.holdingEntity));
 		}

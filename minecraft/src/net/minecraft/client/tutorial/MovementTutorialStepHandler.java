@@ -6,7 +6,6 @@ import net.minecraft.client.input.Input;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class MovementTutorialStepHandler implements TutorialStepHandler {
@@ -67,7 +66,7 @@ public class MovementTutorialStepHandler implements TutorialStepHandler {
 		}
 
 		if (this.moveAroundCompletionTicks != -1 && this.lookAroundCompletionTicks != -1) {
-			if (this.manager.getGameMode() == GameMode.SURVIVAL) {
+			if (this.manager.isInSurvival()) {
 				this.manager.setStep(TutorialStep.FIND_TREE);
 			} else {
 				this.manager.setStep(TutorialStep.NONE);

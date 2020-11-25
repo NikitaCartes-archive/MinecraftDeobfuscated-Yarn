@@ -1,14 +1,12 @@
 package net.minecraft.client.render.entity.model;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableMap.Builder;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
@@ -30,7 +28,7 @@ public class EntityModels {
 	private static final Dilation ARMOR_DILATION = new Dilation(1.0F);
 	private static final Dilation HAT_DILATION = new Dilation(0.5F);
 
-	public static Map<EntityModelLayer, ModelPart> getModels() {
+	public static Map<EntityModelLayer, TexturedModelData> getModels() {
 		Builder<EntityModelLayer, TexturedModelData> builder = ImmutableMap.builder();
 		TexturedModelData texturedModelData = TexturedModelData.of(BipedEntityModel.getModelData(Dilation.NONE, 0.0F), 64, 64);
 		TexturedModelData texturedModelData2 = TexturedModelData.of(BipedEntityModel.getModelData(ARMOR_DILATION, 0.0F), 64, 32);
@@ -217,7 +215,7 @@ public class EntityModels {
 		if (!list.isEmpty()) {
 			throw new IllegalStateException("Missing layer definitions: " + list);
 		} else {
-			return Maps.transformValues(immutableMap, TexturedModelData::createModel);
+			return immutableMap;
 		}
 	}
 }

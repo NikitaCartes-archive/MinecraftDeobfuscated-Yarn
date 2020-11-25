@@ -5,10 +5,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.SalmonEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.SalmonEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, SalmonEntityModel<SalmonEntity>> {
@@ -32,11 +32,11 @@ public class SalmonEntityRenderer extends MobEntityRenderer<SalmonEntity, Salmon
 		}
 
 		float k = i * 4.3F * MathHelper.sin(j * 0.6F * f);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(k));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(k));
 		matrixStack.translate(0.0, 0.0, -0.4F);
 		if (!salmonEntity.isTouchingWater()) {
 			matrixStack.translate(0.2F, 0.1F, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 		}
 	}
 }

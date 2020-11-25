@@ -2285,7 +2285,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public Function<Identifier, Sprite> getSpriteAtlas(Identifier id) {
-		return this.bakedModelManager.method_24153(id)::getSprite;
+		return this.bakedModelManager.getAtlas(id)::getSprite;
 	}
 
 	public boolean is64Bit() {
@@ -2519,11 +2519,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return () -> new Format4ResourcePack((ResourcePack)packFactory.get());
 	}
 
-	public void resetMipmapLevels(int mipmapLevels) {
-		this.bakedModelManager.resetMipmapLevels(mipmapLevels);
+	public void setMipmapLevels(int mipmapLevels) {
+		this.bakedModelManager.setMipmapLevels(mipmapLevels);
 	}
 
-	public EntityModelLoader method_31974() {
+	public EntityModelLoader getEntityModelLoader() {
 		return this.entityModelLoader;
 	}
 

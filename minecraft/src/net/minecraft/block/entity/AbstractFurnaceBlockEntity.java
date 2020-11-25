@@ -481,7 +481,7 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 			++j;
 		}
 
-		ExperienceOrbEntity.method_31493(serverWorld, vec3d, j);
+		ExperienceOrbEntity.spawn(serverWorld, vec3d, j);
 	}
 
 	@Override

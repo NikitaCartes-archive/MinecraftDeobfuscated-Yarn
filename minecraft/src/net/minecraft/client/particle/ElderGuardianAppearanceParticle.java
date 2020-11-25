@@ -13,10 +13,10 @@ import net.minecraft.client.render.entity.ElderGuardianEntityRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.GuardianEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ElderGuardianAppearanceParticle extends Particle {
@@ -25,7 +25,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 
 	private ElderGuardianAppearanceParticle(ClientWorld world, double x, double y, double z) {
 		super(world, x, y, z);
-		this.model = new GuardianEntityModel(MinecraftClient.getInstance().method_31974().getModelPart(EntityModelLayers.ELDER_GUARDIAN));
+		this.model = new GuardianEntityModel(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.ELDER_GUARDIAN));
 		this.gravityStrength = 0.0F;
 		this.maxAge = 30;
 	}
@@ -41,7 +41,7 @@ public class ElderGuardianAppearanceParticle extends Particle {
 		float g = 0.05F + 0.5F * MathHelper.sin(f * (float) Math.PI);
 		MatrixStack matrixStack = new MatrixStack();
 		matrixStack.multiply(camera.getRotation());
-		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(150.0F * f - 60.0F));
+		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(150.0F * f - 60.0F));
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		matrixStack.translate(0.0, -1.101F, 1.5);
 		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();

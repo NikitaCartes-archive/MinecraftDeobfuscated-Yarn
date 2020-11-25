@@ -466,6 +466,24 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_CALCITE_HIT,
 		SoundEvents.BLOCK_CALCITE_FALL
 	);
+	public static final BlockSoundGroup DRIPSTONE_BLOCK = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_DRIPSTONE_BLOCK_BREAK,
+		SoundEvents.BLOCK_DRIPSTONE_BLOCK_STEP,
+		SoundEvents.BLOCK_DRIPSTONE_BLOCK_PLACE,
+		SoundEvents.BLOCK_DRIPSTONE_BLOCK_HIT,
+		SoundEvents.BLOCK_DRIPSTONE_BLOCK_FALL
+	);
+	public static final BlockSoundGroup POINTED_DRIPSTONE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_POINTED_DRIPSTONE_BREAK,
+		SoundEvents.BLOCK_POINTED_DRIPSTONE_STEP,
+		SoundEvents.BLOCK_POINTED_DRIPSTONE_PLACE,
+		SoundEvents.BLOCK_POINTED_DRIPSTONE_HIT,
+		SoundEvents.BLOCK_POINTED_DRIPSTONE_FALL
+	);
 	public static final BlockSoundGroup COPPER = new BlockSoundGroup(
 		1.0F,
 		1.0F,

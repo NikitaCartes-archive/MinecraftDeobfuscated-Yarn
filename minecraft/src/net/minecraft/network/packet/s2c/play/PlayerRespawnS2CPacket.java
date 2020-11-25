@@ -2,6 +2,7 @@ package net.minecraft.network.packet.s2c.play;
 
 import java.io.IOException;
 import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -18,6 +19,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	private RegistryKey<World> dimension;
 	private long sha256Seed;
 	private GameMode gameMode;
+	@Nullable
 	private GameMode previousGameMode;
 	private boolean debugWorld;
 	private boolean flatWorld;
@@ -27,7 +29,14 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 	}
 
 	public PlayerRespawnS2CPacket(
-		DimensionType dimensionType, RegistryKey<World> registryKey, long l, GameMode gameMode, GameMode previousGameMode, boolean bl, boolean bl2, boolean bl3
+		DimensionType dimensionType,
+		RegistryKey<World> registryKey,
+		long l,
+		GameMode gameMode,
+		@Nullable GameMode previousGameMode,
+		boolean bl,
+		boolean bl2,
+		boolean bl3
 	) {
 		this.field_25322 = dimensionType;
 		this.dimension = registryKey;
@@ -49,7 +58,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.dimension = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
 		this.sha256Seed = buf.readLong();
 		this.gameMode = GameMode.byId(buf.readUnsignedByte());
-		this.previousGameMode = GameMode.byId(buf.readUnsignedByte());
+		this.previousGameMode = GameMode.getOrNull(buf.readByte());
 		this.debugWorld = buf.readBoolean();
 		this.flatWorld = buf.readBoolean();
 		this.keepPlayerAttributes = buf.readBoolean();
@@ -61,7 +70,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeIdentifier(this.dimension.getValue());
 		buf.writeLong(this.sha256Seed);
 		buf.writeByte(this.gameMode.getId());
-		buf.writeByte(this.previousGameMode.getId());
+		buf.writeByte(GameMode.getId(this.previousGameMode));
 		buf.writeBoolean(this.debugWorld);
 		buf.writeBoolean(this.flatWorld);
 		buf.writeBoolean(this.keepPlayerAttributes);
@@ -87,6 +96,7 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		return this.gameMode;
 	}
 
+	@Nullable
 	@Environment(EnvType.CLIENT)
 	public GameMode getPreviousGameMode() {
 		return this.previousGameMode;

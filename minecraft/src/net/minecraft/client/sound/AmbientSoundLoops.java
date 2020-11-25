@@ -36,9 +36,9 @@ public class AmbientSoundLoops {
 		private final ClientPlayerEntity player;
 		private int transitionTimer;
 
-		public Underwater(ClientPlayerEntity clientPlayerEntity) {
+		public Underwater(ClientPlayerEntity player) {
 			super(SoundEvents.AMBIENT_UNDERWATER_LOOP, SoundCategory.AMBIENT);
-			this.player = clientPlayerEntity;
+			this.player = player;
 			this.repeat = true;
 			this.repeatDelay = 0;
 			this.volume = 1.0F;

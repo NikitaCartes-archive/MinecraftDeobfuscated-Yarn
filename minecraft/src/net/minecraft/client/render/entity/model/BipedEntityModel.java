@@ -189,35 +189,44 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 			this.rightArm.pivotY = 2.0F;
 		}
 
-		CrossbowPosing.method_29350(this.rightArm, this.leftArm, h);
+		if (this.rightArmPose != BipedEntityModel.ArmPose.SPYGLASS) {
+			CrossbowPosing.method_29350(this.rightArm, h, 1.0F);
+		}
+
+		if (this.leftArmPose != BipedEntityModel.ArmPose.SPYGLASS) {
+			CrossbowPosing.method_29350(this.leftArm, h, -1.0F);
+		}
+
 		if (this.leaningPitch > 0.0F) {
 			float l = f % 26.0F;
 			Arm arm = this.getPreferredArm(livingEntity);
 			float m = arm == Arm.RIGHT && this.handSwingProgress > 0.0F ? 0.0F : this.leaningPitch;
 			float n = arm == Arm.LEFT && this.handSwingProgress > 0.0F ? 0.0F : this.leaningPitch;
-			if (l < 14.0F) {
-				this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 0.0F);
-				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 0.0F);
-				this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float) Math.PI);
-				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
-				this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, (float) Math.PI + 1.8707964F * this.method_2807(l) / this.method_2807(14.0F));
-				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float) Math.PI - 1.8707964F * this.method_2807(l) / this.method_2807(14.0F));
-			} else if (l >= 14.0F && l < 22.0F) {
-				float o = (l - 14.0F) / 8.0F;
-				this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, (float) (Math.PI / 2) * o);
-				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, (float) (Math.PI / 2) * o);
-				this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float) Math.PI);
-				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
-				this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, 5.012389F - 1.8707964F * o);
-				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, 1.2707963F + 1.8707964F * o);
-			} else if (l >= 22.0F && l < 26.0F) {
-				float o = (l - 22.0F) / 4.0F;
-				this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * o);
-				this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * o);
-				this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float) Math.PI);
-				this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
-				this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, (float) Math.PI);
-				this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float) Math.PI);
+			if (!livingEntity.isUsingItem()) {
+				if (l < 14.0F) {
+					this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, 0.0F);
+					this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, 0.0F);
+					this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float) Math.PI);
+					this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
+					this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, (float) Math.PI + 1.8707964F * this.method_2807(l) / this.method_2807(14.0F));
+					this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float) Math.PI - 1.8707964F * this.method_2807(l) / this.method_2807(14.0F));
+				} else if (l >= 14.0F && l < 22.0F) {
+					float o = (l - 14.0F) / 8.0F;
+					this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, (float) (Math.PI / 2) * o);
+					this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, (float) (Math.PI / 2) * o);
+					this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float) Math.PI);
+					this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
+					this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, 5.012389F - 1.8707964F * o);
+					this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, 1.2707963F + 1.8707964F * o);
+				} else if (l >= 22.0F && l < 26.0F) {
+					float o = (l - 22.0F) / 4.0F;
+					this.leftArm.pitch = this.lerpAngle(n, this.leftArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * o);
+					this.rightArm.pitch = MathHelper.lerp(m, this.rightArm.pitch, (float) (Math.PI / 2) - (float) (Math.PI / 2) * o);
+					this.leftArm.yaw = this.lerpAngle(n, this.leftArm.yaw, (float) Math.PI);
+					this.rightArm.yaw = MathHelper.lerp(m, this.rightArm.yaw, (float) Math.PI);
+					this.leftArm.roll = this.lerpAngle(n, this.leftArm.roll, (float) Math.PI);
+					this.rightArm.roll = MathHelper.lerp(m, this.rightArm.roll, (float) Math.PI);
+				}
 			}
 
 			float o = 0.3F;
@@ -259,8 +268,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
 				break;
 			case SPYGLASS:
-				this.rightArm.pitch = MathHelper.clamp(this.head.pitch + CrossbowPosing.method_31978(this.rightArm), -2.4F, 3.3F);
-				this.rightArm.yaw = MathHelper.clamp(this.head.yaw + (float) (-Math.PI / 4), -1.1F, 0.0F);
+				this.rightArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (livingEntity.isInSneakingPose() ? (float) (Math.PI / 12) : 0.0F), -2.4F, 3.3F);
+				this.rightArm.yaw = this.head.yaw - (float) (Math.PI / 12);
 		}
 	}
 
@@ -294,8 +303,8 @@ public class BipedEntityModel<T extends LivingEntity> extends AnimalModel<T> imp
 				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, false);
 				break;
 			case SPYGLASS:
-				this.leftArm.pitch = CrossbowPosing.method_31978(this.leftArm);
-				this.leftArm.yaw = (float) (Math.PI / 4);
+				this.leftArm.pitch = MathHelper.clamp(this.head.pitch - 1.9198622F - (livingEntity.isInSneakingPose() ? (float) (Math.PI / 12) : 0.0F), -2.4F, 3.3F);
+				this.leftArm.yaw = this.head.yaw + (float) (Math.PI / 12);
 		}
 	}
 
