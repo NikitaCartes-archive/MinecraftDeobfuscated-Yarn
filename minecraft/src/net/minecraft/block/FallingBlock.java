@@ -14,7 +14,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
-public class FallingBlock extends Block {
+public class FallingBlock extends Block implements LandingBlock {
 	public FallingBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
@@ -54,12 +54,6 @@ public class FallingBlock extends Block {
 	public static boolean canFallThrough(BlockState state) {
 		Material material = state.getMaterial();
 		return state.isAir() || state.isIn(BlockTags.FIRE) || material.isLiquid() || material.isReplaceable();
-	}
-
-	public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
-	}
-
-	public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
 	}
 
 	@Environment(EnvType.CLIENT)

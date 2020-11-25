@@ -1,12 +1,16 @@
 package net.minecraft.block;
 
 import java.util.Map;
+import java.util.Random;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -69,5 +73,23 @@ public abstract class AbstractCauldronBlock extends Block {
 	@Override
 	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
 		return false;
+	}
+
+	@Override
+	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+		BlockPos blockPos = PointedDripstoneBlock.method_32767(world, pos);
+		if (blockPos != null) {
+			Fluid fluid = PointedDripstoneBlock.getDripFluid(world, blockPos);
+			if (fluid != Fluids.EMPTY && this.method_32765(fluid)) {
+				this.method_32764(state, world, pos, fluid);
+			}
+		}
+	}
+
+	protected boolean method_32765(Fluid fluid) {
+		return false;
+	}
+
+	protected void method_32764(BlockState blockState, World world, BlockPos blockPos, Fluid fluid) {
 	}
 }

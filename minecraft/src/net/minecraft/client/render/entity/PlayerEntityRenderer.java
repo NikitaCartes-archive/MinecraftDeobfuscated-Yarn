@@ -2,6 +2,7 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5697;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -12,7 +13,6 @@ import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
 import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
-import net.minecraft.client.render.entity.feature.HeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckStingersFeatureRenderer;
@@ -21,7 +21,6 @@ import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
@@ -37,6 +36,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
@@ -49,7 +49,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 				new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR))
 			)
 		);
-		this.addFeature(new HeldItemFeatureRenderer<>(this));
+		this.addFeature(new class_5697<>(this));
 		this.addFeature(new StuckArrowsFeatureRenderer<>(ctx, this));
 		this.addFeature(new Deadmau5FeatureRenderer(this));
 		this.addFeature(new CapeFeatureRenderer(this));
@@ -200,7 +200,7 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			float j = (float)abstractClientPlayerEntity.getRoll() + h;
 			float k = MathHelper.clamp(j * j / 100.0F, 0.0F, 1.0F);
 			if (!abstractClientPlayerEntity.isUsingRiptide()) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(k * (-90.0F - abstractClientPlayerEntity.pitch)));
+				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(k * (-90.0F - abstractClientPlayerEntity.pitch)));
 			}
 
 			Vec3d vec3d = abstractClientPlayerEntity.getRotationVec(h);
@@ -210,13 +210,13 @@ public class PlayerEntityRenderer extends LivingEntityRenderer<AbstractClientPla
 			if (d > 0.0 && e > 0.0) {
 				double l = (vec3d2.x * vec3d.x + vec3d2.z * vec3d.z) / Math.sqrt(d * e);
 				double m = vec3d2.x * vec3d.z - vec3d2.z * vec3d.x;
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion((float)(Math.signum(m) * Math.acos(l))));
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float)(Math.signum(m) * Math.acos(l))));
 			}
 		} else if (i > 0.0F) {
 			super.setupTransforms(abstractClientPlayerEntity, matrixStack, f, g, h);
 			float jx = abstractClientPlayerEntity.isTouchingWater() ? -90.0F - abstractClientPlayerEntity.pitch : -90.0F;
 			float kx = MathHelper.lerp(i, 0.0F, jx);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(kx));
+			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(kx));
 			if (abstractClientPlayerEntity.isInSwimmingPose()) {
 				matrixStack.translate(0.0, -1.0, 0.3F);
 			}

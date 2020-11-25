@@ -317,7 +317,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 
 	protected void dropExperience(ServerWorld world, BlockPos pos, int size) {
 		if (world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
-			ExperienceOrbEntity.method_31493(world, Vec3d.ofCenter(pos), size);
+			ExperienceOrbEntity.spawn(world, Vec3d.ofCenter(pos), size);
 		}
 	}
 

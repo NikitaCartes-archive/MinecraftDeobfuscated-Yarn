@@ -443,7 +443,7 @@ public class Box {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}
 
-	public static Box method_30048(double d, double e, double f) {
-		return new Box(-d / 2.0, -e / 2.0, -f / 2.0, d / 2.0, e / 2.0, f / 2.0);
+	public static Box of(double x, double y, double z) {
+		return new Box(-x / 2.0, -y / 2.0, -z / 2.0, x / 2.0, y / 2.0, z / 2.0);
 	}
 }

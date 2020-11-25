@@ -53,6 +53,7 @@ public class Models {
 	public static final Model TEMPLATE_ORIENTABLE_TRAPDOOR_TOP = block("template_orientable_trapdoor_top", "_top", TextureKey.TEXTURE);
 	public static final Model TEMPLATE_ORIENTABLE_TRAPDOOR_BOTTOM = block("template_orientable_trapdoor_bottom", "_bottom", TextureKey.TEXTURE);
 	public static final Model TEMPLATE_ORIENTABLE_TRAPDOOR_OPEN = block("template_orientable_trapdoor_open", "_open", TextureKey.TEXTURE);
+	public static final Model POINTED_DRIPSTONE = block("pointed_dripstone", TextureKey.CROSS);
 	public static final Model CROSS = block("cross", TextureKey.CROSS);
 	public static final Model TINTED_CROSS = block("tinted_cross", TextureKey.CROSS);
 	public static final Model FLOWER_POT_CROSS = block("flower_pot_cross", TextureKey.PLANT);

@@ -26,7 +26,7 @@ public class ExperienceOrbEntity extends Entity {
 	private int orbAge;
 	private int health = 5;
 	private int amount;
-	private int field_27009 = 1;
+	private int pickingCount = 1;
 	private PlayerEntity target;
 
 	public ExperienceOrbEntity(World world, double x, double y, double z, int amount) {
@@ -116,31 +116,31 @@ public class ExperienceOrbEntity extends Entity {
 
 		if (this.world instanceof ServerWorld) {
 			for (ExperienceOrbEntity experienceOrbEntity : this.world
-				.getEntitiesByType(class_5575.method_31795(ExperienceOrbEntity.class), this.getBoundingBox().expand(0.5), this::method_31494)) {
-				this.method_31497(experienceOrbEntity);
+				.getEntitiesByType(class_5575.method_31795(ExperienceOrbEntity.class), this.getBoundingBox().expand(0.5), this::isMergeable)) {
+				this.merge(experienceOrbEntity);
 			}
 		}
 	}
 
-	public static void method_31493(ServerWorld serverWorld, Vec3d vec3d, int i) {
-		while (i > 0) {
-			int j = roundToOrbSize(i);
-			i -= j;
-			if (!method_31496(serverWorld, vec3d, j)) {
-				serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, vec3d.getX(), vec3d.getY(), vec3d.getZ(), j));
+	public static void spawn(ServerWorld world, Vec3d pos, int amount) {
+		while (amount > 0) {
+			int i = roundToOrbSize(amount);
+			amount -= i;
+			if (!wasMergedIntoExistingOrb(world, pos, i)) {
+				world.spawnEntity(new ExperienceOrbEntity(world, pos.getX(), pos.getY(), pos.getZ(), i));
 			}
 		}
 	}
 
-	private static boolean method_31496(ServerWorld serverWorld, Vec3d vec3d, int i) {
-		Box box = Box.method_30048(1.0, 1.0, 1.0).offset(vec3d);
-		int j = serverWorld.getRandom().nextInt(40);
-		List<ExperienceOrbEntity> list = serverWorld.getEntitiesByType(
-			class_5575.method_31795(ExperienceOrbEntity.class), box, experienceOrbEntityx -> method_31495(experienceOrbEntityx, j, i)
+	private static boolean wasMergedIntoExistingOrb(ServerWorld world, Vec3d pos, int amount) {
+		Box box = Box.of(1.0, 1.0, 1.0).offset(pos);
+		int i = world.getRandom().nextInt(40);
+		List<ExperienceOrbEntity> list = world.getEntitiesByType(
+			class_5575.method_31795(ExperienceOrbEntity.class), box, experienceOrbEntityx -> isMergeable(experienceOrbEntityx, i, amount)
 		);
 		if (!list.isEmpty()) {
 			ExperienceOrbEntity experienceOrbEntity = (ExperienceOrbEntity)list.get(0);
-			experienceOrbEntity.field_27009++;
+			experienceOrbEntity.pickingCount++;
 			experienceOrbEntity.orbAge = 0;
 			return true;
 		} else {
@@ -148,18 +148,18 @@ public class ExperienceOrbEntity extends Entity {
 		}
 	}
 
-	private boolean method_31494(ExperienceOrbEntity experienceOrbEntity) {
-		return experienceOrbEntity != this && method_31495(experienceOrbEntity, this.getEntityId(), this.amount);
+	private boolean isMergeable(ExperienceOrbEntity other) {
+		return other != this && isMergeable(other, this.getEntityId(), this.amount);
 	}
 
-	private static boolean method_31495(ExperienceOrbEntity experienceOrbEntity, int i, int j) {
-		return !experienceOrbEntity.isRemoved() && (experienceOrbEntity.getEntityId() - i) % 40 == 0 && experienceOrbEntity.amount == j;
+	private static boolean isMergeable(ExperienceOrbEntity orb, int seed, int amount) {
+		return !orb.isRemoved() && (orb.getEntityId() - seed) % 40 == 0 && orb.amount == amount;
 	}
 
-	private void method_31497(ExperienceOrbEntity experienceOrbEntity) {
-		this.field_27009 = this.field_27009 + experienceOrbEntity.field_27009;
-		this.orbAge = Math.min(this.orbAge, experienceOrbEntity.orbAge);
-		experienceOrbEntity.discard();
+	private void merge(ExperienceOrbEntity other) {
+		this.pickingCount = this.pickingCount + other.pickingCount;
+		this.orbAge = Math.min(this.orbAge, other.orbAge);
+		other.discard();
 	}
 
 	private void applyWaterMovement() {
@@ -191,7 +191,7 @@ public class ExperienceOrbEntity extends Entity {
 		tag.putShort("Health", (short)this.health);
 		tag.putShort("Age", (short)this.orbAge);
 		tag.putShort("Value", (short)this.amount);
-		tag.putInt("Count", this.field_27009);
+		tag.putInt("Count", this.pickingCount);
 	}
 
 	@Override
@@ -199,7 +199,7 @@ public class ExperienceOrbEntity extends Entity {
 		this.health = tag.getShort("Health");
 		this.orbAge = tag.getShort("Age");
 		this.amount = tag.getShort("Value");
-		this.field_27009 = Math.max(tag.getInt("Count"), 1);
+		this.pickingCount = Math.max(tag.getInt("Count"), 1);
 	}
 
 	@Override
@@ -222,8 +222,8 @@ public class ExperienceOrbEntity extends Entity {
 					player.addExperience(this.amount);
 				}
 
-				this.field_27009--;
-				if (this.field_27009 == 0) {
+				this.pickingCount--;
+				if (this.pickingCount == 0) {
 					this.discard();
 				}
 			}

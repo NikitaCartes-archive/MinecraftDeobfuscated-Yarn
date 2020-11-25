@@ -28,6 +28,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 
 public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	public static final IntProperty CANDLES = Properties.CANDLES;
@@ -149,5 +150,10 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	@Override
 	protected Iterable<Vec3d> getParticleOffsets(BlockState state) {
 		return (Iterable<Vec3d>)CANDLES_TO_PARTICLE_OFFSETS.get(((Integer)state.get(CANDLES)).intValue());
+	}
+
+	@Override
+	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
+		return Block.sideCoversSmallSquare(world, pos.down(), Direction.UP);
 	}
 }

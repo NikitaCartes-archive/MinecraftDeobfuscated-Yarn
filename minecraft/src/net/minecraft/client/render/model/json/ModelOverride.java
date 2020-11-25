@@ -35,12 +35,12 @@ public class ModelOverride {
 		return this.modelId;
 	}
 
-	boolean matches(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity) {
+	boolean matches(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int i) {
 		Item item = stack.getItem();
 
 		for (Entry<Identifier, Float> entry : this.predicateToThresholds.entrySet()) {
 			ModelPredicateProvider modelPredicateProvider = ModelPredicateProviderRegistry.get(item, (Identifier)entry.getKey());
-			if (modelPredicateProvider == null || modelPredicateProvider.call(stack, world, entity) < (Float)entry.getValue()) {
+			if (modelPredicateProvider == null || modelPredicateProvider.call(stack, world, entity, i) < (Float)entry.getValue()) {
 				return false;
 			}
 		}

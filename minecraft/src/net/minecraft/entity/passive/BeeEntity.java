@@ -581,7 +581,6 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			Entity entity = source.getAttacker();
 			if (!this.world.isClient) {
 				this.pollinateGoal.cancel();
 			}

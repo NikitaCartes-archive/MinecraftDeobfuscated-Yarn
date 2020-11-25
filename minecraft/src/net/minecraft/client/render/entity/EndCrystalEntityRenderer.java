@@ -15,12 +15,12 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
@@ -62,18 +62,18 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 			this.bottom.render(matrixStack, vertexConsumer, i, k);
 		}
 
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
 		matrixStack.translate(0.0, (double)(1.5F + h / 2.0F), 0.0);
-		matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
+		matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
 		this.frame.render(matrixStack, vertexConsumer, i, k);
 		float l = 0.875F;
 		matrixStack.scale(0.875F, 0.875F, 0.875F);
-		matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
+		matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
 		this.frame.render(matrixStack, vertexConsumer, i, k);
 		matrixStack.scale(0.875F, 0.875F, 0.875F);
-		matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
+		matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0F, SINE_45_DEGREES), 60.0F, true));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
 		this.core.render(matrixStack, vertexConsumer, i, k);
 		matrixStack.pop();
 		matrixStack.pop();

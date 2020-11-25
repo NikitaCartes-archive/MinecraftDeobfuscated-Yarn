@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.GlAllocationUtils;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +37,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	private boolean field_21595;
 	private boolean building;
 	@Nullable
-	private Vector3f[] field_27348;
+	private Vec3f[] field_27348;
 	private float field_27349 = Float.NaN;
 	private float field_27350 = Float.NaN;
 	private float field_27351 = Float.NaN;
@@ -142,13 +142,13 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		}
 	}
 
-	private Vector3f[] method_31954() {
+	private Vec3f[] method_31954() {
 		FloatBuffer floatBuffer = this.buffer.asFloatBuffer();
 		int i = this.buildStart / 4;
 		int j = this.format.getVertexSizeInteger();
 		int k = j * this.drawMode.field_27385;
 		int l = this.vertexCount / this.drawMode.field_27385;
-		Vector3f[] vector3fs = new Vector3f[l];
+		Vec3f[] vec3fs = new Vec3f[l];
 
 		for (int m = 0; m < l; m++) {
 			float f = floatBuffer.get(i + m * k + 0);
@@ -160,10 +160,10 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 			float q = (f + n) / 2.0F;
 			float r = (g + o) / 2.0F;
 			float s = (h + p) / 2.0F;
-			vector3fs[m] = new Vector3f(q, r, s);
+			vec3fs[m] = new Vec3f(q, r, s);
 		}
 
-		return vector3fs;
+		return vec3fs;
 	}
 
 	private void method_31950(VertexFormat.IntType intType) {
@@ -434,15 +434,15 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		private final VertexFormat.DrawMode field_27358;
 		private final int field_27359;
 		@Nullable
-		private final Vector3f[] field_27360;
+		private final Vec3f[] field_27360;
 		private final float field_27361;
 		private final float field_27362;
 		private final float field_27363;
 
-		private class_5594(VertexFormat.DrawMode drawMode, int i, @Nullable Vector3f[] vector3fs, float f, float g, float h) {
+		private class_5594(VertexFormat.DrawMode drawMode, int i, @Nullable Vec3f[] vec3fs, float f, float g, float h) {
 			this.field_27358 = drawMode;
 			this.field_27359 = i;
-			this.field_27360 = vector3fs;
+			this.field_27360 = vec3fs;
 			this.field_27361 = f;
 			this.field_27362 = g;
 			this.field_27363 = h;

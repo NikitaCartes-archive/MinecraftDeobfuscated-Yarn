@@ -543,7 +543,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 		if (this.world instanceof ServerWorld) {
 			if (this.ticksSinceDeath > 150 && this.ticksSinceDeath % 5 == 0 && bl) {
-				ExperienceOrbEntity.method_31493((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.08F));
+				ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.08F));
 			}
 
 			if (this.ticksSinceDeath == 1 && !this.isSilent()) {
@@ -556,7 +556,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 		this.bodyYaw = this.yaw;
 		if (this.ticksSinceDeath == 200 && this.world instanceof ServerWorld) {
 			if (bl) {
-				ExperienceOrbEntity.method_31493((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.2F));
+				ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.2F));
 			}
 
 			if (this.fight != null) {

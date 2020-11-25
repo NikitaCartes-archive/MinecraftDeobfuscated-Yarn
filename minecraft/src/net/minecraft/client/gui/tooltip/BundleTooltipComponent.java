@@ -43,9 +43,10 @@ public class BundleTooltipComponent implements TooltipComponent {
 		int j = 0;
 		int k = this.getDisplayColumns();
 
-		for (ItemStack itemStack : this.inventory) {
+		for (int l = 0; l < this.inventory.size(); l++) {
+			ItemStack itemStack = this.inventory.get(l);
 			this.drawSlot(matrices, i + x - 1, j + y - 1, z, textureManager, false);
-			itemRenderer.renderInGuiWithOverrides(itemStack, x + i, y + j);
+			itemRenderer.method_32797(itemStack, x + i, y + j, l);
 			itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, x + i, y + j);
 			i += 18;
 			if (i >= 18 * k) {

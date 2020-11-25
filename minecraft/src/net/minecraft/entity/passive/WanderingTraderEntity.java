@@ -51,7 +51,6 @@ public class WanderingTraderEntity extends MerchantEntity {
 
 	public WanderingTraderEntity(EntityType<? extends WanderingTraderEntity> entityType, World world) {
 		super(entityType, world);
-		this.teleporting = true;
 	}
 
 	@Override

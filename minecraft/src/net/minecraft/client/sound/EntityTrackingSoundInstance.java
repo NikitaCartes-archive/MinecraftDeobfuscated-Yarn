@@ -10,12 +10,12 @@ import net.minecraft.sound.SoundEvent;
 public class EntityTrackingSoundInstance extends MovingSoundInstance {
 	private final Entity entity;
 
-	public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory soundCategory, Entity entity) {
-		this(sound, soundCategory, 1.0F, 1.0F, entity);
+	public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, Entity entity) {
+		this(sound, category, 1.0F, 1.0F, entity);
 	}
 
-	public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory soundCategory, float volume, float pitch, Entity entity) {
-		super(sound, soundCategory);
+	public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Entity entity) {
+		super(sound, category);
 		this.volume = volume;
 		this.pitch = pitch;
 		this.entity = entity;

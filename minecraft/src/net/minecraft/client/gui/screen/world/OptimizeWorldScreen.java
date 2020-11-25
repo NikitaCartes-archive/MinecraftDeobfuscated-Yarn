@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class OptimizeWorldScreen extends Screen {
-	private static final Logger field_25482 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Object2IntMap<RegistryKey<World>> DIMENSION_COLORS = Util.make(
 		new Object2IntOpenCustomHashMap<>(Util.identityHashStrategy()), object2IntOpenCustomHashMap -> {
 			object2IntOpenCustomHashMap.put(World.OVERWORLD, -13408734);
@@ -54,7 +54,7 @@ public class OptimizeWorldScreen extends Screen {
 			ImmutableSet<RegistryKey<World>> immutableSet = saveProperties.getGeneratorOptions().getWorlds();
 			return new OptimizeWorldScreen(booleanConsumer, dataFixer, session, saveProperties.getLevelInfo(), bl, immutableSet);
 		} catch (Exception var22) {
-			field_25482.warn("Failed to load datapacks, can't optimize world", (Throwable)var22);
+			LOGGER.warn("Failed to load datapacks, can't optimize world", (Throwable)var22);
 			return null;
 		}
 	}

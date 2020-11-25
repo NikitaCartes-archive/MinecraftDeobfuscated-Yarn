@@ -6,10 +6,10 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -96,10 +96,10 @@ public class LightmapTextureManager implements AutoCloseable {
 					i = 0.0F;
 				}
 
-				Vector3f vector3f = new Vector3f(f, f, 1.0F);
-				vector3f.lerp(new Vector3f(1.0F, 1.0F, 1.0F), 0.35F);
+				Vec3f vec3f = new Vec3f(f, f, 1.0F);
+				vec3f.lerp(new Vec3f(1.0F, 1.0F, 1.0F), 0.35F);
 				float j = this.field_21528 + 1.5F;
-				Vector3f vector3f2 = new Vector3f();
+				Vec3f vec3f2 = new Vec3f();
 
 				for (int k = 0; k < 16; k++) {
 					for (int l = 0; l < 16; l++) {
@@ -107,44 +107,44 @@ public class LightmapTextureManager implements AutoCloseable {
 						float n = this.getBrightness(clientWorld, l) * j;
 						float p = n * ((n * 0.6F + 0.4F) * 0.6F + 0.4F);
 						float q = n * (n * n * 0.6F + 0.4F);
-						vector3f2.set(n, p, q);
+						vec3f2.set(n, p, q);
 						if (clientWorld.getSkyProperties().shouldBrightenLighting()) {
-							vector3f2.lerp(new Vector3f(0.99F, 1.12F, 1.0F), 0.25F);
+							vec3f2.lerp(new Vec3f(0.99F, 1.12F, 1.0F), 0.25F);
 						} else {
-							Vector3f vector3f3 = vector3f.copy();
-							vector3f3.scale(m);
-							vector3f2.add(vector3f3);
-							vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
+							Vec3f vec3f3 = vec3f.copy();
+							vec3f3.scale(m);
+							vec3f2.add(vec3f3);
+							vec3f2.lerp(new Vec3f(0.75F, 0.75F, 0.75F), 0.04F);
 							if (this.renderer.getSkyDarkness(delta) > 0.0F) {
 								float r = this.renderer.getSkyDarkness(delta);
-								Vector3f vector3f4 = vector3f2.copy();
-								vector3f4.multiplyComponentwise(0.7F, 0.6F, 0.6F);
-								vector3f2.lerp(vector3f4, r);
+								Vec3f vec3f4 = vec3f2.copy();
+								vec3f4.multiplyComponentwise(0.7F, 0.6F, 0.6F);
+								vec3f2.lerp(vec3f4, r);
 							}
 						}
 
-						vector3f2.clamp(0.0F, 1.0F);
+						vec3f2.clamp(0.0F, 1.0F);
 						if (i > 0.0F) {
-							float s = Math.max(vector3f2.getX(), Math.max(vector3f2.getY(), vector3f2.getZ()));
+							float s = Math.max(vec3f2.getX(), Math.max(vec3f2.getY(), vec3f2.getZ()));
 							if (s < 1.0F) {
 								float r = 1.0F / s;
-								Vector3f vector3f4 = vector3f2.copy();
-								vector3f4.scale(r);
-								vector3f2.lerp(vector3f4, i);
+								Vec3f vec3f4 = vec3f2.copy();
+								vec3f4.scale(r);
+								vec3f2.lerp(vec3f4, i);
 							}
 						}
 
 						float s = (float)this.client.options.gamma;
-						Vector3f vector3f5 = vector3f2.copy();
-						vector3f5.modify(this::method_23795);
-						vector3f2.lerp(vector3f5, s);
-						vector3f2.lerp(new Vector3f(0.75F, 0.75F, 0.75F), 0.04F);
-						vector3f2.clamp(0.0F, 1.0F);
-						vector3f2.scale(255.0F);
+						Vec3f vec3f5 = vec3f2.copy();
+						vec3f5.modify(this::method_23795);
+						vec3f2.lerp(vec3f5, s);
+						vec3f2.lerp(new Vec3f(0.75F, 0.75F, 0.75F), 0.04F);
+						vec3f2.clamp(0.0F, 1.0F);
+						vec3f2.scale(255.0F);
 						int t = 255;
-						int u = (int)vector3f2.getX();
-						int v = (int)vector3f2.getY();
-						int w = (int)vector3f2.getZ();
+						int u = (int)vec3f2.getX();
+						int v = (int)vec3f2.getY();
+						int w = (int)vec3f2.getZ();
 						this.image.setPixelColor(l, k, 0xFF000000 | w << 16 | v << 8 | u);
 					}
 				}

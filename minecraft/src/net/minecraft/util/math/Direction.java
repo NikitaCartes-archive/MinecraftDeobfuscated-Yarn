@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
@@ -108,23 +107,23 @@ public enum Direction implements StringIdentifiable {
 
 	@Environment(EnvType.CLIENT)
 	public Quaternion getRotationQuaternion() {
-		Quaternion quaternion = Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F);
+		Quaternion quaternion = Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F);
 		switch (this) {
 			case DOWN:
-				return Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F);
+				return Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F);
 			case UP:
 				return Quaternion.IDENTITY.copy();
 			case NORTH:
-				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+				quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 				return quaternion;
 			case SOUTH:
 				return quaternion;
 			case WEST:
-				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 				return quaternion;
 			case EAST:
 			default:
-				quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
+				quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
 				return quaternion;
 		}
 	}
@@ -139,6 +138,18 @@ public enum Direction implements StringIdentifiable {
 
 	public Direction.AxisDirection getDirection() {
 		return this.direction;
+	}
+
+	public static Direction method_32801(Entity entity, Direction.Axis axis) {
+		switch (axis) {
+			case X:
+				return EAST.method_30928(entity.getYaw(1.0F)) ? EAST : WEST;
+			case Z:
+				return SOUTH.method_30928(entity.getYaw(1.0F)) ? SOUTH : NORTH;
+			case Y:
+			default:
+				return entity.getPitch(1.0F) < 0.0F ? UP : DOWN;
+		}
 	}
 
 	public Direction getOpposite() {
@@ -188,8 +199,8 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Vector3f getUnitVector() {
-		return new Vector3f((float)this.getOffsetX(), (float)this.getOffsetY(), (float)this.getOffsetZ());
+	public Vec3f getUnitVector() {
+		return new Vec3f((float)this.getOffsetX(), (float)this.getOffsetY(), (float)this.getOffsetZ());
 	}
 
 	public String getName() {
@@ -227,11 +238,11 @@ public enum Direction implements StringIdentifiable {
 		switch (axis) {
 			case X:
 				return direction == Direction.AxisDirection.POSITIVE ? EAST : WEST;
-			case Y:
-				return direction == Direction.AxisDirection.POSITIVE ? UP : DOWN;
 			case Z:
 			default:
 				return direction == Direction.AxisDirection.POSITIVE ? SOUTH : NORTH;
+			case Y:
+				return direction == Direction.AxisDirection.POSITIVE ? UP : DOWN;
 		}
 	}
 

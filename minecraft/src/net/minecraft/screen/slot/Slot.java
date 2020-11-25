@@ -70,7 +70,7 @@ public class Slot {
 	}
 
 	public int getMaxItemCount(ItemStack stack) {
-		return this.getMaxItemCount();
+		return Math.min(this.getMaxItemCount(), stack.getMaxCount());
 	}
 
 	@Nullable
@@ -90,5 +90,52 @@ public class Slot {
 	@Environment(EnvType.CLIENT)
 	public boolean doDrawHoveringEffect() {
 		return true;
+	}
+
+	public ItemStack method_32753(int i, int j, PlayerEntity playerEntity) {
+		if (!this.canTakeItems(playerEntity)) {
+			return ItemStack.EMPTY;
+		} else if (!this.method_32754(playerEntity) && j < this.getStack().getCount()) {
+			return ItemStack.EMPTY;
+		} else {
+			if (!this.method_32754(playerEntity)) {
+				i = this.getStack().getCount();
+			}
+
+			i = Math.min(i, j);
+			ItemStack itemStack = this.takeStack(i);
+			if (this.getStack().isEmpty()) {
+				this.setStack(ItemStack.EMPTY);
+			}
+
+			this.onTakeItem(playerEntity, itemStack);
+			return itemStack;
+		}
+	}
+
+	public ItemStack method_32756(ItemStack itemStack) {
+		return this.method_32755(itemStack, itemStack.getCount());
+	}
+
+	public ItemStack method_32755(ItemStack itemStack, int i) {
+		if (!itemStack.isEmpty() && this.canInsert(itemStack)) {
+			ItemStack itemStack2 = this.getStack();
+			int j = Math.min(Math.min(i, itemStack.getCount()), this.getMaxItemCount(itemStack) - itemStack2.getCount());
+			if (itemStack2.isEmpty()) {
+				this.setStack(itemStack.split(j));
+			} else if (ItemStack.method_31577(itemStack2, itemStack)) {
+				itemStack.decrement(j);
+				itemStack2.increment(j);
+				this.setStack(itemStack2);
+			}
+
+			return itemStack;
+		} else {
+			return itemStack;
+		}
+	}
+
+	public boolean method_32754(PlayerEntity playerEntity) {
+		return this.canTakeItems(playerEntity) && this.canInsert(this.getStack());
 	}
 }

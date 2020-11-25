@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class Vector4f {
@@ -23,7 +24,7 @@ public class Vector4f {
 		this.w = w;
 	}
 
-	public Vector4f(Vector3f vector) {
+	public Vector4f(Vec3f vector) {
 		this(vector.getX(), vector.getY(), vector.getZ(), 1.0F);
 	}
 
@@ -67,7 +68,7 @@ public class Vector4f {
 		return this.w;
 	}
 
-	public void multiplyComponentwise(Vector3f vector) {
+	public void multiplyComponentwise(Vec3f vector) {
 		this.x = this.x * vector.getX();
 		this.y = this.y * vector.getY();
 		this.z = this.z * vector.getZ();

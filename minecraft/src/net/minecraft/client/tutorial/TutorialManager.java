@@ -116,8 +116,11 @@ public class TutorialManager {
 		return this.client;
 	}
 
-	public GameMode getGameMode() {
-		return this.client.interactionManager == null ? GameMode.NOT_SET : this.client.interactionManager.getCurrentGameMode();
+	/**
+	 * Returns whether the current game mode of the client is {@linkplain net.minecraft.world.GameMode#SURVIVAL survival}.
+	 */
+	public boolean isInSurvival() {
+		return this.client.interactionManager == null ? false : this.client.interactionManager.getCurrentGameMode() == GameMode.SURVIVAL;
 	}
 
 	public static Text getKeybindName(String string) {

@@ -4,6 +4,8 @@ import java.util.Map;
 import java.util.function.Predicate;
 import net.minecraft.block.cauldron.CauldronBehavior;
 import net.minecraft.entity.Entity;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.IntProperty;
@@ -22,6 +24,15 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 		super(settings, behaviorMap);
 		this.precipitationPredicate = precipitationPredicate;
 		this.setDefaultState(this.stateManager.getDefaultState().with(LEVEL, Integer.valueOf(1)));
+	}
+
+	public boolean method_32766(BlockState blockState) {
+		return (Integer)blockState.get(LEVEL) == 3;
+	}
+
+	@Override
+	protected boolean method_32765(Fluid fluid) {
+		return fluid == Fluids.WATER && this.precipitationPredicate == RAIN_PREDICATE;
 	}
 
 	@Override
@@ -57,5 +68,13 @@ public class LeveledCauldronBlock extends AbstractCauldronBlock {
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
 		builder.add(LEVEL);
+	}
+
+	@Override
+	protected void method_32764(BlockState blockState, World world, BlockPos blockPos, Fluid fluid) {
+		if (!this.method_32766(blockState)) {
+			world.setBlockState(blockPos, blockState.with(LEVEL, Integer.valueOf((Integer)blockState.get(LEVEL) + 1)));
+			world.syncWorldEvent(1047, blockPos, 0);
+		}
 	}
 }

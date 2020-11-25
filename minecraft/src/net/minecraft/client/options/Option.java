@@ -283,7 +283,7 @@ public abstract class Option {
 			(gameOptions, option, graphicsMode) -> {
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
 				VideoWarningManager videoWarningManager = minecraftClient.getVideoWarningManager();
-				if (graphicsMode == GraphicsMode.FANCY && videoWarningManager.canWarn()) {
+				if (graphicsMode == GraphicsMode.FABULOUS && videoWarningManager.canWarn()) {
 					videoWarningManager.scheduleWarning();
 				} else {
 					gameOptions.graphicsMode = graphicsMode;

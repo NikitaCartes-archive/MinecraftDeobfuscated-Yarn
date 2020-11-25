@@ -11,7 +11,6 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
@@ -28,7 +27,7 @@ public class CraftPlanksTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.manager.getGameMode() != GameMode.SURVIVAL) {
+		if (!this.manager.isInSurvival()) {
 			this.manager.setStep(TutorialStep.NONE);
 		} else {
 			if (this.ticks == 1) {

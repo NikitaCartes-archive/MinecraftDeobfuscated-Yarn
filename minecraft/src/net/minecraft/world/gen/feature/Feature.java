@@ -5,6 +5,7 @@ import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
@@ -111,7 +112,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public abstract boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos, FC config);
 
 	protected static boolean isStone(BlockState state) {
-		return state.isOf(Blocks.STONE) || state.isOf(Blocks.GRANITE) || state.isOf(Blocks.DIORITE) || state.isOf(Blocks.ANDESITE);
+		return state.isIn(BlockTags.BASE_STONE_OVERWORLD);
 	}
 
 	public static boolean isSoil(BlockState state) {

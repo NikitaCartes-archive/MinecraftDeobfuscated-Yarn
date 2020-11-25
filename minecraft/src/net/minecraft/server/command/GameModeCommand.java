@@ -19,16 +19,14 @@ public class GameModeCommand {
 			.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
 
 		for (GameMode gameMode : GameMode.values()) {
-			if (gameMode != GameMode.NOT_SET) {
-				literalArgumentBuilder.then(
-					CommandManager.literal(gameMode.getName())
-						.executes(commandContext -> execute(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
-						.then(
-							CommandManager.argument("target", EntityArgumentType.players())
-								.executes(commandContext -> execute(commandContext, EntityArgumentType.getPlayers(commandContext, "target"), gameMode))
-						)
-				);
-			}
+			literalArgumentBuilder.then(
+				CommandManager.literal(gameMode.getName())
+					.executes(commandContext -> execute(commandContext, Collections.singleton(commandContext.getSource().getPlayer()), gameMode))
+					.then(
+						CommandManager.argument("target", EntityArgumentType.players())
+							.executes(commandContext -> execute(commandContext, EntityArgumentType.getPlayers(commandContext, "target"), gameMode))
+					)
+			);
 		}
 
 		dispatcher.register(literalArgumentBuilder);
@@ -51,8 +49,7 @@ public class GameModeCommand {
 		int i = 0;
 
 		for (ServerPlayerEntity serverPlayerEntity : targets) {
-			if (serverPlayerEntity.interactionManager.getGameMode() != gameMode) {
-				serverPlayerEntity.setGameMode(gameMode);
+			if (serverPlayerEntity.changeGameMode(gameMode)) {
 				setGameMode(context.getSource(), serverPlayerEntity, gameMode);
 				i++;
 			}

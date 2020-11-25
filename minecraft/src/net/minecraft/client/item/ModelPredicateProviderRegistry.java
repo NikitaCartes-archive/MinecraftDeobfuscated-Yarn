@@ -36,8 +36,8 @@ public class ModelPredicateProviderRegistry {
 	private static final Map<Identifier, ModelPredicateProvider> GLOBAL = Maps.<Identifier, ModelPredicateProvider>newHashMap();
 	private static final Identifier DAMAGED_ID = new Identifier("damaged");
 	private static final Identifier DAMAGE_ID = new Identifier("damage");
-	private static final ModelPredicateProvider DAMAGED_PROVIDER = (itemStack, clientWorld, livingEntity) -> itemStack.isDamaged() ? 1.0F : 0.0F;
-	private static final ModelPredicateProvider DAMAGE_PROVIDER = (itemStack, clientWorld, livingEntity) -> MathHelper.clamp(
+	private static final ModelPredicateProvider DAMAGED_PROVIDER = (itemStack, clientWorld, livingEntity, i) -> itemStack.isDamaged() ? 1.0F : 0.0F;
+	private static final ModelPredicateProvider DAMAGE_PROVIDER = (itemStack, clientWorld, livingEntity, i) -> MathHelper.clamp(
 			(float)itemStack.getDamage() / (float)itemStack.getMaxDamage(), 0.0F, 1.0F
 		);
 	private static final Map<Item, Map<Identifier, ModelPredicateProvider>> ITEM_SPECIFIC = Maps.<Item, Map<Identifier, ModelPredicateProvider>>newHashMap();
@@ -73,18 +73,20 @@ public class ModelPredicateProviderRegistry {
 	}
 
 	static {
-		register(new Identifier("lefthanded"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.getMainArm() != Arm.RIGHT ? 1.0F : 0.0F);
+		register(
+			new Identifier("lefthanded"), (itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.getMainArm() != Arm.RIGHT ? 1.0F : 0.0F
+		);
 		register(
 			new Identifier("cooldown"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity instanceof PlayerEntity
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity instanceof PlayerEntity
 					? ((PlayerEntity)livingEntity).getItemCooldownManager().getCooldownProgress(itemStack.getItem(), 0.0F)
 					: 0.0F
 		);
 		register(
 			new Identifier("custom_model_data"),
-			(itemStack, clientWorld, livingEntity) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt("CustomModelData") : 0.0F
+			(itemStack, clientWorld, livingEntity, i) -> itemStack.hasTag() ? (float)itemStack.getTag().getInt("CustomModelData") : 0.0F
 		);
-		register(Items.BOW, new Identifier("pull"), (itemStack, clientWorld, livingEntity) -> {
+		register(Items.BOW, new Identifier("pull"), (itemStack, clientWorld, livingEntity, i) -> {
 			if (livingEntity == null) {
 				return 0.0F;
 			} else {
@@ -94,16 +96,16 @@ public class ModelPredicateProviderRegistry {
 		register(
 			Items.BOW,
 			new Identifier("pulling"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
-		register(Items.BUNDLE, new Identifier("filled"), (itemStack, clientWorld, livingEntity) -> BundleItem.getAmountFilled(itemStack));
+		register(Items.BUNDLE, new Identifier("filled"), (itemStack, clientWorld, livingEntity, i) -> BundleItem.getAmountFilled(itemStack));
 		register(Items.CLOCK, new Identifier("time"), new ModelPredicateProvider() {
 			private double time;
 			private double step;
 			private long lastTick;
 
 			@Override
-			public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
+			public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity, int i) {
 				Entity entity = (Entity)(livingEntity != null ? livingEntity : itemStack.getHolder());
 				if (entity == null) {
 					return 0.0F;
@@ -149,7 +151,7 @@ public class ModelPredicateProviderRegistry {
 				private final ModelPredicateProviderRegistry.AngleInterpolator speed = new ModelPredicateProviderRegistry.AngleInterpolator();
 
 				@Override
-				public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity) {
+				public float call(ItemStack itemStack, @Nullable ClientWorld clientWorld, @Nullable LivingEntity livingEntity, int i) {
 					Entity entity = (Entity)(livingEntity != null ? livingEntity : itemStack.getHolder());
 					if (entity == null) {
 						return 0.0F;
@@ -193,10 +195,14 @@ public class ModelPredicateProviderRegistry {
 								this.speed.update(l, Math.random());
 							}
 
-							double d = this.speed.value + (double)((float)itemStack.hashCode() / 2.1474836E9F);
+							double d = this.speed.value + (double)((float)this.method_32800(i) / 2.1474836E9F);
 							return MathHelper.floorMod((float)d, 1.0F);
 						}
 					}
+				}
+
+				private int method_32800(int i) {
+					return i * 1327217883;
 				}
 
 				@Nullable
@@ -232,7 +238,7 @@ public class ModelPredicateProviderRegistry {
 		register(
 			Items.CROSSBOW,
 			new Identifier("pull"),
-			(itemStack, clientWorld, livingEntity) -> {
+			(itemStack, clientWorld, livingEntity, i) -> {
 				if (livingEntity == null) {
 					return 0.0F;
 				} else {
@@ -245,7 +251,7 @@ public class ModelPredicateProviderRegistry {
 		register(
 			Items.CROSSBOW,
 			new Identifier("pulling"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity != null
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null
 						&& livingEntity.isUsingItem()
 						&& livingEntity.getActiveItem() == itemStack
 						&& !CrossbowItem.isCharged(itemStack)
@@ -253,19 +259,21 @@ public class ModelPredicateProviderRegistry {
 					: 0.0F
 		);
 		register(
-			Items.CROSSBOW, new Identifier("charged"), (itemStack, clientWorld, livingEntity) -> livingEntity != null && CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F
+			Items.CROSSBOW,
+			new Identifier("charged"),
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && CrossbowItem.isCharged(itemStack) ? 1.0F : 0.0F
 		);
 		register(
 			Items.CROSSBOW,
 			new Identifier("firework"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity != null
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null
 						&& CrossbowItem.isCharged(itemStack)
 						&& CrossbowItem.hasProjectile(itemStack, Items.FIREWORK_ROCKET)
 					? 1.0F
 					: 0.0F
 		);
-		register(Items.ELYTRA, new Identifier("broken"), (itemStack, clientWorld, livingEntity) -> ElytraItem.isUsable(itemStack) ? 0.0F : 1.0F);
-		register(Items.FISHING_ROD, new Identifier("cast"), (itemStack, clientWorld, livingEntity) -> {
+		register(Items.ELYTRA, new Identifier("broken"), (itemStack, clientWorld, livingEntity, i) -> ElytraItem.isUsable(itemStack) ? 0.0F : 1.0F);
+		register(Items.FISHING_ROD, new Identifier("cast"), (itemStack, clientWorld, livingEntity, i) -> {
 			if (livingEntity == null) {
 				return 0.0F;
 			} else {
@@ -281,17 +289,12 @@ public class ModelPredicateProviderRegistry {
 		register(
 			Items.SHIELD,
 			new Identifier("blocking"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
 		register(
 			Items.TRIDENT,
 			new Identifier("throwing"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
-		);
-		register(
-			Items.SPYGLASS,
-			new Identifier("scoping"),
-			(itemStack, clientWorld, livingEntity) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
+			(itemStack, clientWorld, livingEntity, i) -> livingEntity != null && livingEntity.isUsingItem() && livingEntity.getActiveItem() == itemStack ? 1.0F : 0.0F
 		);
 	}
 

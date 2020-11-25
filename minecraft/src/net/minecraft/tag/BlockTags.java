@@ -96,7 +96,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> CANDLE_CAKES = register("candle_cakes");
 	public static final Tag.Identified<Block> CAULDRONS = register("cauldrons");
 	public static final Tag.Identified<Block> CRYSTAL_SOUND_BLOCKS = register("crystal_sound_blocks");
-	public static final Tag.Identified<Block> SNOW_STEP_SOUND_BLOCKS = register("snow_step_sound_blocks");
+	public static final Tag.Identified<Block> INSIDE_STEP_SOUND_BLOCKS = register("inside_step_sound_blocks");
 
 	private static Tag.Identified<Block> register(String id) {
 		return REQUIRED_TAGS.add(id);

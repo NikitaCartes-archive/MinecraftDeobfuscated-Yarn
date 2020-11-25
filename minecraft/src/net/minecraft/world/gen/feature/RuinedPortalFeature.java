@@ -20,6 +20,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.BlockView;
@@ -63,11 +64,11 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		int k;
 		if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
 			if (bl) {
-				k = choose(random, 32, 100);
+				k = MathHelper.method_32751(random, 32, 100);
 			} else if (random.nextFloat() < 0.5F) {
-				k = choose(random, 27, 29);
+				k = MathHelper.method_32751(random, 27, 29);
 			} else {
-				k = choose(random, 29, 100);
+				k = MathHelper.method_32751(random, 29, 100);
 			}
 		} else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN) {
 			int l = i - j;
@@ -76,7 +77,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			int l = i - j;
 			k = choosePlacementHeight(random, 15, l);
 		} else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED) {
-			k = i - j + choose(random, 2, 8);
+			k = i - j + MathHelper.method_32751(random, 2, 8);
 		} else {
 			k = i;
 		}
@@ -113,12 +114,8 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		return m;
 	}
 
-	private static int choose(Random random, int min, int max) {
-		return random.nextInt(max - min + 1) + min;
-	}
-
 	private static int choosePlacementHeight(Random random, int min, int max) {
-		return min < max ? choose(random, min, max) : max;
+		return min < max ? MathHelper.method_32751(random, min, max) : max;
 	}
 
 	public static class Start extends StructureStart<RuinedPortalFeatureConfig> {

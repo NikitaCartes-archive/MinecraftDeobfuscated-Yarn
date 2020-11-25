@@ -3,7 +3,6 @@ package net.minecraft.util.math;
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 
 public final class Matrix4f {
 	public float a00;
@@ -369,7 +368,7 @@ public final class Matrix4f {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void addToLastColumn(Vector3f vector) {
+	public void addToLastColumn(Vec3f vector) {
 		this.a03 = this.a03 + vector.getX();
 		this.a13 = this.a13 + vector.getY();
 		this.a23 = this.a23 + vector.getZ();

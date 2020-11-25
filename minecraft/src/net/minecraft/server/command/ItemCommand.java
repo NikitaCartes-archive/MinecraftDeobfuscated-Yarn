@@ -321,10 +321,12 @@ public class ItemCommand {
 
 			class_5630 lv = entity.method_32318(slot);
 			if (lv != class_5630.field_27860) {
-				ItemStack itemStack = method_32715(source, modifier, lv.method_32327());
-				map.put(entity, itemStack);
-				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
+				ItemStack itemStack = method_32715(source, modifier, lv.method_32327().copy());
+				if (lv.method_32332(itemStack)) {
+					map.put(entity, itemStack);
+					if (entity instanceof ServerPlayerEntity) {
+						((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
+					}
 				}
 			}
 		}

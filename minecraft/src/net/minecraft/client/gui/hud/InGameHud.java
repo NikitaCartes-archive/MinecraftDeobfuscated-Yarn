@@ -501,36 +501,37 @@ public class InGameHud extends DrawableHelper {
 			RenderSystem.enableRescaleNormal();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
+			int m = 1;
 
-			for (int m = 0; m < 9; m++) {
-				int n = i - 90 + m * 20 + 2;
-				int o = this.scaledHeight - 16 - 3;
-				this.renderHotbarItem(n, o, tickDelta, playerEntity, playerEntity.getInventory().main.get(m));
+			for (int n = 0; n < 9; n++) {
+				int o = i - 90 + n * 20 + 2;
+				int p = this.scaledHeight - 16 - 3;
+				this.renderHotbarItem(o, p, tickDelta, playerEntity, playerEntity.getInventory().main.get(n), m++);
 			}
 
 			if (!itemStack.isEmpty()) {
-				int m = this.scaledHeight - 16 - 3;
+				int n = this.scaledHeight - 16 - 3;
 				if (arm == Arm.LEFT) {
-					this.renderHotbarItem(i - 91 - 26, m, tickDelta, playerEntity, itemStack);
+					this.renderHotbarItem(i - 91 - 26, n, tickDelta, playerEntity, itemStack, m++);
 				} else {
-					this.renderHotbarItem(i + 91 + 10, m, tickDelta, playerEntity, itemStack);
+					this.renderHotbarItem(i + 91 + 10, n, tickDelta, playerEntity, itemStack, m++);
 				}
 			}
 
 			if (this.client.options.attackIndicator == AttackIndicator.HOTBAR) {
 				float f = this.client.player.getAttackCooldownProgress(0.0F);
 				if (f < 1.0F) {
-					int n = this.scaledHeight - 20;
-					int o = i + 91 + 6;
+					int o = this.scaledHeight - 20;
+					int p = i + 91 + 6;
 					if (arm == Arm.RIGHT) {
-						o = i - 91 - 22;
+						p = i - 91 - 22;
 					}
 
 					this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
-					int p = (int)(f * 19.0F);
+					int q = (int)(f * 19.0F);
 					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-					this.drawTexture(matrices, o, n, 0, 94, 18, 18);
-					this.drawTexture(matrices, o, n + 18 - p, 18, 112 - p, 18, p);
+					this.drawTexture(matrices, p, o, 0, 94, 18, 18);
+					this.drawTexture(matrices, p, o + 18 - q, 18, 112 - q, 18, q);
 				}
 			}
 
@@ -1080,7 +1081,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack) {
+	private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int i) {
 		if (!stack.isEmpty()) {
 			float f = (float)stack.getCooldown() - tickDelta;
 			if (f > 0.0F) {
@@ -1091,7 +1092,7 @@ public class InGameHud extends DrawableHelper {
 				RenderSystem.translatef((float)(-(x + 8)), (float)(-(y + 12)), 0.0F);
 			}
 
-			this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y);
+			this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, i);
 			if (f > 0.0F) {
 				RenderSystem.popMatrix();
 			}

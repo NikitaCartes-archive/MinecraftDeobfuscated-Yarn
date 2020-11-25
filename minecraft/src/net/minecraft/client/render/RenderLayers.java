@@ -223,6 +223,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.POTTED_WARPED_ROOTS, renderLayer3);
 		hashMap.put(Blocks.CRIMSON_DOOR, renderLayer3);
 		hashMap.put(Blocks.WARPED_DOOR, renderLayer3);
+		hashMap.put(Blocks.POINTED_DRIPSTONE, renderLayer3);
 		hashMap.put(Blocks.SMALL_AMETHYST_BUD, renderLayer3);
 		hashMap.put(Blocks.MEDIUM_AMETHYST_BUD, renderLayer3);
 		hashMap.put(Blocks.LARGE_AMETHYST_BUD, renderLayer3);

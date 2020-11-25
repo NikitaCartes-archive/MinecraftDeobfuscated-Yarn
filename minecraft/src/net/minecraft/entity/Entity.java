@@ -124,7 +124,6 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 	protected int ridingCooldown;
 	@Nullable
 	private Entity vehicle;
-	public boolean teleporting;
 	public World world;
 	public double prevX;
 	public double prevY;
@@ -877,7 +876,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 			}
 
 			BlockState blockState = this.world.getBlockState(pos.up());
-			BlockSoundGroup blockSoundGroup = blockState.isIn(BlockTags.SNOW_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
+			BlockSoundGroup blockSoundGroup = blockState.isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
 			this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15F, blockSoundGroup.getPitch());
 		}
 	}
@@ -1140,10 +1139,6 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 		} else {
 			return 0.0F;
 		}
-	}
-
-	public void setWorld(World world) {
-		this.world = world;
 	}
 
 	public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
@@ -1615,7 +1610,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 		} else {
 			float f = 0.1F;
 			float g = this.dimensions.width * 0.8F;
-			Box box = Box.method_30048((double)g, 0.1F, (double)g).offset(this.getX(), this.getEyeY(), this.getZ());
+			Box box = Box.of((double)g, 0.1F, (double)g).offset(this.getX(), this.getEyeY(), this.getZ());
 			return this.world.getBlockCollisions(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, blockPos)).findAny().isPresent();
 		}
 	}

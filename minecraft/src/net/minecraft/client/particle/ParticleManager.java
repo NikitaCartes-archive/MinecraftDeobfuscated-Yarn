@@ -158,6 +158,10 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
 		this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
 		this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.SmallFactory::new);
+		this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_WATER, BlockLeakParticle.class_5696::new);
+		this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_WATER, BlockLeakParticle.class_5695::new);
+		this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_LAVA, BlockLeakParticle.class_5694::new);
+		this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_LAVA, BlockLeakParticle.class_5693::new);
 	}
 
 	private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

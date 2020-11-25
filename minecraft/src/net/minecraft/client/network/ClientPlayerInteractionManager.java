@@ -2,6 +2,7 @@ package net.minecraft.client.network;
 
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5552;
@@ -57,8 +58,9 @@ public class ClientPlayerInteractionManager {
 	private float blockBreakingSoundCooldown;
 	private int blockBreakingCooldown;
 	private boolean breakingBlock;
-	private GameMode gameMode = GameMode.SURVIVAL;
-	private GameMode previousGameMode = GameMode.NOT_SET;
+	private GameMode gameMode = GameMode.DEFAULT;
+	@Nullable
+	private GameMode previousGameMode;
 	private final Object2ObjectLinkedOpenHashMap<Pair<BlockPos, PlayerActionC2SPacket.Action>, Vec3d> unacknowledgedPlayerActions = new Object2ObjectLinkedOpenHashMap<>();
 	private int lastSelectedSlot;
 
@@ -71,8 +73,10 @@ public class ClientPlayerInteractionManager {
 		this.gameMode.setAbilities(player.getAbilities());
 	}
 
-	public void setPreviousGameMode(GameMode gameMode) {
-		this.previousGameMode = gameMode;
+	public void method_32790(GameMode gameMode, @Nullable GameMode gameMode2) {
+		this.gameMode = gameMode;
+		this.previousGameMode = gameMode2;
+		this.gameMode.setAbilities(this.client.player.getAbilities());
 	}
 
 	public void setGameMode(GameMode gameMode) {
@@ -404,6 +408,7 @@ public class ClientPlayerInteractionManager {
 		return this.gameMode == GameMode.SPECTATOR;
 	}
 
+	@Nullable
 	public GameMode getPreviousGameMode() {
 		return this.previousGameMode;
 	}

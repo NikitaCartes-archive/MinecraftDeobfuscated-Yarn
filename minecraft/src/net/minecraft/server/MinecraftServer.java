@@ -76,7 +76,9 @@ import net.minecraft.server.command.CommandOutput;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.function.CommandFunctionManager;
+import net.minecraft.server.network.DemoServerPlayerInteractionManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.network.SpawnLocating;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
@@ -193,7 +195,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private volatile boolean loading;
 	private long lastTimeReference;
 	private boolean profilerStartQueued;
-	private boolean forceGameMode;
 	private final MinecraftSessionService sessionService;
 	private final GameProfileRepository gameProfileRepo;
 	private final UserCache userCache;
@@ -1221,7 +1222,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * @param cheatsAllowed whether players on the server have operator permissions
 	 * @param port the port to open up to LAN connections
 	 */
-	public abstract boolean openToLan(GameMode gameMode, boolean cheatsAllowed, int port);
+	public boolean openToLan(@Nullable GameMode gameMode, boolean cheatsAllowed, int port) {
+		return false;
+	}
 
 	/**
 	 * Gets the amount of ticks the server has been running for.
@@ -1241,20 +1244,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public boolean isSpawnProtected(ServerWorld world, BlockPos pos, PlayerEntity player) {
 		return false;
-	}
-
-	/**
-	 * Sets whether a player's current game mode should be set to the server's current game mode when a player has connected.
-	 */
-	public void setForceGameMode(boolean forceGameMode) {
-		this.forceGameMode = forceGameMode;
-	}
-
-	/**
-	 * Checks whether a player's current game mode should be set to the server's current game mode when a player has connected.
-	 */
-	public boolean shouldForceGameMode() {
-		return this.forceGameMode;
 	}
 
 	public boolean acceptsStatusQuery() {
@@ -1764,5 +1753,19 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public boolean requireResourcePack() {
 		return false;
+	}
+
+	public ServerPlayerInteractionManager method_32816(ServerPlayerEntity serverPlayerEntity) {
+		return (ServerPlayerInteractionManager)(this.isDemo()
+			? new DemoServerPlayerInteractionManager(serverPlayerEntity)
+			: new ServerPlayerInteractionManager(serverPlayerEntity));
+	}
+
+	/**
+	 * Returns the game mode a player should be set to when connecting to the server, or {@code null} if none is set.
+	 */
+	@Nullable
+	public GameMode getForcedGameMode() {
+		return null;
 	}
 }

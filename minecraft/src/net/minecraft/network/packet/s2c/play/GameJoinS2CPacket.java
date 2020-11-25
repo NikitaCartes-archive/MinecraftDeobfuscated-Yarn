@@ -3,6 +3,7 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.Set;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -20,6 +21,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	private long sha256Seed;
 	private boolean hardcore;
 	private GameMode gameMode;
+	@Nullable
 	private GameMode previousGameMode;
 	private Set<RegistryKey<World>> dimensionIds;
 	private DynamicRegistryManager.Impl registryManager;
@@ -38,7 +40,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 	public GameJoinS2CPacket(
 		int playerEntityId,
 		GameMode gameMode,
-		GameMode previousGameMode,
+		@Nullable GameMode previousGameMode,
 		long sha256Seed,
 		boolean hardcore,
 		Set<RegistryKey<World>> dimensionIds,
@@ -74,7 +76,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.playerEntityId = buf.readInt();
 		this.hardcore = buf.readBoolean();
 		this.gameMode = GameMode.byId(buf.readByte());
-		this.previousGameMode = GameMode.byId(buf.readByte());
+		this.previousGameMode = GameMode.getOrNull(buf.readByte());
 		int i = buf.readVarInt();
 		this.dimensionIds = Sets.<RegistryKey<World>>newHashSet();
 
@@ -99,7 +101,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeInt(this.playerEntityId);
 		buf.writeBoolean(this.hardcore);
 		buf.writeByte(this.gameMode.getId());
-		buf.writeByte(this.previousGameMode.getId());
+		buf.writeByte(GameMode.getId(this.previousGameMode));
 		buf.writeVarInt(this.dimensionIds.size());
 
 		for (RegistryKey<World> registryKey : this.dimensionIds) {

@@ -16,7 +16,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.text.CharacterVisitor;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -27,13 +26,14 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 /**
  * Manages the rendering of text.
  */
 @Environment(EnvType.CLIENT)
 public class TextRenderer {
-	private static final Vector3f FORWARD_SHIFT = new Vector3f(0.0F, 0.0F, 0.03F);
+	private static final Vec3f FORWARD_SHIFT = new Vec3f(0.0F, 0.0F, 0.03F);
 	/**
 	 * The font height of the text that is rendered by the text renderer.
 	 */

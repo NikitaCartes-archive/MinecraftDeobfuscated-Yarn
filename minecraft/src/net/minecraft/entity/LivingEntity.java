@@ -99,6 +99,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -200,6 +201,7 @@ public abstract class LivingEntity extends Entity {
 	protected int roll;
 	private BlockPos lastBlockPos;
 	private Optional<BlockPos> climbingPos = Optional.empty();
+	@Nullable
 	private DamageSource lastDamageSource;
 	private long lastDamageTime;
 	protected int riptideTicks;
@@ -1308,7 +1310,7 @@ public abstract class LivingEntity extends Entity {
 	protected void dropXp() {
 		if (this.world instanceof ServerWorld
 			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-			ExperienceOrbEntity.method_31493((ServerWorld)this.world, this.getPos(), this.getCurrentExperience(this.attackingPlayer));
+			ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), this.getCurrentExperience(this.attackingPlayer));
 		}
 	}
 
@@ -1610,28 +1612,23 @@ public abstract class LivingEntity extends Entity {
 			case 37:
 			case 44:
 			case 57:
-				boolean bl = status == 33;
-				boolean bl2 = status == 36;
-				boolean bl3 = status == 37;
-				boolean bl4 = status == 44;
-				boolean bl5 = status == 57;
 				this.limbDistance = 1.5F;
 				this.timeUntilRegen = 20;
 				this.maxHurtTime = 10;
 				this.hurtTime = this.maxHurtTime;
 				this.knockbackVelocity = 0.0F;
-				if (bl) {
+				if (status == 33) {
 					this.playSound(SoundEvents.ENCHANT_THORNS_HIT, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
 				}
 
 				DamageSource damageSource;
-				if (bl3) {
+				if (status == 37) {
 					damageSource = DamageSource.ON_FIRE;
-				} else if (bl2) {
+				} else if (status == 36) {
 					damageSource = DamageSource.DROWN;
-				} else if (bl4) {
+				} else if (status == 44) {
 					damageSource = DamageSource.SWEET_BERRY_BUSH;
-				} else if (bl5) {
+				} else if (status == 57) {
 					damageSource = DamageSource.FREEZE;
 				} else {
 					damageSource = DamageSource.GENERIC;
@@ -1643,6 +1640,8 @@ public abstract class LivingEntity extends Entity {
 				}
 
 				this.damage(DamageSource.GENERIC, 0.0F);
+				this.lastDamageSource = damageSource;
+				this.lastDamageTime = this.world.getTime();
 				break;
 			case 3:
 				SoundEvent soundEvent2 = this.getDeathSound();
@@ -3261,6 +3260,11 @@ public abstract class LivingEntity extends Entity {
 
 	@Override
 	public boolean canFreeze() {
-		return !this.isSpectator();
+		return this.isSpectator()
+			? false
+			: !this.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
+				&& !this.getEquippedStack(EquipmentSlot.CHEST).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
+				&& !this.getEquippedStack(EquipmentSlot.LEGS).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
+				&& !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
 	}
 }

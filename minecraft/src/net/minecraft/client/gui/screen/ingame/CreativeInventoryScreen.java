@@ -626,7 +626,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 				list2.add(1, itemGroup.getTranslationKey().shallowCopy().formatted(Formatting.BLUE));
 			}
 
-			this.method_32634(matrices, list2, stack.getTooltipData(), x, y);
+			this.renderTooltip(matrices, list2, stack.getTooltipData(), x, y);
 		} else {
 			super.renderTooltip(matrices, stack, x, y);
 		}

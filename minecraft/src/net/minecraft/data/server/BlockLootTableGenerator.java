@@ -965,6 +965,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.SEMI_WEATHERED_CUT_COPPER_SLAB);
 		this.addDrop(Blocks.WEATHERED_CUT_COPPER_SLAB);
 		this.addDrop(Blocks.LIGHTNING_ROD);
+		this.addDrop(Blocks.POINTED_DRIPSTONE);
+		this.addDrop(Blocks.DRIPSTONE_BLOCK);
 		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
 		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
 		this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);

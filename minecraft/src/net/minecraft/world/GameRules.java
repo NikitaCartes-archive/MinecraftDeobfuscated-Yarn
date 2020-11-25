@@ -149,6 +149,9 @@ public class GameRules {
 	);
 	public static final GameRules.Key<GameRules.BooleanRule> FALL_DAMAGE = register("fallDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true));
 	public static final GameRules.Key<GameRules.BooleanRule> FIRE_DAMAGE = register("fireDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true));
+	public static final GameRules.Key<GameRules.BooleanRule> FREEZE_DAMAGE = register(
+		"freezeDamage", GameRules.Category.PLAYER, GameRules.BooleanRule.create(true)
+	);
 	public static final GameRules.Key<GameRules.BooleanRule> DO_PATROL_SPAWNING = register(
 		"doPatrolSpawning", GameRules.Category.SPAWNING, GameRules.BooleanRule.create(true)
 	);

@@ -2,13 +2,13 @@ package net.minecraft.client.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.screen.world.GameModeSelection;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.util.NetworkUtils;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class OpenToLanScreen extends Screen {
@@ -16,7 +16,7 @@ public class OpenToLanScreen extends Screen {
 	private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
 	private static final Text OTHER_PLAYERS_TEXT = new TranslatableText("lanServer.otherPlayers");
 	private final Screen parent;
-	private GameModeSelection gameMode = GameModeSelection.SURVIVAL;
+	private GameMode gameMode = GameMode.SURVIVAL;
 	private boolean allowCommands;
 
 	public OpenToLanScreen(Screen parent) {
@@ -27,10 +27,10 @@ public class OpenToLanScreen extends Screen {
 	@Override
 	protected void init() {
 		this.addButton(
-			CyclingButtonWidget.<GameModeSelection>method_32606(GameModeSelection::getName)
-				.method_32624(GameModeSelection.SURVIVAL, GameModeSelection.SPECTATOR, GameModeSelection.CREATIVE, GameModeSelection.ADVENTURE)
+			CyclingButtonWidget.<GameMode>method_32606(GameMode::getSimpleTranslatableName)
+				.method_32624(GameMode.SURVIVAL, GameMode.SPECTATOR, GameMode.CREATIVE, GameMode.ADVENTURE)
 				.value(this.gameMode)
-				.build(this.width / 2 - 155, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, gameModeSelection) -> this.gameMode = gameModeSelection)
+				.build(this.width / 2 - 155, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, gameMode) -> this.gameMode = gameMode)
 		);
 		this.addButton(
 			CyclingButtonWidget.method_32613(this.allowCommands)
@@ -40,7 +40,7 @@ public class OpenToLanScreen extends Screen {
 			this.client.openScreen(null);
 			int i = NetworkUtils.findLocalPort();
 			Text text;
-			if (this.client.getServer().openToLan(this.gameMode.getGameMode(), this.allowCommands, i)) {
+			if (this.client.getServer().openToLan(this.gameMode, this.allowCommands, i)) {
 				text = new TranslatableText("commands.publish.started", i);
 			} else {
 				text = new TranslatableText("commands.publish.failed");

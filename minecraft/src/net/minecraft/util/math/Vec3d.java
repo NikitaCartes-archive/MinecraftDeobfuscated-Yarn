@@ -3,8 +3,10 @@ package net.minecraft.util.math;
 import java.util.EnumSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 
+/**
+ * An immutable vector composed of 3 doubles.
+ */
 public class Vec3d implements Position {
 	public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
 	public final double x;
@@ -41,7 +43,7 @@ public class Vec3d implements Position {
 		this.z = z;
 	}
 
-	public Vec3d(Vector3f vec) {
+	public Vec3d(Vec3f vec) {
 		this((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
 	}
 

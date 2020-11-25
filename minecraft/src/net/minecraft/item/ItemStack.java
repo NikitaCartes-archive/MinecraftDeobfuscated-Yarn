@@ -47,6 +47,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.stat.Stats;
@@ -318,12 +319,12 @@ public final class ItemStack {
 		return this.item.getItemBarColor(this);
 	}
 
-	public boolean onStackClicked(ItemStack itemStack, ClickType clickType, PlayerInventory playerInventory) {
-		return this.getItem().onStackClicked(this, itemStack, clickType, playerInventory);
+	public boolean onStackClicked(Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+		return this.getItem().onStackClicked(this, slot, clickType, playerInventory);
 	}
 
-	public boolean onClicked(ItemStack itemStack, ClickType clickType, PlayerInventory playerInventory) {
-		return this.getItem().onClicked(this, itemStack, clickType, playerInventory);
+	public boolean onClicked(ItemStack itemStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+		return this.getItem().onClicked(this, itemStack, slot, clickType, playerInventory);
 	}
 
 	public void postHit(LivingEntity target, PlayerEntity attacker) {

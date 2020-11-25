@@ -58,7 +58,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class CreateWorldScreen extends Screen {
-	private static final Logger field_25480 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Text GAME_MODE_TEXT = new TranslatableText("selectWorld.gameMode");
 	private static final Text ENTER_SEED_TEXT = new TranslatableText("selectWorld.enterSeed");
 	private static final Text SEED_INFO_TEXT = new TranslatableText("selectWorld.seedInfo");
@@ -430,7 +430,7 @@ public class CreateWorldScreen extends Screen {
 			try {
 				this.field_25477 = Files.createTempDirectory("mcworld-");
 			} catch (IOException var2) {
-				field_25480.warn("Failed to create temporary dir", (Throwable)var2);
+				LOGGER.warn("Failed to create temporary dir", (Throwable)var2);
 				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
 				this.method_30297();
 			}
@@ -460,7 +460,7 @@ public class CreateWorldScreen extends Screen {
 				.handle(
 					(serverResourceManager, throwable) -> {
 						if (throwable != null) {
-							field_25480.warn("Failed to validate datapack", throwable);
+							LOGGER.warn("Failed to validate datapack", throwable);
 							this.client
 								.send(
 									() -> this.client
@@ -507,7 +507,7 @@ public class CreateWorldScreen extends Screen {
 						try {
 							Files.delete(path);
 						} catch (IOException var2x) {
-							field_25480.warn("Failed to remove temporary file {}", path, var2x);
+							LOGGER.warn("Failed to remove temporary file {}", path, var2x);
 						}
 					});
 				} catch (Throwable var12) {
@@ -527,7 +527,7 @@ public class CreateWorldScreen extends Screen {
 					}
 				}
 			} catch (IOException var14) {
-				field_25480.warn("Failed to list temporary dir {}", this.field_25477);
+				LOGGER.warn("Failed to list temporary dir {}", this.field_25477);
 			}
 
 			this.field_25477 = null;
@@ -538,7 +538,7 @@ public class CreateWorldScreen extends Screen {
 		try {
 			Util.relativeCopy(path, path2, path3);
 		} catch (IOException var4) {
-			field_25480.warn("Failed to copy datapack file from {} to {}", path3, path2);
+			LOGGER.warn("Failed to copy datapack file from {} to {}", path3, path2);
 			throw new CreateWorldScreen.WorldCreationException(var4);
 		}
 	}
@@ -570,7 +570,7 @@ public class CreateWorldScreen extends Screen {
 					}
 				}
 			} catch (CreateWorldScreen.WorldCreationException | IOException var33) {
-				field_25480.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
+				LOGGER.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
 				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
 				this.method_30297();
 				return false;
@@ -595,7 +595,7 @@ public class CreateWorldScreen extends Screen {
 						try {
 							path3 = Files.createTempDirectory("mcworld-");
 						} catch (IOException var5) {
-							field_25480.warn("Failed to create temporary dir");
+							LOGGER.warn("Failed to create temporary dir");
 							throw new CreateWorldScreen.WorldCreationException(var5);
 						}
 
@@ -621,7 +621,7 @@ public class CreateWorldScreen extends Screen {
 				}
 			}
 		} catch (CreateWorldScreen.WorldCreationException | IOException var16) {
-			field_25480.warn("Failed to copy datapacks from world {}", path, var16);
+			LOGGER.warn("Failed to copy datapacks from world {}", path, var16);
 			SystemToast.addPackCopyFailure(minecraftClient, path.toString());
 			return null;
 		}

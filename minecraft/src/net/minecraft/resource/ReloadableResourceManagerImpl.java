@@ -84,11 +84,11 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	}
 
 	@Override
-	public Collection<Identifier> findResources(String resourceType, Predicate<String> pathPredicate) {
+	public Collection<Identifier> findResources(String startingPath, Predicate<String> pathPredicate) {
 		Set<Identifier> set = Sets.<Identifier>newHashSet();
 
 		for (NamespaceResourceManager namespaceResourceManager : this.namespaceManagers.values()) {
-			set.addAll(namespaceResourceManager.findResources(resourceType, pathPredicate));
+			set.addAll(namespaceResourceManager.findResources(startingPath, pathPredicate));
 		}
 
 		List<Identifier> list = Lists.<Identifier>newArrayList(set);

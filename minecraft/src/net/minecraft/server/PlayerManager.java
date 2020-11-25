@@ -54,10 +54,8 @@ import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ServerScoreboard;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.server.network.DemoServerPlayerInteractionManager;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.network.ServerPlayerInteractionManager;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -76,7 +74,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
@@ -109,7 +106,6 @@ public abstract class PlayerManager {
 	private final DynamicRegistryManager.Impl registryManager;
 	protected final int maxPlayers;
 	private int viewDistance;
-	private GameMode gameMode;
 	private boolean cheatsAllowed;
 	private int latencyUpdateTimer;
 
@@ -141,8 +137,7 @@ public abstract class PlayerManager {
 			serverWorld2 = serverWorld;
 		}
 
-		player.setWorld(serverWorld2);
-		player.interactionManager.setWorld((ServerWorld)player.world);
+		player.method_32747(serverWorld2);
 		String string2 = "local";
 		if (connection.getAddress() != null) {
 			string2 = connection.getAddress().toString();
@@ -158,7 +153,7 @@ public abstract class PlayerManager {
 			player.getZ()
 		);
 		WorldProperties worldProperties = serverWorld2.getLevelProperties();
-		this.setGameMode(player, null, serverWorld2);
+		player.setGameMode(compoundTag);
 		ServerPlayNetworkHandler serverPlayNetworkHandler = new ServerPlayNetworkHandler(this.server, connection, player);
 		GameRules gameRules = serverWorld2.getGameRules();
 		boolean bl = gameRules.getBoolean(GameRules.DO_IMMEDIATE_RESPAWN);
@@ -419,15 +414,7 @@ public abstract class PlayerManager {
 			serverPlayerEntity3.networkHandler.disconnect(new TranslatableText("multiplayer.disconnect.duplicate_login"));
 		}
 
-		ServerWorld serverWorld = this.server.getOverworld();
-		ServerPlayerInteractionManager serverPlayerInteractionManager;
-		if (this.server.isDemo()) {
-			serverPlayerInteractionManager = new DemoServerPlayerInteractionManager(serverWorld);
-		} else {
-			serverPlayerInteractionManager = new ServerPlayerInteractionManager(serverWorld);
-		}
-
-		return new ServerPlayerEntity(this.server, serverWorld, profile, serverPlayerInteractionManager);
+		return new ServerPlayerEntity(this.server, this.server.getOverworld(), profile);
 	}
 
 	public ServerPlayerEntity respawnPlayer(ServerPlayerEntity player, boolean alive) {
@@ -445,14 +432,7 @@ public abstract class PlayerManager {
 		}
 
 		ServerWorld serverWorld2 = serverWorld != null && optional.isPresent() ? serverWorld : this.server.getOverworld();
-		ServerPlayerInteractionManager serverPlayerInteractionManager;
-		if (this.server.isDemo()) {
-			serverPlayerInteractionManager = new DemoServerPlayerInteractionManager(serverWorld2);
-		} else {
-			serverPlayerInteractionManager = new ServerPlayerInteractionManager(serverWorld2);
-		}
-
-		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile(), serverPlayerInteractionManager);
+		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile());
 		serverPlayerEntity.networkHandler = player.networkHandler;
 		serverPlayerEntity.copyFrom(player, alive);
 		serverPlayerEntity.setEntityId(player.getEntityId());
@@ -462,7 +442,6 @@ public abstract class PlayerManager {
 			serverPlayerEntity.addScoreboardTag(string);
 		}
 
-		this.setGameMode(serverPlayerEntity, player, serverWorld2);
 		boolean bl2 = false;
 		if (optional.isPresent()) {
 			BlockState blockState = serverWorld2.getBlockState(blockPos);
@@ -751,21 +730,6 @@ public abstract class PlayerManager {
 	 */
 	public CompoundTag getUserData() {
 		return null;
-	}
-
-	@Environment(EnvType.CLIENT)
-	public void setGameMode(GameMode gameMode) {
-		this.gameMode = gameMode;
-	}
-
-	private void setGameMode(ServerPlayerEntity player, @Nullable ServerPlayerEntity oldPlayer, ServerWorld world) {
-		if (oldPlayer != null) {
-			player.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
-		} else if (this.gameMode != null) {
-			player.interactionManager.setGameMode(this.gameMode, GameMode.NOT_SET);
-		}
-
-		player.interactionManager.setGameModeIfNotPresent(world.getServer().getSaveProperties().getGameMode());
 	}
 
 	@Environment(EnvType.CLIENT)

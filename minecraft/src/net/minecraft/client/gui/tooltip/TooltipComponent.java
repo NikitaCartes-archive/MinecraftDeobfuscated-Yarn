@@ -14,13 +14,13 @@ import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public interface TooltipComponent {
-	static TooltipComponent createOrderedTextTooltipComponent(OrderedText orderedText) {
-		return new OrderedTextTooltipComponent(orderedText);
+	static TooltipComponent of(OrderedText text) {
+		return new OrderedTextTooltipComponent(text);
 	}
 
-	static TooltipComponent createTooltipComponent(TooltipData tooltipData) {
-		if (tooltipData instanceof BundleTooltipData) {
-			return new BundleTooltipComponent((BundleTooltipData)tooltipData);
+	static TooltipComponent of(TooltipData data) {
+		if (data instanceof BundleTooltipData) {
+			return new BundleTooltipComponent((BundleTooltipData)data);
 		} else {
 			throw new IllegalArgumentException("Unknown TooltipComponent");
 		}

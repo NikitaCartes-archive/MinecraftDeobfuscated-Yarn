@@ -9,8 +9,8 @@ import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.client.render.entity.model.CowEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.MooshroomEntity;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends FeatureRenderer<T, CowEntityModel<T>> {
@@ -27,16 +27,16 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			int m = LivingEntityRenderer.getOverlay(mooshroomEntity, 0.0F);
 			matrixStack.push();
 			matrixStack.translate(0.2F, -0.35F, 0.5);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-48.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0F));
 			matrixStack.scale(-1.0F, -1.0F, 1.0F);
 			matrixStack.translate(-0.5, -0.5, -0.5);
 			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, m);
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.translate(0.2F, -0.35F, 0.5);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(42.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(42.0F));
 			matrixStack.translate(0.1F, 0.0, -0.6F);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-48.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-48.0F));
 			matrixStack.scale(-1.0F, -1.0F, 1.0F);
 			matrixStack.translate(-0.5, -0.5, -0.5);
 			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, m);
@@ -44,7 +44,7 @@ public class MooshroomMushroomFeatureRenderer<T extends MooshroomEntity> extends
 			matrixStack.push();
 			this.getContextModel().getHead().rotate(matrixStack);
 			matrixStack.translate(0.0, -0.7F, -0.2F);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-78.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-78.0F));
 			matrixStack.scale(-1.0F, -1.0F, 1.0F);
 			matrixStack.translate(-0.5, -0.5, -0.5);
 			blockRenderManager.renderBlockAsEntity(blockState, matrixStack, vertexConsumerProvider, i, m);

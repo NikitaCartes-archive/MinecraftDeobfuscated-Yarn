@@ -584,6 +584,10 @@ public final class Biome {
 			this.weight = weight;
 		}
 
+		public String toString() {
+			return "temp: " + this.temperature + ", hum: " + this.humidity + ", alt: " + this.altitude + ", weird: " + this.weirdness + ", offset: " + this.weight;
+		}
+
 		public boolean equals(Object object) {
 			if (this == object) {
 				return true;

@@ -1,11 +1,11 @@
 package net.minecraft.client.render;
 
-import com.google.common.collect.ImmutableList;
+import java.util.Arrays;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FluidState;
@@ -16,6 +16,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.RaycastContext;
 
@@ -26,9 +27,9 @@ public class Camera {
 	private Entity focusedEntity;
 	private Vec3d pos = Vec3d.ZERO;
 	private final BlockPos.Mutable blockPos = new BlockPos.Mutable();
-	private final Vector3f horizontalPlane = new Vector3f(0.0F, 0.0F, 1.0F);
-	private final Vector3f verticalPlane = new Vector3f(0.0F, 1.0F, 0.0F);
-	private final Vector3f diagonalPlane = new Vector3f(1.0F, 0.0F, 0.0F);
+	private final Vec3f horizontalPlane = new Vec3f(0.0F, 0.0F, 1.0F);
+	private final Vec3f verticalPlane = new Vec3f(0.0F, 1.0F, 0.0F);
+	private final Vec3f diagonalPlane = new Vec3f(1.0F, 0.0F, 0.0F);
 	private float pitch;
 	private float yaw;
 	private final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
@@ -107,8 +108,8 @@ public class Camera {
 		this.pitch = pitch;
 		this.yaw = yaw;
 		this.rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
-		this.rotation.hamiltonProduct(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
-		this.rotation.hamiltonProduct(Vector3f.POSITIVE_X.getDegreesQuaternion(pitch));
+		this.rotation.hamiltonProduct(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+		this.rotation.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(pitch));
 		this.horizontalPlane.set(0.0F, 0.0F, 1.0F);
 		this.horizontalPlane.rotate(this.rotation);
 		this.verticalPlane.set(0.0F, 1.0F, 0.0F);
@@ -166,15 +167,19 @@ public class Camera {
 			if (fluidState.isIn(FluidTags.WATER) && this.pos.y < (double)((float)this.blockPos.getY() + fluidState.getHeight(this.area, this.blockPos))) {
 				return CameraSubmersionType.WATER;
 			} else {
-				Vec3d vec3d = new Vec3d(this.diagonalPlane);
-				Vec3d vec3d2 = new Vec3d(this.horizontalPlane);
-				Vec3d vec3d3 = new Vec3d(this.verticalPlane);
-				Vec3d vec3d4 = vec3d2.add(vec3d3).add(vec3d).multiply(0.083333336F);
-				Vec3d vec3d5 = vec3d2.add(vec3d3).subtract(vec3d).multiply(0.083333336F);
-				Vec3d vec3d6 = vec3d2.subtract(vec3d3).add(vec3d).multiply(0.083333336F);
-				Vec3d vec3d7 = vec3d2.subtract(vec3d3).subtract(vec3d).multiply(0.083333336F);
+				MinecraftClient minecraftClient = MinecraftClient.getInstance();
+				double d = (double)minecraftClient.getWindow().getFramebufferWidth() / (double)minecraftClient.getWindow().getFramebufferHeight();
+				double e = Math.tan(minecraftClient.options.fov * (float) (Math.PI / 180.0) / 2.0) * 0.05F;
+				double f = e * d;
+				Vec3d vec3d = new Vec3d(this.horizontalPlane).multiply(0.05F);
+				Vec3d vec3d2 = new Vec3d(this.diagonalPlane).multiply(f);
+				Vec3d vec3d3 = new Vec3d(this.verticalPlane).multiply(e);
+				Vec3d vec3d4 = vec3d.add(vec3d3).add(vec3d2);
+				Vec3d vec3d5 = vec3d.add(vec3d3).subtract(vec3d2);
+				Vec3d vec3d6 = vec3d.subtract(vec3d3).add(vec3d2);
+				Vec3d vec3d7 = vec3d.subtract(vec3d3).subtract(vec3d2);
 
-				for (Vec3d vec3d8 : ImmutableList.of(vec3d4, vec3d5, vec3d6, vec3d7)) {
+				for (Vec3d vec3d8 : Arrays.asList(vec3d, vec3d4, vec3d5, vec3d6, vec3d7)) {
 					Vec3d vec3d9 = this.pos.add(vec3d8);
 					BlockPos blockPos = new BlockPos(vec3d9);
 					FluidState fluidState2 = this.area.getFluidState(blockPos);
@@ -195,11 +200,11 @@ public class Camera {
 		}
 	}
 
-	public final Vector3f getHorizontalPlane() {
+	public final Vec3f getHorizontalPlane() {
 		return this.horizontalPlane;
 	}
 
-	public final Vector3f getVerticalPlane() {
+	public final Vec3f getVerticalPlane() {
 		return this.verticalPlane;
 	}
 

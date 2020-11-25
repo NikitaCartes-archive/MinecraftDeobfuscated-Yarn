@@ -151,9 +151,9 @@ public class StructureBlockScreen extends Screen {
 			})
 		);
 		this.buttonEntities = this.addButton(
-			CyclingButtonWidget.method_32613(this.structureBlock.shouldIgnoreEntities())
+			CyclingButtonWidget.method_32613(!this.structureBlock.shouldIgnoreEntities())
 				.method_32616()
-				.build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setIgnoreEntities(boolean_))
+				.build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setIgnoreEntities(!boolean_))
 		);
 		this.buttonMirror = this.addButton(
 			CyclingButtonWidget.<BlockMirror>method_32606(BlockMirror::method_32354)

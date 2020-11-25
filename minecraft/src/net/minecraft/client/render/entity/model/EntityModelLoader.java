@@ -5,19 +5,20 @@ import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.ModelPart;
+import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 
 @Environment(EnvType.CLIENT)
 public class EntityModelLoader implements SynchronousResourceReloadListener {
-	private Map<EntityModelLayer, ModelPart> modelParts = ImmutableMap.of();
+	private Map<EntityModelLayer, TexturedModelData> modelParts = ImmutableMap.of();
 
 	public ModelPart getModelPart(EntityModelLayer layer) {
-		ModelPart modelPart = (ModelPart)this.modelParts.get(layer);
-		if (modelPart == null) {
+		TexturedModelData texturedModelData = (TexturedModelData)this.modelParts.get(layer);
+		if (texturedModelData == null) {
 			throw new IllegalArgumentException("No model for layer " + layer);
 		} else {
-			return modelPart;
+			return texturedModelData.createModel();
 		}
 	}
 

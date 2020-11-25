@@ -134,16 +134,13 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	}
 
 	protected void renderTooltip(MatrixStack matrices, ItemStack stack, int x, int y) {
-		this.method_32634(matrices, this.getTooltipFromItem(stack), stack.getTooltipData(), x, y);
+		this.renderTooltip(matrices, this.getTooltipFromItem(stack), stack.getTooltipData(), x, y);
 	}
 
-	public void method_32634(MatrixStack matrixStack, List<Text> list, Optional<TooltipData> optional, int i, int j) {
-		List<TooltipComponent> list2 = (List<TooltipComponent>)list.stream()
-			.map(Text::asOrderedText)
-			.map(TooltipComponent::createOrderedTextTooltipComponent)
-			.collect(Collectors.toList());
-		optional.ifPresent(tooltipData -> list2.add(1, TooltipComponent.createTooltipComponent(tooltipData)));
-		this.method_32633(matrixStack, list2, i, j);
+	public void renderTooltip(MatrixStack matrices, List<Text> lines, Optional<TooltipData> data, int x, int y) {
+		List<TooltipComponent> list = (List<TooltipComponent>)lines.stream().map(Text::asOrderedText).map(TooltipComponent::of).collect(Collectors.toList());
+		data.ifPresent(tooltipData -> list.add(1, TooltipComponent.of(tooltipData)));
+		this.renderTooltipFromComponents(matrices, list, x, y);
 	}
 
 	public List<Text> getTooltipFromItem(ItemStack stack) {
@@ -158,54 +155,54 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 		this.renderOrderedTooltip(matrices, Lists.transform(lines, Text::asOrderedText), x, y);
 	}
 
-	public void renderOrderedTooltip(MatrixStack matrices, List<? extends OrderedText> list, int x, int y) {
-		this.method_32633(matrices, (List<TooltipComponent>)list.stream().map(TooltipComponent::createOrderedTextTooltipComponent).collect(Collectors.toList()), x, y);
+	public void renderOrderedTooltip(MatrixStack matrices, List<? extends OrderedText> lines, int x, int y) {
+		this.renderTooltipFromComponents(matrices, (List<TooltipComponent>)lines.stream().map(TooltipComponent::of).collect(Collectors.toList()), x, y);
 	}
 
-	private void method_32633(MatrixStack matrixStack, List<TooltipComponent> list, int i, int j) {
-		if (!list.isEmpty()) {
-			int k = 0;
-			int l = list.size() == 1 ? -2 : 0;
+	private void renderTooltipFromComponents(MatrixStack matrices, List<TooltipComponent> components, int x, int y) {
+		if (!components.isEmpty()) {
+			int i = 0;
+			int j = components.size() == 1 ? -2 : 0;
 
-			for (TooltipComponent tooltipComponent : list) {
-				int m = tooltipComponent.getWidth(this.textRenderer);
-				if (m > k) {
-					k = m;
+			for (TooltipComponent tooltipComponent : components) {
+				int k = tooltipComponent.getWidth(this.textRenderer);
+				if (k > i) {
+					i = k;
 				}
 
-				l += tooltipComponent.getHeight();
+				j += tooltipComponent.getHeight();
 			}
 
-			int n = i + 12;
-			int o = j - 12;
-			if (n + k > this.width) {
-				n -= 28 + k;
+			int l = x + 12;
+			int m = y - 12;
+			if (l + i > this.width) {
+				l -= 28 + i;
 			}
 
-			if (o + l + 6 > this.height) {
-				o = this.height - l - 6;
+			if (m + j + 6 > this.height) {
+				m = this.height - j - 6;
 			}
 
-			matrixStack.push();
-			int q = -267386864;
-			int r = 1347420415;
-			int s = 1344798847;
-			int t = 400;
+			matrices.push();
+			int o = -267386864;
+			int p = 1347420415;
+			int q = 1344798847;
+			int r = 400;
 			float f = this.itemRenderer.zOffset;
 			this.itemRenderer.zOffset = 400.0F;
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-			Matrix4f matrix4f = matrixStack.peek().getModel();
-			fillGradient(matrix4f, bufferBuilder, n - 3, o - 4, n + k + 3, o - 3, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, n - 3, o + l + 3, n + k + 3, o + l + 4, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, n - 3, o - 3, n + k + 3, o + l + 3, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, n - 4, o - 3, n - 3, o + l + 3, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, n + k + 3, o - 3, n + k + 4, o + l + 3, 400, -267386864, -267386864);
-			fillGradient(matrix4f, bufferBuilder, n - 3, o - 3 + 1, n - 3 + 1, o + l + 3 - 1, 400, 1347420415, 1344798847);
-			fillGradient(matrix4f, bufferBuilder, n + k + 2, o - 3 + 1, n + k + 3, o + l + 3 - 1, 400, 1347420415, 1344798847);
-			fillGradient(matrix4f, bufferBuilder, n - 3, o - 3, n + k + 3, o - 3 + 1, 400, 1347420415, 1347420415);
-			fillGradient(matrix4f, bufferBuilder, n - 3, o + l + 2, n + k + 3, o + l + 3, 400, 1344798847, 1344798847);
+			Matrix4f matrix4f = matrices.peek().getModel();
+			fillGradient(matrix4f, bufferBuilder, l - 3, m - 4, l + i + 3, m - 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, l - 3, m + j + 3, l + i + 3, m + j + 4, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, l - 3, m - 3, l + i + 3, m + j + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, l - 4, m - 3, l - 3, m + j + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, l + i + 3, m - 3, l + i + 4, m + j + 3, 400, -267386864, -267386864);
+			fillGradient(matrix4f, bufferBuilder, l - 3, m - 3 + 1, l - 3 + 1, m + j + 3 - 1, 400, 1347420415, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, l + i + 2, m - 3 + 1, l + i + 3, m + j + 3 - 1, 400, 1347420415, 1344798847);
+			fillGradient(matrix4f, bufferBuilder, l - 3, m - 3, l + i + 3, m - 3 + 1, 400, 1347420415, 1347420415);
+			fillGradient(matrix4f, bufferBuilder, l - 3, m + j + 2, l + i + 3, m + j + 3, 400, 1344798847, 1344798847);
 			RenderSystem.enableDepthTest();
 			RenderSystem.disableTexture();
 			RenderSystem.enableBlend();
@@ -217,23 +214,23 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 			RenderSystem.disableBlend();
 			RenderSystem.enableTexture();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			matrixStack.translate(0.0, 0.0, 400.0);
-			int u = o;
+			matrices.translate(0.0, 0.0, 400.0);
+			int s = m;
 
-			for (int v = 0; v < list.size(); v++) {
-				TooltipComponent tooltipComponent2 = (TooltipComponent)list.get(v);
-				tooltipComponent2.drawText(this.textRenderer, n, u, matrix4f, immediate);
-				u += tooltipComponent2.getHeight() + (v == 0 ? 2 : 0);
+			for (int t = 0; t < components.size(); t++) {
+				TooltipComponent tooltipComponent2 = (TooltipComponent)components.get(t);
+				tooltipComponent2.drawText(this.textRenderer, l, s, matrix4f, immediate);
+				s += tooltipComponent2.getHeight() + (t == 0 ? 2 : 0);
 			}
 
 			immediate.draw();
-			matrixStack.pop();
-			u = o;
+			matrices.pop();
+			s = m;
 
-			for (int v = 0; v < list.size(); v++) {
-				TooltipComponent tooltipComponent2 = (TooltipComponent)list.get(v);
-				tooltipComponent2.drawItems(this.textRenderer, n, u, matrixStack, this.itemRenderer, 400, this.client.getTextureManager());
-				u += tooltipComponent2.getHeight() + (v == 0 ? 2 : 0);
+			for (int t = 0; t < components.size(); t++) {
+				TooltipComponent tooltipComponent2 = (TooltipComponent)components.get(t);
+				tooltipComponent2.drawItems(this.textRenderer, l, s, matrices, this.itemRenderer, 400, this.client.getTextureManager());
+				s += tooltipComponent2.getHeight() + (t == 0 ? 2 : 0);
 			}
 
 			this.itemRenderer.zOffset = f;

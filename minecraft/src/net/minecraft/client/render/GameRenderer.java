@@ -22,7 +22,6 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.client.util.Window;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -50,6 +49,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.GameMode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -339,7 +339,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			float g = (float)livingEntity.hurtTime - f;
 			if (livingEntity.isDead()) {
 				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (h + 200.0F)));
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (h + 200.0F)));
 			}
 
 			if (g < 0.0F) {
@@ -349,9 +349,9 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			g /= (float)livingEntity.maxHurtTime;
 			g = MathHelper.sin(g * g * g * g * (float) Math.PI);
 			float h = livingEntity.knockbackVelocity;
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-h));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-g * 14.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-h));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-g * 14.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
 		}
 	}
 
@@ -362,8 +362,8 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			float h = -(playerEntity.horizontalSpeed + g * f);
 			float i = MathHelper.lerp(f, playerEntity.prevStrideDistance, playerEntity.strideDistance);
 			matrixStack.translate((double)(MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double)(-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));
 		}
 	}
 
@@ -427,10 +427,14 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			.getModel()
 			.multiply(
 				Matrix4f.viewboxMatrix(
-					d, (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05F, this.viewDistance * 4.0F
+					d, (float)this.client.getWindow().getFramebufferWidth() / (float)this.client.getWindow().getFramebufferHeight(), 0.05F, this.method_32796()
 				)
 			);
 		return matrixStack.peek().getModel();
+	}
+
+	public float method_32796() {
+		return this.viewDistance * 4.0F;
 	}
 
 	public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
@@ -634,11 +638,11 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			int i = this.client.player.hasStatusEffect(StatusEffects.NAUSEA) ? 7 : 20;
 			float g = 5.0F / (f * f + 5.0F) - f * 0.04F;
 			g *= g;
-			Vector3f vector3f = new Vector3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
-			matrixStack.multiply(vector3f.getDegreesQuaternion(((float)this.ticks + tickDelta) * (float)i));
+			Vec3f vec3f = new Vec3f(0.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F, MathHelper.SQUARE_ROOT_OF_TWO / 2.0F);
+			matrixStack.multiply(vec3f.getDegreesQuaternion(((float)this.ticks + tickDelta) * (float)i));
 			matrixStack.scale(1.0F / g, 1.0F, 1.0F);
 			float h = -((float)this.ticks + tickDelta) * (float)i;
-			matrixStack.multiply(vector3f.getDegreesQuaternion(h));
+			matrixStack.multiply(vec3f.getDegreesQuaternion(h));
 		}
 
 		Matrix4f matrix4f = matrixStack.peek().getModel();
@@ -650,8 +654,8 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			this.client.options.getPerspective().isFrontView(),
 			tickDelta
 		);
-		matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
-		matrix.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
+		matrix.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+		matrix.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw() + 180.0F));
 		this.client.worldRenderer.method_32133(matrix, camera.getPos(), this.getBasicProjectionMatrix(Math.max(d, this.client.options.fov)));
 		this.client.worldRenderer.render(matrix, tickDelta, limitTime, bl, camera, this, this.lightmapTextureManager, matrix4f);
 		this.client.getProfiler().swap("hand");
@@ -704,11 +708,11 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			);
 			float n = 50.0F + 175.0F * MathHelper.sin(k);
 			matrixStack.scale(n, -n, n);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(900.0F * MathHelper.abs(MathHelper.sin(k))));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(900.0F * MathHelper.abs(MathHelper.sin(k))));
+			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(6.0F * MathHelper.cos(f * 8.0F)));
 			VertexConsumerProvider.Immediate immediate = this.buffers.getEntityVertexConsumers();
-			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate);
+			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate, 0);
 			matrixStack.pop();
 			immediate.draw();
 			RenderSystem.popAttributes();

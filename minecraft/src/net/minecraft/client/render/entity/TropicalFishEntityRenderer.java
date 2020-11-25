@@ -9,10 +9,10 @@ import net.minecraft.client.render.entity.model.LargeTropicalFishEntityModel;
 import net.minecraft.client.render.entity.model.SmallTropicalFishEntityModel;
 import net.minecraft.client.render.entity.model.TintableCompositeModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.TropicalFishEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEntity, TintableCompositeModel<TropicalFishEntity>> {
@@ -41,10 +41,10 @@ public class TropicalFishEntityRenderer extends MobEntityRenderer<TropicalFishEn
 	protected void setupTransforms(TropicalFishEntity tropicalFishEntity, MatrixStack matrixStack, float f, float g, float h) {
 		super.setupTransforms(tropicalFishEntity, matrixStack, f, g, h);
 		float i = 4.3F * MathHelper.sin(0.6F * f);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(i));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(i));
 		if (!tropicalFishEntity.isTouchingWater()) {
 			matrixStack.translate(0.2F, 0.1F, 0.0);
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 		}
 	}
 }

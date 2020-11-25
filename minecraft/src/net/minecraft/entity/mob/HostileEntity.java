@@ -63,11 +63,6 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 	}
 
 	@Override
-	public boolean damage(DamageSource source, float amount) {
-		return this.isInvulnerableTo(source) ? false : super.damage(source, amount);
-	}
-
-	@Override
 	protected SoundEvent getHurtSound(DamageSource source) {
 		return SoundEvents.ENTITY_HOSTILE_HURT;
 	}

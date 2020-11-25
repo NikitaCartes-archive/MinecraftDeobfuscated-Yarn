@@ -17,12 +17,12 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity> {
@@ -47,8 +47,8 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		matrixStack.push();
 		float h = (float)enderDragonEntity.getSegmentProperties(7, g)[0];
 		float j = (float)(enderDragonEntity.getSegmentProperties(5, g)[1] - enderDragonEntity.getSegmentProperties(10, g)[1]);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-h));
-		matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(j * 10.0F));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-h));
+		matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(j * 10.0F));
 		matrixStack.translate(0.0, 0.0, 1.0);
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		matrixStack.translate(0.0, -1.501F, 0.0);
@@ -76,12 +76,12 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			matrixStack.translate(0.0, -1.0, -2.0);
 
 			for (int n = 0; (float)n < (l + l * l) / 2.0F * 60.0F; n++) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F + l * 90.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(random.nextFloat() * 360.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(random.nextFloat() * 360.0F + l * 90.0F));
 				float o = random.nextFloat() * 20.0F + 5.0F + m * 10.0F;
 				float p = random.nextFloat() * 2.0F + 1.0F + m * 2.0F;
 				Matrix4f matrix4f = matrixStack.peek().getModel();
@@ -138,8 +138,8 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		float g = MathHelper.sqrt(dx * dx + dy * dy + dz * dz);
 		matrices.push();
 		matrices.translate(0.0, 2.0, 0.0);
-		matrices.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion((float)(-Math.atan2((double)dz, (double)dx)) - (float) (Math.PI / 2)));
-		matrices.multiply(Vector3f.POSITIVE_X.getRadialQuaternion((float)(-Math.atan2((double)f, (double)dy)) - (float) (Math.PI / 2)));
+		matrices.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion((float)(-Math.atan2((double)dz, (double)dx)) - (float) (Math.PI / 2)));
+		matrices.multiply(Vec3f.POSITIVE_X.getRadialQuaternion((float)(-Math.atan2((double)f, (double)dy)) - (float) (Math.PI / 2)));
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(CRYSTAL_BEAM_LAYER);
 		float h = 0.0F - ((float)age + tickDelta) * 0.01F;
 		float i = MathHelper.sqrt(dx * dx + dy * dy + dz * dz) / 32.0F - ((float)age + tickDelta) * 0.01F;
@@ -351,7 +351,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			float g = (float)(Math.sin((double)(f * (float) (Math.PI * 2) - 1.0F)) + 1.0);
 			g = (g * g + g * 2.0F) * 0.05F;
 			matrices.translate(0.0, (double)(g - 2.0F), -3.0);
-			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(g * 2.0F));
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(g * 2.0F));
 			float h = 0.0F;
 			float i = 20.0F;
 			float j = -12.0F;
@@ -386,7 +386,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			this.head.render(matrices, vertices, light, overlay);
 			matrices.push();
 			matrices.translate(0.0, 1.0, 0.0);
-			matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-l * 1.5F));
+			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-l * 1.5F));
 			matrices.translate(0.0, -1.0, 0.0);
 			this.body.roll = 0.0F;
 			this.body.render(matrices, vertices, light, overlay);

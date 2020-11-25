@@ -49,7 +49,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 	private static final Text LAN_SCANNING_TEXT = new TranslatableText("lanServer.scanning");
 	private static final Text CANNOT_RESOLVE_TEXT = new TranslatableText("multiplayer.status.cannot_resolve").formatted(Formatting.DARK_RED);
 	private static final Text CANNOT_CONNECT_TEXT = new TranslatableText("multiplayer.status.cannot_connect").formatted(Formatting.DARK_RED);
-	private static final Text field_26849 = new TranslatableText("multiplayer.status.incompatible");
+	private static final Text INCOMPATIBLE_TEXT = new TranslatableText("multiplayer.status.incompatible");
 	private static final Text NO_CONNECTION_TEXT = new TranslatableText("multiplayer.status.no_connection");
 	private static final Text PINGING_TEXT = new TranslatableText("multiplayer.status.pinging");
 	private final MultiplayerScreen screen;
@@ -262,7 +262,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			Text text2;
 			if (bl) {
 				l = 5;
-				text2 = MultiplayerServerListWidget.field_26849;
+				text2 = MultiplayerServerListWidget.INCOMPATIBLE_TEXT;
 				list2 = this.server.playerListSummary;
 			} else if (this.server.online && this.server.ping != -2L) {
 				if (this.server.ping < 0L) {

@@ -727,10 +727,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void onDimensionChanged(Entity entity) {
-		boolean bl = entity.teleporting;
-		entity.teleporting = true;
 		this.addEntity(entity);
-		entity.teleporting = bl;
 	}
 
 	public void onPlayerTeleport(ServerPlayerEntity player) {

@@ -10,7 +10,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.enums.WireConnection;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.particle.DustParticleEffect;
@@ -28,6 +27,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -72,13 +72,13 @@ public class RedstoneWireBlock extends Block {
 		)
 	);
 	private static final Map<BlockState, VoxelShape> field_24416 = Maps.<BlockState, VoxelShape>newHashMap();
-	private static final Vector3f[] field_24466 = Util.make(new Vector3f[16], vector3fs -> {
+	private static final Vec3f[] field_24466 = Util.make(new Vec3f[16], vec3fs -> {
 		for (int i = 0; i <= 15; i++) {
 			float f = (float)i / 15.0F;
 			float g = f * 0.6F + (f > 0.0F ? 0.4F : 0.3F);
 			float h = MathHelper.clamp(f * f * 0.7F - 0.5F, 0.0F, 1.0F);
 			float j = MathHelper.clamp(f * f * 0.6F - 0.7F, 0.0F, 1.0F);
-			vector3fs[i] = new Vector3f(g, h, j);
+			vec3fs[i] = new Vec3f(g, h, j);
 		}
 	});
 	private final BlockState dotState;
@@ -425,12 +425,12 @@ public class RedstoneWireBlock extends Block {
 
 	@Environment(EnvType.CLIENT)
 	public static int getWireColor(int powerLevel) {
-		Vector3f vector3f = field_24466[powerLevel];
-		return MathHelper.packRgb(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+		Vec3f vec3f = field_24466[powerLevel];
+		return MathHelper.packRgb(vec3f.getX(), vec3f.getY(), vec3f.getZ());
 	}
 
 	@Environment(EnvType.CLIENT)
-	private void method_27936(World world, Random random, BlockPos pos, Vector3f vector3f, Direction direction, Direction direction2, float f, float g) {
+	private void method_27936(World world, Random random, BlockPos pos, Vec3f vec3f, Direction direction, Direction direction2, float f, float g) {
 		float h = g - f;
 		if (!(random.nextFloat() >= 0.2F * h)) {
 			float i = 0.4375F;
@@ -439,7 +439,7 @@ public class RedstoneWireBlock extends Block {
 			double e = 0.5 + (double)(0.4375F * (float)direction.getOffsetY()) + (double)(j * (float)direction2.getOffsetY());
 			double k = 0.5 + (double)(0.4375F * (float)direction.getOffsetZ()) + (double)(j * (float)direction2.getOffsetZ());
 			world.addParticle(
-				new DustParticleEffect(vector3f.getX(), vector3f.getY(), vector3f.getZ(), 1.0F),
+				new DustParticleEffect(vec3f.getX(), vec3f.getY(), vec3f.getZ(), 1.0F),
 				(double)pos.getX() + d,
 				(double)pos.getY() + e,
 				(double)pos.getZ() + k,

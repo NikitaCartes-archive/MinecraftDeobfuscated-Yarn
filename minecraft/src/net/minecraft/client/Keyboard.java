@@ -1,5 +1,6 @@
 package net.minecraft.client;
 
+import com.google.common.base.MoreObjects;
 import java.util.Locale;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -41,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class Keyboard {
@@ -155,7 +157,9 @@ public class Keyboard {
 					} else if (!this.client.player.isSpectator()) {
 						this.client.player.sendChatMessage("/gamemode spectator");
 					} else {
-						this.client.player.sendChatMessage("/gamemode " + this.client.interactionManager.getPreviousGameMode().getName());
+						this.client
+							.player
+							.sendChatMessage("/gamemode " + MoreObjects.firstNonNull(this.client.interactionManager.getPreviousGameMode(), GameMode.CREATIVE).getName());
 					}
 
 					return true;

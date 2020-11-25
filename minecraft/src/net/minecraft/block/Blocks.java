@@ -3053,6 +3053,20 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER).nonOpaque()
 		)
 	);
+	public static final Block POINTED_DRIPSTONE = register(
+		"pointed_dripstone",
+		new PointedDripstoneBlock(
+			AbstractBlock.Settings.of(Material.STONE, MapColor.BROWN_TERRACOTTA)
+				.nonOpaque()
+				.sounds(BlockSoundGroup.POINTED_DRIPSTONE)
+				.ticksRandomly()
+				.strength(1.5F, 3.0F)
+		)
+	);
+	public static final Block DRIPSTONE_BLOCK = register(
+		"dripstone_block",
+		new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.BROWN_TERRACOTTA).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5F, 1.0F))
+	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
 		return blockState -> blockState.get(Properties.LIT) ? litLevel : 0;

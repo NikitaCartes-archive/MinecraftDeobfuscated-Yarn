@@ -12,7 +12,6 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameMode;
 
 @Environment(EnvType.CLIENT)
 public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
@@ -30,7 +29,7 @@ public class PunchTreeTutorialStepHandler implements TutorialStepHandler {
 	@Override
 	public void tick() {
 		this.ticks++;
-		if (this.manager.getGameMode() != GameMode.SURVIVAL) {
+		if (!this.manager.isInSurvival()) {
 			this.manager.setStep(TutorialStep.NONE);
 		} else {
 			if (this.ticks == 1) {

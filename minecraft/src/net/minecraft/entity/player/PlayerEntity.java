@@ -822,8 +822,10 @@ public abstract class PlayerEntity extends LivingEntity {
 			return !this.world.getGameRules().getBoolean(GameRules.DROWNING_DAMAGE);
 		} else if (damageSource == DamageSource.FALL) {
 			return !this.world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
+		} else if (damageSource.isFire()) {
+			return !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
 		} else {
-			return damageSource.isFire() ? !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE) : false;
+			return damageSource == DamageSource.FREEZE ? !this.world.getGameRules().getBoolean(GameRules.FREEZE_DAMAGE) : false;
 		}
 	}
 
@@ -1705,9 +1707,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	public void sendAbilitiesUpdate() {
 	}
 
-	public void setGameMode(GameMode gameMode) {
-	}
-
 	@Override
 	public Text getName() {
 		return new LiteralText(this.gameProfile.getName());
@@ -2059,11 +2058,6 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Environment(EnvType.CLIENT)
 	public boolean isUsingSpyglass() {
 		return this.isUsingItem() && this.getActiveItem().isOf(Items.SPYGLASS);
-	}
-
-	@Override
-	public boolean canFreeze() {
-		return super.canFreeze() && !this.isCreative();
 	}
 
 	public static enum SleepFailureReason {

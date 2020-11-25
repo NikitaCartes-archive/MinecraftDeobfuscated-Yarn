@@ -33,6 +33,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ComposterBlock;
+import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -55,7 +56,6 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3d;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
@@ -94,6 +94,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -1549,23 +1550,23 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		for (int i = 0; i < 6; i++) {
 			matrices.push();
 			if (i == 1) {
-				matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 			}
 
 			if (i == 2) {
-				matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 			}
 
 			if (i == 3) {
-				matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
 			}
 
 			if (i == 4) {
-				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 			}
 
 			if (i == 5) {
-				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
 			}
 
 			Matrix4f matrix4f = matrices.peek().getModel();
@@ -1612,10 +1613,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				RenderSystem.disableTexture();
 				RenderSystem.shadeModel(7425);
 				matrices.push();
-				matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 				float i = MathHelper.sin(this.world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
-				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(i));
-				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(i));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 				float j = fs[0];
 				float k = fs[1];
 				float l = fs[2];
@@ -1642,8 +1643,8 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			matrices.push();
 			float i = 1.0F - this.world.getRainGradient(tickDelta);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, i);
-			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(tickDelta) * 360.0F));
+			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(tickDelta) * 360.0F));
 			Matrix4f matrix4f2 = matrices.peek().getModel();
 			float k = 30.0F;
 			this.textureManager.bindTexture(SUN);
@@ -2047,8 +2048,8 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			double e = 1.0 - worldBorder.getDistanceInsideBorder(camera.getPos().x, camera.getPos().z) / d;
 			e = Math.pow(e, 4.0);
 			double f = camera.getPos().x;
-			double g = camera.getPos().y;
-			double h = camera.getPos().z;
+			double g = camera.getPos().z;
+			double h = (double)this.client.gameRenderer.method_32796();
 			RenderSystem.enableBlend();
 			RenderSystem.enableDepthTest();
 			RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
@@ -2068,20 +2069,20 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			float m = (float)(Util.getMeasuringTimeMs() % 3000L) / 3000.0F;
 			float n = 0.0F;
 			float o = 0.0F;
-			float p = (float)this.world.getTopHeightLimit() * 0.5F;
+			float p = (float)h;
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
-			double q = Math.max((double)MathHelper.floor(h - d), worldBorder.getBoundNorth());
-			double r = Math.min((double)MathHelper.ceil(h + d), worldBorder.getBoundSouth());
+			double q = Math.max((double)MathHelper.floor(g - d), worldBorder.getBoundNorth());
+			double r = Math.min((double)MathHelper.ceil(g + d), worldBorder.getBoundSouth());
 			if (f > worldBorder.getBoundEast() - d) {
 				float s = 0.0F;
 
 				for (double t = q; t < r; s += 0.5F) {
 					double u = Math.min(1.0, r - t);
 					float v = (float)u * 0.5F;
-					this.method_22978(bufferBuilder, f, g, h, worldBorder.getBoundEast(), this.world.getTopHeightLimit(), t, m + s, m + 0.0F);
-					this.method_22978(bufferBuilder, f, g, h, worldBorder.getBoundEast(), this.world.getTopHeightLimit(), t + u, m + v + s, m + 0.0F);
-					this.method_22978(bufferBuilder, f, g, h, worldBorder.getBoundEast(), 0, t + u, m + v + s, m + p);
-					this.method_22978(bufferBuilder, f, g, h, worldBorder.getBoundEast(), 0, t, m + s, m + p);
+					bufferBuilder.vertex(worldBorder.getBoundEast() - f, -h, t - g).texture(m + s, m + 0.0F).next();
+					bufferBuilder.vertex(worldBorder.getBoundEast() - f, -h, t + u - g).texture(m + v + s, m + 0.0F).next();
+					bufferBuilder.vertex(worldBorder.getBoundEast() - f, h, t + u - g).texture(m + v + s, m + p).next();
+					bufferBuilder.vertex(worldBorder.getBoundEast() - f, h, t - g).texture(m + s, m + p).next();
 					t++;
 				}
 			}
@@ -2092,40 +2093,40 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				for (double t = q; t < r; s += 0.5F) {
 					double u = Math.min(1.0, r - t);
 					float v = (float)u * 0.5F;
-					this.method_22978(bufferBuilder, f, g, h, worldBorder.getBoundWest(), this.world.getTopHeightLimit(), t, m + s, m + 0.0F);
-					this.method_22978(bufferBuilder, f, g, h, worldBorder.getBoundWest(), this.world.getTopHeightLimit(), t + u, m + v + s, m + 0.0F);
-					this.method_22978(bufferBuilder, f, g, h, worldBorder.getBoundWest(), 0, t + u, m + v + s, m + p);
-					this.method_22978(bufferBuilder, f, g, h, worldBorder.getBoundWest(), 0, t, m + s, m + p);
+					bufferBuilder.vertex(worldBorder.getBoundWest() - f, -h, t - g).texture(m + s, m + 0.0F).next();
+					bufferBuilder.vertex(worldBorder.getBoundWest() - f, -h, t + u - g).texture(m + v + s, m + 0.0F).next();
+					bufferBuilder.vertex(worldBorder.getBoundWest() - f, h, t + u - g).texture(m + v + s, m + p).next();
+					bufferBuilder.vertex(worldBorder.getBoundWest() - f, h, t - g).texture(m + s, m + p).next();
 					t++;
 				}
 			}
 
 			q = Math.max((double)MathHelper.floor(f - d), worldBorder.getBoundWest());
 			r = Math.min((double)MathHelper.ceil(f + d), worldBorder.getBoundEast());
-			if (h > worldBorder.getBoundSouth() - d) {
+			if (g > worldBorder.getBoundSouth() - d) {
 				float s = 0.0F;
 
 				for (double t = q; t < r; s += 0.5F) {
 					double u = Math.min(1.0, r - t);
 					float v = (float)u * 0.5F;
-					this.method_22978(bufferBuilder, f, g, h, t, this.world.getTopHeightLimit(), worldBorder.getBoundSouth(), m + s, m + 0.0F);
-					this.method_22978(bufferBuilder, f, g, h, t + u, this.world.getTopHeightLimit(), worldBorder.getBoundSouth(), m + v + s, m + 0.0F);
-					this.method_22978(bufferBuilder, f, g, h, t + u, 0, worldBorder.getBoundSouth(), m + v + s, m + p);
-					this.method_22978(bufferBuilder, f, g, h, t, 0, worldBorder.getBoundSouth(), m + s, m + p);
+					bufferBuilder.vertex(t - f, -h, worldBorder.getBoundSouth() - g).texture(m + s, m + 0.0F).next();
+					bufferBuilder.vertex(t + u - f, -h, worldBorder.getBoundSouth() - g).texture(m + v + s, m + 0.0F).next();
+					bufferBuilder.vertex(t + u - f, h, worldBorder.getBoundSouth() - g).texture(m + v + s, m + p).next();
+					bufferBuilder.vertex(t - f, h, worldBorder.getBoundSouth() - g).texture(m + s, m + p).next();
 					t++;
 				}
 			}
 
-			if (h < worldBorder.getBoundNorth() + d) {
+			if (g < worldBorder.getBoundNorth() + d) {
 				float s = 0.0F;
 
 				for (double t = q; t < r; s += 0.5F) {
 					double u = Math.min(1.0, r - t);
 					float v = (float)u * 0.5F;
-					this.method_22978(bufferBuilder, f, g, h, t, this.world.getTopHeightLimit(), worldBorder.getBoundNorth(), m + s, m + 0.0F);
-					this.method_22978(bufferBuilder, f, g, h, t + u, this.world.getTopHeightLimit(), worldBorder.getBoundNorth(), m + v + s, m + 0.0F);
-					this.method_22978(bufferBuilder, f, g, h, t + u, 0, worldBorder.getBoundNorth(), m + v + s, m + p);
-					this.method_22978(bufferBuilder, f, g, h, t, 0, worldBorder.getBoundNorth(), m + s, m + p);
+					bufferBuilder.vertex(t - f, -h, worldBorder.getBoundNorth() - g).texture(m + s, m + 0.0F).next();
+					bufferBuilder.vertex(t + u - f, -h, worldBorder.getBoundNorth() - g).texture(m + v + s, m + 0.0F).next();
+					bufferBuilder.vertex(t + u - f, h, worldBorder.getBoundNorth() - g).texture(m + v + s, m + p).next();
+					bufferBuilder.vertex(t - f, h, worldBorder.getBoundNorth() - g).texture(m + s, m + p).next();
 					t++;
 				}
 			}
@@ -2141,10 +2142,6 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			RenderSystem.popMatrix();
 			RenderSystem.depthMask(true);
 		}
-	}
-
-	private void method_22978(BufferBuilder bufferBuilder, double d, double e, double f, double g, int i, double h, float j, float k) {
-		bufferBuilder.vertex(g - d, (double)i - e, h - f).texture(j, k).next();
 	}
 
 	private void drawBlockOutline(
@@ -2629,6 +2626,21 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			case 1044:
 				this.world.playSound(pos, SoundEvents.BLOCK_SMITHING_TABLE_USE, SoundCategory.BLOCKS, 1.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
 				break;
+			case 1045:
+				this.world.playSound(pos, SoundEvents.BLOCK_POINTED_DRIPSTONE_LAND, SoundCategory.BLOCKS, 2.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false);
+				break;
+			case 1046:
+				this.world
+					.playSound(
+						pos, SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_LAVA_INTO_CAULDRON, SoundCategory.BLOCKS, 2.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false
+					);
+				break;
+			case 1047:
+				this.world
+					.playSound(
+						pos, SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundCategory.BLOCKS, 2.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false
+					);
+				break;
 			case 1500:
 				ComposterBlock.playEffects(this.world, pos, data > 0);
 				break;
@@ -2662,6 +2674,9 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 					double e = (double)pos.getZ() + (5.0 + random.nextDouble() * 6.0) / 16.0;
 					this.world.addParticle(ParticleTypes.SMOKE, s, d, e, 0.0, 0.0, 0.0);
 				}
+				break;
+			case 1504:
+				PointedDripstoneBlock.createParticle(this.world, pos, this.world.getBlockState(pos));
 				break;
 			case 2000:
 				Direction direction = Direction.byId(data);

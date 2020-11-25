@@ -71,7 +71,7 @@ public class SkeletonEntityModel<T extends MobEntity & RangedAttackMob> extends 
 			this.leftArm.pitch = (float) (-Math.PI / 2);
 			this.rightArm.pitch -= k * 1.2F - l * 0.4F;
 			this.leftArm.pitch -= k * 1.2F - l * 0.4F;
-			CrossbowPosing.method_29350(this.rightArm, this.leftArm, h);
+			CrossbowPosing.method_32789(this.rightArm, this.leftArm, h);
 		}
 	}
 

@@ -1108,16 +1108,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				int i = Math.min(this.getMaxTrackDistance(), (ThreadedAnvilChunkStorage.this.watchDistance - 1) * 16);
 				boolean bl = vec3d.x >= (double)(-i) && vec3d.x <= (double)i && vec3d.z >= (double)(-i) && vec3d.z <= (double)i && this.entity.canBeSpectated(player);
 				if (bl) {
-					boolean bl2 = this.entity.teleporting;
-					if (!bl2) {
-						ChunkPos chunkPos = this.entity.getChunkPos();
-						ChunkHolder chunkHolder = ThreadedAnvilChunkStorage.this.getChunkHolder(chunkPos.toLong());
-						if (chunkHolder != null && chunkHolder.getWorldChunk() != null) {
-							bl2 = ThreadedAnvilChunkStorage.getChebyshevDistance(chunkPos, player, false) <= ThreadedAnvilChunkStorage.this.watchDistance;
-						}
-					}
-
-					if (bl2 && this.playersTracking.add(player.networkHandler)) {
+					if (this.playersTracking.add(player.networkHandler)) {
 						this.entry.startTracking(player);
 					}
 				} else if (this.playersTracking.remove(player.networkHandler)) {

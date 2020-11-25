@@ -52,14 +52,17 @@ public class CrossbowPosing {
 			modelPart2.pitch += h * 2.2F - i * 0.4F;
 		}
 
-		method_29350(modelPart, modelPart2, g);
+		method_32789(modelPart, modelPart2, g);
 	}
 
-	public static void method_29350(ModelPart modelPart, ModelPart modelPart2, float f) {
-		modelPart.roll = modelPart.roll + MathHelper.cos(f * 0.09F) * 0.05F + 0.05F;
-		modelPart2.roll = modelPart2.roll - (MathHelper.cos(f * 0.09F) * 0.05F + 0.05F);
-		modelPart.pitch = modelPart.pitch + MathHelper.sin(f * 0.067F) * 0.05F;
-		modelPart2.pitch = modelPart2.pitch - MathHelper.sin(f * 0.067F) * 0.05F;
+	public static void method_29350(ModelPart modelPart, float f, float g) {
+		modelPart.roll = modelPart.roll + g * (MathHelper.cos(f * 0.09F) * 0.05F + 0.05F);
+		modelPart.pitch = modelPart.pitch + g * MathHelper.sin(f * 0.067F) * 0.05F;
+	}
+
+	public static void method_32789(ModelPart modelPart, ModelPart modelPart2, float f) {
+		method_29350(modelPart, f, 1.0F);
+		method_29350(modelPart2, f, -1.0F);
 	}
 
 	public static void method_29352(ModelPart modelPart, ModelPart modelPart2, boolean bl, float f, float g) {
@@ -74,10 +77,6 @@ public class CrossbowPosing {
 		modelPart.pitch = j;
 		modelPart2.pitch += h * 1.2F - i * 0.4F;
 		modelPart.pitch += h * 1.2F - i * 0.4F;
-		method_29350(modelPart2, modelPart, g);
-	}
-
-	public static float method_31978(ModelPart modelPart) {
-		return modelPart.pitch * 0.95F - 2.277655F;
+		method_32789(modelPart2, modelPart, g);
 	}
 }

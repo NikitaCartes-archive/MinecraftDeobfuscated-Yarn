@@ -25,14 +25,14 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 	private final BlockModels blockModelCache;
 	private final TextureManager textureManager;
 	private final BlockColors colorMap;
-	private int mipmap;
+	private int mipmapLevels;
 	private BakedModel missingModel;
 	private Object2IntMap<BlockState> stateLookup;
 
 	public BakedModelManager(TextureManager textureManager, BlockColors colorMap, int mipmap) {
 		this.textureManager = textureManager;
 		this.colorMap = colorMap;
-		this.mipmap = mipmap;
+		this.mipmapLevels = mipmap;
 		this.blockModelCache = new BlockModels(this);
 	}
 
@@ -50,7 +50,7 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 
 	protected ModelLoader prepare(ResourceManager resourceManager, Profiler profiler) {
 		profiler.startTick();
-		ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmap);
+		ModelLoader modelLoader = new ModelLoader(resourceManager, this.colorMap, profiler, this.mipmapLevels);
 		profiler.endTick();
 		return modelLoader;
 	}
@@ -90,8 +90,8 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 		}
 	}
 
-	public SpriteAtlasTexture method_24153(Identifier identifier) {
-		return this.atlasManager.getAtlas(identifier);
+	public SpriteAtlasTexture getAtlas(Identifier id) {
+		return this.atlasManager.getAtlas(id);
 	}
 
 	public void close() {
@@ -100,7 +100,7 @@ public class BakedModelManager extends SinglePreparationResourceReloadListener<M
 		}
 	}
 
-	public void resetMipmapLevels(int i) {
-		this.mipmap = i;
+	public void setMipmapLevels(int mipmapLevels) {
+		this.mipmapLevels = mipmapLevels;
 	}
 }

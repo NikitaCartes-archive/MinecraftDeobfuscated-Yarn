@@ -1,6 +1,8 @@
 package net.minecraft.block;
 
 import net.minecraft.block.cauldron.CauldronBehavior;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
@@ -22,6 +24,22 @@ public class CauldronBlock extends AbstractCauldronBlock {
 			} else if (precipitation == Biome.Precipitation.SNOW) {
 				world.setBlockState(pos, Blocks.POWDER_SNOW_CAULDRON.getDefaultState());
 			}
+		}
+	}
+
+	@Override
+	protected boolean method_32765(Fluid fluid) {
+		return true;
+	}
+
+	@Override
+	protected void method_32764(BlockState blockState, World world, BlockPos blockPos, Fluid fluid) {
+		if (fluid == Fluids.WATER) {
+			world.setBlockState(blockPos, Blocks.WATER_CAULDRON.getDefaultState());
+			world.syncWorldEvent(1047, blockPos, 0);
+		} else if (fluid == Fluids.LAVA) {
+			world.setBlockState(blockPos, Blocks.LAVA_CAULDRON.getDefaultState());
+			world.syncWorldEvent(1046, blockPos, 0);
 		}
 	}
 }

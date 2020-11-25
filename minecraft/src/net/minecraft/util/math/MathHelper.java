@@ -598,6 +598,15 @@ public class MathHelper {
 		return (i + j - 1) / j * j;
 	}
 
+	public static int method_32751(Random random, int i, int j) {
+		return random.nextInt(j - i + 1) + i;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static float method_32750(Random random, float f, float g) {
+		return random.nextFloat() * (g - f) + f;
+	}
+
 	static {
 		for (int i = 0; i < 257; i++) {
 			double d = (double)i / 256.0;

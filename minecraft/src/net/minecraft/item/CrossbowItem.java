@@ -9,7 +9,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
@@ -34,6 +33,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 public class CrossbowItem extends RangedWeaponItem implements Vanishable {
@@ -226,11 +226,11 @@ public class CrossbowItem extends RangedWeaponItem implements Vanishable {
 				crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectileEntity, simulated);
 			} else {
 				Vec3d vec3d = shooter.getOppositeRotationVector(1.0F);
-				Quaternion quaternion = new Quaternion(new Vector3f(vec3d), simulated, true);
+				Quaternion quaternion = new Quaternion(new Vec3f(vec3d), simulated, true);
 				Vec3d vec3d2 = shooter.getRotationVec(1.0F);
-				Vector3f vector3f = new Vector3f(vec3d2);
-				vector3f.rotate(quaternion);
-				projectileEntity.setVelocity((double)vector3f.getX(), (double)vector3f.getY(), (double)vector3f.getZ(), speed, divergence);
+				Vec3f vec3f = new Vec3f(vec3d2);
+				vec3f.rotate(quaternion);
+				projectileEntity.setVelocity((double)vec3f.getX(), (double)vec3f.getY(), (double)vec3f.getZ(), speed, divergence);
 			}
 
 			crossbow.damage(bl ? 3 : 1, shooter, e -> e.sendToolBreakStatus(hand));
