@@ -11,9 +11,9 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FacingBlock;
+import net.minecraft.block.OperatorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
-import net.minecraft.class_5552;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -39,22 +39,22 @@ import org.apache.logging.log4j.Logger;
 
 public class CommandBlock
 extends BlockWithEntity
-implements class_5552 {
+implements OperatorBlock {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final DirectionProperty FACING = FacingBlock.FACING;
     public static final BooleanProperty CONDITIONAL = Properties.CONDITIONAL;
-    private final boolean field_27192;
+    private final boolean auto;
 
-    public CommandBlock(AbstractBlock.Settings settings, boolean bl) {
+    public CommandBlock(AbstractBlock.Settings settings, boolean auto) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH)).with(CONDITIONAL, false));
-        this.field_27192 = bl;
+        this.auto = auto;
     }
 
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         CommandBlockBlockEntity commandBlockBlockEntity = new CommandBlockBlockEntity(pos, state);
-        commandBlockBlockEntity.setAuto(this.field_27192);
+        commandBlockBlockEntity.setAuto(this.auto);
         return commandBlockBlockEntity;
     }
 
@@ -157,7 +157,7 @@ implements class_5552 {
         if (!world.isClient) {
             if (itemStack.getSubTag("BlockEntityTag") == null) {
                 commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
-                commandBlockBlockEntity.setAuto(this.field_27192);
+                commandBlockBlockEntity.setAuto(this.auto);
             }
             if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {
                 boolean bl = world.isReceivingRedstonePower(pos);

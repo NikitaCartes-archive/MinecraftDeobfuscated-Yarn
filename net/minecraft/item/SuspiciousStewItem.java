@@ -31,8 +31,8 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        ItemStack itemStack = super.finishUsing(stack, world, user);
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+        ItemStack itemStack = super.finishUsing(stack, world, entity);
         CompoundTag compoundTag = stack.getTag();
         if (compoundTag != null && compoundTag.contains("Effects", 9)) {
             ListTag listTag = compoundTag.getList("Effects", 10);
@@ -44,10 +44,10 @@ extends Item {
                     j = compoundTag2.getInt("EffectDuration");
                 }
                 if ((statusEffect = StatusEffect.byRawId(compoundTag2.getByte("EffectId"))) == null) continue;
-                user.addStatusEffect(new StatusEffectInstance(statusEffect, j));
+                entity.addStatusEffect(new StatusEffectInstance(statusEffect, j));
             }
         }
-        if (user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode) {
+        if (entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode) {
             return itemStack;
         }
         return new ItemStack(Items.BOWL);

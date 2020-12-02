@@ -80,6 +80,7 @@ import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.level.ColorResolver;
 import org.jetbrains.annotations.Nullable;
 
@@ -198,7 +199,7 @@ extends World {
     }
 
     public void unloadBlockEntities(WorldChunk chunk) {
-        chunk.method_31712();
+        chunk.removeAllBlockEntities();
         this.chunkManager.getLightingProvider().setColumnEnabled(chunk.getPos(), false);
         this.field_27734.method_31875(chunk.getPos());
     }
@@ -679,6 +680,10 @@ extends World {
     @Override
     public Properties getLevelProperties() {
         return this.clientWorldProperties;
+    }
+
+    @Override
+    public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
     }
 
     @Override

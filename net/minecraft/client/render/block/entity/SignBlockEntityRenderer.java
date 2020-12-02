@@ -70,7 +70,7 @@ implements BlockEntityRenderer<SignBlockEntity> {
         }
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(signType);
+        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.method_33082(signType);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, signModel::getLayer);
         signModel.field_27756.render(matrixStack, vertexConsumer, i, j);
         matrixStack.pop();

@@ -69,6 +69,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.apache.logging.log4j.LogManager;
@@ -138,8 +139,8 @@ AutoCloseable {
         return null;
     }
 
-    public boolean isInBuildLimit(BlockPos blockPos) {
-        return !this.isOutOfHeightLimit(blockPos) && World.isValidHorizontally(blockPos);
+    public boolean isInBuildLimit(BlockPos pos) {
+        return !this.isOutOfHeightLimit(pos) && World.isValidHorizontally(pos);
     }
 
     public static boolean isValid(BlockPos pos) {
@@ -232,6 +233,7 @@ AutoCloseable {
 
     @Override
     public boolean breakBlock(BlockPos pos, boolean drop, @Nullable Entity breakingEntity, int maxUpdateDepth) {
+        boolean bl;
         BlockState blockState = this.getBlockState(pos);
         if (blockState.isAir()) {
             return false;
@@ -244,7 +246,10 @@ AutoCloseable {
             BlockEntity blockEntity = blockState.hasBlockEntity() ? this.getBlockEntity(pos) : null;
             Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
         }
-        return this.setBlockState(pos, fluidState.getBlockState(), 3, maxUpdateDepth);
+        if (bl = this.setBlockState(pos, fluidState.getBlockState(), 3, maxUpdateDepth)) {
+            this.emitGameEvent(breakingEntity, GameEvent.BLOCK_DESTROY, pos);
+        }
+        return bl;
     }
 
     public void addBlockBreakParticles(BlockPos pos, BlockState state) {
@@ -289,13 +294,13 @@ AutoCloseable {
         }
     }
 
-    public void updateNeighbor(BlockPos blockPos, Block sourceBlock, BlockPos neighborPos) {
+    public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos neighborPos) {
         if (this.isClient) {
             return;
         }
-        BlockState blockState = this.getBlockState(blockPos);
+        BlockState blockState = this.getBlockState(pos);
         try {
-            blockState.neighborUpdate(this, blockPos, sourceBlock, neighborPos, false);
+            blockState.neighborUpdate(this, pos, sourceBlock, neighborPos, false);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Exception while updating neighbours");
             CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
@@ -306,14 +311,14 @@ AutoCloseable {
                     return "ID #" + Registry.BLOCK.getId(sourceBlock);
                 }
             });
-            CrashReportSection.addBlockInfo(crashReportSection, this, blockPos, blockState);
+            CrashReportSection.addBlockInfo(crashReportSection, this, pos, blockState);
             throw new CrashException(crashReport);
         }
     }
 
     @Override
     public int getTopY(Heightmap.Type heightmap, int x, int z) {
-        int i = x < -30000000 || z < -30000000 || x >= 30000000 || z >= 30000000 ? this.getSeaLevel() + 1 : (this.isChunkLoaded(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z)) ? this.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z)).sampleHeightmap(heightmap, x & 0xF, z & 0xF) + 1 : this.getBottomHeightLimit());
+        int i = x < -30000000 || z < -30000000 || x >= 30000000 || z >= 30000000 ? this.getSeaLevel() + 1 : (this.isChunkLoaded(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z)) ? this.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z)).sampleHeightmap(heightmap, x & 0xF, z & 0xF) + 1 : this.getSectionCount());
         return i;
     }
 
@@ -457,11 +462,11 @@ AutoCloseable {
         this.getWorldChunk(pos).removeBlockEntity(pos);
     }
 
-    public boolean canSetBlock(BlockPos blockPos) {
-        if (this.isOutOfHeightLimit(blockPos)) {
+    public boolean canSetBlock(BlockPos pos) {
+        if (this.isOutOfHeightLimit(pos)) {
             return false;
         }
-        return this.getChunkManager().isChunkLoaded(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+        return this.getChunkManager().isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
 
     public boolean isDirectionSolid(BlockPos pos, Entity entity, Direction direction) {
@@ -840,17 +845,25 @@ AutoCloseable {
         return this.debugWorld;
     }
 
-    @Override
-    public int getSectionCount() {
-        return 16;
-    }
-
-    @Override
-    public int getBottomSectionLimit() {
-        return 0;
-    }
-
     protected abstract class_5577<Entity> method_31592();
+
+    protected void method_32886(@Nullable Entity entity, GameEvent gameEvent, BlockPos blockPos, int i) {
+        int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
+        int k = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
+        int l = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
+        int m = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
+        int n = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
+        int o = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
+        for (int p = j; p <= l; ++p) {
+            for (int q = k; q <= m; ++q) {
+                WorldChunk chunk = this.getChunkManager().getWorldChunk(p, q);
+                if (chunk == null) continue;
+                for (int r = n; r <= o; ++r) {
+                    chunk.method_32914(r).method_32943(gameEvent, entity, blockPos);
+                }
+            }
+        }
+    }
 
     @Override
     public /* synthetic */ Chunk getChunk(int chunkX, int chunkZ) {

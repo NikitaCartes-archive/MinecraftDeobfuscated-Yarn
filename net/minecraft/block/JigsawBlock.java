@@ -7,10 +7,10 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.OperatorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.enums.JigsawOrientation;
-import net.minecraft.class_5552;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.state.StateManager;
@@ -29,7 +29,7 @@ import net.minecraft.world.World;
 public class JigsawBlock
 extends Block
 implements BlockEntityProvider,
-class_5552 {
+OperatorBlock {
     public static final EnumProperty<JigsawOrientation> ORIENTATION = Properties.ORIENTATION;
 
     protected JigsawBlock(AbstractBlock.Settings settings) {
@@ -84,12 +84,12 @@ class_5552 {
         return direction == direction2.getOpposite() && (bl || direction3 == direction4) && info1.tag.getString("target").equals(info2.tag.getString("name"));
     }
 
-    public static Direction getFacing(BlockState blockState) {
-        return blockState.get(ORIENTATION).getFacing();
+    public static Direction getFacing(BlockState state) {
+        return state.get(ORIENTATION).getFacing();
     }
 
-    public static Direction getRotation(BlockState blockState) {
-        return blockState.get(ORIENTATION).getRotation();
+    public static Direction getRotation(BlockState state) {
+        return state.get(ORIENTATION).getRotation();
     }
 }
 

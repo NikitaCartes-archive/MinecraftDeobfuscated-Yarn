@@ -30,7 +30,7 @@ extends Item {
         BlockPos blockPos = context.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         boolean bl = false;
-        if (CampfireBlock.method_30035(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
+        if (CampfireBlock.canBeLit(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true));
             bl = true;

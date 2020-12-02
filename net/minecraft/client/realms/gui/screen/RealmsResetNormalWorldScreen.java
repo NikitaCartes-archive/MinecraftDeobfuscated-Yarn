@@ -6,13 +6,13 @@ package net.minecraft.client.realms.gui.screen;
 import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5672;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.realms.RealmsLabel;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
+import net.minecraft.client.realms.gui.screen.RealmsWorldGeneratorType;
 import net.minecraft.client.realms.gui.screen.ResetWorldInfo;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -25,7 +25,7 @@ extends RealmsScreen {
     private final Consumer<ResetWorldInfo> field_27938;
     private RealmsLabel titleLabel;
     private TextFieldWidget seedEdit;
-    private class_5672 field_27939 = class_5672.field_27944;
+    private RealmsWorldGeneratorType field_27939 = RealmsWorldGeneratorType.DEFAULT;
     private boolean field_27940 = true;
     private final Text field_24206;
 
@@ -49,8 +49,8 @@ extends RealmsScreen {
         this.seedEdit.setMaxLength(32);
         this.addChild(this.seedEdit);
         this.setInitialFocus(this.seedEdit);
-        this.addButton(CyclingButtonWidget.method_32606(class_5672::method_32506).method_32624((class_5672[])class_5672.values()).value(this.field_27939).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(4), 205, 20, new TranslatableText("selectWorld.mapType"), (cyclingButtonWidget, arg) -> {
-            this.field_27939 = arg;
+        this.addButton(CyclingButtonWidget.method_32606(RealmsWorldGeneratorType::getText).method_32624((RealmsWorldGeneratorType[])RealmsWorldGeneratorType.values()).value(this.field_27939).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(4), 205, 20, new TranslatableText("selectWorld.mapType"), (cyclingButtonWidget, realmsWorldGeneratorType) -> {
+            this.field_27939 = realmsWorldGeneratorType;
         }));
         this.addButton(CyclingButtonWidget.method_32613(this.field_27940).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(6) - 2, 205, 20, new TranslatableText("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> {
             this.field_27940 = boolean_;

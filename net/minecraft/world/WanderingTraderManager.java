@@ -93,7 +93,7 @@ implements Spawner {
         BlockPos blockPos22 = optional.orElse(blockPos2);
         BlockPos blockPos3 = this.getNearbySpawnPos(serverWorld, blockPos22, 48);
         if (blockPos3 != null && this.doesNotSuffocateAt(serverWorld, blockPos3)) {
-            if (serverWorld.method_31081(blockPos3).equals(Optional.of(BiomeKeys.THE_VOID))) {
+            if (serverWorld.getBiomeKey(blockPos3).equals(Optional.of(BiomeKeys.THE_VOID))) {
                 return false;
             }
             WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(serverWorld, null, null, null, blockPos3, SpawnReason.EVENT, false, false);

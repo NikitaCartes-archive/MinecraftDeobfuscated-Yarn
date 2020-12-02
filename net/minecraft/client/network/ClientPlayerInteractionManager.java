@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5552;
+import net.minecraft.block.OperatorBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -106,7 +106,7 @@ public class ClientPlayerInteractionManager {
             return false;
         }
         Block block = blockState.getBlock();
-        if (block instanceof class_5552 && !this.client.player.isCreativeLevelTwoOp()) {
+        if (block instanceof OperatorBlock && !this.client.player.isCreativeLevelTwoOp()) {
             return false;
         }
         if (blockState.isAir()) {

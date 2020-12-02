@@ -21,34 +21,34 @@ import net.minecraft.util.math.Vec3d;
 @Environment(value=EnvType.CLIENT)
 public class GuardianEntityModel
 extends SinglePartEntityModel<GuardianEntity> {
-    private static final float[] field_17131 = new float[]{1.75f, 0.25f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f, 1.25f, 0.75f, 0.0f, 0.0f};
-    private static final float[] field_17132 = new float[]{0.0f, 0.0f, 0.0f, 0.0f, 0.25f, 1.75f, 1.25f, 0.75f, 0.0f, 0.0f, 0.0f, 0.0f};
-    private static final float[] field_17133 = new float[]{0.0f, 0.0f, 0.25f, 1.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.75f, 1.25f};
-    private static final float[] field_17134 = new float[]{0.0f, 0.0f, 8.0f, -8.0f, -8.0f, 8.0f, 8.0f, -8.0f, 0.0f, 0.0f, 8.0f, -8.0f};
-    private static final float[] field_17135 = new float[]{-8.0f, -8.0f, -8.0f, -8.0f, 0.0f, 0.0f, 0.0f, 0.0f, 8.0f, 8.0f, 8.0f, 8.0f};
-    private static final float[] field_17136 = new float[]{8.0f, -8.0f, 0.0f, 0.0f, -8.0f, -8.0f, 8.0f, 8.0f, 8.0f, -8.0f, 0.0f, 0.0f};
-    private final ModelPart field_27420;
-    private final ModelPart body;
+    private static final float[] SPIKE_PITCHES = new float[]{1.75f, 0.25f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f, 1.25f, 0.75f, 0.0f, 0.0f};
+    private static final float[] SPIKE_YAWS = new float[]{0.0f, 0.0f, 0.0f, 0.0f, 0.25f, 1.75f, 1.25f, 0.75f, 0.0f, 0.0f, 0.0f, 0.0f};
+    private static final float[] SPIKE_ROLLS = new float[]{0.0f, 0.0f, 0.25f, 1.75f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.75f, 1.25f};
+    private static final float[] SPIKE_PIVOTS_X = new float[]{0.0f, 0.0f, 8.0f, -8.0f, -8.0f, 8.0f, 8.0f, -8.0f, 0.0f, 0.0f, 8.0f, -8.0f};
+    private static final float[] SPIKE_PIVOTS_Y = new float[]{-8.0f, -8.0f, -8.0f, -8.0f, 0.0f, 0.0f, 0.0f, 0.0f, 8.0f, 8.0f, 8.0f, 8.0f};
+    private static final float[] SPIKE_PIVOTS_Z = new float[]{8.0f, -8.0f, 0.0f, 0.0f, -8.0f, -8.0f, 8.0f, 8.0f, 8.0f, -8.0f, 0.0f, 0.0f};
+    private final ModelPart root;
+    private final ModelPart head;
     private final ModelPart eye;
-    private final ModelPart[] field_3380;
-    private final ModelPart[] field_3378;
+    private final ModelPart[] spikes;
+    private final ModelPart[] tail;
 
-    public GuardianEntityModel(ModelPart modelPart) {
-        this.field_27420 = modelPart;
-        this.field_3380 = new ModelPart[12];
-        this.body = modelPart.getChild("head");
-        for (int i = 0; i < this.field_3380.length; ++i) {
-            this.field_3380[i] = this.body.getChild(GuardianEntityModel.method_32003(i));
+    public GuardianEntityModel(ModelPart root) {
+        this.root = root;
+        this.spikes = new ModelPart[12];
+        this.head = root.getChild("head");
+        for (int i = 0; i < this.spikes.length; ++i) {
+            this.spikes[i] = this.head.getChild(GuardianEntityModel.getSpikeName(i));
         }
-        this.eye = this.body.getChild("eye");
-        this.field_3378 = new ModelPart[3];
-        this.field_3378[0] = this.body.getChild("tail0");
-        this.field_3378[1] = this.field_3378[0].getChild("tail1");
-        this.field_3378[2] = this.field_3378[1].getChild("tail2");
+        this.eye = this.head.getChild("eye");
+        this.tail = new ModelPart[3];
+        this.tail[0] = this.head.getChild("tail0");
+        this.tail[1] = this.tail[0].getChild("tail1");
+        this.tail[2] = this.tail[1].getChild("tail2");
     }
 
-    private static String method_32003(int i) {
-        return "spike" + i;
+    private static String getSpikeName(int index) {
+        return "spike" + index;
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -57,13 +57,13 @@ extends SinglePartEntityModel<GuardianEntity> {
         ModelPartData modelPartData2 = modelPartData.addChild("head", ModelPartBuilder.create().uv(0, 0).cuboid(-6.0f, 10.0f, -8.0f, 12.0f, 12.0f, 16.0f).uv(0, 28).cuboid(-8.0f, 10.0f, -6.0f, 2.0f, 12.0f, 12.0f).uv(0, 28).cuboid(6.0f, 10.0f, -6.0f, 2.0f, 12.0f, 12.0f, true).uv(16, 40).cuboid(-6.0f, 8.0f, -6.0f, 12.0f, 2.0f, 12.0f).uv(16, 40).cuboid(-6.0f, 22.0f, -6.0f, 12.0f, 2.0f, 12.0f), ModelTransform.NONE);
         ModelPartBuilder modelPartBuilder = ModelPartBuilder.create().uv(0, 0).cuboid(-1.0f, -4.5f, -1.0f, 2.0f, 9.0f, 2.0f);
         for (int i = 0; i < 12; ++i) {
-            float f = GuardianEntityModel.method_32005(i, 0.0f, 0.0f);
-            float g = GuardianEntityModel.method_32006(i, 0.0f, 0.0f);
-            float h = GuardianEntityModel.method_32007(i, 0.0f, 0.0f);
-            float j = (float)Math.PI * field_17131[i];
-            float k = (float)Math.PI * field_17132[i];
-            float l = (float)Math.PI * field_17133[i];
-            modelPartData2.addChild(GuardianEntityModel.method_32003(i), modelPartBuilder, ModelTransform.of(f, g, h, j, k, l));
+            float f = GuardianEntityModel.getSpikePivotX(i, 0.0f, 0.0f);
+            float g = GuardianEntityModel.getSpikePivotY(i, 0.0f, 0.0f);
+            float h = GuardianEntityModel.getSpikePivotZ(i, 0.0f, 0.0f);
+            float j = (float)Math.PI * SPIKE_PITCHES[i];
+            float k = (float)Math.PI * SPIKE_YAWS[i];
+            float l = (float)Math.PI * SPIKE_ROLLS[i];
+            modelPartData2.addChild(GuardianEntityModel.getSpikeName(i), modelPartBuilder, ModelTransform.of(f, g, h, j, k, l));
         }
         modelPartData2.addChild("eye", ModelPartBuilder.create().uv(8, 0).cuboid(-1.0f, 15.0f, 0.0f, 2.0f, 2.0f, 1.0f), ModelTransform.pivot(0.0f, 0.0f, -8.25f));
         ModelPartData modelPartData3 = modelPartData2.addChild("tail0", ModelPartBuilder.create().uv(40, 0).cuboid(-2.0f, 14.0f, 7.0f, 4.0f, 4.0f, 8.0f), ModelTransform.NONE);
@@ -74,16 +74,16 @@ extends SinglePartEntityModel<GuardianEntity> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27420;
+        return this.root;
     }
 
     @Override
     public void setAngles(GuardianEntity guardianEntity, float f, float g, float h, float i, float j) {
         float k = h - (float)guardianEntity.age;
-        this.body.yaw = i * ((float)Math.PI / 180);
-        this.body.pitch = j * ((float)Math.PI / 180);
-        float l = (1.0f - guardianEntity.getTailAngle(k)) * 0.55f;
-        this.method_24185(h, l);
+        this.head.yaw = i * ((float)Math.PI / 180);
+        this.head.pitch = j * ((float)Math.PI / 180);
+        float l = (1.0f - guardianEntity.getSpikesExtension(k)) * 0.55f;
+        this.updateSpikeExtensions(h, l);
         Entity entity = MinecraftClient.getInstance().getCameraEntity();
         if (guardianEntity.hasBeamTarget()) {
             entity = guardianEntity.getBeamTarget();
@@ -100,34 +100,34 @@ extends SinglePartEntityModel<GuardianEntity> {
             this.eye.pivotX = MathHelper.sqrt((float)Math.abs(e)) * 2.0f * (float)Math.signum(e);
         }
         this.eye.visible = true;
-        float m = guardianEntity.getSpikesExtension(k);
-        this.field_3378[0].yaw = MathHelper.sin(m) * (float)Math.PI * 0.05f;
-        this.field_3378[1].yaw = MathHelper.sin(m) * (float)Math.PI * 0.1f;
-        this.field_3378[2].yaw = MathHelper.sin(m) * (float)Math.PI * 0.15f;
+        float m = guardianEntity.getTailAngle(k);
+        this.tail[0].yaw = MathHelper.sin(m) * (float)Math.PI * 0.05f;
+        this.tail[1].yaw = MathHelper.sin(m) * (float)Math.PI * 0.1f;
+        this.tail[2].yaw = MathHelper.sin(m) * (float)Math.PI * 0.15f;
     }
 
-    private void method_24185(float f, float g) {
+    private void updateSpikeExtensions(float animationProgress, float extension) {
         for (int i = 0; i < 12; ++i) {
-            this.field_3380[i].pivotX = GuardianEntityModel.method_32005(i, f, g);
-            this.field_3380[i].pivotY = GuardianEntityModel.method_32006(i, f, g);
-            this.field_3380[i].pivotZ = GuardianEntityModel.method_32007(i, f, g);
+            this.spikes[i].pivotX = GuardianEntityModel.getSpikePivotX(i, animationProgress, extension);
+            this.spikes[i].pivotY = GuardianEntityModel.getSpikePivotY(i, animationProgress, extension);
+            this.spikes[i].pivotZ = GuardianEntityModel.getSpikePivotZ(i, animationProgress, extension);
         }
     }
 
-    private static float method_32004(int i, float f, float g) {
-        return 1.0f + MathHelper.cos(f * 1.5f + (float)i) * 0.01f - g;
+    private static float getAngle(int index, float animationProgress, float magnitude) {
+        return 1.0f + MathHelper.cos(animationProgress * 1.5f + (float)index) * 0.01f - magnitude;
     }
 
-    private static float method_32005(int i, float f, float g) {
-        return field_17134[i] * GuardianEntityModel.method_32004(i, f, g);
+    private static float getSpikePivotX(int index, float animationProgress, float extension) {
+        return SPIKE_PIVOTS_X[index] * GuardianEntityModel.getAngle(index, animationProgress, extension);
     }
 
-    private static float method_32006(int i, float f, float g) {
-        return 16.0f + field_17135[i] * GuardianEntityModel.method_32004(i, f, g);
+    private static float getSpikePivotY(int index, float animationProgress, float extension) {
+        return 16.0f + SPIKE_PIVOTS_Y[index] * GuardianEntityModel.getAngle(index, animationProgress, extension);
     }
 
-    private static float method_32007(int i, float f, float g) {
-        return field_17136[i] * GuardianEntityModel.method_32004(i, f, g);
+    private static float getSpikePivotZ(int index, float animationProgress, float extension) {
+        return SPIKE_PIVOTS_Z[index] * GuardianEntityModel.getAngle(index, animationProgress, extension);
     }
 }
 

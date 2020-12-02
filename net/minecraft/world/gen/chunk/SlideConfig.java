@@ -9,7 +9,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class SlideConfig {
-    public static final Codec<SlideConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("target")).forGetter(SlideConfig::getTarget), ((MapCodec)Codec.intRange(0, 256).fieldOf("size")).forGetter(SlideConfig::getSize), ((MapCodec)Codec.INT.fieldOf("offset")).forGetter(SlideConfig::getOffset)).apply((Applicative<SlideConfig, ?>)instance, SlideConfig::new));
+    public static final Codec<SlideConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("target")).forGetter(SlideConfig::getTarget), ((MapCodec)Codec.intRange(0, Integer.MAX_VALUE).fieldOf("size")).forGetter(SlideConfig::getSize), ((MapCodec)Codec.INT.fieldOf("offset")).forGetter(SlideConfig::getOffset)).apply((Applicative<SlideConfig, ?>)instance, SlideConfig::new));
     private final int target;
     private final int size;
     private final int offset;

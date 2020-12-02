@@ -18,24 +18,24 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class RavagerEntityModel
 extends SinglePartEntityModel<RavagerEntity> {
-    private final ModelPart field_27489;
+    private final ModelPart root;
     private final ModelPart head;
     private final ModelPart jaw;
-    private final ModelPart field_27490;
-    private final ModelPart field_27491;
-    private final ModelPart field_27492;
-    private final ModelPart field_27493;
+    private final ModelPart rightHindLeg;
+    private final ModelPart leftHindLeg;
+    private final ModelPart rightFrontLeg;
+    private final ModelPart leftFrontLeg;
     private final ModelPart neck;
 
-    public RavagerEntityModel(ModelPart modelPart) {
-        this.field_27489 = modelPart;
-        this.neck = modelPart.getChild("neck");
+    public RavagerEntityModel(ModelPart root) {
+        this.root = root;
+        this.neck = root.getChild("neck");
         this.head = this.neck.getChild("head");
         this.jaw = this.head.getChild("mouth");
-        this.field_27490 = modelPart.getChild("right_hind_leg");
-        this.field_27491 = modelPart.getChild("left_hind_leg");
-        this.field_27492 = modelPart.getChild("right_front_leg");
-        this.field_27493 = modelPart.getChild("left_front_leg");
+        this.rightHindLeg = root.getChild("right_hind_leg");
+        this.leftHindLeg = root.getChild("left_hind_leg");
+        this.rightFrontLeg = root.getChild("right_front_leg");
+        this.leftFrontLeg = root.getChild("left_front_leg");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -57,7 +57,7 @@ extends SinglePartEntityModel<RavagerEntity> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27489;
+        return this.root;
     }
 
     @Override
@@ -65,10 +65,10 @@ extends SinglePartEntityModel<RavagerEntity> {
         this.head.pitch = j * ((float)Math.PI / 180);
         this.head.yaw = i * ((float)Math.PI / 180);
         float k = 0.4f * g;
-        this.field_27490.pitch = MathHelper.cos(f * 0.6662f) * k;
-        this.field_27491.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
-        this.field_27492.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
-        this.field_27493.pitch = MathHelper.cos(f * 0.6662f) * k;
+        this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662f) * k;
+        this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
+        this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * k;
+        this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662f) * k;
     }
 
     @Override
@@ -80,7 +80,7 @@ extends SinglePartEntityModel<RavagerEntity> {
         int l = ravagerEntity.getAttackTick();
         int m = 10;
         if (l > 0) {
-            float n = MathHelper.method_24504((float)l - h, 10.0f);
+            float n = MathHelper.wrap((float)l - h, 10.0f);
             float o = (1.0f + n) * 0.5f;
             float p = o * o * o * 12.0f;
             float q = p * MathHelper.sin(this.neck.pitch);

@@ -219,24 +219,24 @@ implements BlockEntityProvider {
         return DoubleBlockProperties.Type.SECOND;
     }
 
-    private static boolean method_30839(BlockView blockView, BlockPos blockPos) {
-        return blockView.getBlockState(blockPos.down()).getBlock() instanceof BedBlock;
+    private static boolean isBed(BlockView world, BlockPos pos) {
+        return world.getBlockState(pos.down()).getBlock() instanceof BedBlock;
     }
 
-    public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView collisionView, BlockPos pos, float f) {
+    public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, float f) {
         Direction direction3;
-        Direction direction = collisionView.getBlockState(pos).get(FACING);
+        Direction direction = world.getBlockState(pos).get(FACING);
         Direction direction2 = direction.rotateYClockwise();
         Direction direction4 = direction3 = direction2.method_30928(f) ? direction2.getOpposite() : direction2;
-        if (BedBlock.method_30839(collisionView, pos)) {
-            return BedBlock.method_30835(type, collisionView, pos, direction, direction3);
+        if (BedBlock.isBed(world, pos)) {
+            return BedBlock.method_30835(type, world, pos, direction, direction3);
         }
         int[][] is = BedBlock.method_30838(direction, direction3);
-        Optional<Vec3d> optional = BedBlock.method_30836(type, collisionView, pos, is, true);
+        Optional<Vec3d> optional = BedBlock.method_30836(type, world, pos, is, true);
         if (optional.isPresent()) {
             return optional;
         }
-        return BedBlock.method_30836(type, collisionView, pos, is, false);
+        return BedBlock.method_30836(type, world, pos, is, false);
     }
 
     private static Optional<Vec3d> method_30835(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, Direction direction, Direction direction2) {

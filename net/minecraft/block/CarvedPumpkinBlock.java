@@ -57,8 +57,8 @@ implements Wearable {
         this.trySpawnEntity(world, pos);
     }
 
-    public boolean canDispense(WorldView worldView, BlockPos pos) {
-        return this.getSnowGolemDispenserPattern().searchAround(worldView, pos) != null || this.getIronGolemDispenserPattern().searchAround(worldView, pos) != null;
+    public boolean canDispense(WorldView world, BlockPos pos) {
+        return this.getSnowGolemDispenserPattern().searchAround(world, pos) != null || this.getIronGolemDispenserPattern().searchAround(world, pos) != null;
     }
 
     private void trySpawnEntity(World world, BlockPos pos) {

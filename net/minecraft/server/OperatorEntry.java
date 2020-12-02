@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import java.util.UUID;
 import net.minecraft.server.ServerConfigEntry;
+import org.jetbrains.annotations.Nullable;
 
 public class OperatorEntry
 extends ServerConfigEntry<GameProfile> {
@@ -44,6 +45,7 @@ extends ServerConfigEntry<GameProfile> {
         json.addProperty("bypassesPlayerLimit", this.bypassPlayerLimit);
     }
 
+    @Nullable
     private static GameProfile getProfileFromJson(JsonObject json) {
         UUID uUID;
         if (!json.has("uuid") || !json.has("name")) {

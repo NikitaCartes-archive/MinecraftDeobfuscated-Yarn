@@ -41,23 +41,23 @@ extends VillagerResemblingModel<T> {
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
-        this.field_27525.setPivot(0.0f, -2.0f, 0.0f);
+        this.nose.setPivot(0.0f, -2.0f, 0.0f);
         float f = 0.01f * (float)(((Entity)entity).getEntityId() % 10);
-        this.field_27525.pitch = MathHelper.sin((float)((Entity)entity).age * f) * 4.5f * ((float)Math.PI / 180);
-        this.field_27525.yaw = 0.0f;
-        this.field_27525.roll = MathHelper.cos((float)((Entity)entity).age * f) * 2.5f * ((float)Math.PI / 180);
+        this.nose.pitch = MathHelper.sin((float)((Entity)entity).age * f) * 4.5f * ((float)Math.PI / 180);
+        this.nose.yaw = 0.0f;
+        this.nose.roll = MathHelper.cos((float)((Entity)entity).age * f) * 2.5f * ((float)Math.PI / 180);
         if (this.liftingNose) {
-            this.field_27525.setPivot(0.0f, 1.0f, -1.5f);
-            this.field_27525.pitch = -0.9f;
+            this.nose.setPivot(0.0f, 1.0f, -1.5f);
+            this.nose.pitch = -0.9f;
         }
     }
 
     public ModelPart getNose() {
-        return this.field_27525;
+        return this.nose;
     }
 
-    public void setLiftingNose(boolean bl) {
-        this.liftingNose = bl;
+    public void setLiftingNose(boolean liftingNose) {
+        this.liftingNose = liftingNose;
     }
 }
 

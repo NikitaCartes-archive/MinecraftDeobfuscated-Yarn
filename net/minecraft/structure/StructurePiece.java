@@ -316,7 +316,7 @@ public abstract class StructurePiece {
         if (!blockBox.contains(new BlockPos(i, j = this.applyYTransform(y), k = this.applyZTransform(x, z)))) {
             return;
         }
-        while ((structureWorldAccess.isAir(new BlockPos(i, j, k)) || structureWorldAccess.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > structureWorldAccess.getBottomHeightLimit() + 1) {
+        while ((structureWorldAccess.isAir(new BlockPos(i, j, k)) || structureWorldAccess.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > structureWorldAccess.getSectionCount() + 1) {
             structureWorldAccess.setBlockState(new BlockPos(i, j, k), blockState, 2);
             --j;
         }

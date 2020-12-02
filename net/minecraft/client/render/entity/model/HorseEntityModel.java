@@ -21,42 +21,42 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class HorseEntityModel<T extends HorseBaseEntity>
 extends AnimalModel<T> {
-    protected final ModelPart torso;
+    protected final ModelPart body;
     protected final ModelPart head;
-    private final ModelPart field_27425;
-    private final ModelPart field_27426;
-    private final ModelPart field_27427;
-    private final ModelPart field_27428;
-    private final ModelPart field_27429;
-    private final ModelPart field_27430;
-    private final ModelPart field_27431;
-    private final ModelPart field_27432;
+    private final ModelPart rightHindLeg;
+    private final ModelPart leftHindLeg;
+    private final ModelPart rightFrontLeg;
+    private final ModelPart leftFrontLeg;
+    private final ModelPart rightHindBabyLeg;
+    private final ModelPart leftHindBabyLeg;
+    private final ModelPart rightFrontBabyLeg;
+    private final ModelPart leftFrontBabyLeg;
     private final ModelPart tail;
-    private final ModelPart[] field_3304;
-    private final ModelPart[] field_3301;
+    private final ModelPart[] saddle;
+    private final ModelPart[] straps;
 
-    public HorseEntityModel(ModelPart modelPart) {
+    public HorseEntityModel(ModelPart root) {
         super(true, 16.2f, 1.36f, 2.7272f, 2.0f, 20.0f);
-        this.torso = modelPart.getChild("body");
-        this.head = modelPart.getChild("head_parts");
-        this.field_27425 = modelPart.getChild("right_hind_leg");
-        this.field_27426 = modelPart.getChild("left_hind_leg");
-        this.field_27427 = modelPart.getChild("right_front_leg");
-        this.field_27428 = modelPart.getChild("left_front_leg");
-        this.field_27429 = modelPart.getChild("right_hind_baby_leg");
-        this.field_27430 = modelPart.getChild("left_hind_baby_leg");
-        this.field_27431 = modelPart.getChild("right_front_baby_leg");
-        this.field_27432 = modelPart.getChild("left_front_baby_leg");
-        this.tail = this.torso.getChild("tail");
-        ModelPart modelPart2 = this.torso.getChild("saddle");
-        ModelPart modelPart3 = this.head.getChild("left_saddle_mouth");
-        ModelPart modelPart4 = this.head.getChild("right_saddle_mouth");
-        ModelPart modelPart5 = this.head.getChild("left_saddle_line");
-        ModelPart modelPart6 = this.head.getChild("right_saddle_line");
-        ModelPart modelPart7 = this.head.getChild("head_saddle");
-        ModelPart modelPart8 = this.head.getChild("mouth_saddle_wrap");
-        this.field_3304 = new ModelPart[]{modelPart2, modelPart3, modelPart4, modelPart7, modelPart8};
-        this.field_3301 = new ModelPart[]{modelPart5, modelPart6};
+        this.body = root.getChild("body");
+        this.head = root.getChild("head_parts");
+        this.rightHindLeg = root.getChild("right_hind_leg");
+        this.leftHindLeg = root.getChild("left_hind_leg");
+        this.rightFrontLeg = root.getChild("right_front_leg");
+        this.leftFrontLeg = root.getChild("left_front_leg");
+        this.rightHindBabyLeg = root.getChild("right_hind_baby_leg");
+        this.leftHindBabyLeg = root.getChild("left_hind_baby_leg");
+        this.rightFrontBabyLeg = root.getChild("right_front_baby_leg");
+        this.leftFrontBabyLeg = root.getChild("left_front_baby_leg");
+        this.tail = this.body.getChild("tail");
+        ModelPart modelPart = this.body.getChild("saddle");
+        ModelPart modelPart2 = this.head.getChild("left_saddle_mouth");
+        ModelPart modelPart3 = this.head.getChild("right_saddle_mouth");
+        ModelPart modelPart4 = this.head.getChild("left_saddle_line");
+        ModelPart modelPart5 = this.head.getChild("right_saddle_line");
+        ModelPart modelPart6 = this.head.getChild("head_saddle");
+        ModelPart modelPart7 = this.head.getChild("mouth_saddle_wrap");
+        this.saddle = new ModelPart[]{modelPart, modelPart2, modelPart3, modelPart6, modelPart7};
+        this.straps = new ModelPart[]{modelPart4, modelPart5};
     }
 
     public static ModelData getModelData(Dilation dilation) {
@@ -93,13 +93,13 @@ extends AnimalModel<T> {
     public void setAngles(T horseBaseEntity, float f, float g, float h, float i, float j) {
         boolean bl = ((HorseBaseEntity)horseBaseEntity).isSaddled();
         boolean bl2 = ((Entity)horseBaseEntity).hasPassengers();
-        for (ModelPart modelPart : this.field_3304) {
+        for (ModelPart modelPart : this.saddle) {
             modelPart.visible = bl;
         }
-        for (ModelPart modelPart : this.field_3301) {
+        for (ModelPart modelPart : this.straps) {
             modelPart.visible = bl2 && bl;
         }
-        this.torso.pivotY = 11.0f;
+        this.body.pivotY = 11.0f;
     }
 
     @Override
@@ -109,7 +109,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.field_27425, this.field_27426, this.field_27427, this.field_27428, this.field_27429, this.field_27430, this.field_27431, this.field_27432);
+        return ImmutableList.of(this.body, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightHindBabyLeg, this.leftHindBabyLeg, this.rightFrontBabyLeg, this.leftFrontBabyLeg);
     }
 
     @Override
@@ -137,7 +137,7 @@ extends AnimalModel<T> {
         float r = (float)((HorseBaseEntity)horseBaseEntity).age + h;
         this.head.pivotY = 4.0f;
         this.head.pivotZ = -12.0f;
-        this.torso.pitch = 0.0f;
+        this.body.pitch = 0.0f;
         this.head.pitch = 0.5235988f + m;
         this.head.yaw = l * ((float)Math.PI / 180);
         float s = ((Entity)horseBaseEntity).isTouchingWater() ? 0.2f : 1.0f;
@@ -148,45 +148,45 @@ extends AnimalModel<T> {
         this.head.yaw = o * l * ((float)Math.PI / 180) + (1.0f - Math.max(o, n)) * this.head.yaw;
         this.head.pivotY = o * -4.0f + n * 11.0f + (1.0f - Math.max(o, n)) * this.head.pivotY;
         this.head.pivotZ = o * -4.0f + n * -12.0f + (1.0f - Math.max(o, n)) * this.head.pivotZ;
-        this.torso.pitch = o * -0.7853982f + p * this.torso.pitch;
+        this.body.pitch = o * -0.7853982f + p * this.body.pitch;
         float w = 0.2617994f * o;
         float x = MathHelper.cos(r * 0.6f + (float)Math.PI);
-        this.field_27428.pivotY = 2.0f * o + 14.0f * p;
-        this.field_27428.pivotZ = -6.0f * o - 10.0f * p;
-        this.field_27427.pivotY = this.field_27428.pivotY;
-        this.field_27427.pivotZ = this.field_27428.pivotZ;
+        this.leftFrontLeg.pivotY = 2.0f * o + 14.0f * p;
+        this.leftFrontLeg.pivotZ = -6.0f * o - 10.0f * p;
+        this.rightFrontLeg.pivotY = this.leftFrontLeg.pivotY;
+        this.rightFrontLeg.pivotZ = this.leftFrontLeg.pivotZ;
         float y = (-1.0471976f + x) * o + u * p;
         float z = (-1.0471976f - x) * o - u * p;
-        this.field_27426.pitch = w - t * 0.5f * g * p;
-        this.field_27425.pitch = w + t * 0.5f * g * p;
-        this.field_27428.pitch = y;
-        this.field_27427.pitch = z;
+        this.leftHindLeg.pitch = w - t * 0.5f * g * p;
+        this.rightHindLeg.pitch = w + t * 0.5f * g * p;
+        this.leftFrontLeg.pitch = y;
+        this.rightFrontLeg.pitch = z;
         this.tail.pitch = 0.5235988f + g * 0.75f;
         this.tail.pivotY = -5.0f + g;
         this.tail.pivotZ = 2.0f + g * 2.0f;
         this.tail.yaw = bl ? MathHelper.cos(r * 0.7f) : 0.0f;
-        this.field_27429.pivotY = this.field_27425.pivotY;
-        this.field_27429.pivotZ = this.field_27425.pivotZ;
-        this.field_27429.pitch = this.field_27425.pitch;
-        this.field_27430.pivotY = this.field_27426.pivotY;
-        this.field_27430.pivotZ = this.field_27426.pivotZ;
-        this.field_27430.pitch = this.field_27426.pitch;
-        this.field_27431.pivotY = this.field_27427.pivotY;
-        this.field_27431.pivotZ = this.field_27427.pivotZ;
-        this.field_27431.pitch = this.field_27427.pitch;
-        this.field_27432.pivotY = this.field_27428.pivotY;
-        this.field_27432.pivotZ = this.field_27428.pivotZ;
-        this.field_27432.pitch = this.field_27428.pitch;
+        this.rightHindBabyLeg.pivotY = this.rightHindLeg.pivotY;
+        this.rightHindBabyLeg.pivotZ = this.rightHindLeg.pivotZ;
+        this.rightHindBabyLeg.pitch = this.rightHindLeg.pitch;
+        this.leftHindBabyLeg.pivotY = this.leftHindLeg.pivotY;
+        this.leftHindBabyLeg.pivotZ = this.leftHindLeg.pivotZ;
+        this.leftHindBabyLeg.pitch = this.leftHindLeg.pitch;
+        this.rightFrontBabyLeg.pivotY = this.rightFrontLeg.pivotY;
+        this.rightFrontBabyLeg.pivotZ = this.rightFrontLeg.pivotZ;
+        this.rightFrontBabyLeg.pitch = this.rightFrontLeg.pitch;
+        this.leftFrontBabyLeg.pivotY = this.leftFrontLeg.pivotY;
+        this.leftFrontBabyLeg.pivotZ = this.leftFrontLeg.pivotZ;
+        this.leftFrontBabyLeg.pitch = this.leftFrontLeg.pitch;
         boolean bl2 = ((PassiveEntity)horseBaseEntity).isBaby();
-        this.field_27425.visible = !bl2;
-        this.field_27426.visible = !bl2;
-        this.field_27427.visible = !bl2;
-        this.field_27428.visible = !bl2;
-        this.field_27429.visible = bl2;
-        this.field_27430.visible = bl2;
-        this.field_27431.visible = bl2;
-        this.field_27432.visible = bl2;
-        this.torso.pivotY = bl2 ? 10.8f : 0.0f;
+        this.rightHindLeg.visible = !bl2;
+        this.leftHindLeg.visible = !bl2;
+        this.rightFrontLeg.visible = !bl2;
+        this.leftFrontLeg.visible = !bl2;
+        this.rightHindBabyLeg.visible = bl2;
+        this.leftHindBabyLeg.visible = bl2;
+        this.rightFrontBabyLeg.visible = bl2;
+        this.leftFrontBabyLeg.visible = bl2;
+        this.body.pivotY = bl2 ? 10.8f : 0.0f;
     }
 }
 

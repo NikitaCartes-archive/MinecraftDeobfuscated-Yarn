@@ -44,37 +44,37 @@ extends AbstractFireBlock {
     public static final BooleanProperty WEST = ConnectingBlock.WEST;
     public static final BooleanProperty UP = ConnectingBlock.UP;
     private static final Map<Direction, BooleanProperty> DIRECTION_PROPERTIES = ConnectingBlock.FACING_PROPERTIES.entrySet().stream().filter(entry -> entry.getKey() != Direction.DOWN).collect(Util.toMap());
-    private static final VoxelShape field_26653 = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
-    private static final VoxelShape field_26654 = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
-    private static final VoxelShape field_26655 = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
-    private static final VoxelShape field_26656 = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
-    private static final VoxelShape field_26657 = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
-    private final Map<BlockState, VoxelShape> field_26658;
+    private static final VoxelShape UP_SHAPE = Block.createCuboidShape(0.0, 15.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 1.0, 16.0, 16.0);
+    private static final VoxelShape EAST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
+    private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
+    private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
+    private final Map<BlockState, VoxelShape> shapesByState;
     private final Object2IntMap<Block> burnChances = new Object2IntOpenHashMap<Block>();
     private final Object2IntMap<Block> spreadChances = new Object2IntOpenHashMap<Block>();
 
     public FireBlock(AbstractBlock.Settings settings) {
         super(settings, 1.0f);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false)).with(UP, false));
-        this.field_26658 = ImmutableMap.copyOf(this.stateManager.getStates().stream().filter(blockState -> blockState.get(AGE) == 0).collect(Collectors.toMap(Function.identity(), FireBlock::method_31016)));
+        this.shapesByState = ImmutableMap.copyOf(this.stateManager.getStates().stream().filter(state -> state.get(AGE) == 0).collect(Collectors.toMap(Function.identity(), FireBlock::getShapeForState)));
     }
 
-    private static VoxelShape method_31016(BlockState blockState) {
+    private static VoxelShape getShapeForState(BlockState state) {
         VoxelShape voxelShape = VoxelShapes.empty();
-        if (blockState.get(UP).booleanValue()) {
-            voxelShape = field_26653;
+        if (state.get(UP).booleanValue()) {
+            voxelShape = UP_SHAPE;
         }
-        if (blockState.get(NORTH).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, field_26656);
+        if (state.get(NORTH).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
         }
-        if (blockState.get(SOUTH).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, field_26657);
+        if (state.get(SOUTH).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
         }
-        if (blockState.get(EAST).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, field_26655);
+        if (state.get(EAST).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
         }
-        if (blockState.get(WEST).booleanValue()) {
-            voxelShape = VoxelShapes.union(voxelShape, field_26654);
+        if (state.get(WEST).booleanValue()) {
+            voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
         }
         return voxelShape.isEmpty() ? BASE_SHAPE : voxelShape;
     }
@@ -82,14 +82,14 @@ extends AbstractFireBlock {
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (this.canPlaceAt(state, world, pos)) {
-            return this.method_24855(world, pos, state.get(AGE));
+            return this.getStateWithAge(world, pos, state.get(AGE));
         }
         return Blocks.AIR.getDefaultState();
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return this.field_26658.get(state.with(AGE, 0));
+        return this.shapesByState.get(state.with(AGE, 0));
     }
 
     @Override
@@ -121,7 +121,7 @@ extends AbstractFireBlock {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         boolean bl2;
-        world.getBlockTickScheduler().schedule(pos, this, FireBlock.method_26155(world.random));
+        world.getBlockTickScheduler().schedule(pos, this, FireBlock.getFireTickDelay(world.random));
         if (!world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
             return;
         }
@@ -178,7 +178,7 @@ extends AbstractFireBlock {
                     }
                     if (q <= 0 || random.nextInt(o) > q || world.isRaining() && this.isRainingAround(world, mutable)) continue;
                     int r = Math.min(15, i + random.nextInt(5) / 4);
-                    world.setBlockState(mutable, this.method_24855(world, mutable, r), 3);
+                    world.setBlockState(mutable, this.getStateWithAge(world, mutable, r), 3);
                 }
             }
         }
@@ -208,7 +208,7 @@ extends AbstractFireBlock {
             BlockState blockState = world.getBlockState(pos);
             if (rand.nextInt(currentAge + 10) < 5 && !world.hasRain(pos)) {
                 int j = Math.min(currentAge + rand.nextInt(5) / 4, 15);
-                world.setBlockState(pos, this.method_24855(world, pos, j), 3);
+                world.setBlockState(pos, this.getStateWithAge(world, pos, j), 3);
             } else {
                 world.removeBlock(pos, false);
             }
@@ -220,10 +220,10 @@ extends AbstractFireBlock {
         }
     }
 
-    private BlockState method_24855(WorldAccess worldAccess, BlockPos blockPos, int i) {
-        BlockState blockState = FireBlock.getState(worldAccess, blockPos);
+    private BlockState getStateWithAge(WorldAccess world, BlockPos pos, int age) {
+        BlockState blockState = FireBlock.getState(world, pos);
         if (blockState.isOf(Blocks.FIRE)) {
-            return (BlockState)blockState.with(AGE, i);
+            return (BlockState)blockState.with(AGE, age);
         }
         return blockState;
     }
@@ -236,13 +236,13 @@ extends AbstractFireBlock {
         return false;
     }
 
-    private int getBurnChance(WorldView worldView, BlockPos pos) {
-        if (!worldView.isAir(pos)) {
+    private int getBurnChance(WorldView world, BlockPos pos) {
+        if (!world.isAir(pos)) {
             return 0;
         }
         int i = 0;
         for (Direction direction : Direction.values()) {
-            BlockState blockState = worldView.getBlockState(pos.offset(direction));
+            BlockState blockState = world.getBlockState(pos.offset(direction));
             i = Math.max(this.getBurnChance(blockState), i);
         }
         return i;
@@ -256,10 +256,10 @@ extends AbstractFireBlock {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         super.onBlockAdded(state, world, pos, oldState, notify);
-        world.getBlockTickScheduler().schedule(pos, this, FireBlock.method_26155(world.random));
+        world.getBlockTickScheduler().schedule(pos, this, FireBlock.getFireTickDelay(world.random));
     }
 
-    private static int method_26155(Random random) {
+    private static int getFireTickDelay(Random random) {
         return 30 + random.nextInt(10);
     }
 

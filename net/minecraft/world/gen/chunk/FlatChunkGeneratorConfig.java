@@ -8,12 +8,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -27,6 +29,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.GenerationSettings;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import net.minecraft.world.gen.chunk.StructureConfig;
@@ -44,7 +47,7 @@ import org.apache.logging.log4j.Logger;
 public class FlatChunkGeneratorConfig
 implements HeightLimitView {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biomeRegistry), ((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(FlatChunkGeneratorConfig::getStructuresConfig), ((MapCodec)FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers")).forGetter(FlatChunkGeneratorConfig::getLayers), ((MapCodec)Codec.BOOL.fieldOf("lakes")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.hasLakes), ((MapCodec)Codec.BOOL.fieldOf("features")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.hasFeatures), Biome.REGISTRY_CODEC.optionalFieldOf("biome").orElseGet(Optional::empty).forGetter(flatChunkGeneratorConfig -> Optional.of(flatChunkGeneratorConfig.biome))).apply((Applicative<FlatChunkGeneratorConfig, ?>)instance, FlatChunkGeneratorConfig::new)).stable();
+    public static final Codec<FlatChunkGeneratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.biomeRegistry), ((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(FlatChunkGeneratorConfig::getStructuresConfig), ((MapCodec)FlatChunkGeneratorLayer.CODEC.listOf().fieldOf("layers")).forGetter(FlatChunkGeneratorConfig::getLayers), ((MapCodec)Codec.BOOL.fieldOf("lakes")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.hasLakes), ((MapCodec)Codec.BOOL.fieldOf("features")).orElse(false).forGetter(flatChunkGeneratorConfig -> flatChunkGeneratorConfig.hasFeatures), Biome.REGISTRY_CODEC.optionalFieldOf("biome").orElseGet(Optional::empty).forGetter(flatChunkGeneratorConfig -> Optional.of(flatChunkGeneratorConfig.biome))).apply((Applicative<FlatChunkGeneratorConfig, ?>)instance, FlatChunkGeneratorConfig::new)).comapFlatMap(FlatChunkGeneratorConfig::method_33067, Function.identity()).stable();
     private static final Map<StructureFeature<?>, ConfiguredStructureFeature<?, ?>> STRUCTURE_TO_FEATURES = Util.make(Maps.newHashMap(), hashMap -> {
         hashMap.put(StructureFeature.MINESHAFT, ConfiguredStructureFeatures.MINESHAFT);
         hashMap.put(StructureFeature.VILLAGE, ConfiguredStructureFeatures.VILLAGE_PLAINS);
@@ -72,7 +75,15 @@ implements HeightLimitView {
     private boolean hasFeatures;
     private boolean hasLakes;
 
-    public FlatChunkGeneratorConfig(Registry<Biome> biomeRegistry, StructuresConfig structuresConfig, List<FlatChunkGeneratorLayer> layers, boolean hasLakes, boolean hasFeatures, Optional<Supplier<Biome>> biome) {
+    private static DataResult<FlatChunkGeneratorConfig> method_33067(FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+        int i = flatChunkGeneratorConfig.layers.stream().mapToInt(FlatChunkGeneratorLayer::getThickness).sum();
+        if (i > DimensionType.field_28134) {
+            return DataResult.error("Sum of layer heights is > " + DimensionType.field_28134, flatChunkGeneratorConfig);
+        }
+        return DataResult.success(flatChunkGeneratorConfig);
+    }
+
+    private FlatChunkGeneratorConfig(Registry<Biome> biomeRegistry, StructuresConfig structuresConfig, List<FlatChunkGeneratorLayer> layers, boolean hasLakes, boolean hasFeatures, Optional<Supplier<Biome>> biome) {
         this(structuresConfig, biomeRegistry);
         if (hasLakes) {
             this.enableLakes();
@@ -94,7 +105,7 @@ implements HeightLimitView {
         this.biomeRegistry = biomeRegistry;
         this.structuresConfig = structuresConfig;
         this.biome = () -> biomeRegistry.getOrThrow(BiomeKeys.PLAINS);
-        this.layerBlocks = new BlockState[this.getHeight()];
+        this.layerBlocks = new BlockState[this.getBottomSectionLimit()];
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -156,7 +167,7 @@ implements HeightLimitView {
             BlockState blockState = blockStates[i];
             if (blockState == null || Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) continue;
             this.layerBlocks[i] = null;
-            int j = this.getBottomHeightLimit() + i;
+            int j = this.getSectionCount() + i;
             builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(j, blockState)));
         }
         return new Biome.Builder().precipitation(biome.getPrecipitation()).category(biome.getCategory()).depth(biome.getDepth()).scale(biome.getScale()).temperature(biome.getTemperature()).downfall(biome.getDownfall()).effects(biome.getEffects()).generationSettings(builder.build()).spawnSettings(biome.getSpawnSettings()).build();
@@ -185,7 +196,7 @@ implements HeightLimitView {
 
     public void updateLayerBlocks() {
         Arrays.fill(this.layerBlocks, 0, this.layerBlocks.length, null);
-        int i = this.getBottomHeightLimit();
+        int i = this.getSectionCount();
         for (FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.layers) {
             flatChunkGeneratorLayer.setStartY(i);
             i += flatChunkGeneratorLayer.getThickness();
@@ -213,17 +224,17 @@ implements HeightLimitView {
     }
 
     public int method_31926(int i) {
-        return i - this.getBottomHeightLimit();
+        return i - this.getSectionCount();
     }
 
     @Override
     public int getSectionCount() {
-        return 16;
+        return 0;
     }
 
     @Override
     public int getBottomSectionLimit() {
-        return 0;
+        return 256;
     }
 }
 

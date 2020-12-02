@@ -310,7 +310,7 @@ VillagerDataContainer {
 
     private boolean needRestock() {
         for (TradeOffer tradeOffer : this.getOffers()) {
-            if (!tradeOffer.method_21834()) continue;
+            if (!tradeOffer.hasAvailableUses()) continue;
             return true;
         }
         return false;
@@ -338,7 +338,7 @@ VillagerDataContainer {
         return this.canRestock() && this.needRestock();
     }
 
-    private void method_21723() {
+    private void restockAndUpdatePricesOnDemand() {
         int i = 2 - this.restocksToday;
         if (i > 0) {
             for (TradeOffer tradeOffer : this.getOffers()) {
@@ -505,11 +505,11 @@ VillagerDataContainer {
         if (entity != null) {
             this.notifyDeath(entity);
         }
-        this.method_30958();
+        this.releaseAllTickets();
         super.onDeath(source);
     }
 
-    private void method_30958() {
+    private void releaseAllTickets() {
         this.releaseTicketFor(MemoryModuleType.HOME);
         this.releaseTicketFor(MemoryModuleType.JOB_SITE);
         this.releaseTicketFor(MemoryModuleType.POTENTIAL_JOB_SITE);
@@ -630,7 +630,7 @@ VillagerDataContainer {
             this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
         }
         if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
-            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_31081(this.getBlockPos()))));
+            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
         }
         if (spawnReason == SpawnReason.STRUCTURE) {
             this.natural = true;
@@ -641,7 +641,7 @@ VillagerDataContainer {
     @Override
     public VillagerEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         double d = this.random.nextDouble();
-        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(serverWorld.method_31081(this.getBlockPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
+        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(serverWorld.getBiomeKey(this.getBlockPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
         VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, serverWorld, villagerType);
         villagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.BREEDING, null, null);
         return villagerEntity;
@@ -661,7 +661,7 @@ VillagerDataContainer {
             }
             witchEntity.setPersistent();
             world.spawnEntityAndPassengers(witchEntity);
-            this.method_30958();
+            this.releaseAllTickets();
             this.discard();
         } else {
             super.onStruckByLightning(world, lightning);
@@ -780,7 +780,7 @@ VillagerDataContainer {
             IronGolemEntity ironGolemEntity;
             double e;
             double d = world.random.nextInt(16) - 8;
-            BlockPos blockPos2 = this.method_30023(blockPos, d, e = (double)(world.random.nextInt(16) - 8));
+            BlockPos blockPos2 = this.getHighestOpenPositionOnOffset(blockPos, d, e = (double)(world.random.nextInt(16) - 8));
             if (blockPos2 == null || (ironGolemEntity = EntityType.IRON_GOLEM.create(world, null, null, null, blockPos2, SpawnReason.MOB_SUMMONED, false, false)) == null) continue;
             if (ironGolemEntity.canSpawn(world, SpawnReason.MOB_SUMMONED) && ironGolemEntity.canSpawn(world)) {
                 world.spawnEntityAndPassengers(ironGolemEntity);
@@ -792,17 +792,17 @@ VillagerDataContainer {
     }
 
     @Nullable
-    private BlockPos method_30023(BlockPos blockPos, double d, double e) {
+    private BlockPos getHighestOpenPositionOnOffset(BlockPos pos, double x, double z) {
         int i = 6;
-        BlockPos blockPos2 = blockPos.add(d, 6.0, e);
-        BlockState blockState = this.world.getBlockState(blockPos2);
+        BlockPos blockPos = pos.add(x, 6.0, z);
+        BlockState blockState = this.world.getBlockState(blockPos);
         for (int j = 6; j >= -6; --j) {
-            BlockPos blockPos3 = blockPos2;
+            BlockPos blockPos2 = blockPos;
             BlockState blockState2 = blockState;
-            blockPos2 = blockPos3.down();
-            blockState = this.world.getBlockState(blockPos2);
+            blockPos = blockPos2.down();
+            blockState = this.world.getBlockState(blockPos);
             if (!blockState2.isAir() && !blockState2.getMaterial().isLiquid() || !blockState.getMaterial().blocksLight()) continue;
-            return blockPos3;
+            return blockPos2;
         }
         return null;
     }
@@ -831,7 +831,7 @@ VillagerDataContainer {
     }
 
     private void clearDailyRestockCount() {
-        this.method_21723();
+        this.restockAndUpdatePricesOnDemand();
         this.restocksToday = 0;
     }
 

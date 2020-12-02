@@ -57,7 +57,7 @@ extends Feature<TreeFeatureConfig> {
         return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
     }
 
-    private static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
+    private static boolean canPlaceTreeOn(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> TreeFeature.isSoil(state) || state.isOf(Blocks.FARMLAND));
     }
 
@@ -76,7 +76,7 @@ extends Feature<TreeFeatureConfig> {
         return TreeFeature.isAirOrLeaves(world, pos) || TreeFeature.isReplaceablePlant(world, pos) || TreeFeature.isWater(world, pos);
     }
 
-    private boolean generate(StructureWorldAccess structureWorldAccess, Random random, BlockPos pos, Set<BlockPos> logPositions, Set<BlockPos> leavesPositions, BlockBox box, TreeFeatureConfig config) {
+    private boolean generate(StructureWorldAccess world, Random random, BlockPos pos, Set<BlockPos> logPositions, Set<BlockPos> leavesPositions, BlockBox box, TreeFeatureConfig config) {
         BlockPos blockPos;
         int n;
         int i = config.trunkPlacer.getHeight(random);
@@ -84,29 +84,29 @@ extends Feature<TreeFeatureConfig> {
         int k = i - j;
         int l = config.foliagePlacer.getRandomRadius(random, k);
         if (!config.skipFluidCheck) {
-            int m = structureWorldAccess.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
-            n = structureWorldAccess.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
+            int m = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
+            n = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
             if (n - m > config.maxWaterDepth) {
                 return false;
             }
-            int o = config.heightmap == Heightmap.Type.OCEAN_FLOOR ? m : (config.heightmap == Heightmap.Type.WORLD_SURFACE ? n : structureWorldAccess.getTopPosition(config.heightmap, pos).getY());
+            int o = config.heightmap == Heightmap.Type.OCEAN_FLOOR ? m : (config.heightmap == Heightmap.Type.WORLD_SURFACE ? n : world.getTopPosition(config.heightmap, pos).getY());
             blockPos = new BlockPos(pos.getX(), o, pos.getZ());
         } else {
             blockPos = pos;
         }
-        if (blockPos.getY() < structureWorldAccess.getBottomHeightLimit() + 1 || blockPos.getY() + i + 1 > structureWorldAccess.getTopHeightLimit()) {
+        if (blockPos.getY() < world.getSectionCount() + 1 || blockPos.getY() + i + 1 > world.getTopHeightLimit()) {
             return false;
         }
-        if (!TreeFeature.isDirtOrGrass(structureWorldAccess, blockPos.down())) {
+        if (!TreeFeature.canPlaceTreeOn(world, blockPos.down())) {
             return false;
         }
         OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
-        n = this.method_29963(structureWorldAccess, i, blockPos, config);
+        n = this.method_29963(world, i, blockPos, config);
         if (!(n >= i || optionalInt.isPresent() && n >= optionalInt.getAsInt())) {
             return false;
         }
-        List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(structureWorldAccess, random, n, blockPos, logPositions, box, config);
-        list.forEach(treeNode -> treeFeatureConfig.foliagePlacer.generate(structureWorldAccess, random, config, n, (FoliagePlacer.TreeNode)treeNode, j, l, leavesPositions, box));
+        List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, n, blockPos, logPositions, box, config);
+        list.forEach(treeNode -> treeFeatureConfig.foliagePlacer.generate(world, random, config, n, (FoliagePlacer.TreeNode)treeNode, j, l, leavesPositions, box));
         return true;
     }
 

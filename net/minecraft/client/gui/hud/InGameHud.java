@@ -736,12 +736,14 @@ extends DrawableHelper {
         this.client.getProfiler().swap("health");
         for (x = MathHelper.ceil((f + (float)p) / 2.0f) - 1; x >= 0; --x) {
             y = 16;
-            if (playerEntity.hasStatusEffect(StatusEffects.POISON)) {
-                y += 36;
-            } else if (playerEntity.hasStatusEffect(StatusEffects.WITHER)) {
-                y += 72;
-            } else if (playerEntity.isFreezing()) {
-                y += 126;
+            if (u <= 0) {
+                if (playerEntity.hasStatusEffect(StatusEffects.POISON)) {
+                    y += 36;
+                } else if (playerEntity.hasStatusEffect(StatusEffects.WITHER)) {
+                    y += 72;
+                } else if (playerEntity.isFreezing()) {
+                    y += 126;
+                }
             }
             z = 0;
             if (bl) {

@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -25,6 +26,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class FenceGateBlock
 extends HorizontalFacingBlock {
@@ -125,7 +127,9 @@ extends HorizontalFacingBlock {
             state = (BlockState)state.with(OPEN, true);
             world.setBlockState(pos, state, 10);
         }
-        world.syncWorldEvent(player, state.get(OPEN) != false ? 1008 : 1014, pos, 0);
+        boolean bl = state.get(OPEN);
+        world.syncWorldEvent(player, bl ? 1008 : 1014, pos, 0);
+        world.emitGameEvent((Entity)player, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
         return ActionResult.success(world.isClient);
     }
 
@@ -139,6 +143,7 @@ extends HorizontalFacingBlock {
             world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), 2);
             if (state.get(OPEN) != bl) {
                 world.syncWorldEvent(null, bl ? 1008 : 1014, pos, 0);
+                world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
             }
         }
     }

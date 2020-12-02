@@ -70,7 +70,7 @@ extends BipedEntityModel<T> {
             this.leftArm.pitch = -1.5707964f;
             this.rightArm.pitch -= k * 1.2f - l * 0.4f;
             this.leftArm.pitch -= k * 1.2f - l * 0.4f;
-            CrossbowPosing.method_32789(this.rightArm, this.leftArm, h);
+            CrossbowPosing.swingArms(this.rightArm, this.leftArm, h);
         }
     }
 

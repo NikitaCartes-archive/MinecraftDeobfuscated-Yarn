@@ -22,7 +22,7 @@ extends AbstractHeightmapDecorator<DC> {
         int i = pos.getX();
         int j = pos.getZ();
         int k = context.getTopY(this.getHeightmapType(config), i, j);
-        if (k > context.getBottomHeightLimit()) {
+        if (k > context.getSectionCount()) {
             return Stream.of(new BlockPos(i, k, j));
         }
         return Stream.of(new BlockPos[0]);

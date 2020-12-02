@@ -14,9 +14,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.BlockView;
+import net.minecraft.world.EmptyBlockView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -44,13 +45,13 @@ extends StructureFeature<DefaultFeatureConfig> {
             int k = chunkPos.getStartX() + this.random.nextInt(16);
             int l = chunkPos.getStartZ() + this.random.nextInt(16);
             int m = chunkGenerator.getSeaLevel();
-            BlockView blockView = chunkGenerator.getColumnSample(k, l);
+            VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(k, l);
             BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l);
             for (n = m + this.random.nextInt(chunkGenerator.getWorldHeight() - 2 - m); n > m; --n) {
-                BlockState blockState = blockView.getBlockState(mutable);
+                BlockState blockState = verticalBlockSample.method_32892(mutable);
                 mutable.move(Direction.DOWN);
-                BlockState blockState2 = blockView.getBlockState(mutable);
-                if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(blockView, mutable, Direction.UP))) break;
+                BlockState blockState2 = verticalBlockSample.method_32892(mutable);
+                if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(EmptyBlockView.INSTANCE, mutable, Direction.UP))) break;
             }
             if (n <= m) {
                 return;

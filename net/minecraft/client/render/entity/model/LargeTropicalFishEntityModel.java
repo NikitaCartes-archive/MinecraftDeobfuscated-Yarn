@@ -19,12 +19,12 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class LargeTropicalFishEntityModel<T extends Entity>
 extends TintableCompositeModel<T> {
-    private final ModelPart field_27524;
-    private final ModelPart field_3599;
+    private final ModelPart root;
+    private final ModelPart tail;
 
-    public LargeTropicalFishEntityModel(ModelPart modelPart) {
-        this.field_27524 = modelPart;
-        this.field_3599 = modelPart.getChild("tail");
+    public LargeTropicalFishEntityModel(ModelPart root) {
+        this.root = root;
+        this.tail = root.getChild("tail");
     }
 
     public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -42,7 +42,7 @@ extends TintableCompositeModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27524;
+        return this.root;
     }
 
     @Override
@@ -51,7 +51,7 @@ extends TintableCompositeModel<T> {
         if (!((Entity)entity).isTouchingWater()) {
             f = 1.5f;
         }
-        this.field_3599.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
+        this.tail.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
     }
 }
 

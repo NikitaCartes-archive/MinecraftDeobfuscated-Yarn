@@ -83,6 +83,8 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionOptions;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.PositionSourceType;
 import net.minecraft.world.gen.carver.Carver;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -134,6 +136,8 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<RecipeType<?>>> RECIPE_TYPE_KEY = Registry.createRegistryKey("recipe_type");
     public static final RegistryKey<Registry<RecipeSerializer<?>>> RECIPE_SERIALIZER_KEY = Registry.createRegistryKey("recipe_serializer");
     public static final RegistryKey<Registry<EntityAttribute>> ATTRIBUTE_KEY = Registry.createRegistryKey("attribute");
+    public static final RegistryKey<Registry<GameEvent>> GAME_EVENT_KEY = Registry.createRegistryKey("game_event");
+    public static final RegistryKey<Registry<PositionSourceType<?>>> POSITION_SOURCE_TYPE_KEY = Registry.createRegistryKey("position_source_type");
     public static final RegistryKey<Registry<StatType<?>>> STAT_TYPE_KEY = Registry.createRegistryKey("stat_type");
     public static final RegistryKey<Registry<VillagerType>> VILLAGER_TYPE_KEY = Registry.createRegistryKey("villager_type");
     public static final RegistryKey<Registry<VillagerProfession>> VILLAGER_PROFESSION_KEY = Registry.createRegistryKey("villager_profession");
@@ -151,6 +155,7 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<DimensionType>> DIMENSION_TYPE_KEY = Registry.createRegistryKey("dimension_type");
     public static final RegistryKey<Registry<World>> DIMENSION = Registry.createRegistryKey("dimension");
     public static final RegistryKey<Registry<DimensionOptions>> DIMENSION_OPTIONS = Registry.createRegistryKey("dimension");
+    public static final DefaultedRegistry<GameEvent> GAME_EVENT = Registry.create(GAME_EVENT_KEY, "step", () -> GameEvent.STEP);
     public static final Registry<SoundEvent> SOUND_EVENT = Registry.create(SOUND_EVENT_KEY, () -> SoundEvents.ENTITY_ITEM_PICKUP);
     public static final DefaultedRegistry<Fluid> FLUID = Registry.create(FLUID_KEY, "empty", () -> Fluids.EMPTY);
     public static final Registry<StatusEffect> STATUS_EFFECT = Registry.create(MOB_EFFECT_KEY, () -> StatusEffects.LUCK);
@@ -170,6 +175,7 @@ IndexedIterable<T> {
     public static final Registry<RecipeType<?>> RECIPE_TYPE = Registry.create(RECIPE_TYPE_KEY, () -> RecipeType.CRAFTING);
     public static final Registry<RecipeSerializer<?>> RECIPE_SERIALIZER = Registry.create(RECIPE_SERIALIZER_KEY, () -> RecipeSerializer.SHAPELESS);
     public static final Registry<EntityAttribute> ATTRIBUTE = Registry.create(ATTRIBUTE_KEY, () -> EntityAttributes.GENERIC_LUCK);
+    public static final Registry<PositionSourceType<?>> POSITION_SOURCE_TYPE = Registry.create(POSITION_SOURCE_TYPE_KEY, () -> PositionSourceType.BLOCK);
     public static final Registry<StatType<?>> STAT_TYPE = Registry.create(STAT_TYPE_KEY, () -> Stats.USED);
     public static final DefaultedRegistry<VillagerType> VILLAGER_TYPE = Registry.create(VILLAGER_TYPE_KEY, "plains", () -> VillagerType.PLAINS);
     public static final DefaultedRegistry<VillagerProfession> VILLAGER_PROFESSION = Registry.create(VILLAGER_PROFESSION_KEY, "none", () -> VillagerProfession.NONE);
@@ -249,27 +255,27 @@ IndexedIterable<T> {
         });
     }
 
-    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> registryKey, Supplier<T> defaultEntry) {
-        return Registry.create(registryKey, Lifecycle.experimental(), defaultEntry);
+    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Supplier<T> defaultEntry) {
+        return Registry.create(key, Lifecycle.experimental(), defaultEntry);
     }
 
-    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> registryKey, String defaultId, Supplier<T> defaultEntry) {
-        return Registry.create(registryKey, defaultId, Lifecycle.experimental(), defaultEntry);
+    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Supplier<T> defaultEntry) {
+        return Registry.create(key, defaultId, Lifecycle.experimental(), defaultEntry);
     }
 
-    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle, Supplier<T> defaultEntry) {
-        return Registry.create(registryKey, new SimpleRegistry(registryKey, lifecycle), defaultEntry, lifecycle);
+    private static <T> Registry<T> create(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle, Supplier<T> defaultEntry) {
+        return Registry.create(key, new SimpleRegistry(key, lifecycle), defaultEntry, lifecycle);
     }
 
-    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> registryKey, String defaultId, Lifecycle lifecycle, Supplier<T> defaultEntry) {
-        return Registry.create(registryKey, new DefaultedRegistry(defaultId, registryKey, lifecycle), defaultEntry, lifecycle);
+    private static <T> DefaultedRegistry<T> create(RegistryKey<? extends Registry<T>> key, String defaultId, Lifecycle lifecycle, Supplier<T> defaultEntry) {
+        return Registry.create(key, new DefaultedRegistry(defaultId, key, lifecycle), defaultEntry, lifecycle);
     }
 
-    private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> registryKey, R registry, Supplier<T> defaultEntry, Lifecycle lifecycle) {
-        Identifier identifier = registryKey.getValue();
+    private static <T, R extends MutableRegistry<T>> R create(RegistryKey<? extends Registry<T>> key, R registry, Supplier<T> defaultEntry, Lifecycle lifecycle) {
+        Identifier identifier = key.getValue();
         DEFAULT_ENTRIES.put(identifier, defaultEntry);
         MutableRegistry<MutableRegistry<?>> mutableRegistry = ROOT;
-        return mutableRegistry.add(registryKey, registry, lifecycle);
+        return mutableRegistry.add(key, registry, lifecycle);
     }
 
     protected Registry(RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
@@ -372,7 +378,6 @@ IndexedIterable<T> {
         return StreamSupport.stream(this.spliterator(), false);
     }
 
-    @Environment(value=EnvType.CLIENT)
     public abstract boolean containsId(Identifier var1);
 
     public static <T> T register(Registry<? super T> registry, String id, T entry) {
@@ -389,9 +394,9 @@ IndexedIterable<T> {
 
     static {
         BuiltinRegistries.init();
-        DEFAULT_ENTRIES.forEach((? super K identifier, ? super V supplier) -> {
+        DEFAULT_ENTRIES.forEach((? super K id, ? super V supplier) -> {
             if (supplier.get() == null) {
-                LOGGER.error("Unable to bootstrap registry '{}'", identifier);
+                LOGGER.error("Unable to bootstrap registry '{}'", id);
             }
         });
         Registry.validate(ROOT);

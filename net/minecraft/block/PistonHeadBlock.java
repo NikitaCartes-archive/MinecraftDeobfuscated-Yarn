@@ -54,33 +54,33 @@ extends FacingBlock {
     protected static final VoxelShape SHORT_NORTH_ARM_SHAPE = Block.createCuboidShape(6.0, 6.0, 4.0, 10.0, 10.0, 16.0);
     protected static final VoxelShape SHORT_EAST_ARM_SHAPE = Block.createCuboidShape(0.0, 6.0, 6.0, 12.0, 10.0, 10.0);
     protected static final VoxelShape SHORT_WEST_ARM_SHAPE = Block.createCuboidShape(4.0, 6.0, 6.0, 16.0, 10.0, 10.0);
-    private static final VoxelShape[] field_26660 = PistonHeadBlock.method_31019(true);
-    private static final VoxelShape[] field_26661 = PistonHeadBlock.method_31019(false);
+    private static final VoxelShape[] SHORT_HEAD_SHAPES = PistonHeadBlock.getHeadShapes(true);
+    private static final VoxelShape[] HEAD_SHAPES = PistonHeadBlock.getHeadShapes(false);
 
-    private static VoxelShape[] method_31019(boolean bl) {
-        return (VoxelShape[])Arrays.stream(Direction.values()).map(direction -> PistonHeadBlock.getHeadShape(direction, bl)).toArray(VoxelShape[]::new);
+    private static VoxelShape[] getHeadShapes(boolean shortHead) {
+        return (VoxelShape[])Arrays.stream(Direction.values()).map(direction -> PistonHeadBlock.getHeadShape(direction, shortHead)).toArray(VoxelShape[]::new);
     }
 
-    private static VoxelShape getHeadShape(Direction direction, boolean bl) {
+    private static VoxelShape getHeadShape(Direction direction, boolean shortHead) {
         switch (direction) {
             default: {
-                return VoxelShapes.union(DOWN_HEAD_SHAPE, bl ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE);
+                return VoxelShapes.union(DOWN_HEAD_SHAPE, shortHead ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE);
             }
             case UP: {
-                return VoxelShapes.union(UP_HEAD_SHAPE, bl ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE);
+                return VoxelShapes.union(UP_HEAD_SHAPE, shortHead ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE);
             }
             case NORTH: {
-                return VoxelShapes.union(NORTH_HEAD_SHAPE, bl ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE);
+                return VoxelShapes.union(NORTH_HEAD_SHAPE, shortHead ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE);
             }
             case SOUTH: {
-                return VoxelShapes.union(SOUTH_HEAD_SHAPE, bl ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE);
+                return VoxelShapes.union(SOUTH_HEAD_SHAPE, shortHead ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE);
             }
             case WEST: {
-                return VoxelShapes.union(WEST_HEAD_SHAPE, bl ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE);
+                return VoxelShapes.union(WEST_HEAD_SHAPE, shortHead ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE);
             }
             case EAST: 
         }
-        return VoxelShapes.union(EAST_HEAD_SHAPE, bl ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE);
+        return VoxelShapes.union(EAST_HEAD_SHAPE, shortHead ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE);
     }
 
     public PistonHeadBlock(AbstractBlock.Settings settings) {
@@ -95,12 +95,12 @@ extends FacingBlock {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return (state.get(SHORT) != false ? field_26660 : field_26661)[state.get(FACING).ordinal()];
+        return (state.get(SHORT) != false ? SHORT_HEAD_SHAPES : HEAD_SHAPES)[state.get(FACING).ordinal()];
     }
 
-    private boolean method_26980(BlockState blockState, BlockState blockState2) {
-        Block block = blockState.get(TYPE) == PistonType.DEFAULT ? Blocks.PISTON : Blocks.STICKY_PISTON;
-        return blockState2.isOf(block) && blockState2.get(PistonBlock.EXTENDED) != false && blockState2.get(FACING) == blockState.get(FACING);
+    private boolean method_26980(BlockState state, BlockState blockState) {
+        Block block = state.get(TYPE) == PistonType.DEFAULT ? Blocks.PISTON : Blocks.STICKY_PISTON;
+        return blockState.isOf(block) && blockState.get(PistonBlock.EXTENDED) != false && blockState.get(FACING) == state.get(FACING);
     }
 
     @Override

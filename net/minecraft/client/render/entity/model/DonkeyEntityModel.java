@@ -18,13 +18,13 @@ import net.minecraft.entity.passive.AbstractDonkeyEntity;
 @Environment(value=EnvType.CLIENT)
 public class DonkeyEntityModel<T extends AbstractDonkeyEntity>
 extends HorseEntityModel<T> {
-    private final ModelPart field_27399;
-    private final ModelPart field_27400;
+    private final ModelPart leftChest;
+    private final ModelPart rightChest;
 
     public DonkeyEntityModel(ModelPart modelPart) {
         super(modelPart);
-        this.field_27399 = this.torso.getChild("left_chest");
-        this.field_27400 = this.torso.getChild("right_chest");
+        this.leftChest = this.body.getChild("left_chest");
+        this.rightChest = this.body.getChild("right_chest");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -45,11 +45,11 @@ extends HorseEntityModel<T> {
     public void setAngles(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
         super.setAngles(abstractDonkeyEntity, f, g, h, i, j);
         if (((AbstractDonkeyEntity)abstractDonkeyEntity).hasChest()) {
-            this.field_27399.visible = true;
-            this.field_27400.visible = true;
+            this.leftChest.visible = true;
+            this.rightChest.visible = true;
         } else {
-            this.field_27399.visible = false;
-            this.field_27400.visible = false;
+            this.leftChest.visible = false;
+            this.rightChest.visible = false;
         }
     }
 }

@@ -20,28 +20,34 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class WolfEntityModel<T extends WolfEntity>
 extends TintableAnimalModel<T> {
+    /**
+     * This is the main bone used to animate the head. It contains the {@link #real_head} as one of its children.
+     */
     private final ModelPart head;
-    private final ModelPart field_20788;
+    private final ModelPart realHead;
     private final ModelPart torso;
-    private final ModelPart field_27538;
-    private final ModelPart field_27539;
-    private final ModelPart field_27540;
-    private final ModelPart field_27541;
+    private final ModelPart rightHindLeg;
+    private final ModelPart leftHindLeg;
+    private final ModelPart rightFrontLeg;
+    private final ModelPart leftFrontLeg;
+    /**
+     * This is the main bone used to animate the tail. It contains {@link #real_tail} as one of its children.
+     */
     private final ModelPart tail;
-    private final ModelPart field_20789;
+    private final ModelPart realTail;
     private final ModelPart neck;
 
-    public WolfEntityModel(ModelPart modelPart) {
-        this.head = modelPart.getChild("head");
-        this.field_20788 = this.head.getChild("real_head");
-        this.torso = modelPart.getChild("body");
-        this.neck = modelPart.getChild("upper_body");
-        this.field_27538 = modelPart.getChild("right_hind_leg");
-        this.field_27539 = modelPart.getChild("left_hind_leg");
-        this.field_27540 = modelPart.getChild("right_front_leg");
-        this.field_27541 = modelPart.getChild("left_front_leg");
-        this.tail = modelPart.getChild("tail");
-        this.field_20789 = this.tail.getChild("real_tail");
+    public WolfEntityModel(ModelPart root) {
+        this.head = root.getChild("head");
+        this.realHead = this.head.getChild("real_head");
+        this.torso = root.getChild("body");
+        this.neck = root.getChild("upper_body");
+        this.rightHindLeg = root.getChild("right_hind_leg");
+        this.leftHindLeg = root.getChild("left_hind_leg");
+        this.rightFrontLeg = root.getChild("right_front_leg");
+        this.leftFrontLeg = root.getChild("left_front_leg");
+        this.tail = root.getChild("tail");
+        this.realTail = this.tail.getChild("real_tail");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -69,7 +75,7 @@ extends TintableAnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.field_27538, this.field_27539, this.field_27540, this.field_27541, this.tail, this.neck);
+        return ImmutableList.of(this.torso, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.tail, this.neck);
     }
 
     @Override
@@ -82,33 +88,33 @@ extends TintableAnimalModel<T> {
             this.torso.setPivot(0.0f, 18.0f, 0.0f);
             this.torso.pitch = 0.7853982f;
             this.tail.setPivot(-1.0f, 21.0f, 6.0f);
-            this.field_27538.setPivot(-2.5f, 22.7f, 2.0f);
-            this.field_27538.pitch = 4.712389f;
-            this.field_27539.setPivot(0.5f, 22.7f, 2.0f);
-            this.field_27539.pitch = 4.712389f;
-            this.field_27540.pitch = 5.811947f;
-            this.field_27540.setPivot(-2.49f, 17.0f, -4.0f);
-            this.field_27541.pitch = 5.811947f;
-            this.field_27541.setPivot(0.51f, 17.0f, -4.0f);
+            this.rightHindLeg.setPivot(-2.5f, 22.7f, 2.0f);
+            this.rightHindLeg.pitch = 4.712389f;
+            this.leftHindLeg.setPivot(0.5f, 22.7f, 2.0f);
+            this.leftHindLeg.pitch = 4.712389f;
+            this.rightFrontLeg.pitch = 5.811947f;
+            this.rightFrontLeg.setPivot(-2.49f, 17.0f, -4.0f);
+            this.leftFrontLeg.pitch = 5.811947f;
+            this.leftFrontLeg.setPivot(0.51f, 17.0f, -4.0f);
         } else {
             this.torso.setPivot(0.0f, 14.0f, 2.0f);
             this.torso.pitch = 1.5707964f;
             this.neck.setPivot(-1.0f, 14.0f, -3.0f);
             this.neck.pitch = this.torso.pitch;
             this.tail.setPivot(-1.0f, 12.0f, 8.0f);
-            this.field_27538.setPivot(-2.5f, 16.0f, 7.0f);
-            this.field_27539.setPivot(0.5f, 16.0f, 7.0f);
-            this.field_27540.setPivot(-2.5f, 16.0f, -4.0f);
-            this.field_27541.setPivot(0.5f, 16.0f, -4.0f);
-            this.field_27538.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
-            this.field_27539.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
-            this.field_27540.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
-            this.field_27541.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
+            this.rightHindLeg.setPivot(-2.5f, 16.0f, 7.0f);
+            this.leftHindLeg.setPivot(0.5f, 16.0f, 7.0f);
+            this.rightFrontLeg.setPivot(-2.5f, 16.0f, -4.0f);
+            this.leftFrontLeg.setPivot(0.5f, 16.0f, -4.0f);
+            this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
+            this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
+            this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
+            this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
         }
-        this.field_20788.roll = ((WolfEntity)wolfEntity).getBegAnimationProgress(h) + ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, 0.0f);
+        this.realHead.roll = ((WolfEntity)wolfEntity).getBegAnimationProgress(h) + ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, 0.0f);
         this.neck.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.08f);
         this.torso.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.16f);
-        this.field_20789.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.2f);
+        this.realTail.roll = ((WolfEntity)wolfEntity).getShakeAnimationProgress(h, -0.2f);
     }
 
     @Override

@@ -43,29 +43,29 @@ extends Block {
     private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
     private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
     private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
-    private final Map<BlockState, VoxelShape> field_26659;
+    private final Map<BlockState, VoxelShape> shapesByState;
 
     public VineBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(UP, false)).with(NORTH, false)).with(EAST, false)).with(SOUTH, false)).with(WEST, false));
-        this.field_26659 = ImmutableMap.copyOf(this.stateManager.getStates().stream().collect(Collectors.toMap(Function.identity(), VineBlock::method_31018)));
+        this.shapesByState = ImmutableMap.copyOf(this.stateManager.getStates().stream().collect(Collectors.toMap(Function.identity(), VineBlock::getShapeForState)));
     }
 
-    private static VoxelShape method_31018(BlockState blockState) {
+    private static VoxelShape getShapeForState(BlockState state) {
         VoxelShape voxelShape = VoxelShapes.empty();
-        if (blockState.get(UP).booleanValue()) {
+        if (state.get(UP).booleanValue()) {
             voxelShape = UP_SHAPE;
         }
-        if (blockState.get(NORTH).booleanValue()) {
+        if (state.get(NORTH).booleanValue()) {
             voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
         }
-        if (blockState.get(SOUTH).booleanValue()) {
+        if (state.get(SOUTH).booleanValue()) {
             voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
         }
-        if (blockState.get(EAST).booleanValue()) {
+        if (state.get(EAST).booleanValue()) {
             voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
         }
-        if (blockState.get(WEST).booleanValue()) {
+        if (state.get(WEST).booleanValue()) {
             voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
         }
         return voxelShape;
@@ -73,7 +73,7 @@ extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return this.field_26659.get(state);
+        return this.shapesByState.get(state);
     }
 
     @Override
@@ -211,7 +211,7 @@ extends Block {
                 return;
             }
         }
-        if (pos.getY() > world.getBottomHeightLimit() && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.isOf(this)) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
+        if (pos.getY() > world.getSectionCount() && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.isOf(this)) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
             world.setBlockState(blockPos2, blockState4, 2);
         }
     }

@@ -70,7 +70,7 @@ public abstract class ServerConfigList<K, V extends ServerConfigEntry<K>> {
     }
 
     public String[] getNames() {
-        return this.map.keySet().toArray(new String[this.map.size()]);
+        return this.map.keySet().toArray(new String[0]);
     }
 
     public boolean isEmpty() {

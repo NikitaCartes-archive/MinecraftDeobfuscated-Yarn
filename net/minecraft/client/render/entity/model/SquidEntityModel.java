@@ -19,15 +19,15 @@ import net.minecraft.entity.Entity;
 public class SquidEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
     private final ModelPart[] tentacles = new ModelPart[8];
-    private final ModelPart field_27513;
+    private final ModelPart root;
 
-    public SquidEntityModel(ModelPart modelPart) {
-        this.field_27513 = modelPart;
-        Arrays.setAll(this.tentacles, i -> modelPart.getChild(SquidEntityModel.method_32056(i)));
+    public SquidEntityModel(ModelPart root) {
+        this.root = root;
+        Arrays.setAll(this.tentacles, i -> root.getChild(SquidEntityModel.getTentacleName(i)));
     }
 
-    private static String method_32056(int i) {
-        return "tentacle" + i;
+    private static String getTentacleName(int index) {
+        return "tentacle" + index;
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -44,7 +44,7 @@ extends SinglePartEntityModel<T> {
             float h = (float)Math.sin(d) * 5.0f;
             d = (double)k * Math.PI * -2.0 / 8.0 + 1.5707963267948966;
             float l = (float)d;
-            modelPartData.addChild(SquidEntityModel.method_32056(k), modelPartBuilder, ModelTransform.of(f, 15.0f, h, 0.0f, l, 0.0f));
+            modelPartData.addChild(SquidEntityModel.getTentacleName(k), modelPartBuilder, ModelTransform.of(f, 15.0f, h, 0.0f, l, 0.0f));
         }
         return TexturedModelData.of(modelData, 64, 32);
     }
@@ -58,7 +58,7 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27513;
+        return this.root;
     }
 }
 

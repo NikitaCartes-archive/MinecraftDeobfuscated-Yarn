@@ -56,12 +56,12 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
+    public void fromTag(CompoundTag tag) {
         String string;
-        super.fromTag(compoundTag);
-        if (compoundTag.contains("SkullOwner", 10)) {
-            this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner")));
-        } else if (compoundTag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = compoundTag.getString("ExtraType"))) {
+        super.fromTag(tag);
+        if (tag.contains("SkullOwner", 10)) {
+            this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
+        } else if (tag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = tag.getString("ExtraType"))) {
             this.setOwnerAndType(new GameProfile(null, string));
         }
     }

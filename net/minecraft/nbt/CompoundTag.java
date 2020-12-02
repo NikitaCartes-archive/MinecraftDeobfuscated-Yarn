@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.ByteArrayTag;
 import net.minecraft.nbt.ByteTag;
@@ -51,7 +50,6 @@ implements Tag {
         }
         return DataResult.error("Not a compound tag: " + tag);
     }, compoundTag -> new Dynamic<CompoundTag>(NbtOps.INSTANCE, (CompoundTag)compoundTag));
-    private static final Pattern PATTERN = Pattern.compile("[A-Za-z0-9._+-]+");
     public static final TagReader<CompoundTag> READER = new TagReader<CompoundTag>(){
 
         @Override

@@ -114,9 +114,9 @@ public final class ItemStack {
         this(item, 1);
     }
 
-    private ItemStack(ItemConvertible itemConvertible, int count, Optional<CompoundTag> optional) {
-        this(itemConvertible, count);
-        optional.ifPresent(this::setTag);
+    private ItemStack(ItemConvertible item, int count, Optional<CompoundTag> tag) {
+        this(item, count);
+        tag.ifPresent(this::setTag);
     }
 
     public ItemStack(ItemConvertible item, int count) {
@@ -315,8 +315,8 @@ public final class ItemStack {
         return this.getItem().onStackClicked(this, slot, clickType, playerInventory);
     }
 
-    public boolean onClicked(ItemStack itemStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
-        return this.getItem().onClicked(this, itemStack, slot, clickType, playerInventory);
+    public boolean onClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+        return this.getItem().onClicked(this, stack, slot, clickType, playerInventory);
     }
 
     public void postHit(LivingEntity target, PlayerEntity attacker) {
@@ -420,8 +420,8 @@ public final class ItemStack {
         return this.isItemEqualIgnoreDamage(stack);
     }
 
-    public static boolean method_31577(ItemStack itemStack, ItemStack itemStack2) {
-        return itemStack.isOf(itemStack2.getItem()) && ItemStack.areTagsEqual(itemStack, itemStack2);
+    public static boolean canCombine(ItemStack stack, ItemStack otherStack) {
+        return stack.isOf(otherStack.getItem()) && ItemStack.areTagsEqual(stack, otherStack);
     }
 
     public String getTranslationKey() {
@@ -791,7 +791,7 @@ public final class ItemStack {
         this.getOrCreateTag().putInt("RepairCost", repairCost);
     }
 
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot equipmentSlot) {
+    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(EquipmentSlot slot) {
         Multimap<EntityAttribute, EntityAttributeModifier> multimap;
         if (this.hasTag() && this.tag.contains("AttributeModifiers", 9)) {
             multimap = HashMultimap.create();
@@ -800,23 +800,23 @@ public final class ItemStack {
                 EntityAttributeModifier entityAttributeModifier;
                 Optional<EntityAttribute> optional;
                 CompoundTag compoundTag = listTag.getCompound(i);
-                if (compoundTag.contains("Slot", 8) && !compoundTag.getString("Slot").equals(equipmentSlot.getName()) || !(optional = Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")))).isPresent() || (entityAttributeModifier = EntityAttributeModifier.fromTag(compoundTag)) == null || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
+                if (compoundTag.contains("Slot", 8) && !compoundTag.getString("Slot").equals(slot.getName()) || !(optional = Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")))).isPresent() || (entityAttributeModifier = EntityAttributeModifier.fromTag(compoundTag)) == null || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
                 multimap.put(optional.get(), entityAttributeModifier);
             }
         } else {
-            multimap = this.getItem().getAttributeModifiers(equipmentSlot);
+            multimap = this.getItem().getAttributeModifiers(slot);
         }
         return multimap;
     }
 
-    public void addAttributeModifier(EntityAttribute entityAttribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
+    public void addAttributeModifier(EntityAttribute attribute, EntityAttributeModifier modifier, @Nullable EquipmentSlot slot) {
         this.getOrCreateTag();
         if (!this.tag.contains("AttributeModifiers", 9)) {
             this.tag.put("AttributeModifiers", new ListTag());
         }
         ListTag listTag = this.tag.getList("AttributeModifiers", 10);
         CompoundTag compoundTag = modifier.toTag();
-        compoundTag.putString("AttributeName", Registry.ATTRIBUTE.getId(entityAttribute).toString());
+        compoundTag.putString("AttributeName", Registry.ATTRIBUTE.getId(attribute).toString());
         if (slot != null) {
             compoundTag.putString("Slot", slot.getName());
         }
@@ -940,8 +940,8 @@ public final class ItemStack {
     }
 
     @Nullable
-    public SoundEvent method_31572() {
-        return this.getItem().method_31570();
+    public SoundEvent getEquipSound() {
+        return this.getItem().getEquipSound();
     }
 
     public static enum TooltipSection {

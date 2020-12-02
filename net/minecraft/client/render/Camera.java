@@ -40,7 +40,6 @@ public class Camera {
     private float yaw;
     private final Quaternion rotation = new Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
     private boolean thirdPerson;
-    private boolean inverseView;
     private float cameraY;
     private float lastCameraY;
 
@@ -49,7 +48,6 @@ public class Camera {
         this.area = area;
         this.focusedEntity = focusedEntity;
         this.thirdPerson = thirdPerson;
-        this.inverseView = inverseView;
         this.setRotation(focusedEntity.getYaw(tickDelta), focusedEntity.getPitch(tickDelta));
         this.setPos(MathHelper.lerp((double)tickDelta, focusedEntity.prevX, focusedEntity.getX()), MathHelper.lerp((double)tickDelta, focusedEntity.prevY, focusedEntity.getY()) + (double)MathHelper.lerp(tickDelta, this.lastCameraY, this.cameraY), MathHelper.lerp((double)tickDelta, focusedEntity.prevZ, focusedEntity.getZ()));
         if (thirdPerson) {

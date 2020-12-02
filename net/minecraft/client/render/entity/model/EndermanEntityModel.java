@@ -45,9 +45,9 @@ extends BipedEntityModel<T> {
         super.setAngles(livingEntity, f, g, h, i, j);
         this.head.visible = true;
         int k = -14;
-        this.torso.pitch = 0.0f;
-        this.torso.pivotY = -14.0f;
-        this.torso.pivotZ = -0.0f;
+        this.body.pitch = 0.0f;
+        this.body.pivotY = -14.0f;
+        this.body.pivotZ = -0.0f;
         this.rightLeg.pitch -= 0.0f;
         this.leftLeg.pitch -= 0.0f;
         this.rightArm.pitch = (float)((double)this.rightArm.pitch * 0.5);
@@ -91,12 +91,12 @@ extends BipedEntityModel<T> {
         this.leftLeg.pivotY = -5.0f;
         this.head.pivotZ = -0.0f;
         this.head.pivotY = -13.0f;
-        this.helmet.pivotX = this.head.pivotX;
-        this.helmet.pivotY = this.head.pivotY;
-        this.helmet.pivotZ = this.head.pivotZ;
-        this.helmet.pitch = this.head.pitch;
-        this.helmet.yaw = this.head.yaw;
-        this.helmet.roll = this.head.roll;
+        this.hat.pivotX = this.head.pivotX;
+        this.hat.pivotY = this.head.pivotY;
+        this.hat.pivotZ = this.head.pivotZ;
+        this.hat.pitch = this.head.pitch;
+        this.hat.yaw = this.head.yaw;
+        this.hat.roll = this.head.roll;
         if (this.angry) {
             float m = 1.0f;
             this.head.pivotY -= 5.0f;

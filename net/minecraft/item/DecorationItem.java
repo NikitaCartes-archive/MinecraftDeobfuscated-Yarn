@@ -3,6 +3,7 @@
  */
 package net.minecraft.item;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
@@ -16,6 +17,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class DecorationItem
 extends Item {
@@ -52,6 +54,7 @@ extends Item {
         if (abstractDecorationEntity.canStayAttached()) {
             if (!world.isClient) {
                 abstractDecorationEntity.onPlace();
+                world.emitGameEvent((Entity)playerEntity, GameEvent.BLOCK_PLACE, blockPos);
                 world.spawnEntity(abstractDecorationEntity);
             }
             itemStack.decrement(1);

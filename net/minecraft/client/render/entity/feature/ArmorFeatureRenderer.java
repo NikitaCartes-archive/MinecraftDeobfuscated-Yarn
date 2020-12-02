@@ -76,17 +76,17 @@ extends FeatureRenderer<T, M> {
         switch (slot) {
             case HEAD: {
                 ((BipedEntityModel)bipedModel).head.visible = true;
-                ((BipedEntityModel)bipedModel).helmet.visible = true;
+                ((BipedEntityModel)bipedModel).hat.visible = true;
                 break;
             }
             case CHEST: {
-                ((BipedEntityModel)bipedModel).torso.visible = true;
+                ((BipedEntityModel)bipedModel).body.visible = true;
                 ((BipedEntityModel)bipedModel).rightArm.visible = true;
                 ((BipedEntityModel)bipedModel).leftArm.visible = true;
                 break;
             }
             case LEGS: {
-                ((BipedEntityModel)bipedModel).torso.visible = true;
+                ((BipedEntityModel)bipedModel).body.visible = true;
                 ((BipedEntityModel)bipedModel).rightLeg.visible = true;
                 ((BipedEntityModel)bipedModel).leftLeg.visible = true;
                 break;

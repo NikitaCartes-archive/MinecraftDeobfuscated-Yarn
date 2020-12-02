@@ -20,7 +20,7 @@ extends BipedEntityModel<T> {
     @Override
     public void setAngles(T hostileEntity, float f, float g, float h, float i, float j) {
         super.setAngles(hostileEntity, f, g, h, i, j);
-        CrossbowPosing.method_29352(this.leftArm, this.rightArm, this.isAttacking(hostileEntity), this.handSwingProgress, h);
+        CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, this.isAttacking(hostileEntity), this.handSwingProgress, h);
     }
 
     public abstract boolean isAttacking(T var1);

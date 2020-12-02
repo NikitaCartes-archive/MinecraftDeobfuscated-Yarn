@@ -37,6 +37,7 @@ import net.minecraft.block.entity.JukeboxBlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.block.entity.PistonBlockEntity;
+import net.minecraft.block.entity.SculkSensorBlockEntity;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -88,6 +89,7 @@ public class BlockEntityType<T extends BlockEntity> {
     public static final BlockEntityType<JigsawBlockEntity> JIGSAW = BlockEntityType.create("jigsaw", Builder.create(JigsawBlockEntity::new, Blocks.JIGSAW));
     public static final BlockEntityType<CampfireBlockEntity> CAMPFIRE = BlockEntityType.create("campfire", Builder.create(CampfireBlockEntity::new, Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE));
     public static final BlockEntityType<BeehiveBlockEntity> BEEHIVE = BlockEntityType.create("beehive", Builder.create(BeehiveBlockEntity::new, Blocks.BEE_NEST, Blocks.BEEHIVE));
+    public static final BlockEntityType<SculkSensorBlockEntity> SCULK_SENSOR = BlockEntityType.create("sculk_sensor", Builder.create(SculkSensorBlockEntity::new, Blocks.SCULK_SENSOR));
     private final BlockEntityFactory<? extends T> factory;
     private final Set<Block> blocks;
     private final Type<?> type;

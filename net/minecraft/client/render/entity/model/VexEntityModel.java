@@ -28,7 +28,7 @@ extends BipedEntityModel<VexEntity> {
     public VexEntityModel(ModelPart modelPart) {
         super(modelPart);
         this.leftLeg.visible = false;
-        this.helmet.visible = false;
+        this.hat.visible = false;
         this.rightWing = modelPart.getChild("right_wing");
         this.leftWing = modelPart.getChild("left_wing");
     }

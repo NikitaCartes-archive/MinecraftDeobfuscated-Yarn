@@ -53,9 +53,9 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.targetUuid = compoundTag.containsUuid("Target") ? compoundTag.getUuid("Target") : null;
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.targetUuid = tag.containsUuid("Target") ? tag.getUuid("Target") : null;
     }
 
     @Override
@@ -164,7 +164,7 @@ extends BlockEntity {
         int i = list.size();
         int j = i / 7 * 16;
         int k = blockPos.getX();
-        Box box = new Box(k, l = blockPos.getY(), m = blockPos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, world.getTopHeightLimit(), 0.0);
+        Box box = new Box(k, l = blockPos.getY(), m = blockPos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, world.getBottomSectionLimit(), 0.0);
         List<PlayerEntity> list2 = world.getNonSpectatingEntities(PlayerEntity.class, box);
         if (list2.isEmpty()) {
             return;

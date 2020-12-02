@@ -42,7 +42,6 @@ implements ReloadableResourceManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.newHashMap();
     private final List<ResourceReloadListener> listeners = Lists.newArrayList();
-    private final List<ResourceReloadListener> initialListeners = Lists.newArrayList();
     private final Set<String> namespaces = Sets.newLinkedHashSet();
     private final List<ResourcePack> packs = Lists.newArrayList();
     private final ResourceType type;
@@ -124,19 +123,12 @@ implements ReloadableResourceManager {
     @Override
     public void registerListener(ResourceReloadListener listener) {
         this.listeners.add(listener);
-        this.initialListeners.add(listener);
-    }
-
-    protected ResourceReloadMonitor beginReloadInner(Executor prepareExecutor, Executor applyExecutor, List<ResourceReloadListener> listeners, CompletableFuture<Unit> initialStage) {
-        ProfilingResourceReloader resourceReloadMonitor = LOGGER.isDebugEnabled() ? new ProfilingResourceReloader(this, Lists.newArrayList(listeners), prepareExecutor, applyExecutor, initialStage) : ResourceReloader.create(this, Lists.newArrayList(listeners), prepareExecutor, applyExecutor, initialStage);
-        this.initialListeners.clear();
-        return resourceReloadMonitor;
     }
 
     @Override
     public ResourceReloadMonitor beginMonitoredReload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs) {
-        this.clear();
         LOGGER.info("Reloading ResourceManager: {}", () -> packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
+        this.clear();
         for (ResourcePack resourcePack : packs) {
             try {
                 this.addPack(resourcePack);
@@ -145,7 +137,10 @@ implements ReloadableResourceManager {
                 return new FailedResourceReloadMonitor(new PackAdditionFailedException(resourcePack, (Throwable)exception));
             }
         }
-        return this.beginReloadInner(prepareExecutor, applyExecutor, this.listeners, initialStage);
+        if (LOGGER.isDebugEnabled()) {
+            return new ProfilingResourceReloader(this, Lists.newArrayList(this.listeners), prepareExecutor, applyExecutor, initialStage);
+        }
+        return ResourceReloader.create(this, Lists.newArrayList(this.listeners), prepareExecutor, applyExecutor, initialStage);
     }
 
     @Override

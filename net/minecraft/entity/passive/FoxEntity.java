@@ -252,7 +252,7 @@ extends AnimalEntity {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        Optional<RegistryKey<Biome>> optional = world.method_31081(this.getBlockPos());
+        Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
         Type type = Type.fromBiome(optional);
         boolean bl = false;
         if (entityData instanceof FoxData) {

@@ -58,6 +58,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -198,8 +199,8 @@ implements ItemConvertible {
         }
     }
 
-    public static boolean cannotConnect(BlockState blockState) {
-        return blockState.getBlock() instanceof LeavesBlock || blockState.isOf(Blocks.BARRIER) || blockState.isOf(Blocks.CARVED_PUMPKIN) || blockState.isOf(Blocks.JACK_O_LANTERN) || blockState.isOf(Blocks.MELON) || blockState.isOf(Blocks.PUMPKIN) || blockState.isIn(BlockTags.SHULKER_BOXES);
+    public static boolean cannotConnect(BlockState state) {
+        return state.getBlock() instanceof LeavesBlock || state.isOf(Blocks.BARRIER) || state.isOf(Blocks.CARVED_PUMPKIN) || state.isOf(Blocks.JACK_O_LANTERN) || state.isOf(Blocks.MELON) || state.isOf(Blocks.PUMPKIN) || state.isIn(BlockTags.SHULKER_BOXES);
     }
 
     public boolean hasRandomTicks(BlockState state) {
@@ -207,23 +208,23 @@ implements ItemConvertible {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction direction, BlockPos blockPos) {
+    public static boolean shouldDrawSide(BlockState state, BlockView world, BlockPos pos, Direction side, BlockPos blockPos) {
         BlockState blockState = world.getBlockState(blockPos);
-        if (state.isSideInvisible(blockState, direction)) {
+        if (state.isSideInvisible(blockState, side)) {
             return false;
         }
         if (blockState.isOpaque()) {
-            NeighborGroup neighborGroup = new NeighborGroup(state, blockState, direction);
+            NeighborGroup neighborGroup = new NeighborGroup(state, blockState, side);
             Object2ByteLinkedOpenHashMap<NeighborGroup> object2ByteLinkedOpenHashMap = FACE_CULL_MAP.get();
             byte b = object2ByteLinkedOpenHashMap.getAndMoveToFirst(neighborGroup);
             if (b != 127) {
                 return b != 0;
             }
-            VoxelShape voxelShape = state.getCullingFace(world, pos, direction);
+            VoxelShape voxelShape = state.getCullingFace(world, pos, side);
             if (voxelShape.isEmpty()) {
                 return true;
             }
-            VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, direction.getOpposite());
+            VoxelShape voxelShape2 = blockState.getCullingFace(world, blockPos, side.getOpposite());
             boolean bl = VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
             if (object2ByteLinkedOpenHashMap.size() == 2048) {
                 object2ByteLinkedOpenHashMap.removeLastByte();
@@ -396,6 +397,7 @@ implements ItemConvertible {
         if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
             PiglinBrain.onGuardedBlockInteracted(player, false);
         }
+        world.emitGameEvent((Entity)player, GameEvent.BLOCK_DESTROY, pos);
     }
 
     public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {

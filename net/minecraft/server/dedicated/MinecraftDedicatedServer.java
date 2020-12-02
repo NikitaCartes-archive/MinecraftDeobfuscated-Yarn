@@ -137,7 +137,7 @@ implements DedicatedServer {
         if (this.getServerPort() < 0) {
             this.setServerPort(serverPropertiesHandler.serverPort);
         }
-        this.method_31400();
+        this.generateKeyPair();
         LOGGER.info("Starting Minecraft server on {}:{}", (Object)(this.getServerIp().isEmpty() ? "*" : this.getServerIp()), (Object)this.getServerPort());
         try {
             this.getNetworkIo().bind(inetAddress, this.getServerPort());
@@ -161,7 +161,6 @@ implements DedicatedServer {
         }
         this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.saveHandler));
         long l = Util.getMeasuringTimeNano();
-        this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
         SkullBlockEntity.setUserCache(this.getUserCache());
         SkullBlockEntity.setSessionService(this.getSessionService());
         UserCache.setUseRemote(this.isOnlineMode());
@@ -191,6 +190,7 @@ implements DedicatedServer {
         Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.of());
         if (serverPropertiesHandler.enableJmxMonitoring) {
             ServerMBean.register(this);
+            LOGGER.info("JMX monitoring enabled");
         }
         return true;
     }

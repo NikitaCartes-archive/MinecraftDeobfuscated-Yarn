@@ -6,6 +6,7 @@ package net.minecraft.world;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.class_5423;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.particle.ParticleEffect;
@@ -18,6 +19,7 @@ import net.minecraft.world.LunarWorldView;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.chunk.ChunkManager;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public interface WorldAccess
@@ -58,12 +60,18 @@ LunarWorldView {
 
     public void syncWorldEvent(@Nullable PlayerEntity var1, int var2, BlockPos var3, int var4);
 
-    default public int getDimensionHeight() {
-        return this.getDimension().getLogicalHeight();
-    }
-
     default public void syncWorldEvent(int eventId, BlockPos pos, int data) {
         this.syncWorldEvent(null, eventId, pos, data);
+    }
+
+    public void emitGameEvent(@Nullable Entity var1, GameEvent var2, BlockPos var3);
+
+    default public void emitGameEvent(GameEvent event, BlockPos pos) {
+        this.emitGameEvent(null, event, pos);
+    }
+
+    default public void emitGameEvent(@Nullable Entity entity, GameEvent event, Entity emitter) {
+        this.emitGameEvent(entity, event, emitter.getBlockPos());
     }
 }
 

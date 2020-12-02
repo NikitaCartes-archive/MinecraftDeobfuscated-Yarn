@@ -18,14 +18,14 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class SmallPufferfishEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27473;
-    private final ModelPart field_27474;
-    private final ModelPart field_27475;
+    private final ModelPart root;
+    private final ModelPart leftFin;
+    private final ModelPart rightFin;
 
-    public SmallPufferfishEntityModel(ModelPart modelPart) {
-        this.field_27473 = modelPart;
-        this.field_27474 = modelPart.getChild("left_fin");
-        this.field_27475 = modelPart.getChild("right_fin");
+    public SmallPufferfishEntityModel(ModelPart root) {
+        this.root = root;
+        this.leftFin = root.getChild("left_fin");
+        this.rightFin = root.getChild("right_fin");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -43,13 +43,13 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27473;
+        return this.root;
     }
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.field_27475.roll = -0.2f + 0.4f * MathHelper.sin(animationProgress * 0.2f);
-        this.field_27474.roll = 0.2f - 0.4f * MathHelper.sin(animationProgress * 0.2f);
+        this.rightFin.roll = -0.2f + 0.4f * MathHelper.sin(animationProgress * 0.2f);
+        this.leftFin.roll = 0.2f - 0.4f * MathHelper.sin(animationProgress * 0.2f);
     }
 }
 

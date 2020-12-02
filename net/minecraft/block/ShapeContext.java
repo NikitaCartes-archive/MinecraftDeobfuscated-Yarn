@@ -26,6 +26,6 @@ public interface ShapeContext {
 
     public boolean isHolding(Item var1);
 
-    public boolean method_27866(FluidState var1, FlowableFluid var2);
+    public boolean canWalkOnFluid(FluidState var1, FlowableFluid var2);
 }
 

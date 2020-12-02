@@ -6,6 +6,8 @@ package net.minecraft.world.chunk;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.shorts.ShortList;
@@ -27,6 +29,8 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_5711;
+import net.minecraft.class_5713;
 import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
@@ -59,7 +63,7 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.UpgradeData;
-import net.minecraft.world.chunk.light.LightingProvider;
+import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
@@ -114,6 +118,7 @@ implements Chunk {
     private Consumer<WorldChunk> loadToWorldConsumer;
     private final ChunkPos pos;
     private volatile boolean lightOn;
+    private final Int2ObjectMap<class_5713> field_28129;
 
     public WorldChunk(World world, ChunkPos pos, BiomeArray biomes) {
         this(world, pos, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
@@ -123,6 +128,7 @@ implements Chunk {
         this.world = world;
         this.pos = pos;
         this.upgradeData = upgradeData;
+        this.field_28129 = new Int2ObjectOpenHashMap<class_5713>();
         for (Heightmap.Type type : Heightmap.Type.values()) {
             if (!ChunkStatus.FULL.getHeightmapTypes().contains(type)) continue;
             this.heightmaps.put(type, new Heightmap(this, type));
@@ -132,7 +138,7 @@ implements Chunk {
         this.fluidTickScheduler = fluidTickScheduler;
         this.inhabitedTime = inhabitedTime;
         this.loadToWorldConsumer = loadToWorldConsumer;
-        this.sections = new ChunkSection[world.getSectionCount()];
+        this.sections = new ChunkSection[world.method_32890()];
         if (sections != null) {
             if (this.sections.length == sections.length) {
                 System.arraycopy(sections, 0, this.sections, 0, this.sections.length);
@@ -140,7 +146,7 @@ implements Chunk {
                 LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", (Object)sections.length, (Object)this.sections.length);
             }
         }
-        this.postProcessingLists = new ShortList[world.getSectionCount()];
+        this.postProcessingLists = new ShortList[world.method_32890()];
     }
 
     public WorldChunk(ServerWorld serverWorld, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> consumer) {
@@ -160,6 +166,11 @@ implements Chunk {
         }
         this.setLightOn(protoChunk.isLightOn());
         this.shouldSave = true;
+    }
+
+    @Override
+    public class_5713 method_32914(int i2) {
+        return this.field_28129.computeIfAbsent(i2, i -> new class_5711(this.world));
     }
 
     @Override
@@ -287,11 +298,6 @@ implements Chunk {
         return blockState;
     }
 
-    @Nullable
-    public LightingProvider getLightingProvider() {
-        return this.world.getChunkManager().getLightingProvider();
-    }
-
     @Override
     @Deprecated
     public void addEntity(Entity entity) {
@@ -344,6 +350,7 @@ implements Chunk {
     public void addBlockEntity(BlockEntity blockEntity) {
         this.setBlockEntity(blockEntity);
         if (this.canTickBlockEntities()) {
+            this.method_32919(blockEntity);
             this.updateTicker(blockEntity);
         }
     }
@@ -352,8 +359,8 @@ implements Chunk {
         return this.loadedToWorld || this.world.isClient();
     }
 
-    private boolean canTickBlockEntity(BlockPos blockPos) {
-        return (this.world.isClient() || this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) && this.world.getWorldBorder().contains(blockPos);
+    private boolean canTickBlockEntity(BlockPos pos) {
+        return (this.world.isClient() || this.getLevelType().isAfter(ChunkHolder.LevelType.TICKING)) && this.world.getWorldBorder().contains(pos);
     }
 
     @Override
@@ -396,9 +403,26 @@ implements Chunk {
     public void removeBlockEntity(BlockPos pos) {
         BlockEntity blockEntity;
         if (this.canTickBlockEntities() && (blockEntity = this.blockEntities.remove(pos)) != null) {
+            this.method_32918(blockEntity);
             blockEntity.markRemoved();
         }
         this.removeBlockEntityTicker(pos);
+    }
+
+    private <T extends BlockEntity> void method_32918(T blockEntity) {
+        GameEventListener gameEventListener;
+        if (this.world.isClient) {
+            return;
+        }
+        Block block = blockEntity.getCachedState().getBlock();
+        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(this.world, blockEntity)) != null) {
+            int i = ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY());
+            class_5713 lv = this.method_32914(i);
+            lv.removeListener(gameEventListener);
+            if (lv.isEmpty()) {
+                this.field_28129.remove(i);
+            }
+        }
     }
 
     private void removeBlockEntityTicker(BlockPos blockPos) {
@@ -433,7 +457,7 @@ implements Chunk {
         boolean bl;
         boolean bl2 = bl = biomes != null;
         if (bl) {
-            this.blockEntities.values().forEach(this::method_31722);
+            this.blockEntities.values().forEach(this::removeBlockEntity);
             this.blockEntities.clear();
         } else {
             this.blockEntities.values().removeIf(blockEntity -> {
@@ -466,7 +490,7 @@ implements Chunk {
         }
     }
 
-    private void method_31722(BlockEntity blockEntity) {
+    private void removeBlockEntity(BlockEntity blockEntity) {
         blockEntity.markRemoved();
         this.blockEntityTickers.remove(blockEntity.getPos());
     }
@@ -505,7 +529,7 @@ implements Chunk {
 
     @Override
     public Stream<BlockPos> getLightSourcesStream() {
-        return StreamSupport.stream(BlockPos.iterate(this.pos.getStartX(), 0, this.pos.getStartZ(), this.pos.getEndX(), this.getTopHeightLimit() - 1, this.pos.getEndZ()).spliterator(), false).filter(blockPos -> this.getBlockState((BlockPos)blockPos).getLuminance() != 0);
+        return StreamSupport.stream(BlockPos.iterate(this.pos.getStartX(), this.getSectionCount(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopHeightLimit() - 1, this.pos.getEndZ()).spliterator(), false).filter(blockPos -> this.getBlockState((BlockPos)blockPos).getLuminance() != 0);
     }
 
     @Override
@@ -699,12 +723,27 @@ implements Chunk {
         this.setShouldSave(true);
     }
 
-    public void method_31712() {
-        this.blockEntities.values().forEach(this::method_31722);
+    public void removeAllBlockEntities() {
+        this.blockEntities.values().forEach(this::removeBlockEntity);
     }
 
     public void updateAllBlockEntityTickers() {
-        this.blockEntities.values().forEach(this::updateTicker);
+        this.blockEntities.values().forEach(blockEntity -> {
+            this.method_32919(blockEntity);
+            this.updateTicker(blockEntity);
+        });
+    }
+
+    private <T extends BlockEntity> void method_32919(T blockEntity) {
+        GameEventListener gameEventListener;
+        if (this.world.isClient) {
+            return;
+        }
+        Block block = blockEntity.getCachedState().getBlock();
+        if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(this.world, blockEntity)) != null) {
+            class_5713 lv = this.method_32914(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY()));
+            lv.addListener(gameEventListener);
+        }
     }
 
     private <T extends BlockEntity> void updateTicker(T blockEntity) {
@@ -737,12 +776,12 @@ implements Chunk {
     implements BlockEntityTickInvoker {
         private BlockEntityTickInvoker wrapped;
 
-        private WrappedBlockEntityTickInvoker(BlockEntityTickInvoker blockEntityTickInvoker) {
-            this.wrapped = blockEntityTickInvoker;
+        private WrappedBlockEntityTickInvoker(BlockEntityTickInvoker wrapped) {
+            this.wrapped = wrapped;
         }
 
-        private void setWrapped(BlockEntityTickInvoker blockEntityTickInvoker) {
-            this.wrapped = blockEntityTickInvoker;
+        private void setWrapped(BlockEntityTickInvoker wrapped) {
+            this.wrapped = wrapped;
         }
 
         @Override
@@ -777,10 +816,10 @@ implements Chunk {
         private boolean hasWarned;
         final /* synthetic */ WorldChunk worldChunk;
 
-        private DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> blockEntityTicker) {
+        private DirectBlockEntityTickInvoker(T blockEntity, BlockEntityTicker<T> ticker) {
             this.worldChunk = worldChunk;
             this.blockEntity = blockEntity;
-            this.ticker = blockEntityTicker;
+            this.ticker = ticker;
         }
 
         @Override

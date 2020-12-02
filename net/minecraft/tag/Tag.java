@@ -8,15 +8,18 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.tag.SetTag;
@@ -87,6 +90,16 @@ public interface Tag<T> {
         public String toString() {
             return "#" + this.id + "?";
         }
+
+        @Override
+        public void method_32833(Consumer<Identifier> consumer) {
+            consumer.accept(this.id);
+        }
+
+        @Override
+        public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+            return true;
+        }
     }
 
     public static class TagEntry
@@ -115,6 +128,16 @@ public interface Tag<T> {
         public String toString() {
             return "#" + this.id;
         }
+
+        @Override
+        public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+            return predicate2.test(this.id);
+        }
+
+        @Override
+        public void method_32831(Consumer<Identifier> consumer) {
+            consumer.accept(this.id);
+        }
     }
 
     public static class OptionalObjectEntry
@@ -140,6 +163,11 @@ public interface Tag<T> {
             jsonObject.addProperty("id", this.id.toString());
             jsonObject.addProperty("required", false);
             json.add(jsonObject);
+        }
+
+        @Override
+        public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+            return true;
         }
 
         public String toString() {
@@ -170,6 +198,11 @@ public interface Tag<T> {
             json.add(this.id.toString());
         }
 
+        @Override
+        public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+            return predicate.test(this.id);
+        }
+
         public String toString() {
             return this.id.toString();
         }
@@ -179,6 +212,14 @@ public interface Tag<T> {
         public <T> boolean resolve(Function<Identifier, Tag<T>> var1, Function<Identifier, T> var2, Consumer<T> var3);
 
         public void addToJson(JsonArray var1);
+
+        default public void method_32831(Consumer<Identifier> consumer) {
+        }
+
+        default public void method_32833(Consumer<Identifier> consumer) {
+        }
+
+        public boolean method_32832(Predicate<Identifier> var1, Predicate<Identifier> var2);
     }
 
     public static class Builder {
@@ -205,21 +246,26 @@ public interface Tag<T> {
             return this.add(new TagEntry(id), source);
         }
 
-        public <T> Optional<Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
+        public <T> Either<Collection<TrackedEntry>, Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
             ImmutableSet.Builder builder = ImmutableSet.builder();
+            ArrayList<TrackedEntry> list = Lists.newArrayList();
             for (TrackedEntry trackedEntry : this.entries) {
                 if (trackedEntry.getEntry().resolve(tagGetter, objectGetter, builder::add)) continue;
-                return Optional.empty();
+                list.add(trackedEntry);
             }
-            return Optional.of(Tag.of(builder.build()));
+            return list.isEmpty() ? Either.right(Tag.of(builder.build())) : Either.left(list);
         }
 
         public Stream<TrackedEntry> streamEntries() {
             return this.entries.stream();
         }
 
-        public <T> Stream<TrackedEntry> streamUnresolvedEntries(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
-            return this.streamEntries().filter(trackedEntry -> !trackedEntry.getEntry().resolve(tagGetter, objectGetter, object -> {}));
+        public void method_32826(Consumer<Identifier> consumer) {
+            this.entries.forEach(trackedEntry -> ((TrackedEntry)trackedEntry).entry.method_32831(consumer));
+        }
+
+        public void method_32828(Consumer<Identifier> consumer) {
+            this.entries.forEach(trackedEntry -> ((TrackedEntry)trackedEntry).entry.method_32833(consumer));
         }
 
         public Builder read(JsonObject json, String source) {

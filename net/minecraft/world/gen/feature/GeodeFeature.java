@@ -139,7 +139,7 @@ extends Feature<GeodeFeatureConfig> {
                 if (blockState.contains(Properties.WATERLOGGED)) {
                     blockState = (BlockState)blockState.with(Properties.WATERLOGGED, blockState2.getFluidState().isStill());
                 }
-                if (!BuddingAmethystBlock.method_31626(blockState2)) continue;
+                if (!BuddingAmethystBlock.canGrowIn(blockState2)) continue;
                 structureWorldAccess.setBlockState(blockPos5, blockState, 2);
                 continue block4;
             }

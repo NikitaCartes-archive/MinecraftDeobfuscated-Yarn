@@ -27,8 +27,6 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.dynamic.RegistryCodec;
@@ -149,8 +147,8 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    public Lifecycle getEntryLifecycle(T object) {
-        return this.entryToLifecycle.get(object);
+    public Lifecycle getEntryLifecycle(T entry) {
+        return this.entryToLifecycle.get(entry);
     }
 
     @Override
@@ -192,7 +190,6 @@ extends MutableRegistry<T> {
     }
 
     @Override
-    @Environment(value=EnvType.CLIENT)
     public boolean containsId(Identifier id) {
         return this.idToEntry.containsKey(id);
     }

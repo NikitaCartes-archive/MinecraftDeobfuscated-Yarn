@@ -50,6 +50,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class BoatEntity
@@ -158,6 +159,7 @@ extends Entity {
         if (this.world.isClient || this.isRemoved()) {
             return true;
         }
+        this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
         this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0f);
@@ -185,6 +187,7 @@ extends Entity {
         if (this.random.nextInt(20) == 0) {
             this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getSplashSound(), this.getSoundCategory(), 1.0f, 0.8f + 0.4f * this.random.nextFloat(), false);
         }
+        this.method_32875(this.getPrimaryPassenger(), GameEvent.SPLASH);
     }
 
     @Override
@@ -287,6 +290,7 @@ extends Entity {
                     double d = i == 1 ? -vec3d.z : vec3d.z;
                     double e = i == 1 ? vec3d.x : -vec3d.x;
                     this.world.playSound(null, this.getX() + d, this.getY(), this.getZ() + e, soundEvent, this.getSoundCategory(), 1.0f, 0.8f + 0.4f * this.random.nextFloat());
+                    this.world.emitGameEvent(this.getPrimaryPassenger(), GameEvent.SPLASH, new BlockPos(this.getX() + d, this.getY(), this.getZ() + e));
                 }
                 int n = i;
                 this.paddlePhases[n] = (float)((double)this.paddlePhases[n] + (double)0.3926991f);

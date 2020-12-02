@@ -19,26 +19,26 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class OcelotEntityModel<T extends Entity>
 extends AnimalModel<T> {
-    protected final ModelPart field_27454;
-    protected final ModelPart field_27455;
-    protected final ModelPart field_27456;
-    protected final ModelPart field_27457;
+    protected final ModelPart leftHindLeg;
+    protected final ModelPart rightHindLeg;
+    protected final ModelPart leftFrontLeg;
+    protected final ModelPart rightFrontLeg;
     protected final ModelPart upperTail;
     protected final ModelPart lowerTail;
     protected final ModelPart head;
-    protected final ModelPart torso;
+    protected final ModelPart body;
     protected int animationState = 1;
 
-    public OcelotEntityModel(ModelPart modelPart) {
+    public OcelotEntityModel(ModelPart root) {
         super(true, 10.0f, 4.0f);
-        this.head = modelPart.getChild("head");
-        this.torso = modelPart.getChild("body");
-        this.upperTail = modelPart.getChild("tail1");
-        this.lowerTail = modelPart.getChild("tail2");
-        this.field_27454 = modelPart.getChild("left_hind_leg");
-        this.field_27455 = modelPart.getChild("right_hind_leg");
-        this.field_27456 = modelPart.getChild("left_front_leg");
-        this.field_27457 = modelPart.getChild("right_front_leg");
+        this.head = root.getChild("head");
+        this.body = root.getChild("body");
+        this.upperTail = root.getChild("tail1");
+        this.lowerTail = root.getChild("tail2");
+        this.leftHindLeg = root.getChild("left_hind_leg");
+        this.rightHindLeg = root.getChild("right_hind_leg");
+        this.leftFrontLeg = root.getChild("left_front_leg");
+        this.rightFrontLeg = root.getChild("right_front_leg");
     }
 
     public static ModelData getModelData(Dilation dilation) {
@@ -64,7 +64,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.field_27454, this.field_27455, this.field_27456, this.field_27457, this.upperTail, this.lowerTail);
+        return ImmutableList.of(this.body, this.leftHindLeg, this.rightHindLeg, this.leftFrontLeg, this.rightFrontLeg, this.upperTail, this.lowerTail);
     }
 
     @Override
@@ -72,18 +72,18 @@ extends AnimalModel<T> {
         this.head.pitch = headPitch * ((float)Math.PI / 180);
         this.head.yaw = headYaw * ((float)Math.PI / 180);
         if (this.animationState != 3) {
-            this.torso.pitch = 1.5707964f;
+            this.body.pitch = 1.5707964f;
             if (this.animationState == 2) {
-                this.field_27454.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
-                this.field_27455.pitch = MathHelper.cos(limbAngle * 0.6662f + 0.3f) * limbDistance;
-                this.field_27456.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI + 0.3f) * limbDistance;
-                this.field_27457.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * limbDistance;
+                this.leftHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
+                this.rightHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + 0.3f) * limbDistance;
+                this.leftFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI + 0.3f) * limbDistance;
+                this.rightFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * limbDistance;
                 this.lowerTail.pitch = 1.7278761f + 0.31415927f * MathHelper.cos(limbAngle) * limbDistance;
             } else {
-                this.field_27454.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
-                this.field_27455.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * limbDistance;
-                this.field_27456.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * limbDistance;
-                this.field_27457.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
+                this.leftHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
+                this.rightHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * limbDistance;
+                this.leftFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * limbDistance;
+                this.rightFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
                 this.lowerTail.pitch = this.animationState == 1 ? 1.7278761f + 0.7853982f * MathHelper.cos(limbAngle) * limbDistance : 1.7278761f + 0.47123894f * MathHelper.cos(limbAngle) * limbDistance;
             }
         }
@@ -91,25 +91,25 @@ extends AnimalModel<T> {
 
     @Override
     public void animateModel(T entity, float limbAngle, float limbDistance, float tickDelta) {
-        this.torso.pivotY = 12.0f;
-        this.torso.pivotZ = -10.0f;
+        this.body.pivotY = 12.0f;
+        this.body.pivotZ = -10.0f;
         this.head.pivotY = 15.0f;
         this.head.pivotZ = -9.0f;
         this.upperTail.pivotY = 15.0f;
         this.upperTail.pivotZ = 8.0f;
         this.lowerTail.pivotY = 20.0f;
         this.lowerTail.pivotZ = 14.0f;
-        this.field_27456.pivotY = 14.1f;
-        this.field_27456.pivotZ = -5.0f;
-        this.field_27457.pivotY = 14.1f;
-        this.field_27457.pivotZ = -5.0f;
-        this.field_27454.pivotY = 18.0f;
-        this.field_27454.pivotZ = 5.0f;
-        this.field_27455.pivotY = 18.0f;
-        this.field_27455.pivotZ = 5.0f;
+        this.leftFrontLeg.pivotY = 14.1f;
+        this.leftFrontLeg.pivotZ = -5.0f;
+        this.rightFrontLeg.pivotY = 14.1f;
+        this.rightFrontLeg.pivotZ = -5.0f;
+        this.leftHindLeg.pivotY = 18.0f;
+        this.leftHindLeg.pivotZ = 5.0f;
+        this.rightHindLeg.pivotY = 18.0f;
+        this.rightHindLeg.pivotZ = 5.0f;
         this.upperTail.pitch = 0.9f;
         if (((Entity)entity).isInSneakingPose()) {
-            this.torso.pivotY += 1.0f;
+            this.body.pivotY += 1.0f;
             this.head.pivotY += 2.0f;
             this.upperTail.pivotY += 1.0f;
             this.lowerTail.pivotY += -4.0f;

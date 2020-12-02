@@ -36,12 +36,12 @@ implements Fertilizable {
     public static final IntProperty AGE = Properties.AGE_7;
     protected static final VoxelShape[] AGE_TO_SHAPE = new VoxelShape[]{Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 2.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 4.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 6.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 8.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 10.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 12.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 14.0, 9.0), Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)};
     private final GourdBlock gourdBlock;
-    private final Supplier<Item> field_27205;
+    private final Supplier<Item> pickBlockItem;
 
-    protected StemBlock(GourdBlock gourdBlock, Supplier<Item> supplier, AbstractBlock.Settings settings) {
+    protected StemBlock(GourdBlock gourdBlock, Supplier<Item> pickBlockItem, AbstractBlock.Settings settings) {
         super(settings);
         this.gourdBlock = gourdBlock;
-        this.field_27205 = supplier;
+        this.pickBlockItem = pickBlockItem;
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(AGE, 0));
     }
 
@@ -81,7 +81,7 @@ implements Fertilizable {
     @Override
     @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        return new ItemStack(this.field_27205.get());
+        return new ItemStack(this.pickBlockItem.get());
     }
 
     @Override

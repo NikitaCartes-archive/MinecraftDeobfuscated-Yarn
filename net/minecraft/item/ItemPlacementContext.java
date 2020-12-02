@@ -19,8 +19,8 @@ extends ItemUsageContext {
     private final BlockPos placementPos;
     protected boolean canReplaceExisting = true;
 
-    public ItemPlacementContext(PlayerEntity playerEntity, Hand hand, ItemStack itemStack, BlockHitResult blockHitResult) {
-        this(playerEntity.world, playerEntity, hand, itemStack, blockHitResult);
+    public ItemPlacementContext(PlayerEntity player, Hand hand, ItemStack stack, BlockHitResult hitResult) {
+        this(player.world, player, hand, stack, hitResult);
     }
 
     public ItemPlacementContext(ItemUsageContext context) {
@@ -54,8 +54,8 @@ extends ItemUsageContext {
         return Direction.getEntityFacingOrder(this.getPlayer())[0];
     }
 
-    public Direction method_32760() {
-        return Direction.method_32801(this.getPlayer(), Direction.Axis.Y);
+    public Direction getVerticalPlayerLookDirection() {
+        return Direction.getLookDirectionForAxis(this.getPlayer(), Direction.Axis.Y);
     }
 
     public Direction[] getPlacementDirections() {

@@ -44,6 +44,7 @@ import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class ArmorStandEntity
@@ -144,11 +145,13 @@ extends LivingEntity {
         switch (slot.getType()) {
             case HAND: {
                 this.onEquipStack(stack);
+                this.method_32875(null, GameEvent.ARMOR_STAND_ADD_ITEM);
                 this.heldItems.set(slot.getEntitySlotId(), stack);
                 break;
             }
             case ARMOR: {
                 this.onEquipStack(stack);
+                this.method_32875(null, GameEvent.ARMOR_STAND_ADD_ITEM);
                 this.armorItems.set(slot.getEntitySlotId(), stack);
             }
         }
@@ -420,6 +423,7 @@ extends LivingEntity {
         }
         if (source.isSourceCreativePlayer()) {
             this.playBreakSound();
+            this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
             this.spawnBreakParticles();
             this.kill();
             return bl2;
@@ -431,6 +435,7 @@ extends LivingEntity {
             this.kill();
         } else {
             this.world.sendEntityStatus(this, (byte)32);
+            this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
             this.lastHitTime = l;
         }
         return true;
@@ -484,6 +489,7 @@ extends LivingEntity {
         ItemStack itemStack;
         int i;
         this.playBreakSound();
+        this.method_32875(damageSource.getAttacker(), GameEvent.BLOCK_DESTROY);
         this.drop(damageSource);
         for (i = 0; i < this.heldItems.size(); ++i) {
             itemStack = this.heldItems.get(i);

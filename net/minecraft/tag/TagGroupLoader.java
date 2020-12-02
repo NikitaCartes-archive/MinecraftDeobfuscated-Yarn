@@ -3,7 +3,10 @@
  */
 package net.minecraft.tag;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.io.BufferedReader;
@@ -13,13 +16,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.resource.Resource;
@@ -111,25 +117,40 @@ public class TagGroupLoader<T> {
         }, prepareExecutor);
     }
 
+    private static void method_32839(Map<Identifier, Tag.Builder> map, Multimap<Identifier, Identifier> multimap, Set<Identifier> set, Identifier identifier2, BiConsumer<Identifier, Tag.Builder> biConsumer) {
+        if (!set.add(identifier2)) {
+            return;
+        }
+        multimap.get(identifier2).forEach(identifier -> TagGroupLoader.method_32839(map, multimap, set, identifier, biConsumer));
+        Tag.Builder builder = map.get(identifier2);
+        if (builder != null) {
+            biConsumer.accept(identifier2, builder);
+        }
+    }
+
+    private static boolean method_32836(Multimap<Identifier, Identifier> multimap, Identifier identifier, Identifier identifier22) {
+        Collection<Identifier> collection = multimap.get(identifier22);
+        if (collection.contains(identifier)) {
+            return true;
+        }
+        return collection.stream().anyMatch(identifier2 -> TagGroupLoader.method_32836(multimap, identifier, identifier2));
+    }
+
+    private static void method_32844(Multimap<Identifier, Identifier> multimap, Identifier identifier, Identifier identifier2) {
+        if (!TagGroupLoader.method_32836(multimap, identifier, identifier2)) {
+            multimap.put(identifier, identifier2);
+        }
+    }
+
     public TagGroup<T> applyReload(Map<Identifier, Tag.Builder> tags) {
         HashMap map = Maps.newHashMap();
-        Function function = map::get;
+        Function<Identifier, Tag> function = map::get;
         Function<Identifier, Object> function2 = identifier -> this.registryGetter.apply((Identifier)identifier).orElse(null);
-        while (!tags.isEmpty()) {
-            boolean bl = false;
-            Iterator<Map.Entry<Identifier, Tag.Builder>> iterator = tags.entrySet().iterator();
-            while (iterator.hasNext()) {
-                Map.Entry<Identifier, Tag.Builder> entry = iterator.next();
-                Optional<Tag<Object>> optional = entry.getValue().build(function, function2);
-                if (!optional.isPresent()) continue;
-                map.put(entry.getKey(), optional.get());
-                iterator.remove();
-                bl = true;
-            }
-            if (bl) continue;
-            break;
-        }
-        tags.forEach((identifier, builder) -> LOGGER.error("Couldn't load {} tag {} as it is missing following references: {}", (Object)this.entryType, identifier, (Object)builder.streamUnresolvedEntries(function, function2).map(Objects::toString).collect(Collectors.joining(","))));
+        HashMultimap multimap = HashMultimap.create();
+        tags.forEach((identifier, builder) -> builder.method_32826(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
+        tags.forEach((identifier, builder) -> builder.method_32828(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
+        HashSet set = Sets.newHashSet();
+        tags.keySet().forEach(identifier2 -> TagGroupLoader.method_32839(tags, multimap, set, identifier2, (identifier, builder) -> builder.build(function, function2).ifLeft(collection -> LOGGER.error("Couldn't load {} tag {} as it is missing following references: {}", (Object)this.entryType, identifier, (Object)collection.stream().map(Objects::toString).collect(Collectors.joining(",")))).ifRight(tag -> map.put((Identifier)identifier, tag))));
         return TagGroup.create(map);
     }
 }

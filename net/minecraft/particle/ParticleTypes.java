@@ -7,10 +7,12 @@ import com.mojang.serialization.Codec;
 import java.util.function.Function;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.particle.DustColorTransitionParticleEffect;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
+import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.util.registry.Registry;
 
 public class ParticleTypes {
@@ -29,6 +31,7 @@ public class ParticleTypes {
     public static final DefaultParticleType DRIPPING_WATER = ParticleTypes.register("dripping_water", false);
     public static final DefaultParticleType FALLING_WATER = ParticleTypes.register("falling_water", false);
     public static final ParticleType<DustParticleEffect> DUST = ParticleTypes.register("dust", DustParticleEffect.PARAMETERS_FACTORY, particleType -> DustParticleEffect.CODEC);
+    public static final ParticleType<DustColorTransitionParticleEffect> DUST_COLOR_TRANSITION = ParticleTypes.register("dust_color_transition", DustColorTransitionParticleEffect.FACTORY, particleType -> DustColorTransitionParticleEffect.CODEC);
     public static final DefaultParticleType EFFECT = ParticleTypes.register("effect", false);
     public static final DefaultParticleType ELDER_GUARDIAN = ParticleTypes.register("elder_guardian", true);
     public static final DefaultParticleType ENCHANTED_HIT = ParticleTypes.register("enchanted_hit", false);
@@ -49,6 +52,7 @@ public class ParticleTypes {
     public static final DefaultParticleType HEART = ParticleTypes.register("heart", false);
     public static final DefaultParticleType INSTANT_EFFECT = ParticleTypes.register("instant_effect", false);
     public static final ParticleType<ItemStackParticleEffect> ITEM = ParticleTypes.register("item", ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::method_29136);
+    public static final ParticleType<VibrationParticleEffect> VIBRATION = ParticleTypes.register("vibration", VibrationParticleEffect.field_28278, particleType -> VibrationParticleEffect.field_28277);
     public static final DefaultParticleType ITEM_SLIME = ParticleTypes.register("item_slime", false);
     public static final DefaultParticleType ITEM_SNOWBALL = ParticleTypes.register("item_snowball", false);
     public static final DefaultParticleType LARGE_SMOKE = ParticleTypes.register("large_smoke", false);

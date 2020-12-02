@@ -18,16 +18,16 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class DolphinEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27411;
+    private final ModelPart root;
     private final ModelPart body;
     private final ModelPart tail;
-    private final ModelPart flukes;
+    private final ModelPart tailFin;
 
-    public DolphinEntityModel(ModelPart modelPart) {
-        this.field_27411 = modelPart;
-        this.body = modelPart.getChild("body");
+    public DolphinEntityModel(ModelPart root) {
+        this.root = root;
+        this.body = root.getChild("body");
         this.tail = this.body.getChild("tail");
-        this.flukes = this.tail.getChild("tail_fin");
+        this.tailFin = this.tail.getChild("tail_fin");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -48,7 +48,7 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27411;
+        return this.root;
     }
 
     @Override
@@ -58,7 +58,7 @@ extends SinglePartEntityModel<T> {
         if (Entity.squaredHorizontalLength(((Entity)entity).getVelocity()) > 1.0E-7) {
             this.body.pitch += -0.05f - 0.05f * MathHelper.cos(animationProgress * 0.3f);
             this.tail.pitch = -0.1f * MathHelper.cos(animationProgress * 0.3f);
-            this.flukes.pitch = -0.2f * MathHelper.cos(animationProgress * 0.3f);
+            this.tailFin.pitch = -0.2f * MathHelper.cos(animationProgress * 0.3f);
         }
     }
 }

@@ -9,18 +9,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenu;
 import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommand;
-import net.minecraft.client.gui.hud.spectator.SpectatorMenuCommandGroup;
 
 @Environment(value=EnvType.CLIENT)
 public class SpectatorMenuState {
-    private final SpectatorMenuCommandGroup group;
     private final List<SpectatorMenuCommand> commands;
     private final int selectedSlot;
 
-    public SpectatorMenuState(SpectatorMenuCommandGroup group, List<SpectatorMenuCommand> commands, int selectedSlot) {
-        this.group = group;
-        this.commands = commands;
-        this.selectedSlot = selectedSlot;
+    public SpectatorMenuState(List<SpectatorMenuCommand> list, int i) {
+        this.commands = list;
+        this.selectedSlot = i;
     }
 
     public SpectatorMenuCommand getCommand(int slot) {

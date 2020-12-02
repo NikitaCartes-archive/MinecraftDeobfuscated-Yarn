@@ -58,6 +58,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractMinecartEntity
@@ -222,6 +223,7 @@ extends Entity {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
+        this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
         this.scheduleVelocityUpdate();

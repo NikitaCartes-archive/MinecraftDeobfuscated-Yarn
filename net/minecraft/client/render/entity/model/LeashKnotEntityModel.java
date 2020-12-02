@@ -17,12 +17,12 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class LeashKnotEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27442;
-    private final ModelPart leashKnot;
+    private final ModelPart root;
+    private final ModelPart knot;
 
-    public LeashKnotEntityModel(ModelPart modelPart) {
-        this.field_27442 = modelPart;
-        this.leashKnot = modelPart.getChild("knot");
+    public LeashKnotEntityModel(ModelPart root) {
+        this.root = root;
+        this.knot = root.getChild("knot");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -34,13 +34,13 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27442;
+        return this.root;
     }
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.leashKnot.yaw = headYaw * ((float)Math.PI / 180);
-        this.leashKnot.pitch = headPitch * ((float)Math.PI / 180);
+        this.knot.yaw = headYaw * ((float)Math.PI / 180);
+        this.knot.pitch = headPitch * ((float)Math.PI / 180);
     }
 }
 

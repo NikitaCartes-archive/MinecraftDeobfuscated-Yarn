@@ -42,7 +42,7 @@ implements LandingBlock {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (!FallingBlock.canFallThrough(world.getBlockState(pos.down())) || pos.getY() < world.getBottomHeightLimit()) {
+        if (!FallingBlock.canFallThrough(world.getBlockState(pos.down())) || pos.getY() < world.getSectionCount()) {
             return;
         }
         FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, world.getBlockState(pos));

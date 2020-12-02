@@ -90,15 +90,15 @@ extends BlockWithEntity {
         return this.ring(world, state, hit, player, true) ? ActionResult.success(world.isClient) : ActionResult.PASS;
     }
 
-    public boolean ring(World world, BlockState state, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity, boolean bl) {
+    public boolean ring(World world, BlockState state, BlockHitResult hitResult, @Nullable PlayerEntity player, boolean bl) {
         boolean bl2;
-        Direction direction = blockHitResult.getSide();
-        BlockPos blockPos = blockHitResult.getBlockPos();
-        boolean bl3 = bl2 = !bl || this.isPointOnBell(state, direction, blockHitResult.getPos().y - (double)blockPos.getY());
+        Direction direction = hitResult.getSide();
+        BlockPos blockPos = hitResult.getBlockPos();
+        boolean bl3 = bl2 = !bl || this.isPointOnBell(state, direction, hitResult.getPos().y - (double)blockPos.getY());
         if (bl2) {
             boolean bl32 = this.ring(world, blockPos, direction);
-            if (bl32 && playerEntity != null) {
-                playerEntity.incrementStat(Stats.BELL_RING);
+            if (bl32 && player != null) {
+                player.incrementStat(Stats.BELL_RING);
             }
             return true;
         }

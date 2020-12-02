@@ -17,9 +17,9 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-        ItemStack itemStack = super.finishUsing(stack, world, user);
-        if (user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode) {
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+        ItemStack itemStack = super.finishUsing(stack, world, entity);
+        if (entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode) {
             return itemStack;
         }
         return new ItemStack(Items.BOWL);

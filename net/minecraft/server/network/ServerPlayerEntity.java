@@ -189,7 +189,7 @@ implements ScreenHandlerListener {
 
     public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile) {
         super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
-        this.interactionManager = server.method_32816(this);
+        this.interactionManager = server.getPlayerInteractionManager(this);
         this.server = server;
         this.statHandler = server.getPlayerManager().createStatHandler(this);
         this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
@@ -228,7 +228,7 @@ implements ScreenHandlerListener {
             }
         } else {
             this.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
-            while (!world.isSpaceEmpty(this) && this.getY() < 255.0) {
+            while (!world.isSpaceEmpty(this) && this.getY() < (double)(world.getTopHeightLimit() - 1)) {
                 this.updatePosition(this.getX(), this.getY() + 1.0, this.getZ());
             }
         }
@@ -603,7 +603,7 @@ implements ScreenHandlerListener {
             }
             serverWorld.getProfiler().pop();
             serverWorld.getProfiler().push("placing");
-            this.method_32747(destination);
+            this.setWorld(destination);
             destination.onPlayerChangeDimension(this);
             this.setRotation(teleportTarget.yaw, teleportTarget.pitch);
             this.refreshPositionAfterTeleport(teleportTarget.position.x, teleportTarget.position.y, teleportTarget.position.z);
@@ -1275,7 +1275,7 @@ implements ScreenHandlerListener {
             serverWorld.removePlayer(this, Entity.RemovalReason.CHANGED_DIMENSION);
             this.unsetRemoved();
             this.refreshPositionAndAngles(x, y, z, yaw, pitch);
-            this.method_32747(targetWorld);
+            this.setWorld(targetWorld);
             targetWorld.onPlayerTeleport(this);
             this.worldChanged(serverWorld);
             this.networkHandler.requestTeleport(x, y, z, yaw, pitch);
@@ -1371,9 +1371,9 @@ implements ScreenHandlerListener {
         return this.textStream;
     }
 
-    public void method_32747(ServerWorld serverWorld) {
-        this.world = serverWorld;
-        this.interactionManager.setWorld(serverWorld);
+    public void setWorld(ServerWorld world) {
+        this.world = world;
+        this.interactionManager.setWorld(world);
     }
 
     @Nullable

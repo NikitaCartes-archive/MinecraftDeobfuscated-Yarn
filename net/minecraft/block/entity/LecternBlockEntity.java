@@ -206,11 +206,11 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.book = compoundTag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null) : ItemStack.EMPTY;
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.book = tag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null) : ItemStack.EMPTY;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
-        this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
+        this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
     }
 
     @Override

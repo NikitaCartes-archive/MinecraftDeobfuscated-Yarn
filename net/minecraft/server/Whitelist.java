@@ -6,6 +6,7 @@ package net.minecraft.server;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import java.io.File;
+import java.util.Objects;
 import net.minecraft.server.ServerConfigEntry;
 import net.minecraft.server.ServerConfigList;
 import net.minecraft.server.WhitelistEntry;
@@ -27,12 +28,7 @@ extends ServerConfigList<GameProfile, WhitelistEntry> {
 
     @Override
     public String[] getNames() {
-        String[] strings = new String[this.values().size()];
-        int i = 0;
-        for (ServerConfigEntry serverConfigEntry : this.values()) {
-            strings[i++] = ((GameProfile)serverConfigEntry.getKey()).getName();
-        }
-        return strings;
+        return (String[])this.values().stream().map(ServerConfigEntry::getKey).filter(Objects::nonNull).map(GameProfile::getName).toArray(String[]::new);
     }
 
     @Override

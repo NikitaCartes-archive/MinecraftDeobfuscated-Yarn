@@ -109,7 +109,7 @@ RecipeInputProvider {
     public boolean canInsert(ItemStack stack) {
         boolean bl = false;
         for (ItemStack itemStack : this.stacks) {
-            if (!itemStack.isEmpty() && (!ItemStack.method_31577(itemStack, stack) || itemStack.getCount() >= itemStack.getMaxCount())) continue;
+            if (!itemStack.isEmpty() && (!ItemStack.canCombine(itemStack, stack) || itemStack.getCount() >= itemStack.getMaxCount())) continue;
             bl = true;
             break;
         }
@@ -193,7 +193,7 @@ RecipeInputProvider {
     private void addToExistingSlot(ItemStack stack) {
         for (int i = 0; i < this.size; ++i) {
             ItemStack itemStack = this.getStack(i);
-            if (!ItemStack.method_31577(itemStack, stack)) continue;
+            if (!ItemStack.canCombine(itemStack, stack)) continue;
             this.transfer(stack, itemStack);
             if (!stack.isEmpty()) continue;
             return;

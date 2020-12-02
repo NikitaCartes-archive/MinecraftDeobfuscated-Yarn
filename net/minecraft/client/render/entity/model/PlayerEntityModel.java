@@ -27,27 +27,30 @@ import net.minecraft.util.Arm;
 @Environment(value=EnvType.CLIENT)
 public class PlayerEntityModel<T extends LivingEntity>
 extends BipedEntityModel<T> {
-    private final List<ModelPart> field_27466;
+    /**
+     * All the parts. Used when picking a part to render stuck arrows.
+     */
+    private final List<ModelPart> parts;
     public final ModelPart leftSleeve;
     public final ModelPart rightSleeve;
-    public final ModelPart leftPantLeg;
-    public final ModelPart rightPantLeg;
+    public final ModelPart leftPants;
+    public final ModelPart rightPants;
     public final ModelPart jacket;
-    private final ModelPart cape;
-    private final ModelPart ears;
+    private final ModelPart cloak;
+    private final ModelPart ear;
     private final boolean thinArms;
 
-    public PlayerEntityModel(ModelPart modelPart2, boolean thinArms) {
-        super(modelPart2, RenderLayer::getEntityTranslucent);
+    public PlayerEntityModel(ModelPart root, boolean thinArms) {
+        super(root, RenderLayer::getEntityTranslucent);
         this.thinArms = thinArms;
-        this.ears = modelPart2.getChild("ear");
-        this.cape = modelPart2.getChild("cloak");
-        this.leftSleeve = modelPart2.getChild("left_sleeve");
-        this.rightSleeve = modelPart2.getChild("right_sleeve");
-        this.leftPantLeg = modelPart2.getChild("left_pants");
-        this.rightPantLeg = modelPart2.getChild("right_pants");
-        this.jacket = modelPart2.getChild("jacket");
-        this.field_27466 = modelPart2.traverse().filter(modelPart -> !modelPart.isEmpty()).collect(ImmutableList.toImmutableList());
+        this.ear = root.getChild("ear");
+        this.cloak = root.getChild("cloak");
+        this.leftSleeve = root.getChild("left_sleeve");
+        this.rightSleeve = root.getChild("right_sleeve");
+        this.leftPants = root.getChild("left_pants");
+        this.rightPants = root.getChild("right_pants");
+        this.jacket = root.getChild("jacket");
+        this.parts = root.traverse().filter(modelPart -> !modelPart.isEmpty()).collect(ImmutableList.toImmutableList());
     }
 
     public static ModelData getTexturedModelData(Dilation dilation, boolean slim) {
@@ -75,42 +78,42 @@ extends BipedEntityModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.leftPantLeg, this.rightPantLeg, this.leftSleeve, this.rightSleeve, this.jacket));
+        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.leftPants, this.rightPants, this.leftSleeve, this.rightSleeve, this.jacket));
     }
 
     public void renderEars(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
-        this.ears.copyTransform(this.head);
-        this.ears.pivotX = 0.0f;
-        this.ears.pivotY = 0.0f;
-        this.ears.render(matrices, vertices, light, overlay);
+        this.ear.copyTransform(this.head);
+        this.ear.pivotX = 0.0f;
+        this.ear.pivotY = 0.0f;
+        this.ear.render(matrices, vertices, light, overlay);
     }
 
     public void renderCape(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
-        this.cape.render(matrices, vertices, light, overlay);
+        this.cloak.render(matrices, vertices, light, overlay);
     }
 
     @Override
     public void setAngles(T livingEntity, float f, float g, float h, float i, float j) {
         super.setAngles(livingEntity, f, g, h, i, j);
-        this.leftPantLeg.copyTransform(this.leftLeg);
-        this.rightPantLeg.copyTransform(this.rightLeg);
+        this.leftPants.copyTransform(this.leftLeg);
+        this.rightPants.copyTransform(this.rightLeg);
         this.leftSleeve.copyTransform(this.leftArm);
         this.rightSleeve.copyTransform(this.rightArm);
-        this.jacket.copyTransform(this.torso);
+        this.jacket.copyTransform(this.body);
         if (((LivingEntity)livingEntity).getEquippedStack(EquipmentSlot.CHEST).isEmpty()) {
             if (((Entity)livingEntity).isInSneakingPose()) {
-                this.cape.pivotZ = 1.4f;
-                this.cape.pivotY = 1.85f;
+                this.cloak.pivotZ = 1.4f;
+                this.cloak.pivotY = 1.85f;
             } else {
-                this.cape.pivotZ = 0.0f;
-                this.cape.pivotY = 0.0f;
+                this.cloak.pivotZ = 0.0f;
+                this.cloak.pivotY = 0.0f;
             }
         } else if (((Entity)livingEntity).isInSneakingPose()) {
-            this.cape.pivotZ = 0.3f;
-            this.cape.pivotY = 0.8f;
+            this.cloak.pivotZ = 0.3f;
+            this.cloak.pivotY = 0.8f;
         } else {
-            this.cape.pivotZ = -1.1f;
-            this.cape.pivotY = -0.85f;
+            this.cloak.pivotZ = -1.1f;
+            this.cloak.pivotY = -0.85f;
         }
     }
 
@@ -119,11 +122,11 @@ extends BipedEntityModel<T> {
         super.setVisible(visible);
         this.leftSleeve.visible = visible;
         this.rightSleeve.visible = visible;
-        this.leftPantLeg.visible = visible;
-        this.rightPantLeg.visible = visible;
+        this.leftPants.visible = visible;
+        this.rightPants.visible = visible;
         this.jacket.visible = visible;
-        this.cape.visible = visible;
-        this.ears.visible = visible;
+        this.cloak.visible = visible;
+        this.ear.visible = visible;
     }
 
     @Override
@@ -140,7 +143,7 @@ extends BipedEntityModel<T> {
     }
 
     public ModelPart getRandomPart(Random random) {
-        return this.field_27466.get(random.nextInt(this.field_27466.size()));
+        return this.parts.get(random.nextInt(this.parts.size()));
     }
 }
 

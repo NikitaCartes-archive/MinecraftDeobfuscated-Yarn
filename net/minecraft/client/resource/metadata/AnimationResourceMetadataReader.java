@@ -16,6 +16,7 @@ import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.JsonHelper;
 import org.apache.commons.lang3.Validate;
+import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class AnimationResourceMetadataReader
@@ -53,6 +54,7 @@ implements ResourceMetadataReader<AnimationResourceMetadata> {
         return new AnimationResourceMetadata(list, k, j, i, bl);
     }
 
+    @Nullable
     private AnimationFrameResourceMetadata readFrameMetadata(int frame, JsonElement json) {
         if (json.isJsonPrimitive()) {
             return new AnimationFrameResourceMetadata(JsonHelper.asInt(json, "frames[" + frame + "]"));

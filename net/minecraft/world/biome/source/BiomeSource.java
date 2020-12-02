@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_5742;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
@@ -56,12 +57,12 @@ implements BiomeAccess.Storage {
     }
 
     public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
-        int i = x - radius >> 2;
-        int j = y - radius >> 2;
-        int k = z - radius >> 2;
-        int l = x + radius >> 2;
-        int m = y + radius >> 2;
-        int n = z + radius >> 2;
+        int i = class_5742.method_33100(x - radius);
+        int j = class_5742.method_33100(y - radius);
+        int k = class_5742.method_33100(z - radius);
+        int l = class_5742.method_33100(x + radius);
+        int m = class_5742.method_33100(y + radius);
+        int n = class_5742.method_33100(z + radius);
         int o = l - i + 1;
         int p = m - j + 1;
         int q = n - k + 1;
@@ -87,10 +88,10 @@ implements BiomeAccess.Storage {
     @Nullable
     public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl) {
         int o;
-        int j = x >> 2;
-        int k = z >> 2;
-        int l = radius >> 2;
-        int m = y >> 2;
+        int j = class_5742.method_33100(x);
+        int k = class_5742.method_33100(z);
+        int l = class_5742.method_33100(radius);
+        int m = class_5742.method_33100(y);
         BlockPos blockPos = null;
         int n = 0;
         for (int p = o = bl ? 0 : l; p <= l; p += i) {
@@ -106,7 +107,7 @@ implements BiomeAccess.Storage {
                     }
                     if (!predicate.test(this.getBiomeForNoiseGen(s = j + r, m, t = k + q))) continue;
                     if (blockPos == null || random.nextInt(n + 1) == 0) {
-                        blockPos = new BlockPos(s << 2, y, t << 2);
+                        blockPos = new BlockPos(class_5742.method_33101(s), y, class_5742.method_33101(t));
                         if (bl) {
                             return blockPos;
                         }

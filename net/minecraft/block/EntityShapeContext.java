@@ -30,17 +30,17 @@ implements ShapeContext {
     private final boolean descending;
     private final double minY;
     private final ItemStack heldItem;
-    private final ItemStack field_27934;
-    private final Predicate<Fluid> field_24425;
-    private final Optional<Entity> field_27935;
+    private final ItemStack boots;
+    private final Predicate<Fluid> walkOnFluidPredicate;
+    private final Optional<Entity> entity;
 
-    protected EntityShapeContext(boolean descending, double minY, ItemStack itemStack, ItemStack itemStack2, Predicate<Fluid> predicate, Optional<Entity> optional) {
+    protected EntityShapeContext(boolean descending, double minY, ItemStack boots, ItemStack heldItem, Predicate<Fluid> walkOnFluidPredicate, Optional<Entity> entity) {
         this.descending = descending;
         this.minY = minY;
-        this.field_27934 = itemStack;
-        this.heldItem = itemStack2;
-        this.field_24425 = predicate;
-        this.field_27935 = optional;
+        this.boots = boots;
+        this.heldItem = heldItem;
+        this.walkOnFluidPredicate = walkOnFluidPredicate;
+        this.entity = entity;
     }
 
     @Deprecated
@@ -54,8 +54,8 @@ implements ShapeContext {
     }
 
     @Override
-    public boolean method_27866(FluidState state, FlowableFluid fluid) {
-        return this.field_24425.test(fluid) && !state.getFluid().matchesType(fluid);
+    public boolean canWalkOnFluid(FluidState state, FlowableFluid fluid) {
+        return this.walkOnFluidPredicate.test(fluid) && !state.getFluid().matchesType(fluid);
     }
 
     @Override
@@ -68,8 +68,8 @@ implements ShapeContext {
         return this.minY > (double)pos.getY() + shape.getMax(Direction.Axis.Y) - (double)1.0E-5f;
     }
 
-    public Optional<Entity> method_32480() {
-        return this.field_27935;
+    public Optional<Entity> getEntity() {
+        return this.entity;
     }
 }
 

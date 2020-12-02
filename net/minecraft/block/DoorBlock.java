@@ -16,6 +16,7 @@ import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.piston.PistonBehavior;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -40,6 +41,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class DoorBlock
@@ -184,6 +186,7 @@ extends Block {
         state = (BlockState)state.cycle(OPEN);
         world.setBlockState(pos, state, 10);
         world.syncWorldEvent(player, state.get(OPEN) != false ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
+        world.emitGameEvent((Entity)player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
         return ActionResult.success(world.isClient);
     }
 
@@ -191,12 +194,13 @@ extends Block {
         return state.get(OPEN);
     }
 
-    public void setOpen(World world, BlockState state, BlockPos pos, boolean open) {
+    public void setOpen(@Nullable Entity entity, World world, BlockState state, BlockPos pos, boolean open) {
         if (!state.isOf(this) || state.get(OPEN) == open) {
             return;
         }
         world.setBlockState(pos, (BlockState)state.with(OPEN, open), 10);
         this.playOpenCloseSound(world, pos, open);
+        world.emitGameEvent(entity, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
     }
 
     @Override
@@ -206,6 +210,7 @@ extends Block {
         if (!this.getDefaultState().isOf(block) && bl != state.get(POWERED)) {
             if (bl != state.get(OPEN)) {
                 this.playOpenCloseSound(world, pos, bl);
+                world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
             }
             world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), 2);
         }

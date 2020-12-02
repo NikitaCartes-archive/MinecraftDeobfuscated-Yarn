@@ -43,6 +43,7 @@ import net.minecraft.class_5565;
 import net.minecraft.class_5575;
 import net.minecraft.class_5577;
 import net.minecraft.class_5579;
+import net.minecraft.class_5715;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -75,6 +76,7 @@ import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
+import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -129,6 +131,7 @@ import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TickScheduler;
+import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.BlockEntityTickInvoker;
@@ -136,6 +139,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.Spawner;
@@ -476,7 +480,7 @@ implements StructureWorldAccess {
         if (!list.isEmpty()) {
             return list.get(this.random.nextInt(list.size())).getBlockPos();
         }
-        if (blockPos.getY() == this.getBottomHeightLimit() - 1) {
+        if (blockPos.getY() == this.getSectionCount() - 1) {
             blockPos = blockPos.up(2);
         }
         return blockPos;
@@ -701,7 +705,7 @@ implements StructureWorldAccess {
     }
 
     public void unloadEntities(WorldChunk chunk) {
-        chunk.method_31712();
+        chunk.removeAllBlockEntities();
     }
 
     public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason removalReason) {
@@ -737,6 +741,15 @@ implements StructureWorldAccess {
     @Override
     public void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
         this.server.getPlayerManager().sendToAround(player, pos.getX(), pos.getY(), pos.getZ(), 64.0, this.getRegistryKey(), new WorldEventS2CPacket(eventId, pos, data, false));
+    }
+
+    public int getHeightLimit() {
+        return this.getDimension().getLogicalHeight();
+    }
+
+    @Override
+    public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
+        this.method_32886(entity, event, pos, event.getRange());
     }
 
     @Override
@@ -820,6 +833,12 @@ implements StructureWorldAccess {
 
     public StructureManager getStructureManager() {
         return this.server.getStructureManager();
+    }
+
+    public void method_32817(Vibration vibration) {
+        BlockPos blockPos = vibration.getOrigin();
+        VibrationS2CPacket vibrationS2CPacket = new VibrationS2CPacket(vibration);
+        this.players.forEach(player -> this.sendToPlayerIfNearby((ServerPlayerEntity)player, false, blockPos.getX(), blockPos.getY(), blockPos.getZ(), vibrationS2CPacket));
     }
 
     public <T extends ParticleEffect> int spawnParticles(T particle, double x, double y, double z, int count, double deltaX, double deltaY, double deltaZ, double speed) {
@@ -1288,9 +1307,10 @@ implements StructureWorldAccess {
 
         @Override
         public void onUnloadEntity(Entity entity) {
+            class_5715 lv;
             ServerWorld.this.getChunkManager().unloadEntity(entity);
             if (entity instanceof ServerPlayerEntity) {
-                ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+                EnderDragonPart[] serverPlayerEntity = (EnderDragonPart[])entity;
                 ServerWorld.this.players.remove(serverPlayerEntity);
                 ServerWorld.this.updateSleepingPlayers();
             }
@@ -1301,6 +1321,9 @@ implements StructureWorldAccess {
                 for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
                     ServerWorld.this.dragonParts.remove(enderDragonPart.getEntityId());
                 }
+            }
+            if ((lv = entity.method_32877()) != null) {
+                lv.method_32949(entity.world);
             }
         }
 

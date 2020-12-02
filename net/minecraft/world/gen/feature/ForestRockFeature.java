@@ -21,10 +21,10 @@ extends Feature<SingleStateFeatureConfig> {
     @Override
     public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
         BlockState blockState;
-        while (blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 3 && (structureWorldAccess.isAir(blockPos.down()) || !ForestRockFeature.isSoil(blockState = structureWorldAccess.getBlockState(blockPos.down())) && !ForestRockFeature.isStone(blockState))) {
+        while (blockPos.getY() > structureWorldAccess.getSectionCount() + 3 && (structureWorldAccess.isAir(blockPos.down()) || !ForestRockFeature.isSoil(blockState = structureWorldAccess.getBlockState(blockPos.down())) && !ForestRockFeature.isStone(blockState))) {
             blockPos = blockPos.down();
         }
-        if (blockPos.getY() <= structureWorldAccess.getBottomHeightLimit() + 3) {
+        if (blockPos.getY() <= structureWorldAccess.getSectionCount() + 3) {
             return false;
         }
         for (int i = 0; i < 3; ++i) {

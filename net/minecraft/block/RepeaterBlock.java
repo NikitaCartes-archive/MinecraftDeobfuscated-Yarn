@@ -65,8 +65,8 @@ extends AbstractRedstoneGateBlock {
     }
 
     @Override
-    public boolean isLocked(WorldView worldView, BlockPos pos, BlockState state) {
-        return this.getMaxInputLevelSides(worldView, pos, state) > 0;
+    public boolean isLocked(WorldView world, BlockPos pos, BlockState state) {
+        return this.getMaxInputLevelSides(world, pos, state) > 0;
     }
 
     @Override
@@ -90,7 +90,7 @@ extends AbstractRedstoneGateBlock {
         }
         double h = (g /= 16.0f) * (float)direction.getOffsetX();
         double i = g * (float)direction.getOffsetZ();
-        world.addParticle(DustParticleEffect.RED, d + h, e, f + i, 0.0, 0.0, 0.0);
+        world.addParticle(DustParticleEffect.DEFAULT, d + h, e, f + i, 0.0, 0.0, 0.0);
     }
 
     @Override

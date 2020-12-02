@@ -48,7 +48,7 @@ extends ProjectileEntity {
         this.method_26962();
         float g = 0.99f;
         float h = 0.06f;
-        if (this.world.method_29546(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
+        if (this.world.getStatesInBox(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
             this.discard();
             return;
         }

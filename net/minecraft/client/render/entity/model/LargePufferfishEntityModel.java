@@ -18,14 +18,14 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class LargePufferfishEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27467;
-    private final ModelPart field_27468;
-    private final ModelPart field_27469;
+    private final ModelPart root;
+    private final ModelPart leftBlueFin;
+    private final ModelPart rightBlueFin;
 
-    public LargePufferfishEntityModel(ModelPart modelPart) {
-        this.field_27467 = modelPart;
-        this.field_27468 = modelPart.getChild("left_blue_fin");
-        this.field_27469 = modelPart.getChild("right_blue_fin");
+    public LargePufferfishEntityModel(ModelPart root) {
+        this.root = root;
+        this.leftBlueFin = root.getChild("left_blue_fin");
+        this.rightBlueFin = root.getChild("right_blue_fin");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -50,13 +50,13 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27467;
+        return this.root;
     }
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.field_27469.roll = -0.2f + 0.4f * MathHelper.sin(animationProgress * 0.2f);
-        this.field_27468.roll = 0.2f - 0.4f * MathHelper.sin(animationProgress * 0.2f);
+        this.rightBlueFin.roll = -0.2f + 0.4f * MathHelper.sin(animationProgress * 0.2f);
+        this.leftBlueFin.roll = 0.2f - 0.4f * MathHelper.sin(animationProgress * 0.2f);
     }
 }
 

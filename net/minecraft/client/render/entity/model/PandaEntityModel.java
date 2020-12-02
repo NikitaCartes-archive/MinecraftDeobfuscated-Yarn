@@ -24,8 +24,8 @@ extends QuadrupedEntityModel<T> {
     private float lieOnBackAnimationProgress;
     private float playAnimationProgress;
 
-    public PandaEntityModel(ModelPart modelPart) {
-        super(modelPart, true, 23.0f, 4.8f, 2.7f, 3.0f, 49);
+    public PandaEntityModel(ModelPart root) {
+        super(root, true, 23.0f, 4.8f, 2.7f, 3.0f, 49);
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -62,8 +62,8 @@ extends QuadrupedEntityModel<T> {
         if (bl) {
             this.head.yaw = 0.35f * MathHelper.sin(0.6f * h);
             this.head.roll = 0.35f * MathHelper.sin(0.6f * h);
-            this.field_27478.pitch = -0.75f * MathHelper.sin(0.3f * h);
-            this.field_27479.pitch = 0.75f * MathHelper.sin(0.3f * h);
+            this.rightFrontLeg.pitch = -0.75f * MathHelper.sin(0.3f * h);
+            this.leftFrontLeg.pitch = 0.75f * MathHelper.sin(0.3f * h);
         } else {
             this.head.roll = 0.0f;
         }
@@ -76,41 +76,41 @@ extends QuadrupedEntityModel<T> {
             }
         }
         if (this.scaredAnimationProgress > 0.0f) {
-            this.torso.pitch = ModelUtil.interpolateAngle(this.torso.pitch, 1.7407963f, this.scaredAnimationProgress);
+            this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 1.7407963f, this.scaredAnimationProgress);
             this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 1.5707964f, this.scaredAnimationProgress);
-            this.field_27478.roll = -0.27079642f;
-            this.field_27479.roll = 0.27079642f;
-            this.field_27476.roll = 0.5707964f;
-            this.field_27477.roll = -0.5707964f;
+            this.rightFrontLeg.roll = -0.27079642f;
+            this.leftFrontLeg.roll = 0.27079642f;
+            this.rightHindLeg.roll = 0.5707964f;
+            this.leftHindLeg.roll = -0.5707964f;
             if (bl3) {
                 this.head.pitch = 1.5707964f + 0.2f * MathHelper.sin(h * 0.6f);
-                this.field_27478.pitch = -0.4f - 0.2f * MathHelper.sin(h * 0.6f);
-                this.field_27479.pitch = -0.4f - 0.2f * MathHelper.sin(h * 0.6f);
+                this.rightFrontLeg.pitch = -0.4f - 0.2f * MathHelper.sin(h * 0.6f);
+                this.leftFrontLeg.pitch = -0.4f - 0.2f * MathHelper.sin(h * 0.6f);
             }
             if (bl4) {
                 this.head.pitch = 2.1707964f;
-                this.field_27478.pitch = -0.9f;
-                this.field_27479.pitch = -0.9f;
+                this.rightFrontLeg.pitch = -0.9f;
+                this.leftFrontLeg.pitch = -0.9f;
             }
         } else {
-            this.field_27476.roll = 0.0f;
-            this.field_27477.roll = 0.0f;
-            this.field_27478.roll = 0.0f;
-            this.field_27479.roll = 0.0f;
+            this.rightHindLeg.roll = 0.0f;
+            this.leftHindLeg.roll = 0.0f;
+            this.rightFrontLeg.roll = 0.0f;
+            this.leftFrontLeg.roll = 0.0f;
         }
         if (this.lieOnBackAnimationProgress > 0.0f) {
-            this.field_27476.pitch = -0.6f * MathHelper.sin(h * 0.15f);
-            this.field_27477.pitch = 0.6f * MathHelper.sin(h * 0.15f);
-            this.field_27478.pitch = 0.3f * MathHelper.sin(h * 0.25f);
-            this.field_27479.pitch = -0.3f * MathHelper.sin(h * 0.25f);
+            this.rightHindLeg.pitch = -0.6f * MathHelper.sin(h * 0.15f);
+            this.leftHindLeg.pitch = 0.6f * MathHelper.sin(h * 0.15f);
+            this.rightFrontLeg.pitch = 0.3f * MathHelper.sin(h * 0.25f);
+            this.leftFrontLeg.pitch = -0.3f * MathHelper.sin(h * 0.25f);
             this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 1.5707964f, this.lieOnBackAnimationProgress);
         }
         if (this.playAnimationProgress > 0.0f) {
             this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 2.0561945f, this.playAnimationProgress);
-            this.field_27476.pitch = -0.5f * MathHelper.sin(h * 0.5f);
-            this.field_27477.pitch = 0.5f * MathHelper.sin(h * 0.5f);
-            this.field_27478.pitch = 0.5f * MathHelper.sin(h * 0.5f);
-            this.field_27479.pitch = -0.5f * MathHelper.sin(h * 0.5f);
+            this.rightHindLeg.pitch = -0.5f * MathHelper.sin(h * 0.5f);
+            this.leftHindLeg.pitch = 0.5f * MathHelper.sin(h * 0.5f);
+            this.rightFrontLeg.pitch = 0.5f * MathHelper.sin(h * 0.5f);
+            this.leftFrontLeg.pitch = -0.5f * MathHelper.sin(h * 0.5f);
         }
     }
 }

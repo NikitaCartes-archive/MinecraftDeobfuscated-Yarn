@@ -38,21 +38,21 @@ extends DispenserBlock {
     }
 
     @Override
-    protected void dispense(ServerWorld serverWorld, BlockPos pos) {
+    protected void dispense(ServerWorld world, BlockPos pos) {
         ItemStack itemStack2;
-        BlockPointerImpl blockPointerImpl = new BlockPointerImpl(serverWorld, pos);
+        BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
         DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)blockPointerImpl.getBlockEntity();
         int i = dispenserBlockEntity.chooseNonEmptySlot();
         if (i < 0) {
-            serverWorld.syncWorldEvent(1001, pos, 0);
+            world.syncWorldEvent(1001, pos, 0);
             return;
         }
         ItemStack itemStack = dispenserBlockEntity.getStack(i);
         if (itemStack.isEmpty()) {
             return;
         }
-        Direction direction = serverWorld.getBlockState(pos).get(FACING);
-        Inventory inventory = HopperBlockEntity.getInventoryAt(serverWorld, pos.offset(direction));
+        Direction direction = world.getBlockState(pos).get(FACING);
+        Inventory inventory = HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
         if (inventory == null) {
             itemStack2 = BEHAVIOR.dispense(blockPointerImpl, itemStack);
         } else {

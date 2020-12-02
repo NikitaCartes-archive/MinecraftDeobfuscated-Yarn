@@ -129,6 +129,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -580,7 +581,7 @@ extends Entity {
     }
 
     protected void onEquipStack(ItemStack stack) {
-        SoundEvent soundEvent = stack.method_31572();
+        SoundEvent soundEvent = stack.getEquipSound();
         if (stack.isEmpty() || soundEvent == null || this.isSpectator()) {
             return;
         }
@@ -913,7 +914,7 @@ extends Entity {
         }
         this.despawnCounter = 0;
         float f = amount;
-        if (!(source != DamageSource.ANVIL && source != DamageSource.FALLING_BLOCK || this.getEquippedStack(EquipmentSlot.HEAD).isEmpty())) {
+        if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
             this.getEquippedStack(EquipmentSlot.HEAD).damage((int)(amount * 4.0f + this.random.nextFloat() * amount * 2.0f), this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
             amount *= 0.75f;
         }
@@ -1010,6 +1011,7 @@ extends Entity {
         if (entity2 instanceof ServerPlayerEntity) {
             Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
         }
+        this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
         return bl3;
     }
 
@@ -1846,7 +1848,7 @@ extends Entity {
                         q -= d;
                     }
                 } else {
-                    q = this.getY() > (double)this.world.getBottomHeightLimit() ? -0.1 : 0.0;
+                    q = this.getY() > (double)this.world.getSectionCount() ? -0.1 : 0.0;
                 }
                 this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
             }
@@ -2239,8 +2241,13 @@ extends Entity {
             ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
             if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
                 bl = true;
-                if (!this.world.isClient && (this.roll + 1) % 20 == 0) {
-                    itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                int i = this.roll + 1;
+                if (!this.world.isClient && i % 10 == 0) {
+                    int j = i / 10;
+                    if (j % 2 == 0) {
+                        itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+                    }
+                    this.emitGameEvent(GameEvent.ELYTRA_FREE_FALL);
                 }
             } else {
                 bl = false;
@@ -2664,7 +2671,7 @@ extends Entity {
         BlockPos blockPos = new BlockPos(x, g, z);
         if (world.isChunkLoaded(blockPos)) {
             boolean bl2 = false;
-            while (!bl2 && blockPos.getY() > world.getBottomHeightLimit()) {
+            while (!bl2 && blockPos.getY() > world.getSectionCount()) {
                 BlockPos blockPos2 = blockPos.down();
                 BlockState blockState = world.getBlockState(blockPos2);
                 if (blockState.getMaterial().blocksMovement()) {

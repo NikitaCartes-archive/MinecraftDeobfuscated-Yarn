@@ -36,6 +36,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class ShulkerBoxBlockEntity
@@ -186,6 +187,7 @@ implements SidedInventory {
             ++this.viewerCount;
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount == 1) {
+                this.world.emitGameEvent((Entity)player, GameEvent.CONTAINER_OPEN, this.pos);
                 this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5f, this.world.random.nextFloat() * 0.1f + 0.9f);
             }
         }
@@ -197,6 +199,7 @@ implements SidedInventory {
             --this.viewerCount;
             this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
             if (this.viewerCount <= 0) {
+                this.world.emitGameEvent((Entity)player, GameEvent.CONTAINER_CLOSE, this.pos);
                 this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5f, this.world.random.nextFloat() * 0.1f + 0.9f);
             }
         }
@@ -208,9 +211,9 @@ implements SidedInventory {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.deserializeInventory(compoundTag);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.deserializeInventory(tag);
     }
 
     @Override

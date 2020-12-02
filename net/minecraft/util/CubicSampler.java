@@ -7,12 +7,10 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import org.jetbrains.annotations.NotNull;
 
 public class CubicSampler {
     private static final double[] DENSITY_CURVE = new double[]{0.0, 1.0, 4.0, 6.0, 4.0, 1.0, 0.0};
 
-    @NotNull
     @Environment(value=EnvType.CLIENT)
     public static Vec3d sampleColor(Vec3d pos, RgbFetcher rgbFetcher) {
         int i = MathHelper.floor(pos.getX());

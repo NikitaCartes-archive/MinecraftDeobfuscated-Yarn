@@ -543,15 +543,15 @@ public class MathHelper {
         return MathHelper.lerp(deltaZ, MathHelper.lerp2(deltaX, deltaY, val000, val100, val010, val110), MathHelper.lerp2(deltaX, deltaY, val001, val101, val011, val111));
     }
 
-    public static double perlinFade(double d) {
-        return d * d * d * (d * (d * 6.0 - 15.0) + 10.0);
+    public static double perlinFade(double value) {
+        return value * value * value * (value * (value * 6.0 - 15.0) + 10.0);
     }
 
-    public static int sign(double d) {
-        if (d == 0.0) {
+    public static int sign(double value) {
+        if (value == 0.0) {
             return 0;
         }
-        return d > 0.0 ? 1 : -1;
+        return value > 0.0 ? 1 : -1;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -583,29 +583,36 @@ public class MathHelper {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static float method_24504(float f, float g) {
-        return (Math.abs(f % g - g * 0.5f) - g * 0.25f) / (g * 0.25f);
+    public static float wrap(float value, float maxDeviation) {
+        return (Math.abs(value % maxDeviation - maxDeviation * 0.5f) - maxDeviation * 0.25f) / (maxDeviation * 0.25f);
     }
 
     public static float square(float n) {
         return n * n;
     }
 
+    public static double lerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
+        return MathHelper.clampedLerp(start, end, MathHelper.getLerpProgress(lerpValue, lerpStart, lerpEnd));
+    }
+
     /**
      * Returns a value farther than or as far as {@code value} from zero that
      * is a multiple of {@code divisor}.
      */
-    public static int roundUpToMultiple(int i, int j) {
-        return (i + j - 1) / j * j;
+    public static int roundUpToMultiple(int value, int divisor) {
+        return (value + divisor - 1) / divisor * divisor;
     }
 
-    public static int method_32751(Random random, int i, int j) {
-        return random.nextInt(j - i + 1) + i;
+    public static int nextBetween(Random random, int min, int max) {
+        return random.nextInt(max - min + 1) + min;
     }
 
-    @Environment(value=EnvType.CLIENT)
-    public static float method_32750(Random random, float f, float g) {
-        return random.nextFloat() * (g - f) + f;
+    public static float nextBetween(Random random, float min, float max) {
+        return random.nextFloat() * (max - min) + min;
+    }
+
+    public static float nextGaussian(Random random, float mean, float deviation) {
+        return mean + (float)random.nextGaussian() * deviation;
     }
 
     static {

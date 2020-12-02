@@ -17,6 +17,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -227,10 +228,12 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.particle.VibrationParticleEffect;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.recipe.RecipeManager;
 import net.minecraft.resource.ResourcePackSource;
@@ -269,13 +272,17 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameMode;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.LightType;
+import net.minecraft.world.Vibration;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -398,6 +405,14 @@ implements ClientPlayPacketListener {
         entity.pitch = 0.0f;
         entity.setEntityId(packet.getId());
         this.world.addEntity(packet.getId(), entity);
+    }
+
+    @Override
+    public void onVibration(VibrationS2CPacket packet) {
+        NetworkThreadUtils.forceMainThread(packet, this, this.client);
+        Vibration vibration = packet.getVibration();
+        BlockPos blockPos = vibration.getOrigin();
+        this.world.addImportantParticle(new VibrationParticleEffect(vibration), true, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 0.0, 0.0, 0.0);
     }
 
     @Override
@@ -590,9 +605,9 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         int i = packet.getX();
         int j = packet.getZ();
-        BiomeArray biomeArray = packet.getBiomeArray() == null ? null : new BiomeArray(this.registryManager.get(Registry.BIOME_KEY), packet.getBiomeArray());
+        BiomeArray biomeArray = packet.getBiomeArray() == null ? null : new BiomeArray(this.registryManager.get(Registry.BIOME_KEY), (HeightLimitView)this.world, packet.getBiomeArray());
         WorldChunk worldChunk = this.world.getChunkManager().loadChunkFromPacket(i, j, biomeArray, packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
-        for (int k = this.world.getBottomSectionLimit(); k < this.world.getTopSectionLimit(); ++k) {
+        for (int k = this.world.method_32891(); k < this.world.getTopSectionLimit(); ++k) {
             this.world.scheduleBlockRenders(i, k, j);
         }
         if (worldChunk != null) {
@@ -613,7 +628,7 @@ implements ClientPlayPacketListener {
         ClientChunkManager clientChunkManager = this.world.getChunkManager();
         clientChunkManager.unload(i, j);
         LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
-        for (int k = this.world.getBottomSectionLimit(); k < this.world.getTopSectionLimit(); ++k) {
+        for (int k = this.world.method_32891(); k < this.world.getTopSectionLimit(); ++k) {
             this.world.scheduleBlockRenders(i, k, j);
             lightingProvider.setSectionStatus(ChunkSectionPos.from(i, k, j), true);
         }
@@ -1730,6 +1745,15 @@ implements ClientPlayPacketListener {
                 String string11 = packetByteBuf.readString();
                 int ab = packetByteBuf.readInt();
                 this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, ab);
+            } else if (CustomPayloadS2CPacket.field_28284.equals(identifier)) {
+                GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
+                BlockPos blockPos8 = packetByteBuf.readBlockPos();
+                this.client.debugRenderer.field_28254.method_33087(gameEvent, blockPos8);
+            } else if (CustomPayloadS2CPacket.field_28285.equals(identifier)) {
+                Identifier identifier2 = packetByteBuf.readIdentifier();
+                Object positionSource = Registry.POSITION_SOURCE_TYPE.getOrEmpty(identifier2).orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier2)).readFromBuf(packetByteBuf);
+                int m = packetByteBuf.readVarInt();
+                this.client.debugRenderer.field_28254.method_33088((PositionSource)positionSource, m);
             } else {
                 LOGGER.warn("Unknown custom packed identifier: {}", (Object)identifier);
             }
@@ -1897,14 +1921,14 @@ implements ClientPlayPacketListener {
         int i = packet.getChunkX();
         int j = packet.getChunkZ();
         LightingProvider lightingProvider = this.world.getChunkManager().getLightingProvider();
-        long l = packet.getSkyLightMask();
-        long m = packet.getFilledSkyLightMask();
+        BitSet bitSet = packet.getSkyLightMask();
+        BitSet bitSet2 = packet.getFilledSkyLightMask();
         Iterator<byte[]> iterator = packet.getSkyLightUpdates().iterator();
-        this.updateLighting(i, j, lightingProvider, LightType.SKY, l, m, iterator, packet.method_30006());
-        long n = packet.getBlockLightMask();
-        long o = packet.getFilledBlockLightMask();
+        this.updateLighting(i, j, lightingProvider, LightType.SKY, bitSet, bitSet2, iterator, packet.method_30006());
+        BitSet bitSet3 = packet.getBlockLightMask();
+        BitSet bitSet4 = packet.getFilledBlockLightMask();
         Iterator<byte[]> iterator2 = packet.getBlockLightUpdates().iterator();
-        this.updateLighting(i, j, lightingProvider, LightType.BLOCK, n, o, iterator2, packet.method_30006());
+        this.updateLighting(i, j, lightingProvider, LightType.BLOCK, bitSet3, bitSet4, iterator2, packet.method_30006());
     }
 
     @Override
@@ -1912,11 +1936,12 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ScreenHandler screenHandler = this.client.player.currentScreenHandler;
         if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler) {
-            ((MerchantScreenHandler)screenHandler).setOffers(new TradeOfferList(packet.getOffers().toTag()));
-            ((MerchantScreenHandler)screenHandler).setExperienceFromServer(packet.getExperience());
-            ((MerchantScreenHandler)screenHandler).setLevelProgress(packet.getLevelProgress());
-            ((MerchantScreenHandler)screenHandler).setCanLevel(packet.isLeveled());
-            ((MerchantScreenHandler)screenHandler).setRefreshTrades(packet.isRefreshable());
+            MerchantScreenHandler merchantScreenHandler = (MerchantScreenHandler)screenHandler;
+            merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toTag()));
+            merchantScreenHandler.setExperienceFromServer(packet.getExperience());
+            merchantScreenHandler.setLevelProgress(packet.getLevelProgress());
+            merchantScreenHandler.setCanLevel(packet.isLeveled());
+            merchantScreenHandler.setRefreshTrades(packet.isRefreshable());
         }
     }
 
@@ -1939,12 +1964,11 @@ implements ClientPlayPacketListener {
         this.client.interactionManager.processPlayerActionResponse(this.world, packet.getBlockPos(), packet.getBlockState(), packet.getAction(), packet.isApproved());
     }
 
-    private void updateLighting(int chunkX, int chunkZ, LightingProvider provider, LightType type, long l, long m, Iterator<byte[]> iterator, boolean bl) {
+    private void updateLighting(int chunkX, int chunkZ, LightingProvider provider, LightType type, BitSet bitSet, BitSet bitSet2, Iterator<byte[]> iterator, boolean bl) {
         for (int i = 0; i < provider.method_31928(); ++i) {
-            boolean bl3;
             int j = provider.method_31929() + i;
-            boolean bl2 = (l & 1L << i) != 0L;
-            boolean bl4 = bl3 = (m & 1L << i) != 0L;
+            boolean bl2 = bitSet.get(i);
+            boolean bl3 = bitSet2.get(i);
             if (!bl2 && !bl3) continue;
             provider.enqueueSectionData(type, ChunkSectionPos.from(chunkX, j, chunkZ), bl2 ? new ChunkNibbleArray((byte[])iterator.next().clone()) : new ChunkNibbleArray(), bl);
             this.world.scheduleBlockRenders(chunkX, j, chunkZ);

@@ -41,8 +41,8 @@ ModifiableTestableWorld {
 
     public DynamicRegistryManager getRegistryManager();
 
-    default public Optional<RegistryKey<Biome>> method_31081(BlockPos blockPos) {
-        return this.getRegistryManager().get(Registry.BIOME_KEY).getKey(this.getBiome(blockPos));
+    default public Optional<RegistryKey<Biome>> getBiomeKey(BlockPos pos) {
+        return this.getRegistryManager().get(Registry.BIOME_KEY).getKey(this.getBiome(pos));
     }
 }
 

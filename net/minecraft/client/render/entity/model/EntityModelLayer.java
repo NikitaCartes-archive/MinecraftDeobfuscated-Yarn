@@ -9,12 +9,12 @@ import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public final class EntityModelLayer {
-    private final Identifier identifier;
-    private final String layer;
+    private final Identifier id;
+    private final String name;
 
-    public EntityModelLayer(Identifier identifier, String layer) {
-        this.identifier = identifier;
-        this.layer = layer;
+    public EntityModelLayer(Identifier id, String name) {
+        this.id = id;
+        this.name = name;
     }
 
     public boolean equals(Object other) {
@@ -23,19 +23,19 @@ public final class EntityModelLayer {
         }
         if (other instanceof EntityModelLayer) {
             EntityModelLayer entityModelLayer = (EntityModelLayer)other;
-            return this.identifier.equals(entityModelLayer.identifier) && this.layer.equals(entityModelLayer.layer);
+            return this.id.equals(entityModelLayer.id) && this.name.equals(entityModelLayer.name);
         }
         return false;
     }
 
     public int hashCode() {
-        int i = this.identifier.hashCode();
-        i = 31 * i + this.layer.hashCode();
+        int i = this.id.hashCode();
+        i = 31 * i + this.name.hashCode();
         return i;
     }
 
     public String toString() {
-        return this.identifier + "#" + this.layer;
+        return this.id + "#" + this.name;
     }
 }
 

@@ -19,24 +19,24 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class SilverfishEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27497;
+    private final ModelPart root;
     private final ModelPart[] body = new ModelPart[7];
     private final ModelPart[] scales = new ModelPart[3];
     private static final int[][] segmentLocations = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
     private static final int[][] segmentSizes = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
 
-    public SilverfishEntityModel(ModelPart modelPart) {
-        this.field_27497 = modelPart;
-        Arrays.setAll(this.body, i -> modelPart.getChild(SilverfishEntityModel.method_32045(i)));
-        Arrays.setAll(this.scales, i -> modelPart.getChild(SilverfishEntityModel.method_32043(i)));
+    public SilverfishEntityModel(ModelPart root) {
+        this.root = root;
+        Arrays.setAll(this.body, i -> root.getChild(SilverfishEntityModel.getSegmentName(i)));
+        Arrays.setAll(this.scales, i -> root.getChild(SilverfishEntityModel.getLayerName(i)));
     }
 
-    private static String method_32043(int i) {
-        return "layer" + i;
+    private static String getLayerName(int index) {
+        return "layer" + index;
     }
 
-    private static String method_32045(int i) {
-        return "segment" + i;
+    private static String getSegmentName(int index) {
+        return "segment" + index;
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -45,20 +45,20 @@ extends SinglePartEntityModel<T> {
         float[] fs = new float[7];
         float f = -3.5f;
         for (int i = 0; i < 7; ++i) {
-            modelPartData.addChild(SilverfishEntityModel.method_32045(i), ModelPartBuilder.create().uv(segmentSizes[i][0], segmentSizes[i][1]).cuboid((float)segmentLocations[i][0] * -0.5f, 0.0f, (float)segmentLocations[i][2] * -0.5f, segmentLocations[i][0], segmentLocations[i][1], segmentLocations[i][2]), ModelTransform.pivot(0.0f, 24 - segmentLocations[i][1], f));
+            modelPartData.addChild(SilverfishEntityModel.getSegmentName(i), ModelPartBuilder.create().uv(segmentSizes[i][0], segmentSizes[i][1]).cuboid((float)segmentLocations[i][0] * -0.5f, 0.0f, (float)segmentLocations[i][2] * -0.5f, segmentLocations[i][0], segmentLocations[i][1], segmentLocations[i][2]), ModelTransform.pivot(0.0f, 24 - segmentLocations[i][1], f));
             fs[i] = f;
             if (i >= 6) continue;
             f += (float)(segmentLocations[i][2] + segmentLocations[i + 1][2]) * 0.5f;
         }
-        modelPartData.addChild(SilverfishEntityModel.method_32043(0), ModelPartBuilder.create().uv(20, 0).cuboid(-5.0f, 0.0f, (float)segmentLocations[2][2] * -0.5f, 10.0f, 8.0f, segmentLocations[2][2]), ModelTransform.pivot(0.0f, 16.0f, fs[2]));
-        modelPartData.addChild(SilverfishEntityModel.method_32043(1), ModelPartBuilder.create().uv(20, 11).cuboid(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 4.0f, segmentLocations[4][2]), ModelTransform.pivot(0.0f, 20.0f, fs[4]));
-        modelPartData.addChild(SilverfishEntityModel.method_32043(2), ModelPartBuilder.create().uv(20, 18).cuboid(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 5.0f, segmentLocations[1][2]), ModelTransform.pivot(0.0f, 19.0f, fs[1]));
+        modelPartData.addChild(SilverfishEntityModel.getLayerName(0), ModelPartBuilder.create().uv(20, 0).cuboid(-5.0f, 0.0f, (float)segmentLocations[2][2] * -0.5f, 10.0f, 8.0f, segmentLocations[2][2]), ModelTransform.pivot(0.0f, 16.0f, fs[2]));
+        modelPartData.addChild(SilverfishEntityModel.getLayerName(1), ModelPartBuilder.create().uv(20, 11).cuboid(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 4.0f, segmentLocations[4][2]), ModelTransform.pivot(0.0f, 20.0f, fs[4]));
+        modelPartData.addChild(SilverfishEntityModel.getLayerName(2), ModelPartBuilder.create().uv(20, 18).cuboid(-3.0f, 0.0f, (float)segmentLocations[4][2] * -0.5f, 6.0f, 5.0f, segmentLocations[1][2]), ModelTransform.pivot(0.0f, 19.0f, fs[1]));
         return TexturedModelData.of(modelData, 64, 32);
     }
 
     @Override
     public ModelPart getPart() {
-        return this.field_27497;
+        return this.root;
     }
 
     @Override

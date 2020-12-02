@@ -58,7 +58,7 @@ extends Block {
         Item item = itemStack.getItem();
         BlockState blockState = (item instanceof BlockItem ? CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR).getDefaultState();
         boolean bl = blockState.isOf(Blocks.AIR);
-        if (bl != (bl2 = this.method_31646())) {
+        if (bl != (bl2 = this.isEmpty())) {
             if (bl2) {
                 world.setBlockState(pos, blockState, 3);
                 player.incrementStat(Stats.POT_FLOWER);
@@ -82,13 +82,13 @@ extends Block {
     @Override
     @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        if (this.method_31646()) {
+        if (this.isEmpty()) {
             return super.getPickStack(world, pos, state);
         }
         return new ItemStack(this.content);
     }
 
-    private boolean method_31646() {
+    private boolean isEmpty() {
         return this.content == Blocks.AIR;
     }
 

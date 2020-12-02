@@ -102,13 +102,13 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.name = new Identifier(compoundTag.getString("name"));
-        this.target = new Identifier(compoundTag.getString("target"));
-        this.pool = new Identifier(compoundTag.getString("pool"));
-        this.finalState = compoundTag.getString("final_state");
-        this.joint = Joint.byName(compoundTag.getString("joint")).orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.name = new Identifier(tag.getString("name"));
+        this.target = new Identifier(tag.getString("target"));
+        this.pool = new Identifier(tag.getString("pool"));
+        this.finalState = tag.getString("final_state");
+        this.joint = Joint.byName(tag.getString("joint")).orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? Joint.ALIGNED : Joint.ROLLABLE);
     }
 
     @Override

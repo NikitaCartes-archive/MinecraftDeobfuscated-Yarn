@@ -34,6 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 @EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=FlyingItemEntity.class)})
@@ -157,6 +158,7 @@ implements FlyingItemEntity {
 
     private void explodeAndRemove() {
         this.world.sendEntityStatus(this, (byte)17);
+        this.method_32875(this.getOwner(), GameEvent.EXPLODE);
         this.explode();
         this.discard();
     }

@@ -67,6 +67,7 @@ import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class WolfEntity
@@ -209,6 +210,7 @@ implements Angerable {
         } else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
             if (this.shakeProgress == 0.0f) {
                 this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2f + 1.0f);
+                this.emitGameEvent(GameEvent.WOLF_SHAKING);
             }
             this.lastShakeProgress = this.shakeProgress;
             this.shakeProgress += 0.05f;

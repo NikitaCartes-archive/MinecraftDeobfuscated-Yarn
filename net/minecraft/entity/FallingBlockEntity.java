@@ -3,8 +3,7 @@
  */
 package net.minecraft.entity;
 
-import com.google.common.collect.Lists;
-import java.util.ArrayList;
+import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AnvilBlock;
@@ -30,6 +29,7 @@ import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.state.property.Properties;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
@@ -52,7 +52,7 @@ extends Entity {
     private boolean destroyedOnLanding;
     private boolean hurtEntities;
     private int fallHurtMax = 40;
-    private float fallHurtAmount = 2.0f;
+    private float fallHurtAmount;
     public CompoundTag blockEntityData;
     protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 
@@ -162,18 +162,18 @@ extends Entity {
                                     blockEntity.markDirty();
                                 }
                             } else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-                                this.method_32752(block, blockPos);
+                                this.onDestroyedOnLanding(block, blockPos);
                                 this.dropItem(block);
                             }
                         } else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
-                            this.method_32752(block, blockPos);
+                            this.onDestroyedOnLanding(block, blockPos);
                             this.dropItem(block);
                         }
                     } else {
-                        this.method_32752(block, blockPos);
+                        this.onDestroyedOnLanding(block, blockPos);
                     }
                 }
-            } else if (!(this.world.isClient || (this.timeFalling <= 100 || blockPos.getY() > this.world.getBottomHeightLimit() && blockPos.getY() <= this.world.getTopHeightLimit()) && this.timeFalling <= 600)) {
+            } else if (!(this.world.isClient || (this.timeFalling <= 100 || blockPos.getY() > this.world.getSectionCount() && blockPos.getY() <= this.world.getTopHeightLimit()) && this.timeFalling <= 600)) {
                 if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                     this.dropItem(block);
                 }
@@ -183,29 +183,40 @@ extends Entity {
         this.setVelocity(this.getVelocity().multiply(0.98));
     }
 
-    public void method_32752(Block block, BlockPos blockPos) {
+    public void onDestroyedOnLanding(Block block, BlockPos pos) {
         if (block instanceof LandingBlock) {
-            ((LandingBlock)((Object)block)).onDestroyedOnLanding(this.world, blockPos, this);
+            ((LandingBlock)((Object)block)).onDestroyedOnLanding(this.world, pos, this);
         }
     }
 
     @Override
     public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
-        int i;
-        if (this.hurtEntities && (i = MathHelper.ceil(fallDistance - 1.0f)) > 0) {
-            ArrayList<Entity> list = Lists.newArrayList(this.world.getOtherEntities(this, this.getBoundingBox()));
-            boolean bl = this.block.isIn(BlockTags.ANVIL);
-            DamageSource damageSource = bl ? DamageSource.ANVIL : DamageSource.FALLING_BLOCK;
-            for (Entity entity : list) {
-                entity.damage(damageSource, Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax));
-            }
-            if (bl && (double)this.random.nextFloat() < (double)0.05f + (double)i * 0.05) {
-                BlockState blockState = AnvilBlock.getLandingState(this.block);
-                if (blockState == null) {
-                    this.destroyedOnLanding = true;
-                } else {
-                    this.block = blockState;
-                }
+        DamageSource damageSource;
+        Predicate<Entity> predicate;
+        if (!this.hurtEntities) {
+            return false;
+        }
+        int i = MathHelper.ceil(fallDistance - 1.0f);
+        if (i < 0) {
+            return false;
+        }
+        if (this.block.getBlock() instanceof LandingBlock) {
+            LandingBlock landingBlock = (LandingBlock)((Object)this.block.getBlock());
+            predicate = landingBlock.getEntityPredicate();
+            damageSource = landingBlock.getDamageSource();
+        } else {
+            predicate = EntityPredicates.EXCEPT_SPECTATOR;
+            damageSource = DamageSource.FALLING_BLOCK;
+        }
+        float f = Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);
+        this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource, f));
+        boolean bl = this.block.isIn(BlockTags.ANVIL);
+        if (bl && (double)this.random.nextFloat() < (double)0.05f + (double)i * 0.05) {
+            BlockState blockState = AnvilBlock.getLandingState(this.block);
+            if (blockState == null) {
+                this.destroyedOnLanding = true;
+            } else {
+                this.block = blockState;
             }
         }
         return false;
@@ -251,8 +262,10 @@ extends Entity {
         return this.world;
     }
 
-    public void setHurtEntities(boolean hurtEntities) {
-        this.hurtEntities = hurtEntities;
+    public void setHurtEntities(float fallHurtAmount, int fallHurtMax) {
+        this.hurtEntities = true;
+        this.fallHurtAmount = fallHurtAmount;
+        this.fallHurtMax = fallHurtMax;
     }
 
     @Override

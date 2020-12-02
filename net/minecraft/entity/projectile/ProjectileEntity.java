@@ -19,6 +19,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class ProjectileEntity
@@ -94,6 +95,7 @@ extends Entity {
         this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
+        this.method_32875(this.getOwner(), GameEvent.PROJECTILE_SHOOT);
     }
 
     public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
@@ -111,6 +113,9 @@ extends Entity {
             this.onEntityHit((EntityHitResult)hitResult);
         } else if (type == HitResult.Type.BLOCK) {
             this.onBlockHit((BlockHitResult)hitResult);
+        }
+        if (type != HitResult.Type.MISS) {
+            this.method_32875(this.getOwner(), GameEvent.PROJECTILE_LAND);
         }
     }
 

@@ -47,9 +47,9 @@ extends RodBlock {
         return state.get(POWERED) != false ? 15 : 0;
     }
 
-    public void method_31648(BlockState blockState, World world, BlockPos blockPos) {
-        world.setBlockState(blockPos, (BlockState)blockState.with(POWERED, true), 3);
-        world.getBlockTickScheduler().schedule(blockPos, this, 8);
+    public void setPowered(BlockState state, World world, BlockPos pos) {
+        world.setBlockState(pos, (BlockState)state.with(POWERED, true), 3);
+        world.getBlockTickScheduler().schedule(pos, this, 8);
     }
 
     @Override
@@ -60,7 +60,7 @@ extends RodBlock {
     @Override
     public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
         BlockPos blockPos;
-        if (world.isThundering() && projectile instanceof TridentEntity && ((TridentEntity)projectile).method_31551() && world.isSkyVisible(blockPos = hit.getBlockPos())) {
+        if (world.isThundering() && projectile instanceof TridentEntity && ((TridentEntity)projectile).hasChanneling() && world.isSkyVisible(blockPos = hit.getBlockPos())) {
             LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
             lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
             Entity entity = projectile.getOwner();

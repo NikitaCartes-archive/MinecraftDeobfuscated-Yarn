@@ -26,7 +26,7 @@ public class PiglinEntityModel<T extends MobEntity>
 extends PlayerEntityModel<T> {
     public final ModelPart rightEar;
     private final ModelPart leftEar;
-    private final ModelTransform torsoRotation;
+    private final ModelTransform bodyRotation;
     private final ModelTransform headRotation;
     private final ModelTransform leftArmRotation;
     private final ModelTransform rightArmRotation;
@@ -35,7 +35,7 @@ extends PlayerEntityModel<T> {
         super(modelPart, false);
         this.rightEar = this.head.getChild("right_ear");
         this.leftEar = this.head.getChild("left_ear");
-        this.torsoRotation = this.torso.getTransform();
+        this.bodyRotation = this.body.getTransform();
         this.headRotation = this.head.getTransform();
         this.leftArmRotation = this.leftArm.getTransform();
         this.rightArmRotation = this.rightArm.getTransform();
@@ -54,7 +54,7 @@ extends PlayerEntityModel<T> {
 
     @Override
     public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
-        this.torso.setTransform(this.torsoRotation);
+        this.body.setTransform(this.bodyRotation);
         this.head.setTransform(this.headRotation);
         this.leftArm.setTransform(this.leftArmRotation);
         this.rightArm.setTransform(this.rightArmRotation);
@@ -77,9 +77,9 @@ extends PlayerEntityModel<T> {
                 this.leftArm.roll = this.rightArm.roll * -1.0f;
                 this.rightArm.pivotY = MathHelper.sin(n * 40.0f) * 0.5f + 1.5f;
                 this.leftArm.pivotY = MathHelper.sin(n * 40.0f) * 0.5f + 1.5f;
-                this.torso.pivotY = MathHelper.sin(n * 40.0f) * 0.35f;
+                this.body.pivotY = MathHelper.sin(n * 40.0f) * 0.35f;
             } else if (piglinActivity == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON && this.handSwingProgress == 0.0f) {
-                this.method_29354(mobEntity);
+                this.rotateMainArm(mobEntity);
             } else if (piglinActivity == PiglinActivity.CROSSBOW_HOLD) {
                 CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, !((MobEntity)mobEntity).isLeftHanded());
             } else if (piglinActivity == PiglinActivity.CROSSBOW_CHARGE) {
@@ -96,27 +96,27 @@ extends PlayerEntityModel<T> {
                 }
             }
         } else if (((Entity)mobEntity).getType() == EntityType.ZOMBIFIED_PIGLIN) {
-            CrossbowPosing.method_29352(this.leftArm, this.rightArm, ((MobEntity)mobEntity).isAttacking(), this.handSwingProgress, h);
+            CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, ((MobEntity)mobEntity).isAttacking(), this.handSwingProgress, h);
         }
-        this.leftPantLeg.copyTransform(this.leftLeg);
-        this.rightPantLeg.copyTransform(this.rightLeg);
+        this.leftPants.copyTransform(this.leftLeg);
+        this.rightPants.copyTransform(this.rightLeg);
         this.leftSleeve.copyTransform(this.leftArm);
         this.rightSleeve.copyTransform(this.rightArm);
-        this.jacket.copyTransform(this.torso);
-        this.helmet.copyTransform(this.head);
+        this.jacket.copyTransform(this.body);
+        this.hat.copyTransform(this.head);
     }
 
     @Override
-    protected void method_29353(T mobEntity, float f) {
+    protected void animateArms(T mobEntity, float f) {
         if (this.handSwingProgress > 0.0f && mobEntity instanceof PiglinEntity && ((PiglinEntity)mobEntity).getActivity() == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON) {
-            CrossbowPosing.method_29351(this.rightArm, this.leftArm, mobEntity, this.handSwingProgress, f);
+            CrossbowPosing.meleeAttack(this.rightArm, this.leftArm, mobEntity, this.handSwingProgress, f);
             return;
         }
-        super.method_29353(mobEntity, f);
+        super.animateArms(mobEntity, f);
     }
 
-    private void method_29354(T mobEntity) {
-        if (((MobEntity)mobEntity).isLeftHanded()) {
+    private void rotateMainArm(T entity) {
+        if (((MobEntity)entity).isLeftHanded()) {
             this.leftArm.pitch = -1.8f;
         } else {
             this.rightArm.pitch = -1.8f;

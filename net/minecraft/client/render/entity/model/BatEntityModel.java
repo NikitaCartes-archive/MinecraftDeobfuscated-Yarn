@@ -18,7 +18,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class BatEntityModel
 extends SinglePartEntityModel<BatEntity> {
-    private final ModelPart field_27393;
+    private final ModelPart root;
     private final ModelPart head;
     private final ModelPart body;
     private final ModelPart rightWing;
@@ -26,10 +26,10 @@ extends SinglePartEntityModel<BatEntity> {
     private final ModelPart rightWingTip;
     private final ModelPart leftWingTip;
 
-    public BatEntityModel(ModelPart modelPart) {
-        this.field_27393 = modelPart;
-        this.head = modelPart.getChild("head");
-        this.body = modelPart.getChild("body");
+    public BatEntityModel(ModelPart root) {
+        this.root = root;
+        this.head = root.getChild("head");
+        this.body = root.getChild("body");
         this.rightWing = this.body.getChild("right_wing");
         this.rightWingTip = this.rightWing.getChild("right_wing_tip");
         this.leftWing = this.body.getChild("left_wing");
@@ -52,7 +52,7 @@ extends SinglePartEntityModel<BatEntity> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27393;
+        return this.root;
     }
 
     @Override

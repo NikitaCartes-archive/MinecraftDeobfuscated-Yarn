@@ -850,5 +850,27 @@ public class DefaultBiomeCreator {
         DefaultBiomeFeatures.addNetherMineables(builder);
         return new Biome.Builder().precipitation(Biome.Precipitation.NONE).category(Biome.Category.NETHER).depth(0.1f).scale(0.2f).temperature(2.0f).downfall(0.0f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(1705242).skyColor(DefaultBiomeCreator.getSkyColor(2.0f)).particleConfig(new BiomeParticleConfig(ParticleTypes.WARPED_SPORE, 0.01428f)).loopSound(SoundEvents.AMBIENT_WARPED_FOREST_LOOP).moodSound(new BiomeMoodSound(SoundEvents.AMBIENT_WARPED_FOREST_MOOD, 6000, 8, 2.0)).additionsSound(new BiomeAdditionsSound(SoundEvents.AMBIENT_WARPED_FOREST_ADDITIONS, 0.0111)).music(MusicType.createIngameMusic(SoundEvents.MUSIC_NETHER_WARPED_FOREST)).build()).spawnSettings(spawnSettings).generationSettings(builder.build()).build();
     }
+
+    public static Biome method_33132() {
+        SpawnSettings spawnSettings = new SpawnSettings.Builder().build();
+        GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+        DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
+        builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+        DefaultBiomeFeatures.addLandCarvers(builder);
+        DefaultBiomeFeatures.addDefaultLakes(builder);
+        DefaultBiomeFeatures.method_32236(builder);
+        DefaultBiomeFeatures.addDungeons(builder);
+        DefaultBiomeFeatures.addPlainsTallGrass(builder);
+        DefaultBiomeFeatures.addMineables(builder);
+        DefaultBiomeFeatures.addDefaultOres(builder);
+        DefaultBiomeFeatures.addDefaultDisks(builder);
+        DefaultBiomeFeatures.addPlainsFeatures(builder);
+        DefaultBiomeFeatures.addDefaultMushrooms(builder);
+        DefaultBiomeFeatures.addDefaultVegetation(builder);
+        DefaultBiomeFeatures.addSprings(builder);
+        DefaultBiomeFeatures.addFrozenTopLayer(builder);
+        DefaultBiomeFeatures.method_33131(builder);
+        return new Biome.Builder().precipitation(Biome.Precipitation.RAIN).category(Biome.Category.PLAINS).depth(0.125f).scale(0.05f).temperature(0.8f).downfall(0.4f).effects(new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(DefaultBiomeCreator.getSkyColor(0.8f)).moodSound(BiomeMoodSound.CAVE).build()).spawnSettings(spawnSettings).generationSettings(builder.build()).build();
+    }
 }
 

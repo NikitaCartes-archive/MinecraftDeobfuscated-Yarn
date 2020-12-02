@@ -202,7 +202,7 @@ extends ScreenHandler {
         if (!stack.isEmpty()) {
             for (int i = 3; i < 39; ++i) {
                 ItemStack itemStack = ((Slot)this.slots.get(i)).getStack();
-                if (itemStack.isEmpty() || !ItemStack.method_31577(stack, itemStack)) continue;
+                if (itemStack.isEmpty() || !ItemStack.canCombine(stack, itemStack)) continue;
                 ItemStack itemStack2 = this.merchantInventory.getStack(slot);
                 int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
                 int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());

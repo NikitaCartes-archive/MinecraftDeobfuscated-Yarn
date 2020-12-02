@@ -56,16 +56,16 @@ implements BlockEntityProvider {
         return 0;
     }
 
-    private int calculateOutputSignal(World world, BlockPos pos, BlockState blockState) {
-        int i = this.getPower(world, pos, blockState);
+    private int calculateOutputSignal(World world, BlockPos pos, BlockState state) {
+        int i = this.getPower(world, pos, state);
         if (i == 0) {
             return 0;
         }
-        int j = this.getMaxInputLevelSides(world, pos, blockState);
+        int j = this.getMaxInputLevelSides(world, pos, state);
         if (j > i) {
             return 0;
         }
-        if (blockState.get(MODE) == ComparatorMode.SUBTRACT) {
+        if (state.get(MODE) == ComparatorMode.SUBTRACT) {
             return i - j;
         }
         return i;

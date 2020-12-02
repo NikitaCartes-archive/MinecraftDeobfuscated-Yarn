@@ -149,6 +149,7 @@ import net.minecraft.block.RootsBlock;
 import net.minecraft.block.SandBlock;
 import net.minecraft.block.SaplingBlock;
 import net.minecraft.block.ScaffoldingBlock;
+import net.minecraft.block.SculkSensorBlock;
 import net.minecraft.block.SeaPickleBlock;
 import net.minecraft.block.SeagrassBlock;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -211,6 +212,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.block.enums.SculkSensorPhase;
 import net.minecraft.block.sapling.AcaciaSaplingGenerator;
 import net.minecraft.block.sapling.BirchSaplingGenerator;
 import net.minecraft.block.sapling.DarkOakSaplingGenerator;
@@ -1044,6 +1046,7 @@ public class Blocks {
     public static final Block CALCITE = Blocks.register("calcite", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.WHITE_TERRACOTTA).sounds(BlockSoundGroup.CALCITE).requiresTool().strength(0.75f)));
     public static final Block TINTED_GLASS = Blocks.register("tinted_glass", new TintedGlassBlock(AbstractBlock.Settings.copy(GLASS).mapColor(MapColor.GRAY)));
     public static final Block POWDER_SNOW = Blocks.register("powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.1f).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds()));
+    public static final Block SCULK_SENSOR = Blocks.register("sculk_sensor", new SculkSensorBlock(AbstractBlock.Settings.of(Material.SCULK, MapColor.CYAN).strength(1.5f).sounds(BlockSoundGroup.SCULK_SENSOR).luminance(state -> 1).emissiveLighting((state, world, pos) -> SculkSensorBlock.getPhase(state) == SculkSensorPhase.ACTIVE), 8));
     public static final Block WEATHERED_COPPER_BLOCK = Blocks.register("weathered_copper_block", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.WARPED_NYLIUM).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER)));
     public static final Block SEMI_WEATHERED_COPPER_BLOCK = Blocks.register("semi_weathered_copper_block", new CopperBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.WARPED_STEM).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), WEATHERED_COPPER_BLOCK));
     public static final Block LIGHTLY_WEATHERED_COPPER_BLOCK = Blocks.register("lightly_weathered_copper_block", new CopperBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.LIGHT_GRAY_TERRACOTTA).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), SEMI_WEATHERED_COPPER_BLOCK));
@@ -1064,9 +1067,9 @@ public class Blocks {
     public static final Block WAXED_COPPER = Blocks.register("waxed_copper", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
     public static final Block WAXED_SEMI_WEATHERED_COPPER = Blocks.register("waxed_semi_weathered_copper", new Block(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK)));
     public static final Block WAXED_LIGHTLY_WEATHERED_COPPER = Blocks.register("waxed_lightly_weathered_copper", new Block(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK)));
-    public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER = Blocks.register("waxed_semi_weathered_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK), WEATHERED_CUT_COPPER));
-    public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER = Blocks.register("waxed_lightly_weathered_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK), SEMI_WEATHERED_CUT_COPPER));
-    public static final Block WAXED_CUT_COPPER = Blocks.register("waxed_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(COPPER_BLOCK), LIGHTLY_WEATHERED_CUT_COPPER));
+    public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER = Blocks.register("waxed_semi_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK)));
+    public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER = Blocks.register("waxed_lightly_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK)));
+    public static final Block WAXED_CUT_COPPER = Blocks.register("waxed_cut_copper", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
     public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS = Blocks.register("waxed_semi_weathered_cut_copper_stairs", new StairsBlock(WAXED_SEMI_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK)));
     public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER_STAIRS = Blocks.register("waxed_lightly_weathered_cut_copper_stairs", new StairsBlock(WAXED_LIGHTLY_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK)));
     public static final Block WAXED_CUT_COPPER_STAIRS = Blocks.register("waxed_cut_copper_stairs", new StairsBlock(WAXED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK)));
@@ -1078,7 +1081,7 @@ public class Blocks {
     public static final Block DRIPSTONE_BLOCK = Blocks.register("dripstone_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.BROWN_TERRACOTTA).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5f, 1.0f)));
 
     private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
-        return blockState -> blockState.get(Properties.LIT) != false ? litLevel : 0;
+        return state -> state.get(Properties.LIT) != false ? litLevel : 0;
     }
 
     /**
@@ -1102,15 +1105,15 @@ public class Blocks {
     }
 
     private static BedBlock createBedBlock(DyeColor color) {
-        return new BedBlock(color, AbstractBlock.Settings.of(Material.WOOL, blockState -> blockState.get(BedBlock.PART) == BedPart.FOOT ? color.getMapColor() : MapColor.WEB).sounds(BlockSoundGroup.WOOD).strength(0.2f).nonOpaque());
+        return new BedBlock(color, AbstractBlock.Settings.of(Material.WOOL, state -> state.get(BedBlock.PART) == BedPart.FOOT ? color.getMapColor() : MapColor.WEB).sounds(BlockSoundGroup.WOOD).strength(0.2f).nonOpaque());
     }
 
     private static PillarBlock createLogBlock(MapColor topMaterialColor, MapColor sideMaterialColor) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, blockState -> blockState.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMaterialColor : sideMaterialColor).strength(2.0f).sounds(BlockSoundGroup.WOOD));
+        return new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMaterialColor : sideMaterialColor).strength(2.0f).sounds(BlockSoundGroup.WOOD));
     }
 
     private static Block createNetherStemBlock(MapColor materialColor) {
-        return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, blockState -> materialColor).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM));
+        return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, state -> materialColor).strength(2.0f).sounds(BlockSoundGroup.NETHER_STEM));
     }
 
     /**
@@ -1138,8 +1141,8 @@ public class Blocks {
     }
 
     private static ShulkerBoxBlock createShulkerBoxBlock(DyeColor color, AbstractBlock.Settings settings) {
-        AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> {
-            BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+        AbstractBlock.ContextPredicate contextPredicate = (state, world, pos) -> {
+            BlockEntity blockEntity = world.getBlockEntity(pos);
             if (!(blockEntity instanceof ShulkerBoxBlockEntity)) {
                 return true;
             }
@@ -1150,7 +1153,7 @@ public class Blocks {
     }
 
     private static PistonBlock createPistonBlock(boolean sticky) {
-        AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> blockState.get(PistonBlock.EXTENDED) == false;
+        AbstractBlock.ContextPredicate contextPredicate = (state, world, pos) -> state.get(PistonBlock.EXTENDED) == false;
         return new PistonBlock(sticky, AbstractBlock.Settings.of(Material.PISTON).strength(1.5f).solidBlock(Blocks::never).suffocates(contextPredicate).blockVision(contextPredicate));
     }
 

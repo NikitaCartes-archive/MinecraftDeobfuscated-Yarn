@@ -50,8 +50,8 @@ extends BucketItem {
         world.playSound(player, pos, SoundEvents.ITEM_BUCKET_EMPTY_FISH, SoundCategory.NEUTRAL, 1.0f, 1.0f);
     }
 
-    private void spawnFish(ServerWorld serverWorld, ItemStack stack, BlockPos pos) {
-        Entity entity = this.fishType.spawnFromItemStack(serverWorld, stack, null, pos, SpawnReason.BUCKET, true, false);
+    private void spawnFish(ServerWorld world, ItemStack stack, BlockPos pos) {
+        Entity entity = this.fishType.spawnFromItemStack(world, stack, null, pos, SpawnReason.BUCKET, true, false);
         if (entity != null) {
             ((FishEntity)entity).setFromBucket(true);
         }

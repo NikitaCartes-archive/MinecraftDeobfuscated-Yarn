@@ -28,7 +28,6 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.UpgradeData;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.jetbrains.annotations.Nullable;
@@ -88,12 +87,6 @@ extends ProtoChunk {
     @Override
     public ChunkSection[] getSectionArray() {
         return this.wrapped.getSectionArray();
-    }
-
-    @Override
-    @Nullable
-    public LightingProvider getLightingProvider() {
-        return this.wrapped.getLightingProvider();
     }
 
     @Override

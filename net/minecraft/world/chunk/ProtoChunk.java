@@ -86,7 +86,7 @@ implements Chunk {
         this.blockTickScheduler = blockTickScheduler;
         this.fluidTickScheduler = fluidTickScheduler;
         this.field_27229 = heightLimitView;
-        this.sections = new ChunkSection[heightLimitView.getSectionCount()];
+        this.sections = new ChunkSection[heightLimitView.method_32890()];
         if (chunkSections != null) {
             if (this.sections.length == chunkSections.length) {
                 System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -94,7 +94,7 @@ implements Chunk {
                 LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", (Object)chunkSections.length, (Object)this.sections.length);
             }
         }
-        this.postProcessingLists = new ShortList[heightLimitView.getSectionCount()];
+        this.postProcessingLists = new ShortList[heightLimitView.method_32890()];
     }
 
     @Override
@@ -129,7 +129,7 @@ implements Chunk {
     }
 
     public ShortList[] getLightSourcesBySection() {
-        ShortList[] shortLists = new ShortList[this.getSectionCount()];
+        ShortList[] shortLists = new ShortList[this.method_32890()];
         for (BlockPos blockPos : this.lightSources) {
             Chunk.getList(shortLists, this.getSectionIndex(blockPos.getY())).add(ProtoChunk.getPackedSectionRelative(blockPos));
         }
@@ -150,7 +150,7 @@ implements Chunk {
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
-        if (j < this.getBottomHeightLimit() || j >= this.getTopHeightLimit()) {
+        if (j < this.getSectionCount() || j >= this.getTopHeightLimit()) {
             return Blocks.VOID_AIR.getDefaultState();
         }
         int l = this.getSectionIndex(j);
@@ -163,8 +163,7 @@ implements Chunk {
         ChunkSection chunkSection = this.getSection(l);
         BlockState blockState = chunkSection.setBlockState(i & 0xF, j & 0xF, k & 0xF, state);
         if (this.status.isAtLeast(ChunkStatus.FEATURES) && state != blockState && (state.getOpacity(this, pos) != blockState.getOpacity(this, pos) || state.getLuminance() != blockState.getLuminance() || state.hasSidedTransparency() || blockState.hasSidedTransparency())) {
-            LightingProvider lightingProvider = this.getLightingProvider();
-            lightingProvider.checkBlock(pos);
+            this.lightingProvider.checkBlock(pos);
         }
         EnumSet<Heightmap.Type> enumSet = this.getStatus().getHeightmapTypes();
         EnumSet<Heightmap.Type> enumSet2 = null;
@@ -265,11 +264,6 @@ implements Chunk {
     @Override
     public ChunkSection[] getSectionArray() {
         return this.sections;
-    }
-
-    @Nullable
-    public LightingProvider getLightingProvider() {
-        return this.lightingProvider;
     }
 
     @Override

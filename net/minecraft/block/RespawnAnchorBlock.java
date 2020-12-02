@@ -45,8 +45,8 @@ import net.minecraft.world.explosion.ExplosionBehavior;
 public class RespawnAnchorBlock
 extends Block {
     public static final IntProperty CHARGES = Properties.CHARGES;
-    private static final ImmutableList<Vec3i> field_26442 = ImmutableList.of(new Vec3i(0, 0, -1), new Vec3i(-1, 0, 0), new Vec3i(0, 0, 1), new Vec3i(1, 0, 0), new Vec3i(-1, 0, -1), new Vec3i(1, 0, -1), new Vec3i(-1, 0, 1), new Vec3i(1, 0, 1));
-    private static final ImmutableList<Vec3i> field_26443 = ((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)new ImmutableList.Builder().addAll(field_26442)).addAll(field_26442.stream().map(Vec3i::down).iterator())).addAll(field_26442.stream().map(Vec3i::up).iterator())).add(new Vec3i(0, 1, 0))).build();
+    private static final ImmutableList<Vec3i> VALID_HORIZONTAL_SPAWN_OFFSETS = ImmutableList.of(new Vec3i(0, 0, -1), new Vec3i(-1, 0, 0), new Vec3i(0, 0, 1), new Vec3i(1, 0, 0), new Vec3i(-1, 0, -1), new Vec3i(1, 0, -1), new Vec3i(-1, 0, 1), new Vec3i(1, 0, 1));
+    private static final ImmutableList<Vec3i> VALID_SPAWN_OFFSETS = ((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)((ImmutableList.Builder)new ImmutableList.Builder().addAll(VALID_HORIZONTAL_SPAWN_OFFSETS)).addAll(VALID_HORIZONTAL_SPAWN_OFFSETS.stream().map(Vec3i::down).iterator())).addAll(VALID_HORIZONTAL_SPAWN_OFFSETS.stream().map(Vec3i::up).iterator())).add(new Vec3i(0, 1, 0))).build();
 
     public RespawnAnchorBlock(AbstractBlock.Settings settings) {
         super(settings);
@@ -169,19 +169,19 @@ extends Block {
         return RespawnAnchorBlock.getLightLevel(state, 15);
     }
 
-    public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView collisionView, BlockPos pos) {
-        Optional<Vec3d> optional = RespawnAnchorBlock.method_30842(entity, collisionView, pos, true);
+    public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView world, BlockPos pos) {
+        Optional<Vec3d> optional = RespawnAnchorBlock.findRespawnPosition(entity, world, pos, true);
         if (optional.isPresent()) {
             return optional;
         }
-        return RespawnAnchorBlock.method_30842(entity, collisionView, pos, false);
+        return RespawnAnchorBlock.findRespawnPosition(entity, world, pos, false);
     }
 
-    private static Optional<Vec3d> method_30842(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, boolean bl) {
+    private static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView world, BlockPos pos, boolean bl) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (Vec3i vec3i : field_26443) {
-            mutable.set(blockPos).move(vec3i);
-            Vec3d vec3d = Dismounting.method_30769(entityType, collisionView, mutable, bl);
+        for (Vec3i vec3i : VALID_SPAWN_OFFSETS) {
+            mutable.set(pos).move(vec3i);
+            Vec3d vec3d = Dismounting.method_30769(entity, world, mutable, bl);
             if (vec3d == null) continue;
             return Optional.of(vec3d);
         }

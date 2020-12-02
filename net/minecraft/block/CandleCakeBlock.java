@@ -67,7 +67,7 @@ extends AbstractCandleBlock {
         if (itemStack.isOf(Items.FLINT_AND_STEEL) || itemStack.isOf(Items.FIRE_CHARGE)) {
             return ActionResult.PASS;
         }
-        if (!(CandleCakeBlock.method_31634(hit) && player.getStackInHand(hand).isEmpty() && state.get(LIT).booleanValue())) {
+        if (!(CandleCakeBlock.isHittingCandle(hit) && player.getStackInHand(hand).isEmpty() && state.get(LIT).booleanValue())) {
             CandleCakeBlock.dropStacks(state, world, pos);
             return CakeBlock.tryEat(world, pos, Blocks.CAKE.getDefaultState(), player);
         }
@@ -75,7 +75,7 @@ extends AbstractCandleBlock {
         return ActionResult.success(world.isClient);
     }
 
-    private static boolean method_31634(BlockHitResult hitResult) {
+    private static boolean isHittingCandle(BlockHitResult hitResult) {
         return hitResult.getPos().y - (double)hitResult.getBlockPos().getY() > 0.5;
     }
 

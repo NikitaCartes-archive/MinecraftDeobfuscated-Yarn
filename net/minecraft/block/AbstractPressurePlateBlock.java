@@ -20,6 +20,8 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractPressurePlateBlock
 extends Block {
@@ -63,7 +65,7 @@ extends Block {
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int i = this.getRedstoneOutput(state);
         if (i > 0) {
-            this.updatePlateState(world, pos, state, i);
+            this.updatePlateState(null, world, pos, state, i);
         }
     }
 
@@ -74,28 +76,30 @@ extends Block {
         }
         int i = this.getRedstoneOutput(state);
         if (i == 0) {
-            this.updatePlateState(world, pos, state, i);
+            this.updatePlateState(entity, world, pos, state, i);
         }
     }
 
-    protected void updatePlateState(World world, BlockPos pos, BlockState state, int rsOut) {
+    protected void updatePlateState(@Nullable Entity entity, World world, BlockPos blockPos, BlockState blockState, int i) {
         boolean bl2;
-        int i = this.getRedstoneOutput(world, pos);
-        boolean bl = rsOut > 0;
-        boolean bl3 = bl2 = i > 0;
-        if (rsOut != i) {
-            BlockState blockState = this.setRedstoneOutput(state, i);
-            world.setBlockState(pos, blockState, 2);
-            this.updateNeighbors(world, pos);
-            world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
+        int j = this.getRedstoneOutput(world, blockPos);
+        boolean bl = i > 0;
+        boolean bl3 = bl2 = j > 0;
+        if (i != j) {
+            BlockState blockState2 = this.setRedstoneOutput(blockState, j);
+            world.setBlockState(blockPos, blockState2, 2);
+            this.updateNeighbors(world, blockPos);
+            world.scheduleBlockRerenderIfNeeded(blockPos, blockState, blockState2);
         }
         if (!bl2 && bl) {
-            this.playDepressSound(world, pos);
+            this.playDepressSound(world, blockPos);
+            world.emitGameEvent(entity, GameEvent.BLOCK_UNPRESS, blockPos);
         } else if (bl2 && !bl) {
-            this.playPressSound(world, pos);
+            this.playPressSound(world, blockPos);
+            world.emitGameEvent(entity, GameEvent.BLOCK_PRESS, blockPos);
         }
         if (bl2) {
-            world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getTickRate());
+            world.getBlockTickScheduler().schedule(new BlockPos(blockPos), this, this.getTickRate());
         }
     }
 

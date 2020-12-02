@@ -25,7 +25,7 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
     @Override
     public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig) {
         Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
-        BlockPos blockPos2 = NetherrackReplaceBlobsFeature.method_27107(structureWorldAccess, blockPos.mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomHeightLimit() + 1, structureWorldAccess.getTopHeightLimit() - 1), block);
+        BlockPos blockPos2 = NetherrackReplaceBlobsFeature.method_27107(structureWorldAccess, blockPos.mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getSectionCount() + 1, structureWorldAccess.getTopHeightLimit() - 1), block);
         if (blockPos2 == null) {
             return false;
         }
@@ -46,7 +46,7 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
 
     @Nullable
     private static BlockPos method_27107(WorldAccess worldAccess, BlockPos.Mutable mutable, Block block) {
-        while (mutable.getY() > worldAccess.getBottomHeightLimit() + 1) {
+        while (mutable.getY() > worldAccess.getSectionCount() + 1) {
             BlockState blockState = worldAccess.getBlockState(mutable);
             if (blockState.isOf(block)) {
                 return mutable;

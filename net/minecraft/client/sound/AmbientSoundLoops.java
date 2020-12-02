@@ -26,7 +26,6 @@ public class AmbientSoundLoops {
             this.repeat = true;
             this.repeatDelay = 0;
             this.volume = 1.0f;
-            this.field_18935 = true;
             this.looping = true;
         }
 
@@ -53,7 +52,6 @@ public class AmbientSoundLoops {
             this.repeat = false;
             this.repeatDelay = 0;
             this.volume = 1.0f;
-            this.field_18935 = true;
             this.looping = true;
         }
 

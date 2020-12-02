@@ -68,7 +68,7 @@ implements FluidDrainable {
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         EntityShapeContext entityShapeContext;
         Optional<Entity> optional;
-        if (context instanceof EntityShapeContext && (optional = (entityShapeContext = (EntityShapeContext)context).method_32480()).isPresent() && PowderSnowBlock.canWalkOnPowderSnow(optional.get()) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {
+        if (context instanceof EntityShapeContext && (optional = (entityShapeContext = (EntityShapeContext)context).getEntity()).isPresent() && PowderSnowBlock.canWalkOnPowderSnow(optional.get()) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {
             return super.getCollisionShape(state, world, pos, context);
         }
         return VoxelShapes.empty();

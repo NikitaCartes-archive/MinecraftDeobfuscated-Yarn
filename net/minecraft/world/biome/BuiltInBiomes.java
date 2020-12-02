@@ -106,6 +106,7 @@ public abstract class BuiltinBiomes {
         BuiltinBiomes.register(171, BiomeKeys.CRIMSON_FOREST, DefaultBiomeCreator.createCrimsonForest());
         BuiltinBiomes.register(172, BiomeKeys.WARPED_FOREST, DefaultBiomeCreator.createWarpedForest());
         BuiltinBiomes.register(173, BiomeKeys.BASALT_DELTAS, DefaultBiomeCreator.createBasaltDeltas());
+        BuiltinBiomes.register(174, BiomeKeys.DRIPSTONE_CAVES, DefaultBiomeCreator.method_33132());
     }
 }
 

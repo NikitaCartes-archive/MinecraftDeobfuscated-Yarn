@@ -42,7 +42,7 @@ implements BlockEntityRenderer<LecternBlockEntity> {
         matrixStack.translate(0.0, -0.125, 0.0);
         this.book.setPageAngles(0.0f, 0.1f, 0.9f, 1.2f);
         VertexConsumer vertexConsumer = EnchantingTableBlockEntityRenderer.BOOK_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-        this.book.method_24184(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
+        this.book.renderBook(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }
 }

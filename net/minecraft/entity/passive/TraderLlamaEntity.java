@@ -117,15 +117,15 @@ extends LlamaEntity {
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
-    public class DefendTraderGoal
+    public static class DefendTraderGoal
     extends TrackTargetGoal {
         private final LlamaEntity llama;
         private LivingEntity offender;
         private int traderLastAttackedTime;
 
-        public DefendTraderGoal(LlamaEntity llama) {
-            super(llama, false);
-            this.llama = llama;
+        public DefendTraderGoal(LlamaEntity llamaEntity) {
+            super(llamaEntity, false);
+            this.llama = llamaEntity;
             this.setControls(EnumSet.of(Goal.Control.TARGET));
         }
 

@@ -168,9 +168,9 @@ extends PersistentState {
     }
 
     @Nullable
-    public Raid getRaidAt(BlockPos pos, int i) {
+    public Raid getRaidAt(BlockPos pos, int searchDistance) {
         Raid raid = null;
-        double d = i;
+        double d = searchDistance;
         for (Raid raid2 : this.raids.values()) {
             double e = raid2.getCenter().getSquaredDistance(pos);
             if (!raid2.isActive() || !(e < d)) continue;

@@ -126,7 +126,7 @@ public abstract class EntityNavigation {
         if (positions.isEmpty()) {
             return null;
         }
-        if (this.entity.getY() < (double)this.world.getBottomHeightLimit()) {
+        if (this.entity.getY() < (double)this.world.getSectionCount()) {
             return null;
         }
         if (!this.isAtValidPosition()) {

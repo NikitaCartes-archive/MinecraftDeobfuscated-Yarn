@@ -36,12 +36,12 @@ extends AbstractCauldronBlock {
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(LEVEL, 1));
     }
 
-    public boolean method_32766(BlockState blockState) {
-        return blockState.get(LEVEL) == 3;
+    public boolean isFull(BlockState state) {
+        return state.get(LEVEL) == 3;
     }
 
     @Override
-    protected boolean method_32765(Fluid fluid) {
+    protected boolean canBeFilledByDripstone(Fluid fluid) {
         return fluid == Fluids.WATER && this.precipitationPredicate == RAIN_PREDICATE;
     }
 
@@ -82,12 +82,12 @@ extends AbstractCauldronBlock {
     }
 
     @Override
-    protected void method_32764(BlockState blockState, World world, BlockPos blockPos, Fluid fluid) {
-        if (this.method_32766(blockState)) {
+    protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
+        if (this.isFull(state)) {
             return;
         }
-        world.setBlockState(blockPos, (BlockState)blockState.with(LEVEL, blockState.get(LEVEL) + 1));
-        world.syncWorldEvent(1047, blockPos, 0);
+        world.setBlockState(pos, (BlockState)state.with(LEVEL, state.get(LEVEL) + 1));
+        world.syncWorldEvent(1047, pos, 0);
     }
 }
 

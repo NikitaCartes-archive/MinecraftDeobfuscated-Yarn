@@ -12,9 +12,10 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.event.GameEvent;
 
 public interface TagManager {
-    public static final TagManager EMPTY = TagManager.create(TagGroup.createEmpty(), TagGroup.createEmpty(), TagGroup.createEmpty(), TagGroup.createEmpty());
+    public static final TagManager EMPTY = TagManager.create(TagGroup.createEmpty(), TagGroup.createEmpty(), TagGroup.createEmpty(), TagGroup.createEmpty(), TagGroup.createEmpty());
 
     public TagGroup<Block> getBlocks();
 
@@ -23,6 +24,8 @@ public interface TagManager {
     public TagGroup<Fluid> getFluids();
 
     public TagGroup<EntityType<?>> getEntityTypes();
+
+    public TagGroup<GameEvent> getGameEvents();
 
     default public void apply() {
         RequiredTagListRegistry.updateTagManager(this);
@@ -34,6 +37,7 @@ public interface TagManager {
         this.getItems().toPacket(buf, Registry.ITEM);
         this.getFluids().toPacket(buf, Registry.FLUID);
         this.getEntityTypes().toPacket(buf, Registry.ENTITY_TYPE);
+        this.getGameEvents().toPacket(buf, Registry.GAME_EVENT);
     }
 
     public static TagManager fromPacket(PacketByteBuf buf) {
@@ -41,10 +45,11 @@ public interface TagManager {
         TagGroup<Item> tagGroup2 = TagGroup.fromPacket(buf, Registry.ITEM);
         TagGroup<Fluid> tagGroup3 = TagGroup.fromPacket(buf, Registry.FLUID);
         TagGroup<EntityType<?>> tagGroup4 = TagGroup.fromPacket(buf, Registry.ENTITY_TYPE);
-        return TagManager.create(tagGroup, tagGroup2, tagGroup3, tagGroup4);
+        TagGroup<GameEvent> tagGroup5 = TagGroup.fromPacket(buf, Registry.GAME_EVENT);
+        return TagManager.create(tagGroup, tagGroup2, tagGroup3, tagGroup4, tagGroup5);
     }
 
-    public static TagManager create(final TagGroup<Block> blocks, final TagGroup<Item> items, final TagGroup<Fluid> fluids, final TagGroup<EntityType<?>> entityTypes) {
+    public static TagManager create(final TagGroup<Block> blocks, final TagGroup<Item> items, final TagGroup<Fluid> fluids, final TagGroup<EntityType<?>> entityTypes, final TagGroup<GameEvent> tagGroup) {
         return new TagManager(){
 
             @Override
@@ -65,6 +70,11 @@ public interface TagManager {
             @Override
             public TagGroup<EntityType<?>> getEntityTypes() {
                 return entityTypes;
+            }
+
+            @Override
+            public TagGroup<GameEvent> getGameEvents() {
+                return tagGroup;
             }
         };
     }

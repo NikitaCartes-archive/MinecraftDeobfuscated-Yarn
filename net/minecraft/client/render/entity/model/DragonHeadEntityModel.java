@@ -21,8 +21,8 @@ extends SkullBlockEntityModel {
     private final ModelPart head;
     private final ModelPart jaw;
 
-    public DragonHeadEntityModel(ModelPart modelPart) {
-        this.head = modelPart.getChild("head");
+    public DragonHeadEntityModel(ModelPart root) {
+        this.head = root.getChild("head");
         this.jaw = this.head.getChild("jaw");
     }
 
@@ -36,10 +36,10 @@ extends SkullBlockEntityModel {
     }
 
     @Override
-    public void method_2821(float f, float g, float h) {
-        this.jaw.pitch = (float)(Math.sin(f * (float)Math.PI * 0.2f) + 1.0) * 0.2f;
-        this.head.yaw = g * ((float)Math.PI / 180);
-        this.head.pitch = h * ((float)Math.PI / 180);
+    public void setHeadRotation(float animationProgress, float yaw, float pitch) {
+        this.jaw.pitch = (float)(Math.sin(animationProgress * (float)Math.PI * 0.2f) + 1.0) * 0.2f;
+        this.head.yaw = yaw * ((float)Math.PI / 180);
+        this.head.pitch = pitch * ((float)Math.PI / 180);
     }
 
     @Override

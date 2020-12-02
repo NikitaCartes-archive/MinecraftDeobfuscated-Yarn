@@ -5,7 +5,6 @@ package net.minecraft.client.render.entity;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5697;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.OverlayTexture;
@@ -19,6 +18,7 @@ import net.minecraft.client.render.entity.feature.CapeFeatureRenderer;
 import net.minecraft.client.render.entity.feature.Deadmau5FeatureRenderer;
 import net.minecraft.client.render.entity.feature.ElytraFeatureRenderer;
 import net.minecraft.client.render.entity.feature.HeadFeatureRenderer;
+import net.minecraft.client.render.entity.feature.PlayerHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.feature.ShoulderParrotFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckArrowsFeatureRenderer;
 import net.minecraft.client.render.entity.feature.StuckStingersFeatureRenderer;
@@ -50,7 +50,7 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
     public PlayerEntityRenderer(EntityRendererFactory.Context ctx, boolean slim) {
         super(ctx, new PlayerEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM : EntityModelLayers.PLAYER), slim), 0.5f);
         this.addFeature(new ArmorFeatureRenderer(this, new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_INNER_ARMOR : EntityModelLayers.PLAYER_INNER_ARMOR)), new BipedEntityModel(ctx.getPart(slim ? EntityModelLayers.PLAYER_SLIM_OUTER_ARMOR : EntityModelLayers.PLAYER_OUTER_ARMOR))));
-        this.addFeature(new class_5697<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
+        this.addFeature(new PlayerHeldItemFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(this));
         this.addFeature(new StuckArrowsFeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>>(ctx, this));
         this.addFeature(new Deadmau5FeatureRenderer(this));
         this.addFeature(new CapeFeatureRenderer(this));
@@ -80,19 +80,19 @@ extends LivingEntityRenderer<AbstractClientPlayerEntity, PlayerEntityModel<Abstr
         if (player.isSpectator()) {
             playerEntityModel.setVisible(false);
             playerEntityModel.head.visible = true;
-            playerEntityModel.helmet.visible = true;
+            playerEntityModel.hat.visible = true;
         } else {
             playerEntityModel.setVisible(true);
-            playerEntityModel.helmet.visible = player.isPartVisible(PlayerModelPart.HAT);
+            playerEntityModel.hat.visible = player.isPartVisible(PlayerModelPart.HAT);
             playerEntityModel.jacket.visible = player.isPartVisible(PlayerModelPart.JACKET);
-            playerEntityModel.leftPantLeg.visible = player.isPartVisible(PlayerModelPart.LEFT_PANTS_LEG);
-            playerEntityModel.rightPantLeg.visible = player.isPartVisible(PlayerModelPart.RIGHT_PANTS_LEG);
+            playerEntityModel.leftPants.visible = player.isPartVisible(PlayerModelPart.LEFT_PANTS_LEG);
+            playerEntityModel.rightPants.visible = player.isPartVisible(PlayerModelPart.RIGHT_PANTS_LEG);
             playerEntityModel.leftSleeve.visible = player.isPartVisible(PlayerModelPart.LEFT_SLEEVE);
             playerEntityModel.rightSleeve.visible = player.isPartVisible(PlayerModelPart.RIGHT_SLEEVE);
             playerEntityModel.sneaking = player.isInSneakingPose();
             BipedEntityModel.ArmPose armPose = PlayerEntityRenderer.getArmPose(player, Hand.MAIN_HAND);
             BipedEntityModel.ArmPose armPose2 = PlayerEntityRenderer.getArmPose(player, Hand.OFF_HAND);
-            if (armPose.method_30156()) {
+            if (armPose.isTwoHanded()) {
                 BipedEntityModel.ArmPose armPose3 = armPose2 = player.getOffHandStack().isEmpty() ? BipedEntityModel.ArmPose.EMPTY : BipedEntityModel.ArmPose.ITEM;
             }
             if (player.getMainArm() == Arm.RIGHT) {

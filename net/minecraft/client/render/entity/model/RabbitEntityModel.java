@@ -21,33 +21,33 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class RabbitEntityModel<T extends RabbitEntity>
 extends EntityModel<T> {
-    private final ModelPart field_27480;
-    private final ModelPart field_27481;
-    private final ModelPart field_27482;
-    private final ModelPart field_27483;
-    private final ModelPart torso;
-    private final ModelPart field_27484;
-    private final ModelPart field_27485;
-    private final ModelPart field_27486;
-    private final ModelPart field_27487;
-    private final ModelPart field_27488;
+    private final ModelPart leftHindLeg;
+    private final ModelPart rightHindLeg;
+    private final ModelPart leftHaunch;
+    private final ModelPart rightHaunch;
+    private final ModelPart body;
+    private final ModelPart leftFrontLeg;
+    private final ModelPart rightFrontLeg;
+    private final ModelPart head;
+    private final ModelPart rightEar;
+    private final ModelPart leftEar;
     private final ModelPart tail;
     private final ModelPart nose;
-    private float field_3531;
+    private float jumpProgress;
 
-    public RabbitEntityModel(ModelPart modelPart) {
-        this.field_27480 = modelPart.getChild("left_hind_foot");
-        this.field_27481 = modelPart.getChild("right_hind_foot");
-        this.field_27482 = modelPart.getChild("left_haunch");
-        this.field_27483 = modelPart.getChild("right_haunch");
-        this.torso = modelPart.getChild("body");
-        this.field_27484 = modelPart.getChild("left_front_leg");
-        this.field_27485 = modelPart.getChild("right_front_leg");
-        this.field_27486 = modelPart.getChild("head");
-        this.field_27487 = modelPart.getChild("right_ear");
-        this.field_27488 = modelPart.getChild("left_ear");
-        this.tail = modelPart.getChild("tail");
-        this.nose = modelPart.getChild("nose");
+    public RabbitEntityModel(ModelPart root) {
+        this.leftHindLeg = root.getChild("left_hind_foot");
+        this.rightHindLeg = root.getChild("right_hind_foot");
+        this.leftHaunch = root.getChild("left_haunch");
+        this.rightHaunch = root.getChild("right_haunch");
+        this.body = root.getChild("body");
+        this.leftFrontLeg = root.getChild("left_front_leg");
+        this.rightFrontLeg = root.getChild("right_front_leg");
+        this.head = root.getChild("head");
+        this.rightEar = root.getChild("right_ear");
+        this.leftEar = root.getChild("left_ear");
+        this.tail = root.getChild("tail");
+        this.nose = root.getChild("nose");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -75,18 +75,18 @@ extends EntityModel<T> {
             matrices.push();
             matrices.scale(0.56666666f, 0.56666666f, 0.56666666f);
             matrices.translate(0.0, 1.375, 0.125);
-            ImmutableList.of(this.field_27486, this.field_27488, this.field_27487, this.nose).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.head, this.leftEar, this.rightEar, this.nose).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
             matrices.push();
             matrices.scale(0.4f, 0.4f, 0.4f);
             matrices.translate(0.0, 2.25, 0.0);
-            ImmutableList.of(this.field_27480, this.field_27481, this.field_27482, this.field_27483, this.torso, this.field_27484, this.field_27485, this.tail).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.leftHindLeg, this.rightHindLeg, this.leftHaunch, this.rightHaunch, this.body, this.leftFrontLeg, this.rightFrontLeg, this.tail).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {
             matrices.push();
             matrices.scale(0.6f, 0.6f, 0.6f);
             matrices.translate(0.0, 1.0, 0.0);
-            ImmutableList.of(this.field_27480, this.field_27481, this.field_27482, this.field_27483, this.torso, this.field_27484, this.field_27485, this.field_27486, this.field_27487, this.field_27488, this.tail, this.nose, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.leftHindLeg, this.rightHindLeg, this.leftHaunch, this.rightHaunch, this.body, this.leftFrontLeg, this.rightFrontLeg, this.head, this.rightEar, this.leftEar, this.tail, this.nose, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         }
     }
@@ -95,26 +95,26 @@ extends EntityModel<T> {
     public void setAngles(T rabbitEntity, float f, float g, float h, float i, float j) {
         float k = h - (float)((RabbitEntity)rabbitEntity).age;
         this.nose.pitch = j * ((float)Math.PI / 180);
-        this.field_27486.pitch = j * ((float)Math.PI / 180);
-        this.field_27487.pitch = j * ((float)Math.PI / 180);
-        this.field_27488.pitch = j * ((float)Math.PI / 180);
+        this.head.pitch = j * ((float)Math.PI / 180);
+        this.rightEar.pitch = j * ((float)Math.PI / 180);
+        this.leftEar.pitch = j * ((float)Math.PI / 180);
         this.nose.yaw = i * ((float)Math.PI / 180);
-        this.field_27486.yaw = i * ((float)Math.PI / 180);
-        this.field_27487.yaw = this.nose.yaw - 0.2617994f;
-        this.field_27488.yaw = this.nose.yaw + 0.2617994f;
-        this.field_3531 = MathHelper.sin(((RabbitEntity)rabbitEntity).getJumpProgress(k) * (float)Math.PI);
-        this.field_27482.pitch = (this.field_3531 * 50.0f - 21.0f) * ((float)Math.PI / 180);
-        this.field_27483.pitch = (this.field_3531 * 50.0f - 21.0f) * ((float)Math.PI / 180);
-        this.field_27480.pitch = this.field_3531 * 50.0f * ((float)Math.PI / 180);
-        this.field_27481.pitch = this.field_3531 * 50.0f * ((float)Math.PI / 180);
-        this.field_27484.pitch = (this.field_3531 * -40.0f - 11.0f) * ((float)Math.PI / 180);
-        this.field_27485.pitch = (this.field_3531 * -40.0f - 11.0f) * ((float)Math.PI / 180);
+        this.head.yaw = i * ((float)Math.PI / 180);
+        this.rightEar.yaw = this.nose.yaw - 0.2617994f;
+        this.leftEar.yaw = this.nose.yaw + 0.2617994f;
+        this.jumpProgress = MathHelper.sin(((RabbitEntity)rabbitEntity).getJumpProgress(k) * (float)Math.PI);
+        this.leftHaunch.pitch = (this.jumpProgress * 50.0f - 21.0f) * ((float)Math.PI / 180);
+        this.rightHaunch.pitch = (this.jumpProgress * 50.0f - 21.0f) * ((float)Math.PI / 180);
+        this.leftHindLeg.pitch = this.jumpProgress * 50.0f * ((float)Math.PI / 180);
+        this.rightHindLeg.pitch = this.jumpProgress * 50.0f * ((float)Math.PI / 180);
+        this.leftFrontLeg.pitch = (this.jumpProgress * -40.0f - 11.0f) * ((float)Math.PI / 180);
+        this.rightFrontLeg.pitch = (this.jumpProgress * -40.0f - 11.0f) * ((float)Math.PI / 180);
     }
 
     @Override
     public void animateModel(T rabbitEntity, float f, float g, float h) {
         super.animateModel(rabbitEntity, f, g, h);
-        this.field_3531 = MathHelper.sin(((RabbitEntity)rabbitEntity).getJumpProgress(h) * (float)Math.PI);
+        this.jumpProgress = MathHelper.sin(((RabbitEntity)rabbitEntity).getJumpProgress(h) * (float)Math.PI);
     }
 }
 

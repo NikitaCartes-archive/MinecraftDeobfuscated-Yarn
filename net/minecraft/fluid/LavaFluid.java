@@ -110,7 +110,7 @@ extends FlowableFluid {
     }
 
     private boolean hasBurnableBlock(WorldView world, BlockPos pos) {
-        if (pos.getY() >= world.getBottomHeightLimit() && pos.getY() < world.getTopHeightLimit() && !world.isChunkLoaded(pos)) {
+        if (pos.getY() >= world.getSectionCount() && pos.getY() < world.getTopHeightLimit() && !world.isChunkLoaded(pos)) {
             return false;
         }
         return world.getBlockState(pos).getMaterial().isBurnable();

@@ -8,10 +8,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BlockWithEntity;
+import net.minecraft.block.OperatorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
-import net.minecraft.class_5552;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class StructureBlock
 extends BlockWithEntity
-implements class_5552 {
+implements OperatorBlock {
     public static final EnumProperty<StructureBlockMode> MODE = Properties.STRUCTURE_BLOCK_MODE;
 
     protected StructureBlock(AbstractBlock.Settings settings) {
@@ -96,18 +96,18 @@ implements class_5552 {
         }
     }
 
-    private void doAction(ServerWorld serverWorld, StructureBlockBlockEntity structureBlockBlockEntity) {
-        switch (structureBlockBlockEntity.getMode()) {
+    private void doAction(ServerWorld world, StructureBlockBlockEntity blockEntity) {
+        switch (blockEntity.getMode()) {
             case SAVE: {
-                structureBlockBlockEntity.saveStructure(false);
+                blockEntity.saveStructure(false);
                 break;
             }
             case LOAD: {
-                structureBlockBlockEntity.loadStructure(serverWorld, false);
+                blockEntity.loadStructure(world, false);
                 break;
             }
             case CORNER: {
-                structureBlockBlockEntity.unloadStructure();
+                blockEntity.unloadStructure();
                 break;
             }
             case DATA: {

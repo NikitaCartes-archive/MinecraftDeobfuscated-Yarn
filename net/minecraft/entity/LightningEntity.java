@@ -25,6 +25,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class LightningEntity
@@ -57,11 +58,11 @@ extends Entity {
         this.channeler = channeler;
     }
 
-    private void method_31499() {
+    private void powerLightningRod() {
         BlockPos blockPos = this.getBlockPos().down();
         BlockState blockState = this.world.getBlockState(blockPos);
         if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
-            ((LightningRodBlock)blockState.getBlock()).method_31648(blockState, this.world, blockPos);
+            ((LightningRodBlock)blockState.getBlock()).setPowered(blockState, this.world, blockPos);
         }
     }
 
@@ -73,9 +74,10 @@ extends Entity {
             if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
                 this.spawnFire(4);
             }
-            this.method_31499();
+            this.powerLightningRod();
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0f, 0.8f + this.random.nextFloat() * 0.2f);
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0f, 0.5f + this.random.nextFloat() * 0.2f);
+            this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
         }
         --this.ambientTick;
         if (this.ambientTick < 0) {

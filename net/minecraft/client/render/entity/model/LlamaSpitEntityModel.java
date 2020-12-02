@@ -17,10 +17,10 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class LlamaSpitEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27451;
+    private final ModelPart root;
 
-    public LlamaSpitEntityModel(ModelPart modelPart) {
-        this.field_27451 = modelPart;
+    public LlamaSpitEntityModel(ModelPart root) {
+        this.root = root;
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -37,7 +37,7 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27451;
+        return this.root;
     }
 }
 

@@ -17,8 +17,8 @@ import net.minecraft.entity.passive.PolarBearEntity;
 @Environment(value=EnvType.CLIENT)
 public class PolarBearEntityModel<T extends PolarBearEntity>
 extends QuadrupedEntityModel<T> {
-    public PolarBearEntityModel(ModelPart modelPart) {
-        super(modelPart, true, 16.0f, 4.0f, 2.25f, 2.0f, 24);
+    public PolarBearEntityModel(ModelPart root) {
+        super(root, true, 16.0f, 4.0f, 2.25f, 2.0f, 24);
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -43,14 +43,14 @@ extends QuadrupedEntityModel<T> {
         float l = ((PolarBearEntity)polarBearEntity).getWarningAnimationProgress(k);
         l *= l;
         float m = 1.0f - l;
-        this.torso.pitch = 1.5707964f - l * (float)Math.PI * 0.35f;
-        this.torso.pivotY = 9.0f * m + 11.0f * l;
-        this.field_27478.pivotY = 14.0f * m - 6.0f * l;
-        this.field_27478.pivotZ = -8.0f * m - 4.0f * l;
-        this.field_27478.pitch -= l * (float)Math.PI * 0.45f;
-        this.field_27479.pivotY = this.field_27478.pivotY;
-        this.field_27479.pivotZ = this.field_27478.pivotZ;
-        this.field_27479.pitch -= l * (float)Math.PI * 0.45f;
+        this.body.pitch = 1.5707964f - l * (float)Math.PI * 0.35f;
+        this.body.pivotY = 9.0f * m + 11.0f * l;
+        this.rightFrontLeg.pivotY = 14.0f * m - 6.0f * l;
+        this.rightFrontLeg.pivotZ = -8.0f * m - 4.0f * l;
+        this.rightFrontLeg.pitch -= l * (float)Math.PI * 0.45f;
+        this.leftFrontLeg.pivotY = this.rightFrontLeg.pivotY;
+        this.leftFrontLeg.pivotZ = this.rightFrontLeg.pivotZ;
+        this.leftFrontLeg.pitch -= l * (float)Math.PI * 0.45f;
         if (this.child) {
             this.head.pivotY = 10.0f * m - 9.0f * l;
             this.head.pivotZ = -16.0f * m - 7.0f * l;

@@ -29,6 +29,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
@@ -62,7 +63,7 @@ extends Feature<EndSpikeFeatureConfig> {
 
     private void generateSpike(ServerWorldAccess world, Random random, EndSpikeFeatureConfig config, Spike spike) {
         int i = spike.getRadius();
-        for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, world.getBottomHeightLimit(), spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
+        for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, world.getSectionCount(), spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ(), false) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {
                 this.setBlockState(world, blockPos, Blocks.OBSIDIAN.getDefaultState());
                 continue;
@@ -142,7 +143,7 @@ extends Feature<EndSpikeFeatureConfig> {
             this.radius = radius;
             this.height = height;
             this.guarded = guarded;
-            this.boundingBox = new Box(centerX - radius, 0.0, centerZ - radius, centerX + radius, 256.0, centerZ + radius);
+            this.boundingBox = new Box(centerX - radius, DimensionType.field_28136, centerZ - radius, centerX + radius, DimensionType.field_28135, centerZ + radius);
         }
 
         public boolean isInChunk(BlockPos pos) {

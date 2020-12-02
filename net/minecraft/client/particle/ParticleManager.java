@@ -42,6 +42,7 @@ import net.minecraft.client.particle.CrackParticle;
 import net.minecraft.client.particle.CurrentDownParticle;
 import net.minecraft.client.particle.DamageParticle;
 import net.minecraft.client.particle.DragonBreathParticle;
+import net.minecraft.client.particle.DustColorTransitionParticle;
 import net.minecraft.client.particle.ElderGuardianAppearanceParticle;
 import net.minecraft.client.particle.EmitterParticle;
 import net.minecraft.client.particle.EmotionParticle;
@@ -74,6 +75,7 @@ import net.minecraft.client.particle.SquidInkParticle;
 import net.minecraft.client.particle.SuspendParticle;
 import net.minecraft.client.particle.SweepAttackParticle;
 import net.minecraft.client.particle.TotemParticle;
+import net.minecraft.client.particle.VibrationParticle;
 import net.minecraft.client.particle.WaterBubbleParticle;
 import net.minecraft.client.particle.WaterSplashParticle;
 import net.minecraft.client.particle.WaterSuspendParticle;
@@ -154,6 +156,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.DRIPPING_WATER, BlockLeakParticle.DrippingWaterFactory::new);
         this.registerFactory(ParticleTypes.FALLING_WATER, BlockLeakParticle.FallingWaterFactory::new);
         this.registerFactory(ParticleTypes.DUST, RedDustParticle.Factory::new);
+        this.registerFactory(ParticleTypes.DUST_COLOR_TRANSITION, DustColorTransitionParticle.Factory::new);
         this.registerFactory(ParticleTypes.EFFECT, SpellParticle.DefaultFactory::new);
         this.registerFactory(ParticleTypes.ELDER_GUARDIAN, new ElderGuardianAppearanceParticle.Factory());
         this.registerFactory(ParticleTypes.ENCHANTED_HIT, DamageParticle.EnchantedHitFactory::new);
@@ -210,6 +213,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_WATER, BlockLeakParticle.class_5695::new);
         this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_LAVA, BlockLeakParticle.class_5694::new);
         this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_LAVA, BlockLeakParticle.class_5693::new);
+        this.registerFactory(ParticleTypes.VIBRATION, VibrationParticle.Factory::new);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

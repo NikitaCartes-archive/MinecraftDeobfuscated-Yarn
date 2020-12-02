@@ -19,19 +19,19 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class BlazeEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27394;
+    private final ModelPart root;
     private final ModelPart[] rods;
-    private final ModelPart field_27395;
+    private final ModelPart head;
 
-    public BlazeEntityModel(ModelPart modelPart) {
-        this.field_27394 = modelPart;
-        this.field_27395 = modelPart.getChild("head");
+    public BlazeEntityModel(ModelPart root) {
+        this.root = root;
+        this.head = root.getChild("head");
         this.rods = new ModelPart[12];
-        Arrays.setAll(this.rods, i -> modelPart.getChild(BlazeEntityModel.method_31983(i)));
+        Arrays.setAll(this.rods, i -> root.getChild(BlazeEntityModel.getRodName(i)));
     }
 
-    private static String method_31983(int i) {
-        return "part" + i;
+    private static String getRodName(int index) {
+        return "part" + index;
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -48,7 +48,7 @@ extends SinglePartEntityModel<T> {
             g = MathHelper.cos(f) * 9.0f;
             h = -2.0f + MathHelper.cos((float)(i * 2) * 0.25f);
             j = MathHelper.sin(f) * 9.0f;
-            modelPartData.addChild(BlazeEntityModel.method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
+            modelPartData.addChild(BlazeEntityModel.getRodName(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
             f += 1.5707964f;
         }
         f = 0.7853982f;
@@ -56,7 +56,7 @@ extends SinglePartEntityModel<T> {
             g = MathHelper.cos(f) * 7.0f;
             h = 2.0f + MathHelper.cos((float)(i * 2) * 0.25f);
             j = MathHelper.sin(f) * 7.0f;
-            modelPartData.addChild(BlazeEntityModel.method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
+            modelPartData.addChild(BlazeEntityModel.getRodName(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
             f += 1.5707964f;
         }
         f = 0.47123894f;
@@ -64,7 +64,7 @@ extends SinglePartEntityModel<T> {
             g = MathHelper.cos(f) * 5.0f;
             h = 11.0f + MathHelper.cos((float)i * 1.5f * 0.5f);
             j = MathHelper.sin(f) * 5.0f;
-            modelPartData.addChild(BlazeEntityModel.method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
+            modelPartData.addChild(BlazeEntityModel.getRodName(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
             f += 1.5707964f;
         }
         return TexturedModelData.of(modelData, 64, 32);
@@ -72,7 +72,7 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27394;
+        return this.root;
     }
 
     @Override
@@ -99,8 +99,8 @@ extends SinglePartEntityModel<T> {
             this.rods[i].pivotZ = MathHelper.sin(f) * 5.0f;
             f += 1.5707964f;
         }
-        this.field_27395.yaw = headYaw * ((float)Math.PI / 180);
-        this.field_27395.pitch = headPitch * ((float)Math.PI / 180);
+        this.head.yaw = headYaw * ((float)Math.PI / 180);
+        this.head.pitch = headPitch * ((float)Math.PI / 180);
     }
 }
 

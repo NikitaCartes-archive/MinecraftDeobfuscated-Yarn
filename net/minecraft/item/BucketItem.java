@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.FluidFillable;
 import net.minecraft.block.Material;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FlowableFluid;
 import net.minecraft.fluid.Fluid;
@@ -34,6 +35,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class BucketItem
@@ -67,8 +69,9 @@ implements FluidModificationItem {
                 BlockState blockState = world.getBlockState(blockPos);
                 if (blockState.getBlock() instanceof FluidDrainable && !(itemStack2 = (fluidDrainable = (FluidDrainable)((Object)blockState.getBlock())).tryDrainFluid(world, blockPos, blockState)).isEmpty()) {
                     user.incrementStat(Stats.USED.getOrCreateStat(this));
-                    fluidDrainable.getDrainSound().ifPresent(soundEvent -> user.playSound((SoundEvent)soundEvent, 1.0f, 1.0f));
-                    ItemStack itemStack3 = ItemUsage.method_30012(itemStack, user, itemStack2);
+                    fluidDrainable.getDrainSound().ifPresent(sound -> user.playSound((SoundEvent)sound, 1.0f, 1.0f));
+                    world.emitGameEvent((Entity)user, GameEvent.FLUID_PICKUP, blockPos);
+                    ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, user, itemStack2);
                     if (!world.isClient) {
                         Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, itemStack2);
                     }
@@ -144,6 +147,7 @@ implements FluidModificationItem {
     protected void playEmptyingSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos) {
         SoundEvent soundEvent = this.fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
         world.playSound(player, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        world.emitGameEvent((Entity)player, GameEvent.FLUID_PLACE, pos);
     }
 }
 

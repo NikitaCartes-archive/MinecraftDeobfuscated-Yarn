@@ -78,7 +78,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public Stream<PointOfInterest> getInChunk(Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, OccupationStatus occupationStatus) {
-        return IntStream.range(this.field_27240.getBottomSectionLimit(), this.field_27240.getTopSectionLimit()).boxed().map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong())).filter(Optional::isPresent).flatMap(optional -> ((PointOfInterestSet)optional.get()).get(predicate, occupationStatus));
+        return IntStream.range(this.field_27240.method_32891(), this.field_27240.getTopSectionLimit()).boxed().map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong())).filter(Optional::isPresent).flatMap(optional -> ((PointOfInterestSet)optional.get()).get(predicate, occupationStatus));
     }
 
     public Stream<BlockPos> getPositions(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> posPredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
@@ -184,7 +184,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
      * @param radius The radius in blocks
      */
     public void preloadChunks(WorldView world, BlockPos pos, int radius) {
-        ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.field_27240.getBottomSectionLimit(), this.field_27240.getTopSectionLimit()).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong())).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
+        ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.field_27240.method_32891(), this.field_27240.getTopSectionLimit()).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong())).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
     }
 
     final class PointOfInterestDistanceTracker

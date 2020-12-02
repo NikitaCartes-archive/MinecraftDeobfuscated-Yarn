@@ -254,7 +254,7 @@ public class EnderDragonFight {
                 }
             }
         }
-        for (j = i = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN).getY(); j >= this.world.getBottomHeightLimit(); --j) {
+        for (j = i = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN).getY(); j >= this.world.getSectionCount(); --j) {
             BlockPattern.Result result2 = this.endPortalPattern.searchAround(this.world, new BlockPos(EndPortalFeature.ORIGIN.getX(), j, EndPortalFeature.ORIGIN.getZ()));
             if (result2 == null) continue;
             if (this.exitPortalLocation == null) {

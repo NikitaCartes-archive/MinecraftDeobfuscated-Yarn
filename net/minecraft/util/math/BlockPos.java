@@ -46,7 +46,7 @@ extends Vec3i {
     public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
     private static final int SIZE_BITS_X;
     private static final int SIZE_BITS_Z;
-    private static final int SIZE_BITS_Y;
+    public static final int SIZE_BITS_Y;
     private static final long BITS_X;
     private static final long BITS_Y;
     private static final long BITS_Z;
@@ -227,6 +227,10 @@ extends Vec3i {
     @Override
     public BlockPos crossProduct(Vec3i pos) {
         return new BlockPos(this.getY() * pos.getZ() - this.getZ() * pos.getY(), this.getZ() * pos.getX() - this.getX() * pos.getZ(), this.getX() * pos.getY() - this.getY() * pos.getX());
+    }
+
+    public BlockPos withY(int y) {
+        return new BlockPos(this.getX(), y, this.getZ());
     }
 
     /**
@@ -608,18 +612,21 @@ extends Vec3i {
         }
 
         @Override
-        public void setX(int x) {
-            super.setX(x);
+        public Mutable setX(int i) {
+            super.setX(i);
+            return this;
         }
 
         @Override
-        public void setY(int y) {
-            super.setY(y);
+        public Mutable setY(int i) {
+            super.setY(i);
+            return this;
         }
 
         @Override
-        public void setZ(int z) {
-            super.setZ(z);
+        public Mutable setZ(int i) {
+            super.setZ(i);
+            return this;
         }
 
         @Override
@@ -655,6 +662,21 @@ extends Vec3i {
         @Override
         public /* synthetic */ Vec3i up() {
             return super.up();
+        }
+
+        @Override
+        public /* synthetic */ Vec3i setZ(int z) {
+            return this.setZ(z);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i setY(int y) {
+            return this.setY(y);
+        }
+
+        @Override
+        public /* synthetic */ Vec3i setX(int x) {
+            return this.setX(x);
         }
     }
 }

@@ -18,28 +18,28 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class StriderEntityModel<T extends StriderEntity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27514;
-    private final ModelPart field_23353;
-    private final ModelPart field_23354;
-    private final ModelPart field_23355;
-    private final ModelPart field_27515;
-    private final ModelPart field_27516;
-    private final ModelPart field_27517;
-    private final ModelPart field_27518;
-    private final ModelPart field_27519;
-    private final ModelPart field_27520;
+    private final ModelPart root;
+    private final ModelPart rightLeg;
+    private final ModelPart leftLeg;
+    private final ModelPart body;
+    private final ModelPart rightBottomBristle;
+    private final ModelPart rightMiddleBristle;
+    private final ModelPart rightTopBristle;
+    private final ModelPart leftTopBristle;
+    private final ModelPart leftMiddleBristle;
+    private final ModelPart leftBottomBristle;
 
-    public StriderEntityModel(ModelPart modelPart) {
-        this.field_27514 = modelPart;
-        this.field_23353 = modelPart.getChild("right_leg");
-        this.field_23354 = modelPart.getChild("left_leg");
-        this.field_23355 = modelPart.getChild("body");
-        this.field_27515 = this.field_23355.getChild("right_bottom_bristle");
-        this.field_27516 = this.field_23355.getChild("right_middle_bristle");
-        this.field_27517 = this.field_23355.getChild("right_top_bristle");
-        this.field_27518 = this.field_23355.getChild("left_top_bristle");
-        this.field_27519 = this.field_23355.getChild("left_middle_bristle");
-        this.field_27520 = this.field_23355.getChild("left_bottom_bristle");
+    public StriderEntityModel(ModelPart root) {
+        this.root = root;
+        this.rightLeg = root.getChild("right_leg");
+        this.leftLeg = root.getChild("left_leg");
+        this.body = root.getChild("body");
+        this.rightBottomBristle = this.body.getChild("right_bottom_bristle");
+        this.rightMiddleBristle = this.body.getChild("right_middle_bristle");
+        this.rightTopBristle = this.body.getChild("right_top_bristle");
+        this.leftTopBristle = this.body.getChild("left_top_bristle");
+        this.leftMiddleBristle = this.body.getChild("left_middle_bristle");
+        this.leftBottomBristle = this.body.getChild("left_bottom_bristle");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -61,48 +61,48 @@ extends SinglePartEntityModel<T> {
     public void setAngles(StriderEntity striderEntity, float f, float g, float h, float i, float j) {
         g = Math.min(0.25f, g);
         if (!striderEntity.hasPassengers()) {
-            this.field_23355.pitch = j * ((float)Math.PI / 180);
-            this.field_23355.yaw = i * ((float)Math.PI / 180);
+            this.body.pitch = j * ((float)Math.PI / 180);
+            this.body.yaw = i * ((float)Math.PI / 180);
         } else {
-            this.field_23355.pitch = 0.0f;
-            this.field_23355.yaw = 0.0f;
+            this.body.pitch = 0.0f;
+            this.body.yaw = 0.0f;
         }
         float k = 1.5f;
-        this.field_23355.roll = 0.1f * MathHelper.sin(f * 1.5f) * 4.0f * g;
-        this.field_23355.pivotY = 2.0f;
-        this.field_23355.pivotY -= 2.0f * MathHelper.cos(f * 1.5f) * 2.0f * g;
-        this.field_23354.pitch = MathHelper.sin(f * 1.5f * 0.5f) * 2.0f * g;
-        this.field_23353.pitch = MathHelper.sin(f * 1.5f * 0.5f + (float)Math.PI) * 2.0f * g;
-        this.field_23354.roll = 0.17453292f * MathHelper.cos(f * 1.5f * 0.5f) * g;
-        this.field_23353.roll = 0.17453292f * MathHelper.cos(f * 1.5f * 0.5f + (float)Math.PI) * g;
-        this.field_23354.pivotY = 8.0f + 2.0f * MathHelper.sin(f * 1.5f * 0.5f + (float)Math.PI) * 2.0f * g;
-        this.field_23353.pivotY = 8.0f + 2.0f * MathHelper.sin(f * 1.5f * 0.5f) * 2.0f * g;
-        this.field_27515.roll = -1.2217305f;
-        this.field_27516.roll = -1.134464f;
-        this.field_27517.roll = -0.87266463f;
-        this.field_27518.roll = 0.87266463f;
-        this.field_27519.roll = 1.134464f;
-        this.field_27520.roll = 1.2217305f;
+        this.body.roll = 0.1f * MathHelper.sin(f * 1.5f) * 4.0f * g;
+        this.body.pivotY = 2.0f;
+        this.body.pivotY -= 2.0f * MathHelper.cos(f * 1.5f) * 2.0f * g;
+        this.leftLeg.pitch = MathHelper.sin(f * 1.5f * 0.5f) * 2.0f * g;
+        this.rightLeg.pitch = MathHelper.sin(f * 1.5f * 0.5f + (float)Math.PI) * 2.0f * g;
+        this.leftLeg.roll = 0.17453292f * MathHelper.cos(f * 1.5f * 0.5f) * g;
+        this.rightLeg.roll = 0.17453292f * MathHelper.cos(f * 1.5f * 0.5f + (float)Math.PI) * g;
+        this.leftLeg.pivotY = 8.0f + 2.0f * MathHelper.sin(f * 1.5f * 0.5f + (float)Math.PI) * 2.0f * g;
+        this.rightLeg.pivotY = 8.0f + 2.0f * MathHelper.sin(f * 1.5f * 0.5f) * 2.0f * g;
+        this.rightBottomBristle.roll = -1.2217305f;
+        this.rightMiddleBristle.roll = -1.134464f;
+        this.rightTopBristle.roll = -0.87266463f;
+        this.leftTopBristle.roll = 0.87266463f;
+        this.leftMiddleBristle.roll = 1.134464f;
+        this.leftBottomBristle.roll = 1.2217305f;
         float l = MathHelper.cos(f * 1.5f + (float)Math.PI) * g;
-        this.field_27515.roll += l * 1.3f;
-        this.field_27516.roll += l * 1.2f;
-        this.field_27517.roll += l * 0.6f;
-        this.field_27518.roll += l * 0.6f;
-        this.field_27519.roll += l * 1.2f;
-        this.field_27520.roll += l * 1.3f;
+        this.rightBottomBristle.roll += l * 1.3f;
+        this.rightMiddleBristle.roll += l * 1.2f;
+        this.rightTopBristle.roll += l * 0.6f;
+        this.leftTopBristle.roll += l * 0.6f;
+        this.leftMiddleBristle.roll += l * 1.2f;
+        this.leftBottomBristle.roll += l * 1.3f;
         float m = 1.0f;
         float n = 1.0f;
-        this.field_27515.roll += 0.05f * MathHelper.sin(h * 1.0f * -0.4f);
-        this.field_27516.roll += 0.1f * MathHelper.sin(h * 1.0f * 0.2f);
-        this.field_27517.roll += 0.1f * MathHelper.sin(h * 1.0f * 0.4f);
-        this.field_27518.roll += 0.1f * MathHelper.sin(h * 1.0f * 0.4f);
-        this.field_27519.roll += 0.1f * MathHelper.sin(h * 1.0f * 0.2f);
-        this.field_27520.roll += 0.05f * MathHelper.sin(h * 1.0f * -0.4f);
+        this.rightBottomBristle.roll += 0.05f * MathHelper.sin(h * 1.0f * -0.4f);
+        this.rightMiddleBristle.roll += 0.1f * MathHelper.sin(h * 1.0f * 0.2f);
+        this.rightTopBristle.roll += 0.1f * MathHelper.sin(h * 1.0f * 0.4f);
+        this.leftTopBristle.roll += 0.1f * MathHelper.sin(h * 1.0f * 0.4f);
+        this.leftMiddleBristle.roll += 0.1f * MathHelper.sin(h * 1.0f * 0.2f);
+        this.leftBottomBristle.roll += 0.05f * MathHelper.sin(h * 1.0f * -0.4f);
     }
 
     @Override
     public ModelPart getPart() {
-        return this.field_27514;
+        return this.root;
     }
 }
 

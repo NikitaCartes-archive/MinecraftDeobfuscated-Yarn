@@ -14,6 +14,7 @@ import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.ai.pathing.NavigationType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.screen.AnvilScreenHandler;
@@ -88,7 +89,7 @@ extends FallingBlock {
 
     @Override
     protected void configureFallingBlockEntity(FallingBlockEntity entity) {
-        entity.setHurtEntities(true);
+        entity.setHurtEntities(2.0f, 40);
     }
 
     @Override
@@ -103,6 +104,11 @@ extends FallingBlock {
         if (!fallingBlockEntity.isSilent()) {
             world.syncWorldEvent(1029, pos, 0);
         }
+    }
+
+    @Override
+    public DamageSource getDamageSource() {
+        return DamageSource.ANVIL;
     }
 
     @Nullable

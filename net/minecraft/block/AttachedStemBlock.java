@@ -35,13 +35,13 @@ extends PlantBlock {
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
     private static final Map<Direction, VoxelShape> FACING_TO_SHAPE = Maps.newEnumMap(ImmutableMap.of(Direction.SOUTH, Block.createCuboidShape(6.0, 0.0, 6.0, 10.0, 10.0, 16.0), Direction.WEST, Block.createCuboidShape(0.0, 0.0, 6.0, 10.0, 10.0, 10.0), Direction.NORTH, Block.createCuboidShape(6.0, 0.0, 0.0, 10.0, 10.0, 10.0), Direction.EAST, Block.createCuboidShape(6.0, 0.0, 6.0, 16.0, 10.0, 10.0)));
     private final GourdBlock gourdBlock;
-    private final Supplier<Item> field_27095;
+    private final Supplier<Item> pickBlockItem;
 
-    protected AttachedStemBlock(GourdBlock gourdBlock, Supplier<Item> supplier, AbstractBlock.Settings settings) {
+    protected AttachedStemBlock(GourdBlock gourdBlock, Supplier<Item> pickBlockItem, AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState((BlockState)((BlockState)this.stateManager.getDefaultState()).with(FACING, Direction.NORTH));
         this.gourdBlock = gourdBlock;
-        this.field_27095 = supplier;
+        this.pickBlockItem = pickBlockItem;
     }
 
     @Override
@@ -65,7 +65,7 @@ extends PlantBlock {
     @Override
     @Environment(value=EnvType.CLIENT)
     public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-        return new ItemStack(this.field_27095.get());
+        return new ItemStack(this.pickBlockItem.get());
     }
 
     @Override

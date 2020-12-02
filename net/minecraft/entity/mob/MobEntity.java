@@ -556,8 +556,8 @@ extends LivingEntity {
             if (armorItem.getProtection() != armorItem2.getProtection()) {
                 return armorItem.getProtection() > armorItem2.getProtection();
             }
-            if (armorItem.method_26353() != armorItem2.method_26353()) {
-                return armorItem.method_26353() > armorItem2.method_26353();
+            if (armorItem.getToughness() != armorItem2.getToughness()) {
+                return armorItem.getToughness() > armorItem2.getToughness();
             }
             return this.prefersNewDamageableItem(newStack, oldStack);
         }

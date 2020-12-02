@@ -18,16 +18,16 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class EvokerFangsEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27414;
-    private final ModelPart field_3374;
-    private final ModelPart field_3376;
-    private final ModelPart field_3375;
+    private final ModelPart root;
+    private final ModelPart base;
+    private final ModelPart upperJaw;
+    private final ModelPart lowerJaw;
 
-    public EvokerFangsEntityModel(ModelPart modelPart) {
-        this.field_27414 = modelPart;
-        this.field_3374 = modelPart.getChild("base");
-        this.field_3376 = modelPart.getChild("upper_jaw");
-        this.field_3375 = modelPart.getChild("lower_jaw");
+    public EvokerFangsEntityModel(ModelPart root) {
+        this.root = root;
+        this.base = root.getChild("base");
+        this.upperJaw = root.getChild("upper_jaw");
+        this.lowerJaw = root.getChild("lower_jaw");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -47,16 +47,16 @@ extends SinglePartEntityModel<T> {
             f = 1.0f;
         }
         f = 1.0f - f * f * f;
-        this.field_3376.roll = (float)Math.PI - f * 0.35f * (float)Math.PI;
-        this.field_3375.roll = (float)Math.PI + f * 0.35f * (float)Math.PI;
+        this.upperJaw.roll = (float)Math.PI - f * 0.35f * (float)Math.PI;
+        this.lowerJaw.roll = (float)Math.PI + f * 0.35f * (float)Math.PI;
         float g = (limbAngle + MathHelper.sin(limbAngle * 2.7f)) * 0.6f * 12.0f;
-        this.field_3375.pivotY = this.field_3376.pivotY = 24.0f - g;
-        this.field_3374.pivotY = this.field_3376.pivotY;
+        this.lowerJaw.pivotY = this.upperJaw.pivotY = 24.0f - g;
+        this.base.pivotY = this.upperJaw.pivotY;
     }
 
     @Override
     public ModelPart getPart() {
-        return this.field_27414;
+        return this.root;
     }
 }
 

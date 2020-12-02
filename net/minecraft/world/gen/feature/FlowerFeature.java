@@ -25,7 +25,7 @@ extends Feature<U> {
         int i = 0;
         for (int j = 0; j < this.getFlowerAmount(config); ++j) {
             BlockPos blockPos = this.getPos(random, pos, config);
-            if (!world.isAir(blockPos) || blockPos.getY() >= 255 || !blockState.canPlaceAt(world, blockPos) || !this.isPosValid(world, blockPos, config)) continue;
+            if (!world.isAir(blockPos) || !blockState.canPlaceAt(world, blockPos) || !this.isPosValid(world, blockPos, config)) continue;
             world.setBlockState(blockPos, blockState, 2);
             ++i;
         }

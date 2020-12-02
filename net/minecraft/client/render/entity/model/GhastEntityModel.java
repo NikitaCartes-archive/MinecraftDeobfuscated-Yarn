@@ -19,18 +19,18 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class GhastEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27419;
+    private final ModelPart root;
     private final ModelPart[] tentacles = new ModelPart[9];
 
-    public GhastEntityModel(ModelPart modelPart) {
-        this.field_27419 = modelPart;
+    public GhastEntityModel(ModelPart root) {
+        this.root = root;
         for (int i = 0; i < this.tentacles.length; ++i) {
-            this.tentacles[i] = modelPart.getChild(GhastEntityModel.method_32001(i));
+            this.tentacles[i] = root.getChild(GhastEntityModel.getTentacleName(i));
         }
     }
 
-    private static String method_32001(int i) {
-        return "tentacle" + i;
+    private static String getTentacleName(int index) {
+        return "tentacle" + index;
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -42,7 +42,7 @@ extends SinglePartEntityModel<T> {
             float f = (((float)(i % 3) - (float)(i / 3 % 2) * 0.5f + 0.25f) / 2.0f * 2.0f - 1.0f) * 5.0f;
             float g = ((float)(i / 3) / 2.0f * 2.0f - 1.0f) * 5.0f;
             int j = random.nextInt(7) + 8;
-            modelPartData.addChild(GhastEntityModel.method_32001(i), ModelPartBuilder.create().uv(0, 0).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, j, 2.0f), ModelTransform.pivot(f, 24.6f, g));
+            modelPartData.addChild(GhastEntityModel.getTentacleName(i), ModelPartBuilder.create().uv(0, 0).cuboid(-1.0f, 0.0f, -1.0f, 2.0f, j, 2.0f), ModelTransform.pivot(f, 24.6f, g));
         }
         return TexturedModelData.of(modelData, 64, 32);
     }
@@ -56,7 +56,7 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27419;
+        return this.root;
     }
 }
 

@@ -17,7 +17,7 @@ public class TimedTaskRunner {
     public void runSilently(long tick) {
         try {
             this.runTasks(tick);
-        } catch (Exception exception) {
+        } catch (TimeMismatchException timeMismatchException) {
             // empty catch block
         }
     }
@@ -25,8 +25,8 @@ public class TimedTaskRunner {
     public void runReported(long tick) {
         try {
             this.runTasks(tick);
-        } catch (Exception exception) {
-            this.test.fail(exception);
+        } catch (TimeMismatchException timeMismatchException) {
+            this.test.fail(timeMismatchException);
         }
     }
 

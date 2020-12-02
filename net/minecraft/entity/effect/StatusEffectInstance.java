@@ -19,7 +19,6 @@ implements Comparable<StatusEffectInstance> {
     private final StatusEffect type;
     private int duration;
     private int amplifier;
-    private boolean splash;
     private boolean ambient;
     @Environment(value=EnvType.CLIENT)
     private boolean permanent;
@@ -175,9 +174,6 @@ implements Comparable<StatusEffectInstance> {
 
     public String toString() {
         String string = this.amplifier > 0 ? this.getTranslationKey() + " x " + (this.amplifier + 1) + ", Duration: " + this.duration : this.getTranslationKey() + ", Duration: " + this.duration;
-        if (this.splash) {
-            string = string + ", Splash: true";
-        }
         if (!this.showParticles) {
             string = string + ", Particles: false";
         }
@@ -193,7 +189,7 @@ implements Comparable<StatusEffectInstance> {
         }
         if (o instanceof StatusEffectInstance) {
             StatusEffectInstance statusEffectInstance = (StatusEffectInstance)o;
-            return this.duration == statusEffectInstance.duration && this.amplifier == statusEffectInstance.amplifier && this.splash == statusEffectInstance.splash && this.ambient == statusEffectInstance.ambient && this.type.equals(statusEffectInstance.type);
+            return this.duration == statusEffectInstance.duration && this.amplifier == statusEffectInstance.amplifier && this.ambient == statusEffectInstance.ambient && this.type.equals(statusEffectInstance.type);
         }
         return false;
     }
@@ -202,7 +198,6 @@ implements Comparable<StatusEffectInstance> {
         int i = this.type.hashCode();
         i = 31 * i + this.duration;
         i = 31 * i + this.amplifier;
-        i = 31 * i + (this.splash ? 1 : 0);
         i = 31 * i + (this.ambient ? 1 : 0);
         return i;
     }
@@ -226,6 +221,7 @@ implements Comparable<StatusEffectInstance> {
         }
     }
 
+    @Nullable
     public static StatusEffectInstance fromTag(CompoundTag tag) {
         byte i = tag.getByte("Id");
         StatusEffect statusEffect = StatusEffect.byRawId(i);

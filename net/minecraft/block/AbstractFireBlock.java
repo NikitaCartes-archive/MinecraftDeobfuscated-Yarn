@@ -142,7 +142,7 @@ extends Block {
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        if (AbstractFireBlock.method_30366(world) && (optional = AreaHelper.method_30485(world, pos, Direction.Axis.X)).isPresent()) {
+        if (AbstractFireBlock.isOverworldOrNether(world) && (optional = AreaHelper.method_30485(world, pos, Direction.Axis.X)).isPresent()) {
             optional.get().createPortal();
             return;
         }
@@ -151,7 +151,7 @@ extends Block {
         }
     }
 
-    private static boolean method_30366(World world) {
+    private static boolean isOverworldOrNether(World world) {
         return world.getRegistryKey() == World.OVERWORLD || world.getRegistryKey() == World.NETHER;
     }
 
@@ -171,7 +171,7 @@ extends Block {
     }
 
     private static boolean method_30033(World world, BlockPos blockPos, Direction direction) {
-        if (!AbstractFireBlock.method_30366(world)) {
+        if (!AbstractFireBlock.isOverworldOrNether(world)) {
             return false;
         }
         BlockPos.Mutable mutable = blockPos.mutableCopy();

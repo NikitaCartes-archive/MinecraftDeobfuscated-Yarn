@@ -22,12 +22,12 @@ import net.minecraft.util.math.Vec3d;
 @Environment(value=EnvType.CLIENT)
 public class ElytraEntityModel<T extends LivingEntity>
 extends AnimalModel<T> {
-    private final ModelPart field_27412;
-    private final ModelPart field_3365;
+    private final ModelPart rightWing;
+    private final ModelPart leftWing;
 
-    public ElytraEntityModel(ModelPart modelPart) {
-        this.field_3365 = modelPart.getChild("left_wing");
-        this.field_27412 = modelPart.getChild("right_wing");
+    public ElytraEntityModel(ModelPart root) {
+        this.leftWing = root.getChild("left_wing");
+        this.rightWing = root.getChild("right_wing");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -46,7 +46,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.field_3365, this.field_27412);
+        return ImmutableList.of(this.leftWing, this.rightWing);
     }
 
     @Override
@@ -70,24 +70,24 @@ extends AnimalModel<T> {
             m = 3.0f;
             n = 0.08726646f;
         }
-        this.field_3365.pivotY = m;
+        this.leftWing.pivotY = m;
         if (livingEntity instanceof AbstractClientPlayerEntity) {
             AbstractClientPlayerEntity abstractClientPlayerEntity = (AbstractClientPlayerEntity)livingEntity;
             abstractClientPlayerEntity.elytraPitch = (float)((double)abstractClientPlayerEntity.elytraPitch + (double)(k - abstractClientPlayerEntity.elytraPitch) * 0.1);
             abstractClientPlayerEntity.elytraYaw = (float)((double)abstractClientPlayerEntity.elytraYaw + (double)(n - abstractClientPlayerEntity.elytraYaw) * 0.1);
             abstractClientPlayerEntity.elytraRoll = (float)((double)abstractClientPlayerEntity.elytraRoll + (double)(l - abstractClientPlayerEntity.elytraRoll) * 0.1);
-            this.field_3365.pitch = abstractClientPlayerEntity.elytraPitch;
-            this.field_3365.yaw = abstractClientPlayerEntity.elytraYaw;
-            this.field_3365.roll = abstractClientPlayerEntity.elytraRoll;
+            this.leftWing.pitch = abstractClientPlayerEntity.elytraPitch;
+            this.leftWing.yaw = abstractClientPlayerEntity.elytraYaw;
+            this.leftWing.roll = abstractClientPlayerEntity.elytraRoll;
         } else {
-            this.field_3365.pitch = k;
-            this.field_3365.roll = l;
-            this.field_3365.yaw = n;
+            this.leftWing.pitch = k;
+            this.leftWing.roll = l;
+            this.leftWing.yaw = n;
         }
-        this.field_27412.yaw = -this.field_3365.yaw;
-        this.field_27412.pivotY = this.field_3365.pivotY;
-        this.field_27412.pitch = this.field_3365.pitch;
-        this.field_27412.roll = -this.field_3365.roll;
+        this.rightWing.yaw = -this.leftWing.yaw;
+        this.rightWing.pivotY = this.leftWing.pivotY;
+        this.rightWing.pitch = this.leftWing.pitch;
+        this.rightWing.roll = -this.leftWing.roll;
     }
 }
 

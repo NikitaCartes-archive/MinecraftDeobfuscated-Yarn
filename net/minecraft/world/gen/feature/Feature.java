@@ -39,6 +39,8 @@ import net.minecraft.world.gen.feature.DeltaFeature;
 import net.minecraft.world.gen.feature.DeltaFeatureConfig;
 import net.minecraft.world.gen.feature.DesertWellFeature;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
+import net.minecraft.world.gen.feature.DripstoneClusterFeature;
+import net.minecraft.world.gen.feature.DripstoneClusterFeatureConfig;
 import net.minecraft.world.gen.feature.DungeonFeature;
 import net.minecraft.world.gen.feature.EmeraldOreFeature;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
@@ -67,6 +69,8 @@ import net.minecraft.world.gen.feature.IceSpikeFeature;
 import net.minecraft.world.gen.feature.IcebergFeature;
 import net.minecraft.world.gen.feature.KelpFeature;
 import net.minecraft.world.gen.feature.LakeFeature;
+import net.minecraft.world.gen.feature.LargeDripstoneFeature;
+import net.minecraft.world.gen.feature.LargeDripstoneFeatureConfig;
 import net.minecraft.world.gen.feature.NetherForestVegetationFeature;
 import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeature;
 import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
@@ -87,6 +91,8 @@ import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 import net.minecraft.world.gen.feature.SimpleRandomFeature;
 import net.minecraft.world.gen.feature.SimpleRandomFeatureConfig;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
+import net.minecraft.world.gen.feature.SmallDripstoneFeature;
+import net.minecraft.world.gen.feature.SmallDripstoneFeatureConfig;
 import net.minecraft.world.gen.feature.SpringFeature;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
 import net.minecraft.world.gen.feature.TreeFeature;
@@ -151,6 +157,9 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<RandomBooleanFeatureConfig> RANDOM_BOOLEAN_SELECTOR = Feature.register("random_boolean_selector", new RandomBooleanFeature(RandomBooleanFeatureConfig.CODEC));
     public static final Feature<DecoratedFeatureConfig> DECORATED = Feature.register("decorated", new DecoratedFeature(DecoratedFeatureConfig.CODEC));
     public static final Feature<GeodeFeatureConfig> GEODE = Feature.register("geode", new GeodeFeature(GeodeFeatureConfig.CODEC));
+    public static final Feature<DripstoneClusterFeatureConfig> DRIPSTONE_CLUSTER = Feature.register("dripstone_cluster", new DripstoneClusterFeature(DripstoneClusterFeatureConfig.CODEC));
+    public static final Feature<LargeDripstoneFeatureConfig> LARGE_DRIPSTONE = Feature.register("large_dripstone", new LargeDripstoneFeature(LargeDripstoneFeatureConfig.CODEC));
+    public static final Feature<SmallDripstoneFeatureConfig> SMALL_DRIPSTONE = Feature.register("small_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC));
     private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
     private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {

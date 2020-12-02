@@ -51,13 +51,13 @@ implements Hopper {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(compoundTag)) {
-            Inventories.fromTag(compoundTag, this.inventory);
+        if (!this.deserializeLootTable(tag)) {
+            Inventories.fromTag(tag, this.inventory);
         }
-        this.transferCooldown = compoundTag.getInt("TransferCooldown");
+        this.transferCooldown = tag.getInt("TransferCooldown");
     }
 
     @Override

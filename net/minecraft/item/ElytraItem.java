@@ -51,7 +51,7 @@ implements Wearable {
 
     @Override
     @Nullable
-    public SoundEvent method_31570() {
+    public SoundEvent getEquipSound() {
         return SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA;
     }
 }

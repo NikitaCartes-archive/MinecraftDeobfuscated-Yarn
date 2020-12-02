@@ -30,7 +30,7 @@ import org.apache.logging.log4j.Logger;
 public class CompassItem
 extends Item
 implements Vanishable {
-    private static final Logger field_24670 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     public CompassItem(Item.Settings settings) {
         super(settings);
@@ -78,7 +78,7 @@ implements Vanishable {
             ItemStack itemStack = context.getStack();
             boolean bl2 = bl = !playerEntity.getAbilities().creativeMode && itemStack.getCount() == 1;
             if (bl) {
-                this.method_27315(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
+                this.writeToTag(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
             } else {
                 ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
                 CompoundTag compoundTag = itemStack.hasTag() ? itemStack.getTag().copy() : new CompoundTag();
@@ -86,7 +86,7 @@ implements Vanishable {
                 if (!playerEntity.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
-                this.method_27315(world.getRegistryKey(), blockPos, compoundTag);
+                this.writeToTag(world.getRegistryKey(), blockPos, compoundTag);
                 if (!playerEntity.getInventory().insertStack(itemStack2)) {
                     playerEntity.dropItem(itemStack2, false);
                 }
@@ -96,10 +96,10 @@ implements Vanishable {
         return super.useOnBlock(context);
     }
 
-    private void method_27315(RegistryKey<World> registryKey, BlockPos blockPos, CompoundTag compoundTag) {
-        compoundTag.put("LodestonePos", NbtHelper.fromBlockPos(blockPos));
-        World.CODEC.encodeStart(NbtOps.INSTANCE, registryKey).resultOrPartial(field_24670::error).ifPresent(tag -> compoundTag.put("LodestoneDimension", (Tag)tag));
-        compoundTag.putBoolean("LodestoneTracked", true);
+    private void writeToTag(RegistryKey<World> worldKey, BlockPos pos, CompoundTag tag2) {
+        tag2.put("LodestonePos", NbtHelper.fromBlockPos(pos));
+        World.CODEC.encodeStart(NbtOps.INSTANCE, worldKey).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("LodestoneDimension", (Tag)tag));
+        tag2.putBoolean("LodestoneTracked", true);
     }
 
     @Override

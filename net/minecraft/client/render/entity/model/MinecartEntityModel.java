@@ -17,12 +17,12 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class MinecartEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27452;
-    private final ModelPart field_27453;
+    private final ModelPart root;
+    private final ModelPart contents;
 
-    public MinecartEntityModel(ModelPart modelPart) {
-        this.field_27452 = modelPart;
-        this.field_27453 = modelPart.getChild("contents");
+    public MinecartEntityModel(ModelPart root) {
+        this.root = root;
+        this.contents = root.getChild("contents");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -43,12 +43,12 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.field_27453.pivotY = 4.0f - animationProgress;
+        this.contents.pivotY = 4.0f - animationProgress;
     }
 
     @Override
     public ModelPart getPart() {
-        return this.field_27452;
+        return this.root;
     }
 }
 

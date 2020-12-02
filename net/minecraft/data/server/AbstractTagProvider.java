@@ -17,13 +17,11 @@ import java.nio.file.attribute.FileAttribute;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.tag.SetTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -49,11 +47,8 @@ implements DataProvider {
     public void run(DataCache cache) {
         this.tagBuilders.clear();
         this.configure();
-        SetTag tag = SetTag.empty();
-        Function<Identifier, Tag> function = identifier -> this.tagBuilders.containsKey(identifier) ? tag : null;
-        Function<Identifier, Object> function2 = identifier -> this.registry.getOrEmpty((Identifier)identifier).orElse(null);
         this.tagBuilders.forEach((identifier, builder) -> {
-            List list = builder.streamUnresolvedEntries(function, function2).collect(Collectors.toList());
+            List list = builder.streamEntries().filter(trackedEntry -> !trackedEntry.getEntry().method_32832(this.registry::containsId, this.tagBuilders::containsKey)).collect(Collectors.toList());
             if (!list.isEmpty()) {
                 throw new IllegalArgumentException(String.format("Couldn't define tag %s as it is missing following references: %s", identifier, list.stream().map(Objects::toString).collect(Collectors.joining(","))));
             }

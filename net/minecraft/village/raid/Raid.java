@@ -714,9 +714,9 @@ public class Raid {
 
         private static final Status[] VALUES;
 
-        private static Status fromName(String string) {
+        private static Status fromName(String name) {
             for (Status status : VALUES) {
-                if (!string.equalsIgnoreCase(status.name())) continue;
+                if (!name.equalsIgnoreCase(status.name())) continue;
                 return status;
             }
             return ONGOING;

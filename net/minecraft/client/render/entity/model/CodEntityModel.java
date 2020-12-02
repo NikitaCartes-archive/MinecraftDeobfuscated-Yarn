@@ -18,12 +18,12 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class CodEntityModel<T extends Entity>
 extends SinglePartEntityModel<T> {
-    private final ModelPart field_27405;
-    private final ModelPart tail;
+    private final ModelPart root;
+    private final ModelPart tailFin;
 
-    public CodEntityModel(ModelPart modelPart) {
-        this.field_27405 = modelPart;
-        this.tail = modelPart.getChild("tail_fin");
+    public CodEntityModel(ModelPart root) {
+        this.root = root;
+        this.tailFin = root.getChild("tail_fin");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -42,7 +42,7 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27405;
+        return this.root;
     }
 
     @Override
@@ -51,7 +51,7 @@ extends SinglePartEntityModel<T> {
         if (!((Entity)entity).isTouchingWater()) {
             f = 1.5f;
         }
-        this.tail.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
+        this.tailFin.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
     }
 }
 

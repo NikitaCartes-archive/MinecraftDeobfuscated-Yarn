@@ -170,7 +170,7 @@ implements NamedScreenHandlerFactory {
             }
         }
         if (beaconBlockEntity.field_19179 >= l) {
-            beaconBlockEntity.field_19179 = world.getBottomHeightLimit() - 1;
+            beaconBlockEntity.field_19179 = world.getSectionCount() - 1;
             boolean bl = m > 0;
             beaconBlockEntity.beamSegments = beaconBlockEntity.field_19178;
             if (!world.isClient) {
@@ -192,7 +192,7 @@ implements NamedScreenHandlerFactory {
         int k;
         int i = 0;
         int j = 1;
-        while (j <= 4 && (k = y - j) >= world.getBottomHeightLimit()) {
+        while (j <= 4 && (k = y - j) >= world.getSectionCount()) {
             boolean bl = true;
             block1: for (int l = x - j; l <= x + j && bl; ++l) {
                 for (int m = z - j; m <= z + j; ++m) {
@@ -223,7 +223,7 @@ implements NamedScreenHandlerFactory {
             j = 1;
         }
         int k = (9 + i * 2) * 20;
-        Box box = new Box(blockPos).expand(d).stretch(0.0, world.getTopHeightLimit(), 0.0);
+        Box box = new Box(blockPos).expand(d).stretch(0.0, world.getBottomSectionLimit(), 0.0);
         List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
         for (PlayerEntity playerEntity : list) {
             playerEntity.addStatusEffect(new StatusEffectInstance(statusEffect, k, j, true, true));
@@ -268,14 +268,14 @@ implements NamedScreenHandlerFactory {
     }
 
     @Override
-    public void fromTag(CompoundTag compoundTag) {
-        super.fromTag(compoundTag);
-        this.primary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Primary"));
-        this.secondary = BeaconBlockEntity.getPotionEffectById(compoundTag.getInt("Secondary"));
-        if (compoundTag.contains("CustomName", 8)) {
-            this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+    public void fromTag(CompoundTag tag) {
+        super.fromTag(tag);
+        this.primary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Primary"));
+        this.secondary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Secondary"));
+        if (tag.contains("CustomName", 8)) {
+            this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
-        this.lock = ContainerLock.fromTag(compoundTag);
+        this.lock = ContainerLock.fromTag(tag);
     }
 
     @Override
@@ -312,7 +312,7 @@ implements NamedScreenHandlerFactory {
     @Override
     public void setWorld(World world) {
         super.setWorld(world);
-        this.field_19179 = world.getBottomHeightLimit() - 1;
+        this.field_19179 = world.getSectionCount() - 1;
     }
 
     public static class BeamSegment {

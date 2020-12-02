@@ -19,7 +19,7 @@ extends Decorator<NopeDecoratorConfig> {
 
     @Override
     public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
-        int i = random.nextInt(blockPos.getY() + 32);
+        int i = random.nextInt(Math.max(blockPos.getY(), 0) + 32);
         return Stream.of(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
     }
 }

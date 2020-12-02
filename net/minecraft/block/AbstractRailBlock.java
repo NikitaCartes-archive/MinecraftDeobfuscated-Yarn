@@ -31,7 +31,7 @@ extends Block
 implements Waterloggable {
     protected static final VoxelShape STRAIGHT_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
     protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-    public static final BooleanProperty field_27096 = Properties.WATERLOGGED;
+    public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     private final boolean allowCurves;
 
     public static boolean isRail(World world, BlockPos pos) {
@@ -162,14 +162,14 @@ implements Waterloggable {
         BlockState blockState = super.getDefaultState();
         Direction direction = ctx.getPlayerFacing();
         boolean bl2 = direction == Direction.EAST || direction == Direction.WEST;
-        return (BlockState)((BlockState)blockState.with(this.getShapeProperty(), bl2 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH)).with(field_27096, bl);
+        return (BlockState)((BlockState)blockState.with(this.getShapeProperty(), bl2 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH)).with(WATERLOGGED, bl);
     }
 
     public abstract Property<RailShape> getShapeProperty();
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-        if (state.get(field_27096).booleanValue()) {
+        if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
@@ -177,7 +177,7 @@ implements Waterloggable {
 
     @Override
     public FluidState getFluidState(BlockState state) {
-        if (state.get(field_27096).booleanValue()) {
+        if (state.get(WATERLOGGED).booleanValue()) {
             return Fluids.WATER.getStill(false);
         }
         return super.getFluidState(state);

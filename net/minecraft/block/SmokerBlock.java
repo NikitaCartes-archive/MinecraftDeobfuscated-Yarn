@@ -37,7 +37,7 @@ extends AbstractFurnaceBlock {
     @Override
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
-        return SmokerBlock.method_31617(world, type, BlockEntityType.SMOKER);
+        return SmokerBlock.checkType(world, type, BlockEntityType.SMOKER);
     }
 
     @Override

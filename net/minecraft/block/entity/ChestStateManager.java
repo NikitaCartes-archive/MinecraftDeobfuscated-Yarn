@@ -5,10 +5,12 @@ package net.minecraft.block.entity;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.class_5575;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 /**
  * Handles the viewer count for chest-like block entities.
@@ -36,21 +38,23 @@ public abstract class ChestStateManager {
      */
     protected abstract boolean isPlayerViewing(PlayerEntity var1);
 
-    public void openChest(World world, BlockPos pos, BlockState state) {
+    public void openChest(PlayerEntity playerEntity, World world, BlockPos blockPos, BlockState blockState) {
         int i;
         if ((i = this.viewerCount++) == 0) {
-            this.onChestOpened(world, pos, state);
-            ChestStateManager.scheduleBlockTick(world, pos, state);
+            this.onChestOpened(world, blockPos, blockState);
+            world.emitGameEvent((Entity)playerEntity, GameEvent.CONTAINER_OPEN, blockPos);
+            ChestStateManager.scheduleBlockTick(world, blockPos, blockState);
         }
-        this.onInteracted(world, pos, state, i, this.viewerCount);
+        this.onInteracted(world, blockPos, blockState, i, this.viewerCount);
     }
 
-    public void closeChest(World world, BlockPos pos, BlockState state) {
+    public void closeChest(PlayerEntity playerEntity, World world, BlockPos blockPos, BlockState blockState) {
         int i = this.viewerCount--;
         if (this.viewerCount == 0) {
-            this.onChestClosed(world, pos, state);
+            this.onChestClosed(world, blockPos, blockState);
+            world.emitGameEvent((Entity)playerEntity, GameEvent.CONTAINER_CLOSE, blockPos);
         }
-        this.onInteracted(world, pos, state, i, this.viewerCount);
+        this.onInteracted(world, blockPos, blockState, i, this.viewerCount);
     }
 
     private int getInRangeViewerCount(World world, BlockPos pos) {
@@ -71,8 +75,10 @@ public abstract class ChestStateManager {
             boolean bl3 = bl2 = j != 0;
             if (bl && !bl2) {
                 this.onChestOpened(world, pos, state);
+                world.emitGameEvent(null, GameEvent.CONTAINER_OPEN, pos);
             } else if (!bl) {
                 this.onChestClosed(world, pos, state);
+                world.emitGameEvent(null, GameEvent.CONTAINER_CLOSE, pos);
             }
             this.viewerCount = i;
         }

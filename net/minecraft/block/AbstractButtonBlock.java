@@ -29,6 +29,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractButtonBlock
@@ -101,6 +102,7 @@ extends WallMountedBlock {
         }
         this.powerOn(state, world, pos);
         this.playClickSound(player, world, pos, true);
+        world.emitGameEvent((Entity)player, GameEvent.BLOCK_PRESS, pos);
         return ActionResult.success(world.isClient);
     }
 
@@ -156,6 +158,7 @@ extends WallMountedBlock {
             world.setBlockState(pos, (BlockState)state.with(POWERED, false), 3);
             this.updateNeighbors(state, world, pos);
             this.playClickSound(null, world, pos, false);
+            world.emitGameEvent(GameEvent.BLOCK_UNPRESS, pos);
         }
     }
 
@@ -175,6 +178,7 @@ extends WallMountedBlock {
             world.setBlockState(pos, (BlockState)state.with(POWERED, bl), 3);
             this.updateNeighbors(state, world, pos);
             this.playClickSound(null, world, pos, bl);
+            world.emitGameEvent((Entity)list.stream().findFirst().orElse(null), bl ? GameEvent.BLOCK_PRESS : GameEvent.BLOCK_UNPRESS, pos);
         }
         if (bl) {
             world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getPressTicks());

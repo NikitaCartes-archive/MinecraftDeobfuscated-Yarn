@@ -4,26 +4,27 @@
 package net.minecraft.world;
 
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 
 public interface HeightLimitView {
-    public int getSectionCount();
-
     public int getBottomSectionLimit();
 
-    default public int getTopSectionLimit() {
-        return this.getBottomSectionLimit() + this.getSectionCount();
-    }
-
-    default public int getHeight() {
-        return this.getSectionCount() * 16;
-    }
-
-    default public int getBottomHeightLimit() {
-        return this.getBottomSectionLimit() * 16;
-    }
+    public int getSectionCount();
 
     default public int getTopHeightLimit() {
-        return this.getBottomHeightLimit() + this.getHeight();
+        return this.getSectionCount() + this.getBottomSectionLimit();
+    }
+
+    default public int method_32890() {
+        return this.getTopSectionLimit() - this.method_32891();
+    }
+
+    default public int method_32891() {
+        return ChunkSectionPos.getSectionCoord(this.getSectionCount());
+    }
+
+    default public int getTopSectionLimit() {
+        return ChunkSectionPos.getSectionCoord(this.getTopHeightLimit() - 1) + 1;
     }
 
     default public boolean isOutOfHeightLimit(BlockPos pos) {
@@ -31,19 +32,19 @@ public interface HeightLimitView {
     }
 
     default public boolean isOutOfHeightLimit(int y) {
-        return y < this.getBottomHeightLimit() || y >= this.getTopHeightLimit();
+        return y < this.getSectionCount() || y >= this.getTopHeightLimit();
     }
 
     default public int getSectionIndex(int y) {
-        return this.getSectionIndexFromSection(y >> 4);
+        return this.getSectionIndexFromSection(ChunkSectionPos.getSectionCoord(y));
     }
 
     default public int getSectionIndexFromSection(int section) {
-        return section - this.getBottomSectionLimit();
+        return section - this.method_32891();
     }
 
     default public int getSection(int sectionIndex) {
-        return sectionIndex + this.getBottomSectionLimit();
+        return sectionIndex + this.method_32891();
     }
 }
 

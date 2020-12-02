@@ -1,0 +1,158 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft.world.gen.feature.util;
+
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.function.Predicate;
+import net.minecraft.block.BlockState;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.world.TestableWorld;
+
+public abstract class DripstoneColumn {
+    public static Bounded createBounded(int floor, int ceiling) {
+        return new Bounded(floor, ceiling);
+    }
+
+    public static DripstoneColumn createHalfWithCeiling(int ceiling) {
+        return new Half(ceiling, false);
+    }
+
+    public static DripstoneColumn createHalfWithFloor(int floor) {
+        return new Half(floor, true);
+    }
+
+    public static DripstoneColumn createEmpty() {
+        return Empty.INSTANCE;
+    }
+
+    public static DripstoneColumn create(OptionalInt ceilingHeight, OptionalInt floorHeight) {
+        if (ceilingHeight.isPresent() && floorHeight.isPresent()) {
+            return DripstoneColumn.createBounded(ceilingHeight.getAsInt(), floorHeight.getAsInt());
+        }
+        if (ceilingHeight.isPresent()) {
+            return DripstoneColumn.createHalfWithFloor(ceilingHeight.getAsInt());
+        }
+        if (floorHeight.isPresent()) {
+            return DripstoneColumn.createHalfWithCeiling(floorHeight.getAsInt());
+        }
+        return DripstoneColumn.createEmpty();
+    }
+
+    public abstract OptionalInt getCeilingHeight();
+
+    public abstract OptionalInt getFloorHeight();
+
+    public DripstoneColumn withFloor(OptionalInt floor) {
+        return DripstoneColumn.create(floor, this.getCeilingHeight());
+    }
+
+    public static Optional<DripstoneColumn> create(TestableWorld world, BlockPos pos, int height, Predicate<BlockState> canGenerate, Predicate<BlockState> canReplace) {
+        BlockPos.Mutable mutable = pos.mutableCopy();
+        if (!world.testBlockState(pos, canGenerate)) {
+            return Optional.empty();
+        }
+        int i = pos.getY();
+        mutable.setY(i);
+        for (int j = 1; j < height && world.testBlockState(mutable, canGenerate); ++j) {
+            mutable.move(Direction.UP);
+        }
+        OptionalInt optionalInt = world.testBlockState(mutable, canReplace) ? OptionalInt.of(mutable.getY()) : OptionalInt.empty();
+        mutable.setY(i);
+        for (int k = 1; k < height && world.testBlockState(mutable, canGenerate); ++k) {
+            mutable.move(Direction.DOWN);
+        }
+        OptionalInt optionalInt2 = world.testBlockState(mutable, canReplace) ? OptionalInt.of(mutable.getY()) : OptionalInt.empty();
+        return Optional.of(DripstoneColumn.create(optionalInt2, optionalInt));
+    }
+
+    public static final class Half
+    extends DripstoneColumn {
+        private final int height;
+        private final boolean floor;
+
+        public Half(int height, boolean floor) {
+            this.height = height;
+            this.floor = floor;
+        }
+
+        @Override
+        public OptionalInt getCeilingHeight() {
+            return this.floor ? OptionalInt.empty() : OptionalInt.of(this.height);
+        }
+
+        @Override
+        public OptionalInt getFloorHeight() {
+            return this.floor ? OptionalInt.of(this.height) : OptionalInt.empty();
+        }
+
+        public String toString() {
+            return this.floor ? "C(" + this.height + "-)" : "C(-" + this.height + ")";
+        }
+    }
+
+    public static final class Empty
+    extends DripstoneColumn {
+        private static final Empty INSTANCE = new Empty();
+
+        private Empty() {
+        }
+
+        @Override
+        public OptionalInt getCeilingHeight() {
+            return OptionalInt.empty();
+        }
+
+        @Override
+        public OptionalInt getFloorHeight() {
+            return OptionalInt.empty();
+        }
+
+        public String toString() {
+            return "C(-)";
+        }
+    }
+
+    public static final class Bounded
+    extends DripstoneColumn {
+        private final int floor;
+        private final int ceiling;
+
+        protected Bounded(int floor, int ceiling) {
+            this.floor = floor;
+            this.ceiling = ceiling;
+            if (this.getHeight() < 0) {
+                throw new IllegalArgumentException("Column of negative height: " + this);
+            }
+        }
+
+        @Override
+        public OptionalInt getCeilingHeight() {
+            return OptionalInt.of(this.ceiling);
+        }
+
+        @Override
+        public OptionalInt getFloorHeight() {
+            return OptionalInt.of(this.floor);
+        }
+
+        public int getCeiling() {
+            return this.ceiling;
+        }
+
+        public int getFloor() {
+            return this.floor;
+        }
+
+        public int getHeight() {
+            return this.ceiling - this.floor - 1;
+        }
+
+        public String toString() {
+            return "C(" + this.ceiling + "-" + this.floor + ')';
+        }
+    }
+}
+

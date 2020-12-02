@@ -17,6 +17,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockStateRaycastContext;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.RaycastContext;
 import org.jetbrains.annotations.Nullable;
@@ -41,12 +42,23 @@ extends HeightLimitView {
         return 15;
     }
 
-    default public Stream<BlockState> method_29546(Box box) {
+    default public Stream<BlockState> getStatesInBox(Box box) {
         return BlockPos.stream(box).map(this::getBlockState);
     }
 
+    default public BlockHitResult raycast(BlockStateRaycastContext blockStateRaycastContext2) {
+        return BlockView.raycast(blockStateRaycastContext2.getStart(), blockStateRaycastContext2.getEnd(), blockStateRaycastContext2, (blockStateRaycastContext, blockPos) -> {
+            BlockState blockState = this.getBlockState((BlockPos)blockPos);
+            Vec3d vec3d = blockStateRaycastContext.getStart().subtract(blockStateRaycastContext.getEnd());
+            return blockStateRaycastContext.getState().test(blockState) ? new BlockHitResult(blockStateRaycastContext.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContext.getEnd()), false) : null;
+        }, blockStateRaycastContext -> {
+            Vec3d vec3d = blockStateRaycastContext.getStart().subtract(blockStateRaycastContext.getEnd());
+            return BlockHitResult.createMissed(blockStateRaycastContext.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContext.getEnd()));
+        });
+    }
+
     default public BlockHitResult raycast(RaycastContext context) {
-        return BlockView.raycast(context, (raycastContext, blockPos) -> {
+        return BlockView.raycast(context.getStart(), context.getEnd(), context, (raycastContext, blockPos) -> {
             BlockState blockState = this.getBlockState((BlockPos)blockPos);
             FluidState fluidState = this.getFluidState((BlockPos)blockPos);
             Vec3d vec3d = raycastContext.getStart();
@@ -92,13 +104,11 @@ extends HeightLimitView {
         });
     }
 
-    public static <T> T raycast(RaycastContext raycastContext, BiFunction<RaycastContext, BlockPos, T> context, Function<RaycastContext, T> blockRaycaster) {
+    public static <T, C> T raycast(Vec3d vec3d, Vec3d vec3d2, C object, BiFunction<C, BlockPos, T> biFunction, Function<C, T> function) {
         int l;
         int k;
-        Vec3d vec3d2;
-        Vec3d vec3d = raycastContext.getStart();
-        if (vec3d.equals(vec3d2 = raycastContext.getEnd())) {
-            return blockRaycaster.apply(raycastContext);
+        if (vec3d.equals(vec3d2)) {
+            return function.apply(object);
         }
         double d = MathHelper.lerp(-1.0E-7, vec3d2.x, vec3d.x);
         double e = MathHelper.lerp(-1.0E-7, vec3d2.y, vec3d.y);
@@ -108,9 +118,9 @@ extends HeightLimitView {
         double i = MathHelper.lerp(-1.0E-7, vec3d.z, vec3d2.z);
         int j = MathHelper.floor(g);
         BlockPos.Mutable mutable = new BlockPos.Mutable(j, k = MathHelper.floor(h), l = MathHelper.floor(i));
-        T object = context.apply(raycastContext, mutable);
-        if (object != null) {
-            return object;
+        T object2 = biFunction.apply(object, mutable);
+        if (object2 != null) {
+            return object2;
         }
         double m = d - g;
         double n = e - h;
@@ -125,7 +135,7 @@ extends HeightLimitView {
         double w = t * (q > 0 ? 1.0 - MathHelper.fractionalPart(h) : MathHelper.fractionalPart(h));
         double x = u * (r > 0 ? 1.0 - MathHelper.fractionalPart(i) : MathHelper.fractionalPart(i));
         while (v <= 1.0 || w <= 1.0 || x <= 1.0) {
-            T object2;
+            T object3;
             if (v < w) {
                 if (v < x) {
                     j += p;
@@ -141,10 +151,10 @@ extends HeightLimitView {
                 l += r;
                 x += u;
             }
-            if ((object2 = context.apply(raycastContext, mutable.set(j, k, l))) == null) continue;
-            return object2;
+            if ((object3 = biFunction.apply(object, mutable.set(j, k, l))) == null) continue;
+            return object3;
         }
-        return blockRaycaster.apply(raycastContext);
+        return function.apply(object);
     }
 }
 

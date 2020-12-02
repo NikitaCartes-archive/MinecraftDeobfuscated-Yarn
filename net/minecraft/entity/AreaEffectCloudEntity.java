@@ -8,7 +8,6 @@ import com.google.common.collect.Maps;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -57,7 +56,9 @@ extends Entity {
     private int durationOnUse;
     private float radiusOnUse;
     private float radiusGrowth;
+    @Nullable
     private LivingEntity owner;
+    @Nullable
     private UUID ownerUuid;
 
     public AreaEffectCloudEntity(EntityType<? extends AreaEffectCloudEntity> entityType, World world) {
@@ -155,20 +156,20 @@ extends Entity {
 
     @Override
     public void tick() {
-        block23: {
+        block22: {
             boolean bl2;
             float f;
             boolean bl;
-            block21: {
+            block20: {
                 ParticleEffect particleEffect;
-                block22: {
+                block21: {
                     super.tick();
                     bl = this.isWaiting();
                     f = this.getRadius();
-                    if (!this.world.isClient) break block21;
+                    if (!this.world.isClient) break block20;
                     particleEffect = this.getParticleType();
-                    if (!bl) break block22;
-                    if (!this.random.nextBoolean()) break block23;
+                    if (!bl) break block21;
+                    if (!this.random.nextBoolean()) break block22;
                     for (int i = 0; i < 2; ++i) {
                         float g = this.random.nextFloat() * ((float)Math.PI * 2);
                         float h = MathHelper.sqrt(this.random.nextFloat()) * 0.2f;
@@ -184,7 +185,7 @@ extends Entity {
                         }
                         this.world.addImportantParticle(particleEffect, this.getX() + (double)j, this.getY(), this.getZ() + (double)k, 0.0, 0.0, 0.0);
                     }
-                    break block23;
+                    break block22;
                 }
                 float p = (float)Math.PI * f * f;
                 int q = 0;
@@ -204,7 +205,7 @@ extends Entity {
                     }
                     ++q;
                 }
-                break block23;
+                break block22;
             }
             if (this.age >= this.waitTime + this.duration) {
                 this.discard();
@@ -225,12 +226,7 @@ extends Entity {
                 this.setRadius(f);
             }
             if (this.age % 5 == 0) {
-                Iterator<Map.Entry<Entity, Integer>> iterator = this.affectedEntities.entrySet().iterator();
-                while (iterator.hasNext()) {
-                    Map.Entry<Entity, Integer> entry = iterator.next();
-                    if (this.age < entry.getValue()) continue;
-                    iterator.remove();
-                }
+                this.affectedEntities.entrySet().removeIf(entry -> this.age >= (Integer)entry.getValue());
                 ArrayList<StatusEffectInstance> list = Lists.newArrayList();
                 for (StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
                     list.add(new StatusEffectInstance(statusEffectInstance.getEffectType(), statusEffectInstance.getDuration() / 4, statusEffectInstance.getAmplifier(), statusEffectInstance.isAmbient(), statusEffectInstance.shouldShowParticles()));
@@ -353,7 +349,7 @@ extends Entity {
         if (this.customColor) {
             tag.putInt("Color", this.getColor());
         }
-        if (this.potion != Potions.EMPTY && this.potion != null) {
+        if (this.potion != Potions.EMPTY) {
             tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
         }
         if (!this.effects.isEmpty()) {

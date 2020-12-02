@@ -141,7 +141,7 @@ extends PersistentProjectileEntity {
         }
         this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
         float g = 1.0f;
-        if (this.world instanceof ServerWorld && this.world.isThundering() && this.method_31551() && this.world.isSkyVisible(blockPos = entity.getBlockPos())) {
+        if (this.world instanceof ServerWorld && this.world.isThundering() && this.hasChanneling() && this.world.isSkyVisible(blockPos = entity.getBlockPos())) {
             LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);
             lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
             lightningEntity.setChanneler(entity2 instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity2 : null);
@@ -152,7 +152,7 @@ extends PersistentProjectileEntity {
         this.playSound(soundEvent, g, 1.0f);
     }
 
-    public boolean method_31551() {
+    public boolean hasChanneling() {
         return EnchantmentHelper.hasChanneling(this.tridentStack);
     }
 

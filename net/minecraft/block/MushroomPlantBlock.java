@@ -24,11 +24,11 @@ public class MushroomPlantBlock
 extends PlantBlock
 implements Fertilizable {
     protected static final VoxelShape SHAPE = Block.createCuboidShape(5.0, 0.0, 5.0, 11.0, 6.0, 11.0);
-    private final Supplier<ConfiguredFeature<?, ?>> field_27194;
+    private final Supplier<ConfiguredFeature<?, ?>> feature;
 
-    public MushroomPlantBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<?, ?>> supplier) {
+    public MushroomPlantBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<?, ?>> feature) {
         super(settings);
-        this.field_27194 = supplier;
+        this.feature = feature;
     }
 
     @Override
@@ -73,12 +73,12 @@ implements Fertilizable {
         return world.getBaseLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);
     }
 
-    public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos pos, BlockState state, Random random) {
-        serverWorld.removeBlock(pos, false);
-        if (this.field_27194.get().generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
+    public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
+        world.removeBlock(pos, false);
+        if (this.feature.get().generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
             return true;
         }
-        serverWorld.setBlockState(pos, state, 3);
+        world.setBlockState(pos, state, 3);
         return false;
     }
 

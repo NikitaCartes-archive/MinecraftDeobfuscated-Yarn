@@ -31,6 +31,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class StorageMinecartEntity
@@ -172,6 +173,7 @@ NamedScreenHandlerFactory {
     public ActionResult interact(PlayerEntity player, Hand hand) {
         player.openHandledScreen(this);
         if (!player.world.isClient) {
+            this.method_32875(player, GameEvent.CONTAINER_OPEN);
             PiglinBrain.onGuardedBlockInteracted(player, true);
             return ActionResult.CONSUME;
         }

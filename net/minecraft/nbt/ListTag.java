@@ -141,9 +141,9 @@ extends AbstractListTag<Tag> {
         return 0;
     }
 
-    public int getInt(int i) {
+    public int getInt(int index) {
         Tag tag;
-        if (i >= 0 && i < this.value.size() && (tag = this.value.get(i)).getType() == 3) {
+        if (index >= 0 && index < this.value.size() && (tag = this.value.get(index)).getType() == 3) {
             return ((IntTag)tag).getInt();
         }
         return 0;
@@ -296,8 +296,8 @@ extends AbstractListTag<Tag> {
     }
 
     @Override
-    public /* synthetic */ Object get(int i) {
-        return this.get(i);
+    public /* synthetic */ Object get(int index) {
+        return this.get(index);
     }
 }
 

@@ -26,10 +26,10 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.chunk.VerticalBlockSample;
 import net.minecraft.world.gen.feature.RuinedPortalFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -56,7 +56,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         int l;
         int k;
         if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
-            k = bl ? MathHelper.method_32751(random, 32, 100) : (random.nextFloat() < 0.5f ? MathHelper.method_32751(random, 27, 29) : MathHelper.method_32751(random, 29, 100));
+            k = bl ? MathHelper.nextBetween(random, 32, 100) : (random.nextFloat() < 0.5f ? MathHelper.nextBetween(random, 27, 29) : MathHelper.nextBetween(random, 29, 100));
         } else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN) {
             l = i - j;
             k = RuinedPortalFeature.choosePlacementHeight(random, 70, l);
@@ -64,7 +64,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             l = i - j;
             k = RuinedPortalFeature.choosePlacementHeight(random, 15, l);
         } else {
-            k = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED ? i - j + MathHelper.method_32751(random, 2, 8) : i;
+            k = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED ? i - j + MathHelper.nextBetween(random, 2, 8) : i;
         }
         ImmutableList<BlockPos> list = ImmutableList.of(new BlockPos(blockBox.minX, 0, blockBox.minZ), new BlockPos(blockBox.maxX, 0, blockBox.minZ), new BlockPos(blockBox.minX, 0, blockBox.maxZ), new BlockPos(blockBox.maxX, 0, blockBox.maxZ));
         List list2 = list.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ())).collect(Collectors.toList());
@@ -73,8 +73,8 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         block0: for (m = k; m > 15; --m) {
             int n = 0;
             mutable.set(0, m, 0);
-            for (BlockView blockView : list2) {
-                BlockState blockState = blockView.getBlockState(mutable);
+            for (VerticalBlockSample verticalBlockSample : list2) {
+                BlockState blockState = verticalBlockSample.method_32892(mutable);
                 if (blockState == null || !type.getBlockPredicate().test(blockState) || ++n != 3) continue;
                 break block0;
             }
@@ -84,7 +84,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
 
     private static int choosePlacementHeight(Random random, int min, int max) {
         if (min < max) {
-            return MathHelper.method_32751(random, min, max);
+            return MathHelper.nextBetween(random, min, max);
         }
         return max;
     }

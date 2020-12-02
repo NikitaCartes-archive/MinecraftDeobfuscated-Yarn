@@ -129,13 +129,13 @@ implements Wearable {
         return this.protection;
     }
 
-    public float method_26353() {
+    public float getToughness() {
         return this.toughness;
     }
 
     @Override
     @Nullable
-    public SoundEvent method_31570() {
+    public SoundEvent getEquipSound() {
         return this.getMaterial().getEquipSound();
     }
 }

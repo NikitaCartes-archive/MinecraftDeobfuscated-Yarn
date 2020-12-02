@@ -20,26 +20,26 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ParrotEntityModel
 extends SinglePartEntityModel<ParrotEntity> {
-    private final ModelPart field_27458;
-    private final ModelPart torso;
+    private final ModelPart root;
+    private final ModelPart body;
     private final ModelPart tail;
-    private final ModelPart field_27459;
-    private final ModelPart field_27460;
+    private final ModelPart leftWing;
+    private final ModelPart rightWing;
     private final ModelPart head;
-    private final ModelPart headFeathers;
-    private final ModelPart field_27461;
-    private final ModelPart field_27462;
+    private final ModelPart feather;
+    private final ModelPart leftLeg;
+    private final ModelPart rightLeg;
 
-    public ParrotEntityModel(ModelPart modelPart) {
-        this.field_27458 = modelPart;
-        this.torso = modelPart.getChild("body");
-        this.tail = modelPart.getChild("tail");
-        this.field_27459 = modelPart.getChild("left_wing");
-        this.field_27460 = modelPart.getChild("right_wing");
-        this.head = modelPart.getChild("head");
-        this.headFeathers = this.head.getChild("feather");
-        this.field_27461 = modelPart.getChild("left_leg");
-        this.field_27462 = modelPart.getChild("right_leg");
+    public ParrotEntityModel(ModelPart root) {
+        this.root = root;
+        this.body = root.getChild("body");
+        this.tail = root.getChild("tail");
+        this.leftWing = root.getChild("left_wing");
+        this.rightWing = root.getChild("right_wing");
+        this.head = root.getChild("head");
+        this.feather = this.head.getChild("feather");
+        this.leftLeg = root.getChild("left_leg");
+        this.rightLeg = root.getChild("right_leg");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -62,7 +62,7 @@ extends SinglePartEntityModel<ParrotEntity> {
 
     @Override
     public ModelPart getPart() {
-        return this.field_27458;
+        return this.root;
     }
 
     @Override
@@ -78,7 +78,7 @@ extends SinglePartEntityModel<ParrotEntity> {
     public void poseOnShoulder(MatrixStack matrices, VertexConsumer vertexConsumer, int light, int overlay, float limbAngle, float limbDistance, float headYaw, float headPitch, int danceAngle) {
         this.animateModel(Pose.ON_SHOULDER);
         this.setAngles(Pose.ON_SHOULDER, danceAngle, limbAngle, limbDistance, 0.0f, headYaw, headPitch);
-        this.field_27458.render(matrices, vertexConsumer, light, overlay);
+        this.root.render(matrices, vertexConsumer, light, overlay);
     }
 
     private void setAngles(Pose pose, int danceAngle, float limbAngle, float limbDistance, float age, float headYaw, float headPitch) {
@@ -86,10 +86,10 @@ extends SinglePartEntityModel<ParrotEntity> {
         this.head.yaw = headYaw * ((float)Math.PI / 180);
         this.head.roll = 0.0f;
         this.head.pivotX = 0.0f;
-        this.torso.pivotX = 0.0f;
+        this.body.pivotX = 0.0f;
         this.tail.pivotX = 0.0f;
-        this.field_27460.pivotX = -1.5f;
-        this.field_27459.pivotX = 1.5f;
+        this.rightWing.pivotX = -1.5f;
+        this.leftWing.pivotX = 1.5f;
         switch (pose) {
             case SITTING: {
                 break;
@@ -102,55 +102,55 @@ extends SinglePartEntityModel<ParrotEntity> {
                 this.head.pitch = 0.0f;
                 this.head.yaw = 0.0f;
                 this.head.roll = MathHelper.sin(danceAngle) * 0.4f;
-                this.torso.pivotX = f;
-                this.torso.pivotY = 16.5f + g;
-                this.field_27459.roll = -0.0873f - age;
-                this.field_27459.pivotX = 1.5f + f;
-                this.field_27459.pivotY = 16.94f + g;
-                this.field_27460.roll = 0.0873f + age;
-                this.field_27460.pivotX = -1.5f + f;
-                this.field_27460.pivotY = 16.94f + g;
+                this.body.pivotX = f;
+                this.body.pivotY = 16.5f + g;
+                this.leftWing.roll = -0.0873f - age;
+                this.leftWing.pivotX = 1.5f + f;
+                this.leftWing.pivotY = 16.94f + g;
+                this.rightWing.roll = 0.0873f + age;
+                this.rightWing.pivotX = -1.5f + f;
+                this.rightWing.pivotY = 16.94f + g;
                 this.tail.pivotX = f;
                 this.tail.pivotY = 21.07f + g;
                 break;
             }
             case STANDING: {
-                this.field_27461.pitch += MathHelper.cos(limbAngle * 0.6662f) * 1.4f * limbDistance;
-                this.field_27462.pitch += MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
+                this.leftLeg.pitch += MathHelper.cos(limbAngle * 0.6662f) * 1.4f * limbDistance;
+                this.rightLeg.pitch += MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
             }
             default: {
                 float h = age * 0.3f;
                 this.head.pivotY = 15.69f + h;
                 this.tail.pitch = 1.015f + MathHelper.cos(limbAngle * 0.6662f) * 0.3f * limbDistance;
                 this.tail.pivotY = 21.07f + h;
-                this.torso.pivotY = 16.5f + h;
-                this.field_27459.roll = -0.0873f - age;
-                this.field_27459.pivotY = 16.94f + h;
-                this.field_27460.roll = 0.0873f + age;
-                this.field_27460.pivotY = 16.94f + h;
-                this.field_27461.pivotY = 22.0f + h;
-                this.field_27462.pivotY = 22.0f + h;
+                this.body.pivotY = 16.5f + h;
+                this.leftWing.roll = -0.0873f - age;
+                this.leftWing.pivotY = 16.94f + h;
+                this.rightWing.roll = 0.0873f + age;
+                this.rightWing.pivotY = 16.94f + h;
+                this.leftLeg.pivotY = 22.0f + h;
+                this.rightLeg.pivotY = 22.0f + h;
             }
         }
     }
 
     private void animateModel(Pose pose) {
-        this.headFeathers.pitch = -0.2214f;
-        this.torso.pitch = 0.4937f;
-        this.field_27459.pitch = -0.6981f;
-        this.field_27459.yaw = (float)(-Math.PI);
-        this.field_27460.pitch = -0.6981f;
-        this.field_27460.yaw = (float)(-Math.PI);
-        this.field_27461.pitch = -0.0299f;
-        this.field_27462.pitch = -0.0299f;
-        this.field_27461.pivotY = 22.0f;
-        this.field_27462.pivotY = 22.0f;
-        this.field_27461.roll = 0.0f;
-        this.field_27462.roll = 0.0f;
+        this.feather.pitch = -0.2214f;
+        this.body.pitch = 0.4937f;
+        this.leftWing.pitch = -0.6981f;
+        this.leftWing.yaw = (float)(-Math.PI);
+        this.rightWing.pitch = -0.6981f;
+        this.rightWing.yaw = (float)(-Math.PI);
+        this.leftLeg.pitch = -0.0299f;
+        this.rightLeg.pitch = -0.0299f;
+        this.leftLeg.pivotY = 22.0f;
+        this.rightLeg.pivotY = 22.0f;
+        this.leftLeg.roll = 0.0f;
+        this.rightLeg.roll = 0.0f;
         switch (pose) {
             case FLYING: {
-                this.field_27461.pitch += 0.6981317f;
-                this.field_27462.pitch += 0.6981317f;
+                this.leftLeg.pitch += 0.6981317f;
+                this.rightLeg.pitch += 0.6981317f;
                 break;
             }
             case SITTING: {
@@ -158,20 +158,20 @@ extends SinglePartEntityModel<ParrotEntity> {
                 this.head.pivotY = 17.59f;
                 this.tail.pitch = 1.5388988f;
                 this.tail.pivotY = 22.97f;
-                this.torso.pivotY = 18.4f;
-                this.field_27459.roll = -0.0873f;
-                this.field_27459.pivotY = 18.84f;
-                this.field_27460.roll = 0.0873f;
-                this.field_27460.pivotY = 18.84f;
-                this.field_27461.pivotY += 1.9f;
-                this.field_27462.pivotY += 1.9f;
-                this.field_27461.pitch += 1.5707964f;
-                this.field_27462.pitch += 1.5707964f;
+                this.body.pivotY = 18.4f;
+                this.leftWing.roll = -0.0873f;
+                this.leftWing.pivotY = 18.84f;
+                this.rightWing.roll = 0.0873f;
+                this.rightWing.pivotY = 18.84f;
+                this.leftLeg.pivotY += 1.9f;
+                this.rightLeg.pivotY += 1.9f;
+                this.leftLeg.pitch += 1.5707964f;
+                this.rightLeg.pitch += 1.5707964f;
                 break;
             }
             case PARTY: {
-                this.field_27461.roll = -0.34906584f;
-                this.field_27462.roll = 0.34906584f;
+                this.leftLeg.roll = -0.34906584f;
+                this.rightLeg.roll = 0.34906584f;
                 break;
             }
         }

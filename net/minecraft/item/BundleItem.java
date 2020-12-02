@@ -74,7 +74,7 @@ extends Item {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        if (BundleItem.method_32757(itemStack, user)) {
+        if (BundleItem.dropAllBundledItems(itemStack, user)) {
             return TypedActionResult.success(itemStack, world.isClient());
         }
         return TypedActionResult.fail(itemStack);
@@ -83,14 +83,13 @@ extends Item {
     @Override
     @Environment(value=EnvType.CLIENT)
     public boolean isItemBarVisible(ItemStack stack) {
-        int i = BundleItem.getBundleOccupancy(stack);
-        return i > 0 && i < 64;
+        return BundleItem.getBundleOccupancy(stack) > 0;
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
     public int getItemBarStep(ItemStack stack) {
-        return 13 * BundleItem.getBundleOccupancy(stack) / 64 + 1;
+        return Math.min(13 * BundleItem.getBundleOccupancy(stack) / 64, 13);
     }
 
     @Override
@@ -136,7 +135,7 @@ extends Item {
         if (itemStack.isOf(Items.BUNDLE)) {
             return Optional.empty();
         }
-        return listTag.stream().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).filter(compoundTag -> ItemStack.method_31577(ItemStack.fromTag(compoundTag), itemStack)).findFirst();
+        return listTag.stream().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).filter(compoundTag -> ItemStack.canCombine(ItemStack.fromTag(compoundTag), itemStack)).findFirst();
     }
 
     private static int getItemOccupancy(ItemStack stack) {
@@ -147,7 +146,7 @@ extends Item {
     }
 
     private static int getBundleOccupancy(ItemStack stack) {
-        return BundleItem.method_32345(stack).mapToInt(itemStack -> BundleItem.getItemOccupancy(itemStack) * itemStack.getCount()).sum();
+        return BundleItem.getBundledStacks(stack).mapToInt(itemStack -> BundleItem.getItemOccupancy(itemStack) * itemStack.getCount()).sum();
     }
 
     private static Optional<ItemStack> method_32759(ItemStack itemStack) {
@@ -166,25 +165,25 @@ extends Item {
         return Optional.of(itemStack2);
     }
 
-    private static boolean method_32757(ItemStack itemStack, PlayerEntity playerEntity) {
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
+    private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
+        CompoundTag compoundTag = stack.getOrCreateTag();
         if (!compoundTag.contains("Items")) {
             return false;
         }
-        if (playerEntity instanceof ServerPlayerEntity) {
+        if (player instanceof ServerPlayerEntity) {
             ListTag listTag = compoundTag.getList("Items", 10);
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag2 = listTag.getCompound(i);
-                ItemStack itemStack2 = ItemStack.fromTag(compoundTag2);
-                playerEntity.dropItem(itemStack2, true);
+                ItemStack itemStack = ItemStack.fromTag(compoundTag2);
+                player.dropItem(itemStack, true);
             }
         }
-        itemStack.removeSubTag("Items");
+        stack.removeSubTag("Items");
         return true;
     }
 
-    private static Stream<ItemStack> method_32345(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getTag();
+    private static Stream<ItemStack> getBundledStacks(ItemStack stack) {
+        CompoundTag compoundTag = stack.getTag();
         if (compoundTag == null) {
             return Stream.empty();
         }
@@ -196,16 +195,14 @@ extends Item {
     @Environment(value=EnvType.CLIENT)
     public Optional<TooltipData> getTooltipData(ItemStack stack) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-        BundleItem.method_32345(stack).forEach(defaultedList::add);
+        BundleItem.getBundledStacks(stack).forEach(defaultedList::add);
         return Optional.of(new BundleTooltipData(defaultedList, BundleItem.getBundleOccupancy(stack) < 64));
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-        if (context.isAdvanced()) {
-            tooltip.add(new TranslatableText("item.minecraft.bundle.fullness", BundleItem.getBundleOccupancy(stack), 64).formatted(Formatting.GRAY));
-        }
+        tooltip.add(new TranslatableText("item.minecraft.bundle.fullness", BundleItem.getBundleOccupancy(stack), 64).formatted(Formatting.GRAY));
     }
 }
 

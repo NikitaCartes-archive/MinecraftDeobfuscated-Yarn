@@ -12,6 +12,7 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.class_5713;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
@@ -36,6 +37,10 @@ import org.jetbrains.annotations.Nullable;
 public interface Chunk
 extends BlockView,
 StructureHolder {
+    default public class_5713 method_32914(int i) {
+        return class_5713.field_28181;
+    }
+
     @Nullable
     public BlockState setBlockState(BlockPos var1, BlockState var2, boolean var3);
 
@@ -56,7 +61,7 @@ StructureHolder {
 
     default public int getHighestNonEmptySectionYOffset() {
         ChunkSection chunkSection = this.getHighestNonEmptySection();
-        return chunkSection == null ? this.getBottomHeightLimit() : chunkSection.getYOffset();
+        return chunkSection == null ? this.getSectionCount() : chunkSection.getYOffset();
     }
 
     public Set<BlockPos> getBlockEntityPositions();
@@ -78,8 +83,8 @@ StructureHolder {
     public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> var1);
 
     default public boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
-        if (lowerHeight < this.getBottomHeightLimit()) {
-            lowerHeight = this.getBottomHeightLimit();
+        if (lowerHeight < this.getSectionCount()) {
+            lowerHeight = this.getSectionCount();
         }
         if (upperHeight >= this.getTopHeightLimit()) {
             upperHeight = this.getTopHeightLimit() - 1;

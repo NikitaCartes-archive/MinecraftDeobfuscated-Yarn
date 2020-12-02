@@ -200,7 +200,6 @@ AutoCloseable {
     private boolean flightEnabled;
     @Nullable
     private String motd;
-    private int worldHeight;
     private int playerIdleTimeout;
     public final long[] lastTickLengths = new long[100];
     @Nullable
@@ -922,7 +921,7 @@ AutoCloseable {
         return this.userName != null;
     }
 
-    protected void method_31400() {
+    protected void generateKeyPair() {
         LOGGER.info("Generating keypair");
         try {
             this.keyPair = NetworkEncryptionUtils.generateServerKeyPair();
@@ -1005,7 +1004,7 @@ AutoCloseable {
             snooper.addInfo("world[" + i + "][mode]", (Object)this.saveProperties.getGameMode());
             snooper.addInfo("world[" + i + "][difficulty]", (Object)serverWorld.getDifficulty());
             snooper.addInfo("world[" + i + "][hardcore]", this.saveProperties.isHardcore());
-            snooper.addInfo("world[" + i + "][height]", this.worldHeight);
+            snooper.addInfo("world[" + i + "][height]", serverWorld.getTopHeightLimit());
             snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
             ++i;
         }
@@ -1069,14 +1068,6 @@ AutoCloseable {
 
     public void setMotd(String motd) {
         this.motd = motd;
-    }
-
-    public int getWorldHeight() {
-        return this.worldHeight;
-    }
-
-    public void setWorldHeight(int worldHeight) {
-        this.worldHeight = worldHeight;
     }
 
     public boolean isStopped() {
@@ -1532,8 +1523,8 @@ AutoCloseable {
         return false;
     }
 
-    public ServerPlayerInteractionManager method_32816(ServerPlayerEntity serverPlayerEntity) {
-        return this.isDemo() ? new DemoServerPlayerInteractionManager(serverPlayerEntity) : new ServerPlayerInteractionManager(serverPlayerEntity);
+    public ServerPlayerInteractionManager getPlayerInteractionManager(ServerPlayerEntity player) {
+        return this.isDemo() ? new DemoServerPlayerInteractionManager(player) : new ServerPlayerInteractionManager(player);
     }
 
     /**

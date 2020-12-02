@@ -7,6 +7,7 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_5742;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -56,7 +57,7 @@ BiomeAccess.Storage {
         int l = MathHelper.floor(box.maxY);
         int m = MathHelper.floor(box.minZ);
         if (this.isRegionLoaded(i, k, m, j, l, n = MathHelper.floor(box.maxZ))) {
-            return this.method_29546(box);
+            return this.getStatesInBox(box);
         }
         return Stream.empty();
     }
@@ -69,7 +70,7 @@ BiomeAccess.Storage {
 
     @Override
     default public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-        Chunk chunk = this.getChunk(biomeX >> 2, biomeZ >> 2, ChunkStatus.BIOMES, false);
+        Chunk chunk = this.getChunk(class_5742.method_33103(biomeX), class_5742.method_33103(biomeZ), ChunkStatus.BIOMES, false);
         if (chunk != null && chunk.getBiomeArray() != null) {
             return chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
         }
@@ -89,6 +90,16 @@ BiomeAccess.Storage {
     public int getSeaLevel();
 
     public DimensionType getDimension();
+
+    @Override
+    default public int getSectionCount() {
+        return this.getDimension().getMinimumY();
+    }
+
+    @Override
+    default public int getBottomSectionLimit() {
+        return this.getDimension().getHeight();
+    }
 
     default public BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
         return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());
@@ -191,7 +202,7 @@ BiomeAccess.Storage {
 
     @Deprecated
     default public boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-        if (maxY < this.getBottomHeightLimit() || minY >= this.getTopHeightLimit()) {
+        if (maxY < this.getSectionCount() || minY >= this.getTopHeightLimit()) {
             return false;
         }
         minZ >>= 4;

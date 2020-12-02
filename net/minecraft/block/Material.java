@@ -44,6 +44,7 @@ public final class Material {
      */
     public static final Material SUPPORTED = Builder.method_15808(new Builder(MapColor.CLEAR).allowsMovement()).notSolid().destroyedByPiston().build();
     public static final Material COBWEB = Builder.method_15808(new Builder(MapColor.WEB).allowsMovement()).destroyedByPiston().build();
+    public static final Material SCULK = new Builder(MapColor.BLACK).build();
     public static final Material REDSTONE_LAMP = new Builder(MapColor.CLEAR).build();
     /**
      * Material for blocks that come from mobs such as honey, slime, or infested blocks. Includes clay but not bone blocks.

@@ -11,7 +11,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
@@ -58,9 +57,9 @@ extends ChunkGenerator {
             BlockState blockState;
             BlockState blockState2 = blockState = blockStates[i] == null ? Blocks.AIR.getDefaultState() : blockStates[i];
             if (Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) continue;
-            return this.config.getBottomHeightLimit() + i - 1;
+            return this.config.getSectionCount() + i - 1;
         }
-        return blockStates.length;
+        return this.config.getSectionCount() + blockStates.length;
     }
 
     @Override
@@ -72,7 +71,7 @@ extends ChunkGenerator {
         for (int i = 0; i < blockStates.length; ++i) {
             BlockState blockState = blockStates[i];
             if (blockState == null) continue;
-            int j = world.getBottomHeightLimit() + i;
+            int j = world.getSectionCount() + i;
             for (int k = 0; k < 16; ++k) {
                 for (int l = 0; l < 16; ++l) {
                     chunk.setBlockState(mutable.set(k, j, l), blockState, false);
@@ -89,14 +88,14 @@ extends ChunkGenerator {
         for (int i = blockStates.length - 1; i >= 0; --i) {
             BlockState blockState = blockStates[i];
             if (blockState == null || !heightmapType.getBlockPredicate().test(blockState)) continue;
-            return this.config.getBottomHeightLimit() + i + 1;
+            return this.config.getSectionCount() + i + 1;
         }
         return 0;
     }
 
     @Override
-    public BlockView getColumnSample(int x, int z) {
-        return new VerticalBlockSample((BlockState[])Arrays.stream(this.config.getLayerBlocks()).map(state -> state == null ? Blocks.AIR.getDefaultState() : state).toArray(BlockState[]::new));
+    public VerticalBlockSample getColumnSample(int x, int z) {
+        return new VerticalBlockSample(0, (BlockState[])Arrays.stream(this.config.getLayerBlocks()).map(state -> state == null ? Blocks.AIR.getDefaultState() : state).toArray(BlockState[]::new));
     }
 }
 

@@ -77,7 +77,7 @@ extends PathNodeMaker {
             i = MathHelper.floor(this.entity.getY() + 0.5);
         } else {
             blockPos = this.entity.getBlockPos();
-            while ((this.cachedWorld.getBlockState(blockPos).isAir() || this.cachedWorld.getBlockState(blockPos).canPathfindThrough(this.cachedWorld, blockPos, NavigationType.LAND)) && blockPos.getY() > this.entity.world.getBottomHeightLimit()) {
+            while ((this.cachedWorld.getBlockState(blockPos).isAir() || this.cachedWorld.getBlockState(blockPos).canPathfindThrough(this.cachedWorld, blockPos, NavigationType.LAND)) && blockPos.getY() > this.entity.world.getSectionCount()) {
                 blockPos = blockPos.down();
             }
             i = blockPos.up().getY();
@@ -225,7 +225,7 @@ extends PathNodeMaker {
             if (this.method_29303(this.entity, x, y - 1, z) != PathNodeType.WATER) {
                 return pathNode;
             }
-            while (y > this.entity.world.getBottomHeightLimit()) {
+            while (y > this.entity.world.getSectionCount()) {
                 if ((pathNodeType2 = this.method_29303(this.entity, x, --y, z)) == PathNodeType.WATER) {
                     pathNode = this.getNode(x, y, z);
                     pathNode.type = pathNodeType2;
@@ -239,7 +239,7 @@ extends PathNodeMaker {
             int i = 0;
             int j = y;
             while (pathNodeType2 == PathNodeType.OPEN) {
-                if (--y < this.entity.world.getBottomHeightLimit()) {
+                if (--y < this.entity.world.getSectionCount()) {
                     PathNode pathNode2 = this.getNode(x, j, z);
                     pathNode2.type = PathNodeType.BLOCKED;
                     pathNode2.penalty = -1.0f;
@@ -362,7 +362,7 @@ extends PathNodeMaker {
         int j = mutable.getY();
         int k = mutable.getZ();
         PathNodeType pathNodeType = LandPathNodeMaker.getCommonNodeType(blockView, mutable);
-        if (pathNodeType == PathNodeType.OPEN && j >= blockView.getBottomHeightLimit() + 1) {
+        if (pathNodeType == PathNodeType.OPEN && j >= blockView.getSectionCount() + 1) {
             PathNodeType pathNodeType2 = LandPathNodeMaker.getCommonNodeType(blockView, mutable.set(i, j - 1, k));
             PathNodeType pathNodeType3 = pathNodeType = pathNodeType2 == PathNodeType.WALKABLE || pathNodeType2 == PathNodeType.OPEN || pathNodeType2 == PathNodeType.WATER || pathNodeType2 == PathNodeType.LAVA ? PathNodeType.OPEN : PathNodeType.WALKABLE;
             if (pathNodeType2 == PathNodeType.DAMAGE_FIRE) {

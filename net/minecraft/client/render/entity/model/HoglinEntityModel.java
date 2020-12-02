@@ -25,24 +25,24 @@ extends AnimalModel<T> {
     private final ModelPart head;
     private final ModelPart rightEar;
     private final ModelPart leftEar;
-    private final ModelPart torso;
-    private final ModelPart field_27421;
-    private final ModelPart field_27422;
-    private final ModelPart field_27423;
-    private final ModelPart field_27424;
-    private final ModelPart field_25484;
+    private final ModelPart body;
+    private final ModelPart rightFrontLeg;
+    private final ModelPart leftFrontLeg;
+    private final ModelPart rightHindLeg;
+    private final ModelPart leftHindLeg;
+    private final ModelPart mane;
 
-    public HoglinEntityModel(ModelPart modelPart) {
+    public HoglinEntityModel(ModelPart root) {
         super(true, 8.0f, 6.0f, 1.9f, 2.0f, 24.0f);
-        this.torso = modelPart.getChild("body");
-        this.field_25484 = this.torso.getChild("mane");
-        this.head = modelPart.getChild("head");
+        this.body = root.getChild("body");
+        this.mane = this.body.getChild("mane");
+        this.head = root.getChild("head");
         this.rightEar = this.head.getChild("right_ear");
         this.leftEar = this.head.getChild("left_ear");
-        this.field_27421 = modelPart.getChild("right_front_leg");
-        this.field_27422 = modelPart.getChild("left_front_leg");
-        this.field_27423 = modelPart.getChild("right_hind_leg");
-        this.field_27424 = modelPart.getChild("left_hind_leg");
+        this.rightFrontLeg = root.getChild("right_front_leg");
+        this.leftFrontLeg = root.getChild("left_front_leg");
+        this.rightHindLeg = root.getChild("right_hind_leg");
+        this.leftHindLeg = root.getChild("left_hind_leg");
     }
 
     public static TexturedModelData getTexturedModelData() {
@@ -71,7 +71,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.field_27421, this.field_27422, this.field_27423, this.field_27424);
+        return ImmutableList.of(this.body, this.rightFrontLeg, this.leftFrontLeg, this.rightHindLeg, this.leftHindLeg);
     }
 
     @Override
@@ -84,15 +84,15 @@ extends AnimalModel<T> {
         this.head.pitch = MathHelper.lerp(l, 0.87266463f, -0.34906584f);
         if (((LivingEntity)mobEntity).isBaby()) {
             this.head.pivotY = MathHelper.lerp(l, 2.0f, 5.0f);
-            this.field_25484.pivotZ = -3.0f;
+            this.mane.pivotZ = -3.0f;
         } else {
             this.head.pivotY = 2.0f;
-            this.field_25484.pivotZ = -7.0f;
+            this.mane.pivotZ = -7.0f;
         }
         float m = 1.2f;
-        this.field_27421.pitch = MathHelper.cos(f) * 1.2f * g;
-        this.field_27423.pitch = this.field_27422.pitch = MathHelper.cos(f + (float)Math.PI) * 1.2f * g;
-        this.field_27424.pitch = this.field_27421.pitch;
+        this.rightFrontLeg.pitch = MathHelper.cos(f) * 1.2f * g;
+        this.rightHindLeg.pitch = this.leftFrontLeg.pitch = MathHelper.cos(f + (float)Math.PI) * 1.2f * g;
+        this.leftHindLeg.pitch = this.rightFrontLeg.pitch;
     }
 }
 

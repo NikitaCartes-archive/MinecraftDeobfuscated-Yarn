@@ -88,21 +88,21 @@ extends Block {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player2, Hand hand, BlockHitResult hit) {
+        ItemStack itemStack = player2.getStackInHand(hand);
         if (itemStack.isOf(Items.FLINT_AND_STEEL) || itemStack.isOf(Items.FIRE_CHARGE)) {
-            TntBlock.primeTnt(world, pos, player);
+            TntBlock.primeTnt(world, pos, player2);
             world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
-            if (!player.isCreative()) {
+            if (!player2.isCreative()) {
                 if (itemStack.isOf(Items.FLINT_AND_STEEL)) {
-                    itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                    itemStack.damage(1, player2, player -> player.sendToolBreakStatus(hand));
                 } else {
                     itemStack.decrement(1);
                 }
             }
             return ActionResult.success(world.isClient);
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUse(state, world, pos, player2, hand, hit);
     }
 
     @Override

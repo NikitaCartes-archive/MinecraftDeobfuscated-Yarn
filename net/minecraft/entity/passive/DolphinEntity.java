@@ -320,7 +320,7 @@ extends WaterCreatureEntity {
         if (pos.getY() <= 45 || pos.getY() >= world.getSeaLevel()) {
             return false;
         }
-        Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+        Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
         return (!Objects.equals(optional, Optional.of(BiomeKeys.OCEAN)) || !Objects.equals(optional, Optional.of(BiomeKeys.DEEP_OCEAN))) && world.getFluidState(pos).isIn(FluidTags.WATER);
     }
 

@@ -52,6 +52,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -158,6 +159,7 @@ implements ItemConvertible {
         if (this.isFood()) {
             ItemStack itemStack = user.getStackInHand(hand);
             if (user.canConsume(this.getFoodComponent().isAlwaysEdible())) {
+                world.emitGameEvent((Entity)user, GameEvent.EATING_START, user);
                 user.setCurrentHand(hand);
                 return TypedActionResult.consume(itemStack);
             }
@@ -166,9 +168,10 @@ implements ItemConvertible {
         return TypedActionResult.pass(user.getStackInHand(hand));
     }
 
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
         if (this.isFood()) {
-            return user.eatFood(world, stack);
+            world.emitGameEvent((Entity)entity, GameEvent.EATING_FINISH, entity);
+            return entity.eatFood(world, stack);
         }
         return stack;
     }
@@ -441,7 +444,7 @@ implements ItemConvertible {
     }
 
     @Nullable
-    public SoundEvent method_31570() {
+    public SoundEvent getEquipSound() {
         return null;
     }
 

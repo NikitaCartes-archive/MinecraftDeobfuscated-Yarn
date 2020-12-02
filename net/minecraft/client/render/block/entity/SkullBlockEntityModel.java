@@ -15,6 +15,6 @@ extends Model {
         super(RenderLayer::getEntityTranslucent);
     }
 
-    public abstract void method_2821(float var1, float var2, float var3);
+    public abstract void setHeadRotation(float var1, float var2, float var3);
 }
 

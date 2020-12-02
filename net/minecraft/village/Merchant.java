@@ -26,7 +26,7 @@ public interface Merchant {
     public TradeOfferList getOffers();
 
     @Environment(value=EnvType.CLIENT)
-    public void setOffersFromServer(@Nullable TradeOfferList var1);
+    public void setOffersFromServer(TradeOfferList var1);
 
     public void trade(TradeOffer var1);
 

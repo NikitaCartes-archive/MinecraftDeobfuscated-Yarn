@@ -44,6 +44,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.EntityExplosionBehavior;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.jetbrains.annotations.Nullable;
@@ -136,6 +137,7 @@ public class Explosion {
     public void collectBlocksAndDamageEntities() {
         int l;
         int k;
+        this.world.emitGameEvent(this.entity, GameEvent.EXPLODE, new BlockPos(this.x, this.y, this.z));
         HashSet<BlockPos> set = Sets.newHashSet();
         int i = 16;
         for (int j = 0; j < 16; ++j) {

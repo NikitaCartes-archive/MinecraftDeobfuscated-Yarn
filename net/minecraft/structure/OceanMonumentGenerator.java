@@ -1599,7 +1599,7 @@ public class OceanMonumentGenerator {
         protected static final int FOUR_ONE_ZERO_INDEX = Piece.getIndex(4, 1, 0);
         protected PieceSetting setting;
 
-        protected static final int getIndex(int x, int y, int z) {
+        protected static int getIndex(int x, int y, int z) {
             return y * 25 + z * 5 + x;
         }
 

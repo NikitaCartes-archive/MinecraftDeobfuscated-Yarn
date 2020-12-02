@@ -107,7 +107,7 @@ implements SynchronousResourceReloadListener {
                 }
                 SkullBlock.SkullType skullType = ((AbstractSkullBlock)block).getSkullType();
                 SkullBlockEntityModel skullBlockEntityModel = this.field_27737.get(skullType);
-                RenderLayer renderLayer = SkullBlockEntityRenderer.method_3578(skullType, gameProfile);
+                RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
                 SkullBlockEntityRenderer.method_32161(null, 180.0f, 0.0f, matrices, vertexConsumers, light, skullBlockEntityModel, renderLayer);
                 return;
             }
