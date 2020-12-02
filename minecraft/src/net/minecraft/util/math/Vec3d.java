@@ -1,19 +1,28 @@
 package net.minecraft.util.math;
 
+import com.mojang.serialization.Codec;
 import java.util.EnumSet;
+import java.util.stream.DoubleStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5699;
+import net.minecraft.util.Util;
 
 /**
  * An immutable vector composed of 3 doubles.
  */
 public class Vec3d implements Position {
+	public static final Codec<Vec3d> field_28243 = class_5699.field_28095
+		.<Vec3d>comapFlatMap(
+			doubleStream -> Util.method_33141(doubleStream, 3).map(ds -> new Vec3d(ds[0], ds[1], ds[2])),
+			vec3d -> DoubleStream.of(new double[]{vec3d.x, vec3d.y, vec3d.z})
+		)
+		.stable();
 	public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
 	public final double x;
 	public final double y;
 	public final double z;
 
-	@Environment(EnvType.CLIENT)
 	public static Vec3d unpackRgb(int rgb) {
 		double d = (double)(rgb >> 16 & 0xFF) / 255.0;
 		double e = (double)(rgb >> 8 & 0xFF) / 255.0;
@@ -156,6 +165,11 @@ public class Vec3d implements Position {
 
 	public String toString() {
 		return "(" + this.x + ", " + this.y + ", " + this.z + ")";
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Vec3d method_33068(Vec3d vec3d, double d) {
+		return new Vec3d(MathHelper.lerp(d, this.x, vec3d.x), MathHelper.lerp(d, this.y, vec3d.y), MathHelper.lerp(d, this.z, vec3d.z));
 	}
 
 	public Vec3d rotateX(float angle) {

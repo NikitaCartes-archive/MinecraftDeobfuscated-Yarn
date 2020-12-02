@@ -91,10 +91,10 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 				matrixStack.translate(-0.5, 0.0, -0.5);
 				SkullBlock.SkullType skullType = ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType();
 				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.headModels.get(skullType);
-				RenderLayer renderLayer = SkullBlockEntityRenderer.method_3578(skullType, gameProfile);
+				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
 				SkullBlockEntityRenderer.method_32161(null, 180.0F, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
 			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
-				method_32798(matrixStack, bl);
+				translate(matrixStack, bl);
 				MinecraftClient.getInstance()
 					.getHeldItemRenderer()
 					.renderItem(livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);
@@ -104,13 +104,13 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 		}
 	}
 
-	public static void method_32798(MatrixStack matrixStack, boolean bl) {
+	public static void translate(MatrixStack matrices, boolean villager) {
 		float f = 0.625F;
-		matrixStack.translate(0.0, -0.25, 0.0);
-		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-		matrixStack.scale(0.625F, -0.625F, -0.625F);
-		if (bl) {
-			matrixStack.translate(0.0, 0.1875, 0.0);
+		matrices.translate(0.0, -0.25, 0.0);
+		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+		matrices.scale(0.625F, -0.625F, -0.625F);
+		if (villager) {
+			matrices.translate(0.0, 0.1875, 0.0);
 		}
 	}
 }

@@ -47,10 +47,10 @@ public class ConduitBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.containsUuid("Target")) {
-			this.targetUuid = compoundTag.getUuid("Target");
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.containsUuid("Target")) {
+			this.targetUuid = tag.getUuid("Target");
 		} else {
 			this.targetUuid = null;
 		}
@@ -173,7 +173,7 @@ public class ConduitBlockEntity extends BlockEntity {
 		int m = blockPos.getZ();
 		Box box = new Box((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 			.expand((double)j)
-			.stretch(0.0, (double)world.getTopHeightLimit(), 0.0);
+			.stretch(0.0, (double)world.getBottomSectionLimit(), 0.0);
 		List<PlayerEntity> list2 = world.getNonSpectatingEntities(PlayerEntity.class, box);
 		if (!list2.isEmpty()) {
 			for (PlayerEntity playerEntity : list2) {

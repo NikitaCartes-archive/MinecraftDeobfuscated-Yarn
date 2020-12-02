@@ -22,6 +22,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public abstract class AbstractButtonBlock extends WallMountedBlock {
 	public static final BooleanProperty POWERED = Properties.POWERED;
@@ -95,6 +96,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 		} else {
 			this.powerOn(state, world, pos);
 			this.playClickSound(player, world, pos, true);
+			world.emitGameEvent(player, GameEvent.BLOCK_PRESS, pos);
 			return ActionResult.success(world.isClient);
 		}
 	}
@@ -146,6 +148,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 3);
 				this.updateNeighbors(state, world, pos);
 				this.playClickSound(null, world, pos, false);
+				world.emitGameEvent(GameEvent.BLOCK_UNPRESS, pos);
 			}
 		}
 	}
@@ -165,6 +168,7 @@ public abstract class AbstractButtonBlock extends WallMountedBlock {
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), 3);
 			this.updateNeighbors(state, world, pos);
 			this.playClickSound(null, world, pos, bl);
+			world.emitGameEvent((Entity)list.stream().findFirst().orElse(null), bl ? GameEvent.BLOCK_PRESS : GameEvent.BLOCK_UNPRESS, pos);
 		}
 
 		if (bl) {

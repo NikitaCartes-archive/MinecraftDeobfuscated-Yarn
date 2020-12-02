@@ -31,8 +31,8 @@ public class KelpBlock extends AbstractPlantStemBlock implements FluidFillable {
 	}
 
 	@Override
-	protected boolean canAttachTo(BlockState blockState) {
-		return !blockState.isOf(Blocks.MAGMA_BLOCK);
+	protected boolean canAttachTo(BlockState state) {
+		return !state.isOf(Blocks.MAGMA_BLOCK);
 	}
 
 	@Override

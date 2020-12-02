@@ -24,8 +24,8 @@ public class SuspiciousStewItem extends Item {
 	}
 
 	@Override
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		ItemStack itemStack = super.finishUsing(stack, world, user);
+	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+		ItemStack itemStack = super.finishUsing(stack, world, entity);
 		CompoundTag compoundTag = stack.getTag();
 		if (compoundTag != null && compoundTag.contains("Effects", 9)) {
 			ListTag listTag = compoundTag.getList("Effects", 10);
@@ -39,11 +39,11 @@ public class SuspiciousStewItem extends Item {
 
 				StatusEffect statusEffect = StatusEffect.byRawId(compoundTag2.getByte("EffectId"));
 				if (statusEffect != null) {
-					user.addStatusEffect(new StatusEffectInstance(statusEffect, j));
+					entity.addStatusEffect(new StatusEffectInstance(statusEffect, j));
 				}
 			}
 		}
 
-		return user instanceof PlayerEntity && ((PlayerEntity)user).getAbilities().creativeMode ? itemStack : new ItemStack(Items.BOWL);
+		return entity instanceof PlayerEntity && ((PlayerEntity)entity).getAbilities().creativeMode ? itemStack : new ItemStack(Items.BOWL);
 	}
 }

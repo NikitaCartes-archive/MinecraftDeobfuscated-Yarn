@@ -152,6 +152,7 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
@@ -176,6 +177,7 @@ public enum NetworkState {
 					.register(MobSpawnS2CPacket.class, MobSpawnS2CPacket::new)
 					.register(PaintingSpawnS2CPacket.class, PaintingSpawnS2CPacket::new)
 					.register(PlayerSpawnS2CPacket.class, PlayerSpawnS2CPacket::new)
+					.register(VibrationS2CPacket.class, VibrationS2CPacket::new)
 					.register(EntityAnimationS2CPacket.class, EntityAnimationS2CPacket::new)
 					.register(StatisticsS2CPacket.class, StatisticsS2CPacket::new)
 					.register(PlayerActionResponseS2CPacket.class, PlayerActionResponseS2CPacket::new)

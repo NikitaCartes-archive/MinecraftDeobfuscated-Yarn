@@ -17,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ZombieSiegeManager implements Spawner {
-	private static final Logger field_26390 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private boolean spawned;
 	private ZombieSiegeManager.State state = ZombieSiegeManager.State.SIEGE_DONE;
 	private int remaining;
@@ -100,7 +100,7 @@ public class ZombieSiegeManager implements Spawner {
 				zombieEntity = new ZombieEntity(world);
 				zombieEntity.initialize(world, world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.EVENT, null, null);
 			} catch (Exception var5) {
-				field_26390.warn("Failed to create zombie for village siege at {}", vec3d, var5);
+				LOGGER.warn("Failed to create zombie for village siege at {}", vec3d, var5);
 				return;
 			}
 

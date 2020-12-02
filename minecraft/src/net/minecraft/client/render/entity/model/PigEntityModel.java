@@ -13,12 +13,12 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class PigEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
-	public PigEntityModel(ModelPart modelPart) {
-		super(modelPart, false, 4.0F, 4.0F, 2.0F, 2.0F, 24);
+	public PigEntityModel(ModelPart root) {
+		super(root, false, 4.0F, 4.0F, 2.0F, 2.0F, 24);
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
-		ModelData modelData = QuadrupedEntityModel.method_32033(6, dilation);
+		ModelData modelData = QuadrupedEntityModel.getModelData(6, dilation);
 		ModelPartData modelPartData = modelData.getRoot();
 		modelPartData.addChild(
 			"head",

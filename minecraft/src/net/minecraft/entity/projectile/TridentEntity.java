@@ -138,7 +138,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 
 		this.setVelocity(this.getVelocity().multiply(-0.01, -0.1, -0.01));
 		float g = 1.0F;
-		if (this.world instanceof ServerWorld && this.world.isThundering() && this.method_31551()) {
+		if (this.world instanceof ServerWorld && this.world.isThundering() && this.hasChanneling()) {
 			BlockPos blockPos = entity.getBlockPos();
 			if (this.world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this.world);
@@ -153,7 +153,7 @@ public class TridentEntity extends PersistentProjectileEntity {
 		this.playSound(soundEvent, g, 1.0F);
 	}
 
-	public boolean method_31551() {
+	public boolean hasChanneling() {
 		return EnchantmentHelper.hasChanneling(this.tridentStack);
 	}
 

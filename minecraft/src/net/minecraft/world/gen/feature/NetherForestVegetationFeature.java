@@ -26,13 +26,13 @@ public class NetherForestVegetationFeature extends Feature<BlockPileFeatureConfi
 			return false;
 		} else {
 			int k = pos.getY();
-			if (k >= world.getBottomHeightLimit() + 1 && k + 1 < world.getTopHeightLimit()) {
+			if (k >= world.getSectionCount() + 1 && k + 1 < world.getTopHeightLimit()) {
 				int l = 0;
 
 				for (int m = 0; m < i * i; m++) {
 					BlockPos blockPos = pos.add(random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
 					BlockState blockState2 = config.stateProvider.getBlockState(random, blockPos);
-					if (world.isAir(blockPos) && blockPos.getY() > world.getBottomHeightLimit() && blockState2.canPlaceAt(world, blockPos)) {
+					if (world.isAir(blockPos) && blockPos.getY() > world.getSectionCount() && blockState2.canPlaceAt(world, blockPos)) {
 						world.setBlockState(blockPos, blockState2, 2);
 						l++;
 					}

@@ -60,8 +60,8 @@ public class FenceBlock extends HorizontalConnectingBlock {
 		return !cannotConnect(state) && neighborIsFullSquare || bl || bl2;
 	}
 
-	private boolean isFence(BlockState blockState) {
-		return blockState.isIn(BlockTags.FENCES) && blockState.isIn(BlockTags.WOODEN_FENCES) == this.getDefaultState().isIn(BlockTags.WOODEN_FENCES);
+	private boolean isFence(BlockState state) {
+		return state.isIn(BlockTags.FENCES) && state.isIn(BlockTags.WOODEN_FENCES) == this.getDefaultState().isIn(BlockTags.WOODEN_FENCES);
 	}
 
 	@Override

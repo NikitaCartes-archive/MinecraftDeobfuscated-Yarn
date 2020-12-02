@@ -62,7 +62,7 @@ public class ChunkSerializer {
 		}
 
 		BiomeArray biomeArray = new BiomeArray(
-			world.getRegistryManager().get(Registry.BIOME_KEY), pos, biomeSource, compoundTag.contains("Biomes", 11) ? compoundTag.getIntArray("Biomes") : null
+			world.getRegistryManager().get(Registry.BIOME_KEY), world, pos, biomeSource, compoundTag.contains("Biomes", 11) ? compoundTag.getIntArray("Biomes") : null
 		);
 		UpgradeData upgradeData = compoundTag.contains("UpgradeData", 10)
 			? new UpgradeData(compoundTag.getCompound("UpgradeData"), world)
@@ -75,7 +75,7 @@ public class ChunkSerializer {
 		);
 		boolean bl = compoundTag.getBoolean("isLightOn");
 		ListTag listTag = compoundTag.getList("Sections", 10);
-		int i = world.getSectionCount();
+		int i = world.method_32890();
 		ChunkSection[] chunkSections = new ChunkSection[i];
 		boolean bl2 = world.getDimension().hasSkyLight();
 		ChunkManager chunkManager = world.getChunkManager();
@@ -150,7 +150,7 @@ public class ChunkSerializer {
 
 			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
 				for (BlockPos blockPos : BlockPos.iterate(
-					pos.getStartX(), world.getBottomHeightLimit(), pos.getStartZ(), pos.getEndX(), world.getTopHeightLimit() - 1, pos.getEndZ()
+					pos.getStartX(), world.getSectionCount(), pos.getStartZ(), pos.getEndX(), world.getTopHeightLimit() - 1, pos.getEndZ()
 				)) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);

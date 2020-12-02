@@ -14,22 +14,22 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityModel<T> implements ModelWithHead, ModelWithHat {
-	private final ModelPart field_27526;
-	private final ModelPart field_27527;
-	private final ModelPart field_27528;
-	private final ModelPart field_27529;
-	private final ModelPart field_27530;
-	private final ModelPart field_27531;
-	protected final ModelPart field_27525;
+	private final ModelPart root;
+	private final ModelPart head;
+	private final ModelPart hat;
+	private final ModelPart hatRim;
+	private final ModelPart rightLeg;
+	private final ModelPart leftLeg;
+	protected final ModelPart nose;
 
-	public VillagerResemblingModel(ModelPart modelPart) {
-		this.field_27526 = modelPart;
-		this.field_27527 = modelPart.getChild("head");
-		this.field_27528 = this.field_27527.getChild("hat");
-		this.field_27529 = this.field_27528.getChild("hat_rim");
-		this.field_27525 = this.field_27527.getChild("nose");
-		this.field_27530 = modelPart.getChild("right_leg");
-		this.field_27531 = modelPart.getChild("left_leg");
+	public VillagerResemblingModel(ModelPart root) {
+		this.root = root;
+		this.head = root.getChild("head");
+		this.hat = this.head.getChild("hat");
+		this.hatRim = this.hat.getChild("hat_rim");
+		this.nose = this.head.getChild("nose");
+		this.rightLeg = root.getChild("right_leg");
+		this.leftLeg = root.getChild("left_leg");
 	}
 
 	public static ModelData getModelData() {
@@ -72,7 +72,7 @@ public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityM
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27526;
+		return this.root;
 	}
 
 	@Override
@@ -82,30 +82,30 @@ public class VillagerResemblingModel<T extends Entity> extends SinglePartEntityM
 			bl = ((MerchantEntity)entity).getHeadRollingTimeLeft() > 0;
 		}
 
-		this.field_27527.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.field_27527.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
+		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 		if (bl) {
-			this.field_27527.roll = 0.3F * MathHelper.sin(0.45F * animationProgress);
-			this.field_27527.pitch = 0.4F;
+			this.head.roll = 0.3F * MathHelper.sin(0.45F * animationProgress);
+			this.head.pitch = 0.4F;
 		} else {
-			this.field_27527.roll = 0.0F;
+			this.head.roll = 0.0F;
 		}
 
-		this.field_27530.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance * 0.5F;
-		this.field_27531.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance * 0.5F;
-		this.field_27530.yaw = 0.0F;
-		this.field_27531.yaw = 0.0F;
+		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance * 0.5F;
+		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance * 0.5F;
+		this.rightLeg.yaw = 0.0F;
+		this.leftLeg.yaw = 0.0F;
 	}
 
 	@Override
 	public ModelPart getHead() {
-		return this.field_27527;
+		return this.head;
 	}
 
 	@Override
 	public void setHatVisible(boolean visible) {
-		this.field_27527.visible = visible;
-		this.field_27528.visible = visible;
-		this.field_27529.visible = visible;
+		this.head.visible = visible;
+		this.hat.visible = visible;
+		this.hatRim.visible = visible;
 	}
 }

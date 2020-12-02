@@ -52,7 +52,7 @@ public class PlayerInventory implements Inventory, Nameable {
 
 	private boolean canStackAddMore(ItemStack existingStack, ItemStack stack) {
 		return !existingStack.isEmpty()
-			&& ItemStack.method_31577(existingStack, stack)
+			&& ItemStack.canCombine(existingStack, stack)
 			&& existingStack.isStackable()
 			&& existingStack.getCount() < existingStack.getMaxCount()
 			&& existingStack.getCount() < this.getMaxCountPerStack();
@@ -104,7 +104,7 @@ public class PlayerInventory implements Inventory, Nameable {
 	@Environment(EnvType.CLIENT)
 	public int getSlotWithStack(ItemStack itemStack) {
 		for (int i = 0; i < this.main.size(); i++) {
-			if (!this.main.get(i).isEmpty() && ItemStack.method_31577(itemStack, this.main.get(i))) {
+			if (!this.main.get(i).isEmpty() && ItemStack.canCombine(itemStack, this.main.get(i))) {
 				return i;
 			}
 		}
@@ -116,7 +116,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (int i = 0; i < this.main.size(); i++) {
 			ItemStack itemStack2 = this.main.get(i);
 			if (!this.main.get(i).isEmpty()
-				&& ItemStack.method_31577(itemStack, this.main.get(i))
+				&& ItemStack.canCombine(itemStack, this.main.get(i))
 				&& !this.main.get(i).isDamaged()
 				&& !itemStack2.hasEnchantments()
 				&& !itemStack2.hasCustomName()) {

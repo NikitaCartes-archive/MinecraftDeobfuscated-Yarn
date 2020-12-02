@@ -13,16 +13,16 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class DolphinEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27411;
+	private final ModelPart root;
 	private final ModelPart body;
 	private final ModelPart tail;
-	private final ModelPart flukes;
+	private final ModelPart tailFin;
 
-	public DolphinEntityModel(ModelPart modelPart) {
-		this.field_27411 = modelPart;
-		this.body = modelPart.getChild("body");
+	public DolphinEntityModel(ModelPart root) {
+		this.root = root;
+		this.body = root.getChild("body");
 		this.tail = this.body.getChild("tail");
-		this.flukes = this.tail.getChild("tail_fin");
+		this.tailFin = this.tail.getChild("tail_fin");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -61,7 +61,7 @@ public class DolphinEntityModel<T extends Entity> extends SinglePartEntityModel<
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27411;
+		return this.root;
 	}
 
 	@Override
@@ -71,7 +71,7 @@ public class DolphinEntityModel<T extends Entity> extends SinglePartEntityModel<
 		if (Entity.squaredHorizontalLength(entity.getVelocity()) > 1.0E-7) {
 			this.body.pitch = this.body.pitch + (-0.05F - 0.05F * MathHelper.cos(animationProgress * 0.3F));
 			this.tail.pitch = -0.1F * MathHelper.cos(animationProgress * 0.3F);
-			this.flukes.pitch = -0.2F * MathHelper.cos(animationProgress * 0.3F);
+			this.tailFin.pitch = -0.2F * MathHelper.cos(animationProgress * 0.3F);
 		}
 	}
 }

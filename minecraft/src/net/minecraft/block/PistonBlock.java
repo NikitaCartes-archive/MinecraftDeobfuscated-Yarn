@@ -29,6 +29,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class PistonBlock extends FacingBlock {
 	public static final BooleanProperty EXTENDED = Properties.EXTENDED;
@@ -167,6 +168,7 @@ public class PistonBlock extends FacingBlock {
 
 			world.setBlockState(pos, state.with(EXTENDED, Boolean.valueOf(true)), 67);
 			world.playSound(null, pos, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.25F + 0.6F);
+			world.emitGameEvent(GameEvent.PISTON_EXTEND, pos);
 		} else if (type == 1 || type == 2) {
 			BlockEntity blockEntity = world.getBlockEntity(pos.offset(direction));
 			if (blockEntity instanceof PistonBlockEntity) {
@@ -213,29 +215,30 @@ public class PistonBlock extends FacingBlock {
 			}
 
 			world.playSound(null, pos, SoundEvents.BLOCK_PISTON_CONTRACT, SoundCategory.BLOCKS, 0.5F, world.random.nextFloat() * 0.15F + 0.6F);
+			world.emitGameEvent(GameEvent.PISTON_CONTRACT, pos);
 		}
 
 		return true;
 	}
 
-	public static boolean isMovable(BlockState blockState, World world, BlockPos blockPos, Direction direction, boolean canBreak, Direction pistonDir) {
-		if (blockPos.getY() < world.getBottomHeightLimit() || blockPos.getY() > world.getTopHeightLimit() - 1 || !world.getWorldBorder().contains(blockPos)) {
+	public static boolean isMovable(BlockState state, World world, BlockPos pos, Direction direction, boolean canBreak, Direction pistonDir) {
+		if (pos.getY() < world.getSectionCount() || pos.getY() > world.getTopHeightLimit() - 1 || !world.getWorldBorder().contains(pos)) {
 			return false;
-		} else if (blockState.isAir()) {
+		} else if (state.isAir()) {
 			return true;
-		} else if (blockState.isOf(Blocks.OBSIDIAN) || blockState.isOf(Blocks.CRYING_OBSIDIAN) || blockState.isOf(Blocks.RESPAWN_ANCHOR)) {
+		} else if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR)) {
 			return false;
-		} else if (direction == Direction.DOWN && blockPos.getY() == world.getBottomHeightLimit()) {
+		} else if (direction == Direction.DOWN && pos.getY() == world.getSectionCount()) {
 			return false;
-		} else if (direction == Direction.UP && blockPos.getY() == world.getTopHeightLimit() - 1) {
+		} else if (direction == Direction.UP && pos.getY() == world.getTopHeightLimit() - 1) {
 			return false;
 		} else {
-			if (!blockState.isOf(Blocks.PISTON) && !blockState.isOf(Blocks.STICKY_PISTON)) {
-				if (blockState.getHardness(world, blockPos) == -1.0F) {
+			if (!state.isOf(Blocks.PISTON) && !state.isOf(Blocks.STICKY_PISTON)) {
+				if (state.getHardness(world, pos) == -1.0F) {
 					return false;
 				}
 
-				switch (blockState.getPistonBehavior()) {
+				switch (state.getPistonBehavior()) {
 					case BLOCK:
 						return false;
 					case DESTROY:
@@ -243,11 +246,11 @@ public class PistonBlock extends FacingBlock {
 					case PUSH_ONLY:
 						return direction == pistonDir;
 				}
-			} else if ((Boolean)blockState.get(EXTENDED)) {
+			} else if ((Boolean)state.get(EXTENDED)) {
 				return false;
 			}
 
-			return !blockState.hasBlockEntity();
+			return !state.hasBlockEntity();
 		}
 	}
 

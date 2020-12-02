@@ -16,7 +16,7 @@ public class IcePatchFeature extends DiskFeature {
 	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig
 	) {
-		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 2) {
+		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getSectionCount() + 2) {
 			blockPos = blockPos.down();
 		}
 

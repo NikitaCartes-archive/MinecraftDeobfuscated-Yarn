@@ -16,23 +16,23 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 	public final ModelPart head;
-	private final ModelPart torso;
-	private final ModelPart field_27415;
-	private final ModelPart field_27416;
-	private final ModelPart field_27417;
-	private final ModelPart field_27418;
+	private final ModelPart body;
+	private final ModelPart rightHindLeg;
+	private final ModelPart leftHindLeg;
+	private final ModelPart rightFrontLeg;
+	private final ModelPart leftFrontLeg;
 	private final ModelPart tail;
 	private float legPitchModifier;
 
-	public FoxEntityModel(ModelPart modelPart) {
+	public FoxEntityModel(ModelPart root) {
 		super(true, 8.0F, 3.35F);
-		this.head = modelPart.getChild("head");
-		this.torso = modelPart.getChild("body");
-		this.field_27415 = modelPart.getChild("right_hind_leg");
-		this.field_27416 = modelPart.getChild("left_hind_leg");
-		this.field_27417 = modelPart.getChild("right_front_leg");
-		this.field_27418 = modelPart.getChild("left_front_leg");
-		this.tail = this.torso.getChild("tail");
+		this.head = root.getChild("head");
+		this.body = root.getChild("body");
+		this.rightHindLeg = root.getChild("right_hind_leg");
+		this.leftHindLeg = root.getChild("left_hind_leg");
+		this.rightFrontLeg = root.getChild("right_front_leg");
+		this.leftFrontLeg = root.getChild("left_front_leg");
+		this.tail = this.body.getChild("tail");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -63,49 +63,49 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 	}
 
 	public void animateModel(T foxEntity, float f, float g, float h) {
-		this.torso.pitch = (float) (Math.PI / 2);
+		this.body.pitch = (float) (Math.PI / 2);
 		this.tail.pitch = -0.05235988F;
-		this.field_27415.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
-		this.field_27416.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
-		this.field_27417.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
-		this.field_27418.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
+		this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
+		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
+		this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
+		this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 		this.head.setPivot(-1.0F, 16.5F, -3.0F);
 		this.head.yaw = 0.0F;
 		this.head.roll = foxEntity.getHeadRoll(h);
-		this.field_27415.visible = true;
-		this.field_27416.visible = true;
-		this.field_27417.visible = true;
-		this.field_27418.visible = true;
-		this.torso.setPivot(0.0F, 16.0F, -6.0F);
-		this.torso.roll = 0.0F;
-		this.field_27415.setPivot(-5.0F, 17.5F, 7.0F);
-		this.field_27416.setPivot(-1.0F, 17.5F, 7.0F);
+		this.rightHindLeg.visible = true;
+		this.leftHindLeg.visible = true;
+		this.rightFrontLeg.visible = true;
+		this.leftFrontLeg.visible = true;
+		this.body.setPivot(0.0F, 16.0F, -6.0F);
+		this.body.roll = 0.0F;
+		this.rightHindLeg.setPivot(-5.0F, 17.5F, 7.0F);
+		this.leftHindLeg.setPivot(-1.0F, 17.5F, 7.0F);
 		if (foxEntity.isInSneakingPose()) {
-			this.torso.pitch = 1.6755161F;
+			this.body.pitch = 1.6755161F;
 			float i = foxEntity.getBodyRotationHeightOffset(h);
-			this.torso.setPivot(0.0F, 16.0F + foxEntity.getBodyRotationHeightOffset(h), -6.0F);
+			this.body.setPivot(0.0F, 16.0F + foxEntity.getBodyRotationHeightOffset(h), -6.0F);
 			this.head.setPivot(-1.0F, 16.5F + i, -3.0F);
 			this.head.yaw = 0.0F;
 		} else if (foxEntity.isSleeping()) {
-			this.torso.roll = (float) (-Math.PI / 2);
-			this.torso.setPivot(0.0F, 21.0F, -6.0F);
+			this.body.roll = (float) (-Math.PI / 2);
+			this.body.setPivot(0.0F, 21.0F, -6.0F);
 			this.tail.pitch = (float) (-Math.PI * 5.0 / 6.0);
 			if (this.child) {
 				this.tail.pitch = -2.1816616F;
-				this.torso.setPivot(0.0F, 21.0F, -2.0F);
+				this.body.setPivot(0.0F, 21.0F, -2.0F);
 			}
 
 			this.head.setPivot(1.0F, 19.49F, -3.0F);
 			this.head.pitch = 0.0F;
 			this.head.yaw = (float) (-Math.PI * 2.0 / 3.0);
 			this.head.roll = 0.0F;
-			this.field_27415.visible = false;
-			this.field_27416.visible = false;
-			this.field_27417.visible = false;
-			this.field_27418.visible = false;
+			this.rightHindLeg.visible = false;
+			this.leftHindLeg.visible = false;
+			this.rightFrontLeg.visible = false;
+			this.leftFrontLeg.visible = false;
 		} else if (foxEntity.isSitting()) {
-			this.torso.pitch = (float) (Math.PI / 6);
-			this.torso.setPivot(0.0F, 9.0F, -3.0F);
+			this.body.pitch = (float) (Math.PI / 6);
+			this.body.setPivot(0.0F, 9.0F, -3.0F);
 			this.tail.pitch = (float) (Math.PI / 4);
 			this.tail.setPivot(-4.0F, 15.0F, -2.0F);
 			this.head.setPivot(-1.0F, 10.0F, -0.25F);
@@ -115,12 +115,12 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 				this.head.setPivot(-1.0F, 13.0F, -3.75F);
 			}
 
-			this.field_27415.pitch = (float) (-Math.PI * 5.0 / 12.0);
-			this.field_27415.setPivot(-5.0F, 21.5F, 6.75F);
-			this.field_27416.pitch = (float) (-Math.PI * 5.0 / 12.0);
-			this.field_27416.setPivot(-1.0F, 21.5F, 6.75F);
-			this.field_27417.pitch = (float) (-Math.PI / 12);
-			this.field_27418.pitch = (float) (-Math.PI / 12);
+			this.rightHindLeg.pitch = (float) (-Math.PI * 5.0 / 12.0);
+			this.rightHindLeg.setPivot(-5.0F, 21.5F, 6.75F);
+			this.leftHindLeg.pitch = (float) (-Math.PI * 5.0 / 12.0);
+			this.leftHindLeg.setPivot(-1.0F, 21.5F, 6.75F);
+			this.rightFrontLeg.pitch = (float) (-Math.PI / 12);
+			this.leftFrontLeg.pitch = (float) (-Math.PI / 12);
 		}
 	}
 
@@ -131,7 +131,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.torso, this.field_27415, this.field_27416, this.field_27417, this.field_27418);
+		return ImmutableList.<ModelPart>of(this.body, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg);
 	}
 
 	public void setAngles(T foxEntity, float f, float g, float h, float i, float j) {
@@ -148,20 +148,20 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 
 		if (foxEntity.isInSneakingPose()) {
 			float k = MathHelper.cos(h) * 0.01F;
-			this.torso.yaw = k;
-			this.field_27415.roll = k;
-			this.field_27416.roll = k;
-			this.field_27417.roll = k / 2.0F;
-			this.field_27418.roll = k / 2.0F;
+			this.body.yaw = k;
+			this.rightHindLeg.roll = k;
+			this.leftHindLeg.roll = k;
+			this.rightFrontLeg.roll = k / 2.0F;
+			this.leftFrontLeg.roll = k / 2.0F;
 		}
 
 		if (foxEntity.isWalking()) {
 			float k = 0.1F;
 			this.legPitchModifier += 0.67F;
-			this.field_27415.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F) * 0.1F;
-			this.field_27416.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F + (float) Math.PI) * 0.1F;
-			this.field_27417.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F + (float) Math.PI) * 0.1F;
-			this.field_27418.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F) * 0.1F;
+			this.rightHindLeg.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F) * 0.1F;
+			this.leftHindLeg.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F + (float) Math.PI) * 0.1F;
+			this.rightFrontLeg.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F + (float) Math.PI) * 0.1F;
+			this.leftFrontLeg.pitch = MathHelper.cos(this.legPitchModifier * 0.4662F) * 0.1F;
 		}
 	}
 }

@@ -63,7 +63,7 @@ public class AreaHelper {
 
 	@Nullable
 	private BlockPos method_30492(BlockPos blockPos) {
-		int i = Math.max(this.world.getBottomHeightLimit(), blockPos.getY() - 21);
+		int i = Math.max(this.world.getSectionCount(), blockPos.getY() - 21);
 
 		while (blockPos.getY() > i && validStateInsidePortal(this.world.getBlockState(blockPos.down()))) {
 			blockPos = blockPos.down();

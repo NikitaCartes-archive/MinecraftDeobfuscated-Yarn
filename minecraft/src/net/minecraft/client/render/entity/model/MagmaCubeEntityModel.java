@@ -14,16 +14,16 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class MagmaCubeEntityModel<T extends SlimeEntity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27441;
-	private final ModelPart[] field_3427 = new ModelPart[8];
+	private final ModelPart root;
+	private final ModelPart[] slices = new ModelPart[8];
 
-	public MagmaCubeEntityModel(ModelPart modelPart) {
-		this.field_27441 = modelPart;
-		Arrays.setAll(this.field_3427, i -> modelPart.getChild(method_32015(i)));
+	public MagmaCubeEntityModel(ModelPart root) {
+		this.root = root;
+		Arrays.setAll(this.slices, i -> root.getChild(getSliceName(i)));
 	}
 
-	private static String method_32015(int i) {
-		return "cube" + i;
+	private static String getSliceName(int index) {
+		return "cube" + index;
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -41,7 +41,7 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends SinglePartEntit
 				k = 19;
 			}
 
-			modelPartData.addChild(method_32015(i), ModelPartBuilder.create().uv(j, k).cuboid(-4.0F, (float)(16 + i), -4.0F, 8.0F, 1.0F, 8.0F), ModelTransform.NONE);
+			modelPartData.addChild(getSliceName(i), ModelPartBuilder.create().uv(j, k).cuboid(-4.0F, (float)(16 + i), -4.0F, 8.0F, 1.0F, 8.0F), ModelTransform.NONE);
 		}
 
 		modelPartData.addChild("inside_cube", ModelPartBuilder.create().uv(0, 16).cuboid(-2.0F, 18.0F, -2.0F, 4.0F, 4.0F, 4.0F), ModelTransform.NONE);
@@ -57,13 +57,13 @@ public class MagmaCubeEntityModel<T extends SlimeEntity> extends SinglePartEntit
 			i = 0.0F;
 		}
 
-		for (int j = 0; j < this.field_3427.length; j++) {
-			this.field_3427[j].pivotY = (float)(-(4 - j)) * i * 1.7F;
+		for (int j = 0; j < this.slices.length; j++) {
+			this.slices[j].pivotY = (float)(-(4 - j)) * i * 1.7F;
 		}
 	}
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27441;
+		return this.root;
 	}
 }

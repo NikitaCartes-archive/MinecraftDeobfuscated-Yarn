@@ -192,6 +192,10 @@ public abstract class AbstractBlock {
 		return AbstractBlock.OffsetType.NONE;
 	}
 
+	public float getMaxModelOffset() {
+		return 0.25F;
+	}
+
 	/**
 	 * Applies a block rotation to a block state.
 	 * 
@@ -569,16 +573,17 @@ public abstract class AbstractBlock {
 		}
 
 		public Vec3d getModelOffset(BlockView world, BlockPos pos) {
-			AbstractBlock.OffsetType offsetType = this.getBlock().getOffsetType();
+			Block block = this.getBlock();
+			AbstractBlock.OffsetType offsetType = block.getOffsetType();
 			if (offsetType == AbstractBlock.OffsetType.NONE) {
 				return Vec3d.ZERO;
 			} else {
 				long l = MathHelper.hashCode(pos.getX(), 0, pos.getZ());
-				return new Vec3d(
-					((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5,
-					offsetType == AbstractBlock.OffsetType.XYZ ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0,
-					((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5
-				);
+				float f = block.getMaxModelOffset();
+				double d = MathHelper.clamp(((double)((float)(l & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+				double e = offsetType == AbstractBlock.OffsetType.XYZ ? ((double)((float)(l >> 4 & 15L) / 15.0F) - 1.0) * 0.2 : 0.0;
+				double g = MathHelper.clamp(((double)((float)(l >> 8 & 15L) / 15.0F) - 0.5) * 0.5, (double)(-f), (double)f);
+				return new Vec3d(d, e, g);
 			}
 		}
 
@@ -1030,8 +1035,8 @@ public abstract class AbstractBlock {
 			return this;
 		}
 
-		public AbstractBlock.Settings mapColor(MapColor mapColor) {
-			this.mapColorProvider = blockState -> mapColor;
+		public AbstractBlock.Settings mapColor(MapColor color) {
+			this.mapColorProvider = state -> color;
 			return this;
 		}
 	}

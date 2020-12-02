@@ -122,7 +122,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
 		if (data == null) {
-			for (int i = this.field_27240.getBottomSectionLimit(); i < this.field_27240.getTopSectionLimit(); i++) {
+			for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); i++) {
 				this.loadedElements.put(ChunkSectionPos.from(pos, i).asLong(), Optional.empty());
 			}
 		} else {
@@ -133,7 +133,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			Dynamic<T> dynamic2 = this.dataFixer.update(this.dataFixType.getTypeReference(), dynamic, j, k);
 			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
 
-			for (int l = this.field_27240.getBottomSectionLimit(); l < this.field_27240.getTopSectionLimit(); l++) {
+			for (int l = this.field_27240.method_32891(); l < this.field_27240.getTopSectionLimit(); l++) {
 				long m = ChunkSectionPos.from(pos, l).asLong();
 				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
 					.result()
@@ -162,7 +162,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 
-		for (int i = this.field_27240.getBottomSectionLimit(); i < this.field_27240.getTopSectionLimit(); i++) {
+		for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); i++) {
 			long l = ChunkSectionPos.from(chunkPos, i).asLong();
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
@@ -204,7 +204,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	public void method_20436(ChunkPos chunkPos) {
 		if (!this.unsavedElements.isEmpty()) {
-			for (int i = this.field_27240.getBottomSectionLimit(); i < this.field_27240.getTopSectionLimit(); i++) {
+			for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); i++) {
 				long l = ChunkSectionPos.from(chunkPos, i).asLong();
 				if (this.unsavedElements.contains(l)) {
 					this.save(chunkPos);

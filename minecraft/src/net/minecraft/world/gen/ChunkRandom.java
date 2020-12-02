@@ -3,8 +3,6 @@ package net.minecraft.world.gen;
 import java.util.Random;
 
 public class ChunkRandom extends Random {
-	private int sampleCount;
-
 	public ChunkRandom() {
 	}
 
@@ -24,11 +22,6 @@ public class ChunkRandom extends Random {
 		for (int i = 0; i < count; i++) {
 			this.next(1);
 		}
-	}
-
-	protected int next(int bound) {
-		this.sampleCount++;
-		return super.next(bound);
 	}
 
 	/**

@@ -175,8 +175,8 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 	}
 
 	@Override
-	protected Path getOutput(Identifier identifier) {
-		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/items/" + identifier.getPath() + ".json");
+	protected Path getOutput(Identifier id) {
+		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/items/" + id.getPath() + ".json");
 	}
 
 	@Override

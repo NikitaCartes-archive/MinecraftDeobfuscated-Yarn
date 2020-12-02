@@ -108,17 +108,17 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.itemsBeingCooked.clear();
-		Inventories.fromTag(compoundTag, this.itemsBeingCooked);
-		if (compoundTag.contains("CookingTimes", 11)) {
-			int[] is = compoundTag.getIntArray("CookingTimes");
+		Inventories.fromTag(tag, this.itemsBeingCooked);
+		if (tag.contains("CookingTimes", 11)) {
+			int[] is = tag.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 
-		if (compoundTag.contains("CookingTotalTimes", 11)) {
-			int[] is = compoundTag.getIntArray("CookingTotalTimes");
+		if (tag.contains("CookingTotalTimes", 11)) {
+			int[] is = tag.getIntArray("CookingTotalTimes");
 			System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
 		}
 	}

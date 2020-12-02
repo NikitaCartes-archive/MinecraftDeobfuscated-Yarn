@@ -1458,8 +1458,9 @@ public class Items {
 		"powder_snow_bucket",
 		new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
-	public static final Item field_28042 = register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
-	public static final Item field_28043 = register(Blocks.DRIPSTONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item POINTED_DRIPSTONE = register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
+	public static final Item DRIPSTONE_BLOCK = register(Blocks.DRIPSTONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item SCULK_SENSOR = register(Blocks.SCULK_SENSOR, ItemGroup.REDSTONE);
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

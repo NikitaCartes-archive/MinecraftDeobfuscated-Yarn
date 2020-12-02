@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.block.enums.BedPart;
+import net.minecraft.block.enums.SculkSensorPhase;
 import net.minecraft.block.sapling.AcaciaSaplingGenerator;
 import net.minecraft.block.sapling.BirchSaplingGenerator;
 import net.minecraft.block.sapling.DarkOakSaplingGenerator;
@@ -2949,6 +2950,17 @@ public class Blocks {
 	public static final Block POWDER_SNOW = register(
 		"powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.1F).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds())
 	);
+	public static final Block SCULK_SENSOR = register(
+		"sculk_sensor",
+		new SculkSensorBlock(
+			AbstractBlock.Settings.of(Material.SCULK, MapColor.CYAN)
+				.strength(1.5F)
+				.sounds(BlockSoundGroup.SCULK_SENSOR)
+				.luminance(state -> 1)
+				.emissiveLighting((state, world, pos) -> SculkSensorBlock.getPhase(state) == SculkSensorPhase.ACTIVE),
+			8
+		)
+	);
 	public static final Block WEATHERED_COPPER_BLOCK = register(
 		"weathered_copper_block",
 		new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.WARPED_NYLIUM).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER))
@@ -3019,14 +3031,12 @@ public class Blocks {
 		"waxed_lightly_weathered_copper", new Block(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK))
 	);
 	public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER = register(
-		"waxed_semi_weathered_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK), WEATHERED_CUT_COPPER)
+		"waxed_semi_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK))
 	);
 	public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER = register(
-		"waxed_lightly_weathered_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK), SEMI_WEATHERED_CUT_COPPER)
+		"waxed_lightly_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK))
 	);
-	public static final Block WAXED_CUT_COPPER = register(
-		"waxed_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(COPPER_BLOCK), LIGHTLY_WEATHERED_CUT_COPPER)
-	);
+	public static final Block WAXED_CUT_COPPER = register("waxed_cut_copper", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
 	public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS = register(
 		"waxed_semi_weathered_cut_copper_stairs",
 		new StairsBlock(WAXED_SEMI_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK))
@@ -3069,7 +3079,7 @@ public class Blocks {
 	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
-		return blockState -> blockState.get(Properties.LIT) ? litLevel : 0;
+		return state -> state.get(Properties.LIT) ? litLevel : 0;
 	}
 
 	/**
@@ -3095,7 +3105,7 @@ public class Blocks {
 	private static BedBlock createBedBlock(DyeColor color) {
 		return new BedBlock(
 			color,
-			AbstractBlock.Settings.of(Material.WOOL, blockState -> blockState.get(BedBlock.PART) == BedPart.FOOT ? color.getMapColor() : MapColor.WEB)
+			AbstractBlock.Settings.of(Material.WOOL, state -> state.get(BedBlock.PART) == BedPart.FOOT ? color.getMapColor() : MapColor.WEB)
 				.sounds(BlockSoundGroup.WOOD)
 				.strength(0.2F)
 				.nonOpaque()
@@ -3104,14 +3114,14 @@ public class Blocks {
 
 	private static PillarBlock createLogBlock(MapColor topMaterialColor, MapColor sideMaterialColor) {
 		return new PillarBlock(
-			AbstractBlock.Settings.of(Material.WOOD, blockState -> blockState.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMaterialColor : sideMaterialColor)
+			AbstractBlock.Settings.of(Material.WOOD, state -> state.get(PillarBlock.AXIS) == Direction.Axis.Y ? topMaterialColor : sideMaterialColor)
 				.strength(2.0F)
 				.sounds(BlockSoundGroup.WOOD)
 		);
 	}
 
 	private static Block createNetherStemBlock(MapColor materialColor) {
-		return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, blockState -> materialColor).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM));
+		return new PillarBlock(AbstractBlock.Settings.of(Material.NETHER_WOOD, state -> materialColor).strength(2.0F).sounds(BlockSoundGroup.NETHER_STEM));
 	}
 
 	/**
@@ -3158,8 +3168,8 @@ public class Blocks {
 	}
 
 	private static ShulkerBoxBlock createShulkerBoxBlock(DyeColor color, AbstractBlock.Settings settings) {
-		AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> {
-			BlockEntity blockEntity = blockView.getBlockEntity(blockPos);
+		AbstractBlock.ContextPredicate contextPredicate = (state, world, pos) -> {
+			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (!(blockEntity instanceof ShulkerBoxBlockEntity)) {
 				return true;
 			} else {
@@ -3171,7 +3181,7 @@ public class Blocks {
 	}
 
 	private static PistonBlock createPistonBlock(boolean sticky) {
-		AbstractBlock.ContextPredicate contextPredicate = (blockState, blockView, blockPos) -> !(Boolean)blockState.get(PistonBlock.EXTENDED);
+		AbstractBlock.ContextPredicate contextPredicate = (state, world, pos) -> !(Boolean)state.get(PistonBlock.EXTENDED);
 		return new PistonBlock(
 			sticky, AbstractBlock.Settings.of(Material.PISTON).strength(1.5F).solidBlock(Blocks::never).suffocates(contextPredicate).blockVision(contextPredicate)
 		);

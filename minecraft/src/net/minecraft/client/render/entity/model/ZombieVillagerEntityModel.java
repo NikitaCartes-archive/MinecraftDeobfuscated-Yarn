@@ -13,7 +13,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 
 @Environment(EnvType.CLIENT)
 public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEntityModel<T> implements ModelWithHat {
-	private final ModelPart hat = this.helmet.getChild("hat_rim");
+	private final ModelPart hatRim = this.hat.getChild("hat_rim");
 
 	public ZombieVillagerEntityModel(ModelPart modelPart) {
 		super(modelPart);
@@ -76,13 +76,13 @@ public class ZombieVillagerEntityModel<T extends ZombieEntity> extends BipedEnti
 
 	public void setAngles(T zombieEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(zombieEntity, f, g, h, i, j);
-		CrossbowPosing.method_29352(this.leftArm, this.rightArm, zombieEntity.isAttacking(), this.handSwingProgress, h);
+		CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, zombieEntity.isAttacking(), this.handSwingProgress, h);
 	}
 
 	@Override
 	public void setHatVisible(boolean visible) {
 		this.head.visible = visible;
-		this.helmet.visible = visible;
 		this.hat.visible = visible;
+		this.hatRim.visible = visible;
 	}
 }

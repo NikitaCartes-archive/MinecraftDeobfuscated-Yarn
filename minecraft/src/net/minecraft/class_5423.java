@@ -24,8 +24,8 @@ public interface class_5423 extends EntityView, WorldView, ModifiableTestableWor
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
-		return EntityView.super.intersectsEntities(except, shape);
+	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
+		return EntityView.super.intersectsEntities(entity, shape);
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public interface class_5423 extends EntityView, WorldView, ModifiableTestableWor
 
 	DynamicRegistryManager getRegistryManager();
 
-	default Optional<RegistryKey<Biome>> method_31081(BlockPos blockPos) {
-		return this.getRegistryManager().get(Registry.BIOME_KEY).getKey(this.getBiome(blockPos));
+	default Optional<RegistryKey<Biome>> getBiomeKey(BlockPos pos) {
+		return this.getRegistryManager().get(Registry.BIOME_KEY).getKey(this.getBiome(pos));
 	}
 }

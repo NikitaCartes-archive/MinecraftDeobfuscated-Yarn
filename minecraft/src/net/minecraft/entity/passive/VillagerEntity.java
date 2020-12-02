@@ -378,7 +378,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 	private boolean needRestock() {
 		for (TradeOffer tradeOffer : this.getOffers()) {
-			if (tradeOffer.method_21834()) {
+			if (tradeOffer.hasAvailableUses()) {
 				return true;
 			}
 		}
@@ -410,7 +410,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		return this.canRestock() && this.needRestock();
 	}
 
-	private void method_21723() {
+	private void restockAndUpdatePricesOnDemand() {
 		int i = 2 - this.restocksToday;
 		if (i > 0) {
 			for (TradeOffer tradeOffer : this.getOffers()) {
@@ -587,11 +587,11 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			this.notifyDeath(entity);
 		}
 
-		this.method_30958();
+		this.releaseAllTickets();
 		super.onDeath(source);
 	}
 
-	private void method_30958() {
+	private void releaseAllTickets() {
 		this.releaseTicketFor(MemoryModuleType.HOME);
 		this.releaseTicketFor(MemoryModuleType.JOB_SITE);
 		this.releaseTicketFor(MemoryModuleType.POTENTIAL_JOB_SITE);
@@ -718,7 +718,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 
 		if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
-			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_31081(this.getBlockPos()))));
+			this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
 		}
 
 		if (spawnReason == SpawnReason.STRUCTURE) {
@@ -732,7 +732,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		double d = this.random.nextDouble();
 		VillagerType villagerType;
 		if (d < 0.5) {
-			villagerType = VillagerType.forBiome(serverWorld.method_31081(this.getBlockPos()));
+			villagerType = VillagerType.forBiome(serverWorld.getBiomeKey(this.getBlockPos()));
 		} else if (d < 0.75) {
 			villagerType = this.getVillagerData().getType();
 		} else {
@@ -759,7 +759,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 
 			witchEntity.setPersistent();
 			world.spawnEntityAndPassengers(witchEntity);
-			this.method_30958();
+			this.releaseAllTickets();
 			this.discard();
 		} else {
 			super.onStruckByLightning(world, lightning);
@@ -872,7 +872,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		for (int i = 0; i < 10; i++) {
 			double d = (double)(world.random.nextInt(16) - 8);
 			double e = (double)(world.random.nextInt(16) - 8);
-			BlockPos blockPos2 = this.method_30023(blockPos, d, e);
+			BlockPos blockPos2 = this.getHighestOpenPositionOnOffset(blockPos, d, e);
 			if (blockPos2 != null) {
 				IronGolemEntity ironGolemEntity = EntityType.IRON_GOLEM.create(world, null, null, null, blockPos2, SpawnReason.MOB_SUMMONED, false, false);
 				if (ironGolemEntity != null) {
@@ -890,18 +890,18 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Nullable
-	private BlockPos method_30023(BlockPos blockPos, double d, double e) {
+	private BlockPos getHighestOpenPositionOnOffset(BlockPos pos, double x, double z) {
 		int i = 6;
-		BlockPos blockPos2 = blockPos.add(d, 6.0, e);
-		BlockState blockState = this.world.getBlockState(blockPos2);
+		BlockPos blockPos = pos.add(x, 6.0, z);
+		BlockState blockState = this.world.getBlockState(blockPos);
 
 		for (int j = 6; j >= -6; j--) {
-			BlockPos blockPos3 = blockPos2;
+			BlockPos blockPos2 = blockPos;
 			BlockState blockState2 = blockState;
-			blockPos2 = blockPos2.down();
-			blockState = this.world.getBlockState(blockPos2);
+			blockPos = blockPos.down();
+			blockState = this.world.getBlockState(blockPos);
 			if ((blockState2.isAir() || blockState2.getMaterial().isLiquid()) && blockState.getMaterial().blocksLight()) {
-				return blockPos3;
+				return blockPos2;
 			}
 		}
 
@@ -932,7 +932,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private void clearDailyRestockCount() {
-		this.method_21723();
+		this.restockAndUpdatePricesOnDemand();
 		this.restocksToday = 0;
 	}
 

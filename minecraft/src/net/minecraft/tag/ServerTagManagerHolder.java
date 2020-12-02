@@ -7,6 +7,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.event.GameEvent;
 
 /**
  * A class containing the single static instance of {@link TagManager} on the server.
@@ -18,6 +19,9 @@ public class ServerTagManagerHolder {
 		TagGroup.create((Map<Identifier, Tag<Fluid>>)FluidTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))),
 		TagGroup.create(
 			(Map<Identifier, Tag<EntityType<?>>>)EntityTypeTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))
+		),
+		TagGroup.create(
+			(Map<Identifier, Tag<GameEvent>>)GameEventTags.getRequiredTags().stream().collect(Collectors.toMap(Tag.Identified::getId, identified -> identified))
 		)
 	);
 

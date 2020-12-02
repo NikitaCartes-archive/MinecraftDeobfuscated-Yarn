@@ -35,8 +35,6 @@ public enum DyeColor implements StringIdentifiable {
 	private final int id;
 	private final String name;
 	private final MapColor mapColor;
-	private final int color;
-	private final int colorSwapped;
 	private final float[] colorComponents;
 	private final int fireworkColor;
 	private final int signColor;
@@ -44,13 +42,11 @@ public enum DyeColor implements StringIdentifiable {
 	private DyeColor(int woolId, String name, int color, MapColor mapColor, int fireworkColor, int signColor) {
 		this.id = woolId;
 		this.name = name;
-		this.color = color;
 		this.mapColor = mapColor;
 		this.signColor = signColor;
 		int j = (color & 0xFF0000) >> 16;
 		int k = (color & 0xFF00) >> 8;
 		int l = (color & 0xFF) >> 0;
-		this.colorSwapped = l << 16 | k << 8 | j << 0;
 		this.colorComponents = new float[]{(float)j / 255.0F, (float)k / 255.0F, (float)l / 255.0F};
 		this.fireworkColor = fireworkColor;
 	}

@@ -229,6 +229,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.LARGE_AMETHYST_BUD, renderLayer3);
 		hashMap.put(Blocks.AMETHYST_CLUSTER, renderLayer3);
 		hashMap.put(Blocks.LIGHTNING_ROD, renderLayer3);
+		hashMap.put(Blocks.SCULK_SENSOR, renderLayer3);
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		hashMap.put(Blocks.ICE, renderLayer4);
 		hashMap.put(Blocks.NETHER_PORTAL, renderLayer4);

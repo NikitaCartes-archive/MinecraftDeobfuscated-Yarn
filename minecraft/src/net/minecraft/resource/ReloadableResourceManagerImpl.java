@@ -26,7 +26,6 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.<String, NamespaceResourceManager>newHashMap();
 	private final List<ResourceReloadListener> listeners = Lists.<ResourceReloadListener>newArrayList();
-	private final List<ResourceReloadListener> initialListeners = Lists.<ResourceReloadListener>newArrayList();
 	private final Set<String> namespaces = Sets.<String>newLinkedHashSet();
 	private final List<ResourcePack> packs = Lists.<ResourcePack>newArrayList();
 	private final ResourceType type;
@@ -111,31 +110,14 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 	@Override
 	public void registerListener(ResourceReloadListener listener) {
 		this.listeners.add(listener);
-		this.initialListeners.add(listener);
-	}
-
-	protected ResourceReloadMonitor beginReloadInner(
-		Executor prepareExecutor, Executor applyExecutor, List<ResourceReloadListener> listeners, CompletableFuture<Unit> initialStage
-	) {
-		ResourceReloadMonitor resourceReloadMonitor;
-		if (LOGGER.isDebugEnabled()) {
-			resourceReloadMonitor = new ProfilingResourceReloader(
-				this, Lists.<ResourceReloadListener>newArrayList(listeners), prepareExecutor, applyExecutor, initialStage
-			);
-		} else {
-			resourceReloadMonitor = ResourceReloader.create(this, Lists.<ResourceReloadListener>newArrayList(listeners), prepareExecutor, applyExecutor, initialStage);
-		}
-
-		this.initialListeners.clear();
-		return resourceReloadMonitor;
 	}
 
 	@Override
 	public ResourceReloadMonitor beginMonitoredReload(
 		Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs
 	) {
-		this.clear();
 		LOGGER.info("Reloading ResourceManager: {}", () -> (String)packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
+		this.clear();
 
 		for (ResourcePack resourcePack : packs) {
 			try {
@@ -146,7 +128,9 @@ public class ReloadableResourceManagerImpl implements ReloadableResourceManager 
 			}
 		}
 
-		return this.beginReloadInner(prepareExecutor, applyExecutor, this.listeners, initialStage);
+		return (ResourceReloadMonitor)(LOGGER.isDebugEnabled()
+			? new ProfilingResourceReloader(this, Lists.<ResourceReloadListener>newArrayList(this.listeners), prepareExecutor, applyExecutor, initialStage)
+			: ResourceReloader.create(this, Lists.<ResourceReloadListener>newArrayList(this.listeners), prepareExecutor, applyExecutor, initialStage));
 	}
 
 	@Environment(EnvType.CLIENT)

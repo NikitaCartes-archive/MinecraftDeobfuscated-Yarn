@@ -18,7 +18,7 @@ public class PoweredRailBlock extends AbstractRailBlock {
 	protected PoweredRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(SHAPE, RailShape.NORTH_SOUTH).with(POWERED, Boolean.valueOf(false)).with(field_27096, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(SHAPE, RailShape.NORTH_SOUTH).with(POWERED, Boolean.valueOf(false)).with(WATERLOGGED, Boolean.valueOf(false))
 		);
 	}
 
@@ -259,6 +259,6 @@ public class PoweredRailBlock extends AbstractRailBlock {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(SHAPE, POWERED, field_27096);
+		builder.add(SHAPE, POWERED, WATERLOGGED);
 	}
 }

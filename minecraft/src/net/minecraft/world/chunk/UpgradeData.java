@@ -43,7 +43,7 @@ public class UpgradeData {
 	private static final Set<UpgradeData.Logic> CALLBACK_LOGICS = Sets.<UpgradeData.Logic>newHashSet();
 
 	private UpgradeData(HeightLimitView heightLimitView) {
-		this.centerIndicesToUpgrade = new int[heightLimitView.getSectionCount()][];
+		this.centerIndicesToUpgrade = new int[heightLimitView.method_32890()][];
 	}
 
 	public UpgradeData(CompoundTag tag, HeightLimitView heightLimitView) {
@@ -98,7 +98,7 @@ public class UpgradeData {
 			Direction[] directions = Direction.values();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (BlockPos blockPos : BlockPos.iterate(k, world.getBottomHeightLimit(), m, l, world.getTopHeightLimit() - 1, n)) {
+			for (BlockPos blockPos : BlockPos.iterate(k, world.getSectionCount(), m, l, world.getTopHeightLimit() - 1, n)) {
 				BlockState blockState = world.getBlockState(blockPos);
 				BlockState blockState2 = blockState;
 

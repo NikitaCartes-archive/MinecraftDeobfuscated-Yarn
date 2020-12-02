@@ -34,8 +34,8 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 	}
 
 	@Override
-	protected Path getOutput(Identifier identifier) {
-		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/entity_types/" + identifier.getPath() + ".json");
+	protected Path getOutput(Identifier id) {
+		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/entity_types/" + id.getPath() + ".json");
 	}
 
 	@Override

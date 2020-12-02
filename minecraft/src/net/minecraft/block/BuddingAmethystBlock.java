@@ -26,7 +26,7 @@ public class BuddingAmethystBlock extends AmethystBlock {
 			BlockPos blockPos = pos.offset(direction);
 			BlockState blockState = world.getBlockState(blockPos);
 			Block block = null;
-			if (method_31626(blockState)) {
+			if (canGrowIn(blockState)) {
 				block = Blocks.SMALL_AMETHYST_BUD;
 			} else if (blockState.isOf(Blocks.SMALL_AMETHYST_BUD) && blockState.get(AmethystClusterBlock.FACING) == direction) {
 				block = Blocks.MEDIUM_AMETHYST_BUD;
@@ -45,7 +45,7 @@ public class BuddingAmethystBlock extends AmethystBlock {
 		}
 	}
 
-	public static boolean method_31626(BlockState blockState) {
-		return blockState.isAir() || blockState.isOf(Blocks.WATER) && blockState.getFluidState().getLevel() == 8;
+	public static boolean canGrowIn(BlockState state) {
+		return state.isAir() || state.isOf(Blocks.WATER) && state.getFluidState().getLevel() == 8;
 	}
 }

@@ -59,6 +59,7 @@ import net.minecraft.util.math.IntRange;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class WolfEntity extends TameableEntity implements Angerable {
 	private static final TrackedData<Boolean> BEGGING = DataTracker.registerData(WolfEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -203,6 +204,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			} else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
 				if (this.shakeProgress == 0.0F) {
 					this.playSound(SoundEvents.ENTITY_WOLF_SHAKE, this.getSoundVolume(), (this.random.nextFloat() - this.random.nextFloat()) * 0.2F + 1.0F);
+					this.emitGameEvent(GameEvent.WOLF_SHAKING);
 				}
 
 				this.lastShakeProgress = this.shakeProgress;

@@ -96,7 +96,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 	}
 
 	public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+		Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
 		boolean bl = world.getDifficulty() != Difficulty.PEACEFUL
 			&& isSpawnDark(world, pos, random)
 			&& (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));

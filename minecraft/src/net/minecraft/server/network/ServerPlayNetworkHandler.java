@@ -413,7 +413,7 @@ public class ServerPlayNetworkHandler implements class_5629, ServerPlayPacketLis
 	}
 
 	private boolean method_29780(Entity entity) {
-		return entity.world.method_29546(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0)).allMatch(AbstractBlock.AbstractBlockState::isAir);
+		return entity.world.getStatesInBox(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0)).allMatch(AbstractBlock.AbstractBlockState::isAir);
 	}
 
 	@Override
@@ -952,7 +952,7 @@ public class ServerPlayNetworkHandler implements class_5629, ServerPlayPacketLis
 			case START_DESTROY_BLOCK:
 			case ABORT_DESTROY_BLOCK:
 			case STOP_DESTROY_BLOCK:
-				this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.server.getWorldHeight());
+				this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopHeightLimit());
 				return;
 			default:
 				throw new IllegalArgumentException("Invalid player action");
@@ -983,20 +983,21 @@ public class ServerPlayNetworkHandler implements class_5629, ServerPlayPacketLis
 		BlockPos blockPos = blockHitResult.getBlockPos();
 		Direction direction = blockHitResult.getSide();
 		this.player.updateLastActionTime();
-		if (blockPos.getY() < this.server.getWorldHeight()) {
+		int i = this.player.world.getTopHeightLimit();
+		if (blockPos.getY() < i) {
 			if (this.requestedTeleportPos == null
 				&& this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0
 				&& serverWorld.canPlayerModifyAt(this.player, blockPos)) {
 				ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
-				if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= this.server.getWorldHeight() - 1 && canPlace(this.player, itemStack)) {
-					Text text = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
+				if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
+					Text text = new TranslatableText("build.tooHigh", i).formatted(Formatting.RED);
 					this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO, Util.NIL_UUID));
 				} else if (actionResult.shouldSwingHand()) {
 					this.player.swingHand(hand, true);
 				}
 			}
 		} else {
-			Text text2 = new TranslatableText("build.tooHigh", this.server.getWorldHeight()).formatted(Formatting.RED);
+			Text text2 = new TranslatableText("build.tooHigh", i).formatted(Formatting.RED);
 			this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text2, MessageType.GAME_INFO, Util.NIL_UUID));
 		}
 

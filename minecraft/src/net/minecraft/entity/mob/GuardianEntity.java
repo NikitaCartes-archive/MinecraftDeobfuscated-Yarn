@@ -48,11 +48,11 @@ import net.minecraft.world.WorldView;
 public class GuardianEntity extends HostileEntity {
 	private static final TrackedData<Boolean> SPIKES_RETRACTED = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Integer> BEAM_TARGET_ID = DataTracker.registerData(GuardianEntity.class, TrackedDataHandlerRegistry.INTEGER);
-	private float spikesExtension;
-	private float prevSpikesExtension;
-	private float spikesExtensionRate;
 	private float tailAngle;
 	private float prevTailAngle;
+	private float spikesExtensionRate;
+	private float spikesExtension;
+	private float prevSpikesExtension;
 	private LivingEntity cachedBeamTarget;
 	private int beamTicks;
 	private boolean flopping;
@@ -63,8 +63,8 @@ public class GuardianEntity extends HostileEntity {
 		this.experiencePoints = 10;
 		this.setPathfindingPenalty(PathNodeType.WATER, 0.0F);
 		this.moveControl = new GuardianEntity.GuardianMoveControl(this);
-		this.spikesExtension = this.random.nextFloat();
-		this.prevSpikesExtension = this.spikesExtension;
+		this.tailAngle = this.random.nextFloat();
+		this.prevTailAngle = this.tailAngle;
 	}
 
 	@Override
@@ -201,7 +201,7 @@ public class GuardianEntity extends HostileEntity {
 	public void tickMovement() {
 		if (this.isAlive()) {
 			if (this.world.isClient) {
-				this.prevSpikesExtension = this.spikesExtension;
+				this.prevTailAngle = this.tailAngle;
 				if (!this.isTouchingWater()) {
 					this.spikesExtensionRate = 2.0F;
 					Vec3d vec3d = this.getVelocity();
@@ -220,14 +220,14 @@ public class GuardianEntity extends HostileEntity {
 					this.spikesExtensionRate = this.spikesExtensionRate + (0.125F - this.spikesExtensionRate) * 0.2F;
 				}
 
-				this.spikesExtension = this.spikesExtension + this.spikesExtensionRate;
-				this.prevTailAngle = this.tailAngle;
+				this.tailAngle = this.tailAngle + this.spikesExtensionRate;
+				this.prevSpikesExtension = this.spikesExtension;
 				if (!this.isInsideWaterOrBubbleColumn()) {
-					this.tailAngle = this.random.nextFloat();
+					this.spikesExtension = this.random.nextFloat();
 				} else if (this.areSpikesRetracted()) {
-					this.tailAngle = this.tailAngle + (0.0F - this.tailAngle) * 0.25F;
+					this.spikesExtension = this.spikesExtension + (0.0F - this.spikesExtension) * 0.25F;
 				} else {
-					this.tailAngle = this.tailAngle + (1.0F - this.tailAngle) * 0.06F;
+					this.spikesExtension = this.spikesExtension + (1.0F - this.spikesExtension) * 0.06F;
 				}
 
 				if (this.areSpikesRetracted() && this.isTouchingWater()) {
@@ -298,13 +298,13 @@ public class GuardianEntity extends HostileEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getSpikesExtension(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevSpikesExtension, this.spikesExtension);
+	public float getTailAngle(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.prevTailAngle, this.tailAngle);
 	}
 
 	@Environment(EnvType.CLIENT)
-	public float getTailAngle(float tickDelta) {
-		return MathHelper.lerp(tickDelta, this.prevTailAngle, this.tailAngle);
+	public float getSpikesExtension(float tickDelta) {
+		return MathHelper.lerp(tickDelta, this.prevSpikesExtension, this.spikesExtension);
 	}
 
 	public float getBeamProgress(float tickDelta) {

@@ -20,7 +20,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.ChunkTickScheduler;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeArray;
-import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.feature.StructureFeature;
 
@@ -78,12 +77,6 @@ public class ReadOnlyChunk extends ProtoChunk {
 	@Override
 	public ChunkSection[] getSectionArray() {
 		return this.wrapped.getSectionArray();
-	}
-
-	@Nullable
-	@Override
-	public LightingProvider getLightingProvider() {
-		return this.wrapped.getLightingProvider();
 	}
 
 	@Override

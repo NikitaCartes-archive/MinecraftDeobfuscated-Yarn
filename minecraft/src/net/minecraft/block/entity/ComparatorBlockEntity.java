@@ -19,9 +19,9 @@ public class ComparatorBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.outputSignal = compoundTag.getInt("OutputSignal");
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.outputSignal = tag.getInt("OutputSignal");
 	}
 
 	public int getOutputSignal() {

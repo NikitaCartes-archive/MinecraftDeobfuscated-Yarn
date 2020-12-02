@@ -13,23 +13,23 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class PhantomEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27463;
-	private final ModelPart leftWing;
+	private final ModelPart root;
+	private final ModelPart leftWingBase;
 	private final ModelPart leftWingTip;
-	private final ModelPart rightWing;
+	private final ModelPart rightWingBase;
 	private final ModelPart rightWingTip;
-	private final ModelPart tail;
-	private final ModelPart lowerTail;
+	private final ModelPart tailBase;
+	private final ModelPart tailTip;
 
-	public PhantomEntityModel(ModelPart modelPart) {
-		this.field_27463 = modelPart;
-		ModelPart modelPart2 = modelPart.getChild("body");
-		this.tail = modelPart2.getChild("tail_base");
-		this.lowerTail = this.tail.getChild("tail_tip");
-		this.leftWing = modelPart2.getChild("left_wing_base");
-		this.leftWingTip = this.leftWing.getChild("left_wing_tip");
-		this.rightWing = modelPart2.getChild("right_wing_base");
-		this.rightWingTip = this.rightWing.getChild("right_wing_tip");
+	public PhantomEntityModel(ModelPart root) {
+		this.root = root;
+		ModelPart modelPart = root.getChild("body");
+		this.tailBase = modelPart.getChild("tail_base");
+		this.tailTip = this.tailBase.getChild("tail_tip");
+		this.leftWingBase = modelPart.getChild("left_wing_base");
+		this.leftWingTip = this.leftWingBase.getChild("left_wing_tip");
+		this.rightWingBase = modelPart.getChild("right_wing_base");
+		this.rightWingTip = this.rightWingBase.getChild("right_wing_tip");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -66,18 +66,18 @@ public class PhantomEntityModel<T extends Entity> extends SinglePartEntityModel<
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27463;
+		return this.root;
 	}
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		float f = ((float)(entity.getEntityId() * 3) + animationProgress) * 0.13F;
 		float g = 16.0F;
-		this.leftWing.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
+		this.leftWingBase.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
 		this.leftWingTip.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
-		this.rightWing.roll = -this.leftWing.roll;
+		this.rightWingBase.roll = -this.leftWingBase.roll;
 		this.rightWingTip.roll = -this.leftWingTip.roll;
-		this.tail.pitch = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
-		this.lowerTail.pitch = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
+		this.tailBase.pitch = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
+		this.tailTip.pitch = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
 	}
 }

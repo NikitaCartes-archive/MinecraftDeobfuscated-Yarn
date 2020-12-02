@@ -352,7 +352,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		return !block.isAir() && !block.isIn(BlockTags.WITHER_IMMUNE);
 	}
 
-	public void method_6885() {
+	public void onSummoned() {
 		this.setInvulTimer(220);
 		this.bossBar.setPercent(0.0F);
 		this.setHealth(this.getMaxHealth() / 3.0F);

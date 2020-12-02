@@ -67,6 +67,14 @@ public class UniformIntDistribution {
 		return this.spread == 0 ? this.base : this.base + random.nextInt(this.spread + 1);
 	}
 
+	public int minValue() {
+		return this.base;
+	}
+
+	public int maxValue() {
+		return this.base + this.spread;
+	}
+
 	public boolean equals(Object object) {
 		if (this == object) {
 			return true;

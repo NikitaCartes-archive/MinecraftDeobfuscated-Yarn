@@ -42,6 +42,7 @@ import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ArmorStandEntity extends LivingEntity {
 	private static final EulerAngle DEFAULT_HEAD_ROTATION = new EulerAngle(0.0F, 0.0F, 0.0F);
@@ -140,10 +141,12 @@ public class ArmorStandEntity extends LivingEntity {
 		switch (slot.getType()) {
 			case HAND:
 				this.onEquipStack(stack);
+				this.method_32875(null, GameEvent.ARMOR_STAND_ADD_ITEM);
 				this.heldItems.set(slot.getEntitySlotId(), stack);
 				break;
 			case ARMOR:
 				this.onEquipStack(stack);
+				this.method_32875(null, GameEvent.ARMOR_STAND_ADD_ITEM);
 				this.armorItems.set(slot.getEntitySlotId(), stack);
 		}
 	}
@@ -407,6 +410,7 @@ public class ArmorStandEntity extends LivingEntity {
 				return false;
 			} else if (source.isSourceCreativePlayer()) {
 				this.playBreakSound();
+				this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
 				this.spawnBreakParticles();
 				this.kill();
 				return bl2;
@@ -414,6 +418,7 @@ public class ArmorStandEntity extends LivingEntity {
 				long l = this.world.getTime();
 				if (l - this.lastHitTime > 5L && !bl) {
 					this.world.sendEntityStatus(this, (byte)32);
+					this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
 					this.lastHitTime = l;
 				} else {
 					this.breakAndDropItem(source);
@@ -486,6 +491,7 @@ public class ArmorStandEntity extends LivingEntity {
 
 	private void onBreak(DamageSource damageSource) {
 		this.playBreakSound();
+		this.method_32875(damageSource.getAttacker(), GameEvent.BLOCK_DESTROY);
 		this.drop(damageSource);
 
 		for (int i = 0; i < this.heldItems.size(); i++) {

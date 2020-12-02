@@ -26,7 +26,6 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 	public final GameMode gameMode = this.get("gamemode", combineParser(GameMode::byId, GameMode::byName), GameMode::getName, GameMode.SURVIVAL);
 	public final String levelName = this.getString("level-name", "world");
 	public final int serverPort = this.getInt("server-port", 25565);
-	public final int maxBuildHeight = this.transformedParseInt("max-build-height", integer -> MathHelper.clamp((integer + 8) / 16 * 16, 64, 256), 256);
 	public final Boolean announcePlayerAchievements = this.getDeprecatedBoolean("announce-player-achievements");
 	public final boolean enableQuery = this.parseBoolean("enable-query", false);
 	public final int queryPort = this.getInt("query.port", 25565);

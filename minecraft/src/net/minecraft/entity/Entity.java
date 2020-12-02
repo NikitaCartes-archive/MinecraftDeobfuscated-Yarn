@@ -24,6 +24,7 @@ import net.minecraft.class_5459;
 import net.minecraft.class_5568;
 import net.minecraft.class_5569;
 import net.minecraft.class_5630;
+import net.minecraft.class_5715;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -107,6 +108,7 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.AreaHelper;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -309,7 +311,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 	@Environment(EnvType.CLIENT)
 	protected void afterSpawn() {
 		if (this.world != null) {
-			for (double d = this.getY(); d > (double)this.world.getBottomHeightLimit() && d < (double)this.world.getBottomHeightLimit(); d++) {
+			for (double d = this.getY(); d > (double)this.world.getSectionCount() && d < (double)this.world.getTopHeightLimit(); d++) {
 				this.updatePosition(this.getX(), d, this.getZ());
 				if (this.world.isSpaceEmpty(this)) {
 					break;
@@ -433,7 +435,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 	}
 
 	public void method_31473() {
-		if (this.getY() < (double)(this.world.getBottomHeightLimit() - 64)) {
+		if (this.getY() < (double)(this.world.getSectionCount() - 64)) {
 			this.destroy();
 		}
 	}
@@ -580,11 +582,14 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 						}
 
 						this.playSwimSound(h);
+						this.emitGameEvent(GameEvent.SWIM);
 					} else {
 						this.playStepSound(blockPos, blockState);
+						this.emitGameEvent(GameEvent.STEP);
 					}
 				} else if (this.distanceTraveled > this.nextFlySoundDistance && this.hasWings() && blockState.isAir()) {
 					this.nextFlySoundDistance = this.playFlySound(this.distanceTraveled);
+					this.emitGameEvent(GameEvent.FLAP);
 				}
 			}
 
@@ -864,6 +869,14 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 	protected void onBlockCollision(BlockState state) {
 	}
 
+	protected void method_32875(@Nullable Entity entity, GameEvent gameEvent) {
+		this.world.emitGameEvent(entity, gameEvent, this.blockPos);
+	}
+
+	protected void emitGameEvent(GameEvent gameEvent) {
+		this.world.emitGameEvent(this, gameEvent, this.blockPos);
+	}
+
 	protected void playStepSound(BlockPos pos, BlockState state) {
 		if (!state.getMaterial().isLiquid()) {
 			if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.field_26994 + 20) {
@@ -923,6 +936,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 		if (onGround) {
 			if (this.fallDistance > 0.0F) {
 				landedState.getBlock().onLandedUpon(this.world, landedPosition, this, this.fallDistance);
+				this.emitGameEvent(GameEvent.HIT_GROUND);
 			}
 
 			this.fallDistance = 0.0F;
@@ -1075,6 +1089,8 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 			double e = (this.random.nextDouble() * 2.0 - 1.0) * (double)this.dimensions.width;
 			this.world.addParticle(ParticleTypes.SPLASH, this.getX() + d, (double)(h + 1.0F), this.getZ() + e, vec3d.x, vec3d.y, vec3d.z);
 		}
+
+		this.emitGameEvent(GameEvent.SPLASH);
 	}
 
 	protected BlockState getLandingBlockState() {
@@ -1261,6 +1277,7 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
+			this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
 			this.scheduleVelocityUpdate();
 			return false;
 		}
@@ -1976,6 +1993,11 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 				? false
 				: this.isInvisible();
 		}
+	}
+
+	@Nullable
+	public class_5715 method_32877() {
+		return null;
 	}
 
 	@Nullable
@@ -2922,6 +2944,10 @@ public abstract class Entity implements Nameable, class_5568, CommandOutput {
 			}
 
 			this.field_26996.updateEntityPosition();
+			class_5715 lv = this.method_32877();
+			if (lv != null) {
+				lv.method_32952(this.world);
+			}
 		}
 	}
 

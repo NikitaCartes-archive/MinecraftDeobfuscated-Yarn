@@ -30,12 +30,14 @@ public class DamageSource {
 	public static final DamageSource GENERIC = new DamageSource("generic").setBypassesArmor();
 	public static final DamageSource MAGIC = new DamageSource("magic").setBypassesArmor().setUsesMagic();
 	public static final DamageSource WITHER = new DamageSource("wither").setBypassesArmor();
-	public static final DamageSource ANVIL = new DamageSource("anvil");
-	public static final DamageSource FALLING_BLOCK = new DamageSource("fallingBlock");
+	public static final DamageSource ANVIL = new DamageSource("anvil").setFallingBlock();
+	public static final DamageSource FALLING_BLOCK = new DamageSource("fallingBlock").setFallingBlock();
 	public static final DamageSource DRAGON_BREATH = new DamageSource("dragonBreath").setBypassesArmor();
 	public static final DamageSource DRYOUT = new DamageSource("dryout");
 	public static final DamageSource SWEET_BERRY_BUSH = new DamageSource("sweetBerryBush");
 	public static final DamageSource FREEZE = new DamageSource("freeze").setBypassesArmor();
+	public static final DamageSource FALLING_STALACTITE = new DamageSource("fallingStalactite").setFallingBlock();
+	private boolean fallingBlock;
 	private boolean bypassesArmor;
 	private boolean outOfWorld;
 	private boolean unblockable;
@@ -137,6 +139,10 @@ public class DamageSource {
 		return this.bypassesArmor;
 	}
 
+	public boolean isFallingBlock() {
+		return this.fallingBlock;
+	}
+
 	public float getExhaustion() {
 		return this.exhaustion;
 	}
@@ -166,6 +172,11 @@ public class DamageSource {
 	protected DamageSource setBypassesArmor() {
 		this.bypassesArmor = true;
 		this.exhaustion = 0.0F;
+		return this;
+	}
+
+	protected DamageSource setFallingBlock() {
+		this.fallingBlock = true;
 		return this;
 	}
 

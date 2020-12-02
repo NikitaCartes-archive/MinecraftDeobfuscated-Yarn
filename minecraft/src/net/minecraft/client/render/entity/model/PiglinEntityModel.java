@@ -19,7 +19,7 @@ import net.minecraft.util.math.MathHelper;
 public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T> {
 	public final ModelPart rightEar = this.head.getChild("right_ear");
 	private final ModelPart leftEar = this.head.getChild("left_ear");
-	private final ModelTransform torsoRotation = this.torso.getTransform();
+	private final ModelTransform bodyRotation = this.body.getTransform();
 	private final ModelTransform headRotation = this.head.getTransform();
 	private final ModelTransform leftArmRotation = this.leftArm.getTransform();
 	private final ModelTransform rightArmRotation = this.rightArm.getTransform();
@@ -60,7 +60,7 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 	}
 
 	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
-		this.torso.setTransform(this.torsoRotation);
+		this.body.setTransform(this.bodyRotation);
 		this.head.setTransform(this.headRotation);
 		this.leftArm.setTransform(this.leftArmRotation);
 		this.rightArm.setTransform(this.rightArmRotation);
@@ -83,9 +83,9 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 				this.leftArm.roll = this.rightArm.roll * -1.0F;
 				this.rightArm.pivotY = MathHelper.sin(n * 40.0F) * 0.5F + 1.5F;
 				this.leftArm.pivotY = MathHelper.sin(n * 40.0F) * 0.5F + 1.5F;
-				this.torso.pivotY = MathHelper.sin(n * 40.0F) * 0.35F;
+				this.body.pivotY = MathHelper.sin(n * 40.0F) * 0.35F;
 			} else if (piglinActivity == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON && this.handSwingProgress == 0.0F) {
-				this.method_29354(mobEntity);
+				this.rotateMainArm(mobEntity);
 			} else if (piglinActivity == PiglinActivity.CROSSBOW_HOLD) {
 				CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, !mobEntity.isLeftHanded());
 			} else if (piglinActivity == PiglinActivity.CROSSBOW_CHARGE) {
@@ -102,29 +102,29 @@ public class PiglinEntityModel<T extends MobEntity> extends PlayerEntityModel<T>
 				}
 			}
 		} else if (mobEntity.getType() == EntityType.ZOMBIFIED_PIGLIN) {
-			CrossbowPosing.method_29352(this.leftArm, this.rightArm, mobEntity.isAttacking(), this.handSwingProgress, h);
+			CrossbowPosing.meleeAttack(this.leftArm, this.rightArm, mobEntity.isAttacking(), this.handSwingProgress, h);
 		}
 
-		this.leftPantLeg.copyTransform(this.leftLeg);
-		this.rightPantLeg.copyTransform(this.rightLeg);
+		this.leftPants.copyTransform(this.leftLeg);
+		this.rightPants.copyTransform(this.rightLeg);
 		this.leftSleeve.copyTransform(this.leftArm);
 		this.rightSleeve.copyTransform(this.rightArm);
-		this.jacket.copyTransform(this.torso);
-		this.helmet.copyTransform(this.head);
+		this.jacket.copyTransform(this.body);
+		this.hat.copyTransform(this.head);
 	}
 
-	protected void method_29353(T mobEntity, float f) {
+	protected void animateArms(T mobEntity, float f) {
 		if (this.handSwingProgress > 0.0F
 			&& mobEntity instanceof PiglinEntity
 			&& ((PiglinEntity)mobEntity).getActivity() == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON) {
-			CrossbowPosing.method_29351(this.rightArm, this.leftArm, mobEntity, this.handSwingProgress, f);
+			CrossbowPosing.meleeAttack(this.rightArm, this.leftArm, mobEntity, this.handSwingProgress, f);
 		} else {
-			super.method_29353(mobEntity, f);
+			super.animateArms(mobEntity, f);
 		}
 	}
 
-	private void method_29354(T mobEntity) {
-		if (mobEntity.isLeftHanded()) {
+	private void rotateMainArm(T entity) {
+		if (entity.isLeftHanded()) {
 			this.leftArm.pitch = -1.8F;
 		} else {
 			this.rightArm.pitch = -1.8F;

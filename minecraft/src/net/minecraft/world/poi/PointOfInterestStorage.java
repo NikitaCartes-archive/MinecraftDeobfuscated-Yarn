@@ -78,7 +78,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	public Stream<PointOfInterest> getInChunk(
 		Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return IntStream.range(this.field_27240.getBottomSectionLimit(), this.field_27240.getTopSectionLimit())
+		return IntStream.range(this.field_27240.method_32891(), this.field_27240.getTopSectionLimit())
 			.boxed()
 			.map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong()))
 			.filter(Optional::isPresent)
@@ -224,7 +224,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	 * @param radius The radius in blocks
 	 */
 	public void preloadChunks(WorldView world, BlockPos pos, int radius) {
-		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.field_27240.getBottomSectionLimit(), this.field_27240.getTopSectionLimit())
+		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.field_27240.method_32891(), this.field_27240.getTopSectionLimit())
 			.map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong())))
 			.filter(pair -> !(Boolean)((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false))
 			.map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos())

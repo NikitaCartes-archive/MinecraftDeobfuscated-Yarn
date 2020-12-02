@@ -13,11 +13,11 @@ import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 
 public class FungusBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 9.0, 12.0);
-	private final Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> field_22135;
+	private final Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> feature;
 
-	protected FungusBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> supplier) {
+	protected FungusBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> feature) {
 		super(settings);
-		this.field_22135 = supplier;
+		this.feature = feature;
 	}
 
 	@Override
@@ -32,7 +32,7 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-		Block block = ((HugeFungusFeatureConfig)((ConfiguredFeature)this.field_22135.get()).config).validBaseBlock.getBlock();
+		Block block = ((HugeFungusFeatureConfig)((ConfiguredFeature)this.feature.get()).config).validBaseBlock.getBlock();
 		BlockState blockState = world.getBlockState(pos.down());
 		return blockState.isOf(block);
 	}
@@ -44,6 +44,6 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		((ConfiguredFeature)this.field_22135.get()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos);
+		((ConfiguredFeature)this.feature.get()).generate(world, world.getChunkManager().getChunkGenerator(), random, pos);
 	}
 }

@@ -26,6 +26,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class BlockItem extends Item {
 	@Deprecated
@@ -79,6 +80,7 @@ public class BlockItem extends Item {
 						(blockSoundGroup.getVolume() + 1.0F) / 2.0F,
 						blockSoundGroup.getPitch() * 0.8F
 					);
+					world.emitGameEvent(playerEntity, GameEvent.BLOCK_PLACE, blockPos);
 					if (playerEntity == null || !playerEntity.getAbilities().creativeMode) {
 						itemStack.decrement(1);
 					}

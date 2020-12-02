@@ -47,7 +47,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 		this.method_26962();
 		float g = 0.99F;
 		float h = 0.06F;
-		if (this.world.method_29546(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
+		if (this.world.getStatesInBox(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {
 			this.discard();
 		} else if (this.isInsideWaterOrBubbleColumn()) {
 			this.discard();

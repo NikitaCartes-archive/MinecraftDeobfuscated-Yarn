@@ -47,6 +47,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public abstract class AbstractMinecartEntity extends Entity {
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(AbstractMinecartEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -214,6 +215,7 @@ public abstract class AbstractMinecartEntity extends Entity {
 		} else if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
+			this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
 			this.setDamageWobbleSide(-this.getDamageWobbleSide());
 			this.setDamageWobbleTicks(10);
 			this.scheduleVelocityUpdate();

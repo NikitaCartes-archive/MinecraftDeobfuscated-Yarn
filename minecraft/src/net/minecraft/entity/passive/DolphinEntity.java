@@ -348,7 +348,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	public static boolean canSpawn(EntityType<DolphinEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (pos.getY() > 45 && pos.getY() < world.getSeaLevel()) {
-			Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+			Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
 			return (!Objects.equals(optional, Optional.of(BiomeKeys.OCEAN)) || !Objects.equals(optional, Optional.of(BiomeKeys.DEEP_OCEAN)))
 				&& world.getFluidState(pos).isIn(FluidTags.WATER);
 		} else {

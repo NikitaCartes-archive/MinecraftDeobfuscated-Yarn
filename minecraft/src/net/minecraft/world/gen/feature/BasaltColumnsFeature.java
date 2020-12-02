@@ -95,7 +95,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 
 	@Nullable
 	private static BlockPos method_27094(WorldAccess worldAccess, int i, BlockPos.Mutable mutable, int j) {
-		while (mutable.getY() > worldAccess.getBottomHeightLimit() + 1 && j > 0) {
+		while (mutable.getY() > worldAccess.getSectionCount() + 1 && j > 0) {
 			j--;
 			if (method_30379(worldAccess, i, mutable)) {
 				return mutable;

@@ -114,6 +114,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 /**
  * Represents an entity which has a health value and can receive damage.
@@ -624,7 +625,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	protected void onEquipStack(ItemStack stack) {
-		SoundEvent soundEvent = stack.method_31572();
+		SoundEvent soundEvent = stack.getEquipSound();
 		if (!stack.isEmpty() && soundEvent != null && !this.isSpectator()) {
 			this.playSound(soundEvent, 1.0F, 1.0F);
 		}
@@ -993,7 +994,7 @@ public abstract class LivingEntity extends Entity {
 
 			this.despawnCounter = 0;
 			float f = amount;
-			if ((source == DamageSource.ANVIL || source == DamageSource.FALLING_BLOCK) && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
+			if (source.isFallingBlock() && !this.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
 				this.getEquippedStack(EquipmentSlot.HEAD)
 					.damage((int)(amount * 4.0F + this.random.nextFloat() * amount * 2.0F), this, livingEntityx -> livingEntityx.sendEquipmentBreakStatus(EquipmentSlot.HEAD));
 				amount *= 0.75F;
@@ -1128,6 +1129,7 @@ public abstract class LivingEntity extends Entity {
 				Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
 			}
 
+			this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
 			return bl3;
 		}
 	}
@@ -2069,7 +2071,7 @@ public abstract class LivingEntity extends Entity {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
 					this.fallDistance = 0.0F;
 				} else if (this.world.isClient && !this.world.isChunkLoaded(blockPos)) {
-					if (this.getY() > (double)this.world.getBottomHeightLimit()) {
+					if (this.getY() > (double)this.world.getSectionCount()) {
 						q = -0.1;
 					} else {
 						q = 0.0;
@@ -2537,8 +2539,14 @@ public abstract class LivingEntity extends Entity {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
 			if (itemStack.isOf(Items.ELYTRA) && ElytraItem.isUsable(itemStack)) {
 				bl = true;
-				if (!this.world.isClient && (this.roll + 1) % 20 == 0) {
-					itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+				int i = this.roll + 1;
+				if (!this.world.isClient && i % 10 == 0) {
+					int j = i / 10;
+					if (j % 2 == 0) {
+						itemStack.damage(1, this, livingEntity -> livingEntity.sendEquipmentBreakStatus(EquipmentSlot.CHEST));
+					}
+
+					this.emitGameEvent(GameEvent.ELYTRA_FREE_FALL);
 				}
 			} else {
 				bl = false;
@@ -2979,7 +2987,7 @@ public abstract class LivingEntity extends Entity {
 		if (world.isChunkLoaded(blockPos)) {
 			boolean bl2 = false;
 
-			while (!bl2 && blockPos.getY() > world.getBottomHeightLimit()) {
+			while (!bl2 && blockPos.getY() > world.getSectionCount()) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = world.getBlockState(blockPos2);
 				if (blockState.getMaterial().blocksMovement()) {

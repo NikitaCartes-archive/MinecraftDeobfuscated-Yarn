@@ -5,14 +5,17 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 import net.minecraft.util.Identifier;
@@ -84,25 +87,29 @@ public interface Tag<T> {
 			return this.add(new Tag.TagEntry(id), source);
 		}
 
-		public <T> Optional<Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
+		public <T> Either<Collection<Tag.TrackedEntry>, Tag<T>> build(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
 			ImmutableSet.Builder<T> builder = ImmutableSet.builder();
+			List<Tag.TrackedEntry> list = Lists.<Tag.TrackedEntry>newArrayList();
 
 			for (Tag.TrackedEntry trackedEntry : this.entries) {
 				if (!trackedEntry.getEntry().resolve(tagGetter, objectGetter, builder::add)) {
-					return Optional.empty();
+					list.add(trackedEntry);
 				}
 			}
 
-			return Optional.of(Tag.of(builder.build()));
+			return list.isEmpty() ? Either.right(Tag.of(builder.build())) : Either.left(list);
 		}
 
 		public Stream<Tag.TrackedEntry> streamEntries() {
 			return this.entries.stream();
 		}
 
-		public <T> Stream<Tag.TrackedEntry> streamUnresolvedEntries(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter) {
-			return this.streamEntries().filter(trackedEntry -> !trackedEntry.getEntry().resolve(tagGetter, objectGetter, object -> {
-				}));
+		public void method_32826(Consumer<Identifier> consumer) {
+			this.entries.forEach(trackedEntry -> trackedEntry.entry.method_32831(consumer));
+		}
+
+		public void method_32828(Consumer<Identifier> consumer) {
+			this.entries.forEach(trackedEntry -> trackedEntry.entry.method_32833(consumer));
 		}
 
 		public Tag.Builder read(JsonObject json, String source) {
@@ -160,6 +167,14 @@ public interface Tag<T> {
 		<T> boolean resolve(Function<Identifier, Tag<T>> tagGetter, Function<Identifier, T> objectGetter, Consumer<T> collector);
 
 		void addToJson(JsonArray json);
+
+		default void method_32831(Consumer<Identifier> consumer) {
+		}
+
+		default void method_32833(Consumer<Identifier> consumer) {
+		}
+
+		boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2);
 	}
 
 	public interface Identified<T> extends Tag<T> {
@@ -187,6 +202,11 @@ public interface Tag<T> {
 		@Override
 		public void addToJson(JsonArray json) {
 			json.add(this.id.toString());
+		}
+
+		@Override
+		public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+			return predicate.test(this.id);
 		}
 
 		public String toString() {
@@ -217,6 +237,11 @@ public interface Tag<T> {
 			jsonObject.addProperty("id", this.id.toString());
 			jsonObject.addProperty("required", false);
 			json.add(jsonObject);
+		}
+
+		@Override
+		public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+			return true;
 		}
 
 		public String toString() {
@@ -252,6 +277,16 @@ public interface Tag<T> {
 		public String toString() {
 			return "#" + this.id + "?";
 		}
+
+		@Override
+		public void method_32833(Consumer<Identifier> consumer) {
+			consumer.accept(this.id);
+		}
+
+		@Override
+		public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+			return true;
+		}
 	}
 
 	public static class TagEntry implements Tag.Entry {
@@ -279,6 +314,16 @@ public interface Tag<T> {
 
 		public String toString() {
 			return "#" + this.id;
+		}
+
+		@Override
+		public boolean method_32832(Predicate<Identifier> predicate, Predicate<Identifier> predicate2) {
+			return predicate2.test(this.id);
+		}
+
+		@Override
+		public void method_32831(Consumer<Identifier> consumer) {
+			consumer.accept(this.id);
 		}
 	}
 

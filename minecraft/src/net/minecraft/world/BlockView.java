@@ -35,12 +35,35 @@ public interface BlockView extends HeightLimitView {
 		return 15;
 	}
 
-	default Stream<BlockState> method_29546(Box box) {
+	default Stream<BlockState> getStatesInBox(Box box) {
 		return BlockPos.stream(box).map(this::getBlockState);
 	}
 
+	default BlockHitResult raycast(BlockStateRaycastContext blockStateRaycastContext) {
+		return raycast(
+			blockStateRaycastContext.getStart(),
+			blockStateRaycastContext.getEnd(),
+			blockStateRaycastContext,
+			(blockStateRaycastContextx, blockPos) -> {
+				BlockState blockState = this.getBlockState(blockPos);
+				Vec3d vec3d = blockStateRaycastContextx.getStart().subtract(blockStateRaycastContextx.getEnd());
+				return blockStateRaycastContextx.getState().test(blockState)
+					? new BlockHitResult(
+						blockStateRaycastContextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContextx.getEnd()), false
+					)
+					: null;
+			},
+			blockStateRaycastContextx -> {
+				Vec3d vec3d = blockStateRaycastContextx.getStart().subtract(blockStateRaycastContextx.getEnd());
+				return BlockHitResult.createMissed(
+					blockStateRaycastContextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContextx.getEnd())
+				);
+			}
+		);
+	}
+
 	default BlockHitResult raycast(RaycastContext context) {
-		return raycast(context, (raycastContext, blockPos) -> {
+		return raycast(context.getStart(), context.getEnd(), context, (raycastContext, blockPos) -> {
 			BlockState blockState = this.getBlockState(blockPos);
 			FluidState fluidState = this.getFluidState(blockPos);
 			Vec3d vec3d = raycastContext.getStart();
@@ -87,11 +110,9 @@ public interface BlockView extends HeightLimitView {
 		});
 	}
 
-	static <T> T raycast(RaycastContext raycastContext, BiFunction<RaycastContext, BlockPos, T> context, Function<RaycastContext, T> blockRaycaster) {
-		Vec3d vec3d = raycastContext.getStart();
-		Vec3d vec3d2 = raycastContext.getEnd();
+	static <T, C> T raycast(Vec3d vec3d, Vec3d vec3d2, C object, BiFunction<C, BlockPos, T> biFunction, Function<C, T> function) {
 		if (vec3d.equals(vec3d2)) {
-			return (T)blockRaycaster.apply(raycastContext);
+			return (T)function.apply(object);
 		} else {
 			double d = MathHelper.lerp(-1.0E-7, vec3d2.x, vec3d.x);
 			double e = MathHelper.lerp(-1.0E-7, vec3d2.y, vec3d.y);
@@ -103,9 +124,9 @@ public interface BlockView extends HeightLimitView {
 			int k = MathHelper.floor(h);
 			int l = MathHelper.floor(i);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(j, k, l);
-			T object = (T)context.apply(raycastContext, mutable);
-			if (object != null) {
-				return object;
+			T object2 = (T)biFunction.apply(object, mutable);
+			if (object2 != null) {
+				return object2;
 			} else {
 				double m = d - g;
 				double n = e - h;
@@ -137,13 +158,13 @@ public interface BlockView extends HeightLimitView {
 						x += u;
 					}
 
-					T object2 = (T)context.apply(raycastContext, mutable.set(j, k, l));
-					if (object2 != null) {
-						return object2;
+					T object3 = (T)biFunction.apply(object, mutable.set(j, k, l));
+					if (object3 != null) {
+						return object3;
 					}
 				}
 
-				return (T)blockRaycaster.apply(raycastContext);
+				return (T)function.apply(object);
 			}
 		}
 	}

@@ -23,9 +23,9 @@ public final class ChunkGeneratorSettings {
 					GenerationShapeConfig.CODEC.fieldOf("noise").forGetter(ChunkGeneratorSettings::getGenerationShapeConfig),
 					BlockState.CODEC.fieldOf("default_block").forGetter(ChunkGeneratorSettings::getDefaultBlock),
 					BlockState.CODEC.fieldOf("default_fluid").forGetter(ChunkGeneratorSettings::getDefaultFluid),
-					Codec.intRange(-20, 276).fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorSettings::getBedrockCeilingY),
-					Codec.intRange(-20, 276).fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorSettings::getBedrockFloorY),
-					Codec.intRange(0, 255).fieldOf("sea_level").forGetter(ChunkGeneratorSettings::getSeaLevel),
+					Codec.INT.fieldOf("bedrock_roof_position").forGetter(ChunkGeneratorSettings::getBedrockCeilingY),
+					Codec.INT.fieldOf("bedrock_floor_position").forGetter(ChunkGeneratorSettings::getBedrockFloorY),
+					Codec.INT.fieldOf("sea_level").forGetter(ChunkGeneratorSettings::getSeaLevel),
 					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorSettings::isMobGenerationDisabled)
 				)
 				.apply(instance, ChunkGeneratorSettings::new)
@@ -138,7 +138,8 @@ public final class ChunkGeneratorSettings {
 	) {
 		return new ChunkGeneratorSettings(
 			structuresConfig,
-			new GenerationShapeConfig(
+			GenerationShapeConfig.method_32994(
+				0,
 				128,
 				new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0),
 				new SlideConfig(-3000, 64, -46),
@@ -154,8 +155,8 @@ public final class ChunkGeneratorSettings {
 			),
 			defaultBlock,
 			defaultFluid,
-			-10,
-			-10,
+			Integer.MIN_VALUE,
+			Integer.MIN_VALUE,
 			0,
 			mobGenerationDisabled
 		);
@@ -168,7 +169,8 @@ public final class ChunkGeneratorSettings {
 		map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
 		return new ChunkGeneratorSettings(
 			new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map),
-			new GenerationShapeConfig(
+			GenerationShapeConfig.method_32994(
+				0,
 				128,
 				new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0),
 				new SlideConfig(120, 3, 0),
@@ -195,7 +197,8 @@ public final class ChunkGeneratorSettings {
 		double d = 0.9999999814507745;
 		return new ChunkGeneratorSettings(
 			structuresConfig,
-			new GenerationShapeConfig(
+			GenerationShapeConfig.method_32994(
+				0,
 				256,
 				new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0),
 				new SlideConfig(-10, 3, 0),
@@ -211,7 +214,7 @@ public final class ChunkGeneratorSettings {
 			),
 			Blocks.STONE.getDefaultState(),
 			Blocks.WATER.getDefaultState(),
-			-10,
+			Integer.MIN_VALUE,
 			0,
 			63,
 			false

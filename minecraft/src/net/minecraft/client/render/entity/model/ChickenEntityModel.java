@@ -15,23 +15,23 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 	private final ModelPart head;
-	private final ModelPart torso;
-	private final ModelPart field_27401;
-	private final ModelPart field_27402;
-	private final ModelPart field_27403;
-	private final ModelPart field_27404;
+	private final ModelPart body;
+	private final ModelPart rightLeg;
+	private final ModelPart leftLeg;
+	private final ModelPart rightWing;
+	private final ModelPart leftWing;
 	private final ModelPart beak;
 	private final ModelPart wattle;
 
-	public ChickenEntityModel(ModelPart modelPart) {
-		this.head = modelPart.getChild("head");
-		this.beak = modelPart.getChild("beak");
-		this.wattle = modelPart.getChild("red_thing");
-		this.torso = modelPart.getChild("body");
-		this.field_27401 = modelPart.getChild("right_leg");
-		this.field_27402 = modelPart.getChild("left_leg");
-		this.field_27403 = modelPart.getChild("right_wing");
-		this.field_27404 = modelPart.getChild("left_wing");
+	public ChickenEntityModel(ModelPart root) {
+		this.head = root.getChild("head");
+		this.beak = root.getChild("beak");
+		this.wattle = root.getChild("red_thing");
+		this.body = root.getChild("body");
+		this.rightLeg = root.getChild("right_leg");
+		this.leftLeg = root.getChild("left_leg");
+		this.rightWing = root.getChild("right_wing");
+		this.leftWing = root.getChild("left_wing");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -67,7 +67,7 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.torso, this.field_27401, this.field_27402, this.field_27403, this.field_27404);
+		return ImmutableList.<ModelPart>of(this.body, this.rightLeg, this.leftLeg, this.rightWing, this.leftWing);
 	}
 
 	@Override
@@ -78,9 +78,9 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 		this.beak.yaw = this.head.yaw;
 		this.wattle.pitch = this.head.pitch;
 		this.wattle.yaw = this.head.yaw;
-		this.field_27401.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
-		this.field_27402.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.field_27403.roll = animationProgress;
-		this.field_27404.roll = -animationProgress;
+		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+		this.rightWing.roll = animationProgress;
+		this.leftWing.roll = -animationProgress;
 	}
 }

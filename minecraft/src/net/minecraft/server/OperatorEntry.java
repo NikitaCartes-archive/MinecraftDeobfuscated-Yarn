@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import java.util.UUID;
+import javax.annotation.Nullable;
 
 public class OperatorEntry extends ServerConfigEntry<GameProfile> {
 	private final int permissionLevel;
@@ -38,6 +39,7 @@ public class OperatorEntry extends ServerConfigEntry<GameProfile> {
 		}
 	}
 
+	@Nullable
 	private static GameProfile getProfileFromJson(JsonObject json) {
 		if (json.has("uuid") && json.has("name")) {
 			String string = json.get("uuid").getAsString();

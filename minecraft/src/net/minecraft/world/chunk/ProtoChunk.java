@@ -90,7 +90,7 @@ public class ProtoChunk implements Chunk {
 		this.blockTickScheduler = blockTickScheduler;
 		this.fluidTickScheduler = fluidTickScheduler;
 		this.field_27229 = heightLimitView;
-		this.sections = new ChunkSection[heightLimitView.getSectionCount()];
+		this.sections = new ChunkSection[heightLimitView.method_32890()];
 		if (chunkSections != null) {
 			if (this.sections.length == chunkSections.length) {
 				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -99,7 +99,7 @@ public class ProtoChunk implements Chunk {
 			}
 		}
 
-		this.postProcessingLists = new ShortList[heightLimitView.getSectionCount()];
+		this.postProcessingLists = new ShortList[heightLimitView.method_32890()];
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public class ProtoChunk implements Chunk {
 	}
 
 	public ShortList[] getLightSourcesBySection() {
-		ShortList[] shortLists = new ShortList[this.getSectionCount()];
+		ShortList[] shortLists = new ShortList[this.method_32890()];
 
 		for (BlockPos blockPos : this.lightSources) {
 			Chunk.getList(shortLists, this.getSectionIndex(blockPos.getY())).add(getPackedSectionRelative(blockPos));
@@ -153,7 +153,7 @@ public class ProtoChunk implements Chunk {
 		int i = pos.getX();
 		int j = pos.getY();
 		int k = pos.getZ();
-		if (j >= this.getBottomHeightLimit() && j < this.getTopHeightLimit()) {
+		if (j >= this.getSectionCount() && j < this.getTopHeightLimit()) {
 			int l = this.getSectionIndex(j);
 			if (this.sections[l] == WorldChunk.EMPTY_SECTION && state.isOf(Blocks.AIR)) {
 				return state;
@@ -172,8 +172,7 @@ public class ProtoChunk implements Chunk {
 							|| state.hasSidedTransparency()
 							|| blockState.hasSidedTransparency()
 					)) {
-					LightingProvider lightingProvider = this.getLightingProvider();
-					lightingProvider.checkBlock(pos);
+					this.lightingProvider.checkBlock(pos);
 				}
 
 				EnumSet<Heightmap.Type> enumSet = this.getStatus().getHeightmapTypes();
@@ -285,11 +284,6 @@ public class ProtoChunk implements Chunk {
 	@Override
 	public ChunkSection[] getSectionArray() {
 		return this.sections;
-	}
-
-	@Nullable
-	public LightingProvider getLightingProvider() {
-		return this.lightingProvider;
 	}
 
 	@Override

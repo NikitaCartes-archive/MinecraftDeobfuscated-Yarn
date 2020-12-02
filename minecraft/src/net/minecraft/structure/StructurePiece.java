@@ -397,7 +397,7 @@ public abstract class StructurePiece {
 		if (blockBox.contains(new BlockPos(i, j, k))) {
 			while (
 				(structureWorldAccess.isAir(new BlockPos(i, j, k)) || structureWorldAccess.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid())
-					&& j > structureWorldAccess.getBottomHeightLimit() + 1
+					&& j > structureWorldAccess.getSectionCount() + 1
 			) {
 				structureWorldAccess.setBlockState(new BlockPos(i, j, k), blockState, 2);
 				j--;

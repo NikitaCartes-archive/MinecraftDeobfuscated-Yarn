@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5742;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -25,7 +26,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
@@ -128,7 +128,7 @@ public abstract class ChunkGenerator {
 
 	public void populateBiomes(Registry<Biome> biomeRegistry, Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
-		((ProtoChunk)chunk).setBiomes(new BiomeArray(biomeRegistry, chunkPos, this.biomeSource));
+		((ProtoChunk)chunk).setBiomes(new BiomeArray(biomeRegistry, chunk, chunkPos, this.biomeSource));
 	}
 
 	public void carve(long seed, BiomeAccess access, Chunk chunk, GenerationStep.Carver carver) {
@@ -138,7 +138,9 @@ public abstract class ChunkGenerator {
 		ChunkPos chunkPos = chunk.getPos();
 		int j = chunkPos.x;
 		int k = chunkPos.z;
-		GenerationSettings generationSettings = this.populationSource.getBiomeForNoiseGen(chunkPos.x << 2, 0, chunkPos.z << 2).getGenerationSettings();
+		GenerationSettings generationSettings = this.populationSource
+			.getBiomeForNoiseGen(class_5742.method_33100(chunkPos.getStartX()), 0, class_5742.method_33100(chunkPos.getStartZ()))
+			.getGenerationSettings();
 		BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
 
 		for (int l = j - 8; l <= j + 8; l++) {
@@ -328,7 +330,7 @@ public abstract class ChunkGenerator {
 
 	public abstract int getHeight(int x, int z, Heightmap.Type heightmapType);
 
-	public abstract BlockView getColumnSample(int x, int z);
+	public abstract VerticalBlockSample getColumnSample(int x, int z);
 
 	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
 		return this.getHeight(x, z, heightmapType);

@@ -185,6 +185,7 @@ import net.minecraft.datafixer.schema.Schema2519;
 import net.minecraft.datafixer.schema.Schema2522;
 import net.minecraft.datafixer.schema.Schema2551;
 import net.minecraft.datafixer.schema.Schema2568;
+import net.minecraft.datafixer.schema.Schema2684;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -660,6 +661,8 @@ public class Schemas {
 		builder.addFixer(
 			DirtPathRenameFix.createDirtPathRenameFix(schema127, "Renamed grass path block to dirt path", method_30068("minecraft:grass_path", "minecraft:dirt_path"))
 		);
+		Schema schema128 = builder.addSchema(2684, Schema2684::new);
+		builder.addFixer(new ChoiceTypesFix(schema128, "Added Sculk Sensor", TypeReferences.BLOCK_ENTITY));
 	}
 
 	private static UnaryOperator<String> method_30070(Map<String, String> map) {

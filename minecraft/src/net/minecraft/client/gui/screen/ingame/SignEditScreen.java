@@ -140,7 +140,7 @@ public class SignEditScreen extends Screen {
 		matrices.push();
 		matrices.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.field_27390);
+		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.method_33082(this.field_27390);
 		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
 		this.model.foot.visible = bl;
 		this.model.field_27756.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);

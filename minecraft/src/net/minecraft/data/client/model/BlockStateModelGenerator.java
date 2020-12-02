@@ -27,6 +27,7 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.JigsawOrientation;
 import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.enums.RailShape;
+import net.minecraft.block.enums.SculkSensorPhase;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.block.enums.Thickness;
@@ -2654,6 +2655,22 @@ public class BlockStateModelGenerator {
 			);
 	}
 
+	private void method_33128() {
+		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_inactive");
+		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_active");
+		this.registerParentedItemModel(Blocks.SCULK_SENSOR, identifier);
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.SCULK_SENSOR)
+					.coordinate(
+						BlockStateVariantMap.create(Properties.SCULK_SENSOR_PHASE)
+							.register(
+								sculkSensorPhase -> BlockStateVariant.create().put(VariantSettings.MODEL, sculkSensorPhase == SculkSensorPhase.ACTIVE ? identifier2 : identifier)
+							)
+					)
+			);
+	}
+
 	private void registerScaffolding() {
 		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SCAFFOLDING, "_stable");
 		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SCAFFOLDING, "_unstable");
@@ -3610,6 +3627,7 @@ public class BlockStateModelGenerator {
 		this.registerVine();
 		this.registerMagmaBlock();
 		this.registerJigsaw();
+		this.method_33128();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);

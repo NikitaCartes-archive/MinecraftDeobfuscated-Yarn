@@ -296,7 +296,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 
 			for (int i = 0; i < 5; i++) {
 				BlockPos blockPos2 = blockPos.add(8 - this.random.nextInt(17), 8 - this.random.nextInt(17), 8 - this.random.nextInt(17));
-				if (blockPos2.getY() > this.world.getBottomHeightLimit()
+				if (blockPos2.getY() > this.world.getSectionCount()
 					&& this.world.isAir(blockPos2)
 					&& this.world.getWorldBorder().contains(blockPos2)
 					&& this.world.isSpaceEmpty(this, new Box(blockPos2))) {

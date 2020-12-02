@@ -42,7 +42,7 @@ public class BuriedTreasureGenerator {
 			int i = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
 			BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
 
-			while (mutable.getY() > structureWorldAccess.getBottomHeightLimit()) {
+			while (mutable.getY() > structureWorldAccess.getSectionCount()) {
 				BlockState blockState = structureWorldAccess.getBlockState(mutable);
 				BlockState blockState2 = structureWorldAccess.getBlockState(mutable.down());
 				if (blockState2 == Blocks.SANDSTONE.getDefaultState()

@@ -39,18 +39,18 @@ public class TargetBlock extends Block {
 		}
 	}
 
-	private static int trigger(WorldAccess world, BlockState state, BlockHitResult blockHitResult, Entity entity) {
-		int i = calculatePower(blockHitResult, blockHitResult.getPos());
+	private static int trigger(WorldAccess world, BlockState state, BlockHitResult hitResult, Entity entity) {
+		int i = calculatePower(hitResult, hitResult.getPos());
 		int j = entity instanceof PersistentProjectileEntity ? 20 : 8;
-		if (!world.getBlockTickScheduler().isScheduled(blockHitResult.getBlockPos(), state.getBlock())) {
-			setPower(world, state, i, blockHitResult.getBlockPos(), j);
+		if (!world.getBlockTickScheduler().isScheduled(hitResult.getBlockPos(), state.getBlock())) {
+			setPower(world, state, i, hitResult.getBlockPos(), j);
 		}
 
 		return i;
 	}
 
-	private static int calculatePower(BlockHitResult blockHitResult, Vec3d pos) {
-		Direction direction = blockHitResult.getSide();
+	private static int calculatePower(BlockHitResult hitResult, Vec3d pos) {
+		Direction direction = hitResult.getSide();
 		double d = Math.abs(MathHelper.fractionalPart(pos.x) - 0.5);
 		double e = Math.abs(MathHelper.fractionalPart(pos.y) - 0.5);
 		double f = Math.abs(MathHelper.fractionalPart(pos.z) - 0.5);

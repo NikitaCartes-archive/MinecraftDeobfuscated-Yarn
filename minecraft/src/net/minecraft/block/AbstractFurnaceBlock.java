@@ -110,9 +110,9 @@ public abstract class AbstractFurnaceBlock extends BlockWithEntity {
 	}
 
 	@Nullable
-	protected static <T extends BlockEntity> BlockEntityTicker<T> method_31617(
-		World world, BlockEntityType<T> blockEntityType, BlockEntityType<? extends AbstractFurnaceBlockEntity> blockEntityType2
+	protected static <T extends BlockEntity> BlockEntityTicker<T> checkType(
+		World world, BlockEntityType<T> givenType, BlockEntityType<? extends AbstractFurnaceBlockEntity> expectedType
 	) {
-		return world.isClient ? null : checkType(blockEntityType, blockEntityType2, AbstractFurnaceBlockEntity::tick);
+		return world.isClient ? null : checkType(givenType, expectedType, AbstractFurnaceBlockEntity::tick);
 	}
 }

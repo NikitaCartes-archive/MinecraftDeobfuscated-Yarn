@@ -48,6 +48,10 @@ public class TexturedRenderLayers {
 		.collect(ImmutableList.toImmutableList());
 	public static final Map<SignType, SpriteIdentifier> WOOD_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
 		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::getSignTextureId));
+	public static final Map<BannerPattern, SpriteIdentifier> field_28252 = (Map<BannerPattern, SpriteIdentifier>)Arrays.stream(BannerPattern.values())
+		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::method_33084));
+	public static final Map<BannerPattern, SpriteIdentifier> field_28253 = (Map<BannerPattern, SpriteIdentifier>)Arrays.stream(BannerPattern.values())
+		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::method_33085));
 	public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values())
 		.sorted(Comparator.comparingInt(DyeColor::getId))
 		.map(dyeColor -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, new Identifier("entity/bed/" + dyeColor.getName())))
@@ -106,12 +110,8 @@ public class TexturedRenderLayers {
 	public static void addDefaultTextures(Consumer<SpriteIdentifier> adder) {
 		adder.accept(SHULKER_TEXTURE_ID);
 		COLORED_SHULKER_BOXES_TEXTURES.forEach(adder);
-
-		for (BannerPattern bannerPattern : BannerPattern.values()) {
-			adder.accept(new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(true)));
-			adder.accept(new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(false)));
-		}
-
+		field_28252.values().forEach(adder);
+		field_28253.values().forEach(adder);
 		WOOD_TYPE_TEXTURES.values().forEach(adder);
 
 		for (SpriteIdentifier spriteIdentifier : BED_TEXTURES) {
@@ -130,8 +130,28 @@ public class TexturedRenderLayers {
 		adder.accept(ENDER);
 	}
 
-	public static SpriteIdentifier getSignTextureId(SignType type) {
+	private static SpriteIdentifier getSignTextureId(SignType type) {
 		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + type.getName()));
+	}
+
+	public static SpriteIdentifier method_33082(SignType signType) {
+		return (SpriteIdentifier)WOOD_TYPE_TEXTURES.get(signType);
+	}
+
+	private static SpriteIdentifier method_33084(BannerPattern bannerPattern) {
+		return new SpriteIdentifier(BANNER_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(true));
+	}
+
+	public static SpriteIdentifier method_33081(BannerPattern bannerPattern) {
+		return (SpriteIdentifier)field_28252.get(bannerPattern);
+	}
+
+	private static SpriteIdentifier method_33085(BannerPattern bannerPattern) {
+		return new SpriteIdentifier(SHIELD_PATTERNS_ATLAS_TEXTURE, bannerPattern.getSpriteId(false));
+	}
+
+	public static SpriteIdentifier method_33083(BannerPattern bannerPattern) {
+		return (SpriteIdentifier)field_28253.get(bannerPattern);
 	}
 
 	private static SpriteIdentifier getChestTextureId(String variant) {

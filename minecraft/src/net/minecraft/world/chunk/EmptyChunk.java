@@ -1,6 +1,5 @@
 package net.minecraft.world.chunk;
 
-import java.util.Arrays;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -8,7 +7,6 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ChunkHolder;
-import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.Registry;
@@ -16,13 +14,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BuiltinBiomes;
 import net.minecraft.world.biome.source.BiomeArray;
-import net.minecraft.world.chunk.light.LightingProvider;
 
 public class EmptyChunk extends WorldChunk {
-	private static final Biome[] BIOMES = Util.make(new Biome[BiomeArray.DEFAULT_LENGTH], biomes -> Arrays.fill(biomes, BuiltinBiomes.PLAINS));
-
 	public EmptyChunk(World world, ChunkPos pos) {
-		super(world, pos, new BiomeArray(world.getRegistryManager().get(Registry.BIOME_KEY), BIOMES));
+		super(world, pos, new EmptyChunk.class_5706(world));
 	}
 
 	@Override
@@ -39,12 +34,6 @@ public class EmptyChunk extends WorldChunk {
 	@Override
 	public FluidState getFluidState(BlockPos pos) {
 		return Fluids.EMPTY.getDefaultState();
-	}
-
-	@Nullable
-	@Override
-	public LightingProvider getLightingProvider() {
-		return null;
 	}
 
 	@Override
@@ -87,5 +76,23 @@ public class EmptyChunk extends WorldChunk {
 	@Override
 	public ChunkHolder.LevelType getLevelType() {
 		return ChunkHolder.LevelType.BORDER;
+	}
+
+	static class class_5706 extends BiomeArray {
+		private static final Biome[] field_28128 = new Biome[0];
+
+		public class_5706(World world) {
+			super(world.getRegistryManager().get(Registry.BIOME_KEY), world, field_28128);
+		}
+
+		@Override
+		public int[] toIntArray() {
+			throw new UnsupportedOperationException("Can not write biomes of an empty chunk");
+		}
+
+		@Override
+		public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
+			return BuiltinBiomes.PLAINS;
+		}
 	}
 }

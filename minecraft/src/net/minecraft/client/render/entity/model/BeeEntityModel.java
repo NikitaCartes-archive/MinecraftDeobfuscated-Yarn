@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
-	private final ModelPart body;
+	private final ModelPart bone;
 	private final ModelPart rightWing;
 	private final ModelPart leftWing;
 	private final ModelPart frontLegs;
@@ -27,18 +27,18 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 	private final ModelPart rightAntenna;
 	private float bodyPitch;
 
-	public BeeEntityModel(ModelPart modelPart) {
+	public BeeEntityModel(ModelPart root) {
 		super(false, 24.0F, 0.0F);
-		this.body = modelPart.getChild("bone");
-		ModelPart modelPart2 = this.body.getChild("body");
-		this.stinger = modelPart2.getChild("stinger");
-		this.leftAntenna = modelPart2.getChild("left_antenna");
-		this.rightAntenna = modelPart2.getChild("right_antenna");
-		this.rightWing = this.body.getChild("right_wing");
-		this.leftWing = this.body.getChild("left_wing");
-		this.frontLegs = this.body.getChild("front_legs");
-		this.middleLegs = this.body.getChild("middle_legs");
-		this.backLegs = this.body.getChild("back_legs");
+		this.bone = root.getChild("bone");
+		ModelPart modelPart = this.bone.getChild("body");
+		this.stinger = modelPart.getChild("stinger");
+		this.leftAntenna = modelPart.getChild("left_antenna");
+		this.rightAntenna = modelPart.getChild("right_antenna");
+		this.rightWing = this.bone.getChild("right_wing");
+		this.leftWing = this.bone.getChild("left_wing");
+		this.frontLegs = this.bone.getChild("front_legs");
+		this.middleLegs = this.bone.getChild("middle_legs");
+		this.backLegs = this.bone.getChild("back_legs");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -87,7 +87,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		this.rightWing.pitch = 0.0F;
 		this.leftAntenna.pitch = 0.0F;
 		this.rightAntenna.pitch = 0.0F;
-		this.body.pitch = 0.0F;
+		this.bone.pitch = 0.0F;
 		boolean bl = beeEntity.isOnGround() && beeEntity.getVelocity().lengthSquared() < 1.0E-7;
 		if (bl) {
 			this.rightWing.yaw = -0.2618F;
@@ -108,28 +108,28 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 			this.frontLegs.pitch = (float) (Math.PI / 4);
 			this.middleLegs.pitch = (float) (Math.PI / 4);
 			this.backLegs.pitch = (float) (Math.PI / 4);
-			this.body.pitch = 0.0F;
-			this.body.yaw = 0.0F;
-			this.body.roll = 0.0F;
+			this.bone.pitch = 0.0F;
+			this.bone.yaw = 0.0F;
+			this.bone.roll = 0.0F;
 		}
 
 		if (!beeEntity.hasAngerTime()) {
-			this.body.pitch = 0.0F;
-			this.body.yaw = 0.0F;
-			this.body.roll = 0.0F;
+			this.bone.pitch = 0.0F;
+			this.bone.yaw = 0.0F;
+			this.bone.roll = 0.0F;
 			if (!bl) {
 				float k = MathHelper.cos(h * 0.18F);
-				this.body.pitch = 0.1F + k * (float) Math.PI * 0.025F;
+				this.bone.pitch = 0.1F + k * (float) Math.PI * 0.025F;
 				this.leftAntenna.pitch = k * (float) Math.PI * 0.03F;
 				this.rightAntenna.pitch = k * (float) Math.PI * 0.03F;
 				this.frontLegs.pitch = -k * (float) Math.PI * 0.1F + (float) (Math.PI / 8);
 				this.backLegs.pitch = -k * (float) Math.PI * 0.05F + (float) (Math.PI / 4);
-				this.body.pivotY = 19.0F - MathHelper.cos(h * 0.18F) * 0.9F;
+				this.bone.pivotY = 19.0F - MathHelper.cos(h * 0.18F) * 0.9F;
 			}
 		}
 
 		if (this.bodyPitch > 0.0F) {
-			this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 3.0915928F, this.bodyPitch);
+			this.bone.pitch = ModelUtil.interpolateAngle(this.bone.pitch, 3.0915928F, this.bodyPitch);
 		}
 	}
 
@@ -140,6 +140,6 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.body);
+		return ImmutableList.<ModelPart>of(this.bone);
 	}
 }

@@ -292,7 +292,7 @@ public class FoxEntity extends AnimalEntity {
 	public EntityData initialize(
 		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
 	) {
-		Optional<RegistryKey<Biome>> optional = world.method_31081(this.getBlockPos());
+		Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(optional);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {

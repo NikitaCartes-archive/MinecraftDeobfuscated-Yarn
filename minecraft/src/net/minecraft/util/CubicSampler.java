@@ -1,6 +1,5 @@
 package net.minecraft.util;
 
-import javax.annotation.Nonnull;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.MathHelper;
@@ -9,7 +8,6 @@ import net.minecraft.util.math.Vec3d;
 public class CubicSampler {
 	private static final double[] DENSITY_CURVE = new double[]{0.0, 1.0, 4.0, 6.0, 4.0, 1.0, 0.0};
 
-	@Nonnull
 	@Environment(EnvType.CLIENT)
 	public static Vec3d sampleColor(Vec3d pos, CubicSampler.RgbFetcher rgbFetcher) {
 		int i = MathHelper.floor(pos.getX());

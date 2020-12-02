@@ -22,6 +22,9 @@ public class ParticleTypes {
 	public static final DefaultParticleType DRIPPING_WATER = register("dripping_water", false);
 	public static final DefaultParticleType FALLING_WATER = register("falling_water", false);
 	public static final ParticleType<DustParticleEffect> DUST = register("dust", DustParticleEffect.PARAMETERS_FACTORY, particleType -> DustParticleEffect.CODEC);
+	public static final ParticleType<DustColorTransitionParticleEffect> DUST_COLOR_TRANSITION = register(
+		"dust_color_transition", DustColorTransitionParticleEffect.FACTORY, particleType -> DustColorTransitionParticleEffect.CODEC
+	);
 	public static final DefaultParticleType EFFECT = register("effect", false);
 	public static final DefaultParticleType ELDER_GUARDIAN = register("elder_guardian", true);
 	public static final DefaultParticleType ENCHANTED_HIT = register("enchanted_hit", false);
@@ -45,6 +48,9 @@ public class ParticleTypes {
 	public static final DefaultParticleType INSTANT_EFFECT = register("instant_effect", false);
 	public static final ParticleType<ItemStackParticleEffect> ITEM = register(
 		"item", ItemStackParticleEffect.PARAMETERS_FACTORY, ItemStackParticleEffect::method_29136
+	);
+	public static final ParticleType<VibrationParticleEffect> VIBRATION = register(
+		"vibration", VibrationParticleEffect.field_28278, particleType -> VibrationParticleEffect.field_28277
 	);
 	public static final DefaultParticleType ITEM_SLIME = register("item_slime", false);
 	public static final DefaultParticleType ITEM_SNOWBALL = register("item_snowball", false);

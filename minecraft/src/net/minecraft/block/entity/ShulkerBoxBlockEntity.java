@@ -32,6 +32,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implements SidedInventory {
 	private static final int[] AVAILABLE_SLOTS = IntStream.range(0, 27).toArray();
@@ -200,6 +201,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			this.viewerCount++;
 			this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount == 1) {
+				this.world.emitGameEvent(player, GameEvent.CONTAINER_OPEN, this.pos);
 				this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_OPEN, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 		}
@@ -211,6 +213,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 			this.viewerCount--;
 			this.world.addSyncedBlockEvent(this.pos, this.getCachedState().getBlock(), 1, this.viewerCount);
 			if (this.viewerCount <= 0) {
+				this.world.emitGameEvent(player, GameEvent.CONTAINER_CLOSE, this.pos);
 				this.world.playSound(null, this.pos, SoundEvents.BLOCK_SHULKER_BOX_CLOSE, SoundCategory.BLOCKS, 0.5F, this.world.random.nextFloat() * 0.1F + 0.9F);
 			}
 		}
@@ -222,9 +225,9 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.deserializeInventory(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.deserializeInventory(tag);
 	}
 
 	@Override

@@ -66,7 +66,7 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 		float h = 22.5F * (float)(bl ? (2 + direction.getHorizontal()) * 4 : (Integer)blockState.get(SkullBlock.ROTATION));
 		SkullBlock.SkullType skullType = ((AbstractSkullBlock)blockState.getBlock()).getSkullType();
 		SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.MODELS.get(skullType);
-		RenderLayer renderLayer = method_3578(skullType, skullBlockEntity.getOwner());
+		RenderLayer renderLayer = getRenderLayer(skullType, skullBlockEntity.getOwner());
 		method_32161(direction, h, g, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
 	}
 
@@ -90,19 +90,19 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 
 		matrixStack.scale(-1.0F, -1.0F, 1.0F);
 		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
-		skullBlockEntityModel.method_2821(g, f, 0.0F);
+		skullBlockEntityModel.setHeadRotation(g, f, 0.0F);
 		skullBlockEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
 		matrixStack.pop();
 	}
 
-	public static RenderLayer method_3578(SkullBlock.SkullType skullType, @Nullable GameProfile gameProfile) {
-		Identifier identifier = (Identifier)TEXTURES.get(skullType);
-		if (skullType == SkullBlock.Type.PLAYER && gameProfile != null) {
+	public static RenderLayer getRenderLayer(SkullBlock.SkullType type, @Nullable GameProfile profile) {
+		Identifier identifier = (Identifier)TEXTURES.get(type);
+		if (type == SkullBlock.Type.PLAYER && profile != null) {
 			MinecraftClient minecraftClient = MinecraftClient.getInstance();
-			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(gameProfile);
+			Map<Type, MinecraftProfileTexture> map = minecraftClient.getSkinProvider().getTextures(profile);
 			return map.containsKey(Type.SKIN)
 				? RenderLayer.getEntityTranslucent(minecraftClient.getSkinProvider().loadSkin((MinecraftProfileTexture)map.get(Type.SKIN), Type.SKIN))
-				: RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(gameProfile)));
+				: RenderLayer.getEntityCutoutNoCull(DefaultSkinHelper.getTexture(PlayerEntity.getUuidFromProfile(profile)));
 		} else {
 			return RenderLayer.getEntityCutoutNoCullZOffset(identifier);
 		}

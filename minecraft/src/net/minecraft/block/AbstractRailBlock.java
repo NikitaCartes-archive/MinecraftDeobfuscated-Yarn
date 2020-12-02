@@ -20,7 +20,7 @@ import net.minecraft.world.WorldView;
 public abstract class AbstractRailBlock extends Block implements Waterloggable {
 	protected static final VoxelShape STRAIGHT_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 2.0, 16.0);
 	protected static final VoxelShape ASCENDING_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 8.0, 16.0);
-	public static final BooleanProperty field_27096 = Properties.WATERLOGGED;
+	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
 	private final boolean allowCurves;
 
 	public static boolean isRail(World world, BlockPos pos) {
@@ -145,14 +145,14 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 		BlockState blockState = super.getDefaultState();
 		Direction direction = ctx.getPlayerFacing();
 		boolean bl2 = direction == Direction.EAST || direction == Direction.WEST;
-		return blockState.with(this.getShapeProperty(), bl2 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).with(field_27096, Boolean.valueOf(bl));
+		return blockState.with(this.getShapeProperty(), bl2 ? RailShape.EAST_WEST : RailShape.NORTH_SOUTH).with(WATERLOGGED, Boolean.valueOf(bl));
 	}
 
 	public abstract Property<RailShape> getShapeProperty();
 
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		if ((Boolean)state.get(field_27096)) {
+		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
@@ -161,6 +161,6 @@ public abstract class AbstractRailBlock extends Block implements Waterloggable {
 
 	@Override
 	public FluidState getFluidState(BlockState state) {
-		return state.get(field_27096) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
+		return state.get(WATERLOGGED) ? Fluids.WATER.getStill(false) : super.getFluidState(state);
 	}
 }

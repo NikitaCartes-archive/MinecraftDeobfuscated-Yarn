@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_5552;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.enums.StructureBlockMode;
@@ -19,7 +18,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-public class StructureBlock extends BlockWithEntity implements class_5552 {
+public class StructureBlock extends BlockWithEntity implements OperatorBlock {
 	public static final EnumProperty<StructureBlockMode> MODE = Properties.STRUCTURE_BLOCK_MODE;
 
 	protected StructureBlock(AbstractBlock.Settings settings) {
@@ -86,16 +85,16 @@ public class StructureBlock extends BlockWithEntity implements class_5552 {
 		}
 	}
 
-	private void doAction(ServerWorld serverWorld, StructureBlockBlockEntity structureBlockBlockEntity) {
-		switch (structureBlockBlockEntity.getMode()) {
+	private void doAction(ServerWorld world, StructureBlockBlockEntity blockEntity) {
+		switch (blockEntity.getMode()) {
 			case SAVE:
-				structureBlockBlockEntity.saveStructure(false);
+				blockEntity.saveStructure(false);
 				break;
 			case LOAD:
-				structureBlockBlockEntity.loadStructure(serverWorld, false);
+				blockEntity.loadStructure(world, false);
 				break;
 			case CORNER:
-				structureBlockBlockEntity.unloadStructure();
+				blockEntity.unloadStructure();
 			case DATA:
 		}
 	}

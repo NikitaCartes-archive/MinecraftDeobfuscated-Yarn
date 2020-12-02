@@ -14,13 +14,16 @@ public class Memory<T> {
 	}
 
 	public void tick() {
-		if (this.method_24914()) {
+		if (this.isTimed()) {
 			this.expiry--;
 		}
 	}
 
-	public static <T> Memory<T> method_28355(T object) {
-		return new Memory<>(object, Long.MAX_VALUE);
+	/**
+	 * Creates a memory without an expiry time.
+	 */
+	public static <T> Memory<T> permanent(T value) {
+		return new Memory<>(value, Long.MAX_VALUE);
 	}
 
 	/**
@@ -39,10 +42,10 @@ public class Memory<T> {
 	}
 
 	public String toString() {
-		return this.value + (this.method_24914() ? " (ttl: " + this.expiry + ")" : "");
+		return this.value + (this.isTimed() ? " (ttl: " + this.expiry + ")" : "");
 	}
 
-	public boolean method_24914() {
+	public boolean isTimed() {
 		return this.expiry != Long.MAX_VALUE;
 	}
 
@@ -50,7 +53,7 @@ public class Memory<T> {
 		return RecordCodecBuilder.create(
 			instance -> instance.group(
 						codec.fieldOf("value").forGetter(memory -> memory.value),
-						Codec.LONG.optionalFieldOf("ttl").forGetter(memory -> memory.method_24914() ? Optional.of(memory.expiry) : Optional.empty())
+						Codec.LONG.optionalFieldOf("ttl").forGetter(memory -> memory.isTimed() ? Optional.of(memory.expiry) : Optional.empty())
 					)
 					.apply(instance, (object, optional) -> new Memory<>(object, (Long)optional.orElse(Long.MAX_VALUE)))
 		);

@@ -14,7 +14,6 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 	private final StatusEffect type;
 	private int duration;
 	private int amplifier;
-	private boolean splash;
 	private boolean ambient;
 	@Environment(EnvType.CLIENT)
 	private boolean permanent;
@@ -187,10 +186,6 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			string = this.getTranslationKey() + ", Duration: " + this.duration;
 		}
 
-		if (this.splash) {
-			string = string + ", Splash: true";
-		}
-
 		if (!this.showParticles) {
 			string = string + ", Particles: false";
 		}
@@ -211,7 +206,6 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 			StatusEffectInstance statusEffectInstance = (StatusEffectInstance)o;
 			return this.duration == statusEffectInstance.duration
 				&& this.amplifier == statusEffectInstance.amplifier
-				&& this.splash == statusEffectInstance.splash
 				&& this.ambient == statusEffectInstance.ambient
 				&& this.type.equals(statusEffectInstance.type);
 		}
@@ -221,7 +215,6 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		int i = this.type.hashCode();
 		i = 31 * i + this.duration;
 		i = 31 * i + this.amplifier;
-		i = 31 * i + (this.splash ? 1 : 0);
 		return 31 * i + (this.ambient ? 1 : 0);
 	}
 
@@ -244,6 +237,7 @@ public class StatusEffectInstance implements Comparable<StatusEffectInstance> {
 		}
 	}
 
+	@Nullable
 	public static StatusEffectInstance fromTag(CompoundTag tag) {
 		int i = tag.getByte("Id");
 		StatusEffect statusEffect = StatusEffect.byRawId(i);

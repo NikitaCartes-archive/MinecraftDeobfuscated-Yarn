@@ -33,7 +33,7 @@ public class LecternBlockEntityRenderer implements BlockEntityRenderer<LecternBl
 			matrixStack.translate(0.0, -0.125, 0.0);
 			this.book.setPageAngles(0.0F, 0.1F, 0.9F, 1.2F);
 			VertexConsumer vertexConsumer = EnchantingTableBlockEntityRenderer.BOOK_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-			this.book.method_24184(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
+			this.book.renderBook(matrixStack, vertexConsumer, i, j, 1.0F, 1.0F, 1.0F, 1.0F);
 			matrixStack.pop();
 		}
 	}

@@ -216,7 +216,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 		if (!stack.isEmpty()) {
 			for (int i = 3; i < 39; i++) {
 				ItemStack itemStack = this.slots.get(i).getStack();
-				if (!itemStack.isEmpty() && ItemStack.method_31577(stack, itemStack)) {
+				if (!itemStack.isEmpty() && ItemStack.canCombine(stack, itemStack)) {
 					ItemStack itemStack2 = this.merchantInventory.getStack(slot);
 					int j = itemStack2.isEmpty() ? 0 : itemStack2.getCount();
 					int k = Math.min(stack.getMaxCount() - j, itemStack.getCount());

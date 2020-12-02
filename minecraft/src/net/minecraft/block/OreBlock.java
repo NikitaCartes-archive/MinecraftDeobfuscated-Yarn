@@ -8,22 +8,22 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.IntRange;
 
 public class OreBlock extends Block {
-	private final IntRange field_27195;
+	private final IntRange experienceDropped;
 
 	public OreBlock(AbstractBlock.Settings settings) {
 		this(settings, IntRange.between(0, 0));
 	}
 
-	public OreBlock(AbstractBlock.Settings settings, IntRange intRange) {
+	public OreBlock(AbstractBlock.Settings settings, IntRange experienceDropped) {
 		super(settings);
-		this.field_27195 = intRange;
+		this.experienceDropped = experienceDropped;
 	}
 
 	@Override
 	public void onStacksDropped(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {
 		super.onStacksDropped(state, world, pos, stack);
 		if (EnchantmentHelper.getLevel(Enchantments.SILK_TOUCH, stack) == 0) {
-			int i = this.field_27195.choose(world.random);
+			int i = this.experienceDropped.choose(world.random);
 			if (i > 0) {
 				this.dropExperience(world, pos, i);
 			}

@@ -69,15 +69,15 @@ public class FilledMapItem extends NetworkSyncedItem {
 		return l;
 	}
 
-	private static void method_32348(ItemStack itemStack, int i) {
-		itemStack.getOrCreateTag().putInt("map", i);
+	private static void setMapId(ItemStack stack, int id) {
+		stack.getOrCreateTag().putInt("map", id);
 	}
 
 	private static void createMapState(
 		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension
 	) {
 		int i = method_32349(world, x, z, scale, showIcons, unlimitedTracking, dimension);
-		method_32348(stack, i);
+		setMapId(stack, i);
 	}
 
 	public static String getMapName(int mapId) {
@@ -138,15 +138,15 @@ public class FilledMapItem extends NetworkSyncedItem {
 										for (int z = 0; z < i; z++) {
 											int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
 											BlockState blockState;
-											if (aa <= world.getBottomHeightLimit() + 1) {
+											if (aa <= world.getSectionCount() + 1) {
 												blockState = Blocks.BEDROCK.getDefaultState();
 											} else {
 												do {
 													mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
 													blockState = worldChunk.getBlockState(mutable);
-												} while (blockState.getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getBottomHeightLimit());
+												} while (blockState.getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getSectionCount());
 
-												if (aa > world.getBottomHeightLimit() && !blockState.getFluidState().isEmpty()) {
+												if (aa > world.getSectionCount() && !blockState.getFluidState().isEmpty()) {
 													int ab = aa - 1;
 													mutable2.set(mutable);
 
@@ -155,7 +155,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 														mutable2.setY(ab--);
 														blockState2 = worldChunk.getBlockState(mutable2);
 														w++;
-													} while (ab > world.getBottomHeightLimit() && !blockState2.getFluidState().isEmpty());
+													} while (ab > world.getSectionCount() && !blockState2.getFluidState().isEmpty());
 
 													blockState = this.getFluidStateIfVisible(world, blockState, mutable);
 												}
@@ -213,10 +213,10 @@ public class FilledMapItem extends NetworkSyncedItem {
 		return biomes[x * scale + z * scale * 128 * scale].getDepth() >= 0.0F;
 	}
 
-	public static void fillExplorationMap(ServerWorld serverWorld, ItemStack map) {
-		MapState mapState = getOrCreateMapState(map, serverWorld);
+	public static void fillExplorationMap(ServerWorld world, ItemStack map) {
+		MapState mapState = getOrCreateMapState(map, world);
 		if (mapState != null) {
-			if (serverWorld.getRegistryKey() == mapState.dimension) {
+			if (world.getRegistryKey() == mapState.dimension) {
 				int i = 1 << mapState.scale;
 				int j = mapState.xCenter;
 				int k = mapState.zCenter;
@@ -224,7 +224,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 				for (int l = 0; l < 128 * i; l++) {
 					for (int m = 0; m < 128 * i; m++) {
-						biomes[l * 128 * i + m] = serverWorld.getBiome(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l));
+						biomes[l * 128 * i + m] = world.getBiome(new BlockPos((j / i - 64) * i + m, 0, (k / i - 64) * i + l));
 					}
 				}
 
@@ -346,7 +346,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 		if (mapState != null) {
 			int i = world.getNextMapId();
 			world.putMapState(getMapName(i), mapState.method_32364(amount));
-			method_32348(map, i);
+			setMapId(map, i);
 		}
 	}
 
@@ -357,7 +357,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 			String string = getMapName(i);
 			MapState mapState2 = mapState.method_32361();
 			world.putMapState(string, mapState2);
-			method_32348(stack, i);
+			setMapId(stack, i);
 		}
 	}
 

@@ -91,7 +91,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 				itemStack2 = new ItemStack(Items.MUSHROOM_STEW);
 			}
 
-			ItemStack itemStack3 = ItemUsage.method_30270(itemStack, player, itemStack2, false);
+			ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, player, itemStack2, false);
 			player.setStackInHand(hand, itemStack3);
 			SoundEvent soundEvent;
 			if (bl) {

@@ -86,6 +86,7 @@ import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
+import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
@@ -100,6 +101,8 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onEntitySpawn(EntitySpawnS2CPacket packet);
 
 	void onExperienceOrbSpawn(ExperienceOrbSpawnS2CPacket packet);
+
+	void onVibration(VibrationS2CPacket packet);
 
 	void onMobSpawn(MobSpawnS2CPacket packet);
 

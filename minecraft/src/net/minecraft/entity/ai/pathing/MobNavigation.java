@@ -38,11 +38,11 @@ public class MobNavigation extends EntityNavigation {
 		if (this.world.getBlockState(target).isAir()) {
 			BlockPos blockPos = target.down();
 
-			while (blockPos.getY() > this.world.getBottomHeightLimit() && this.world.getBlockState(blockPos).isAir()) {
+			while (blockPos.getY() > this.world.getSectionCount() && this.world.getBlockState(blockPos).isAir()) {
 				blockPos = blockPos.down();
 			}
 
-			if (blockPos.getY() > this.world.getBottomHeightLimit()) {
+			if (blockPos.getY() > this.world.getSectionCount()) {
 				return super.findPathTo(blockPos.up(), distance);
 			}
 

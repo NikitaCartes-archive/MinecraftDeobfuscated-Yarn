@@ -204,16 +204,16 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.contains("Book", 10)) {
-			this.book = this.resolveBook(ItemStack.fromTag(compoundTag.getCompound("Book")), null);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.contains("Book", 10)) {
+			this.book = this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
 
 		this.pageCount = WrittenBookItem.getPageCount(this.book);
-		this.currentPage = MathHelper.clamp(compoundTag.getInt("Page"), 0, this.pageCount - 1);
+		this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
 	}
 
 	@Override

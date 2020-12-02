@@ -11,14 +11,14 @@ public class TimedTaskRunner {
 	public void runSilently(long tick) {
 		try {
 			this.runTasks(tick);
-		} catch (Exception var4) {
+		} catch (TimeMismatchException var4) {
 		}
 	}
 
 	public void runReported(long tick) {
 		try {
 			this.runTasks(tick);
-		} catch (Exception var4) {
+		} catch (TimeMismatchException var4) {
 			this.test.fail(var4);
 		}
 	}

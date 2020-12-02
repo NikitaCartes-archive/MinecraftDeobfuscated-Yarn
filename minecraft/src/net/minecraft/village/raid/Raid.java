@@ -774,9 +774,9 @@ public class Raid {
 
 		private static final Raid.Status[] VALUES = values();
 
-		private static Raid.Status fromName(String string) {
+		private static Raid.Status fromName(String name) {
 			for (Raid.Status status : VALUES) {
-				if (string.equalsIgnoreCase(status.name())) {
+				if (name.equalsIgnoreCase(status.name())) {
 					return status;
 				}
 			}

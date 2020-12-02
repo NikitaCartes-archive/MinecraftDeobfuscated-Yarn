@@ -97,13 +97,13 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.name = new Identifier(compoundTag.getString("name"));
-		this.target = new Identifier(compoundTag.getString("target"));
-		this.pool = new Identifier(compoundTag.getString("pool"));
-		this.finalState = compoundTag.getString("final_state");
-		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(compoundTag.getString("joint"))
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.name = new Identifier(tag.getString("name"));
+		this.target = new Identifier(tag.getString("target"));
+		this.pool = new Identifier(tag.getString("pool"));
+		this.finalState = tag.getString("final_state");
+		this.joint = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(tag.getString("joint"))
 			.orElseGet(() -> JigsawBlock.getFacing(this.getCachedState()).getAxis().isHorizontal() ? JigsawBlockEntity.Joint.ALIGNED : JigsawBlockEntity.Joint.ROLLABLE);
 	}
 

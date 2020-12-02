@@ -29,6 +29,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 @EnvironmentInterfaces({@EnvironmentInterface(
 		value = EnvType.CLIENT,
@@ -175,6 +176,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	private void explodeAndRemove() {
 		this.world.sendEntityStatus(this, (byte)17);
+		this.method_32875(this.getOwner(), GameEvent.EXPLODE);
 		this.explode();
 		this.discard();
 	}

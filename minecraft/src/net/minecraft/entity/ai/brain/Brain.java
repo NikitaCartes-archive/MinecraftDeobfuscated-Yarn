@@ -163,7 +163,7 @@ public class Brain<E extends LivingEntity> {
 	}
 
 	public <U> void remember(MemoryModuleType<U> type, Optional<? extends U> value) {
-		this.setMemory(type, value.map(Memory::method_28355));
+		this.setMemory(type, value.map(Memory::permanent));
 	}
 
 	private <U> void setMemory(MemoryModuleType<U> type, Optional<? extends Memory<?>> memory) {

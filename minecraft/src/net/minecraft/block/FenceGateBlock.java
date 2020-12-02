@@ -17,6 +17,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class FenceGateBlock extends HorizontalFacingBlock {
 	public static final BooleanProperty OPEN = Properties.OPEN;
@@ -131,7 +132,9 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 			world.setBlockState(pos, state, 10);
 		}
 
-		world.syncWorldEvent(player, state.get(OPEN) ? 1008 : 1014, pos, 0);
+		boolean bl = (Boolean)state.get(OPEN);
+		world.syncWorldEvent(player, bl ? 1008 : 1014, pos, 0);
+		world.emitGameEvent(player, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 		return ActionResult.success(world.isClient);
 	}
 
@@ -143,6 +146,7 @@ public class FenceGateBlock extends HorizontalFacingBlock {
 				world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)).with(OPEN, Boolean.valueOf(bl)), 2);
 				if ((Boolean)state.get(OPEN) != bl) {
 					world.syncWorldEvent(null, bl ? 1008 : 1014, pos, 0);
+					world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 				}
 			}
 		}

@@ -14,19 +14,19 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27394;
+	private final ModelPart root;
 	private final ModelPart[] rods;
-	private final ModelPart field_27395;
+	private final ModelPart head;
 
-	public BlazeEntityModel(ModelPart modelPart) {
-		this.field_27394 = modelPart;
-		this.field_27395 = modelPart.getChild("head");
+	public BlazeEntityModel(ModelPart root) {
+		this.root = root;
+		this.head = root.getChild("head");
 		this.rods = new ModelPart[12];
-		Arrays.setAll(this.rods, i -> modelPart.getChild(method_31983(i)));
+		Arrays.setAll(this.rods, i -> root.getChild(getRodName(i)));
 	}
 
-	private static String method_31983(int i) {
-		return "part" + i;
+	private static String getRodName(int index) {
+		return "part" + index;
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -40,7 +40,7 @@ public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 			float g = MathHelper.cos(f) * 9.0F;
 			float h = -2.0F + MathHelper.cos((float)(i * 2) * 0.25F);
 			float j = MathHelper.sin(f) * 9.0F;
-			modelPartData.addChild(method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
+			modelPartData.addChild(getRodName(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
 			f++;
 		}
 
@@ -50,7 +50,7 @@ public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 			float g = MathHelper.cos(f) * 7.0F;
 			float h = 2.0F + MathHelper.cos((float)(i * 2) * 0.25F);
 			float j = MathHelper.sin(f) * 7.0F;
-			modelPartData.addChild(method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
+			modelPartData.addChild(getRodName(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
 			f++;
 		}
 
@@ -60,7 +60,7 @@ public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 			float g = MathHelper.cos(f) * 5.0F;
 			float h = 11.0F + MathHelper.cos((float)i * 1.5F * 0.5F);
 			float j = MathHelper.sin(f) * 5.0F;
-			modelPartData.addChild(method_31983(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
+			modelPartData.addChild(getRodName(i), modelPartBuilder, ModelTransform.pivot(g, h, j));
 			f++;
 		}
 
@@ -69,7 +69,7 @@ public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27394;
+		return this.root;
 	}
 
 	@Override
@@ -101,7 +101,7 @@ public class BlazeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 			f++;
 		}
 
-		this.field_27395.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.field_27395.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
+		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 	}
 }

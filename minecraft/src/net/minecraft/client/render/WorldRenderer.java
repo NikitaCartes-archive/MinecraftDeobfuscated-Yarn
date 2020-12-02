@@ -391,7 +391,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				int l = random.nextInt(21) - 10;
 				BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l)).down();
 				Biome biome = worldView.getBiome(blockPos3);
-				if (blockPos3.getY() > worldView.getBottomHeightLimit()
+				if (blockPos3.getY() > worldView.getSectionCount()
 					&& blockPos3.getY() <= blockPos.getY() + 10
 					&& blockPos3.getY() >= blockPos.getY() - 10
 					&& biome.getPrecipitation() == Biome.Precipitation.RAIN
@@ -663,7 +663,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		this.entityRenderDispatcher.setWorld(clientWorld);
 		this.world = clientWorld;
 		if (clientWorld != null) {
-			this.visibleChunks.ensureCapacity(4356 * clientWorld.getSectionCount());
+			this.visibleChunks.ensureCapacity(4356 * clientWorld.method_32890());
 			this.reload();
 		} else {
 			this.chunksToRebuild.clear();
@@ -829,7 +829,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				builtChunk.setRebuildFrame(frame);
 				queue.add(new WorldRenderer.ChunkInfo(builtChunk, null, 0));
 			} else {
-				int p = blockPos.getY() > this.world.getBottomHeightLimit() ? this.world.getTopHeightLimit() - 8 : this.world.getBottomHeightLimit() + 8;
+				int p = blockPos.getY() > this.world.getSectionCount() ? this.world.getTopHeightLimit() - 8 : this.world.getSectionCount() + 8;
 				int q = MathHelper.floor(vec3d.x / 16.0) * 16;
 				int r = MathHelper.floor(vec3d.z / 16.0) * 16;
 				List<WorldRenderer.ChunkInfo> list = Lists.<WorldRenderer.ChunkInfo>newArrayList();
@@ -905,7 +905,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		BlockPos blockPos = chunk.getNeighborPosition(direction);
 		if (MathHelper.abs(pos.getX() - blockPos.getX()) > this.renderDistance * 16) {
 			return null;
-		} else if (blockPos.getY() < this.world.getBottomHeightLimit() || blockPos.getY() >= this.world.getTopHeightLimit()) {
+		} else if (blockPos.getY() < this.world.getSectionCount() || blockPos.getY() >= this.world.getTopHeightLimit()) {
 			return null;
 		} else {
 			return MathHelper.abs(pos.getZ() - blockPos.getZ()) > this.renderDistance * 16 ? null : this.chunks.getRenderedChunk(blockPos);
@@ -2676,7 +2676,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				}
 				break;
 			case 1504:
-				PointedDripstoneBlock.createParticle(this.world, pos, this.world.getBlockState(pos));
+				PointedDripstoneBlock.method_32899(this.world, pos, this.world.getBlockState(pos));
 				break;
 			case 2000:
 				Direction direction = Direction.byId(data);

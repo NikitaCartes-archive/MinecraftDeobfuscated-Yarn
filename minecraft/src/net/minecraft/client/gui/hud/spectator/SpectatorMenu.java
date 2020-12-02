@@ -110,7 +110,7 @@ public class SpectatorMenu {
 	}
 
 	public SpectatorMenuState getCurrentState() {
-		return new SpectatorMenuState(this.currentGroup, this.getCommands(), this.selectedSlot);
+		return new SpectatorMenuState(this.getCommands(), this.selectedSlot);
 	}
 
 	@Environment(EnvType.CLIENT)

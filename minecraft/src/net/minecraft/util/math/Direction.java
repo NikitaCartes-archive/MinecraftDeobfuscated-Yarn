@@ -140,7 +140,7 @@ public enum Direction implements StringIdentifiable {
 		return this.direction;
 	}
 
-	public static Direction method_32801(Entity entity, Direction.Axis axis) {
+	public static Direction getLookDirectionForAxis(Entity entity, Direction.Axis axis) {
 		switch (axis) {
 			case X:
 				return EAST.method_30928(entity.getYaw(1.0F)) ? EAST : WEST;

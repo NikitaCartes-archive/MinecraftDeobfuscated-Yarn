@@ -638,11 +638,13 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.CRYSTAL_SOUND_BLOCKS).add(Blocks.AMETHYST_BLOCK, Blocks.BUDDING_AMETHYST);
 		this.getOrCreateTagBuilder(BlockTags.CAULDRONS).add(Blocks.CAULDRON, Blocks.WATER_CAULDRON, Blocks.LAVA_CAULDRON, Blocks.POWDER_SNOW_CAULDRON);
 		this.getOrCreateTagBuilder(BlockTags.INSIDE_STEP_SOUND_BLOCKS).add(Blocks.SNOW, Blocks.POWDER_SNOW);
+		this.getOrCreateTagBuilder(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS).addTag(BlockTags.BASE_STONE_OVERWORLD).add(Blocks.DIRT);
+		this.getOrCreateTagBuilder(BlockTags.OCCLUDES_VIBRATION_SIGNALS).addTag(BlockTags.WOOL);
 	}
 
 	@Override
-	protected Path getOutput(Identifier identifier) {
-		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/blocks/" + identifier.getPath() + ".json");
+	protected Path getOutput(Identifier id) {
+		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/blocks/" + id.getPath() + ".json");
 	}
 
 	@Override

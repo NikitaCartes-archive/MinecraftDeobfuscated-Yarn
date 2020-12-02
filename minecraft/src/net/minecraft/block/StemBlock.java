@@ -31,12 +31,12 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 		Block.createCuboidShape(7.0, 0.0, 7.0, 9.0, 16.0, 9.0)
 	};
 	private final GourdBlock gourdBlock;
-	private final Supplier<Item> field_27205;
+	private final Supplier<Item> pickBlockItem;
 
-	protected StemBlock(GourdBlock gourdBlock, Supplier<Item> supplier, AbstractBlock.Settings settings) {
+	protected StemBlock(GourdBlock gourdBlock, Supplier<Item> pickBlockItem, AbstractBlock.Settings settings) {
 		super(settings);
 		this.gourdBlock = gourdBlock;
-		this.field_27205 = supplier;
+		this.pickBlockItem = pickBlockItem;
 		this.setDefaultState(this.stateManager.getDefaultState().with(AGE, Integer.valueOf(0)));
 	}
 
@@ -82,7 +82,7 @@ public class StemBlock extends PlantBlock implements Fertilizable {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return new ItemStack((ItemConvertible)this.field_27205.get());
+		return new ItemStack((ItemConvertible)this.pickBlockItem.get());
 	}
 
 	@Override

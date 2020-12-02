@@ -42,6 +42,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class Explosion {
 	private static final ExplosionBehavior field_25818 = new ExplosionBehavior();
@@ -151,6 +152,7 @@ public class Explosion {
 	}
 
 	public void collectBlocksAndDamageEntities() {
+		this.world.emitGameEvent(this.entity, GameEvent.EXPLODE, new BlockPos(this.x, this.y, this.z));
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		int i = 16;
 

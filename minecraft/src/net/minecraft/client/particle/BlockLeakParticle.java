@@ -227,7 +227,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 			if (this.onGround) {
 				this.markDead();
 				this.world.addParticle(this.nextParticle, this.x, this.y, this.z, 0.0, 0.0, 0.0);
-				float f = MathHelper.method_32750(this.random, 0.3F, 1.0F);
+				float f = MathHelper.nextBetween(this.random, 0.3F, 1.0F);
 				this.world.playSound(this.x, this.y, this.z, SoundEvents.BLOCK_BEEHIVE_DRIP, SoundCategory.BLOCKS, f, 1.0F, false);
 			}
 		}
@@ -389,7 +389,7 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 				this.markDead();
 				this.world.addParticle(this.nextParticle, this.x, this.y, this.z, 0.0, 0.0, 0.0);
 				SoundEvent soundEvent = this.method_32791() == Fluids.LAVA ? SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_LAVA : SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_WATER;
-				float f = MathHelper.method_32750(this.random, 0.3F, 1.0F);
+				float f = MathHelper.nextBetween(this.random, 0.3F, 1.0F);
 				this.world.playSound(this.x, this.y, this.z, soundEvent, SoundCategory.BLOCKS, f, 1.0F, false);
 			}
 		}

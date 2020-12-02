@@ -23,7 +23,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 		this.shouldExclude = predicate;
 		this.pos = chunkPos;
 		this.field_27230 = heightLimitView;
-		this.scheduledPositions = new ShortList[heightLimitView.getSectionCount()];
+		this.scheduledPositions = new ShortList[heightLimitView.method_32890()];
 
 		for (int i = 0; i < tag.size(); i++) {
 			ListTag listTag = tag.getList(i);

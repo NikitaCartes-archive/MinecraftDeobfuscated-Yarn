@@ -3,11 +3,12 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.BlockState;
+import net.minecraft.world.dimension.DimensionType;
 
 public class FillLayerFeatureConfig implements FeatureConfig {
 	public static final Codec<FillLayerFeatureConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					Codec.intRange(0, 255).fieldOf("height").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.height),
+					Codec.intRange(DimensionType.field_28136, DimensionType.field_28135).fieldOf("height").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.height),
 					BlockState.CODEC.fieldOf("state").forGetter(fillLayerFeatureConfig -> fillLayerFeatureConfig.state)
 				)
 				.apply(instance, FillLayerFeatureConfig::new)

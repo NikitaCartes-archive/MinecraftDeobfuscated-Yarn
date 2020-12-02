@@ -13,7 +13,6 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryLookupCodec;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
@@ -96,8 +95,8 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public BlockView getColumnSample(int x, int z) {
-		return new VerticalBlockSample(new BlockState[0]);
+	public VerticalBlockSample getColumnSample(int x, int z) {
+		return new VerticalBlockSample(0, new BlockState[0]);
 	}
 
 	public static BlockState getBlockState(int x, int z) {

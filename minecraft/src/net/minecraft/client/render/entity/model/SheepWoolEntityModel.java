@@ -13,10 +13,10 @@ import net.minecraft.entity.passive.SheepEntity;
 
 @Environment(EnvType.CLIENT)
 public class SheepWoolEntityModel<T extends SheepEntity> extends QuadrupedEntityModel<T> {
-	private float field_3541;
+	private float headAngle;
 
-	public SheepWoolEntityModel(ModelPart modelPart) {
-		super(modelPart, false, 8.0F, 4.0F, 2.0F, 2.0F, 24);
+	public SheepWoolEntityModel(ModelPart root) {
+		super(root, false, 8.0F, 4.0F, 2.0F, 2.0F, 24);
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -41,11 +41,11 @@ public class SheepWoolEntityModel<T extends SheepEntity> extends QuadrupedEntity
 	public void animateModel(T sheepEntity, float f, float g, float h) {
 		super.animateModel(sheepEntity, f, g, h);
 		this.head.pivotY = 6.0F + sheepEntity.getNeckAngle(h) * 9.0F;
-		this.field_3541 = sheepEntity.getHeadAngle(h);
+		this.headAngle = sheepEntity.getHeadAngle(h);
 	}
 
 	public void setAngles(T sheepEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(sheepEntity, f, g, h, i, j);
-		this.head.pitch = this.field_3541;
+		this.head.pitch = this.headAngle;
 	}
 }

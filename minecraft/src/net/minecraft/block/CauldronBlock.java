@@ -28,18 +28,18 @@ public class CauldronBlock extends AbstractCauldronBlock {
 	}
 
 	@Override
-	protected boolean method_32765(Fluid fluid) {
+	protected boolean canBeFilledByDripstone(Fluid fluid) {
 		return true;
 	}
 
 	@Override
-	protected void method_32764(BlockState blockState, World world, BlockPos blockPos, Fluid fluid) {
+	protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
 		if (fluid == Fluids.WATER) {
-			world.setBlockState(blockPos, Blocks.WATER_CAULDRON.getDefaultState());
-			world.syncWorldEvent(1047, blockPos, 0);
+			world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
+			world.syncWorldEvent(1047, pos, 0);
 		} else if (fluid == Fluids.LAVA) {
-			world.setBlockState(blockPos, Blocks.LAVA_CAULDRON.getDefaultState());
-			world.syncWorldEvent(1046, blockPos, 0);
+			world.setBlockState(pos, Blocks.LAVA_CAULDRON.getDefaultState());
+			world.syncWorldEvent(1046, pos, 0);
 		}
 	}
 }

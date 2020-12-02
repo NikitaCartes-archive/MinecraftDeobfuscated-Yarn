@@ -42,7 +42,7 @@ public final class PerlinNoiseSampler {
 		double q = MathHelper.perlinFade(n);
 		double s;
 		if (d != 0.0) {
-			double r = Math.min(e, m);
+			double r = e < 0.0 ? 0.0 : Math.min(e, m);
 			s = (double)MathHelper.floor(r / d) * d;
 		} else {
 			s = 0.0;

@@ -182,7 +182,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private boolean flightEnabled;
 	@Nullable
 	private String motd;
-	private int worldHeight;
 	private int playerIdleTimeout;
 	public final long[] lastTickLengths = new long[100];
 	@Nullable
@@ -1019,7 +1018,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.userName != null;
 	}
 
-	protected void method_31400() {
+	protected void generateKeyPair() {
 		LOGGER.info("Generating keypair");
 
 		try {
@@ -1104,7 +1103,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				snooper.addInfo("world[" + i + "][mode]", this.saveProperties.getGameMode());
 				snooper.addInfo("world[" + i + "][difficulty]", serverWorld.getDifficulty());
 				snooper.addInfo("world[" + i + "][hardcore]", this.saveProperties.isHardcore());
-				snooper.addInfo("world[" + i + "][height]", this.worldHeight);
+				snooper.addInfo("world[" + i + "][height]", serverWorld.getTopHeightLimit());
 				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
 				i++;
 			}
@@ -1170,14 +1169,6 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public void setMotd(String motd) {
 		this.motd = motd;
-	}
-
-	public int getWorldHeight() {
-		return this.worldHeight;
-	}
-
-	public void setWorldHeight(int worldHeight) {
-		this.worldHeight = worldHeight;
 	}
 
 	public boolean isStopped() {
@@ -1755,10 +1746,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return false;
 	}
 
-	public ServerPlayerInteractionManager method_32816(ServerPlayerEntity serverPlayerEntity) {
-		return (ServerPlayerInteractionManager)(this.isDemo()
-			? new DemoServerPlayerInteractionManager(serverPlayerEntity)
-			: new ServerPlayerInteractionManager(serverPlayerEntity));
+	public ServerPlayerInteractionManager getPlayerInteractionManager(ServerPlayerEntity player) {
+		return (ServerPlayerInteractionManager)(this.isDemo() ? new DemoServerPlayerInteractionManager(player) : new ServerPlayerInteractionManager(player));
 	}
 
 	/**

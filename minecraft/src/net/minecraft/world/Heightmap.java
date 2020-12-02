@@ -18,6 +18,7 @@ import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 
 public class Heightmap {
@@ -30,7 +31,7 @@ public class Heightmap {
 	public Heightmap(Chunk chunk, Heightmap.Type type) {
 		this.blockPredicate = type.getBlockPredicate();
 		this.chunk = chunk;
-		int i = (int)Math.ceil(Math.log((double)(chunk.getHeight() + 1)) / Math.log(2.0));
+		int i = MathHelper.log2DeBruijn(chunk.getBottomSectionLimit() + 1);
 		this.storage = new PackedIntegerArray(i, 256);
 	}
 
@@ -47,7 +48,7 @@ public class Heightmap {
 					objectList.add(chunk.getHeightmap(type));
 				}
 
-				for (int m = j - 1; m >= chunk.getBottomHeightLimit(); m--) {
+				for (int m = j - 1; m >= chunk.getSectionCount(); m--) {
 					mutable.set(k, m, l);
 					BlockState blockState = chunk.getBlockState(mutable);
 					if (!blockState.isOf(Blocks.AIR)) {
@@ -83,7 +84,7 @@ public class Heightmap {
 			} else if (i - 1 == y) {
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-				for (int j = y - 1; j >= this.chunk.getBottomHeightLimit(); j--) {
+				for (int j = y - 1; j >= this.chunk.getSectionCount(); j--) {
 					mutable.set(x, j, z);
 					if (this.blockPredicate.test(this.chunk.getBlockState(mutable))) {
 						this.set(x, z, j + 1);
@@ -91,7 +92,7 @@ public class Heightmap {
 					}
 				}
 
-				this.set(x, z, this.chunk.getBottomHeightLimit());
+				this.set(x, z, this.chunk.getSectionCount());
 				return true;
 			}
 
@@ -104,11 +105,11 @@ public class Heightmap {
 	}
 
 	private int get(int index) {
-		return this.storage.get(index) + this.chunk.getBottomHeightLimit();
+		return this.storage.get(index) + this.chunk.getSectionCount();
 	}
 
 	private void set(int x, int z, int height) {
-		this.storage.set(toIndex(x, z), height - this.chunk.getBottomHeightLimit());
+		this.storage.set(toIndex(x, z), height - this.chunk.getSectionCount());
 	}
 
 	public void setTo(long[] heightmap) {

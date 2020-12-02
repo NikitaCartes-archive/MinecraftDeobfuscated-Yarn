@@ -15,6 +15,7 @@ import net.minecraft.util.math.EulerAngle;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ArmorStandItem extends Item {
 	public ArmorStandItem(Item.Settings settings) {
@@ -49,6 +50,7 @@ public class ArmorStandItem extends Item {
 					world.playSound(
 						null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75F, 0.8F
 					);
+					world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_PLACE, armorStandEntity);
 				}
 
 				itemStack.decrement(1);

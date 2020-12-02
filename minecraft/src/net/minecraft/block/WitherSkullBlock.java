@@ -44,7 +44,7 @@ public class WitherSkullBlock extends SkullBlock {
 		if (!world.isClient) {
 			BlockState blockState = blockEntity.getCachedState();
 			boolean bl = blockState.isOf(Blocks.WITHER_SKELETON_SKULL) || blockState.isOf(Blocks.WITHER_SKELETON_WALL_SKULL);
-			if (bl && pos.getY() >= world.getBottomHeightLimit() && world.getDifficulty() != Difficulty.PEACEFUL) {
+			if (bl && pos.getY() >= world.getSectionCount() && world.getDifficulty() != Difficulty.PEACEFUL) {
 				BlockPattern blockPattern = getWitherBossPattern();
 				BlockPattern.Result result = blockPattern.searchAround(world, pos);
 				if (result != null) {
@@ -66,7 +66,7 @@ public class WitherSkullBlock extends SkullBlock {
 						0.0F
 					);
 					witherEntity.bodyYaw = result.getForwards().getAxis() == Direction.Axis.X ? 0.0F : 90.0F;
-					witherEntity.method_6885();
+					witherEntity.onSummoned();
 
 					for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(ServerPlayerEntity.class, witherEntity.getBoundingBox().expand(50.0))) {
 						Criteria.SUMMONED_ENTITY.trigger(serverPlayerEntity, witherEntity);
@@ -86,7 +86,7 @@ public class WitherSkullBlock extends SkullBlock {
 
 	public static boolean canDispense(World world, BlockPos pos, ItemStack stack) {
 		return stack.isOf(Items.WITHER_SKELETON_SKULL)
-				&& pos.getY() >= world.getBottomHeightLimit() + 2
+				&& pos.getY() >= world.getSectionCount() + 2
 				&& world.getDifficulty() != Difficulty.PEACEFUL
 				&& !world.isClient
 			? getWitherDispenserPattern().searchAround(world, pos) != null

@@ -2,10 +2,10 @@ package net.minecraft.server.network;
 
 import java.util.Objects;
 import javax.annotation.Nullable;
-import net.minecraft.class_5552;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.OperatorBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
@@ -235,7 +235,7 @@ public class ServerPlayerInteractionManager {
 		} else {
 			BlockEntity blockEntity = this.world.getBlockEntity(pos);
 			Block block = blockState.getBlock();
-			if (block instanceof class_5552 && !this.player.isCreativeLevelTwoOp()) {
+			if (block instanceof OperatorBlock && !this.player.isCreativeLevelTwoOp()) {
 				this.world.updateListeners(pos, blockState, blockState, 3);
 				return false;
 			} else if (this.player.isBlockBreakingRestricted(this.world, pos, this.gameMode)) {

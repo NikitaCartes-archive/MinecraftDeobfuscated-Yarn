@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
@@ -51,6 +52,7 @@ public class AnimationResourceMetadataReader implements ResourceMetadataReader<A
 		return new AnimationResourceMetadata(list, k, jx, i, bl);
 	}
 
+	@Nullable
 	private AnimationFrameResourceMetadata readFrameMetadata(int frame, JsonElement json) {
 		if (json.isJsonPrimitive()) {
 			return new AnimationFrameResourceMetadata(JsonHelper.asInt(json, "frames[" + frame + "]"));

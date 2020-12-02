@@ -584,8 +584,8 @@ public abstract class MobEntity extends LivingEntity {
 				if (armorItem.getProtection() != armorItem2.getProtection()) {
 					return armorItem.getProtection() > armorItem2.getProtection();
 				} else {
-					return armorItem.method_26353() != armorItem2.method_26353()
-						? armorItem.method_26353() > armorItem2.method_26353()
+					return armorItem.getToughness() != armorItem2.getToughness()
+						? armorItem.getToughness() > armorItem2.getToughness()
 						: this.prefersNewDamageableItem(newStack, oldStack);
 				}
 			}

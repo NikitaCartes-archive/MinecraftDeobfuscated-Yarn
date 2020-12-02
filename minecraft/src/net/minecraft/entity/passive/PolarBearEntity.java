@@ -101,7 +101,7 @@ public class PolarBearEntity extends AnimalEntity implements Angerable {
 	}
 
 	public static boolean canSpawn(EntityType<PolarBearEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+		Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
 		return !Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_OCEAN)) && !Objects.equals(optional, Optional.of(BiomeKeys.DEEP_FROZEN_OCEAN))
 			? isValidNaturalSpawn(type, world, spawnReason, pos, random)
 			: world.getBaseLightLevel(pos, 0) > 8 && world.getBlockState(pos.down()).isOf(Blocks.ICE);

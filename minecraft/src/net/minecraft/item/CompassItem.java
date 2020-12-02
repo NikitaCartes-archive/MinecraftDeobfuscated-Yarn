@@ -19,7 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class CompassItem extends Item implements Vanishable {
-	private static final Logger field_24670 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public CompassItem(Item.Settings settings) {
 		super(settings);
@@ -73,7 +73,7 @@ public class CompassItem extends Item implements Vanishable {
 			ItemStack itemStack = context.getStack();
 			boolean bl = !playerEntity.getAbilities().creativeMode && itemStack.getCount() == 1;
 			if (bl) {
-				this.method_27315(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
+				this.writeToTag(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
 			} else {
 				ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
 				CompoundTag compoundTag = itemStack.hasTag() ? itemStack.getTag().copy() : new CompoundTag();
@@ -82,7 +82,7 @@ public class CompassItem extends Item implements Vanishable {
 					itemStack.decrement(1);
 				}
 
-				this.method_27315(world.getRegistryKey(), blockPos, compoundTag);
+				this.writeToTag(world.getRegistryKey(), blockPos, compoundTag);
 				if (!playerEntity.getInventory().insertStack(itemStack2)) {
 					playerEntity.dropItem(itemStack2, false);
 				}
@@ -92,10 +92,10 @@ public class CompassItem extends Item implements Vanishable {
 		}
 	}
 
-	private void method_27315(RegistryKey<World> registryKey, BlockPos blockPos, CompoundTag compoundTag) {
-		compoundTag.put("LodestonePos", NbtHelper.fromBlockPos(blockPos));
-		World.CODEC.encodeStart(NbtOps.INSTANCE, registryKey).resultOrPartial(field_24670::error).ifPresent(tag -> compoundTag.put("LodestoneDimension", tag));
-		compoundTag.putBoolean("LodestoneTracked", true);
+	private void writeToTag(RegistryKey<World> worldKey, BlockPos pos, CompoundTag tag) {
+		tag.put("LodestonePos", NbtHelper.fromBlockPos(pos));
+		World.CODEC.encodeStart(NbtOps.INSTANCE, worldKey).resultOrPartial(LOGGER::error).ifPresent(tagx -> tag.put("LodestoneDimension", tagx));
+		tag.putBoolean("LodestoneTracked", true);
 	}
 
 	@Override

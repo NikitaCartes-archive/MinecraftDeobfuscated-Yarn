@@ -48,7 +48,7 @@ public class FlowerPotBlock extends Block {
 		BlockState blockState = (item instanceof BlockItem ? (Block)CONTENT_TO_POTTED.getOrDefault(((BlockItem)item).getBlock(), Blocks.AIR) : Blocks.AIR)
 			.getDefaultState();
 		boolean bl = blockState.isOf(Blocks.AIR);
-		boolean bl2 = this.method_31646();
+		boolean bl2 = this.isEmpty();
 		if (bl != bl2) {
 			if (bl2) {
 				world.setBlockState(pos, blockState, 3);
@@ -76,10 +76,10 @@ public class FlowerPotBlock extends Block {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return this.method_31646() ? super.getPickStack(world, pos, state) : new ItemStack(this.content);
+		return this.isEmpty() ? super.getPickStack(world, pos, state) : new ItemStack(this.content);
 	}
 
-	private boolean method_31646() {
+	private boolean isEmpty() {
 		return this.content == Blocks.AIR;
 	}
 

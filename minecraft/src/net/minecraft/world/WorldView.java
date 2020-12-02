@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5742;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -45,7 +46,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		int l = MathHelper.floor(box.maxY);
 		int m = MathHelper.floor(box.minZ);
 		int n = MathHelper.floor(box.maxZ);
-		return this.isRegionLoaded(i, k, m, j, l, n) ? this.method_29546(box) : Stream.empty();
+		return this.isRegionLoaded(i, k, m, j, l, n) ? this.getStatesInBox(box) : Stream.empty();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -56,7 +57,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Override
 	default Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		Chunk chunk = this.getChunk(biomeX >> 2, biomeZ >> 2, ChunkStatus.BIOMES, false);
+		Chunk chunk = this.getChunk(class_5742.method_33103(biomeX), class_5742.method_33103(biomeZ), ChunkStatus.BIOMES, false);
 		return chunk != null && chunk.getBiomeArray() != null
 			? chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ)
 			: this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);
@@ -75,6 +76,16 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	int getSeaLevel();
 
 	DimensionType getDimension();
+
+	@Override
+	default int getSectionCount() {
+		return this.getDimension().getMinimumY();
+	}
+
+	@Override
+	default int getBottomSectionLimit() {
+		return this.getDimension().getHeight();
+	}
 
 	default BlockPos getTopPosition(Heightmap.Type heightmap, BlockPos pos) {
 		return new BlockPos(pos.getX(), this.getTopY(heightmap, pos.getX(), pos.getZ()), pos.getZ());
@@ -180,7 +191,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Deprecated
 	default boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		if (maxY >= this.getBottomHeightLimit() && minY < this.getTopHeightLimit()) {
+		if (maxY >= this.getSectionCount() && minY < this.getTopHeightLimit()) {
 			minX >>= 4;
 			minZ >>= 4;
 			maxX >>= 4;

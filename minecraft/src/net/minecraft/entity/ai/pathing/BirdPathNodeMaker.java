@@ -327,7 +327,7 @@ public class BirdPathNodeMaker extends LandPathNodeMaker {
 	public PathNodeType getDefaultNodeType(BlockView world, int x, int y, int z) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		PathNodeType pathNodeType = getCommonNodeType(world, mutable.set(x, y, z));
-		if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomHeightLimit() + 1) {
+		if (pathNodeType == PathNodeType.OPEN && y >= world.getSectionCount() + 1) {
 			BlockState blockState = world.getBlockState(mutable.set(x, y - 1, z));
 			PathNodeType pathNodeType2 = getCommonNodeType(world, mutable.set(x, y - 1, z));
 			if (pathNodeType2 == PathNodeType.DAMAGE_FIRE

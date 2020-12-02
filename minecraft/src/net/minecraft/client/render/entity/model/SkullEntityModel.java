@@ -15,12 +15,12 @@ import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class SkullEntityModel extends SkullBlockEntityModel {
-	private final ModelPart field_27498;
-	protected final ModelPart skull;
+	private final ModelPart root;
+	protected final ModelPart head;
 
-	public SkullEntityModel(ModelPart modelPart) {
-		this.field_27498 = modelPart;
-		this.skull = modelPart.getChild("head");
+	public SkullEntityModel(ModelPart root) {
+		this.root = root;
+		this.head = root.getChild("head");
 	}
 
 	public static ModelData getModelData() {
@@ -44,13 +44,13 @@ public class SkullEntityModel extends SkullBlockEntityModel {
 	}
 
 	@Override
-	public void method_2821(float f, float g, float h) {
-		this.skull.yaw = g * (float) (Math.PI / 180.0);
-		this.skull.pitch = h * (float) (Math.PI / 180.0);
+	public void setHeadRotation(float animationProgress, float yaw, float pitch) {
+		this.head.yaw = yaw * (float) (Math.PI / 180.0);
+		this.head.pitch = pitch * (float) (Math.PI / 180.0);
 	}
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.field_27498.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		this.root.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 	}
 }

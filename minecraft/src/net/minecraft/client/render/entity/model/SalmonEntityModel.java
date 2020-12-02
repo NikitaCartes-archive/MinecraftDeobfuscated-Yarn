@@ -13,12 +13,12 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SalmonEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27494;
+	private final ModelPart root;
 	private final ModelPart tail;
 
-	public SalmonEntityModel(ModelPart modelPart) {
-		this.field_27494 = modelPart;
-		this.tail = modelPart.getChild("body_back");
+	public SalmonEntityModel(ModelPart root) {
+		this.root = root;
+		this.tail = root.getChild("body_back");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -54,7 +54,7 @@ public class SalmonEntityModel<T extends Entity> extends SinglePartEntityModel<T
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27494;
+		return this.root;
 	}
 
 	@Override

@@ -161,7 +161,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		}
 
 		if (beaconBlockEntity.field_19179 >= l) {
-			beaconBlockEntity.field_19179 = world.getBottomHeightLimit() - 1;
+			beaconBlockEntity.field_19179 = world.getSectionCount() - 1;
 			boolean bl = m > 0;
 			beaconBlockEntity.beamSegments = beaconBlockEntity.field_19178;
 			if (!world.isClient) {
@@ -186,7 +186,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 
 		for (int j = 1; j <= 4; i = j++) {
 			int k = y - j;
-			if (k < world.getBottomHeightLimit()) {
+			if (k < world.getSectionCount()) {
 				break;
 			}
 
@@ -224,7 +224,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			}
 
 			int k = (9 + i * 2) * 20;
-			Box box = new Box(blockPos).expand(d).stretch(0.0, (double)world.getTopHeightLimit(), 0.0);
+			Box box = new Box(blockPos).expand(d).stretch(0.0, (double)world.getBottomSectionLimit(), 0.0);
 			List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
 
 			for (PlayerEntity playerEntity : list) {
@@ -272,15 +272,15 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.primary = getPotionEffectById(compoundTag.getInt("Primary"));
-		this.secondary = getPotionEffectById(compoundTag.getInt("Secondary"));
-		if (compoundTag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.primary = getPotionEffectById(tag.getInt("Primary"));
+		this.secondary = getPotionEffectById(tag.getInt("Secondary"));
+		if (tag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
-		this.lock = ContainerLock.fromTag(compoundTag);
+		this.lock = ContainerLock.fromTag(tag);
 	}
 
 	@Override
@@ -317,7 +317,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	public void setWorld(World world) {
 		super.setWorld(world);
-		this.field_19179 = world.getBottomHeightLimit() - 1;
+		this.field_19179 = world.getSectionCount() - 1;
 	}
 
 	public static class BeamSegment {

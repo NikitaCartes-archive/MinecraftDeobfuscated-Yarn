@@ -13,13 +13,11 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.tag.SetTag;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
@@ -44,13 +42,12 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 	public void run(DataCache cache) {
 		this.tagBuilders.clear();
 		this.configure();
-		Tag<T> tag = SetTag.empty();
-		Function<Identifier, Tag<T>> function = identifier -> this.tagBuilders.containsKey(identifier) ? tag : null;
-		Function<Identifier, T> function2 = identifier -> this.registry.getOrEmpty(identifier).orElse(null);
 		this.tagBuilders
 			.forEach(
 				(identifier, builder) -> {
-					List<Tag.TrackedEntry> list = (List<Tag.TrackedEntry>)builder.streamUnresolvedEntries(function, function2).collect(Collectors.toList());
+					List<Tag.TrackedEntry> list = (List<Tag.TrackedEntry>)builder.streamEntries()
+						.filter(trackedEntry -> !trackedEntry.getEntry().method_32832(this.registry::containsId, this.tagBuilders::containsKey))
+						.collect(Collectors.toList());
 					if (!list.isEmpty()) {
 						throw new IllegalArgumentException(
 							String.format(
@@ -67,20 +64,20 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 							if (!Objects.equals(cache.getOldSha1(path), string2) || !Files.exists(path, new LinkOption[0])) {
 								Files.createDirectories(path.getParent());
 								BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
-								Throwable var12 = null;
+								Throwable var10 = null;
 
 								try {
 									bufferedWriter.write(string);
-								} catch (Throwable var22) {
-									var12 = var22;
-									throw var22;
+								} catch (Throwable var20) {
+									var10 = var20;
+									throw var20;
 								} finally {
 									if (bufferedWriter != null) {
-										if (var12 != null) {
+										if (var10 != null) {
 											try {
 												bufferedWriter.close();
-											} catch (Throwable var21) {
-												var12.addSuppressed(var21);
+											} catch (Throwable var19) {
+												var10.addSuppressed(var19);
 											}
 										} else {
 											bufferedWriter.close();
@@ -90,15 +87,15 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 							}
 
 							cache.updateSha1(path, string2);
-						} catch (IOException var24) {
-							LOGGER.error("Couldn't save tags to {}", path, var24);
+						} catch (IOException var22) {
+							LOGGER.error("Couldn't save tags to {}", path, var22);
 						}
 					}
 				}
 			);
 	}
 
-	protected abstract Path getOutput(Identifier identifier);
+	protected abstract Path getOutput(Identifier id);
 
 	protected AbstractTagProvider.ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> identified) {
 		Tag.Builder builder = this.method_27169(identified);

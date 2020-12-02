@@ -7,7 +7,7 @@ public class SlideConfig {
 	public static final Codec<SlideConfig> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.INT.fieldOf("target").forGetter(SlideConfig::getTarget),
-					Codec.intRange(0, 256).fieldOf("size").forGetter(SlideConfig::getSize),
+					Codec.intRange(0, Integer.MAX_VALUE).fieldOf("size").forGetter(SlideConfig::getSize),
 					Codec.INT.fieldOf("offset").forGetter(SlideConfig::getOffset)
 				)
 				.apply(instance, SlideConfig::new)

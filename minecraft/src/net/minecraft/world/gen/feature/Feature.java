@@ -85,6 +85,15 @@ public abstract class Feature<FC extends FeatureConfig> {
 	);
 	public static final Feature<DecoratedFeatureConfig> DECORATED = register("decorated", new DecoratedFeature(DecoratedFeatureConfig.CODEC));
 	public static final Feature<GeodeFeatureConfig> GEODE = register("geode", new GeodeFeature(GeodeFeatureConfig.CODEC));
+	public static final Feature<DripstoneClusterFeatureConfig> DRIPSTONE_CLUSTER = register(
+		"dripstone_cluster", new DripstoneClusterFeature(DripstoneClusterFeatureConfig.CODEC)
+	);
+	public static final Feature<LargeDripstoneFeatureConfig> LARGE_DRIPSTONE = register(
+		"large_dripstone", new LargeDripstoneFeature(LargeDripstoneFeatureConfig.CODEC)
+	);
+	public static final Feature<SmallDripstoneFeatureConfig> SMALL_DRIPSTONE = register(
+		"small_dripstone", new SmallDripstoneFeature(SmallDripstoneFeatureConfig.CODEC)
+	);
 	private final Codec<ConfiguredFeature<FC, Feature<FC>>> codec;
 
 	private static <C extends FeatureConfig, F extends Feature<C>> F register(String name, F feature) {

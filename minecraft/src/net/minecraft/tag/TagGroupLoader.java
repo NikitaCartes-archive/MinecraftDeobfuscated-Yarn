@@ -1,6 +1,9 @@
 package net.minecraft.tag;
 
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import java.io.BufferedReader;
@@ -9,13 +12,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import net.minecraft.resource.Resource;
@@ -121,38 +125,62 @@ public class TagGroupLoader<T> {
 		);
 	}
 
+	private static void method_32839(
+		Map<Identifier, Tag.Builder> map,
+		Multimap<Identifier, Identifier> multimap,
+		Set<Identifier> set,
+		Identifier identifier,
+		BiConsumer<Identifier, Tag.Builder> biConsumer
+	) {
+		if (set.add(identifier)) {
+			multimap.get(identifier).forEach(identifierx -> method_32839(map, multimap, set, identifierx, biConsumer));
+			Tag.Builder builder = (Tag.Builder)map.get(identifier);
+			if (builder != null) {
+				biConsumer.accept(identifier, builder);
+			}
+		}
+	}
+
+	private static boolean method_32836(Multimap<Identifier, Identifier> multimap, Identifier identifier, Identifier identifier2) {
+		Collection<Identifier> collection = multimap.get(identifier2);
+		return collection.contains(identifier) ? true : collection.stream().anyMatch(identifier2x -> method_32836(multimap, identifier, identifier2x));
+	}
+
+	private static void method_32844(Multimap<Identifier, Identifier> multimap, Identifier identifier, Identifier identifier2) {
+		if (!method_32836(multimap, identifier, identifier2)) {
+			multimap.put(identifier, identifier2);
+		}
+	}
+
 	public TagGroup<T> applyReload(Map<Identifier, Tag.Builder> tags) {
 		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMap();
 		Function<Identifier, Tag<T>> function = map::get;
 		Function<Identifier, T> function2 = identifier -> ((Optional)this.registryGetter.apply(identifier)).orElse(null);
-
-		while (!tags.isEmpty()) {
-			boolean bl = false;
-			Iterator<Entry<Identifier, Tag.Builder>> iterator = tags.entrySet().iterator();
-
-			while (iterator.hasNext()) {
-				Entry<Identifier, Tag.Builder> entry = (Entry<Identifier, Tag.Builder>)iterator.next();
-				Optional<Tag<T>> optional = ((Tag.Builder)entry.getValue()).build(function, function2);
-				if (optional.isPresent()) {
-					map.put(entry.getKey(), optional.get());
-					iterator.remove();
-					bl = true;
-				}
-			}
-
-			if (!bl) {
-				break;
-			}
-		}
-
-		tags.forEach(
-			(identifier, builder) -> LOGGER.error(
-					"Couldn't load {} tag {} as it is missing following references: {}",
-					this.entryType,
-					identifier,
-					builder.streamUnresolvedEntries(function, function2).map(Objects::toString).collect(Collectors.joining(","))
-				)
-		);
+		Multimap<Identifier, Identifier> multimap = HashMultimap.create();
+		tags.forEach((identifier, builder) -> builder.method_32826(identifier2 -> method_32844(multimap, identifier, identifier2)));
+		tags.forEach((identifier, builder) -> builder.method_32828(identifier2 -> method_32844(multimap, identifier, identifier2)));
+		Set<Identifier> set = Sets.<Identifier>newHashSet();
+		tags.keySet()
+			.forEach(
+				identifier -> method_32839(
+						tags,
+						multimap,
+						set,
+						identifier,
+						(identifierx, builder) -> builder.build(function, function2)
+								.ifLeft(
+									collection -> LOGGER.error(
+											"Couldn't load {} tag {} as it is missing following references: {}",
+											this.entryType,
+											identifierx,
+											collection.stream().map(Objects::toString).collect(Collectors.joining(","))
+										)
+								)
+								.ifRight(tag -> {
+									Tag var10000 = (Tag)map.put(identifierx, tag);
+								})
+					)
+			);
 		return TagGroup.create(map);
 	}
 }

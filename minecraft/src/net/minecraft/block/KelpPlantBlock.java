@@ -25,8 +25,8 @@ public class KelpPlantBlock extends AbstractPlantBlock implements FluidFillable 
 	}
 
 	@Override
-	protected boolean canAttachTo(BlockState blockState) {
-		return this.getStem().canAttachTo(blockState);
+	protected boolean canAttachTo(BlockState state) {
+		return this.getStem().canAttachTo(state);
 	}
 
 	@Override

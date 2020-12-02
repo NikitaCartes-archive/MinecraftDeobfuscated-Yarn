@@ -127,11 +127,11 @@ public class LightingProvider implements LightingView {
 	}
 
 	public int method_31928() {
-		return this.field_27339.getSectionCount() + 2;
+		return this.field_27339.method_32890() + 2;
 	}
 
 	public int method_31929() {
-		return this.field_27339.getBottomSectionLimit() - 1;
+		return this.field_27339.method_32891() - 1;
 	}
 
 	public int method_31930() {

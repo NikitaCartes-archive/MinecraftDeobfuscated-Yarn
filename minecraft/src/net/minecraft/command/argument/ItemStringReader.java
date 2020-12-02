@@ -1,13 +1,11 @@
 package net.minecraft.command.argument;
 
-import com.google.common.collect.Maps;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import javax.annotation.Nullable;
@@ -15,7 +13,6 @@ import net.minecraft.command.CommandSource;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.state.property.Property;
 import net.minecraft.tag.TagGroup;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -29,7 +26,6 @@ public class ItemStringReader {
 	private static final BiFunction<SuggestionsBuilder, TagGroup<Item>, CompletableFuture<Suggestions>> NBT_SUGGESTION_PROVIDER = (suggestionsBuilder, tagGroup) -> suggestionsBuilder.buildFuture();
 	private final StringReader reader;
 	private final boolean allowTag;
-	private final Map<Property<?>, Comparable<?>> field_10801 = Maps.<Property<?>, Comparable<?>>newHashMap();
 	private Item item;
 	@Nullable
 	private CompoundTag tag;

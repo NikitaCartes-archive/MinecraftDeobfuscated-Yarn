@@ -20,10 +20,10 @@ public class VillagerData {
 	private final VillagerProfession profession;
 	private final int level;
 
-	public VillagerData(VillagerType villagerType, VillagerProfession villagerProfession, int i) {
-		this.type = villagerType;
-		this.profession = villagerProfession;
-		this.level = Math.max(1, i);
+	public VillagerData(VillagerType type, VillagerProfession profession, int level) {
+		this.type = type;
+		this.profession = profession;
+		this.level = Math.max(1, level);
 	}
 
 	public VillagerType getType() {
@@ -38,12 +38,12 @@ public class VillagerData {
 		return this.level;
 	}
 
-	public VillagerData withType(VillagerType villagerType) {
-		return new VillagerData(villagerType, this.profession, this.level);
+	public VillagerData withType(VillagerType type) {
+		return new VillagerData(type, this.profession, this.level);
 	}
 
-	public VillagerData withProfession(VillagerProfession villagerProfession) {
-		return new VillagerData(this.type, villagerProfession, this.level);
+	public VillagerData withProfession(VillagerProfession profession) {
+		return new VillagerData(this.type, profession, this.level);
 	}
 
 	public VillagerData withLevel(int level) {

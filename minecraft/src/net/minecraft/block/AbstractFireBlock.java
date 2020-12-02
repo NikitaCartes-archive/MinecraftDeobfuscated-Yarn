@@ -135,7 +135,7 @@ public abstract class AbstractFireBlock extends Block {
 	@Override
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
-			if (method_30366(world)) {
+			if (isOverworldOrNether(world)) {
 				Optional<AreaHelper> optional = AreaHelper.method_30485(world, pos, Direction.Axis.X);
 				if (optional.isPresent()) {
 					((AreaHelper)optional.get()).createPortal();
@@ -149,7 +149,7 @@ public abstract class AbstractFireBlock extends Block {
 		}
 	}
 
-	private static boolean method_30366(World world) {
+	private static boolean isOverworldOrNether(World world) {
 		return world.getRegistryKey() == World.OVERWORLD || world.getRegistryKey() == World.NETHER;
 	}
 
@@ -166,7 +166,7 @@ public abstract class AbstractFireBlock extends Block {
 	}
 
 	private static boolean method_30033(World world, BlockPos blockPos, Direction direction) {
-		if (!method_30366(world)) {
+		if (!isOverworldOrNether(world)) {
 			return false;
 		} else {
 			BlockPos.Mutable mutable = blockPos.mutableCopy();

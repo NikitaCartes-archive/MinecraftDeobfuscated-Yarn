@@ -42,7 +42,7 @@ public class ElytraItem extends Item implements Wearable {
 
 	@Nullable
 	@Override
-	public SoundEvent method_31570() {
+	public SoundEvent getEquipSound() {
 		return SoundEvents.ITEM_ARMOR_EQUIP_ELYTRA;
 	}
 }

@@ -44,6 +44,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -150,6 +151,7 @@ public class Item implements ItemConvertible {
 		if (this.isFood()) {
 			ItemStack itemStack = user.getStackInHand(hand);
 			if (user.canConsume(this.getFoodComponent().isAlwaysEdible())) {
+				world.emitGameEvent(user, GameEvent.EATING_START, user);
 				user.setCurrentHand(hand);
 				return TypedActionResult.consume(itemStack);
 			} else {
@@ -160,8 +162,13 @@ public class Item implements ItemConvertible {
 		}
 	}
 
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		return this.isFood() ? user.eatFood(world, stack) : stack;
+	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+		if (this.isFood()) {
+			world.emitGameEvent(entity, GameEvent.EATING_FINISH, entity);
+			return entity.eatFood(world, stack);
+		} else {
+			return stack;
+		}
 	}
 
 	public final int getMaxCount() {
@@ -434,7 +441,7 @@ public class Item implements ItemConvertible {
 	}
 
 	@Nullable
-	public SoundEvent method_31570() {
+	public SoundEvent getEquipSound() {
 		return null;
 	}
 

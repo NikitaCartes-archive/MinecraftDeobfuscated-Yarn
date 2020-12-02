@@ -66,6 +66,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public interface DispenserBehavior {
 	DispenserBehavior NOOP = (blockPointer, itemStack) -> itemStack;
@@ -368,6 +369,7 @@ public interface DispenserBehavior {
 					if (itemStack.isEmpty()) {
 						return super.dispenseSilently(pointer, stack);
 					} else {
+						worldAccess.emitGameEvent(null, GameEvent.FLUID_PICKUP, blockPos);
 						Item item = itemStack.getItem();
 						stack.decrement(1);
 						if (stack.isEmpty()) {
@@ -395,7 +397,7 @@ public interface DispenserBehavior {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (AbstractFireBlock.method_30032(world, blockPos, direction)) {
 					world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
-				} else if (CampfireBlock.method_30035(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
+				} else if (CampfireBlock.canBeLit(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
 				} else if (blockState.getBlock() instanceof TntBlock) {
 					TntBlock.primeTnt(world, blockPos);
@@ -404,8 +406,11 @@ public interface DispenserBehavior {
 					this.setSuccess(false);
 				}
 
-				if (this.isSuccess() && stack.damage(1, world.random, null)) {
-					stack.setCount(0);
+				if (this.isSuccess()) {
+					world.emitGameEvent(null, GameEvent.FLINT_AND_STEEL_USE, blockPos);
+					if (stack.damage(1, world.random, null)) {
+						stack.setCount(0);
+					}
 				}
 
 				return stack;

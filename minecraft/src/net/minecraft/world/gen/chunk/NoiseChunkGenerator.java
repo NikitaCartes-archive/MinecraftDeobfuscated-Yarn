@@ -32,7 +32,6 @@ import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.world.BlockView;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.SpawnHelper;
@@ -256,29 +255,31 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		double ah = generationShapeConfig.hasRandomDensityOffset() ? this.getRandomDensityAt(x, z) : 0.0;
 		double ai = generationShapeConfig.getDensityFactor();
 		double aj = generationShapeConfig.getDensityOffset();
+		int ak = MathHelper.floorDiv(generationShapeConfig.method_32993(), this.verticalNoiseResolution);
 
-		for (int ak = 0; ak <= this.noiseSizeY; ak++) {
-			double al = this.sampleNoise(x, ak, z, y, aa, ab, ac);
-			double am = 1.0 - (double)ak * 2.0 / (double)this.noiseSizeY + ah;
-			double an = am * ai + aj;
-			double ao = (an + d) * e;
-			if (ao > 0.0) {
-				al += ao * 4.0;
+		for (int al = 0; al <= this.noiseSizeY; al++) {
+			int am = al + ak;
+			double an = this.sampleNoise(x, am, z, y, aa, ab, ac);
+			double ao = 1.0 - (double)am * 2.0 / (double)this.noiseSizeY + ah;
+			double ap = ao * ai + aj;
+			double aq = (ap + d) * e;
+			if (aq > 0.0) {
+				an += aq * 4.0;
 			} else {
-				al += ao;
+				an += aq;
 			}
 
 			if (w > 0.0) {
-				double ap = ((double)(this.noiseSizeY - ak) - ad) / w;
-				al = MathHelper.clampedLerp(v, al, ap);
+				double ar = ((double)(this.noiseSizeY - al) - ad) / w;
+				an = MathHelper.clampedLerp(v, an, ar);
 			}
 
 			if (af > 0.0) {
-				double ap = ((double)ak - ag) / af;
-				al = MathHelper.clampedLerp(ae, al, ap);
+				double ar = ((double)al - ag) / af;
+				an = MathHelper.clampedLerp(ae, an, ar);
 			}
 
-			buffer[ak] = al;
+			buffer[al] = an;
 		}
 	}
 
@@ -301,10 +302,10 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public BlockView getColumnSample(int x, int z) {
+	public VerticalBlockSample getColumnSample(int x, int z) {
 		BlockState[] blockStates = new BlockState[this.noiseSizeY * this.verticalNoiseResolution];
 		this.sampleHeightmap(x, z, blockStates, null);
-		return new VerticalBlockSample(blockStates);
+		return new VerticalBlockSample(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().method_32993(), blockStates);
 	}
 
 	private int sampleHeightmap(int x, int z, @Nullable BlockState[] states, @Nullable Predicate<BlockState> predicate) {
@@ -332,13 +333,14 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				double t = (double)s / (double)this.verticalNoiseResolution;
 				double u = MathHelper.lerp3(t, d, e, f, o, h, q, g, p, n, r);
 				int v = m * this.verticalNoiseResolution + s;
-				BlockState blockState = this.getBlockState(u, v);
+				int w = v + ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().method_32993();
+				BlockState blockState = this.getBlockState(u, w);
 				if (states != null) {
 					states[v] = blockState;
 				}
 
 				if (predicate != null && predicate.test(blockState)) {
-					return v + 1;
+					return w + 1;
 				}
 			}
 		}
@@ -394,8 +396,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		int k = chunkGeneratorSettings.getBedrockFloorY();
 		int l = this.worldHeight - 1 - chunkGeneratorSettings.getBedrockCeilingY();
 		int m = 5;
-		boolean bl = l + 5 - 1 >= 0 && l < this.worldHeight;
-		boolean bl2 = k + 5 - 1 >= 0 && k < this.worldHeight;
+		boolean bl = l + 5 - 1 >= chunk.getSectionCount() && l < chunk.getTopHeightLimit();
+		boolean bl2 = k + 5 - 1 >= chunk.getSectionCount() && k < chunk.getTopHeightLimit();
 		if (bl || bl2) {
 			for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
 				if (bl) {
@@ -474,7 +476,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			}
 
 			for (int o = 0; o < this.noiseSizeZ; o++) {
-				ChunkSection chunkSection = protoChunk.getSection(protoChunk.getSectionCount() - 1);
+				ChunkSection chunkSection = protoChunk.getSection(protoChunk.method_32890() - 1);
 				chunkSection.lock();
 
 				for (int p = this.noiseSizeY - 1; p >= 0; p--) {
@@ -488,7 +490,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 					double s = ds[1][o + 1][p + 1];
 
 					for (int t = this.verticalNoiseResolution - 1; t >= 0; t--) {
-						int u = p * this.verticalNoiseResolution + t;
+						int u = p * this.verticalNoiseResolution + t + ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().method_32993();
 						int v = u & 15;
 						int w = protoChunk.getSectionIndex(u);
 						if (protoChunk.getSectionIndex(chunkSection.getYOffset()) != w) {

@@ -28,6 +28,7 @@ import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public abstract class StorageMinecartEntity extends AbstractMinecartEntity implements Inventory, NamedScreenHandlerFactory {
 	private DefaultedList<ItemStack> inventory = DefaultedList.ofSize(36, ItemStack.EMPTY);
@@ -164,6 +165,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		player.openHandledScreen(this);
 		if (!player.world.isClient) {
+			this.method_32875(player, GameEvent.CONTAINER_OPEN);
 			PiglinBrain.onGuardedBlockInteracted(player, true);
 			return ActionResult.CONSUME;
 		} else {

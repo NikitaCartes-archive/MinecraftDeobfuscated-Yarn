@@ -71,20 +71,19 @@ public class BundleItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		return method_32757(itemStack, user) ? TypedActionResult.success(itemStack, world.isClient()) : TypedActionResult.fail(itemStack);
+		return dropAllBundledItems(itemStack, user) ? TypedActionResult.success(itemStack, world.isClient()) : TypedActionResult.fail(itemStack);
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public boolean isItemBarVisible(ItemStack stack) {
-		int i = getBundleOccupancy(stack);
-		return i > 0 && i < 64;
+		return getBundleOccupancy(stack) > 0;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public int getItemBarStep(ItemStack stack) {
-		return 13 * getBundleOccupancy(stack) / 64 + 1;
+		return Math.min(13 * getBundleOccupancy(stack) / 64, 13);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -136,7 +135,7 @@ public class BundleItem extends Item {
 			: listTag.stream()
 				.filter(CompoundTag.class::isInstance)
 				.map(CompoundTag.class::cast)
-				.filter(compoundTag -> ItemStack.method_31577(ItemStack.fromTag(compoundTag), itemStack))
+				.filter(compoundTag -> ItemStack.canCombine(ItemStack.fromTag(compoundTag), itemStack))
 				.findFirst();
 	}
 
@@ -145,7 +144,7 @@ public class BundleItem extends Item {
 	}
 
 	private static int getBundleOccupancy(ItemStack stack) {
-		return method_32345(stack).mapToInt(itemStack -> getItemOccupancy(itemStack) * itemStack.getCount()).sum();
+		return getBundledStacks(stack).mapToInt(itemStack -> getItemOccupancy(itemStack) * itemStack.getCount()).sum();
 	}
 
 	private static Optional<ItemStack> method_32759(ItemStack itemStack) {
@@ -166,28 +165,28 @@ public class BundleItem extends Item {
 		}
 	}
 
-	private static boolean method_32757(ItemStack itemStack, PlayerEntity playerEntity) {
-		CompoundTag compoundTag = itemStack.getOrCreateTag();
+	private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
+		CompoundTag compoundTag = stack.getOrCreateTag();
 		if (!compoundTag.contains("Items")) {
 			return false;
 		} else {
-			if (playerEntity instanceof ServerPlayerEntity) {
+			if (player instanceof ServerPlayerEntity) {
 				ListTag listTag = compoundTag.getList("Items", 10);
 
 				for (int i = 0; i < listTag.size(); i++) {
 					CompoundTag compoundTag2 = listTag.getCompound(i);
-					ItemStack itemStack2 = ItemStack.fromTag(compoundTag2);
-					playerEntity.dropItem(itemStack2, true);
+					ItemStack itemStack = ItemStack.fromTag(compoundTag2);
+					player.dropItem(itemStack, true);
 				}
 			}
 
-			itemStack.removeSubTag("Items");
+			stack.removeSubTag("Items");
 			return true;
 		}
 	}
 
-	private static Stream<ItemStack> method_32345(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getTag();
+	private static Stream<ItemStack> getBundledStacks(ItemStack stack) {
+		CompoundTag compoundTag = stack.getTag();
 		if (compoundTag == null) {
 			return Stream.empty();
 		} else {
@@ -200,15 +199,13 @@ public class BundleItem extends Item {
 	@Override
 	public Optional<TooltipData> getTooltipData(ItemStack stack) {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-		method_32345(stack).forEach(defaultedList::add);
+		getBundledStacks(stack).forEach(defaultedList::add);
 		return Optional.of(new BundleTooltipData(defaultedList, getBundleOccupancy(stack) < 64));
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-		if (context.isAdvanced()) {
-			tooltip.add(new TranslatableText("item.minecraft.bundle.fullness", getBundleOccupancy(stack), 64).formatted(Formatting.GRAY));
-		}
+		tooltip.add(new TranslatableText("item.minecraft.bundle.fullness", getBundleOccupancy(stack), 64).formatted(Formatting.GRAY));
 	}
 }

@@ -17,24 +17,24 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityModel<T> {
-	private final ModelPart field_27443;
-	private final ModelPart field_27444;
-	private final ModelPart field_27445;
-	private final ModelPart field_27446;
-	private final ModelPart field_27447;
-	private final ModelPart field_27448;
-	private final ModelPart field_27449;
-	private final ModelPart field_27450;
+	private final ModelPart head;
+	private final ModelPart body;
+	private final ModelPart rightHindLeg;
+	private final ModelPart leftHindLeg;
+	private final ModelPart rightFrontLeg;
+	private final ModelPart leftFrontLeg;
+	private final ModelPart rightChest;
+	private final ModelPart leftChest;
 
-	public LlamaEntityModel(ModelPart modelPart) {
-		this.field_27443 = modelPart.getChild("head");
-		this.field_27444 = modelPart.getChild("body");
-		this.field_27449 = modelPart.getChild("right_chest");
-		this.field_27450 = modelPart.getChild("left_chest");
-		this.field_27445 = modelPart.getChild("right_hind_leg");
-		this.field_27446 = modelPart.getChild("left_hind_leg");
-		this.field_27447 = modelPart.getChild("right_front_leg");
-		this.field_27448 = modelPart.getChild("left_front_leg");
+	public LlamaEntityModel(ModelPart root) {
+		this.head = root.getChild("head");
+		this.body = root.getChild("body");
+		this.rightChest = root.getChild("right_chest");
+		this.leftChest = root.getChild("left_chest");
+		this.rightHindLeg = root.getChild("right_hind_leg");
+		this.leftHindLeg = root.getChild("left_hind_leg");
+		this.rightFrontLeg = root.getChild("right_front_leg");
+		this.leftFrontLeg = root.getChild("left_front_leg");
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -79,15 +79,15 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 	}
 
 	public void setAngles(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
-		this.field_27443.pitch = j * (float) (Math.PI / 180.0);
-		this.field_27443.yaw = i * (float) (Math.PI / 180.0);
-		this.field_27445.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
-		this.field_27446.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
-		this.field_27447.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
-		this.field_27448.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
+		this.head.pitch = j * (float) (Math.PI / 180.0);
+		this.head.yaw = i * (float) (Math.PI / 180.0);
+		this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
+		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
+		this.rightFrontLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
+		this.leftFrontLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 		boolean bl = !abstractDonkeyEntity.isBaby() && abstractDonkeyEntity.hasChest();
-		this.field_27449.visible = bl;
-		this.field_27450.visible = bl;
+		this.rightChest.visible = bl;
+		this.leftChest.visible = bl;
 	}
 
 	@Override
@@ -98,24 +98,22 @@ public class LlamaEntityModel<T extends AbstractDonkeyEntity> extends EntityMode
 			float g = 0.7F;
 			matrices.scale(0.71428573F, 0.64935064F, 0.7936508F);
 			matrices.translate(0.0, 1.3125, 0.22F);
-			this.field_27443.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+			this.head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 			matrices.pop();
 			matrices.push();
 			float h = 1.1F;
 			matrices.scale(0.625F, 0.45454544F, 0.45454544F);
 			matrices.translate(0.0, 2.0625, 0.0);
-			this.field_27444.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+			this.body.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 			matrices.pop();
 			matrices.push();
 			matrices.scale(0.45454544F, 0.41322312F, 0.45454544F);
 			matrices.translate(0.0, 2.0625, 0.0);
-			ImmutableList.of(this.field_27445, this.field_27446, this.field_27447, this.field_27448, this.field_27449, this.field_27450)
+			ImmutableList.of(this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
 				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 		} else {
-			ImmutableList.of(
-					this.field_27443, this.field_27444, this.field_27445, this.field_27446, this.field_27447, this.field_27448, this.field_27449, this.field_27450
-				)
+			ImmutableList.of(this.head, this.body, this.rightHindLeg, this.leftHindLeg, this.rightFrontLeg, this.leftFrontLeg, this.rightChest, this.leftChest)
 				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 		}
 	}

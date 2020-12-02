@@ -20,6 +20,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggable {
 	public static final BooleanProperty OPEN = Properties.OPEN;
@@ -103,6 +104,8 @@ public class TrapdoorBlock extends HorizontalFacingBlock implements Waterloggabl
 			int i = this.material == Material.METAL ? 1036 : 1013;
 			world.syncWorldEvent(player, i, pos, 0);
 		}
+
+		world.emitGameEvent(player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
 	}
 
 	@Override

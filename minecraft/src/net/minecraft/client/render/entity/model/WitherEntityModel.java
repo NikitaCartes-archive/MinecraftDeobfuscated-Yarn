@@ -14,20 +14,20 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WitherEntityModel<T extends WitherEntity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27532;
-	private final ModelPart field_27533;
-	private final ModelPart field_27534;
-	private final ModelPart field_27535;
-	private final ModelPart field_27536;
-	private final ModelPart field_27537;
+	private final ModelPart root;
+	private final ModelPart centerHead;
+	private final ModelPart rightHead;
+	private final ModelPart leftHead;
+	private final ModelPart ribcage;
+	private final ModelPart tail;
 
-	public WitherEntityModel(ModelPart modelPart) {
-		this.field_27532 = modelPart;
-		this.field_27536 = modelPart.getChild("ribcage");
-		this.field_27537 = modelPart.getChild("tail");
-		this.field_27533 = modelPart.getChild("center_head");
-		this.field_27534 = modelPart.getChild("right_head");
-		this.field_27535 = modelPart.getChild("left_head");
+	public WitherEntityModel(ModelPart root) {
+		this.root = root;
+		this.ribcage = root.getChild("ribcage");
+		this.tail = root.getChild("tail");
+		this.centerHead = root.getChild("center_head");
+		this.rightHead = root.getChild("right_head");
+		this.leftHead = root.getChild("left_head");
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -62,25 +62,25 @@ public class WitherEntityModel<T extends WitherEntity> extends SinglePartEntityM
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27532;
+		return this.root;
 	}
 
 	public void setAngles(T witherEntity, float f, float g, float h, float i, float j) {
 		float k = MathHelper.cos(h * 0.1F);
-		this.field_27536.pitch = (0.065F + 0.05F * k) * (float) Math.PI;
-		this.field_27537.setPivot(-2.0F, 6.9F + MathHelper.cos(this.field_27536.pitch) * 10.0F, -0.5F + MathHelper.sin(this.field_27536.pitch) * 10.0F);
-		this.field_27537.pitch = (0.265F + 0.1F * k) * (float) Math.PI;
-		this.field_27533.yaw = i * (float) (Math.PI / 180.0);
-		this.field_27533.pitch = j * (float) (Math.PI / 180.0);
+		this.ribcage.pitch = (0.065F + 0.05F * k) * (float) Math.PI;
+		this.tail.setPivot(-2.0F, 6.9F + MathHelper.cos(this.ribcage.pitch) * 10.0F, -0.5F + MathHelper.sin(this.ribcage.pitch) * 10.0F);
+		this.tail.pitch = (0.265F + 0.1F * k) * (float) Math.PI;
+		this.centerHead.yaw = i * (float) (Math.PI / 180.0);
+		this.centerHead.pitch = j * (float) (Math.PI / 180.0);
 	}
 
 	public void animateModel(T witherEntity, float f, float g, float h) {
-		method_32066(witherEntity, this.field_27534, 0);
-		method_32066(witherEntity, this.field_27535, 1);
+		rotateHead(witherEntity, this.rightHead, 0);
+		rotateHead(witherEntity, this.leftHead, 1);
 	}
 
-	private static <T extends WitherEntity> void method_32066(T witherEntity, ModelPart modelPart, int i) {
-		modelPart.yaw = (witherEntity.getHeadYaw(i) - witherEntity.bodyYaw) * (float) (Math.PI / 180.0);
-		modelPart.pitch = witherEntity.getHeadPitch(i) * (float) (Math.PI / 180.0);
+	private static <T extends WitherEntity> void rotateHead(T entity, ModelPart head, int sigma) {
+		head.yaw = (entity.getHeadYaw(sigma) - entity.bodyYaw) * (float) (Math.PI / 180.0);
+		head.pitch = entity.getHeadPitch(sigma) * (float) (Math.PI / 180.0);
 	}
 }

@@ -3,6 +3,7 @@ package net.minecraft.server.world;
 import com.mojang.datafixers.util.Either;
 import it.unimi.dsi.fastutil.shorts.ShortArraySet;
 import it.unimi.dsi.fastutil.shorts.ShortSet;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -68,8 +69,8 @@ public class ChunkHolder {
 	 * Entries for a section are null if the section has no positions marked for update.
 	 */
 	private final ShortSet[] blockUpdatesBySection;
-	private int blockLightUpdateBits;
-	private int skyLightUpdateBits;
+	private final BitSet blockLightUpdateBits = new BitSet();
+	private final BitSet skyLightUpdateBits = new BitSet();
 	private final LightingProvider lightingProvider;
 	private final ChunkHolder.LevelUpdateListener levelUpdateListener;
 	private final ChunkHolder.PlayersWatchingChunkProvider playersWatchingChunkProvider;
@@ -94,7 +95,7 @@ public class ChunkHolder {
 		this.level = this.lastTickLevel;
 		this.completedLevel = this.lastTickLevel;
 		this.setLevel(level);
-		this.blockUpdatesBySection = new ShortSet[heightLimitView.getSectionCount()];
+		this.blockUpdatesBySection = new ShortSet[heightLimitView.method_32890()];
 	}
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getFutureFor(ChunkStatus leastStatus) {
@@ -176,20 +177,25 @@ public class ChunkHolder {
 	/**
 	 * @param y chunk section y coordinate
 	 */
-	public void markForLightUpdate(LightType type, int y) {
+	public void markForLightUpdate(LightType lightType, int y) {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
 			worldChunk.setShouldSave(true);
-			if (type == LightType.SKY) {
-				this.skyLightUpdateBits = this.skyLightUpdateBits | 1 << y - this.lightingProvider.method_31929();
-			} else {
-				this.blockLightUpdateBits = this.blockLightUpdateBits | 1 << y - this.lightingProvider.method_31929();
+			int i = this.lightingProvider.method_31929();
+			int j = this.lightingProvider.method_31930();
+			if (y >= i && y <= j) {
+				int k = y - i;
+				if (lightType == LightType.SKY) {
+					this.skyLightUpdateBits.set(k);
+				} else {
+					this.blockLightUpdateBits.set(k);
+				}
 			}
 		}
 	}
 
 	public void flushUpdates(WorldChunk worldChunk) {
-		if (this.pendingBlockUpdates || this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
+		if (this.pendingBlockUpdates || !this.skyLightUpdateBits.isEmpty() || !this.blockLightUpdateBits.isEmpty()) {
 			World world = worldChunk.getWorld();
 			int i = 0;
 
@@ -198,12 +204,12 @@ public class ChunkHolder {
 			}
 
 			this.field_26744 |= i >= 64;
-			if (this.skyLightUpdateBits != 0 || this.blockLightUpdateBits != 0) {
+			if (!this.skyLightUpdateBits.isEmpty() || !this.blockLightUpdateBits.isEmpty()) {
 				this.sendPacketToPlayersWatching(
 					new LightUpdateS2CPacket(worldChunk.getPos(), this.lightingProvider, this.skyLightUpdateBits, this.blockLightUpdateBits, true), !this.field_26744
 				);
-				this.skyLightUpdateBits = 0;
-				this.blockLightUpdateBits = 0;
+				this.skyLightUpdateBits.clear();
+				this.blockLightUpdateBits.clear();
 			}
 
 			for (int j = 0; j < this.blockUpdatesBySection.length; j++) {

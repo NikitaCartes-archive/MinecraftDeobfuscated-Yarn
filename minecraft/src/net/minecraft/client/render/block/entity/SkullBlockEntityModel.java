@@ -11,5 +11,5 @@ public abstract class SkullBlockEntityModel extends Model {
 		super(RenderLayer::getEntityTranslucent);
 	}
 
-	public abstract void method_2821(float f, float g, float h);
+	public abstract void setHeadRotation(float animationProgress, float yaw, float pitch);
 }

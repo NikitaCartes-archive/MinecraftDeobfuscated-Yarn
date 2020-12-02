@@ -31,7 +31,7 @@ public class DetectorRailBlock extends AbstractRailBlock {
 	public DetectorRailBlock(AbstractBlock.Settings settings) {
 		super(true, settings);
 		this.setDefaultState(
-			this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)).with(SHAPE, RailShape.NORTH_SOUTH).with(field_27096, Boolean.valueOf(false))
+			this.stateManager.getDefaultState().with(POWERED, Boolean.valueOf(false)).with(SHAPE, RailShape.NORTH_SOUTH).with(WATERLOGGED, Boolean.valueOf(false))
 		);
 	}
 
@@ -285,6 +285,6 @@ public class DetectorRailBlock extends AbstractRailBlock {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(SHAPE, POWERED, field_27096);
+		builder.add(SHAPE, POWERED, WATERLOGGED);
 	}
 }

@@ -33,50 +33,50 @@ public class CrossbowPosing {
 		modelPart2.pitch = MathHelper.lerp(h, modelPart2.pitch, (float) (-Math.PI / 2));
 	}
 
-	public static <T extends MobEntity> void method_29351(ModelPart modelPart, ModelPart modelPart2, T mobEntity, float f, float g) {
-		float h = MathHelper.sin(f * (float) Math.PI);
-		float i = MathHelper.sin((1.0F - (1.0F - f) * (1.0F - f)) * (float) Math.PI);
-		modelPart.roll = 0.0F;
-		modelPart2.roll = 0.0F;
-		modelPart.yaw = (float) (Math.PI / 20);
-		modelPart2.yaw = (float) (-Math.PI / 20);
-		if (mobEntity.getMainArm() == Arm.RIGHT) {
-			modelPart.pitch = -1.8849558F + MathHelper.cos(g * 0.09F) * 0.15F;
-			modelPart2.pitch = -0.0F + MathHelper.cos(g * 0.19F) * 0.5F;
-			modelPart.pitch += h * 2.2F - i * 0.4F;
-			modelPart2.pitch += h * 1.2F - i * 0.4F;
+	public static <T extends MobEntity> void meleeAttack(ModelPart leftArm, ModelPart rightArm, T actor, float swingProgress, float animationProgress) {
+		float f = MathHelper.sin(swingProgress * (float) Math.PI);
+		float g = MathHelper.sin((1.0F - (1.0F - swingProgress) * (1.0F - swingProgress)) * (float) Math.PI);
+		leftArm.roll = 0.0F;
+		rightArm.roll = 0.0F;
+		leftArm.yaw = (float) (Math.PI / 20);
+		rightArm.yaw = (float) (-Math.PI / 20);
+		if (actor.getMainArm() == Arm.RIGHT) {
+			leftArm.pitch = -1.8849558F + MathHelper.cos(animationProgress * 0.09F) * 0.15F;
+			rightArm.pitch = -0.0F + MathHelper.cos(animationProgress * 0.19F) * 0.5F;
+			leftArm.pitch += f * 2.2F - g * 0.4F;
+			rightArm.pitch += f * 1.2F - g * 0.4F;
 		} else {
-			modelPart.pitch = -0.0F + MathHelper.cos(g * 0.19F) * 0.5F;
-			modelPart2.pitch = -1.8849558F + MathHelper.cos(g * 0.09F) * 0.15F;
-			modelPart.pitch += h * 1.2F - i * 0.4F;
-			modelPart2.pitch += h * 2.2F - i * 0.4F;
+			leftArm.pitch = -0.0F + MathHelper.cos(animationProgress * 0.19F) * 0.5F;
+			rightArm.pitch = -1.8849558F + MathHelper.cos(animationProgress * 0.09F) * 0.15F;
+			leftArm.pitch += f * 1.2F - g * 0.4F;
+			rightArm.pitch += f * 2.2F - g * 0.4F;
 		}
 
-		method_32789(modelPart, modelPart2, g);
+		swingArms(leftArm, rightArm, animationProgress);
 	}
 
-	public static void method_29350(ModelPart modelPart, float f, float g) {
-		modelPart.roll = modelPart.roll + g * (MathHelper.cos(f * 0.09F) * 0.05F + 0.05F);
-		modelPart.pitch = modelPart.pitch + g * MathHelper.sin(f * 0.067F) * 0.05F;
+	public static void swingArm(ModelPart arm, float animationProgress, float sigma) {
+		arm.roll = arm.roll + sigma * (MathHelper.cos(animationProgress * 0.09F) * 0.05F + 0.05F);
+		arm.pitch = arm.pitch + sigma * MathHelper.sin(animationProgress * 0.067F) * 0.05F;
 	}
 
-	public static void method_32789(ModelPart modelPart, ModelPart modelPart2, float f) {
-		method_29350(modelPart, f, 1.0F);
-		method_29350(modelPart2, f, -1.0F);
+	public static void swingArms(ModelPart leftArm, ModelPart rightArm, float animationProgress) {
+		swingArm(leftArm, animationProgress, 1.0F);
+		swingArm(rightArm, animationProgress, -1.0F);
 	}
 
-	public static void method_29352(ModelPart modelPart, ModelPart modelPart2, boolean bl, float f, float g) {
-		float h = MathHelper.sin(f * (float) Math.PI);
-		float i = MathHelper.sin((1.0F - (1.0F - f) * (1.0F - f)) * (float) Math.PI);
-		modelPart2.roll = 0.0F;
-		modelPart.roll = 0.0F;
-		modelPart2.yaw = -(0.1F - h * 0.6F);
-		modelPart.yaw = 0.1F - h * 0.6F;
-		float j = (float) -Math.PI / (bl ? 1.5F : 2.25F);
-		modelPart2.pitch = j;
-		modelPart.pitch = j;
-		modelPart2.pitch += h * 1.2F - i * 0.4F;
-		modelPart.pitch += h * 1.2F - i * 0.4F;
-		method_32789(modelPart2, modelPart, g);
+	public static void meleeAttack(ModelPart leftArm, ModelPart rightArm, boolean attacking, float swingProgress, float animationProgress) {
+		float f = MathHelper.sin(swingProgress * (float) Math.PI);
+		float g = MathHelper.sin((1.0F - (1.0F - swingProgress) * (1.0F - swingProgress)) * (float) Math.PI);
+		rightArm.roll = 0.0F;
+		leftArm.roll = 0.0F;
+		rightArm.yaw = -(0.1F - f * 0.6F);
+		leftArm.yaw = 0.1F - f * 0.6F;
+		float h = (float) -Math.PI / (attacking ? 1.5F : 2.25F);
+		rightArm.pitch = h;
+		leftArm.pitch = h;
+		rightArm.pitch += f * 1.2F - g * 0.4F;
+		leftArm.pitch += f * 1.2F - g * 0.4F;
+		swingArms(rightArm, leftArm, animationProgress);
 	}
 }

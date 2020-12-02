@@ -1433,4 +1433,38 @@ public class DefaultBiomeCreator {
 			.generationSettings(builder.build())
 			.build();
 	}
+
+	public static Biome method_33132() {
+		SpawnSettings spawnSettings = new SpawnSettings.Builder().build();
+		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
+		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder);
+		DefaultBiomeFeatures.addDefaultLakes(builder);
+		DefaultBiomeFeatures.method_32236(builder);
+		DefaultBiomeFeatures.addDungeons(builder);
+		DefaultBiomeFeatures.addPlainsTallGrass(builder);
+		DefaultBiomeFeatures.addMineables(builder);
+		DefaultBiomeFeatures.addDefaultOres(builder);
+		DefaultBiomeFeatures.addDefaultDisks(builder);
+		DefaultBiomeFeatures.addPlainsFeatures(builder);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder);
+		DefaultBiomeFeatures.addDefaultVegetation(builder);
+		DefaultBiomeFeatures.addSprings(builder);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder);
+		DefaultBiomeFeatures.method_33131(builder);
+		return new Biome.Builder()
+			.precipitation(Biome.Precipitation.RAIN)
+			.category(Biome.Category.PLAINS)
+			.depth(0.125F)
+			.scale(0.05F)
+			.temperature(0.8F)
+			.downfall(0.4F)
+			.effects(
+				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.8F)).moodSound(BiomeMoodSound.CAVE).build()
+			)
+			.spawnSettings(spawnSettings)
+			.generationSettings(builder.build())
+			.build();
+	}
 }

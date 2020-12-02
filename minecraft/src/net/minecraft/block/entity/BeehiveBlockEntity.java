@@ -248,22 +248,22 @@ public class BeehiveBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.bees.clear();
-		ListTag listTag = compoundTag.getList("Bees", 10);
+		ListTag listTag = tag.getList("Bees", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag2 = listTag.getCompound(i);
+			CompoundTag compoundTag = listTag.getCompound(i);
 			BeehiveBlockEntity.Bee bee = new BeehiveBlockEntity.Bee(
-				compoundTag2.getCompound("EntityData"), compoundTag2.getInt("TicksInHive"), compoundTag2.getInt("MinOccupationTicks")
+				compoundTag.getCompound("EntityData"), compoundTag.getInt("TicksInHive"), compoundTag.getInt("MinOccupationTicks")
 			);
 			this.bees.add(bee);
 		}
 
 		this.flowerPos = null;
-		if (compoundTag.contains("FlowerPos")) {
-			this.flowerPos = NbtHelper.toBlockPos(compoundTag.getCompound("FlowerPos"));
+		if (tag.contains("FlowerPos")) {
+			this.flowerPos = NbtHelper.toBlockPos(tag.getCompound("FlowerPos"));
 		}
 	}
 

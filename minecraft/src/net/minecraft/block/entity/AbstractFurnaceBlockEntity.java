@@ -196,18 +196,18 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		Inventories.fromTag(compoundTag, this.inventory);
-		this.burnTime = compoundTag.getShort("BurnTime");
-		this.cookTime = compoundTag.getShort("CookTime");
-		this.cookTimeTotal = compoundTag.getShort("CookTimeTotal");
+		Inventories.fromTag(tag, this.inventory);
+		this.burnTime = tag.getShort("BurnTime");
+		this.cookTime = tag.getShort("CookTime");
+		this.cookTimeTotal = tag.getShort("CookTimeTotal");
 		this.fuelTime = this.getFuelTime(this.inventory.get(1));
-		CompoundTag compoundTag2 = compoundTag.getCompound("RecipesUsed");
+		CompoundTag compoundTag = tag.getCompound("RecipesUsed");
 
-		for (String string : compoundTag2.getKeys()) {
-			this.recipesUsed.put(new Identifier(string), compoundTag2.getInt(string));
+		for (String string : compoundTag.getKeys()) {
+			this.recipesUsed.put(new Identifier(string), compoundTag.getInt(string));
 		}
 	}
 

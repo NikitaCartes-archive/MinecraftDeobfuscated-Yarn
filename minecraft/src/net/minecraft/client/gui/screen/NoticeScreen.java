@@ -3,7 +3,6 @@ package net.minecraft.client.gui.screen;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5489;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -14,7 +13,6 @@ public class NoticeScreen extends Screen {
 	protected final Text notice;
 	private class_5489 noticeLines = class_5489.field_26528;
 	protected final Text buttonString;
-	private int field_2347;
 
 	public NoticeScreen(Runnable actionHandler, Text title, Text notice) {
 		this(actionHandler, title, notice, ScreenTexts.BACK);
@@ -40,15 +38,5 @@ public class NoticeScreen extends Screen {
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 16777215);
 		this.noticeLines.method_30888(matrices, this.width / 2, 90);
 		super.render(matrices, mouseX, mouseY, delta);
-	}
-
-	@Override
-	public void tick() {
-		super.tick();
-		if (--this.field_2347 == 0) {
-			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-				abstractButtonWidget.active = true;
-			}
-		}
 	}
 }

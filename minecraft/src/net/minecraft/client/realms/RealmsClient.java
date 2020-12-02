@@ -222,7 +222,7 @@ public class RealmsClient {
 
 	public Boolean resetWorldWithSeed(long worldId, ResetWorldInfo resetWorldInfo) throws RealmsServiceException {
 		RealmsWorldResetDto realmsWorldResetDto = new RealmsWorldResetDto(
-			resetWorldInfo.method_32508(), -1L, resetWorldInfo.method_32509().method_32507(), resetWorldInfo.method_32510()
+			resetWorldInfo.method_32508(), -1L, resetWorldInfo.method_32509().getId(), resetWorldInfo.method_32510()
 		);
 		String string = this.url("worlds" + "/$WORLD_ID/reset".replace("$WORLD_ID", String.valueOf(worldId)));
 		String string2 = this.execute(Request.post(string, JSON.toJson(realmsWorldResetDto), 30000, 80000));

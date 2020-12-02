@@ -17,6 +17,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.ProbabilityConfig;
+import net.minecraft.world.gen.UniformFloatDistribution;
 import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
@@ -878,6 +879,54 @@ public class ConfiguredFeatures {
 			.rangeOf(64)
 			.spreadHorizontally()
 			.repeat(10)
+	);
+	public static final ConfiguredFeature<?, ?> DRIPSTONE_CLUSTER = register(
+		"dripstone_cluster",
+		Feature.DRIPSTONE_CLUSTER
+			.configure(
+				new DripstoneClusterFeatureConfig(
+					12,
+					UniformIntDistribution.of(3, 3),
+					UniformIntDistribution.of(2, 6),
+					1,
+					3,
+					UniformIntDistribution.of(2, 2),
+					UniformFloatDistribution.of(0.3F, 0.4F),
+					UniformFloatDistribution.of(0.1F, 0.9F),
+					0.1F,
+					0.3F,
+					0.1F,
+					3,
+					8
+				)
+			)
+			.rangeOf(60)
+			.spreadHorizontally()
+			.repeat(UniformIntDistribution.of(5, 10))
+	);
+	public static final ConfiguredFeature<?, ?> LARGE_DRIPSTONE = register(
+		"large_dripstone",
+		Feature.LARGE_DRIPSTONE
+			.configure(
+				new LargeDripstoneFeatureConfig(
+					30,
+					UniformIntDistribution.of(3, 16),
+					UniformFloatDistribution.of(0.4F, 1.6F),
+					0.33F,
+					UniformFloatDistribution.of(0.3F, 0.6F),
+					UniformFloatDistribution.of(0.4F, 0.6F),
+					UniformFloatDistribution.of(0.0F, 0.2F),
+					5,
+					0.7F
+				)
+			)
+			.rangeOf(60)
+			.spreadHorizontally()
+			.repeat(UniformIntDistribution.of(1, 4))
+	);
+	public static final ConfiguredFeature<?, ?> SMALL_DRIPSTONE = register(
+		"small_dripstone",
+		Feature.SMALL_DRIPSTONE.configure(new SmallDripstoneFeatureConfig(5, 10, 2, 0.2F)).rangeOf(60).spreadHorizontally().repeat(UniformIntDistribution.of(20, 40))
 	);
 	public static final ConfiguredFeature<?, ?> CRIMSON_FUNGI = register(
 		"crimson_fungi",

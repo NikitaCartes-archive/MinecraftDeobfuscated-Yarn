@@ -60,6 +60,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import org.apache.logging.log4j.LogManager;
@@ -138,8 +139,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return null;
 	}
 
-	public boolean isInBuildLimit(BlockPos blockPos) {
-		return !this.isOutOfHeightLimit(blockPos) && isValidHorizontally(blockPos);
+	public boolean isInBuildLimit(BlockPos pos) {
+		return !this.isOutOfHeightLimit(pos) && isValidHorizontally(pos);
 	}
 
 	public static boolean isValid(BlockPos pos) {
@@ -262,7 +263,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				Block.dropStacks(blockState, this, pos, blockEntity, breakingEntity, ItemStack.EMPTY);
 			}
 
-			return this.setBlockState(pos, fluidState.getBlockState(), 3, maxUpdateDepth);
+			boolean bl = this.setBlockState(pos, fluidState.getBlockState(), 3, maxUpdateDepth);
+			if (bl) {
+				this.emitGameEvent(breakingEntity, GameEvent.BLOCK_DESTROY, pos);
+			}
+
+			return bl;
 		}
 	}
 
@@ -313,12 +319,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 	}
 
-	public void updateNeighbor(BlockPos blockPos, Block sourceBlock, BlockPos neighborPos) {
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos neighborPos) {
 		if (!this.isClient) {
-			BlockState blockState = this.getBlockState(blockPos);
+			BlockState blockState = this.getBlockState(pos);
 
 			try {
-				blockState.neighborUpdate(this, blockPos, sourceBlock, neighborPos, false);
+				blockState.neighborUpdate(this, pos, sourceBlock, neighborPos, false);
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Exception while updating neighbours");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
@@ -329,7 +335,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 						return "ID #" + Registry.BLOCK.getId(sourceBlock);
 					}
 				}));
-				CrashReportSection.addBlockInfo(crashReportSection, this, blockPos, blockState);
+				CrashReportSection.addBlockInfo(crashReportSection, this, pos, blockState);
 				throw new CrashException(crashReport);
 			}
 		}
@@ -342,7 +348,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			if (this.isChunkLoaded(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z))) {
 				i = this.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z)).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
 			} else {
-				i = this.getBottomHeightLimit();
+				i = this.getSectionCount();
 			}
 		} else {
 			i = this.getSeaLevel() + 1;
@@ -508,10 +514,10 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 	}
 
-	public boolean canSetBlock(BlockPos blockPos) {
-		return this.isOutOfHeightLimit(blockPos)
+	public boolean canSetBlock(BlockPos pos) {
+		return this.isOutOfHeightLimit(pos)
 			? false
-			: this.getChunkManager().isChunkLoaded(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+			: this.getChunkManager().isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 	}
 
 	public boolean isDirectionSolid(BlockPos pos, Entity entity, Direction direction) {
@@ -898,15 +904,25 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return this.debugWorld;
 	}
 
-	@Override
-	public int getSectionCount() {
-		return 16;
-	}
-
-	@Override
-	public int getBottomSectionLimit() {
-		return 0;
-	}
-
 	protected abstract class_5577<Entity> method_31592();
+
+	protected void method_32886(@Nullable Entity entity, GameEvent gameEvent, BlockPos blockPos, int i) {
+		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
+		int k = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
+		int l = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
+		int m = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
+		int n = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
+		int o = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
+
+		for (int p = j; p <= l; p++) {
+			for (int q = k; q <= m; q++) {
+				Chunk chunk = this.getChunkManager().getWorldChunk(p, q);
+				if (chunk != null) {
+					for (int r = n; r <= o; r++) {
+						chunk.method_32914(r).method_32943(gameEvent, entity, blockPos);
+					}
+				}
+			}
+		}
+	}
 }

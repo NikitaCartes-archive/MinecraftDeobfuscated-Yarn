@@ -5,9 +5,9 @@ import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5552;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.OperatorBlock;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -102,7 +102,7 @@ public class ClientPlayerInteractionManager {
 				return false;
 			} else {
 				Block block = blockState.getBlock();
-				if (block instanceof class_5552 && !this.client.player.isCreativeLevelTwoOp()) {
+				if (block instanceof OperatorBlock && !this.client.player.isCreativeLevelTwoOp()) {
 					return false;
 				} else if (blockState.isAir()) {
 					return false;

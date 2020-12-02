@@ -72,16 +72,19 @@ public class Vec3i implements Comparable<Vec3i> {
 		return this.z;
 	}
 
-	protected void setX(int x) {
+	protected Vec3i setX(int x) {
 		this.x = x;
+		return this;
 	}
 
-	protected void setY(int y) {
+	protected Vec3i setY(int y) {
 		this.y = y;
+		return this;
 	}
 
-	protected void setZ(int z) {
+	protected Vec3i setZ(int z) {
 		this.z = z;
+		return this;
 	}
 
 	public Vec3i up() {
@@ -130,6 +133,10 @@ public class Vec3i implements Comparable<Vec3i> {
 
 	public double getSquaredDistance(Position pos, boolean treatAsBlockPos) {
 		return this.getSquaredDistance(pos.getX(), pos.getY(), pos.getZ(), treatAsBlockPos);
+	}
+
+	public double getSquaredDistance(Vec3i vec, boolean treatAsBlockPos) {
+		return this.getSquaredDistance((double)vec.x, (double)vec.y, (double)vec.z, treatAsBlockPos);
 	}
 
 	public double getSquaredDistance(double x, double y, double z, boolean treatAsBlockPos) {

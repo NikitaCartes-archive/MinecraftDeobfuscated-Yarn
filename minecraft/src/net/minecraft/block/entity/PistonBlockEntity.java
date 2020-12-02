@@ -42,16 +42,16 @@ public class PistonBlockEntity extends BlockEntity {
 	private long savedWorldTime;
 	private int field_26705;
 
-	public PistonBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.PISTON, blockPos, blockState);
+	public PistonBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.PISTON, pos, state);
 	}
 
-	public PistonBlockEntity(BlockPos blockPos, BlockState blockState, BlockState blockState2, Direction direction, boolean bl, boolean bl2) {
-		this(blockPos, blockState);
-		this.pushedBlock = blockState2;
-		this.facing = direction;
-		this.extending = bl;
-		this.source = bl2;
+	public PistonBlockEntity(BlockPos pos, BlockState state, BlockState pushedBlock, Direction facing, boolean extending, boolean source) {
+		this(pos, state);
+		this.pushedBlock = pushedBlock;
+		this.facing = facing;
+		this.extending = extending;
+		this.source = source;
 	}
 
 	@Override
@@ -108,16 +108,16 @@ public class PistonBlockEntity extends BlockEntity {
 			: this.pushedBlock;
 	}
 
-	private static void pushEntities(World world, BlockPos blockPos, float f, PistonBlockEntity pistonBlockEntity) {
-		Direction direction = pistonBlockEntity.getMovementDirection();
-		double d = (double)(f - pistonBlockEntity.progress);
-		VoxelShape voxelShape = pistonBlockEntity.getHeadBlockState().getCollisionShape(world, blockPos);
+	private static void pushEntities(World world, BlockPos pos, float f, PistonBlockEntity blockEntity) {
+		Direction direction = blockEntity.getMovementDirection();
+		double d = (double)(f - blockEntity.progress);
+		VoxelShape voxelShape = blockEntity.getHeadBlockState().getCollisionShape(world, pos);
 		if (!voxelShape.isEmpty()) {
-			Box box = offsetHeadBox(blockPos, voxelShape.getBoundingBox(), pistonBlockEntity);
+			Box box = offsetHeadBox(pos, voxelShape.getBoundingBox(), blockEntity);
 			List<Entity> list = world.getOtherEntities(null, Boxes.stretch(box, direction, d).union(box));
 			if (!list.isEmpty()) {
 				List<Box> list2 = voxelShape.getBoundingBoxes();
-				boolean bl = pistonBlockEntity.pushedBlock.isOf(Blocks.SLIME_BLOCK);
+				boolean bl = blockEntity.pushedBlock.isOf(Blocks.SLIME_BLOCK);
 				Iterator var12 = list.iterator();
 
 				while (true) {
@@ -158,7 +158,7 @@ public class PistonBlockEntity extends BlockEntity {
 					double i = 0.0;
 
 					for (Box box2 : list2) {
-						Box box3 = Boxes.stretch(offsetHeadBox(blockPos, box2, pistonBlockEntity), direction, d);
+						Box box3 = Boxes.stretch(offsetHeadBox(pos, box2, blockEntity), direction, d);
 						Box box4 = entity.getBoundingBox();
 						if (box3.intersects(box4)) {
 							i = Math.max(i, getIntersectionSize(box3, direction, box4));
@@ -171,8 +171,8 @@ public class PistonBlockEntity extends BlockEntity {
 					if (!(i <= 0.0)) {
 						i = Math.min(i, d) + 0.01;
 						method_23672(direction, entity, i, direction);
-						if (!pistonBlockEntity.extending && pistonBlockEntity.source) {
-							push(blockPos, entity, direction, d);
+						if (!blockEntity.extending && blockEntity.source) {
+							push(pos, entity, direction, d);
 						}
 					}
 				}
@@ -236,18 +236,18 @@ public class PistonBlockEntity extends BlockEntity {
 		}
 	}
 
-	private static Box offsetHeadBox(BlockPos blockPos, Box box, PistonBlockEntity pistonBlockEntity) {
-		double d = (double)pistonBlockEntity.getAmountExtended(pistonBlockEntity.progress);
+	private static Box offsetHeadBox(BlockPos pos, Box box, PistonBlockEntity blockEntity) {
+		double d = (double)blockEntity.getAmountExtended(blockEntity.progress);
 		return box.offset(
-			(double)blockPos.getX() + d * (double)pistonBlockEntity.facing.getOffsetX(),
-			(double)blockPos.getY() + d * (double)pistonBlockEntity.facing.getOffsetY(),
-			(double)blockPos.getZ() + d * (double)pistonBlockEntity.facing.getOffsetZ()
+			(double)pos.getX() + d * (double)blockEntity.facing.getOffsetX(),
+			(double)pos.getY() + d * (double)blockEntity.facing.getOffsetY(),
+			(double)pos.getZ() + d * (double)blockEntity.facing.getOffsetZ()
 		);
 	}
 
-	private static void push(BlockPos blockPos, Entity entity, Direction direction, double amount) {
+	private static void push(BlockPos pos, Entity entity, Direction direction, double amount) {
 		Box box = entity.getBoundingBox();
-		Box box2 = VoxelShapes.fullCube().getBoundingBox().offset(blockPos);
+		Box box2 = VoxelShapes.fullCube().getBoundingBox().offset(pos);
 		if (box.intersects(box2)) {
 			Direction direction2 = direction.getOpposite();
 			double d = getIntersectionSize(box2, direction2, box) + 0.01;
@@ -283,50 +283,50 @@ public class PistonBlockEntity extends BlockEntity {
 		}
 	}
 
-	public static void tick(World world, BlockPos blockPos, BlockState blockState, PistonBlockEntity pistonBlockEntity) {
-		pistonBlockEntity.savedWorldTime = world.getTime();
-		pistonBlockEntity.lastProgress = pistonBlockEntity.progress;
-		if (pistonBlockEntity.lastProgress >= 1.0F) {
-			if (world.isClient && pistonBlockEntity.field_26705 < 5) {
-				pistonBlockEntity.field_26705++;
+	public static void tick(World world, BlockPos pos, BlockState state, PistonBlockEntity blockEntity) {
+		blockEntity.savedWorldTime = world.getTime();
+		blockEntity.lastProgress = blockEntity.progress;
+		if (blockEntity.lastProgress >= 1.0F) {
+			if (world.isClient && blockEntity.field_26705 < 5) {
+				blockEntity.field_26705++;
 			} else {
-				world.removeBlockEntity(blockPos);
-				pistonBlockEntity.markRemoved();
-				if (pistonBlockEntity.pushedBlock != null && world.getBlockState(blockPos).isOf(Blocks.MOVING_PISTON)) {
-					BlockState blockState2 = Block.postProcessState(pistonBlockEntity.pushedBlock, world, blockPos);
-					if (blockState2.isAir()) {
-						world.setBlockState(blockPos, pistonBlockEntity.pushedBlock, 84);
-						Block.replace(pistonBlockEntity.pushedBlock, blockState2, world, blockPos, 3);
+				world.removeBlockEntity(pos);
+				blockEntity.markRemoved();
+				if (blockEntity.pushedBlock != null && world.getBlockState(pos).isOf(Blocks.MOVING_PISTON)) {
+					BlockState blockState = Block.postProcessState(blockEntity.pushedBlock, world, pos);
+					if (blockState.isAir()) {
+						world.setBlockState(pos, blockEntity.pushedBlock, 84);
+						Block.replace(blockEntity.pushedBlock, blockState, world, pos, 3);
 					} else {
-						if (blockState2.contains(Properties.WATERLOGGED) && (Boolean)blockState2.get(Properties.WATERLOGGED)) {
-							blockState2 = blockState2.with(Properties.WATERLOGGED, Boolean.valueOf(false));
+						if (blockState.contains(Properties.WATERLOGGED) && (Boolean)blockState.get(Properties.WATERLOGGED)) {
+							blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(false));
 						}
 
-						world.setBlockState(blockPos, blockState2, 67);
-						world.updateNeighbor(blockPos, blockState2.getBlock(), blockPos);
+						world.setBlockState(pos, blockState, 67);
+						world.updateNeighbor(pos, blockState.getBlock(), pos);
 					}
 				}
 			}
 		} else {
-			float f = pistonBlockEntity.progress + 0.5F;
-			pushEntities(world, blockPos, f, pistonBlockEntity);
-			method_23674(world, blockPos, f, pistonBlockEntity);
-			pistonBlockEntity.progress = f;
-			if (pistonBlockEntity.progress >= 1.0F) {
-				pistonBlockEntity.progress = 1.0F;
+			float f = blockEntity.progress + 0.5F;
+			pushEntities(world, pos, f, blockEntity);
+			method_23674(world, pos, f, blockEntity);
+			blockEntity.progress = f;
+			if (blockEntity.progress >= 1.0F) {
+				blockEntity.progress = 1.0F;
 			}
 		}
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.pushedBlock = NbtHelper.toBlockState(compoundTag.getCompound("blockState"));
-		this.facing = Direction.byId(compoundTag.getInt("facing"));
-		this.progress = compoundTag.getFloat("progress");
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
+		this.facing = Direction.byId(tag.getInt("facing"));
+		this.progress = tag.getFloat("progress");
 		this.lastProgress = this.progress;
-		this.extending = compoundTag.getBoolean("extending");
-		this.source = compoundTag.getBoolean("source");
+		this.extending = tag.getBoolean("extending");
+		this.source = tag.getBoolean("source");
 	}
 
 	@Override

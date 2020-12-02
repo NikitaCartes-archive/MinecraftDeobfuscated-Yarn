@@ -14,24 +14,24 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SilverfishEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27497;
+	private final ModelPart root;
 	private final ModelPart[] body = new ModelPart[7];
 	private final ModelPart[] scales = new ModelPart[3];
 	private static final int[][] segmentLocations = new int[][]{{3, 2, 2}, {4, 3, 2}, {6, 4, 3}, {3, 3, 3}, {2, 2, 3}, {2, 1, 2}, {1, 1, 2}};
 	private static final int[][] segmentSizes = new int[][]{{0, 0}, {0, 4}, {0, 9}, {0, 16}, {0, 22}, {11, 0}, {13, 4}};
 
-	public SilverfishEntityModel(ModelPart modelPart) {
-		this.field_27497 = modelPart;
-		Arrays.setAll(this.body, i -> modelPart.getChild(method_32045(i)));
-		Arrays.setAll(this.scales, i -> modelPart.getChild(method_32043(i)));
+	public SilverfishEntityModel(ModelPart root) {
+		this.root = root;
+		Arrays.setAll(this.body, i -> root.getChild(getSegmentName(i)));
+		Arrays.setAll(this.scales, i -> root.getChild(getLayerName(i)));
 	}
 
-	private static String method_32043(int i) {
-		return "layer" + i;
+	private static String getLayerName(int index) {
+		return "layer" + index;
 	}
 
-	private static String method_32045(int i) {
-		return "segment" + i;
+	private static String getSegmentName(int index) {
+		return "segment" + index;
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -42,7 +42,7 @@ public class SilverfishEntityModel<T extends Entity> extends SinglePartEntityMod
 
 		for (int i = 0; i < 7; i++) {
 			modelPartData.addChild(
-				method_32045(i),
+				getSegmentName(i),
 				ModelPartBuilder.create()
 					.uv(segmentSizes[i][0], segmentSizes[i][1])
 					.cuboid(
@@ -62,17 +62,17 @@ public class SilverfishEntityModel<T extends Entity> extends SinglePartEntityMod
 		}
 
 		modelPartData.addChild(
-			method_32043(0),
+			getLayerName(0),
 			ModelPartBuilder.create().uv(20, 0).cuboid(-5.0F, 0.0F, (float)segmentLocations[2][2] * -0.5F, 10.0F, 8.0F, (float)segmentLocations[2][2]),
 			ModelTransform.pivot(0.0F, 16.0F, fs[2])
 		);
 		modelPartData.addChild(
-			method_32043(1),
+			getLayerName(1),
 			ModelPartBuilder.create().uv(20, 11).cuboid(-3.0F, 0.0F, (float)segmentLocations[4][2] * -0.5F, 6.0F, 4.0F, (float)segmentLocations[4][2]),
 			ModelTransform.pivot(0.0F, 20.0F, fs[4])
 		);
 		modelPartData.addChild(
-			method_32043(2),
+			getLayerName(2),
 			ModelPartBuilder.create().uv(20, 18).cuboid(-3.0F, 0.0F, (float)segmentLocations[4][2] * -0.5F, 6.0F, 5.0F, (float)segmentLocations[1][2]),
 			ModelTransform.pivot(0.0F, 19.0F, fs[1])
 		);
@@ -81,7 +81,7 @@ public class SilverfishEntityModel<T extends Entity> extends SinglePartEntityMod
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27497;
+		return this.root;
 	}
 
 	@Override

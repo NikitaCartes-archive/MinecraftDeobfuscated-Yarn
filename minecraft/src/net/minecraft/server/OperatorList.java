@@ -3,6 +3,7 @@ package net.minecraft.server;
 import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 import java.io.File;
+import java.util.Objects;
 
 public class OperatorList extends ServerConfigList<GameProfile, OperatorEntry> {
 	public OperatorList(File file) {
@@ -16,14 +17,7 @@ public class OperatorList extends ServerConfigList<GameProfile, OperatorEntry> {
 
 	@Override
 	public String[] getNames() {
-		String[] strings = new String[this.values().size()];
-		int i = 0;
-
-		for (ServerConfigEntry<GameProfile> serverConfigEntry : this.values()) {
-			strings[i++] = serverConfigEntry.getKey().getName();
-		}
-
-		return strings;
+		return (String[])this.values().stream().map(ServerConfigEntry::getKey).filter(Objects::nonNull).map(GameProfile::getName).toArray(String[]::new);
 	}
 
 	public boolean isOp(GameProfile profile) {

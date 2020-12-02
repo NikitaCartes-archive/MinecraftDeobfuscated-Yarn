@@ -33,8 +33,8 @@ public class PotionItem extends Item {
 	}
 
 	@Override
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		PlayerEntity playerEntity = user instanceof PlayerEntity ? (PlayerEntity)user : null;
+	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+		PlayerEntity playerEntity = entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
 		if (playerEntity instanceof ServerPlayerEntity) {
 			Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, stack);
 		}
@@ -42,9 +42,9 @@ public class PotionItem extends Item {
 		if (!world.isClient) {
 			for (StatusEffectInstance statusEffectInstance : PotionUtil.getPotionEffects(stack)) {
 				if (statusEffectInstance.getEffectType().isInstant()) {
-					statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, user, statusEffectInstance.getAmplifier(), 1.0);
+					statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, entity, statusEffectInstance.getAmplifier(), 1.0);
 				} else {
-					user.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
+					entity.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
 				}
 			}
 		}

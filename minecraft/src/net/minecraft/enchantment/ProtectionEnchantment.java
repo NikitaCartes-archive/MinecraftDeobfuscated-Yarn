@@ -76,20 +76,18 @@ public class ProtectionEnchantment extends Enchantment {
 	}
 
 	public static enum Type {
-		ALL("all", 1, 11),
-		FIRE("fire", 10, 8),
-		FALL("fall", 5, 6),
-		EXPLOSION("explosion", 5, 8),
-		PROJECTILE("projectile", 3, 6);
+		ALL(1, 11),
+		FIRE(10, 8),
+		FALL(5, 6),
+		EXPLOSION(5, 8),
+		PROJECTILE(3, 6);
 
-		private final String name;
 		private final int basePower;
 		private final int powerPerLevel;
 
-		private Type(String name, int basePower, int powerPerLevel) {
-			this.name = name;
-			this.basePower = basePower;
-			this.powerPerLevel = powerPerLevel;
+		private Type(int j, int k) {
+			this.basePower = j;
+			this.powerPerLevel = k;
 		}
 
 		public int getBasePower() {

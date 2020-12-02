@@ -21,6 +21,7 @@ import net.minecraft.util.math.Box;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class LightningEntity extends Entity {
 	private int ambientTick;
@@ -51,11 +52,11 @@ public class LightningEntity extends Entity {
 		this.channeler = channeler;
 	}
 
-	private void method_31499() {
+	private void powerLightningRod() {
 		BlockPos blockPos = this.getBlockPos().down();
 		BlockState blockState = this.world.getBlockState(blockPos);
 		if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
-			((LightningRodBlock)blockState.getBlock()).method_31648(blockState, this.world, blockPos);
+			((LightningRodBlock)blockState.getBlock()).setPowered(blockState, this.world, blockPos);
 		}
 	}
 
@@ -68,7 +69,7 @@ public class LightningEntity extends Entity {
 				this.spawnFire(4);
 			}
 
-			this.method_31499();
+			this.powerLightningRod();
 			this.world
 				.playSound(
 					null,
@@ -84,6 +85,7 @@ public class LightningEntity extends Entity {
 				.playSound(
 					null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0F, 0.5F + this.random.nextFloat() * 0.2F
 				);
+			this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
 		}
 
 		this.ambientTick--;

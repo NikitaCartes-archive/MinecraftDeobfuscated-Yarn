@@ -14,19 +14,19 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class GhastEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27419;
+	private final ModelPart root;
 	private final ModelPart[] tentacles = new ModelPart[9];
 
-	public GhastEntityModel(ModelPart modelPart) {
-		this.field_27419 = modelPart;
+	public GhastEntityModel(ModelPart root) {
+		this.root = root;
 
 		for (int i = 0; i < this.tentacles.length; i++) {
-			this.tentacles[i] = modelPart.getChild(method_32001(i));
+			this.tentacles[i] = root.getChild(getTentacleName(i));
 		}
 	}
 
-	private static String method_32001(int i) {
-		return "tentacle" + i;
+	private static String getTentacleName(int index) {
+		return "tentacle" + index;
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -40,7 +40,7 @@ public class GhastEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 			float g = ((float)(i / 3) / 2.0F * 2.0F - 1.0F) * 5.0F;
 			int j = random.nextInt(7) + 8;
 			modelPartData.addChild(
-				method_32001(i), ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, (float)j, 2.0F), ModelTransform.pivot(f, 24.6F, g)
+				getTentacleName(i), ModelPartBuilder.create().uv(0, 0).cuboid(-1.0F, 0.0F, -1.0F, 2.0F, (float)j, 2.0F), ModelTransform.pivot(f, 24.6F, g)
 			);
 		}
 
@@ -56,6 +56,6 @@ public class GhastEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27419;
+		return this.root;
 	}
 }

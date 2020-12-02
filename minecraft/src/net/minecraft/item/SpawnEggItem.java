@@ -157,36 +157,36 @@ public class SpawnEggItem extends Item {
 	}
 
 	public Optional<MobEntity> spawnBaby(
-		PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, ServerWorld serverWorld, Vec3d vec3d, ItemStack itemStack
+		PlayerEntity user, MobEntity entity, EntityType<? extends MobEntity> entityType, ServerWorld world, Vec3d pos, ItemStack stack
 	) {
-		if (!this.isOfSameEntityType(itemStack.getTag(), entityType)) {
+		if (!this.isOfSameEntityType(stack.getTag(), entityType)) {
 			return Optional.empty();
 		} else {
-			MobEntity mobEntity2;
-			if (mobEntity instanceof PassiveEntity) {
-				mobEntity2 = ((PassiveEntity)mobEntity).createChild(serverWorld, (PassiveEntity)mobEntity);
+			MobEntity mobEntity;
+			if (entity instanceof PassiveEntity) {
+				mobEntity = ((PassiveEntity)entity).createChild(world, (PassiveEntity)entity);
 			} else {
-				mobEntity2 = entityType.create(serverWorld);
+				mobEntity = entityType.create(world);
 			}
 
-			if (mobEntity2 == null) {
+			if (mobEntity == null) {
 				return Optional.empty();
 			} else {
-				mobEntity2.setBaby(true);
-				if (!mobEntity2.isBaby()) {
+				mobEntity.setBaby(true);
+				if (!mobEntity.isBaby()) {
 					return Optional.empty();
 				} else {
-					mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
-					serverWorld.spawnEntityAndPassengers(mobEntity2);
-					if (itemStack.hasCustomName()) {
-						mobEntity2.setCustomName(itemStack.getName());
+					mobEntity.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
+					world.spawnEntityAndPassengers(mobEntity);
+					if (stack.hasCustomName()) {
+						mobEntity.setCustomName(stack.getName());
 					}
 
 					if (!user.getAbilities().creativeMode) {
-						itemStack.decrement(1);
+						stack.decrement(1);
 					}
 
-					return Optional.of(mobEntity2);
+					return Optional.of(mobEntity);
 				}
 			}
 		}
