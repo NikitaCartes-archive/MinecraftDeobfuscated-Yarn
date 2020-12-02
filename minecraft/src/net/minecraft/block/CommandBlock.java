@@ -1,7 +1,6 @@
 package net.minecraft.block;
 
 import java.util.Random;
-import net.minecraft.class_5552;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.entity.LivingEntity;
@@ -27,22 +26,22 @@ import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class CommandBlock extends BlockWithEntity implements class_5552 {
+public class CommandBlock extends BlockWithEntity implements OperatorBlock {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final DirectionProperty FACING = FacingBlock.FACING;
 	public static final BooleanProperty CONDITIONAL = Properties.CONDITIONAL;
-	private final boolean field_27192;
+	private final boolean auto;
 
-	public CommandBlock(AbstractBlock.Settings settings, boolean bl) {
+	public CommandBlock(AbstractBlock.Settings settings, boolean auto) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(CONDITIONAL, Boolean.valueOf(false)));
-		this.field_27192 = bl;
+		this.auto = auto;
 	}
 
 	@Override
 	public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
 		CommandBlockBlockEntity commandBlockBlockEntity = new CommandBlockBlockEntity(pos, state);
-		commandBlockBlockEntity.setAuto(this.field_27192);
+		commandBlockBlockEntity.setAuto(this.auto);
 		return commandBlockBlockEntity;
 	}
 
@@ -142,7 +141,7 @@ public class CommandBlock extends BlockWithEntity implements class_5552 {
 			if (!world.isClient) {
 				if (itemStack.getSubTag("BlockEntityTag") == null) {
 					commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
-					commandBlockBlockEntity.setAuto(this.field_27192);
+					commandBlockBlockEntity.setAuto(this.auto);
 				}
 
 				if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {

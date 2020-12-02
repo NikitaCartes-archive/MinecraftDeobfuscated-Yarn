@@ -14,23 +14,17 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
-	private final ModelPart field_27396;
-	private final ModelPart field_27397;
-	private final ModelPart bottom;
+	private final ModelPart leftPaddle;
+	private final ModelPart rightPaddle;
+	private final ModelPart waterPatch;
 	private final ImmutableList<ModelPart> parts;
 
-	public BoatEntityModel(ModelPart modelPart) {
-		this.field_27396 = modelPart.getChild("left_paddle");
-		this.field_27397 = modelPart.getChild("right_paddle");
-		this.bottom = modelPart.getChild("water_patch");
+	public BoatEntityModel(ModelPart root) {
+		this.leftPaddle = root.getChild("left_paddle");
+		this.rightPaddle = root.getChild("right_paddle");
+		this.waterPatch = root.getChild("water_patch");
 		this.parts = ImmutableList.of(
-			modelPart.getChild("bottom"),
-			modelPart.getChild("back"),
-			modelPart.getChild("front"),
-			modelPart.getChild("right"),
-			modelPart.getChild("left"),
-			this.field_27396,
-			this.field_27397
+			root.getChild("bottom"), root.getChild("back"), root.getChild("front"), root.getChild("right"), root.getChild("left"), this.leftPaddle, this.rightPaddle
 		);
 	}
 
@@ -86,8 +80,8 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 	}
 
 	public void setAngles(BoatEntity boatEntity, float f, float g, float h, float i, float j) {
-		setPaddleAngle(boatEntity, 0, this.field_27396, f);
-		setPaddleAngle(boatEntity, 1, this.field_27397, f);
+		setPaddleAngle(boatEntity, 0, this.leftPaddle, f);
+		setPaddleAngle(boatEntity, 1, this.rightPaddle, f);
 	}
 
 	public ImmutableList<ModelPart> getParts() {
@@ -95,15 +89,15 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 	}
 
 	public ModelPart getBottom() {
-		return this.bottom;
+		return this.waterPatch;
 	}
 
-	private static void setPaddleAngle(BoatEntity boatEntity, int i, ModelPart modelPart, float angle) {
-		float f = boatEntity.interpolatePaddlePhase(i, angle);
-		modelPart.pitch = (float)MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (double)((MathHelper.sin(-f) + 1.0F) / 2.0F));
-		modelPart.yaw = (float)MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (double)((MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F));
-		if (i == 1) {
-			modelPart.yaw = (float) Math.PI - modelPart.yaw;
+	private static void setPaddleAngle(BoatEntity entity, int sigma, ModelPart part, float angle) {
+		float f = entity.interpolatePaddlePhase(sigma, angle);
+		part.pitch = (float)MathHelper.clampedLerp((float) (-Math.PI / 3), (float) (-Math.PI / 12), (double)((MathHelper.sin(-f) + 1.0F) / 2.0F));
+		part.yaw = (float)MathHelper.clampedLerp((float) (-Math.PI / 4), (float) (Math.PI / 4), (double)((MathHelper.sin(-f + 1.0F) + 1.0F) / 2.0F));
+		if (sigma == 1) {
+			part.yaw = (float) Math.PI - part.yaw;
 		}
 	}
 }

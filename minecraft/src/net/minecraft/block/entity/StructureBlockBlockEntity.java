@@ -84,49 +84,49 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.setStructureName(compoundTag.getString("name"));
-		this.author = compoundTag.getString("author");
-		this.metadata = compoundTag.getString("metadata");
-		int i = MathHelper.clamp(compoundTag.getInt("posX"), -48, 48);
-		int j = MathHelper.clamp(compoundTag.getInt("posY"), -48, 48);
-		int k = MathHelper.clamp(compoundTag.getInt("posZ"), -48, 48);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.setStructureName(tag.getString("name"));
+		this.author = tag.getString("author");
+		this.metadata = tag.getString("metadata");
+		int i = MathHelper.clamp(tag.getInt("posX"), -48, 48);
+		int j = MathHelper.clamp(tag.getInt("posY"), -48, 48);
+		int k = MathHelper.clamp(tag.getInt("posZ"), -48, 48);
 		this.offset = new BlockPos(i, j, k);
-		int l = MathHelper.clamp(compoundTag.getInt("sizeX"), 0, 48);
-		int m = MathHelper.clamp(compoundTag.getInt("sizeY"), 0, 48);
-		int n = MathHelper.clamp(compoundTag.getInt("sizeZ"), 0, 48);
+		int l = MathHelper.clamp(tag.getInt("sizeX"), 0, 48);
+		int m = MathHelper.clamp(tag.getInt("sizeY"), 0, 48);
+		int n = MathHelper.clamp(tag.getInt("sizeZ"), 0, 48);
 		this.size = new BlockPos(l, m, n);
 
 		try {
-			this.rotation = BlockRotation.valueOf(compoundTag.getString("rotation"));
+			this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
 		} catch (IllegalArgumentException var11) {
 			this.rotation = BlockRotation.NONE;
 		}
 
 		try {
-			this.mirror = BlockMirror.valueOf(compoundTag.getString("mirror"));
+			this.mirror = BlockMirror.valueOf(tag.getString("mirror"));
 		} catch (IllegalArgumentException var10) {
 			this.mirror = BlockMirror.NONE;
 		}
 
 		try {
-			this.mode = StructureBlockMode.valueOf(compoundTag.getString("mode"));
+			this.mode = StructureBlockMode.valueOf(tag.getString("mode"));
 		} catch (IllegalArgumentException var9) {
 			this.mode = StructureBlockMode.DATA;
 		}
 
-		this.ignoreEntities = compoundTag.getBoolean("ignoreEntities");
-		this.powered = compoundTag.getBoolean("powered");
-		this.showAir = compoundTag.getBoolean("showair");
-		this.showBoundingBox = compoundTag.getBoolean("showboundingbox");
-		if (compoundTag.contains("integrity")) {
-			this.integrity = compoundTag.getFloat("integrity");
+		this.ignoreEntities = tag.getBoolean("ignoreEntities");
+		this.powered = tag.getBoolean("powered");
+		this.showAir = tag.getBoolean("showair");
+		this.showBoundingBox = tag.getBoolean("showboundingbox");
+		if (tag.contains("integrity")) {
+			this.integrity = tag.getFloat("integrity");
 		} else {
 			this.integrity = 1.0F;
 		}
 
-		this.seed = compoundTag.getLong("seed");
+		this.seed = tag.getLong("seed");
 		this.updateBlockMode();
 	}
 
@@ -431,8 +431,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setMirror(this.mirror)
 				.setRotation(this.rotation)
-				.setIgnoreEntities(this.ignoreEntities)
-				.setChunkPosition(null);
+				.setIgnoreEntities(this.ignoreEntities);
 			if (this.integrity < 1.0F) {
 				structurePlacementData.clearProcessors()
 					.addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0F, 1.0F)))
@@ -440,7 +439,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			}
 
 			BlockPos blockPos3 = blockPos.add(this.offset);
-			structure.place(serverWorld, blockPos3, structurePlacementData, createRandom(this.seed));
+			structure.place(serverWorld, blockPos3, blockPos3, structurePlacementData, createRandom(this.seed), 2);
 			return true;
 		}
 	}

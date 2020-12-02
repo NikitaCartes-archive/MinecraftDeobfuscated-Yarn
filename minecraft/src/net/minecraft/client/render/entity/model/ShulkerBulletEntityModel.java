@@ -12,12 +12,12 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerBulletEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27496;
+	private final ModelPart root;
 	private final ModelPart bullet;
 
-	public ShulkerBulletEntityModel(ModelPart modelPart) {
-		this.field_27496 = modelPart;
-		this.bullet = modelPart.getChild("main");
+	public ShulkerBulletEntityModel(ModelPart root) {
+		this.root = root;
+		this.bullet = root.getChild("main");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -39,7 +39,7 @@ public class ShulkerBulletEntityModel<T extends Entity> extends SinglePartEntity
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27496;
+		return this.root;
 	}
 
 	@Override

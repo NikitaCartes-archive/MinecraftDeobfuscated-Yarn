@@ -276,7 +276,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
 		if (world.getDifficulty() != Difficulty.PEACEFUL) {
-			if (Objects.equals(world.method_31081(pos), Optional.of(BiomeKeys.SWAMP))
+			if (Objects.equals(world.getBiomeKey(pos), Optional.of(BiomeKeys.SWAMP))
 				&& pos.getY() > 50
 				&& pos.getY() < 70
 				&& random.nextFloat() < 0.5F

@@ -51,12 +51,12 @@ public class SkullBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.contains("SkullOwner", 10)) {
-			this.setOwnerAndType(NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner")));
-		} else if (compoundTag.contains("ExtraType", 8)) {
-			String string = compoundTag.getString("ExtraType");
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.contains("SkullOwner", 10)) {
+			this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
+		} else if (tag.contains("ExtraType", 8)) {
+			String string = tag.getString("ExtraType");
 			if (!ChatUtil.isEmpty(string)) {
 				this.setOwnerAndType(new GameProfile(null, string));
 			}

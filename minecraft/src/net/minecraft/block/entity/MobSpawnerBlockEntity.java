@@ -33,9 +33,9 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		this.logic.fromTag(this.world, this.pos, compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		this.logic.fromTag(this.world, this.pos, tag);
 	}
 
 	@Override

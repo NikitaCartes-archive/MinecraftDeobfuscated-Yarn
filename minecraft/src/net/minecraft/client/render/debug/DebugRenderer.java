@@ -45,6 +45,7 @@ public class DebugRenderer {
 	public final RaidCenterDebugRenderer raidCenterDebugRenderer;
 	public final GoalSelectorDebugRenderer goalSelectorDebugRenderer;
 	public final GameTestDebugRenderer gameTestDebugRenderer;
+	public final GameEventDebugRenderer field_28254;
 	private boolean showChunkBorder;
 
 	public DebugRenderer(MinecraftClient client) {
@@ -65,6 +66,7 @@ public class DebugRenderer {
 		this.raidCenterDebugRenderer = new RaidCenterDebugRenderer(client);
 		this.goalSelectorDebugRenderer = new GoalSelectorDebugRenderer(client);
 		this.gameTestDebugRenderer = new GameTestDebugRenderer();
+		this.field_28254 = new GameEventDebugRenderer(client);
 	}
 
 	public void reset() {
@@ -86,6 +88,7 @@ public class DebugRenderer {
 		this.raidCenterDebugRenderer.clear();
 		this.goalSelectorDebugRenderer.clear();
 		this.gameTestDebugRenderer.clear();
+		this.field_28254.clear();
 	}
 
 	public boolean toggleShowChunkBorder() {

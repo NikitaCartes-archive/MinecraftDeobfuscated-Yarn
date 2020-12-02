@@ -322,9 +322,9 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		return false;
 	}
 
-	public static boolean method_30035(BlockState blockState) {
-		return blockState.isIn(BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(WATERLOGGED) && abstractBlockState.contains(LIT))
-			&& !blockState.get(WATERLOGGED)
-			&& !blockState.get(LIT);
+	public static boolean canBeLit(BlockState state) {
+		return state.isIn(BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(WATERLOGGED) && abstractBlockState.contains(LIT))
+			&& !state.get(WATERLOGGED)
+			&& !state.get(LIT);
 	}
 }

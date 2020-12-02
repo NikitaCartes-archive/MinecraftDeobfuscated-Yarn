@@ -39,9 +39,9 @@ public class LightningRodBlock extends RodBlock {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
-	public void method_31648(BlockState blockState, World world, BlockPos blockPos) {
-		world.setBlockState(blockPos, blockState.with(POWERED, Boolean.valueOf(true)), 3);
-		world.getBlockTickScheduler().schedule(blockPos, this, 8);
+	public void setPowered(BlockState state, World world, BlockPos pos) {
+		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 3);
+		world.getBlockTickScheduler().schedule(pos, this, 8);
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class LightningRodBlock extends RodBlock {
 
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
-		if (world.isThundering() && projectile instanceof TridentEntity && ((TridentEntity)projectile).method_31551()) {
+		if (world.isThundering() && projectile instanceof TridentEntity && ((TridentEntity)projectile).hasChanneling()) {
 			BlockPos blockPos = hit.getBlockPos();
 			if (world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);

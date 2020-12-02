@@ -5,11 +5,24 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.ChunkNibbleArray;
 
 public class AlphaChunkIo {
+	private static final HeightLimitView field_28130 = new HeightLimitView() {
+		@Override
+		public int getSectionCount() {
+			return 0;
+		}
+
+		@Override
+		public int getBottomSectionLimit() {
+			return 128;
+		}
+	};
+
 	public static AlphaChunkIo.AlphaChunk readAlphaChunk(CompoundTag tag) {
 		int i = tag.getInt("xPos");
 		int j = tag.getInt("zPos");
@@ -93,7 +106,9 @@ public class AlphaChunkIo {
 		}
 
 		compoundTag.put("Sections", listTag);
-		compoundTag.putIntArray("Biomes", new BiomeArray(impl.get(Registry.BIOME_KEY), new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray());
+		compoundTag.putIntArray(
+			"Biomes", new BiomeArray(impl.get(Registry.BIOME_KEY), field_28130, new ChunkPos(alphaChunk.x, alphaChunk.z), biomeSource).toIntArray()
+		);
 		compoundTag.put("Entities", alphaChunk.entities);
 		compoundTag.put("TileEntities", alphaChunk.blockEntities);
 		if (alphaChunk.blockTicks != null) {

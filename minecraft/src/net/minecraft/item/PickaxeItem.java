@@ -134,7 +134,7 @@ public class PickaxeItem extends MiningToolItem {
 		Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER,
 		Blocks.LIGHTNING_ROD
 	);
-	private static final Object2IntMap<Block> field_27078 = Util.make(
+	private static final Object2IntMap<Block> BLOCK_MINING_LEVELS = Util.make(
 		new Object2IntOpenHashMap<>(),
 		object2IntOpenHashMap -> {
 			object2IntOpenHashMap.defaultReturnValue(-1);
@@ -211,7 +211,7 @@ public class PickaxeItem extends MiningToolItem {
 	@Override
 	public boolean isEffectiveOn(BlockState state) {
 		int i = this.getMaterial().getMiningLevel();
-		int j = field_27078.getInt(state.getBlock());
+		int j = BLOCK_MINING_LEVELS.getInt(state.getBlock());
 		if (j != -1) {
 			return i >= j;
 		} else {

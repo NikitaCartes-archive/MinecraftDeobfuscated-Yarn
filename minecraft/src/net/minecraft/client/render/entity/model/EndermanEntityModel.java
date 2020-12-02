@@ -48,9 +48,9 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 		super.setAngles(livingEntity, f, g, h, i, j);
 		this.head.visible = true;
 		int k = -14;
-		this.torso.pitch = 0.0F;
-		this.torso.pivotY = -14.0F;
-		this.torso.pivotZ = -0.0F;
+		this.body.pitch = 0.0F;
+		this.body.pivotY = -14.0F;
+		this.body.pivotZ = -0.0F;
 		this.rightLeg.pitch -= 0.0F;
 		this.leftLeg.pitch -= 0.0F;
 		this.rightArm.pitch = (float)((double)this.rightArm.pitch * 0.5);
@@ -103,12 +103,12 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 		this.leftLeg.pivotY = -5.0F;
 		this.head.pivotZ = -0.0F;
 		this.head.pivotY = -13.0F;
-		this.helmet.pivotX = this.head.pivotX;
-		this.helmet.pivotY = this.head.pivotY;
-		this.helmet.pivotZ = this.head.pivotZ;
-		this.helmet.pitch = this.head.pitch;
-		this.helmet.yaw = this.head.yaw;
-		this.helmet.roll = this.head.roll;
+		this.hat.pivotX = this.head.pivotX;
+		this.hat.pivotY = this.head.pivotY;
+		this.hat.pivotZ = this.head.pivotZ;
+		this.hat.pitch = this.head.pitch;
+		this.hat.yaw = this.head.yaw;
+		this.hat.roll = this.head.roll;
 		if (this.angry) {
 			float m = 1.0F;
 			this.head.pivotY -= 5.0F;

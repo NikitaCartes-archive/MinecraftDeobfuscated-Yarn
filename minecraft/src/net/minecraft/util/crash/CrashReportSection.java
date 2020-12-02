@@ -50,7 +50,7 @@ public class CrashReportSection {
 			int p = j & 15;
 			int q = k & 15;
 			int r = ChunkSectionPos.getBlockCoord(l);
-			int s = heightLimitView.getBottomHeightLimit();
+			int s = heightLimitView.getSectionCount();
 			int t = ChunkSectionPos.getBlockCoord(n);
 			int u = ChunkSectionPos.getBlockCoord(l + 1) - 1;
 			int v = heightLimitView.getTopHeightLimit() - 1;
@@ -70,7 +70,7 @@ public class CrashReportSection {
 			int p = (l + 1 << 5) - 1;
 			int q = (m + 1 << 5) - 1;
 			int r = l << 9;
-			int s = heightLimitView.getBottomHeightLimit();
+			int s = heightLimitView.getSectionCount();
 			int t = m << 9;
 			int u = (l + 1 << 9) - 1;
 			int v = heightLimitView.getTopHeightLimit() - 1;

@@ -22,6 +22,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.listener.GameEventListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -57,7 +59,7 @@ public class DebugInfoSender {
 		method_24819(world, pos);
 	}
 
-	private static void method_24819(ServerWorld serverWorld, BlockPos blockPos) {
+	private static void method_24819(ServerWorld world, BlockPos pos) {
 	}
 
 	public static void sendPathfindingData(World world, MobEntity mob, @Nullable Path path, float nodeReachProximity) {
@@ -84,7 +86,13 @@ public class DebugInfoSender {
 	public static void sendBeeDebugData(BeeEntity bee) {
 	}
 
-	public static void sendBeehiveDebugData(World world, BlockPos blockPos, BlockState blockState, BeehiveBlockEntity beehiveBlockEntity) {
+	public static void method_33139(World world, GameEvent event, BlockPos pos) {
+	}
+
+	public static void method_33140(World world, GameEventListener eventListener) {
+	}
+
+	public static void sendBeehiveDebugData(World world, BlockPos pos, BlockState state, BeehiveBlockEntity blockEntity) {
 	}
 
 	private static void sendToAll(ServerWorld world, PacketByteBuf buf, Identifier channel) {

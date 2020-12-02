@@ -27,7 +27,7 @@ public final class EntityPredicates {
 	 * 
 	 * @see net.minecraft.entity.LivingEntity#isAlive()
 	 */
-	public static final Predicate<LivingEntity> VALID_LIVING_ENTITY = LivingEntity::isAlive;
+	public static final Predicate<Entity> VALID_LIVING_ENTITY = entity -> entity.isAlive() && entity instanceof LivingEntity;
 	/**
 	 * Tests if an entity is not mounted.
 	 * 

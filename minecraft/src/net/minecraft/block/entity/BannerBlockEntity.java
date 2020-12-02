@@ -90,13 +90,13 @@ public class BannerBlockEntity extends BlockEntity implements Nameable {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
-		if (compoundTag.contains("CustomName", 8)) {
-			this.customName = Text.Serializer.fromJson(compoundTag.getString("CustomName"));
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
+		if (tag.contains("CustomName", 8)) {
+			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
-		this.patternListTag = compoundTag.getList("Patterns", 10);
+		this.patternListTag = tag.getList("Patterns", 10);
 		this.patterns = null;
 		this.patternListTagRead = true;
 	}

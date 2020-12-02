@@ -105,7 +105,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloadListen
 
 				SkullBlock.SkullType skullType = ((AbstractSkullBlock)block).getSkullType();
 				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.field_27737.get(skullType);
-				RenderLayer renderLayer = SkullBlockEntityRenderer.method_3578(skullType, gameProfile);
+				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
 				SkullBlockEntityRenderer.method_32161(null, 180.0F, 0.0F, matrices, vertexConsumers, light, skullBlockEntityModel, renderLayer);
 			} else {
 				BlockState blockState = block.getDefaultState();

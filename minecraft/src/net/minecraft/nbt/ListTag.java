@@ -137,9 +137,9 @@ public class ListTag extends AbstractListTag<Tag> {
 		return 0;
 	}
 
-	public int getInt(int i) {
-		if (i >= 0 && i < this.value.size()) {
-			Tag tag = (Tag)this.value.get(i);
+	public int getInt(int index) {
+		if (index >= 0 && index < this.value.size()) {
+			Tag tag = (Tag)this.value.get(index);
 			if (tag.getType() == 3) {
 				return ((IntTag)tag).getInt();
 			}

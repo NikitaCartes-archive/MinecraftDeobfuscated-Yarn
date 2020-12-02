@@ -133,13 +133,13 @@ public class ArmorItem extends Item implements Wearable {
 		return this.protection;
 	}
 
-	public float method_26353() {
+	public float getToughness() {
 		return this.toughness;
 	}
 
 	@Nullable
 	@Override
-	public SoundEvent method_31570() {
+	public SoundEvent getEquipSound() {
 		return this.getMaterial().getEquipSound();
 	}
 }

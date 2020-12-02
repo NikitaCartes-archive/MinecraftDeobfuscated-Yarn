@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.minecraft.class_5713;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -29,6 +30,10 @@ import org.apache.logging.log4j.LogManager;
  * Represents a scoped, modifiable view of biomes, block states, fluid states and block entities.
  */
 public interface Chunk extends BlockView, StructureHolder {
+	default class_5713 method_32914(int i) {
+		return class_5713.field_28181;
+	}
+
 	@Nullable
 	BlockState setBlockState(BlockPos pos, BlockState state, boolean moved);
 
@@ -52,7 +57,7 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	default int getHighestNonEmptySectionYOffset() {
 		ChunkSection chunkSection = this.getHighestNonEmptySection();
-		return chunkSection == null ? this.getBottomHeightLimit() : chunkSection.getYOffset();
+		return chunkSection == null ? this.getSectionCount() : chunkSection.getYOffset();
 	}
 
 	Set<BlockPos> getBlockEntityPositions();
@@ -74,8 +79,8 @@ public interface Chunk extends BlockView, StructureHolder {
 	void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts);
 
 	default boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
-		if (lowerHeight < this.getBottomHeightLimit()) {
-			lowerHeight = this.getBottomHeightLimit();
+		if (lowerHeight < this.getSectionCount()) {
+			lowerHeight = this.getSectionCount();
 		}
 
 		if (upperHeight >= this.getTopHeightLimit()) {

@@ -17,7 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class AxeItem extends MiningToolItem {
-	private static final Set<Material> field_23139 = Sets.<Material>newHashSet(
+	private static final Set<Material> EFFECTIVE_MATERIALS = Sets.<Material>newHashSet(
 		Material.WOOD, Material.NETHER_WOOD, Material.PLANT, Material.REPLACEABLE_PLANT, Material.BAMBOO, Material.GOURD
 	);
 	private static final Set<Block> EFFECTIVE_BLOCKS = Sets.<Block>newHashSet(
@@ -58,7 +58,7 @@ public class AxeItem extends MiningToolItem {
 	@Override
 	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		Material material = state.getMaterial();
-		return field_23139.contains(material) ? this.miningSpeed : super.getMiningSpeedMultiplier(stack, state);
+		return EFFECTIVE_MATERIALS.contains(material) ? this.miningSpeed : super.getMiningSpeedMultiplier(stack, state);
 	}
 
 	@Override

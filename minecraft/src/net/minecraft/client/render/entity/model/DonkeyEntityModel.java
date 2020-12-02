@@ -13,8 +13,8 @@ import net.minecraft.entity.passive.AbstractDonkeyEntity;
 
 @Environment(EnvType.CLIENT)
 public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEntityModel<T> {
-	private final ModelPart field_27399 = this.torso.getChild("left_chest");
-	private final ModelPart field_27400 = this.torso.getChild("right_chest");
+	private final ModelPart leftChest = this.body.getChild("left_chest");
+	private final ModelPart rightChest = this.body.getChild("right_chest");
 
 	public DonkeyEntityModel(ModelPart modelPart) {
 		super(modelPart);
@@ -37,11 +37,11 @@ public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEnti
 	public void setAngles(T abstractDonkeyEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(abstractDonkeyEntity, f, g, h, i, j);
 		if (abstractDonkeyEntity.hasChest()) {
-			this.field_27399.visible = true;
-			this.field_27400.visible = true;
+			this.leftChest.visible = true;
+			this.rightChest.visible = true;
 		} else {
-			this.field_27399.visible = false;
-			this.field_27400.visible = false;
+			this.leftChest.visible = false;
+			this.rightChest.visible = false;
 		}
 	}
 }

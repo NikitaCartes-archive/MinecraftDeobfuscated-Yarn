@@ -41,6 +41,7 @@ import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
@@ -358,6 +359,10 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public void syncWorldEvent(@Nullable PlayerEntity player, int eventId, BlockPos pos, int data) {
+	}
+
+	@Override
+	public void emitGameEvent(@Nullable Entity entity, GameEvent event, BlockPos pos) {
 	}
 
 	@Override

@@ -32,13 +32,13 @@ public interface Angerable {
 		}
 	}
 
-	default void angerFromTag(World world, CompoundTag compoundTag) {
-		this.setAngerTime(compoundTag.getInt("AngerTime"));
+	default void angerFromTag(World world, CompoundTag tag) {
+		this.setAngerTime(tag.getInt("AngerTime"));
 		if (world instanceof ServerWorld) {
-			if (!compoundTag.containsUuid("AngryAt")) {
+			if (!tag.containsUuid("AngryAt")) {
 				this.setAngryAt(null);
 			} else {
-				UUID uUID = compoundTag.getUuid("AngryAt");
+				UUID uUID = tag.getUuid("AngryAt");
 				this.setAngryAt(uUID);
 				Entity entity = ((ServerWorld)world).getEntity(uUID);
 				if (entity != null) {

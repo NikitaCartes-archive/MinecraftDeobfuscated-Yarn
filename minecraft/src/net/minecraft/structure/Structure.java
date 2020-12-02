@@ -188,15 +188,6 @@ public class Structure {
 		return transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
 	}
 
-	public void place(ServerWorldAccess serverWorldAccess, BlockPos pos, StructurePlacementData placementData, Random random) {
-		placementData.calculateBoundingBox();
-		this.placeAndNotifyListeners(serverWorldAccess, pos, placementData, random);
-	}
-
-	public void placeAndNotifyListeners(ServerWorldAccess serverWorldAccess, BlockPos pos, StructurePlacementData data, Random random) {
-		this.place(serverWorldAccess, pos, pos, data, random, 2);
-	}
-
 	public boolean place(ServerWorldAccess serverWorldAccess, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, Random random, int i) {
 		if (this.blockInfoLists.isEmpty()) {
 			return false;

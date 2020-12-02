@@ -16,23 +16,23 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BookModel extends Model {
-	private final ModelPart field_27398;
+	private final ModelPart root;
 	private final ModelPart leftCover;
 	private final ModelPart rightCover;
-	private final ModelPart leftBlock;
-	private final ModelPart rightBlock;
+	private final ModelPart leftPages;
+	private final ModelPart rightPages;
 	private final ModelPart leftPage;
 	private final ModelPart rightPage;
 
-	public BookModel(ModelPart modelPart) {
+	public BookModel(ModelPart root) {
 		super(RenderLayer::getEntitySolid);
-		this.field_27398 = modelPart;
-		this.leftCover = modelPart.getChild("left_lid");
-		this.rightCover = modelPart.getChild("right_lid");
-		this.leftBlock = modelPart.getChild("left_pages");
-		this.rightBlock = modelPart.getChild("right_pages");
-		this.leftPage = modelPart.getChild("flip_page1");
-		this.rightPage = modelPart.getChild("flip_page2");
+		this.root = root;
+		this.leftCover = root.getChild("left_lid");
+		this.rightCover = root.getChild("right_lid");
+		this.leftPages = root.getChild("left_pages");
+		this.rightPages = root.getChild("right_pages");
+		this.leftPage = root.getChild("flip_page1");
+		this.rightPage = root.getChild("flip_page2");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -57,24 +57,24 @@ public class BookModel extends Model {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.method_24184(matrices, vertices, light, overlay, red, green, blue, alpha);
+		this.renderBook(matrices, vertices, light, overlay, red, green, blue, alpha);
 	}
 
-	public void method_24184(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.field_27398.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+	public void renderBook(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
+		this.root.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 	}
 
-	public void setPageAngles(float f, float g, float h, float i) {
-		float j = (MathHelper.sin(f * 0.02F) * 0.1F + 1.25F) * i;
-		this.leftCover.yaw = (float) Math.PI + j;
-		this.rightCover.yaw = -j;
-		this.leftBlock.yaw = j;
-		this.rightBlock.yaw = -j;
-		this.leftPage.yaw = j - j * 2.0F * g;
-		this.rightPage.yaw = j - j * 2.0F * h;
-		this.leftBlock.pivotX = MathHelper.sin(j);
-		this.rightBlock.pivotX = MathHelper.sin(j);
-		this.leftPage.pivotX = MathHelper.sin(j);
-		this.rightPage.pivotX = MathHelper.sin(j);
+	public void setPageAngles(float pageTurnAmount, float leftFlipAmount, float rightFlipAmount, float pageTurnSpeed) {
+		float f = (MathHelper.sin(pageTurnAmount * 0.02F) * 0.1F + 1.25F) * pageTurnSpeed;
+		this.leftCover.yaw = (float) Math.PI + f;
+		this.rightCover.yaw = -f;
+		this.leftPages.yaw = f;
+		this.rightPages.yaw = -f;
+		this.leftPage.yaw = f - f * 2.0F * leftFlipAmount;
+		this.rightPage.yaw = f - f * 2.0F * rightFlipAmount;
+		this.leftPages.pivotX = MathHelper.sin(f);
+		this.rightPages.pivotX = MathHelper.sin(f);
+		this.leftPage.pivotX = MathHelper.sin(f);
+		this.rightPage.pivotX = MathHelper.sin(f);
 	}
 }

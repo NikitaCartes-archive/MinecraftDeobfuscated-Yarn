@@ -43,7 +43,7 @@ public abstract class BlockEntity {
 		return this.world != null;
 	}
 
-	public void fromTag(CompoundTag compoundTag) {
+	public void fromTag(CompoundTag tag) {
 	}
 
 	public CompoundTag toTag(CompoundTag tag) {

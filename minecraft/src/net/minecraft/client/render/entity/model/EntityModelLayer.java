@@ -6,12 +6,12 @@ import net.minecraft.util.Identifier;
 
 @Environment(EnvType.CLIENT)
 public final class EntityModelLayer {
-	private final Identifier identifier;
-	private final String layer;
+	private final Identifier id;
+	private final String name;
 
-	public EntityModelLayer(Identifier identifier, String layer) {
-		this.identifier = identifier;
-		this.layer = layer;
+	public EntityModelLayer(Identifier id, String name) {
+		this.id = id;
+		this.name = name;
 	}
 
 	public boolean equals(Object other) {
@@ -21,16 +21,16 @@ public final class EntityModelLayer {
 			return false;
 		} else {
 			EntityModelLayer entityModelLayer = (EntityModelLayer)other;
-			return this.identifier.equals(entityModelLayer.identifier) && this.layer.equals(entityModelLayer.layer);
+			return this.id.equals(entityModelLayer.id) && this.name.equals(entityModelLayer.name);
 		}
 	}
 
 	public int hashCode() {
-		int i = this.identifier.hashCode();
-		return 31 * i + this.layer.hashCode();
+		int i = this.id.hashCode();
+		return 31 * i + this.name.hashCode();
 	}
 
 	public String toString() {
-		return this.identifier + "#" + this.layer;
+		return this.id + "#" + this.name;
 	}
 }

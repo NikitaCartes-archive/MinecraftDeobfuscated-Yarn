@@ -137,7 +137,7 @@ public abstract class PlayerManager {
 			serverWorld2 = serverWorld;
 		}
 
-		player.method_32747(serverWorld2);
+		player.setWorld(serverWorld2);
 		String string2 = "local";
 		if (connection.getAddress() != null) {
 			string2 = connection.getAddress().toString();

@@ -79,13 +79,13 @@ public class EnderChestBlockEntity extends BlockEntity implements ChestAnimation
 
 	public void onOpen(PlayerEntity player) {
 		if (!player.isSpectator()) {
-			this.stateManager.openChest(this.getWorld(), this.getPos(), this.getCachedState());
+			this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 
 	public void onClose(PlayerEntity player) {
 		if (!player.isSpectator()) {
-			this.stateManager.closeChest(this.getWorld(), this.getPos(), this.getCachedState());
+			this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 

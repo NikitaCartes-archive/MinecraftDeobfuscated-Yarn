@@ -19,7 +19,6 @@ public abstract class AbstractSoundInstance implements SoundInstance {
 	protected boolean repeat;
 	protected int repeatDelay;
 	protected SoundInstance.AttenuationType attenuationType = SoundInstance.AttenuationType.LINEAR;
-	protected boolean field_18935;
 	protected boolean looping;
 
 	protected AbstractSoundInstance(SoundEvent sound, SoundCategory category) {

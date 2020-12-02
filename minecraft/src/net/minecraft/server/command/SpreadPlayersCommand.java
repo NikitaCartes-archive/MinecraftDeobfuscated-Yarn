@@ -259,6 +259,9 @@ public class SpreadPlayersCommand {
 		private double x;
 		private double z;
 
+		private Pile() {
+		}
+
 		double getDistance(SpreadPlayersCommand.Pile other) {
 			double d = this.x - other.x;
 			double e = this.z - other.z;
@@ -307,7 +310,7 @@ public class SpreadPlayersCommand {
 			mutable.move(Direction.DOWN);
 
 			boolean bl3;
-			for(boolean bl2 = blockView.getBlockState(mutable).isAir(); mutable.getY() > blockView.getBottomHeightLimit(); bl2 = bl3) {
+			for(boolean bl2 = blockView.getBlockState(mutable).isAir(); mutable.getY() > blockView.getSectionCount(); bl2 = bl3) {
 				mutable.move(Direction.DOWN);
 				bl3 = blockView.getBlockState(mutable).isAir();
 				if (!bl3 && bl2 && bl) {

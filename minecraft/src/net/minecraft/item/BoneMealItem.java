@@ -92,7 +92,7 @@ public class BoneMealItem extends Item {
 						}
 					}
 
-					Optional<RegistryKey<Biome>> optional = world.method_31081(blockPos2);
+					Optional<RegistryKey<Biome>> optional = world.getBiomeKey(blockPos2);
 					if (Objects.equals(optional, Optional.of(BiomeKeys.WARM_OCEAN)) || Objects.equals(optional, Optional.of(BiomeKeys.DEEP_WARM_OCEAN))) {
 						if (i == 0 && facing != null && facing.getAxis().isHorizontal()) {
 							blockState = BlockTags.WALL_CORALS.getRandom(world.random).getDefaultState().with(DeadCoralWallFanBlock.FACING, facing);

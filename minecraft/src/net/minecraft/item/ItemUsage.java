@@ -11,32 +11,32 @@ public class ItemUsage {
 		return TypedActionResult.consume(player.getStackInHand(hand));
 	}
 
-	public static ItemStack method_30270(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2, boolean bl) {
-		boolean bl2 = playerEntity.getAbilities().creativeMode;
-		if (bl && bl2) {
-			if (!playerEntity.getInventory().contains(itemStack2)) {
-				playerEntity.getInventory().insertStack(itemStack2);
+	public static ItemStack exchangeStack(ItemStack inputStack, PlayerEntity player, ItemStack outputStack, boolean creativeOverride) {
+		boolean bl = player.getAbilities().creativeMode;
+		if (creativeOverride && bl) {
+			if (!player.getInventory().contains(outputStack)) {
+				player.getInventory().insertStack(outputStack);
 			}
 
-			return itemStack;
+			return inputStack;
 		} else {
-			if (!bl2) {
-				itemStack.decrement(1);
+			if (!bl) {
+				inputStack.decrement(1);
 			}
 
-			if (itemStack.isEmpty()) {
-				return itemStack2;
+			if (inputStack.isEmpty()) {
+				return outputStack;
 			} else {
-				if (!playerEntity.getInventory().insertStack(itemStack2)) {
-					playerEntity.dropItem(itemStack2, false);
+				if (!player.getInventory().insertStack(outputStack)) {
+					player.dropItem(outputStack, false);
 				}
 
-				return itemStack;
+				return inputStack;
 			}
 		}
 	}
 
-	public static ItemStack method_30012(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2) {
-		return method_30270(itemStack, playerEntity, itemStack2, true);
+	public static ItemStack exchangeStack(ItemStack inputStack, PlayerEntity player, ItemStack outputStack) {
+		return exchangeStack(inputStack, player, outputStack, true);
 	}
 }

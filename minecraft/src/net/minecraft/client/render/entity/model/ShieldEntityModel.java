@@ -15,15 +15,15 @@ import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)
 public class ShieldEntityModel extends Model {
-	private final ModelPart field_27495;
+	private final ModelPart root;
 	private final ModelPart plate;
 	private final ModelPart handle;
 
-	public ShieldEntityModel(ModelPart modelPart) {
+	public ShieldEntityModel(ModelPart root) {
 		super(RenderLayer::getEntitySolid);
-		this.field_27495 = modelPart;
-		this.plate = modelPart.getChild("plate");
-		this.handle = modelPart.getChild("handle");
+		this.root = root;
+		this.plate = root.getChild("plate");
+		this.handle = root.getChild("handle");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -44,6 +44,6 @@ public class ShieldEntityModel extends Model {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.field_27495.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		this.root.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 	}
 }

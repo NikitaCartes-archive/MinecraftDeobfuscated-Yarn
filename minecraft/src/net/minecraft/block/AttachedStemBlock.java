@@ -34,13 +34,13 @@ public class AttachedStemBlock extends PlantBlock {
 		)
 	);
 	private final GourdBlock gourdBlock;
-	private final Supplier<Item> field_27095;
+	private final Supplier<Item> pickBlockItem;
 
-	protected AttachedStemBlock(GourdBlock gourdBlock, Supplier<Item> supplier, AbstractBlock.Settings settings) {
+	protected AttachedStemBlock(GourdBlock gourdBlock, Supplier<Item> pickBlockItem, AbstractBlock.Settings settings) {
 		super(settings);
 		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH));
 		this.gourdBlock = gourdBlock;
-		this.field_27095 = supplier;
+		this.pickBlockItem = pickBlockItem;
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class AttachedStemBlock extends PlantBlock {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public ItemStack getPickStack(BlockView world, BlockPos pos, BlockState state) {
-		return new ItemStack((ItemConvertible)this.field_27095.get());
+		return new ItemStack((ItemConvertible)this.pickBlockItem.get());
 	}
 
 	@Override

@@ -101,9 +101,9 @@ public class DaylightDetectorBlock extends BlockWithEntity {
 		return !world.isClient && world.getDimension().hasSkyLight() ? checkType(type, BlockEntityType.DAYLIGHT_DETECTOR, DaylightDetectorBlock::tick) : null;
 	}
 
-	private static void tick(World world, BlockPos pos, BlockState blockState, DaylightDetectorBlockEntity daylightDetectorBlockEntity) {
+	private static void tick(World world, BlockPos pos, BlockState state, DaylightDetectorBlockEntity blockEntity) {
 		if (world.getTime() % 20L == 0L) {
-			updateState(blockState, world, pos);
+			updateState(state, world, pos);
 		}
 	}
 

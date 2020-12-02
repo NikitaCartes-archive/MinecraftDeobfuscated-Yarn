@@ -15,15 +15,15 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntityModel<T> {
-	private final ModelPart bottomShell;
-	private final ModelPart topShell;
+	private final ModelPart base;
+	private final ModelPart lid;
 	private final ModelPart head;
 
-	public ShulkerEntityModel(ModelPart modelPart) {
+	public ShulkerEntityModel(ModelPart root) {
 		super(RenderLayer::getEntityCutoutNoCullZOffset);
-		this.topShell = modelPart.getChild("lid");
-		this.bottomShell = modelPart.getChild("base");
-		this.head = modelPart.getChild("head");
+		this.lid = root.getChild("lid");
+		this.base = root.getChild("base");
+		this.head = root.getChild("head");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -44,11 +44,11 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 			n = MathHelper.sin(h * 0.1F) * 0.7F;
 		}
 
-		this.topShell.setPivot(0.0F, 16.0F + MathHelper.sin(l) * 8.0F + n, 0.0F);
+		this.lid.setPivot(0.0F, 16.0F + MathHelper.sin(l) * 8.0F + n, 0.0F);
 		if (shulkerEntity.getOpenProgress(k) > 0.3F) {
-			this.topShell.yaw = m * m * m * m * (float) Math.PI * 0.125F;
+			this.lid.yaw = m * m * m * m * (float) Math.PI * 0.125F;
 		} else {
-			this.topShell.yaw = 0.0F;
+			this.lid.yaw = 0.0F;
 		}
 
 		this.head.pitch = j * (float) (Math.PI / 180.0);
@@ -57,11 +57,11 @@ public class ShulkerEntityModel<T extends ShulkerEntity> extends CompositeEntity
 
 	@Override
 	public Iterable<ModelPart> getParts() {
-		return ImmutableList.<ModelPart>of(this.bottomShell, this.topShell);
+		return ImmutableList.<ModelPart>of(this.base, this.lid);
 	}
 
 	public ModelPart getTopShell() {
-		return this.topShell;
+		return this.lid;
 	}
 
 	public ModelPart getHead() {

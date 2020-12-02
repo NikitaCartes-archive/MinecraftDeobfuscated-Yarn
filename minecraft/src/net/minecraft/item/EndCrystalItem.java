@@ -11,6 +11,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class EndCrystalItem extends Item {
 	public EndCrystalItem(Item.Settings settings) {
@@ -40,6 +41,7 @@ public class EndCrystalItem extends Item {
 						EndCrystalEntity endCrystalEntity = new EndCrystalEntity(world, d + 0.5, e, f + 0.5);
 						endCrystalEntity.setShowBottom(false);
 						world.spawnEntity(endCrystalEntity);
+						world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_PLACE, blockPos2);
 						EnderDragonFight enderDragonFight = ((ServerWorld)world).getEnderDragonFight();
 						if (enderDragonFight != null) {
 							enderDragonFight.respawnDragon();

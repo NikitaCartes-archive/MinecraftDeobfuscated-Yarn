@@ -74,7 +74,6 @@ public class IntegratedServer extends MinecraftServer {
 		);
 		this.setServerName(client.getSession().getUsername());
 		this.setDemo(client.isDemo());
-		this.setWorldHeight(256);
 		this.setPlayerManager(new IntegratedPlayerManager(this, this.registryManager, this.saveHandler));
 		this.client = client;
 	}
@@ -85,7 +84,7 @@ public class IntegratedServer extends MinecraftServer {
 		this.setOnlineMode(true);
 		this.setPvpEnabled(true);
 		this.setFlightEnabled(true);
-		this.method_31400();
+		this.generateKeyPair();
 		this.loadWorld();
 		this.setMotd(this.getUserName() + " - " + this.getSaveProperties().getLevelName());
 		return true;

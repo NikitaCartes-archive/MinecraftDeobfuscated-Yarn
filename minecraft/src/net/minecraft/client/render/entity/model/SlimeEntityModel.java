@@ -12,10 +12,10 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class SlimeEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27499;
+	private final ModelPart root;
 
-	public SlimeEntityModel(ModelPart modelPart) {
-		this.field_27499 = modelPart;
+	public SlimeEntityModel(ModelPart root) {
+		this.root = root;
 	}
 
 	public static TexturedModelData getOuterTexturedModelData() {
@@ -41,6 +41,6 @@ public class SlimeEntityModel<T extends Entity> extends SinglePartEntityModel<T>
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27499;
+		return this.root;
 	}
 }

@@ -48,6 +48,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class BoatEntity extends Entity {
 	private static final TrackedData<Integer> DAMAGE_WOBBLE_TICKS = DataTracker.registerData(BoatEntity.class, TrackedDataHandlerRegistry.INTEGER);
@@ -150,6 +151,7 @@ public class BoatEntity extends Entity {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (!this.world.isClient && !this.isRemoved()) {
+			this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
 			this.setDamageWobbleSide(-this.getDamageWobbleSide());
 			this.setDamageWobbleTicks(10);
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
@@ -187,6 +189,8 @@ public class BoatEntity extends Entity {
 			this.world
 				.playSound(this.getX(), this.getY(), this.getZ(), this.getSplashSound(), this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat(), false);
 		}
+
+		this.method_32875(this.getPrimaryPassenger(), GameEvent.SPLASH);
 	}
 
 	@Override
@@ -301,6 +305,7 @@ public class BoatEntity extends Entity {
 						double e = i == 1 ? vec3d.x : -vec3d.x;
 						this.world
 							.playSound(null, this.getX() + d, this.getY(), this.getZ() + e, soundEvent, this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat());
+						this.world.emitGameEvent(this.getPrimaryPassenger(), GameEvent.SPLASH, new BlockPos(this.getX() + d, this.getY(), this.getZ() + e));
 					}
 				}
 

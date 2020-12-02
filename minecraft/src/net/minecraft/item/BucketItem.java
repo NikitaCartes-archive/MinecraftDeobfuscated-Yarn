@@ -27,6 +27,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class BucketItem extends Item implements FluidModificationItem {
 	private final Fluid fluid;
@@ -59,8 +60,9 @@ public class BucketItem extends Item implements FluidModificationItem {
 					ItemStack itemStack2 = fluidDrainable.tryDrainFluid(world, blockPos, blockState);
 					if (!itemStack2.isEmpty()) {
 						user.incrementStat(Stats.USED.getOrCreateStat(this));
-						fluidDrainable.getDrainSound().ifPresent(soundEvent -> user.playSound(soundEvent, 1.0F, 1.0F));
-						ItemStack itemStack3 = ItemUsage.method_30012(itemStack, user, itemStack2);
+						fluidDrainable.getDrainSound().ifPresent(sound -> user.playSound(sound, 1.0F, 1.0F));
+						world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
+						ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, user, itemStack2);
 						if (!world.isClient) {
 							Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)user, itemStack2);
 						}
@@ -143,5 +145,6 @@ public class BucketItem extends Item implements FluidModificationItem {
 	protected void playEmptyingSound(@Nullable PlayerEntity player, WorldAccess world, BlockPos pos) {
 		SoundEvent soundEvent = this.fluid.isIn(FluidTags.LAVA) ? SoundEvents.ITEM_BUCKET_EMPTY_LAVA : SoundEvents.ITEM_BUCKET_EMPTY;
 		world.playSound(player, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		world.emitGameEvent(player, GameEvent.FLUID_PLACE, pos);
 	}
 }

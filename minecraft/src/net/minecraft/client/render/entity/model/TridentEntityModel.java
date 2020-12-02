@@ -17,11 +17,11 @@ import net.minecraft.util.Identifier;
 @Environment(EnvType.CLIENT)
 public class TridentEntityModel extends Model {
 	public static final Identifier TEXTURE = new Identifier("textures/entity/trident.png");
-	private final ModelPart field_27521;
+	private final ModelPart root;
 
-	public TridentEntityModel(ModelPart modelPart) {
+	public TridentEntityModel(ModelPart root) {
 		super(RenderLayer::getEntitySolid);
-		this.field_27521 = modelPart;
+		this.root = root;
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -39,6 +39,6 @@ public class TridentEntityModel extends Model {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-		this.field_27521.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+		this.root.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 	}
 }

@@ -137,7 +137,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 						blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(blockState2.getFluidState().isStill()));
 					}
 
-					if (BuddingAmethystBlock.method_31626(blockState2)) {
+					if (BuddingAmethystBlock.canGrowIn(blockState2)) {
 						structureWorldAccess.setBlockState(blockPos5, blockState, 2);
 						break;
 					}

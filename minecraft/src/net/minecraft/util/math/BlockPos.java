@@ -39,7 +39,7 @@ public class BlockPos extends Vec3i {
 	public static final BlockPos ORIGIN = new BlockPos(0, 0, 0);
 	private static final int SIZE_BITS_X = 1 + MathHelper.log2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
 	private static final int SIZE_BITS_Z = SIZE_BITS_X;
-	private static final int SIZE_BITS_Y = 64 - SIZE_BITS_X - SIZE_BITS_Z;
+	public static final int SIZE_BITS_Y = 64 - SIZE_BITS_X - SIZE_BITS_Z;
 	private static final long BITS_X = (1L << SIZE_BITS_X) - 1L;
 	private static final long BITS_Y = (1L << SIZE_BITS_Y) - 1L;
 	private static final long BITS_Z = (1L << SIZE_BITS_Z) - 1L;
@@ -210,6 +210,10 @@ public class BlockPos extends Vec3i {
 			this.getZ() * pos.getX() - this.getX() * pos.getZ(),
 			this.getX() * pos.getY() - this.getY() * pos.getX()
 		);
+	}
+
+	public BlockPos withY(int y) {
+		return new BlockPos(this.getX(), y, this.getZ());
 	}
 
 	/**
@@ -569,19 +573,19 @@ public class BlockPos extends Vec3i {
 			}
 		}
 
-		@Override
-		public void setX(int x) {
-			super.setX(x);
+		public BlockPos.Mutable setX(int i) {
+			super.setX(i);
+			return this;
 		}
 
-		@Override
-		public void setY(int y) {
-			super.setY(y);
+		public BlockPos.Mutable setY(int i) {
+			super.setY(i);
+			return this;
 		}
 
-		@Override
-		public void setZ(int z) {
-			super.setZ(z);
+		public BlockPos.Mutable setZ(int i) {
+			super.setZ(i);
+			return this;
 		}
 
 		@Override

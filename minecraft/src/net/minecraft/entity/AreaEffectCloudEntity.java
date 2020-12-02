@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -48,7 +47,9 @@ public class AreaEffectCloudEntity extends Entity {
 	private int durationOnUse;
 	private float radiusOnUse;
 	private float radiusGrowth;
+	@Nullable
 	private LivingEntity owner;
+	@Nullable
 	private UUID ownerUuid;
 
 	public AreaEffectCloudEntity(EntityType<? extends AreaEffectCloudEntity> entityType, World world) {
@@ -241,15 +242,7 @@ public class AreaEffectCloudEntity extends Entity {
 			}
 
 			if (this.age % 5 == 0) {
-				Iterator<Entry<Entity, Integer>> iterator = this.affectedEntities.entrySet().iterator();
-
-				while(iterator.hasNext()) {
-					Entry<Entity, Integer> entry = (Entry)iterator.next();
-					if (this.age >= entry.getValue()) {
-						iterator.remove();
-					}
-				}
-
+				this.affectedEntities.entrySet().removeIf(entry -> this.age >= entry.getValue());
 				List<StatusEffectInstance> list = Lists.<StatusEffectInstance>newArrayList();
 
 				for(StatusEffectInstance statusEffectInstance : this.potion.getEffects()) {
@@ -403,7 +396,7 @@ public class AreaEffectCloudEntity extends Entity {
 			tag.putInt("Color", this.getColor());
 		}
 
-		if (this.potion != Potions.EMPTY && this.potion != null) {
+		if (this.potion != Potions.EMPTY) {
 			tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
 		}
 

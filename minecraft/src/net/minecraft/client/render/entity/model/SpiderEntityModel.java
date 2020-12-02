@@ -13,28 +13,28 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SpiderEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27504;
+	private final ModelPart root;
 	private final ModelPart head;
-	private final ModelPart field_27505;
-	private final ModelPart field_27506;
-	private final ModelPart field_27507;
-	private final ModelPart field_27508;
-	private final ModelPart field_27509;
-	private final ModelPart field_27510;
-	private final ModelPart field_27511;
-	private final ModelPart field_27512;
+	private final ModelPart rightHindLeg;
+	private final ModelPart leftHindLeg;
+	private final ModelPart rightMiddleLeg;
+	private final ModelPart leftMiddleLeg;
+	private final ModelPart rightMiddleFrontLeg;
+	private final ModelPart leftMiddleFrontLeg;
+	private final ModelPart rightFrontLeg;
+	private final ModelPart leftFrontLeg;
 
-	public SpiderEntityModel(ModelPart modelPart) {
-		this.field_27504 = modelPart;
-		this.head = modelPart.getChild("head");
-		this.field_27505 = modelPart.getChild("right_hind_leg");
-		this.field_27506 = modelPart.getChild("left_hind_leg");
-		this.field_27507 = modelPart.getChild("right_middle_hind_leg");
-		this.field_27508 = modelPart.getChild("left_middle_hind_leg");
-		this.field_27509 = modelPart.getChild("right_middle_front_leg");
-		this.field_27510 = modelPart.getChild("left_middle_front_leg");
-		this.field_27511 = modelPart.getChild("right_front_leg");
-		this.field_27512 = modelPart.getChild("left_front_leg");
+	public SpiderEntityModel(ModelPart root) {
+		this.root = root;
+		this.head = root.getChild("head");
+		this.rightHindLeg = root.getChild("right_hind_leg");
+		this.leftHindLeg = root.getChild("left_hind_leg");
+		this.rightMiddleLeg = root.getChild("right_middle_hind_leg");
+		this.leftMiddleLeg = root.getChild("left_middle_hind_leg");
+		this.rightMiddleFrontLeg = root.getChild("right_middle_front_leg");
+		this.leftMiddleFrontLeg = root.getChild("left_middle_front_leg");
+		this.rightFrontLeg = root.getChild("right_front_leg");
+		this.leftFrontLeg = root.getChild("left_front_leg");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -59,7 +59,7 @@ public class SpiderEntityModel<T extends Entity> extends SinglePartEntityModel<T
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27504;
+		return this.root;
 	}
 
 	@Override
@@ -67,24 +67,24 @@ public class SpiderEntityModel<T extends Entity> extends SinglePartEntityModel<T
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 		float f = (float) (Math.PI / 4);
-		this.field_27505.roll = (float) (-Math.PI / 4);
-		this.field_27506.roll = (float) (Math.PI / 4);
-		this.field_27507.roll = -0.58119464F;
-		this.field_27508.roll = 0.58119464F;
-		this.field_27509.roll = -0.58119464F;
-		this.field_27510.roll = 0.58119464F;
-		this.field_27511.roll = (float) (-Math.PI / 4);
-		this.field_27512.roll = (float) (Math.PI / 4);
+		this.rightHindLeg.roll = (float) (-Math.PI / 4);
+		this.leftHindLeg.roll = (float) (Math.PI / 4);
+		this.rightMiddleLeg.roll = -0.58119464F;
+		this.leftMiddleLeg.roll = 0.58119464F;
+		this.rightMiddleFrontLeg.roll = -0.58119464F;
+		this.leftMiddleFrontLeg.roll = 0.58119464F;
+		this.rightFrontLeg.roll = (float) (-Math.PI / 4);
+		this.leftFrontLeg.roll = (float) (Math.PI / 4);
 		float g = -0.0F;
 		float h = (float) (Math.PI / 8);
-		this.field_27505.yaw = (float) (Math.PI / 4);
-		this.field_27506.yaw = (float) (-Math.PI / 4);
-		this.field_27507.yaw = (float) (Math.PI / 8);
-		this.field_27508.yaw = (float) (-Math.PI / 8);
-		this.field_27509.yaw = (float) (-Math.PI / 8);
-		this.field_27510.yaw = (float) (Math.PI / 8);
-		this.field_27511.yaw = (float) (-Math.PI / 4);
-		this.field_27512.yaw = (float) (Math.PI / 4);
+		this.rightHindLeg.yaw = (float) (Math.PI / 4);
+		this.leftHindLeg.yaw = (float) (-Math.PI / 4);
+		this.rightMiddleLeg.yaw = (float) (Math.PI / 8);
+		this.leftMiddleLeg.yaw = (float) (-Math.PI / 8);
+		this.rightMiddleFrontLeg.yaw = (float) (-Math.PI / 8);
+		this.leftMiddleFrontLeg.yaw = (float) (Math.PI / 8);
+		this.rightFrontLeg.yaw = (float) (-Math.PI / 4);
+		this.leftFrontLeg.yaw = (float) (Math.PI / 4);
 		float i = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + 0.0F) * 0.4F) * limbDistance;
 		float j = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + (float) Math.PI) * 0.4F) * limbDistance;
 		float k = -(MathHelper.cos(limbAngle * 0.6662F * 2.0F + (float) (Math.PI / 2)) * 0.4F) * limbDistance;
@@ -93,21 +93,21 @@ public class SpiderEntityModel<T extends Entity> extends SinglePartEntityModel<T
 		float n = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) Math.PI) * 0.4F) * limbDistance;
 		float o = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) (Math.PI / 2)) * 0.4F) * limbDistance;
 		float p = Math.abs(MathHelper.sin(limbAngle * 0.6662F + (float) (Math.PI * 3.0 / 2.0)) * 0.4F) * limbDistance;
-		this.field_27505.yaw += i;
-		this.field_27506.yaw += -i;
-		this.field_27507.yaw += j;
-		this.field_27508.yaw += -j;
-		this.field_27509.yaw += k;
-		this.field_27510.yaw += -k;
-		this.field_27511.yaw += l;
-		this.field_27512.yaw += -l;
-		this.field_27505.roll += m;
-		this.field_27506.roll += -m;
-		this.field_27507.roll += n;
-		this.field_27508.roll += -n;
-		this.field_27509.roll += o;
-		this.field_27510.roll += -o;
-		this.field_27511.roll += p;
-		this.field_27512.roll += -p;
+		this.rightHindLeg.yaw += i;
+		this.leftHindLeg.yaw += -i;
+		this.rightMiddleLeg.yaw += j;
+		this.leftMiddleLeg.yaw += -j;
+		this.rightMiddleFrontLeg.yaw += k;
+		this.leftMiddleFrontLeg.yaw += -k;
+		this.rightFrontLeg.yaw += l;
+		this.leftFrontLeg.yaw += -l;
+		this.rightHindLeg.roll += m;
+		this.leftHindLeg.roll += -m;
+		this.rightMiddleLeg.roll += n;
+		this.leftMiddleLeg.roll += -n;
+		this.rightMiddleFrontLeg.roll += o;
+		this.leftMiddleFrontLeg.roll += -o;
+		this.rightFrontLeg.roll += p;
+		this.leftFrontLeg.roll += -p;
 	}
 }

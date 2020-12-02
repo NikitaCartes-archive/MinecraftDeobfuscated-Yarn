@@ -6,6 +6,7 @@ import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.listener.GameEventListener;
 
 public interface BlockEntityProvider {
 	@Nullable
@@ -13,6 +14,11 @@ public interface BlockEntityProvider {
 
 	@Nullable
 	default <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+		return null;
+	}
+
+	@Nullable
+	default <T extends BlockEntity> GameEventListener getGameEventListener(World world, T blockEntity) {
 		return null;
 	}
 }

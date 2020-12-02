@@ -493,6 +493,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_COPPER_HIT,
 		SoundEvents.BLOCK_COPPER_FALL
 	);
+	public static final BlockSoundGroup SCULK_SENSOR = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SCULK_SENSOR_BREAK,
+		SoundEvents.BLOCK_SCULK_SENSOR_STEP,
+		SoundEvents.BLOCK_SCULK_SENSOR_PLACE,
+		SoundEvents.BLOCK_SCULK_SENSOR_HIT,
+		SoundEvents.BLOCK_SCULK_SENSOR_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

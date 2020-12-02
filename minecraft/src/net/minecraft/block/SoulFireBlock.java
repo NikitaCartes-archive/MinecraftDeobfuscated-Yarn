@@ -21,8 +21,8 @@ public class SoulFireBlock extends AbstractFireBlock {
 		return isSoulBase(world.getBlockState(pos.down()));
 	}
 
-	public static boolean isSoulBase(BlockState blockState) {
-		return blockState.isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS);
+	public static boolean isSoulBase(BlockState state) {
+		return state.isIn(BlockTags.SOUL_FIRE_BASE_BLOCKS);
 	}
 
 	@Override

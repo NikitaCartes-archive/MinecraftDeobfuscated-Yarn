@@ -19,24 +19,24 @@ public class HoneyBottleItem extends Item {
 	}
 
 	@Override
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		super.finishUsing(stack, world, user);
-		if (user instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)user;
+	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+		super.finishUsing(stack, world, entity);
+		if (entity instanceof ServerPlayerEntity) {
+			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 			Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
 			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
 		if (!world.isClient) {
-			user.removeStatusEffect(StatusEffects.POISON);
+			entity.removeStatusEffect(StatusEffects.POISON);
 		}
 
 		if (stack.isEmpty()) {
 			return new ItemStack(Items.GLASS_BOTTLE);
 		} else {
-			if (user instanceof PlayerEntity && !((PlayerEntity)user).getAbilities().creativeMode) {
+			if (entity instanceof PlayerEntity && !((PlayerEntity)entity).getAbilities().creativeMode) {
 				ItemStack itemStack = new ItemStack(Items.GLASS_BOTTLE);
-				PlayerEntity playerEntity = (PlayerEntity)user;
+				PlayerEntity playerEntity = (PlayerEntity)entity;
 				if (!playerEntity.getInventory().insertStack(itemStack)) {
 					playerEntity.dropItem(itemStack, false);
 				}

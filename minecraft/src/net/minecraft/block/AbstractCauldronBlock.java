@@ -77,19 +77,19 @@ public abstract class AbstractCauldronBlock extends Block {
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		BlockPos blockPos = PointedDripstoneBlock.method_32767(world, pos);
+		BlockPos blockPos = PointedDripstoneBlock.getDripPos(world, pos);
 		if (blockPos != null) {
 			Fluid fluid = PointedDripstoneBlock.getDripFluid(world, blockPos);
-			if (fluid != Fluids.EMPTY && this.method_32765(fluid)) {
-				this.method_32764(state, world, pos, fluid);
+			if (fluid != Fluids.EMPTY && this.canBeFilledByDripstone(fluid)) {
+				this.fillFromDripstone(state, world, pos, fluid);
 			}
 		}
 	}
 
-	protected boolean method_32765(Fluid fluid) {
+	protected boolean canBeFilledByDripstone(Fluid fluid) {
 		return false;
 	}
 
-	protected void method_32764(BlockState blockState, World world, BlockPos blockPos, Fluid fluid) {
+	protected void fillFromDripstone(BlockState state, World world, BlockPos pos, Fluid fluid) {
 	}
 }

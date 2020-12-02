@@ -19,7 +19,7 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 		BlockPos blockPos,
 		SingleStateFeatureConfig singleStateFeatureConfig
 	) {
-		for(; blockPos.getY() > structureWorldAccess.getBottomHeightLimit() + 3; blockPos = blockPos.down()) {
+		for(; blockPos.getY() > structureWorldAccess.getSectionCount() + 3; blockPos = blockPos.down()) {
 			if (!structureWorldAccess.isAir(blockPos.down())) {
 				BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());
 				if (isSoil(blockState) || isStone(blockState)) {
@@ -28,7 +28,7 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 			}
 		}
 
-		if (blockPos.getY() <= structureWorldAccess.getBottomHeightLimit() + 3) {
+		if (blockPos.getY() <= structureWorldAccess.getSectionCount() + 3) {
 			return false;
 		} else {
 			for(int i = 0; i < 3; ++i) {

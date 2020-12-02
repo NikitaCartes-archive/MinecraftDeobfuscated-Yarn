@@ -66,11 +66,11 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag compoundTag) {
-		super.fromTag(compoundTag);
+	public void fromTag(CompoundTag tag) {
+		super.fromTag(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(compoundTag)) {
-			Inventories.fromTag(compoundTag, this.inventory);
+		if (!this.deserializeLootTable(tag)) {
+			Inventories.fromTag(tag, this.inventory);
 		}
 	}
 
@@ -102,14 +102,14 @@ public class BarrelBlockEntity extends LootableContainerBlockEntity {
 	@Override
 	public void onOpen(PlayerEntity player) {
 		if (!player.isSpectator()) {
-			this.stateManager.openChest(this.getWorld(), this.getPos(), this.getCachedState());
+			this.stateManager.openChest(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 
 	@Override
 	public void onClose(PlayerEntity player) {
 		if (!player.isSpectator()) {
-			this.stateManager.closeChest(this.getWorld(), this.getPos(), this.getCachedState());
+			this.stateManager.closeChest(player, this.getWorld(), this.getPos(), this.getCachedState());
 		}
 	}
 

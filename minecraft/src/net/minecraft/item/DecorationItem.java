@@ -10,6 +10,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class DecorationItem extends Item {
 	private final EntityType<? extends AbstractDecorationEntity> entityType;
@@ -49,6 +50,7 @@ public class DecorationItem extends Item {
 			if (abstractDecorationEntity.canStayAttached()) {
 				if (!world.isClient) {
 					abstractDecorationEntity.onPlace();
+					world.emitGameEvent(playerEntity, GameEvent.BLOCK_PLACE, blockPos);
 					world.spawnEntity(abstractDecorationEntity);
 				}
 

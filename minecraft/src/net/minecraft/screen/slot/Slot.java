@@ -23,10 +23,10 @@ public class Slot {
 		this.y = y;
 	}
 
-	public void onStackChanged(ItemStack originalItem, ItemStack itemStack) {
-		int i = itemStack.getCount() - originalItem.getCount();
+	public void onStackChanged(ItemStack originalItem, ItemStack newItem) {
+		int i = newItem.getCount() - originalItem.getCount();
 		if (i > 0) {
-			this.onCrafted(itemStack, i);
+			this.onCrafted(newItem, i);
 		}
 	}
 
@@ -123,7 +123,7 @@ public class Slot {
 			int j = Math.min(Math.min(i, itemStack.getCount()), this.getMaxItemCount(itemStack) - itemStack2.getCount());
 			if (itemStack2.isEmpty()) {
 				this.setStack(itemStack.split(j));
-			} else if (ItemStack.method_31577(itemStack2, itemStack)) {
+			} else if (ItemStack.canCombine(itemStack2, itemStack)) {
 				itemStack.decrement(j);
 				itemStack2.increment(j);
 				this.setStack(itemStack2);

@@ -46,10 +46,8 @@ public class PistonExtensionBlock extends BlockWithEntity {
 		return null;
 	}
 
-	public static BlockEntity createBlockEntityPiston(
-		BlockPos blockPos, BlockState blockState, BlockState blockState2, Direction direction, boolean bl, boolean bl2
-	) {
-		return new PistonBlockEntity(blockPos, blockState, blockState2, direction, bl, bl2);
+	public static BlockEntity createBlockEntityPiston(BlockPos pos, BlockState state, BlockState pushedBlock, Direction facing, boolean extending, boolean source) {
+		return new PistonBlockEntity(pos, state, pushedBlock, facing, extending, source);
 	}
 
 	@Nullable

@@ -14,18 +14,18 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class SnowGolemEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27500;
-	private final ModelPart field_27501;
-	private final ModelPart topSnowball;
-	private final ModelPart field_27502;
-	private final ModelPart field_27503;
+	private final ModelPart root;
+	private final ModelPart upperBody;
+	private final ModelPart head;
+	private final ModelPart leftArm;
+	private final ModelPart rightArm;
 
-	public SnowGolemEntityModel(ModelPart modelPart) {
-		this.field_27500 = modelPart;
-		this.topSnowball = modelPart.getChild("head");
-		this.field_27502 = modelPart.getChild("left_arm");
-		this.field_27503 = modelPart.getChild("right_arm");
-		this.field_27501 = modelPart.getChild("upper_body");
+	public SnowGolemEntityModel(ModelPart root) {
+		this.root = root;
+		this.head = root.getChild("head");
+		this.leftArm = root.getChild("left_arm");
+		this.rightArm = root.getChild("right_arm");
+		this.upperBody = root.getChild("upper_body");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -50,25 +50,25 @@ public class SnowGolemEntityModel<T extends Entity> extends SinglePartEntityMode
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		this.topSnowball.yaw = headYaw * (float) (Math.PI / 180.0);
-		this.topSnowball.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.field_27501.yaw = headYaw * (float) (Math.PI / 180.0) * 0.25F;
-		float f = MathHelper.sin(this.field_27501.yaw);
-		float g = MathHelper.cos(this.field_27501.yaw);
-		this.field_27502.yaw = this.field_27501.yaw;
-		this.field_27503.yaw = this.field_27501.yaw + (float) Math.PI;
-		this.field_27502.pivotX = g * 5.0F;
-		this.field_27502.pivotZ = -f * 5.0F;
-		this.field_27503.pivotX = -g * 5.0F;
-		this.field_27503.pivotZ = f * 5.0F;
+		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
+		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
+		this.upperBody.yaw = headYaw * (float) (Math.PI / 180.0) * 0.25F;
+		float f = MathHelper.sin(this.upperBody.yaw);
+		float g = MathHelper.cos(this.upperBody.yaw);
+		this.leftArm.yaw = this.upperBody.yaw;
+		this.rightArm.yaw = this.upperBody.yaw + (float) Math.PI;
+		this.leftArm.pivotX = g * 5.0F;
+		this.leftArm.pivotZ = -f * 5.0F;
+		this.rightArm.pivotX = -g * 5.0F;
+		this.rightArm.pivotZ = f * 5.0F;
 	}
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27500;
+		return this.root;
 	}
 
 	public ModelPart getTopSnowball() {
-		return this.topSnowball;
+		return this.head;
 	}
 }

@@ -52,7 +52,7 @@ public abstract class AbstractPlantPartBlock extends Block {
 		}
 	}
 
-	protected boolean canAttachTo(BlockState blockState) {
+	protected boolean canAttachTo(BlockState state) {
 		return true;
 	}
 

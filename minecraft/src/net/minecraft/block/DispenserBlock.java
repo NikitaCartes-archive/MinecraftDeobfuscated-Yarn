@@ -35,6 +35,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Position;
 import net.minecraft.util.math.PositionImpl;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class DispenserBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = FacingBlock.FACING;
@@ -71,12 +72,13 @@ public class DispenserBlock extends BlockWithEntity {
 		}
 	}
 
-	protected void dispense(ServerWorld serverWorld, BlockPos pos) {
-		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(serverWorld, pos);
+	protected void dispense(ServerWorld world, BlockPos pos) {
+		BlockPointerImpl blockPointerImpl = new BlockPointerImpl(world, pos);
 		DispenserBlockEntity dispenserBlockEntity = blockPointerImpl.getBlockEntity();
 		int i = dispenserBlockEntity.chooseNonEmptySlot();
 		if (i < 0) {
-			serverWorld.syncWorldEvent(1001, pos, 0);
+			world.syncWorldEvent(1001, pos, 0);
+			world.emitGameEvent(GameEvent.DISPENSE_FAIL, pos);
 		} else {
 			ItemStack itemStack = dispenserBlockEntity.getStack(i);
 			DispenserBehavior dispenserBehavior = this.getBehaviorForItem(itemStack);

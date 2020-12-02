@@ -12,8 +12,8 @@ import net.minecraft.entity.Entity;
 
 @Environment(EnvType.CLIENT)
 public class CowEntityModel<T extends Entity> extends QuadrupedEntityModel<T> {
-	public CowEntityModel(ModelPart modelPart) {
-		super(modelPart, false, 10.0F, 4.0F, 2.0F, 2.0F, 24);
+	public CowEntityModel(ModelPart root) {
+		super(root, false, 10.0F, 4.0F, 2.0F, 2.0F, 24);
 	}
 
 	public static TexturedModelData getTexturedModelData() {

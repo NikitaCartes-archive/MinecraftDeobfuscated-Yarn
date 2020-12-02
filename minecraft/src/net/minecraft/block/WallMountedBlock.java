@@ -22,9 +22,9 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 		return canPlaceAt(world, pos, getDirection(state).getOpposite());
 	}
 
-	public static boolean canPlaceAt(WorldView worldView, BlockPos pos, Direction direction) {
+	public static boolean canPlaceAt(WorldView world, BlockPos pos, Direction direction) {
 		BlockPos blockPos = pos.offset(direction);
-		return worldView.getBlockState(blockPos).isSideSolidFullSquare(worldView, blockPos, direction.getOpposite());
+		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, direction.getOpposite());
 	}
 
 	@Nullable

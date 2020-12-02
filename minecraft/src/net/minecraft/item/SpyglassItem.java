@@ -30,8 +30,8 @@ public class SpyglassItem extends Item {
 	}
 
 	@Override
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		this.playStopUsingSound(user);
+	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+		this.playStopUsingSound(entity);
 		return stack;
 	}
 

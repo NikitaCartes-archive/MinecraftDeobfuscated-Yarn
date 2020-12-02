@@ -10,17 +10,14 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 
 public class SimpleMerchant implements Merchant {
-	private final MerchantInventory merchantInventory;
 	private final PlayerEntity player;
 	private TradeOfferList recipeList = new TradeOfferList();
 	private int experience;
 
 	public SimpleMerchant(PlayerEntity playerEntity) {
 		this.player = playerEntity;
-		this.merchantInventory = new MerchantInventory(this);
 	}
 
-	@Nullable
 	@Override
 	public PlayerEntity getCurrentCustomer() {
 		return this.player;
@@ -37,7 +34,7 @@ public class SimpleMerchant implements Merchant {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public void setOffersFromServer(@Nullable TradeOfferList offers) {
+	public void setOffersFromServer(TradeOfferList offers) {
 		this.recipeList = offers;
 	}
 

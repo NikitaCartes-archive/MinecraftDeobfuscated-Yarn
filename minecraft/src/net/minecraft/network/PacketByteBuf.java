@@ -136,12 +136,14 @@ public class PacketByteBuf extends ByteBuf {
 		return this;
 	}
 
-	@Environment(EnvType.CLIENT)
+	public long[] method_33134() {
+		return this.readLongArray(null);
+	}
+
 	public long[] readLongArray(@Nullable long[] ls) {
 		return this.readLongArray(ls, this.readableBytes() / 8);
 	}
 
-	@Environment(EnvType.CLIENT)
 	public long[] readLongArray(@Nullable long[] toArray, int i) {
 		int j = this.readVarInt();
 		if (toArray == null || toArray.length != j) {

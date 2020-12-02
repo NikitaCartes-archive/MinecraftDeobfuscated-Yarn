@@ -38,7 +38,7 @@ public class VineBlock extends Block {
 	private static final VoxelShape WEST_SHAPE = Block.createCuboidShape(15.0, 0.0, 0.0, 16.0, 16.0, 16.0);
 	private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
 	private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
-	private final Map<BlockState, VoxelShape> field_26659;
+	private final Map<BlockState, VoxelShape> shapesByState;
 
 	public VineBlock(AbstractBlock.Settings settings) {
 		super(settings);
@@ -51,33 +51,33 @@ public class VineBlock extends Block {
 				.with(SOUTH, Boolean.valueOf(false))
 				.with(WEST, Boolean.valueOf(false))
 		);
-		this.field_26659 = ImmutableMap.copyOf(
+		this.shapesByState = ImmutableMap.copyOf(
 			(Map<? extends BlockState, ? extends VoxelShape>)this.stateManager
 				.getStates()
 				.stream()
-				.collect(Collectors.toMap(Function.identity(), VineBlock::method_31018))
+				.collect(Collectors.toMap(Function.identity(), VineBlock::getShapeForState))
 		);
 	}
 
-	private static VoxelShape method_31018(BlockState blockState) {
+	private static VoxelShape getShapeForState(BlockState state) {
 		VoxelShape voxelShape = VoxelShapes.empty();
-		if (blockState.get(UP)) {
+		if (state.get(UP)) {
 			voxelShape = UP_SHAPE;
 		}
 
-		if (blockState.get(NORTH)) {
+		if (state.get(NORTH)) {
 			voxelShape = VoxelShapes.union(voxelShape, SOUTH_SHAPE);
 		}
 
-		if (blockState.get(SOUTH)) {
+		if (state.get(SOUTH)) {
 			voxelShape = VoxelShapes.union(voxelShape, NORTH_SHAPE);
 		}
 
-		if (blockState.get(EAST)) {
+		if (state.get(EAST)) {
 			voxelShape = VoxelShapes.union(voxelShape, WEST_SHAPE);
 		}
 
-		if (blockState.get(WEST)) {
+		if (state.get(WEST)) {
 			voxelShape = VoxelShapes.union(voxelShape, EAST_SHAPE);
 		}
 
@@ -86,7 +86,7 @@ public class VineBlock extends Block {
 
 	@Override
 	public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-		return (VoxelShape)this.field_26659.get(state);
+		return (VoxelShape)this.shapesByState.get(state);
 	}
 
 	@Override
@@ -231,7 +231,7 @@ public class VineBlock extends Block {
 					}
 				}
 
-				if (pos.getY() > world.getBottomHeightLimit()) {
+				if (pos.getY() > world.getSectionCount()) {
 					BlockPos blockPos2 = pos.down();
 					BlockState blockState = world.getBlockState(blockPos2);
 					if (blockState.isAir() || blockState.isOf(this)) {

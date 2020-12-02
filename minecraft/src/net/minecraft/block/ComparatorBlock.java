@@ -45,16 +45,16 @@ public class ComparatorBlock extends AbstractRedstoneGateBlock implements BlockE
 		return blockEntity instanceof ComparatorBlockEntity ? ((ComparatorBlockEntity)blockEntity).getOutputSignal() : 0;
 	}
 
-	private int calculateOutputSignal(World world, BlockPos pos, BlockState blockState) {
-		int i = this.getPower(world, pos, blockState);
+	private int calculateOutputSignal(World world, BlockPos pos, BlockState state) {
+		int i = this.getPower(world, pos, state);
 		if (i == 0) {
 			return 0;
 		} else {
-			int j = this.getMaxInputLevelSides(world, pos, blockState);
+			int j = this.getMaxInputLevelSides(world, pos, state);
 			if (j > i) {
 				return 0;
 			} else {
-				return blockState.get(MODE) == ComparatorMode.SUBTRACT ? i - j : i;
+				return state.get(MODE) == ComparatorMode.SUBTRACT ? i - j : i;
 			}
 		}
 	}

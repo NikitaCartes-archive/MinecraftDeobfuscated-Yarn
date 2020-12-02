@@ -14,20 +14,20 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CreeperEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27406;
+	private final ModelPart root;
 	private final ModelPart head;
-	private final ModelPart field_27407;
-	private final ModelPart field_27408;
-	private final ModelPart field_27409;
-	private final ModelPart field_27410;
+	private final ModelPart leftHindLeg;
+	private final ModelPart rightHindLeg;
+	private final ModelPart leftFrontLeg;
+	private final ModelPart rightFrontLeg;
 
-	public CreeperEntityModel(ModelPart modelPart) {
-		this.field_27406 = modelPart;
-		this.head = modelPart.getChild("head");
-		this.field_27408 = modelPart.getChild("right_hind_leg");
-		this.field_27407 = modelPart.getChild("left_hind_leg");
-		this.field_27410 = modelPart.getChild("right_front_leg");
-		this.field_27409 = modelPart.getChild("left_front_leg");
+	public CreeperEntityModel(ModelPart root) {
+		this.root = root;
+		this.head = root.getChild("head");
+		this.rightHindLeg = root.getChild("right_hind_leg");
+		this.leftHindLeg = root.getChild("left_hind_leg");
+		this.rightFrontLeg = root.getChild("right_front_leg");
+		this.leftFrontLeg = root.getChild("left_front_leg");
 	}
 
 	public static TexturedModelData getTexturedModelData(Dilation dilation) {
@@ -49,16 +49,16 @@ public class CreeperEntityModel<T extends Entity> extends SinglePartEntityModel<
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27406;
+		return this.root;
 	}
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
 		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
-		this.field_27407.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
-		this.field_27408.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.field_27409.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
-		this.field_27410.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+		this.leftHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
+		this.rightHindLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+		this.leftFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
+		this.rightFrontLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
 	}
 }

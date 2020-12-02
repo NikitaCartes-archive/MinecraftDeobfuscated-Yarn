@@ -7,14 +7,12 @@ import net.fabricmc.api.Environment;
 
 @Environment(EnvType.CLIENT)
 public class SpectatorMenuState {
-	private final SpectatorMenuCommandGroup group;
 	private final List<SpectatorMenuCommand> commands;
 	private final int selectedSlot;
 
-	public SpectatorMenuState(SpectatorMenuCommandGroup group, List<SpectatorMenuCommand> commands, int selectedSlot) {
-		this.group = group;
-		this.commands = commands;
-		this.selectedSlot = selectedSlot;
+	public SpectatorMenuState(List<SpectatorMenuCommand> list, int i) {
+		this.commands = list;
+		this.selectedSlot = i;
 	}
 
 	public SpectatorMenuCommand getCommand(int slot) {

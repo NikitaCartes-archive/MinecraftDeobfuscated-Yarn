@@ -18,6 +18,7 @@ import net.minecraft.data.server.AdvancementsProvider;
 import net.minecraft.data.server.BlockTagsProvider;
 import net.minecraft.data.server.EntityTypeTagsProvider;
 import net.minecraft.data.server.FluidTagsProvider;
+import net.minecraft.data.server.GameEventTagsProvider;
 import net.minecraft.data.server.ItemTagsProvider;
 import net.minecraft.data.server.LootTablesProvider;
 import net.minecraft.data.server.RecipesProvider;
@@ -74,6 +75,7 @@ public class Main {
 			dataGenerator.install(new RecipesProvider(dataGenerator));
 			dataGenerator.install(new AdvancementsProvider(dataGenerator));
 			dataGenerator.install(new LootTablesProvider(dataGenerator));
+			dataGenerator.install(new GameEventTagsProvider(dataGenerator));
 		}
 
 		if (includeDev) {

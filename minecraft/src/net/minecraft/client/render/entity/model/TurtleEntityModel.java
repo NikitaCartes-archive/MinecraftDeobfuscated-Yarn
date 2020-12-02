@@ -22,9 +22,9 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 	 */
 	private final ModelPart plastron;
 
-	public TurtleEntityModel(ModelPart modelPart) {
-		super(modelPart, true, 120.0F, 0.0F, 9.0F, 6.0F, 120);
-		this.plastron = modelPart.getChild("egg_belly");
+	public TurtleEntityModel(ModelPart root) {
+		super(root, true, 120.0F, 0.0F, 9.0F, 6.0F, 120);
+		this.plastron = root.getChild("egg_belly");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -68,28 +68,28 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 
 	public void setAngles(T turtleEntity, float f, float g, float h, float i, float j) {
 		super.setAngles(turtleEntity, f, g, h, i, j);
-		this.field_27476.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
-		this.field_27477.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
-		this.field_27478.roll = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
-		this.field_27479.roll = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
-		this.field_27478.pitch = 0.0F;
-		this.field_27479.pitch = 0.0F;
-		this.field_27478.yaw = 0.0F;
-		this.field_27479.yaw = 0.0F;
-		this.field_27476.yaw = 0.0F;
-		this.field_27477.yaw = 0.0F;
+		this.rightHindLeg.pitch = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
+		this.leftHindLeg.pitch = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
+		this.rightFrontLeg.roll = MathHelper.cos(f * 0.6662F * 0.6F + (float) Math.PI) * 0.5F * g;
+		this.leftFrontLeg.roll = MathHelper.cos(f * 0.6662F * 0.6F) * 0.5F * g;
+		this.rightFrontLeg.pitch = 0.0F;
+		this.leftFrontLeg.pitch = 0.0F;
+		this.rightFrontLeg.yaw = 0.0F;
+		this.leftFrontLeg.yaw = 0.0F;
+		this.rightHindLeg.yaw = 0.0F;
+		this.leftHindLeg.yaw = 0.0F;
 		if (!turtleEntity.isTouchingWater() && turtleEntity.isOnGround()) {
 			float k = turtleEntity.isDiggingSand() ? 4.0F : 1.0F;
 			float l = turtleEntity.isDiggingSand() ? 2.0F : 1.0F;
 			float m = 5.0F;
-			this.field_27478.yaw = MathHelper.cos(k * f * 5.0F + (float) Math.PI) * 8.0F * g * l;
-			this.field_27478.roll = 0.0F;
-			this.field_27479.yaw = MathHelper.cos(k * f * 5.0F) * 8.0F * g * l;
-			this.field_27479.roll = 0.0F;
-			this.field_27476.yaw = MathHelper.cos(f * 5.0F + (float) Math.PI) * 3.0F * g;
-			this.field_27476.pitch = 0.0F;
-			this.field_27477.yaw = MathHelper.cos(f * 5.0F) * 3.0F * g;
-			this.field_27477.pitch = 0.0F;
+			this.rightFrontLeg.yaw = MathHelper.cos(k * f * 5.0F + (float) Math.PI) * 8.0F * g * l;
+			this.rightFrontLeg.roll = 0.0F;
+			this.leftFrontLeg.yaw = MathHelper.cos(k * f * 5.0F) * 8.0F * g * l;
+			this.leftFrontLeg.roll = 0.0F;
+			this.rightHindLeg.yaw = MathHelper.cos(f * 5.0F + (float) Math.PI) * 3.0F * g;
+			this.rightHindLeg.pitch = 0.0F;
+			this.leftHindLeg.yaw = MathHelper.cos(f * 5.0F) * 3.0F * g;
+			this.leftHindLeg.pitch = 0.0F;
 		}
 
 		this.plastron.visible = !this.child && turtleEntity.hasEgg();

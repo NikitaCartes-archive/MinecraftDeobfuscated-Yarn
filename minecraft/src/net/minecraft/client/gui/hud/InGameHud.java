@@ -785,12 +785,14 @@ public class InGameHud extends DrawableHelper {
 
 			for(int x = MathHelper.ceil((f + (float)p) / 2.0F) - 1; x >= 0; --x) {
 				int y = 16;
-				if (playerEntity.hasStatusEffect(StatusEffects.POISON)) {
-					y += 36;
-				} else if (playerEntity.hasStatusEffect(StatusEffects.WITHER)) {
-					y += 72;
-				} else if (playerEntity.isFreezing()) {
-					y += 126;
+				if (u <= 0) {
+					if (playerEntity.hasStatusEffect(StatusEffects.POISON)) {
+						y += 36;
+					} else if (playerEntity.hasStatusEffect(StatusEffects.WITHER)) {
+						y += 72;
+					} else if (playerEntity.isFreezing()) {
+						y += 126;
+					}
 				}
 
 				int z = 0;

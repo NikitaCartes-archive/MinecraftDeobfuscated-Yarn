@@ -154,7 +154,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			this.setServerPort(serverPropertiesHandler.serverPort);
 		}
 
-		this.method_31400();
+		this.generateKeyPair();
 		LOGGER.info("Starting Minecraft server on {}:{}", this.getServerIp().isEmpty() ? "*" : this.getServerIp(), this.getServerPort());
 
 		try {
@@ -184,7 +184,6 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		} else {
 			this.setPlayerManager(new DedicatedPlayerManager(this, this.registryManager, this.saveHandler));
 			long l = Util.getMeasuringTimeNano();
-			this.setWorldHeight(serverPropertiesHandler.maxBuildHeight);
 			SkullBlockEntity.setUserCache(this.getUserCache());
 			SkullBlockEntity.setSessionService(this.getSessionService());
 			UserCache.setUseRemote(this.isOnlineMode());
@@ -218,6 +217,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 			Items.AIR.appendStacks(ItemGroup.SEARCH, DefaultedList.of());
 			if (serverPropertiesHandler.enableJmxMonitoring) {
 				ServerMBean.register(this);
+				LOGGER.info("JMX monitoring enabled");
 			}
 
 			return true;

@@ -14,20 +14,20 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class IronGolemEntityModel<T extends IronGolemEntity> extends SinglePartEntityModel<T> {
-	private final ModelPart field_27436;
+	private final ModelPart root;
 	private final ModelPart head;
-	private final ModelPart field_27437;
-	private final ModelPart field_27438;
-	private final ModelPart field_27439;
-	private final ModelPart field_27440;
+	private final ModelPart rightArm;
+	private final ModelPart leftArm;
+	private final ModelPart rightLeg;
+	private final ModelPart leftLeg;
 
-	public IronGolemEntityModel(ModelPart modelPart) {
-		this.field_27436 = modelPart;
-		this.head = modelPart.getChild("head");
-		this.field_27437 = modelPart.getChild("right_arm");
-		this.field_27438 = modelPart.getChild("left_arm");
-		this.field_27439 = modelPart.getChild("right_leg");
-		this.field_27440 = modelPart.getChild("left_leg");
+	public IronGolemEntityModel(ModelPart root) {
+		this.root = root;
+		this.head = root.getChild("head");
+		this.rightArm = root.getChild("right_arm");
+		this.leftArm = root.getChild("left_arm");
+		this.rightLeg = root.getChild("right_leg");
+		this.leftLeg = root.getChild("left_leg");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -64,36 +64,36 @@ public class IronGolemEntityModel<T extends IronGolemEntity> extends SinglePartE
 
 	@Override
 	public ModelPart getPart() {
-		return this.field_27436;
+		return this.root;
 	}
 
 	public void setAngles(T ironGolemEntity, float f, float g, float h, float i, float j) {
 		this.head.yaw = i * (float) (Math.PI / 180.0);
 		this.head.pitch = j * (float) (Math.PI / 180.0);
-		this.field_27439.pitch = -1.5F * MathHelper.method_24504(f, 13.0F) * g;
-		this.field_27440.pitch = 1.5F * MathHelper.method_24504(f, 13.0F) * g;
-		this.field_27439.yaw = 0.0F;
-		this.field_27440.yaw = 0.0F;
+		this.rightLeg.pitch = -1.5F * MathHelper.wrap(f, 13.0F) * g;
+		this.leftLeg.pitch = 1.5F * MathHelper.wrap(f, 13.0F) * g;
+		this.rightLeg.yaw = 0.0F;
+		this.leftLeg.yaw = 0.0F;
 	}
 
 	public void animateModel(T ironGolemEntity, float f, float g, float h) {
 		int i = ironGolemEntity.getAttackTicksLeft();
 		if (i > 0) {
-			this.field_27437.pitch = -2.0F + 1.5F * MathHelper.method_24504((float)i - h, 10.0F);
-			this.field_27438.pitch = -2.0F + 1.5F * MathHelper.method_24504((float)i - h, 10.0F);
+			this.rightArm.pitch = -2.0F + 1.5F * MathHelper.wrap((float)i - h, 10.0F);
+			this.leftArm.pitch = -2.0F + 1.5F * MathHelper.wrap((float)i - h, 10.0F);
 		} else {
 			int j = ironGolemEntity.getLookingAtVillagerTicks();
 			if (j > 0) {
-				this.field_27437.pitch = -0.8F + 0.025F * MathHelper.method_24504((float)j, 70.0F);
-				this.field_27438.pitch = 0.0F;
+				this.rightArm.pitch = -0.8F + 0.025F * MathHelper.wrap((float)j, 70.0F);
+				this.leftArm.pitch = 0.0F;
 			} else {
-				this.field_27437.pitch = (-0.2F + 1.5F * MathHelper.method_24504(f, 13.0F)) * g;
-				this.field_27438.pitch = (-0.2F - 1.5F * MathHelper.method_24504(f, 13.0F)) * g;
+				this.rightArm.pitch = (-0.2F + 1.5F * MathHelper.wrap(f, 13.0F)) * g;
+				this.leftArm.pitch = (-0.2F - 1.5F * MathHelper.wrap(f, 13.0F)) * g;
 			}
 		}
 	}
 
 	public ModelPart getRightArm() {
-		return this.field_27437;
+		return this.rightArm;
 	}
 }
