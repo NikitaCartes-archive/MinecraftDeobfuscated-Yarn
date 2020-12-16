@@ -50,12 +50,12 @@ public class EditWorldScreen extends Screen {
 	private ButtonWidget saveButton;
 	private final BooleanConsumer callback;
 	private TextFieldWidget levelNameTextField;
-	private final LevelStorage.Session field_23777;
+	private final LevelStorage.Session storageSession;
 
-	public EditWorldScreen(BooleanConsumer callback, LevelStorage.Session session) {
+	public EditWorldScreen(BooleanConsumer callback, LevelStorage.Session storageSession) {
 		super(new TranslatableText("selectWorld.edit.title"));
 		this.callback = callback;
-		this.field_23777 = session;
+		this.storageSession = storageSession;
 	}
 
 	@Override
@@ -68,7 +68,7 @@ public class EditWorldScreen extends Screen {
 		this.client.keyboard.setRepeatEvents(true);
 		ButtonWidget buttonWidget = this.addButton(
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 0 + 5, 200, 20, new TranslatableText("selectWorld.edit.resetIcon"), buttonWidgetx -> {
-				FileUtils.deleteQuietly(this.field_23777.getIconFile());
+				FileUtils.deleteQuietly(this.storageSession.getIconFile());
 				buttonWidgetx.active = false;
 			})
 		);
@@ -79,11 +79,11 @@ public class EditWorldScreen extends Screen {
 				200,
 				20,
 				new TranslatableText("selectWorld.edit.openFolder"),
-				buttonWidgetx -> Util.getOperatingSystem().open(this.field_23777.getDirectory(WorldSavePath.ROOT).toFile())
+				buttonWidgetx -> Util.getOperatingSystem().open(this.storageSession.getDirectory(WorldSavePath.ROOT).toFile())
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 48 + 5, 200, 20, new TranslatableText("selectWorld.edit.backup"), buttonWidgetx -> {
-			boolean bl = backupLevel(this.field_23777);
+			boolean bl = backupLevel(this.storageSession);
 			this.callback.accept(!bl);
 		}));
 		this.addButton(
@@ -109,10 +109,10 @@ public class EditWorldScreen extends Screen {
 				new TranslatableText("selectWorld.edit.optimize"),
 				buttonWidgetx -> this.client.openScreen(new BackupPromptScreen(this, (bl, bl2) -> {
 						if (bl) {
-							backupLevel(this.field_23777);
+							backupLevel(this.storageSession);
 						}
 
-						this.client.openScreen(OptimizeWorldScreen.method_27031(this.client, this.callback, this.client.getDataFixer(), this.field_23777, bl2));
+						this.client.openScreen(OptimizeWorldScreen.create(this.client, this.callback, this.client.getDataFixer(), this.storageSession, bl2));
 					}, new TranslatableText("optimizeWorld.confirm.title"), new TranslatableText("optimizeWorld.confirm.description"), true))
 			)
 		);
@@ -128,11 +128,11 @@ public class EditWorldScreen extends Screen {
 
 					DataResult<String> dataResult2;
 					try (MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client
-							.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, this.field_23777)) {
+							.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, this.storageSession)) {
 						DynamicOps<JsonElement> dynamicOps = RegistryReadingOps.of(JsonOps.INSTANCE, impl);
 						DataResult<JsonElement> dataResult = GeneratorOptions.CODEC.encodeStart(dynamicOps, integratedResourceManager.getSaveProperties().getGeneratorOptions());
 						dataResult2 = dataResult.flatMap(jsonElement -> {
-							Path path = this.field_23777.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
+							Path path = this.storageSession.getDirectory(WorldSavePath.ROOT).resolve("worldgen_settings_export.json");
 
 							try {
 								JsonWriter jsonWriter = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardCharsets.UTF_8));
@@ -179,8 +179,8 @@ public class EditWorldScreen extends Screen {
 			new ButtonWidget(this.width / 2 - 100, this.height / 4 + 144 + 5, 98, 20, new TranslatableText("selectWorld.edit.save"), buttonWidgetx -> this.commit())
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 2, this.height / 4 + 144 + 5, 98, 20, ScreenTexts.CANCEL, buttonWidgetx -> this.callback.accept(false)));
-		buttonWidget.active = this.field_23777.getIconFile().isFile();
-		LevelSummary levelSummary = this.field_23777.getLevelSummary();
+		buttonWidget.active = this.storageSession.getIconFile().isFile();
+		LevelSummary levelSummary = this.storageSession.getLevelSummary();
 		String string = levelSummary == null ? "" : levelSummary.getDisplayName();
 		this.levelNameTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 38, 200, 20, new TranslatableText("selectWorld.enterName"));
 		this.levelNameTextField.setText(string);
@@ -208,36 +208,36 @@ public class EditWorldScreen extends Screen {
 
 	private void commit() {
 		try {
-			this.field_23777.save(this.levelNameTextField.getText().trim());
+			this.storageSession.save(this.levelNameTextField.getText().trim());
 			this.callback.accept(true);
 		} catch (IOException var2) {
-			LOGGER.error("Failed to access world '{}'", this.field_23777.getDirectoryName(), var2);
-			SystemToast.addWorldAccessFailureToast(this.client, this.field_23777.getDirectoryName());
+			LOGGER.error("Failed to access world '{}'", this.storageSession.getDirectoryName(), var2);
+			SystemToast.addWorldAccessFailureToast(this.client, this.storageSession.getDirectoryName());
 			this.callback.accept(true);
 		}
 	}
 
-	public static void method_29784(LevelStorage levelStorage, String string) {
+	public static void onBackupConfirm(LevelStorage storage, String levelName) {
 		boolean bl = false;
 
-		try (LevelStorage.Session session = levelStorage.createSession(string)) {
+		try (LevelStorage.Session session = storage.createSession(levelName)) {
 			bl = true;
 			backupLevel(session);
 		} catch (IOException var16) {
 			if (!bl) {
-				SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), string);
+				SystemToast.addWorldAccessFailureToast(MinecraftClient.getInstance(), levelName);
 			}
 
-			LOGGER.warn("Failed to create backup of level {}", string, var16);
+			LOGGER.warn("Failed to create backup of level {}", levelName, var16);
 		}
 	}
 
-	public static boolean backupLevel(LevelStorage.Session session) {
+	public static boolean backupLevel(LevelStorage.Session storageSession) {
 		long l = 0L;
 		IOException iOException = null;
 
 		try {
-			l = session.createBackup();
+			l = storageSession.createBackup();
 		} catch (IOException var6) {
 			iOException = var6;
 		}
@@ -248,7 +248,7 @@ public class EditWorldScreen extends Screen {
 			MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
 			return false;
 		} else {
-			Text text = new TranslatableText("selectWorld.edit.backupCreated", session.getDirectoryName());
+			Text text = new TranslatableText("selectWorld.edit.backupCreated", storageSession.getDirectoryName());
 			Text text2 = new TranslatableText("selectWorld.edit.backupSize", MathHelper.ceil((double)l / 1048576.0));
 			MinecraftClient.getInstance().getToastManager().add(new SystemToast(SystemToast.Type.WORLD_BACKUP, text, text2));
 			return true;

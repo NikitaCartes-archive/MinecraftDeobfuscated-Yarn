@@ -35,18 +35,18 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 	public static final SpriteIdentifier CLOSED_EYE_TEXTURE = new SpriteIdentifier(
 		SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/closed_eye")
 	);
-	private final ModelPart field_20823;
-	private final ModelPart field_20824;
-	private final ModelPart field_20825;
-	private final ModelPart field_20826;
-	private final BlockEntityRenderDispatcher field_27753;
+	private final ModelPart conduitEye;
+	private final ModelPart conduitWind;
+	private final ModelPart conduitShell;
+	private final ModelPart conduit;
+	private final BlockEntityRenderDispatcher dispatcher;
 
-	public ConduitBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		this.field_27753 = context.getRenderDispatcher();
-		this.field_20823 = context.getLayerModelPart(EntityModelLayers.CONDUIT_EYE);
-		this.field_20824 = context.getLayerModelPart(EntityModelLayers.CONDUIT_WIND);
-		this.field_20825 = context.getLayerModelPart(EntityModelLayers.CONDUIT_SHELL);
-		this.field_20826 = context.getLayerModelPart(EntityModelLayers.CONDUIT);
+	public ConduitBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		this.dispatcher = ctx.getRenderDispatcher();
+		this.conduitEye = ctx.getLayerModelPart(EntityModelLayers.CONDUIT_EYE);
+		this.conduitWind = ctx.getLayerModelPart(EntityModelLayers.CONDUIT_WIND);
+		this.conduitShell = ctx.getLayerModelPart(EntityModelLayers.CONDUIT_SHELL);
+		this.conduit = ctx.getLayerModelPart(EntityModelLayers.CONDUIT);
 	}
 
 	public static TexturedModelData getEyeTexturedModelData() {
@@ -85,7 +85,7 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
 			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-			this.field_20825.render(matrixStack, vertexConsumer, i, j);
+			this.conduitShell.render(matrixStack, vertexConsumer, i, j);
 			matrixStack.pop();
 		} else {
 			float h = conduitBlockEntity.getRotation(f) * (180.0F / (float)Math.PI);
@@ -96,7 +96,7 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 			Vec3f vec3f = new Vec3f(0.5F, 1.0F, 0.5F);
 			vec3f.normalize();
 			matrixStack.multiply(new Quaternion(vec3f, h, true));
-			this.field_20826.render(matrixStack, CAGE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
+			this.conduit.render(matrixStack, CAGE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
 			matrixStack.pop();
 			int l = conduitBlockEntity.ticks / 66 % 3;
 			matrixStack.push();
@@ -109,16 +109,16 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 
 			VertexConsumer vertexConsumer2 = (l == 1 ? WIND_VERTICAL_TEXTURE : WIND_TEXTURE)
 				.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
-			this.field_20824.render(matrixStack, vertexConsumer2, i, j);
+			this.conduitWind.render(matrixStack, vertexConsumer2, i, j);
 			matrixStack.pop();
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
 			matrixStack.scale(0.875F, 0.875F, 0.875F);
 			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
 			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
-			this.field_20824.render(matrixStack, vertexConsumer2, i, j);
+			this.conduitWind.render(matrixStack, vertexConsumer2, i, j);
 			matrixStack.pop();
-			Camera camera = this.field_27753.camera;
+			Camera camera = this.dispatcher.camera;
 			matrixStack.push();
 			matrixStack.translate(0.5, (double)(0.3F + k * 0.2F), 0.5);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
@@ -128,7 +128,7 @@ public class ConduitBlockEntityRenderer implements BlockEntityRenderer<ConduitBl
 			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			float n = 1.3333334F;
 			matrixStack.scale(1.3333334F, 1.3333334F, 1.3333334F);
-			this.field_20823
+			this.conduitEye
 				.render(
 					matrixStack,
 					(conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE).getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull),

@@ -15,6 +15,7 @@ public class EntityModelLayers {
 	public static final EntityModelLayer ARMOR_STAND = registerMain("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_INNER_ARMOR = createInnerArmor("armor_stand");
 	public static final EntityModelLayer ARMOR_STAND_OUTER_ARMOR = createOuterArmor("armor_stand");
+	public static final EntityModelLayer AXOLOTL = registerMain("axolotl");
 	public static final EntityModelLayer BANNER = registerMain("banner");
 	public static final EntityModelLayer BAT = registerMain("bat");
 	public static final EntityModelLayer BED_FOOT = registerMain("bed_foot");

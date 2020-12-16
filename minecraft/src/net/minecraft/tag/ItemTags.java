@@ -1,11 +1,10 @@
 package net.minecraft.tag;
 
-import java.util.List;
 import net.minecraft.item.Item;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public final class ItemTags {
-	protected static final RequiredTagList<Item> REQUIRED_TAGS = RequiredTagListRegistry.register(new Identifier("item"), TagManager::getItems);
+	protected static final RequiredTagList<Item> REQUIRED_TAGS = RequiredTagListRegistry.register(Registry.ITEM_KEY, "tags/items");
 	public static final Tag.Identified<Item> WOOL = register("wool");
 	public static final Tag.Identified<Item> PLANKS = register("planks");
 	public static final Tag.Identified<Item> STONE_BRICKS = register("stone_bricks");
@@ -64,6 +63,8 @@ public final class ItemTags {
 	public static final Tag.Identified<Item> STONE_TOOL_MATERIALS = register("stone_tool_materials");
 	public static final Tag.Identified<Item> STONE_CRAFTING_MATERIALS = register("stone_crafting_materials");
 	public static final Tag.Identified<Item> FREEZE_IMMUNE_WEARABLES = register("freeze_immune_wearables");
+	public static final Tag.Identified<Item> AXOLOTL_TEMPT_ITEMS = register("axolotl_tempt_items");
+	public static final Tag.Identified<Item> OCCLUDES_VIBRATION_SIGNALS = register("occludes_vibration_signals");
 
 	private static Tag.Identified<Item> register(String id) {
 		return REQUIRED_TAGS.add(id);
@@ -71,9 +72,5 @@ public final class ItemTags {
 
 	public static TagGroup<Item> getTagGroup() {
 		return REQUIRED_TAGS.getGroup();
-	}
-
-	public static List<? extends Tag.Identified<Item>> getRequiredTags() {
-		return REQUIRED_TAGS.getTags();
 	}
 }

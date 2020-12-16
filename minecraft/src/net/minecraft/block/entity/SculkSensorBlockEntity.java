@@ -13,7 +13,7 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
 import net.minecraft.world.event.listener.SculkSensorListener;
 
-public class SculkSensorBlockEntity extends BlockEntity implements SculkSensorListener.class_5719 {
+public class SculkSensorBlockEntity extends BlockEntity implements SculkSensorListener.Listener {
 	private final SculkSensorListener listener;
 	private int lastVibrationFrequency;
 

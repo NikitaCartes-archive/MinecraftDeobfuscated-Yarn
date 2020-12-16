@@ -9,7 +9,7 @@ public interface LayerSampleContext<R extends LayerSampler> extends LayerRandomn
 		return this.createSampler(operator);
 	}
 
-	default R createSampler(LayerOperator operator, R layerSampler, R layerSampler2) {
+	default R createSampler(LayerOperator operator, R firstParent, R secondParent) {
 		return this.createSampler(operator);
 	}
 

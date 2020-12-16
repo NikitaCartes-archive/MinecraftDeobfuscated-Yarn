@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 import javax.annotation.Nullable;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.command.argument.ParticleArgumentType;
+import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -59,7 +59,7 @@ public class AreaEffectCloudEntity extends Entity {
 
 	public AreaEffectCloudEntity(World world, double x, double y, double z) {
 		this(EntityType.AREA_EFFECT_CLOUD, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class AreaEffectCloudEntity extends Entity {
 		double e = this.getY();
 		double f = this.getZ();
 		super.calculateDimensions();
-		this.updatePosition(d, e, f);
+		this.setPosition(d, e, f);
 	}
 
 	public float getRadius() {
@@ -349,7 +349,7 @@ public class AreaEffectCloudEntity extends Entity {
 
 		if (tag.contains("Particle", 8)) {
 			try {
-				this.setParticleType(ParticleArgumentType.readParameters(new StringReader(tag.getString("Particle"))));
+				this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(tag.getString("Particle"))));
 			} catch (CommandSyntaxException var5) {
 				LOGGER.warn("Couldn't load custom particle {}", tag.getString("Particle"), var5);
 			}

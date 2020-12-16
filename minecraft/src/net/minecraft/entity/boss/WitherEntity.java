@@ -291,10 +291,10 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 							if (livingEntity != this && livingEntity.isAlive() && this.canSee(livingEntity)) {
 								if (livingEntity instanceof PlayerEntity) {
 									if (!((PlayerEntity)livingEntity).getAbilities().invulnerable) {
-										this.setTrackedEntityId(ix, livingEntity.getEntityId());
+										this.setTrackedEntityId(ix, livingEntity.getId());
 									}
 								} else {
-									this.setTrackedEntityId(ix, livingEntity.getEntityId());
+									this.setTrackedEntityId(ix, livingEntity.getId());
 								}
 								break;
 							}
@@ -306,7 +306,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 			}
 
 			if (this.getTarget() != null) {
-				this.setTrackedEntityId(0, this.getTarget().getEntityId());
+				this.setTrackedEntityId(0, this.getTarget().getId());
 			} else {
 				this.setTrackedEntityId(0, 0);
 			}

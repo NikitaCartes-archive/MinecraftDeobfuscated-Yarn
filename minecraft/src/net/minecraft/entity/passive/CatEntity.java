@@ -251,12 +251,12 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	protected void eat(PlayerEntity player, ItemStack stack) {
+	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
 		if (this.isBreedingItem(stack)) {
 			this.playSound(SoundEvents.ENTITY_CAT_EAT, 1.0F, 1.0F);
 		}
 
-		super.eat(player, stack);
+		super.eat(player, hand, stack);
 	}
 
 	private float getAttackDamage() {
@@ -395,7 +395,7 @@ public class CatEntity extends TameableEntity {
 				if (this.isOwner(player)) {
 					if (!(item instanceof DyeItem)) {
 						if (item.isFood() && this.isBreedingItem(itemStack) && this.getHealth() < this.getMaxHealth()) {
-							this.eat(player, itemStack);
+							this.eat(player, hand, itemStack);
 							this.heal((float)item.getFoodComponent().getHunger());
 							return ActionResult.CONSUME;
 						}
@@ -420,7 +420,7 @@ public class CatEntity extends TameableEntity {
 					}
 				}
 			} else if (this.isBreedingItem(itemStack)) {
-				this.eat(player, itemStack);
+				this.eat(player, hand, itemStack);
 				if (this.random.nextInt(3) == 0) {
 					this.setOwner(player);
 					this.setSitting(true);
@@ -519,7 +519,7 @@ public class CatEntity extends TameableEntity {
 					BlockPos blockPos = this.owner.getBlockPos();
 					BlockState blockState = this.cat.world.getBlockState(blockPos);
 					if (blockState.isIn(BlockTags.BEDS)) {
-						this.bedPos = (BlockPos)blockState.method_28500(BedBlock.FACING)
+						this.bedPos = (BlockPos)blockState.getOrEmpty(BedBlock.FACING)
 							.map(direction -> blockPos.offset(direction.getOpposite()))
 							.orElseGet(() -> new BlockPos(blockPos));
 						return !this.method_16098();

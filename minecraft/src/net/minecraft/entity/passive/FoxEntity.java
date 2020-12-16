@@ -68,6 +68,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -330,12 +331,12 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void eat(PlayerEntity player, ItemStack stack) {
+	protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
 		if (this.isBreedingItem(stack)) {
 			this.playSound(this.getEatSound(stack), 1.0F, 1.0F);
 		}
 
-		super.eat(player, stack);
+		super.eat(player, hand, stack);
 	}
 
 	@Override
@@ -450,7 +451,7 @@ public class FoxEntity extends AnimalEntity {
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
 		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canEquip(stack);
 	}
 

@@ -151,8 +151,8 @@ public class ChunkSectionPos extends Vec3i {
 		return sectionCoord << 4;
 	}
 
-	public static int method_32205(int i, int j) {
-		return getBlockCoord(i) + j;
+	public static int getOffsetPos(int chunkCoord, int offset) {
+		return getBlockCoord(chunkCoord) + offset;
 	}
 
 	/**
@@ -204,15 +204,15 @@ public class ChunkSectionPos extends Vec3i {
 	}
 
 	public int getMaxX() {
-		return method_32205(this.getSectionX(), 15);
+		return getOffsetPos(this.getSectionX(), 15);
 	}
 
 	public int getMaxY() {
-		return method_32205(this.getSectionY(), 15);
+		return getOffsetPos(this.getSectionY(), 15);
 	}
 
 	public int getMaxZ() {
-		return method_32205(this.getSectionZ(), 15);
+		return getOffsetPos(this.getSectionZ(), 15);
 	}
 
 	/**

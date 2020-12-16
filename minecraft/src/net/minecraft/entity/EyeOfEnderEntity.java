@@ -39,7 +39,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 
 	public EyeOfEnderEntity(World world, double x, double y, double z) {
 		this(EntityType.EYE_OF_ENDER, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 	}
 
 	public void setItem(ItemStack stack) {
@@ -161,7 +161,7 @@ public class EyeOfEnderEntity extends Entity implements FlyingItemEntity {
 		}
 
 		if (!this.world.isClient) {
-			this.updatePosition(d, e, f);
+			this.setPosition(d, e, f);
 			this.lifespan++;
 			if (this.lifespan > 80 && !this.world.isClient) {
 				this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0F, 1.0F);

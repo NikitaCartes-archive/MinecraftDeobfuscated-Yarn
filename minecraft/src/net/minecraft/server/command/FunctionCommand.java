@@ -4,7 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.Collection;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.FunctionArgumentType;
+import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.TranslatableText;
@@ -12,8 +12,8 @@ import net.minecraft.text.TranslatableText;
 public class FunctionCommand {
 	public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
 		CommandFunctionManager commandFunctionManager = commandContext.getSource().getMinecraftServer().getCommandFunctionManager();
-		CommandSource.suggestIdentifiers(commandFunctionManager.method_29464(), suggestionsBuilder, "#");
-		return CommandSource.suggestIdentifiers(commandFunctionManager.method_29463(), suggestionsBuilder);
+		CommandSource.suggestIdentifiers(commandFunctionManager.getFunctionTags(), suggestionsBuilder, "#");
+		return CommandSource.suggestIdentifiers(commandFunctionManager.getAllFunctions(), suggestionsBuilder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -21,9 +21,9 @@ public class FunctionCommand {
 			CommandManager.literal("function")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("name", FunctionArgumentType.function())
+					CommandManager.argument("name", CommandFunctionArgumentType.commandFunction())
 						.suggests(SUGGESTION_PROVIDER)
-						.executes(commandContext -> execute(commandContext.getSource(), FunctionArgumentType.getFunctions(commandContext, "name")))
+						.executes(commandContext -> execute(commandContext.getSource(), CommandFunctionArgumentType.getFunctions(commandContext, "name")))
 				)
 		);
 	}

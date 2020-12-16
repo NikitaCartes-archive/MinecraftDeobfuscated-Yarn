@@ -25,13 +25,13 @@ import org.apache.logging.log4j.Logger;
 public class StorageIoWorker implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final AtomicBoolean closed = new AtomicBoolean();
-	private final TaskExecutor<TaskQueue.PrioritizedTask> field_24468;
+	private final TaskExecutor<TaskQueue.PrioritizedTask> executor;
 	private final RegionBasedStorage storage;
 	private final Map<ChunkPos, StorageIoWorker.Result> results = Maps.<ChunkPos, StorageIoWorker.Result>newLinkedHashMap();
 
-	public StorageIoWorker(File file, boolean bl, String string) {
-		this.storage = new RegionBasedStorage(file, bl);
-		this.field_24468 = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + string);
+	public StorageIoWorker(File directory, boolean dsync, String name) {
+		this.storage = new RegionBasedStorage(directory, dsync);
+		this.executor = new TaskExecutor<>(new TaskQueue.Prioritized(StorageIoWorker.Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
 	}
 
 	public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable CompoundTag nbt) {
@@ -93,7 +93,7 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> supplier) {
-		return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.FOREGROUND.ordinal(), () -> {
+		return this.executor.method_27918(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.FOREGROUND.ordinal(), () -> {
 				if (!this.closed.get()) {
 					messageListener.send(supplier.get());
 				}
@@ -113,7 +113,7 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	private void method_27945() {
-		this.field_24468.send(new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.BACKGROUND.ordinal(), this::writeResult));
+		this.executor.send(new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.BACKGROUND.ordinal(), this::writeResult));
 	}
 
 	private void write(ChunkPos pos, StorageIoWorker.Result result) {
@@ -128,10 +128,10 @@ public class StorageIoWorker implements AutoCloseable {
 
 	public void close() throws IOException {
 		if (this.closed.compareAndSet(false, true)) {
-			this.field_24468
+			this.executor
 				.ask(messageListener -> new TaskQueue.PrioritizedTask(StorageIoWorker.Priority.SHUTDOWN.ordinal(), () -> messageListener.send(Unit.INSTANCE)))
 				.join();
-			this.field_24468.close();
+			this.executor.close();
 
 			try {
 				this.storage.close();

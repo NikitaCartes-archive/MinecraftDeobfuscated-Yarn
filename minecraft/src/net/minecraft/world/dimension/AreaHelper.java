@@ -20,7 +20,7 @@ import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 
 public class AreaHelper {
-	private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (blockState, blockView, blockPos) -> blockState.isOf(Blocks.OBSIDIAN);
+	private static final AbstractBlock.ContextPredicate IS_VALID_FRAME_BLOCK = (state, world, pos) -> state.isOf(Blocks.OBSIDIAN);
 	private final WorldAccess world;
 	private final Direction.Axis axis;
 	private final Direction negativeDir;

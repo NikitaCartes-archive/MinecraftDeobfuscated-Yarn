@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLike;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -13,7 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class class_5582<T extends class_5568> {
+public class class_5582<T extends EntityLike> {
 	private static final Logger field_27279 = LogManager.getLogger();
 	private final EntityLoader<T> field_27280;
 	private final class_5570<T> field_27281;
@@ -34,7 +35,7 @@ public class class_5582<T extends class_5568> {
 		this.field_27282.method_31782(l).forEach(arg -> {
 			class_5584 lv = arg.method_31763(class_5584.TICKING);
 			if (!lv.shouldTick()) {
-				arg.method_31766().filter(argx -> !argx.isPlayer()).forEach(this.field_27280::addEntity);
+				arg.method_31766().filter(entityLike -> !entityLike.isPlayer()).forEach(this.field_27280::addEntity);
 			}
 		});
 	}
@@ -45,7 +46,7 @@ public class class_5582<T extends class_5568> {
 		this.field_27282.method_31782(l).forEach(arg -> {
 			class_5584 lv = arg.method_31763(class_5584.TRACKED);
 			if (lv.shouldTick()) {
-				arg.method_31766().filter(argx -> !argx.isPlayer()).forEach(this.field_27280::removeEntity);
+				arg.method_31766().filter(entityLike -> !entityLike.isPlayer()).forEach(this.field_27280::removeEntity);
 			}
 		});
 	}
@@ -54,20 +55,20 @@ public class class_5582<T extends class_5568> {
 		return this.field_27284;
 	}
 
-	public void method_31870(T arg) {
-		this.field_27281.addEntity(arg);
-		long l = class_5573.method_31779(arg.getBlockPos());
+	public void addEntity(T entityLike) {
+		this.field_27281.addEntity(entityLike);
+		long l = class_5573.method_31779(entityLike.getBlockPos());
 		class_5572<T> lv = this.field_27282.method_31784(l);
-		lv.method_31764(arg);
-		arg.method_31744(new class_5582.class_5583(arg, l, lv));
-		this.field_27280.method_31802(arg);
-		this.field_27280.onLoadEntity(arg);
-		if (arg.isPlayer() || lv.method_31768().shouldTick()) {
-			this.field_27280.addEntity(arg);
+		lv.method_31764(entityLike);
+		entityLike.method_31744(new class_5582.class_5583(entityLike, l, lv));
+		this.field_27280.method_31802(entityLike);
+		this.field_27280.onLoadEntity(entityLike);
+		if (entityLike.isPlayer() || lv.method_31768().shouldTick()) {
+			this.field_27280.addEntity(entityLike);
 		}
 	}
 
-	public int method_31874() {
+	public int getRegularEntityCount() {
 		return this.field_27281.getEntityCount();
 	}
 

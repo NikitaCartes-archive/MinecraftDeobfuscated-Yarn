@@ -500,7 +500,7 @@ public class ChunkBuilder {
 			}
 
 			private <E extends BlockEntity> void addBlockEntity(ChunkBuilder.ChunkData data, Set<BlockEntity> blockEntities, E blockEntity) {
-				BlockEntityRenderer<E> blockEntityRenderer = MinecraftClient.getInstance().method_31975().get(blockEntity);
+				BlockEntityRenderer<E> blockEntityRenderer = MinecraftClient.getInstance().getBlockEntityRenderDispatcher().get(blockEntity);
 				if (blockEntityRenderer != null) {
 					data.blockEntities.add(blockEntity);
 					if (blockEntityRenderer.rendersOutsideBoundingBox(blockEntity)) {

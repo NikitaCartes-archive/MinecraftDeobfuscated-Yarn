@@ -197,7 +197,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean getSongPlaying() {
+	public boolean isSongPlaying() {
 		return this.songPlaying;
 	}
 

@@ -39,7 +39,7 @@ public class FireworkEntityRenderer extends EntityRenderer<FireworkRocketEntity>
 				OverlayTexture.DEFAULT_UV,
 				matrixStack,
 				vertexConsumerProvider,
-				fireworkRocketEntity.getEntityId()
+				fireworkRocketEntity.getId()
 			);
 		matrixStack.pop();
 		super.render(fireworkRocketEntity, f, g, matrixStack, vertexConsumerProvider, i);

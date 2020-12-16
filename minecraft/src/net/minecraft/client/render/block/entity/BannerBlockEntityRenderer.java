@@ -35,8 +35,8 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 	private final ModelPart pillar;
 	private final ModelPart crossbar;
 
-	public BannerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.BANNER);
+	public BannerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		ModelPart modelPart = ctx.getLayerModelPart(EntityModelLayers.BANNER);
 		this.banner = modelPart.getChild("flag");
 		this.pillar = modelPart.getChild("pole");
 		this.crossbar = modelPart.getChild("bar");
@@ -88,23 +88,23 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 			float k = ((float)Math.floorMod((long)(blockPos.getX() * 7 + blockPos.getY() * 9 + blockPos.getZ() * 13) + l, 100L) + f) / 100.0F;
 			this.banner.pitch = (-0.0125F + 0.01F * MathHelper.cos((float) (Math.PI * 2) * k)) * (float) Math.PI;
 			this.banner.pivotY = -32.0F;
-			method_29999(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
+			renderCanvas(matrixStack, vertexConsumerProvider, i, j, this.banner, ModelLoader.BANNER_BASE, true, list);
 			matrixStack.pop();
 			matrixStack.pop();
 		}
 	}
 
-	public static void method_29999(
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		int j,
-		ModelPart modelPart,
-		SpriteIdentifier spriteIdentifier,
-		boolean bl,
-		List<Pair<BannerPattern, DyeColor>> list
+	public static void renderCanvas(
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		int overlay,
+		ModelPart canvas,
+		SpriteIdentifier baseSprite,
+		boolean isBanner,
+		List<Pair<BannerPattern, DyeColor>> patterns
 	) {
-		renderCanvas(matrixStack, vertexConsumerProvider, i, j, modelPart, spriteIdentifier, bl, list, false);
+		renderCanvas(matrices, vertexConsumers, light, overlay, canvas, baseSprite, isBanner, patterns, false);
 	}
 
 	public static void renderCanvas(
@@ -116,9 +116,9 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 		SpriteIdentifier baseSprite,
 		boolean isBanner,
 		List<Pair<BannerPattern, DyeColor>> patterns,
-		boolean bl
+		boolean glint
 	) {
-		canvas.render(matrices, baseSprite.method_30001(vertexConsumers, RenderLayer::getEntitySolid, bl), light, overlay);
+		canvas.render(matrices, baseSprite.method_30001(vertexConsumers, RenderLayer::getEntitySolid, glint), light, overlay);
 
 		for (int i = 0; i < 17 && i < patterns.size(); i++) {
 			Pair<BannerPattern, DyeColor> pair = (Pair<BannerPattern, DyeColor>)patterns.get(i);

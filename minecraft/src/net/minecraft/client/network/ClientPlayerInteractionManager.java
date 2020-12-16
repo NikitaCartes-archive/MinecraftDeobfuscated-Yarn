@@ -153,7 +153,7 @@ public class ClientPlayerInteractionManager {
 					this.selectedStack = this.client.player.getMainHandStack();
 					this.currentBreakingProgress = 0.0F;
 					this.blockBreakingSoundCooldown = 0.0F;
-					this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
+					this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
 				}
 			}
 
@@ -168,7 +168,7 @@ public class ClientPlayerInteractionManager {
 			this.sendPlayerAction(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, Direction.DOWN);
 			this.breakingBlock = false;
 			this.currentBreakingProgress = 0.0F;
-			this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, -1);
+			this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, -1);
 			this.client.player.resetLastAttackedTicks();
 		}
 	}
@@ -214,7 +214,7 @@ public class ClientPlayerInteractionManager {
 					this.blockBreakingCooldown = 5;
 				}
 
-				this.client.world.setBlockBreakingInfo(this.client.player.getEntityId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
+				this.client.world.setBlockBreakingInfo(this.client.player.getId(), this.currentBreakingPos, (int)(this.currentBreakingProgress * 10.0F) - 1);
 				return true;
 			}
 		} else {
@@ -437,8 +437,8 @@ public class ClientPlayerInteractionManager {
 		if ((vec3d == null || !approved || action != PlayerActionC2SPacket.Action.START_DESTROY_BLOCK && blockState != state) && blockState != state) {
 			world.setBlockStateWithoutNeighborUpdates(pos, state);
 			PlayerEntity playerEntity = this.client.player;
-			if (vec3d != null && world == playerEntity.world && playerEntity.method_30632(pos, state)) {
-				playerEntity.method_30634(vec3d.x, vec3d.y, vec3d.z);
+			if (vec3d != null && world == playerEntity.world && playerEntity.collidesWithStateAtPos(pos, state)) {
+				playerEntity.updatePosition(vec3d.x, vec3d.y, vec3d.z);
 			}
 		}
 

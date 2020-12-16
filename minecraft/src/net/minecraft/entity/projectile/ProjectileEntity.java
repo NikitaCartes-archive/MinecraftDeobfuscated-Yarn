@@ -31,7 +31,7 @@ public abstract class ProjectileEntity extends Entity {
 	public void setOwner(@Nullable Entity entity) {
 		if (entity != null) {
 			this.ownerUuid = entity.getUuid();
-			this.ownerEntityId = entity.getEntityId();
+			this.ownerEntityId = entity.getId();
 		}
 	}
 
@@ -102,7 +102,7 @@ public abstract class ProjectileEntity extends Entity {
 		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
-		this.method_32875(this.getOwner(), GameEvent.PROJECTILE_SHOOT);
+		this.emitGameEvent(this.getOwner(), GameEvent.PROJECTILE_SHOOT);
 	}
 
 	public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
@@ -123,7 +123,7 @@ public abstract class ProjectileEntity extends Entity {
 		}
 
 		if (type != HitResult.Type.MISS) {
-			this.method_32875(this.getOwner(), GameEvent.PROJECTILE_LAND);
+			this.emitGameEvent(this.getOwner(), GameEvent.PROJECTILE_LAND);
 		}
 	}
 
@@ -180,7 +180,7 @@ public abstract class ProjectileEntity extends Entity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		Entity entity = this.getOwner();
-		return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getEntityId());
+		return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getId());
 	}
 
 	@Environment(EnvType.CLIENT)

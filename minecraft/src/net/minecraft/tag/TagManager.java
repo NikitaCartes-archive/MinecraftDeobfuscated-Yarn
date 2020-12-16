@@ -1,77 +1,132 @@
 package net.minecraft.tag;
 
-import net.minecraft.block.Block;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap.Builder;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.EntityType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
-import net.minecraft.network.PacketByteBuf;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.util.registry.RegistryKey;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-public interface TagManager {
-	TagManager EMPTY = create(TagGroup.createEmpty(), TagGroup.createEmpty(), TagGroup.createEmpty(), TagGroup.createEmpty(), TagGroup.createEmpty());
+public class TagManager {
+	private static final Logger LOGGER = LogManager.getLogger();
+	public static final TagManager EMPTY = new TagManager(ImmutableMap.of());
+	private final Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups;
 
-	TagGroup<Block> getBlocks();
+	private TagManager(Map<RegistryKey<? extends Registry<?>>, TagGroup<?>> tagGroups) {
+		this.tagGroups = tagGroups;
+	}
 
-	TagGroup<Item> getItems();
+	@Nullable
+	private <T> TagGroup<T> getTagGroup(RegistryKey<? extends Registry<T>> registryKey) {
+		return (TagGroup<T>)this.tagGroups.get(registryKey);
+	}
 
-	TagGroup<Fluid> getFluids();
+	public <T> TagGroup<T> getOrCreateTagGroup(RegistryKey<? extends Registry<T>> registryKey) {
+		return (TagGroup<T>)this.tagGroups.getOrDefault(registryKey, TagGroup.createEmpty());
+	}
 
-	TagGroup<EntityType<?>> getEntityTypes();
+	public <T, E extends Exception> Tag<T> getTag(RegistryKey<? extends Registry<T>> registryKey, Identifier id, Function<Identifier, E> function) throws E {
+		TagGroup<T> tagGroup = this.getTagGroup(registryKey);
+		if (tagGroup == null) {
+			throw (Exception)function.apply(id);
+		} else {
+			Tag<T> tag = tagGroup.getTag(id);
+			if (tag == null) {
+				throw (Exception)function.apply(id);
+			} else {
+				return tag;
+			}
+		}
+	}
 
-	TagGroup<GameEvent> getGameEvents();
+	public <T, E extends Exception> Identifier getTagId(RegistryKey<? extends Registry<T>> registryKey, Tag<T> tag, Supplier<E> supplier) throws E {
+		TagGroup<T> tagGroup = this.getTagGroup(registryKey);
+		if (tagGroup == null) {
+			throw (Exception)supplier.get();
+		} else {
+			Identifier identifier = tagGroup.getUncheckedTagId(tag);
+			if (identifier == null) {
+				throw (Exception)supplier.get();
+			} else {
+				return identifier;
+			}
+		}
+	}
 
-	default void apply() {
+	public void method_33161(TagManager.class_5750 arg) {
+		this.tagGroups.forEach((registryKey, tagGroup) -> method_33162(arg, registryKey, tagGroup));
+	}
+
+	private static <T> void method_33162(TagManager.class_5750 arg, RegistryKey<? extends Registry<?>> registryKey, TagGroup<?> tagGroup) {
+		arg.method_33173(registryKey, tagGroup);
+	}
+
+	public void apply() {
 		RequiredTagListRegistry.updateTagManager(this);
 		Blocks.refreshShapeCache();
 	}
 
-	default void toPacket(PacketByteBuf buf) {
-		this.getBlocks().toPacket(buf, Registry.BLOCK);
-		this.getItems().toPacket(buf, Registry.ITEM);
-		this.getFluids().toPacket(buf, Registry.FLUID);
-		this.getEntityTypes().toPacket(buf, Registry.ENTITY_TYPE);
-		this.getGameEvents().toPacket(buf, Registry.GAME_EVENT);
+	public Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> toPacket(DynamicRegistryManager dynamicRegistryManager) {
+		final Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> map = Maps.<RegistryKey<? extends Registry<?>>, TagGroup.class_5748>newHashMap();
+		this.method_33161(new TagManager.class_5750() {
+			@Override
+			public <T> void method_33173(RegistryKey<? extends Registry<T>> registryKey, TagGroup<T> tagGroup) {
+				Optional<? extends Registry<T>> optional = dynamicRegistryManager.getOptional(registryKey);
+				if (optional.isPresent()) {
+					map.put(registryKey, tagGroup.toPacket((Registry<T>)optional.get()));
+				} else {
+					TagManager.LOGGER.error("Unknown registry {}", registryKey);
+				}
+			}
+		});
+		return map;
 	}
 
-	static TagManager fromPacket(PacketByteBuf buf) {
-		TagGroup<Block> tagGroup = TagGroup.fromPacket(buf, Registry.BLOCK);
-		TagGroup<Item> tagGroup2 = TagGroup.fromPacket(buf, Registry.ITEM);
-		TagGroup<Fluid> tagGroup3 = TagGroup.fromPacket(buf, Registry.FLUID);
-		TagGroup<EntityType<?>> tagGroup4 = TagGroup.fromPacket(buf, Registry.ENTITY_TYPE);
-		TagGroup<GameEvent> tagGroup5 = TagGroup.fromPacket(buf, Registry.GAME_EVENT);
-		return create(tagGroup, tagGroup2, tagGroup3, tagGroup4, tagGroup5);
+	@Environment(EnvType.CLIENT)
+	public static TagManager fromPacket(DynamicRegistryManager dynamicRegistryManager, Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> map) {
+		TagManager.class_5749 lv = new TagManager.class_5749();
+		map.forEach((registryKey, arg2) -> method_33163(dynamicRegistryManager, lv, registryKey, arg2));
+		return lv.method_33171();
 	}
 
-	static TagManager create(
-		TagGroup<Block> blocks, TagGroup<Item> items, TagGroup<Fluid> fluids, TagGroup<EntityType<?>> entityTypes, TagGroup<GameEvent> tagGroup
+	@Environment(EnvType.CLIENT)
+	private static <T> void method_33163(
+		DynamicRegistryManager dynamicRegistryManager, TagManager.class_5749 arg, RegistryKey<? extends Registry<? extends T>> registryKey, TagGroup.class_5748 arg2
 	) {
-		return new TagManager() {
-			@Override
-			public TagGroup<Block> getBlocks() {
-				return blocks;
-			}
+		Optional<? extends Registry<? extends T>> optional = dynamicRegistryManager.getOptional(registryKey);
+		if (optional.isPresent()) {
+			arg.method_33172(registryKey, TagGroup.method_33155(arg2, (Registry<? extends T>)optional.get()));
+		} else {
+			LOGGER.error("Unknown registry {}", registryKey);
+		}
+	}
 
-			@Override
-			public TagGroup<Item> getItems() {
-				return items;
-			}
+	public static class class_5749 {
+		private final Builder<RegistryKey<? extends Registry<?>>, TagGroup<?>> field_28310 = ImmutableMap.builder();
 
-			@Override
-			public TagGroup<Fluid> getFluids() {
-				return fluids;
-			}
+		public <T> TagManager.class_5749 method_33172(RegistryKey<? extends Registry<? extends T>> registryKey, TagGroup<T> tagGroup) {
+			this.field_28310.put(registryKey, tagGroup);
+			return this;
+		}
 
-			@Override
-			public TagGroup<EntityType<?>> getEntityTypes() {
-				return entityTypes;
-			}
+		public TagManager method_33171() {
+			return new TagManager(this.field_28310.build());
+		}
+	}
 
-			@Override
-			public TagGroup<GameEvent> getGameEvents() {
-				return tagGroup;
-			}
-		};
+	@FunctionalInterface
+	interface class_5750 {
+		<T> void method_33173(RegistryKey<? extends Registry<T>> registryKey, TagGroup<T> tagGroup);
 	}
 }

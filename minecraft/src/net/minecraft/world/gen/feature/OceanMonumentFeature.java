@@ -44,13 +44,13 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		ChunkPos chunkPos,
 		DefaultFeatureConfig defaultFeatureConfig
 	) {
-		for (Biome biome2 : biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 16)) {
+		for (Biome biome2 : biomeSource.getBiomesInArea(ChunkSectionPos.getOffsetPos(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.getOffsetPos(j, 9), 16)) {
 			if (!biome2.getGenerationSettings().hasStructureFeature(this)) {
 				return false;
 			}
 		}
 
-		for (Biome biome3 : biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 29)) {
+		for (Biome biome3 : biomeSource.getBiomesInArea(ChunkSectionPos.getOffsetPos(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.getOffsetPos(j, 9), 29)) {
 			if (biome3.getCategory() != Biome.Category.OCEAN && biome3.getCategory() != Biome.Category.RIVER) {
 				return false;
 			}

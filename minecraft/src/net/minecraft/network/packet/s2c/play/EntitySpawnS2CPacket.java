@@ -54,22 +54,13 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public EntitySpawnS2CPacket(Entity entity, int entityData) {
 		this(
-			entity.getEntityId(),
-			entity.getUuid(),
-			entity.getX(),
-			entity.getY(),
-			entity.getZ(),
-			entity.pitch,
-			entity.yaw,
-			entity.getType(),
-			entityData,
-			entity.getVelocity()
+			entity.getId(), entity.getUuid(), entity.getX(), entity.getY(), entity.getZ(), entity.pitch, entity.yaw, entity.getType(), entityData, entity.getVelocity()
 		);
 	}
 
 	public EntitySpawnS2CPacket(Entity entity, EntityType<?> entityType, int data, BlockPos pos) {
 		this(
-			entity.getEntityId(),
+			entity.getId(),
 			entity.getUuid(),
 			(double)pos.getX(),
 			(double)pos.getY(),

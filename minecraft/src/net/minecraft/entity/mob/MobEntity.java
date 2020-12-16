@@ -35,6 +35,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -523,7 +524,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	public boolean tryEquip(ItemStack equipment) {
-		EquipmentSlot equipmentSlot = method_32326(equipment);
+		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(equipment);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 		boolean bl = this.prefersNewEquipment(equipment, itemStack);
 		if (bl && this.canPickupItem(equipment)) {
@@ -950,27 +951,27 @@ public abstract class MobEntity extends LivingEntity {
 
 	protected void updateEnchantments(LocalDifficulty difficulty) {
 		float f = difficulty.getClampedLocalDifficulty();
-		this.method_30759(f);
+		this.enchantMainHandItem(f);
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			if (equipmentSlot.getType() == EquipmentSlot.Type.ARMOR) {
-				this.method_30758(f, equipmentSlot);
+				this.enchantEquipment(f, equipmentSlot);
 			}
 		}
 	}
 
-	protected void method_30759(float f) {
-		if (!this.getMainHandStack().isEmpty() && this.random.nextFloat() < 0.25F * f) {
+	protected void enchantMainHandItem(float power) {
+		if (!this.getMainHandStack().isEmpty() && this.random.nextFloat() < 0.25F * power) {
 			this.equipStack(
-				EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0F + f * (float)this.random.nextInt(18)), false)
+				EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0F + power * (float)this.random.nextInt(18)), false)
 			);
 		}
 	}
 
-	protected void method_30758(float f, EquipmentSlot equipmentSlot) {
-		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-		if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5F * f) {
-			this.equipStack(equipmentSlot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0F + f * (float)this.random.nextInt(18)), false));
+	protected void enchantEquipment(float power, EquipmentSlot slot) {
+		ItemStack itemStack = this.getEquippedStack(slot);
+		if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5F * power) {
+			this.equipStack(slot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0F + power * (float)this.random.nextInt(18)), false));
 		}
 	}
 
@@ -1017,7 +1018,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = method_32326(stack);
+		EquipmentSlot equipmentSlot = getPreferredEquipmentSlot(stack);
 		return this.getEquippedStack(equipmentSlot).isEmpty() && this.canPickUpLoot();
 	}
 
@@ -1033,7 +1034,7 @@ public abstract class MobEntity extends LivingEntity {
 			this.detachLeash(true, !player.getAbilities().creativeMode);
 			return ActionResult.success(this.world.isClient);
 		} else {
-			ActionResult actionResult = this.method_29506(player, hand);
+			ActionResult actionResult = this.interactWithItem(player, hand);
 			if (actionResult.isAccepted()) {
 				return actionResult;
 			} else {
@@ -1043,15 +1044,15 @@ public abstract class MobEntity extends LivingEntity {
 		}
 	}
 
-	private ActionResult method_29506(PlayerEntity playerEntity, Hand hand) {
-		ItemStack itemStack = playerEntity.getStackInHand(hand);
-		if (itemStack.isOf(Items.LEAD) && this.canBeLeashedBy(playerEntity)) {
-			this.attachLeash(playerEntity, true);
+	private ActionResult interactWithItem(PlayerEntity player, Hand hand) {
+		ItemStack itemStack = player.getStackInHand(hand);
+		if (itemStack.isOf(Items.LEAD) && this.canBeLeashedBy(player)) {
+			this.attachLeash(player, true);
 			itemStack.decrement(1);
 			return ActionResult.success(this.world.isClient);
 		} else {
 			if (itemStack.isOf(Items.NAME_TAG)) {
-				ActionResult actionResult = itemStack.useOnEntity(playerEntity, this, hand);
+				ActionResult actionResult = itemStack.useOnEntity(player, this, hand);
 				if (actionResult.isAccepted()) {
 					return actionResult;
 				}
@@ -1061,9 +1062,9 @@ public abstract class MobEntity extends LivingEntity {
 				if (this.world instanceof ServerWorld) {
 					SpawnEggItem spawnEggItem = (SpawnEggItem)itemStack.getItem();
 					Optional<MobEntity> optional = spawnEggItem.spawnBaby(
-						playerEntity, this, (EntityType<? extends MobEntity>)this.getType(), (ServerWorld)this.world, this.getPos(), itemStack
+						player, this, (EntityType<? extends MobEntity>)this.getType(), (ServerWorld)this.world, this.getPos(), itemStack
 					);
-					optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(playerEntity, mobEntity));
+					optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(player, mobEntity));
 					return optional.isPresent() ? ActionResult.SUCCESS : ActionResult.PASS;
 				} else {
 					return ActionResult.CONSUME;
@@ -1288,9 +1289,17 @@ public abstract class MobEntity extends LivingEntity {
 		return this.isLeftHanded() ? Arm.LEFT : Arm.RIGHT;
 	}
 
+	public double method_33191(LivingEntity livingEntity) {
+		return (double)(this.getWidth() * 2.0F * this.getWidth() * 2.0F + livingEntity.getWidth());
+	}
+
 	@Override
 	public boolean canTarget(LivingEntity target) {
-		return target.getType() == EntityType.PLAYER && ((PlayerEntity)target).getAbilities().invulnerable ? false : super.canTarget(target);
+		if (target.getType() == EntityType.PLAYER && ((PlayerEntity)target).getAbilities().invulnerable) {
+			return false;
+		} else {
+			return target.getType() == EntityType.AXOLOTL && ((AxolotlEntity)target).isPlayingDead() ? false : super.canTarget(target);
+		}
 	}
 
 	@Override
@@ -1360,8 +1369,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	protected void method_30076() {
-		super.method_30076();
+	protected void removeFromDimension() {
+		super.removeFromDimension();
 		this.detachLeash(true, false);
 	}
 

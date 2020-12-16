@@ -17,7 +17,6 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
@@ -27,7 +26,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 	private static final Text BUFFET_BIOME_TEXT = new TranslatableText("createWorld.customize.buffet.biome");
 	private final Screen field_24562;
 	private final Consumer<Biome> field_24563;
-	private final MutableRegistry<Biome> field_25888;
+	private final Registry<Biome> field_25888;
 	private CustomizeBuffetLevelScreen.BuffetBiomesListWidget biomeSelectionList;
 	private Biome field_25040;
 	private ButtonWidget confirmButton;

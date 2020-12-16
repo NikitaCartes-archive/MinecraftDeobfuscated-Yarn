@@ -79,7 +79,7 @@ import net.minecraft.world.level.ColorResolver;
 @Environment(EnvType.CLIENT)
 public class ClientWorld extends World {
 	private final EntityList entityList = new EntityList();
-	private final class_5582<Entity> field_27734 = new class_5582<>(Entity.class, new ClientWorld.EntityLoader());
+	private final class_5582<Entity> entityManager = new class_5582<>(Entity.class, new ClientWorld.EntityLoader());
 	private final ClientPlayNetworkHandler netHandler;
 	private final WorldRenderer worldRenderer;
 	private final ClientWorld.Properties clientWorldProperties;
@@ -153,7 +153,7 @@ public class ClientWorld extends World {
 	}
 
 	public Iterable<Entity> getEntities() {
-		return this.method_31592().method_31803();
+		return this.getEntityIdMap().iterate();
 	}
 
 	public void tickEntities() {
@@ -201,12 +201,12 @@ public class ClientWorld extends World {
 	public void unloadBlockEntities(WorldChunk chunk) {
 		chunk.removeAllBlockEntities();
 		this.chunkManager.getLightingProvider().setColumnEnabled(chunk.getPos(), false);
-		this.field_27734.method_31875(chunk.getPos());
+		this.entityManager.method_31875(chunk.getPos());
 	}
 
 	public void resetChunkColor(ChunkPos chunkPos) {
 		this.colorCache.forEach((colorResolver, biomeColorCache) -> biomeColorCache.reset(chunkPos.x, chunkPos.z));
-		this.field_27734.method_31869(chunkPos);
+		this.entityManager.method_31869(chunkPos);
 	}
 
 	public void reloadColor() {
@@ -219,7 +219,7 @@ public class ClientWorld extends World {
 	}
 
 	public int getRegularEntityCount() {
-		return this.field_27734.method_31874();
+		return this.entityManager.getRegularEntityCount();
 	}
 
 	public void addPlayer(int id, AbstractClientPlayerEntity player) {
@@ -232,11 +232,11 @@ public class ClientWorld extends World {
 
 	private void addEntityPrivate(int id, Entity entity) {
 		this.removeEntity(id, Entity.RemovalReason.DISCARDED);
-		this.field_27734.method_31870(entity);
+		this.entityManager.addEntity(entity);
 	}
 
 	public void removeEntity(int entityId, Entity.RemovalReason removalReason) {
-		Entity entity = this.method_31592().method_31804(entityId);
+		Entity entity = this.getEntityIdMap().getById(entityId);
 		if (entity != null) {
 			entity.setRemoved(removalReason);
 		}
@@ -245,7 +245,7 @@ public class ClientWorld extends World {
 	@Nullable
 	@Override
 	public Entity getEntityById(int id) {
-		return this.method_31592().method_31804(id);
+		return this.getEntityIdMap().getById(id);
 	}
 
 	public void setBlockStateWithoutNeighborUpdates(BlockPos pos, BlockState state) {
@@ -443,8 +443,8 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void putMapState(String string, MapState mapState) {
-		this.mapStates.put(string, mapState);
+	public void putMapState(String id, MapState state) {
+		this.mapStates.put(id, state);
 	}
 
 	@Override
@@ -721,12 +721,12 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	protected class_5577<Entity> method_31592() {
-		return this.field_27734.method_31866();
+	protected class_5577<Entity> getEntityIdMap() {
+		return this.entityManager.method_31866();
 	}
 
 	public String asString() {
-		return "Chunks[C] W: " + this.chunkManager.getDebugString() + " E: " + this.field_27734.method_31879();
+		return "Chunks[C] W: " + this.chunkManager.getDebugString() + " E: " + this.entityManager.method_31879();
 	}
 
 	@Override

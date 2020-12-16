@@ -38,6 +38,7 @@ import net.minecraft.enchantment.UnbreakingEnchantment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -341,8 +342,17 @@ public final class ItemStack {
 		}
 	}
 
-	public boolean isEffectiveOn(BlockState state) {
-		return this.getItem().isEffectiveOn(state);
+	/**
+	 * Determines whether this item can be used as a suitable tool for mining the specified block.
+	 * <p>
+	 * Depending on block implementation, when combined together, the correct item and block may achieve a better mining speed and yield
+	 * drops that would not be obtained when mining otherwise.
+	 * </p>
+	 * @return values consistent with calls to {@link Item#isSuitableFor}
+	 * @see Item#isSuitableFor(BlockState)
+	 */
+	public boolean isSuitableFor(BlockState state) {
+		return this.getItem().isSuitableFor(state);
 	}
 
 	public ActionResult useOnEntity(PlayerEntity user, LivingEntity entity, Hand hand) {
@@ -986,6 +996,10 @@ public final class ItemStack {
 
 	public void usageTick(World world, LivingEntity user, int remainingUseTicks) {
 		this.getItem().usageTick(world, user, this, remainingUseTicks);
+	}
+
+	public void onItemEntityDestroyed(ItemEntity entity) {
+		this.getItem().onItemEntityDestroyed(entity);
 	}
 
 	public boolean isFood() {

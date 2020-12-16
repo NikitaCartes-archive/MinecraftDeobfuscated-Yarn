@@ -65,7 +65,16 @@ public abstract class DynamicRegistryManager {
 	/**
 	 * Retrieves a registry optionally from this manager.
 	 */
-	public abstract <E> Optional<MutableRegistry<E>> getOptional(RegistryKey<? extends Registry<E>> key);
+	public abstract <E> Optional<MutableRegistry<E>> getOptionalMutable(RegistryKey<? extends Registry<? extends E>> key);
+
+	public <E> MutableRegistry<E> getMutable(RegistryKey<? extends Registry<? extends E>> key) {
+		return (MutableRegistry<E>)this.getOptionalMutable(key).orElseThrow(() -> new IllegalStateException("Missing registry: " + key));
+	}
+
+	public <E> Optional<? extends Registry<E>> getOptional(RegistryKey<? extends Registry<? extends E>> key) {
+		Optional<? extends Registry<E>> optional = this.getOptionalMutable(key);
+		return optional.isPresent() ? optional : Registry.REGISTRIES.getOrEmpty(key.getValue());
+	}
 
 	/**
 	 * Retrieves a registry from this manager, or throws an exception when the
@@ -73,12 +82,8 @@ public abstract class DynamicRegistryManager {
 	 * 
 	 * @throws IllegalStateException if the registry does not exist
 	 */
-	public <E> MutableRegistry<E> get(RegistryKey<? extends Registry<E>> key) {
-		return (MutableRegistry<E>)this.getOptional(key).orElseThrow(() -> new IllegalStateException("Missing registry: " + key));
-	}
-
-	public Registry<DimensionType> getDimensionTypes() {
-		return this.get(Registry.DIMENSION_TYPE_KEY);
+	public <E> Registry<E> get(RegistryKey<? extends Registry<? extends E>> key) {
+		return (Registry<E>)this.getOptional(key).orElseThrow(() -> new IllegalStateException("Missing registry: " + key));
 	}
 
 	private static <E> void register(
@@ -111,18 +116,21 @@ public abstract class DynamicRegistryManager {
 		return impl;
 	}
 
-	private static <E> void method_31141(DynamicRegistryManager.Impl impl, RegistryOps.EntryLoader.Impl impl2, DynamicRegistryManager.Info<E> info) {
+	private static <E> void method_31141(
+		DynamicRegistryManager.Impl registryManager, RegistryOps.EntryLoader.Impl entryLoader, DynamicRegistryManager.Info<E> info
+	) {
 		RegistryKey<? extends Registry<E>> registryKey = info.getRegistry();
 		boolean bl = !registryKey.equals(Registry.NOISE_SETTINGS_WORLDGEN) && !registryKey.equals(Registry.DIMENSION_TYPE_KEY);
 		Registry<E> registry = BUILTIN.get(registryKey);
-		MutableRegistry<E> mutableRegistry = impl.get(registryKey);
+		MutableRegistry<E> mutableRegistry = registryManager.getMutable(registryKey);
 
 		for (Entry<RegistryKey<E>, E> entry : registry.getEntries()) {
+			RegistryKey<E> registryKey2 = (RegistryKey<E>)entry.getKey();
 			E object = (E)entry.getValue();
 			if (bl) {
-				impl2.add(BUILTIN, (RegistryKey<E>)entry.getKey(), info.getEntryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
+				entryLoader.add(BUILTIN, registryKey2, info.getEntryCodec(), registry.getRawId(object), object, registry.getEntryLifecycle(object));
 			} else {
-				mutableRegistry.set(registry.getRawId(object), (RegistryKey<E>)entry.getKey(), object, registry.getEntryLifecycle(object));
+				mutableRegistry.set(registry.getRawId(object), registryKey2, object, registry.getEntryLifecycle(object));
 			}
 		}
 	}
@@ -133,12 +141,8 @@ public abstract class DynamicRegistryManager {
 	 */
 	private static <R extends Registry<?>> void copyFromBuiltin(DynamicRegistryManager.Impl manager, RegistryKey<R> registryRef) {
 		Registry<R> registry = (Registry<R>)BuiltinRegistries.REGISTRIES;
-		Registry<?> registry2 = registry.get(registryRef);
-		if (registry2 == null) {
-			throw new IllegalStateException("Missing builtin registry: " + registryRef);
-		} else {
-			addBuiltinEntries(manager, registry2);
-		}
+		Registry<?> registry2 = registry.getOrThrow(registryRef);
+		addBuiltinEntries(manager, registry2);
 	}
 
 	/**
@@ -146,8 +150,7 @@ public abstract class DynamicRegistryManager {
 	 * within this manager.
 	 */
 	private static <E> void addBuiltinEntries(DynamicRegistryManager.Impl manager, Registry<E> registry) {
-		MutableRegistry<E> mutableRegistry = (MutableRegistry<E>)manager.getOptional(registry.getKey())
-			.orElseThrow(() -> new IllegalStateException("Missing registry: " + registry.getKey()));
+		MutableRegistry<E> mutableRegistry = manager.getMutable(registry.getKey());
 
 		for (Entry<RegistryKey<E>, E> entry : registry.getEntries()) {
 			E object = (E)entry.getValue();
@@ -236,7 +239,7 @@ public abstract class DynamicRegistryManager {
 		}
 
 		@Override
-		public <E> Optional<MutableRegistry<E>> getOptional(RegistryKey<? extends Registry<E>> key) {
+		public <E> Optional<MutableRegistry<E>> getOptionalMutable(RegistryKey<? extends Registry<? extends E>> key) {
 			return Optional.ofNullable(this.registries.get(key)).map(simpleRegistry -> simpleRegistry);
 		}
 	}

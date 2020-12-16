@@ -255,6 +255,6 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 	public Vec3d method_30951(float f) {
 		float g = MathHelper.lerp(f, this.prevBodyYaw, this.bodyYaw) * (float) (Math.PI / 180.0);
 		Vec3d vec3d = new Vec3d(0.0, this.getBoundingBox().getYLength() - 1.0, 0.2);
-		return this.method_30950(f).add(vec3d.rotateY(-g));
+		return this.getLerpedPos(f).add(vec3d.rotateY(-g));
 	}
 }

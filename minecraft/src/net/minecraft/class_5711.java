@@ -36,10 +36,17 @@ public class class_5711 implements class_5713 {
 	}
 
 	@Override
-	public void method_32943(GameEvent gameEvent, @Nullable Entity entity, BlockPos blockPos) {
-		boolean bl = this.listeners.stream().filter(gameEventListener -> this.method_32936(this.world, gameEvent, entity, blockPos, gameEventListener)).count() > 0L;
+	public void listen(GameEvent event, @Nullable Entity entity, BlockPos pos) {
+		boolean bl = false;
+
+		for (GameEventListener gameEventListener : this.listeners) {
+			if (this.method_32936(this.world, event, entity, pos, gameEventListener)) {
+				bl = true;
+			}
+		}
+
 		if (bl) {
-			DebugInfoSender.method_33139(this.world, gameEvent, blockPos);
+			DebugInfoSender.method_33139(this.world, event, pos);
 		}
 	}
 
@@ -50,7 +57,7 @@ public class class_5711 implements class_5713 {
 		} else {
 			double d = ((BlockPos)optional.get()).getSquaredDistance(blockPos, false);
 			int i = gameEventListener.getRange() * gameEventListener.getRange();
-			return d <= (double)i && gameEventListener.method_32947(world, gameEvent, entity, blockPos);
+			return d <= (double)i && gameEventListener.listen(world, gameEvent, entity, blockPos);
 		}
 	}
 }

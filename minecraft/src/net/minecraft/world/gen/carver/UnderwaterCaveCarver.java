@@ -15,8 +15,8 @@ import net.minecraft.world.gen.ProbabilityConfig;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class UnderwaterCaveCarver extends CaveCarver {
-	public UnderwaterCaveCarver(Codec<ProbabilityConfig> codec) {
-		super(codec, 256);
+	public UnderwaterCaveCarver(Codec<ProbabilityConfig> configCodec) {
+		super(configCodec, 256);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.STONE,
 			Blocks.GRANITE,
@@ -69,9 +69,9 @@ public class UnderwaterCaveCarver extends CaveCarver {
 		Function<BlockPos, Biome> posToBiome,
 		BitSet carvingMask,
 		Random random,
-		BlockPos.Mutable mutable,
-		BlockPos.Mutable mutable2,
-		BlockPos.Mutable mutable3,
+		BlockPos.Mutable currentPos,
+		BlockPos.Mutable upperPos,
+		BlockPos.Mutable lowerPos,
 		int seaLevel,
 		int mainChunkX,
 		int mainChunkZ,
@@ -80,9 +80,9 @@ public class UnderwaterCaveCarver extends CaveCarver {
 		int relativeX,
 		int y,
 		int relativeZ,
-		MutableBoolean mutableBoolean
+		MutableBoolean visitedSurface
 	) {
-		return carveAtPoint(this, chunk, carvingMask, random, mutable, seaLevel, mainChunkX, mainChunkZ, x, z, relativeX, y, relativeZ);
+		return carveAtPoint(this, chunk, carvingMask, random, currentPos, seaLevel, mainChunkX, mainChunkZ, x, z, relativeX, y, relativeZ);
 	}
 
 	protected static boolean carveAtPoint(

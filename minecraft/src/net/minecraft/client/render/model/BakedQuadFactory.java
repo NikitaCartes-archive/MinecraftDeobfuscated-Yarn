@@ -35,7 +35,7 @@ public class BakedQuadFactory {
 		Identifier modelId
 	) {
 		ModelElementTexture modelElementTexture = face.textureData;
-		if (settings.isShaded()) {
+		if (settings.isUvLocked()) {
 			modelElementTexture = uvLock(face.textureData, side, settings.getRotation(), modelId);
 		}
 

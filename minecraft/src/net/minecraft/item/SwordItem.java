@@ -76,7 +76,7 @@ public class SwordItem extends ToolItem implements Vanishable {
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState state) {
+	public boolean isSuitableFor(BlockState state) {
 		return state.isOf(Blocks.COBWEB);
 	}
 

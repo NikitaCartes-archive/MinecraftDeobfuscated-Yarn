@@ -255,7 +255,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		double ah = generationShapeConfig.hasRandomDensityOffset() ? this.getRandomDensityAt(x, z) : 0.0;
 		double ai = generationShapeConfig.getDensityFactor();
 		double aj = generationShapeConfig.getDensityOffset();
-		int ak = MathHelper.floorDiv(generationShapeConfig.method_32993(), this.verticalNoiseResolution);
+		int ak = MathHelper.floorDiv(generationShapeConfig.getMinimumY(), this.verticalNoiseResolution);
 
 		for (int al = 0; al <= this.noiseSizeY; al++) {
 			int am = al + ak;
@@ -305,7 +305,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	public VerticalBlockSample getColumnSample(int x, int z) {
 		BlockState[] blockStates = new BlockState[this.noiseSizeY * this.verticalNoiseResolution];
 		this.sampleHeightmap(x, z, blockStates, null);
-		return new VerticalBlockSample(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().method_32993(), blockStates);
+		return new VerticalBlockSample(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY(), blockStates);
 	}
 
 	private int sampleHeightmap(int x, int z, @Nullable BlockState[] states, @Nullable Predicate<BlockState> predicate) {
@@ -333,7 +333,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				double t = (double)s / (double)this.verticalNoiseResolution;
 				double u = MathHelper.lerp3(t, d, e, f, o, h, q, g, p, n, r);
 				int v = m * this.verticalNoiseResolution + s;
-				int w = v + ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().method_32993();
+				int w = v + ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY();
 				BlockState blockState = this.getBlockState(u, w);
 				if (states != null) {
 					states[v] = blockState;
@@ -490,7 +490,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 					double s = ds[1][o + 1][p + 1];
 
 					for (int t = this.verticalNoiseResolution - 1; t >= 0; t--) {
-						int u = p * this.verticalNoiseResolution + t + ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().method_32993();
+						int u = p * this.verticalNoiseResolution + t + ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY();
 						int v = u & 15;
 						int w = protoChunk.getSectionIndex(u);
 						if (protoChunk.getSectionIndex(chunkSection.getYOffset()) != w) {

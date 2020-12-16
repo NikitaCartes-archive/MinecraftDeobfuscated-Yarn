@@ -181,7 +181,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 							this.hookedEntity = null;
 							this.state = FishingBobberEntity.State.FLYING;
 						} else {
-							this.updatePosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
+							this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
 						}
 					}
 
@@ -272,7 +272,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 	}
 
 	private void updateHookedEntityId() {
-		this.getDataTracker().set(HOOK_ENTITY_ID, this.hookedEntity.getEntityId() + 1);
+		this.getDataTracker().set(HOOK_ENTITY_ID, this.hookedEntity.getId() + 1);
 	}
 
 	private void tickFishingLogic(BlockPos pos) {
@@ -527,7 +527,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		Entity entity = this.getOwner();
-		return new EntitySpawnS2CPacket(this, entity == null ? this.getEntityId() : entity.getEntityId());
+		return new EntitySpawnS2CPacket(this, entity == null ? this.getId() : entity.getId());
 	}
 
 	@Environment(EnvType.CLIENT)

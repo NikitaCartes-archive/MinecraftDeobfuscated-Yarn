@@ -17,18 +17,18 @@ import org.apache.commons.lang3.StringUtils;
 
 public class LevelSummary implements Comparable<LevelSummary> {
 	private final LevelInfo levelInfo;
-	private final SaveVersionInfo field_25023;
+	private final SaveVersionInfo versionInfo;
 	private final String name;
 	private final boolean requiresConversion;
 	private final boolean locked;
 	private final File file;
 	@Nullable
 	@Environment(EnvType.CLIENT)
-	private Text field_24191;
+	private Text details;
 
 	public LevelSummary(LevelInfo levelInfo, SaveVersionInfo saveVersionInfo, String string, boolean bl, boolean bl2, File file) {
 		this.levelInfo = levelInfo;
-		this.field_25023 = saveVersionInfo;
+		this.versionInfo = saveVersionInfo;
 		this.name = string;
 		this.locked = bl2;
 		this.file = file;
@@ -57,14 +57,14 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 	@Environment(EnvType.CLIENT)
 	public long getLastPlayed() {
-		return this.field_25023.getLastPlayed();
+		return this.versionInfo.getLastPlayed();
 	}
 
 	public int compareTo(LevelSummary levelSummary) {
-		if (this.field_25023.getLastPlayed() < levelSummary.field_25023.getLastPlayed()) {
+		if (this.versionInfo.getLastPlayed() < levelSummary.versionInfo.getLastPlayed()) {
 			return 1;
 		} else {
-			return this.field_25023.getLastPlayed() > levelSummary.field_25023.getLastPlayed() ? -1 : this.name.compareTo(levelSummary.name);
+			return this.versionInfo.getLastPlayed() > levelSummary.versionInfo.getLastPlayed() ? -1 : this.name.compareTo(levelSummary.name);
 		}
 	}
 
@@ -85,28 +85,28 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 	@Environment(EnvType.CLIENT)
 	public MutableText getVersion() {
-		return (MutableText)(ChatUtil.isEmpty(this.field_25023.getVersionName())
+		return (MutableText)(ChatUtil.isEmpty(this.versionInfo.getVersionName())
 			? new TranslatableText("selectWorld.versionUnknown")
-			: new LiteralText(this.field_25023.getVersionName()));
+			: new LiteralText(this.versionInfo.getVersionName()));
 	}
 
 	public SaveVersionInfo method_29586() {
-		return this.field_25023;
+		return this.versionInfo;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean isDifferentVersion() {
-		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.field_25023.isStable() || this.isOutdatedLevel();
+		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.versionInfo.isStable() || this.isOutdatedLevel();
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean isFutureLevel() {
-		return this.field_25023.getVersionId() > SharedConstants.getGameVersion().getWorldVersion();
+		return this.versionInfo.getVersionId() > SharedConstants.getGameVersion().getWorldVersion();
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean isOutdatedLevel() {
-		return this.field_25023.getVersionId() < SharedConstants.getGameVersion().getWorldVersion();
+		return this.versionInfo.getVersionId() < SharedConstants.getGameVersion().getWorldVersion();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -115,16 +115,16 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_27429() {
-		if (this.field_24191 == null) {
-			this.field_24191 = this.method_27430();
+	public Text getDetails() {
+		if (this.details == null) {
+			this.details = this.createDetails();
 		}
 
-		return this.field_24191;
+		return this.details;
 	}
 
 	@Environment(EnvType.CLIENT)
-	private Text method_27430() {
+	private Text createDetails() {
 		if (this.isLocked()) {
 			return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 		} else if (this.requiresConversion()) {

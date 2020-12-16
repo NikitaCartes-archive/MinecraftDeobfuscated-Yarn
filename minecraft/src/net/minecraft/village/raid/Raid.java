@@ -498,7 +498,7 @@ public class Raid {
 			raider.setAbleToJoinRaid(true);
 			raider.setOutOfRaidCounter(0);
 			if (!existing && pos != null) {
-				raider.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 1.0, (double)pos.getZ() + 0.5);
+				raider.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 1.0, (double)pos.getZ() + 0.5);
 				raider.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnReason.EVENT, null, null);
 				raider.addBonusForWave(wave, false);
 				raider.setOnGround(true);

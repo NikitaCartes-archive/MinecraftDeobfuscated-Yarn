@@ -40,9 +40,9 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 			if (longSet.add(l)) {
 				DebugRenderer.drawString(
 					world.getChunkManager().getLightingProvider().displaySectionLevel(LightType.SKY, ChunkSectionPos.from(l)),
-					(double)ChunkSectionPos.method_32205(ChunkSectionPos.unpackX(l), 8),
-					(double)ChunkSectionPos.method_32205(ChunkSectionPos.unpackY(l), 8),
-					(double)ChunkSectionPos.method_32205(ChunkSectionPos.unpackZ(l), 8),
+					(double)ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackX(l), 8),
+					(double)ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackY(l), 8),
+					(double)ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackZ(l), 8),
 					16711680,
 					0.3F
 				);

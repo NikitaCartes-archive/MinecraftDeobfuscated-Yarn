@@ -138,7 +138,7 @@ public final class ChunkGeneratorSettings {
 	) {
 		return new ChunkGeneratorSettings(
 			structuresConfig,
-			GenerationShapeConfig.method_32994(
+			GenerationShapeConfig.create(
 				0,
 				128,
 				new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0),
@@ -169,7 +169,7 @@ public final class ChunkGeneratorSettings {
 		map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
 		return new ChunkGeneratorSettings(
 			new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map),
-			GenerationShapeConfig.method_32994(
+			GenerationShapeConfig.create(
 				0,
 				128,
 				new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0),
@@ -197,7 +197,7 @@ public final class ChunkGeneratorSettings {
 		double d = 0.9999999814507745;
 		return new ChunkGeneratorSettings(
 			structuresConfig,
-			GenerationShapeConfig.method_32994(
+			GenerationShapeConfig.create(
 				0,
 				256,
 				new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0),

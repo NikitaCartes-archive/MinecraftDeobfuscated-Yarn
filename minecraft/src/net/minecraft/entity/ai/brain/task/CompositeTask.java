@@ -68,7 +68,7 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 		return "(" + this.getClass().getSimpleName() + "): " + set;
 	}
 
-	static enum Order {
+	public static enum Order {
 		ORDERED(weightedList -> {
 		}),
 		SHUFFLED(WeightedList::shuffle);
@@ -84,7 +84,7 @@ public class CompositeTask<E extends LivingEntity> extends Task<E> {
 		}
 	}
 
-	static enum RunMode {
+	public static enum RunMode {
 		RUN_ONE {
 			@Override
 			public <E extends LivingEntity> void run(WeightedList<Task<? super E>> tasks, ServerWorld world, E entity, long time) {

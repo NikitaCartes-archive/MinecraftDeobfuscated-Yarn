@@ -1044,11 +1044,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	class PollinateGoal extends BeeEntity.NotAngryGoal {
-		private final Predicate<BlockState> flowerPredicate = blockState -> {
-			if (blockState.isIn(BlockTags.TALL_FLOWERS)) {
-				return blockState.isOf(Blocks.SUNFLOWER) ? blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
+		private final Predicate<BlockState> flowerPredicate = state -> {
+			if (state.isIn(BlockTags.TALL_FLOWERS)) {
+				return state.isOf(Blocks.SUNFLOWER) ? state.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER : true;
 			} else {
-				return blockState.isIn(BlockTags.SMALL_FLOWERS);
+				return state.isIn(BlockTags.SMALL_FLOWERS);
 			}
 		};
 		private int pollinationTicks;

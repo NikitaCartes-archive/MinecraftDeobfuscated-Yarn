@@ -180,8 +180,8 @@ public class Brain<E extends LivingEntity> {
 		return ((Optional)this.memories.get(type)).map(Memory::getValue);
 	}
 
-	public <U> boolean method_29519(MemoryModuleType<U> memoryModuleType, U object) {
-		return !this.hasMemoryModule(memoryModuleType) ? false : this.getOptionalMemory(memoryModuleType).filter(object2 -> object2.equals(object)).isPresent();
+	public <U> boolean hasMemoryModuleWithValue(MemoryModuleType<U> type, U value) {
+		return !this.hasMemoryModule(type) ? false : this.getOptionalMemory(type).filter(object2 -> object2.equals(value)).isPresent();
 	}
 
 	public boolean isMemoryInState(MemoryModuleType<?> type, MemoryModuleState state) {
@@ -311,7 +311,7 @@ public class Brain<E extends LivingEntity> {
 		this.setTaskList(activity, indexedTasks, requiredMemories, Sets.<MemoryModuleType<?>>newHashSet());
 	}
 
-	private void setTaskList(
+	public void setTaskList(
 		Activity activity,
 		ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks,
 		Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemories,

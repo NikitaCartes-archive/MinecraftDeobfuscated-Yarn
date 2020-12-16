@@ -40,16 +40,16 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		this.markStateDirty();
 	}
 
-	public static int getUniformLocation(int i, CharSequence charSequence) {
-		return GlStateManager.getUniformLocation(i, charSequence);
+	public static int getUniformLocation(int program, CharSequence name) {
+		return GlStateManager.getUniformLocation(program, name);
 	}
 
-	public static void uniform1(int i, int j) {
-		RenderSystem.glUniform1i(i, j);
+	public static void uniform1(int location, int value) {
+		RenderSystem.glUniform1i(location, value);
 	}
 
-	public static int getAttribLocation(int i, CharSequence charSequence) {
-		return GlStateManager.getAttribLocation(i, charSequence);
+	public static int getAttribLocation(int program, CharSequence name) {
+		return GlStateManager.getAttribLocation(program, name);
 	}
 
 	public void close() {
@@ -88,8 +88,8 @@ public class GlUniform extends Uniform implements AutoCloseable {
 		return i;
 	}
 
-	public void setLoc(int i) {
-		this.loc = i;
+	public void setLoc(int loc) {
+		this.loc = loc;
 	}
 
 	public String getName() {

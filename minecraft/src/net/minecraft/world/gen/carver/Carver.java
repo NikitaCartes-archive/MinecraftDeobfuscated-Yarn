@@ -68,8 +68,8 @@ public abstract class Carver<C extends CarverConfig> {
 	private final Codec<ConfiguredCarver<C>> codec;
 	protected final int heightLimit;
 
-	private static <C extends CarverConfig, F extends Carver<C>> F register(String string, F carver) {
-		return Registry.register(Registry.CARVER, string, carver);
+	private static <C extends CarverConfig, F extends Carver<C>> F register(String name, F carver) {
+		return Registry.register(Registry.CARVER, name, carver);
 	}
 
 	public Carver(Codec<C> configCodec, int heightLimit) {
@@ -153,9 +153,9 @@ public abstract class Carver<C extends CarverConfig> {
 		Function<BlockPos, Biome> posToBiome,
 		BitSet carvingMask,
 		Random random,
-		BlockPos.Mutable mutable,
-		BlockPos.Mutable mutable2,
-		BlockPos.Mutable mutable3,
+		BlockPos.Mutable currentPos,
+		BlockPos.Mutable upperPos,
+		BlockPos.Mutable lowerPos,
 		int seaLevel,
 		int mainChunkX,
 		int mainChunkZ,
@@ -164,31 +164,31 @@ public abstract class Carver<C extends CarverConfig> {
 		int relativeX,
 		int y,
 		int relativeZ,
-		MutableBoolean mutableBoolean
+		MutableBoolean visitedSurface
 	) {
 		int i = relativeX | relativeZ << 4 | y << 8;
 		if (carvingMask.get(i)) {
 			return false;
 		} else {
 			carvingMask.set(i);
-			mutable.set(x, y, z);
-			BlockState blockState = chunk.getBlockState(mutable);
-			BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable, Direction.UP));
+			currentPos.set(x, y, z);
+			BlockState blockState = chunk.getBlockState(currentPos);
+			BlockState blockState2 = chunk.getBlockState(upperPos.set(currentPos, Direction.UP));
 			if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
-				mutableBoolean.setTrue();
+				visitedSurface.setTrue();
 			}
 
 			if (!this.canCarveBlock(blockState, blockState2)) {
 				return false;
 			} else {
 				if (y < 11) {
-					chunk.setBlockState(mutable, LAVA.getBlockState(), false);
+					chunk.setBlockState(currentPos, LAVA.getBlockState(), false);
 				} else {
-					chunk.setBlockState(mutable, CAVE_AIR, false);
-					if (mutableBoolean.isTrue()) {
-						mutable3.set(mutable, Direction.DOWN);
-						if (chunk.getBlockState(mutable3).isOf(Blocks.DIRT)) {
-							chunk.setBlockState(mutable3, ((Biome)posToBiome.apply(mutable)).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
+					chunk.setBlockState(currentPos, CAVE_AIR, false);
+					if (visitedSurface.isTrue()) {
+						lowerPos.set(currentPos, Direction.DOWN);
+						if (chunk.getBlockState(lowerPos).isOf(Blocks.DIRT)) {
+							chunk.setBlockState(lowerPos, ((Biome)posToBiome.apply(currentPos)).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
 						}
 					}
 				}
@@ -208,7 +208,7 @@ public abstract class Carver<C extends CarverConfig> {
 		int mainChunkX,
 		int mainChunkZ,
 		BitSet carvingMask,
-		C carverConfig
+		C config
 	);
 
 	public abstract boolean shouldCarve(Random random, int chunkX, int chunkZ, C config);

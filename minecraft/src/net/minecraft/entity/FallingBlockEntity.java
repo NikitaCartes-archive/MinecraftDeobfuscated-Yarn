@@ -57,7 +57,7 @@ public class FallingBlockEntity extends Entity {
 		this(EntityType.FALLING_BLOCK, world);
 		this.block = block;
 		this.inanimate = true;
-		this.updatePosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
+		this.setPosition(x, y + (double)((1.0F - this.getHeight()) / 2.0F), z);
 		this.setVelocity(Vec3d.ZERO);
 		this.prevX = x;
 		this.prevY = y;
@@ -323,7 +323,7 @@ public class FallingBlockEntity extends Entity {
 		double d = packet.getX();
 		double e = packet.getY();
 		double f = packet.getZ();
-		this.updatePosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);
+		this.setPosition(d, e + (double)((1.0F - this.getHeight()) / 2.0F), f);
 		this.setFallingBlockPos(this.getBlockPos());
 	}
 }

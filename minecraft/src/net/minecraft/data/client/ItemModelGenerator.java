@@ -253,6 +253,7 @@ public class ItemModelGenerator {
 		this.register(Items.TRIDENT, Models.GENERATED);
 		this.register(Items.TROPICAL_FISH, Models.GENERATED);
 		this.register(Items.TROPICAL_FISH_BUCKET, Models.GENERATED);
+		this.register(Items.AXOLOTL_BUCKET, Models.GENERATED);
 		this.register(Items.TURTLE_HELMET, Models.GENERATED);
 		this.register(Items.WATER_BUCKET, Models.GENERATED);
 		this.register(Items.WHEAT, Models.GENERATED);

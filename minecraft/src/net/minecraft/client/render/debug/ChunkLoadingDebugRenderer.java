@@ -70,7 +70,7 @@ public class ChunkLoadingDebugRenderer implements DebugRenderer.Renderer {
 
 				for (String string2 : strings) {
 					DebugRenderer.drawString(
-						string2, (double)ChunkSectionPos.method_32205(chunkPos.x, 8), e + (double)i, (double)ChunkSectionPos.method_32205(chunkPos.z, 8), -1, 0.15F
+						string2, (double)ChunkSectionPos.getOffsetPos(chunkPos.x, 8), e + (double)i, (double)ChunkSectionPos.getOffsetPos(chunkPos.z, 8), -1, 0.15F
 					);
 					i -= 2;
 				}

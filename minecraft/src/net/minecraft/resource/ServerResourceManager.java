@@ -13,20 +13,22 @@ import net.minecraft.server.function.FunctionLoader;
 import net.minecraft.tag.TagManager;
 import net.minecraft.tag.TagManagerLoader;
 import net.minecraft.util.Unit;
+import net.minecraft.util.registry.DynamicRegistryManager;
 
 public class ServerResourceManager implements AutoCloseable {
 	private static final CompletableFuture<Unit> field_25334 = CompletableFuture.completedFuture(Unit.INSTANCE);
 	private final ReloadableResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA);
 	private final CommandManager commandManager;
 	private final RecipeManager recipeManager = new RecipeManager();
-	private final TagManagerLoader registryTagManager = new TagManagerLoader();
+	private final TagManagerLoader registryTagManager;
 	private final LootConditionManager lootConditionManager = new LootConditionManager();
 	private final LootManager lootManager = new LootManager(this.lootConditionManager);
 	private final LootFunctionManager lootFunctionManager = new LootFunctionManager(this.lootConditionManager, this.lootManager);
 	private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootConditionManager);
 	private final FunctionLoader functionLoader;
 
-	public ServerResourceManager(CommandManager.RegistrationEnvironment registrationEnvironment, int i) {
+	public ServerResourceManager(DynamicRegistryManager dynamicRegistryManager, CommandManager.RegistrationEnvironment registrationEnvironment, int i) {
+		this.registryTagManager = new TagManagerLoader(dynamicRegistryManager);
 		this.commandManager = new CommandManager(registrationEnvironment);
 		this.functionLoader = new FunctionLoader(i, this.commandManager.getDispatcher());
 		this.resourceManager.registerListener(this.registryTagManager);
@@ -75,9 +77,14 @@ public class ServerResourceManager implements AutoCloseable {
 	}
 
 	public static CompletableFuture<ServerResourceManager> reload(
-		List<ResourcePack> packs, CommandManager.RegistrationEnvironment registrationEnvironment, int i, Executor executor, Executor executor2
+		List<ResourcePack> packs,
+		DynamicRegistryManager dynamicRegistryManager,
+		CommandManager.RegistrationEnvironment registrationEnvironment,
+		int i,
+		Executor executor,
+		Executor executor2
 	) {
-		ServerResourceManager serverResourceManager = new ServerResourceManager(registrationEnvironment, i);
+		ServerResourceManager serverResourceManager = new ServerResourceManager(dynamicRegistryManager, registrationEnvironment, i);
 		CompletableFuture<Unit> completableFuture = serverResourceManager.resourceManager.beginReload(executor, executor2, packs, field_25334);
 		return completableFuture.whenComplete((unit, throwable) -> {
 			if (throwable != null) {

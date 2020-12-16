@@ -29,11 +29,11 @@ public class CombatEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		switch (type) {
 			case END_COMBAT:
 				this.timeSinceLastAttack = damageTracker.getTimeSinceLastAttack();
-				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
+				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getId();
 				break;
 			case ENTITY_DIED:
-				this.entityId = damageTracker.getEntity().getEntityId();
-				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getEntityId();
+				this.entityId = damageTracker.getEntity().getId();
+				this.attackerEntityId = livingEntity == null ? -1 : livingEntity.getId();
 				this.deathMessage = deathMessage;
 		}
 	}

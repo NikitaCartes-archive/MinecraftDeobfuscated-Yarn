@@ -101,7 +101,7 @@ public abstract class ChunkGenerator {
 					int o = (int)Math.round(Math.cos(d) * e);
 					int p = (int)Math.round(Math.sin(d) * e);
 					BlockPos blockPos = this.populationSource
-						.locateBiome(ChunkSectionPos.method_32205(o, 8), 0, ChunkSectionPos.method_32205(p, 8), 112, list::contains, random);
+						.locateBiome(ChunkSectionPos.getOffsetPos(o, 8), 0, ChunkSectionPos.getOffsetPos(p, 8), 112, list::contains, random);
 					if (blockPos != null) {
 						o = ChunkSectionPos.getSectionCoord(blockPos.getX());
 						p = ChunkSectionPos.getSectionCoord(blockPos.getZ());
@@ -182,7 +182,7 @@ public abstract class ChunkGenerator {
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (ChunkPos chunkPos : this.strongholds) {
-				mutable.set(ChunkSectionPos.method_32205(chunkPos.x, 8), 32, ChunkSectionPos.method_32205(chunkPos.z, 8));
+				mutable.set(ChunkSectionPos.getOffsetPos(chunkPos.x, 8), 32, ChunkSectionPos.getOffsetPos(chunkPos.z, 8));
 				double e = mutable.getSquaredDistance(center);
 				if (blockPos == null) {
 					blockPos = new BlockPos(mutable);

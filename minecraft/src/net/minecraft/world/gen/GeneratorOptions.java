@@ -54,7 +54,7 @@ public class GeneratorOptions {
 					)
 					.apply(instance, instance.stable(GeneratorOptions::new))
 		)
-		.comapFlatMap(GeneratorOptions::method_28610, Function.identity());
+		.comapFlatMap(GeneratorOptions::validate, Function.identity());
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final long seed;
 	private final boolean generateStructures;
@@ -62,34 +62,34 @@ public class GeneratorOptions {
 	private final SimpleRegistry<DimensionOptions> options;
 	private final Optional<String> legacyCustomOptions;
 
-	private DataResult<GeneratorOptions> method_28610() {
+	private DataResult<GeneratorOptions> validate() {
 		DimensionOptions dimensionOptions = this.options.get(DimensionOptions.OVERWORLD);
 		if (dimensionOptions == null) {
 			return DataResult.error("Overworld settings missing");
 		} else {
-			return this.method_28611() ? DataResult.success(this, Lifecycle.stable()) : DataResult.success(this);
+			return this.isStable() ? DataResult.success(this, Lifecycle.stable()) : DataResult.success(this);
 		}
 	}
 
-	private boolean method_28611() {
-		return DimensionOptions.method_29567(this.seed, this.options);
+	private boolean isStable() {
+		return DimensionOptions.hasDefaultSettings(this.seed, this.options);
 	}
 
-	public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> simpleRegistry) {
-		this(seed, generateStructures, bonusChest, simpleRegistry, Optional.empty());
-		DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
+	public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> options) {
+		this(seed, generateStructures, bonusChest, options, Optional.empty());
+		DimensionOptions dimensionOptions = options.get(DimensionOptions.OVERWORLD);
 		if (dimensionOptions == null) {
 			throw new IllegalStateException("Overworld settings missing");
 		}
 	}
 
 	private GeneratorOptions(
-		long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> simpleRegistry, Optional<String> legacyCustomOptions
+		long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> options, Optional<String> legacyCustomOptions
 	) {
 		this.seed = seed;
 		this.generateStructures = generateStructures;
 		this.bonusChest = bonusChest;
-		this.options = simpleRegistry;
+		this.options = options;
 		this.legacyCustomOptions = legacyCustomOptions;
 	}
 

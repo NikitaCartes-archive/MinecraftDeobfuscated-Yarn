@@ -41,10 +41,10 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.options.CloudRenderMode;
-import net.minecraft.client.options.GraphicsMode;
-import net.minecraft.client.options.Option;
-import net.minecraft.client.options.ParticlesMode;
+import net.minecraft.client.option.CloudRenderMode;
+import net.minecraft.client.option.GraphicsMode;
+import net.minecraft.client.option.Option;
+import net.minecraft.client.option.ParticlesMode;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBuilder;
@@ -201,7 +201,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	public WorldRenderer(MinecraftClient client, BufferBuilderStorage bufferBuilderStorage) {
 		this.client = client;
 		this.entityRenderDispatcher = client.getEntityRenderDispatcher();
-		this.field_27741 = client.method_31975();
+		this.field_27741 = client.getBlockEntityRenderDispatcher();
 		this.bufferBuilders = bufferBuilderStorage;
 		this.textureManager = client.getTextureManager();
 
@@ -503,7 +503,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				}
 
 				this.client.options.graphicsMode = GraphicsMode.FANCY;
-				this.client.method_31186(shaderException, text);
+				this.client.onResourceReloadFailure(shaderException, text);
 			} else {
 				CrashReport crashReport = this.client.addDetailsToCrashReport(new CrashReport(string2, shaderException));
 				this.client.options.graphicsMode = GraphicsMode.FANCY;
@@ -837,7 +837,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				for (int s = -this.renderDistance; s <= this.renderDistance; s++) {
 					for (int t = -this.renderDistance; t <= this.renderDistance; t++) {
 						ChunkBuilder.BuiltChunk builtChunk2 = this.chunks
-							.getRenderedChunk(new BlockPos(q + ChunkSectionPos.method_32205(s, 8), p, r + ChunkSectionPos.method_32205(t, 8)));
+							.getRenderedChunk(new BlockPos(q + ChunkSectionPos.getOffsetPos(s, 8), p, r + ChunkSectionPos.getOffsetPos(t, 8)));
 						if (builtChunk2 != null && frustum.isVisible(builtChunk2.boundingBox)) {
 							builtChunk2.setRebuildFrame(frame);
 							list.add(new WorldRenderer.ChunkInfo(builtChunk2, null, 0));

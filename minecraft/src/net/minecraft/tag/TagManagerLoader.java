@@ -1,28 +1,31 @@
 package net.minecraft.tag;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
-import java.util.Map;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
-import net.minecraft.block.Block;
-import net.minecraft.entity.EntityType;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.item.Item;
+import javax.annotation.Nullable;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceReloadListener;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
+import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.util.registry.RegistryKey;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TagManagerLoader implements ResourceReloadListener {
-	private final TagGroupLoader<Block> blocks = new TagGroupLoader<>(Registry.BLOCK::getOrEmpty, "tags/blocks", "block");
-	private final TagGroupLoader<Item> items = new TagGroupLoader<>(Registry.ITEM::getOrEmpty, "tags/items", "item");
-	private final TagGroupLoader<Fluid> fluids = new TagGroupLoader<>(Registry.FLUID::getOrEmpty, "tags/fluids", "fluid");
-	private final TagGroupLoader<EntityType<?>> entityTypes = new TagGroupLoader<>(Registry.ENTITY_TYPE::getOrEmpty, "tags/entity_types", "entity_type");
-	private final TagGroupLoader<GameEvent> field_28094 = new TagGroupLoader<>(Registry.GAME_EVENT::getOrEmpty, "tags/game_events", "game_event");
+	private static final Logger field_28311 = LogManager.getLogger();
+	private final DynamicRegistryManager field_28312;
 	private TagManager tagManager = TagManager.EMPTY;
+
+	public TagManagerLoader(DynamicRegistryManager dynamicRegistryManager) {
+		this.field_28312 = dynamicRegistryManager;
+	}
 
 	public TagManager getTagManager() {
 		return this.tagManager;
@@ -37,22 +40,21 @@ public class TagManagerLoader implements ResourceReloadListener {
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = this.blocks.prepareReload(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture2 = this.items.prepareReload(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture3 = this.fluids.prepareReload(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture4 = this.entityTypes.prepareReload(manager, prepareExecutor);
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture5 = this.field_28094.prepareReload(manager, prepareExecutor);
-		return CompletableFuture.allOf(completableFuture, completableFuture2, completableFuture3, completableFuture4)
+		List<TagManagerLoader.class_5751<?>> list = Lists.<TagManagerLoader.class_5751<?>>newArrayList();
+		RequiredTagListRegistry.forEach(requiredTagList -> {
+			TagManagerLoader.class_5751<?> lv = this.method_33178(manager, prepareExecutor, requiredTagList);
+			if (lv != null) {
+				list.add(lv);
+			}
+		});
+		return CompletableFuture.allOf((CompletableFuture[])list.stream().map(arg -> arg.field_28314).toArray(CompletableFuture[]::new))
 			.thenCompose(synchronizer::whenPrepared)
 			.thenAcceptAsync(
 				void_ -> {
-					TagGroup<Block> tagGroup = this.blocks.applyReload((Map<Identifier, Tag.Builder>)completableFuture.join());
-					TagGroup<Item> tagGroup2 = this.items.applyReload((Map<Identifier, Tag.Builder>)completableFuture2.join());
-					TagGroup<Fluid> tagGroup3 = this.fluids.applyReload((Map<Identifier, Tag.Builder>)completableFuture3.join());
-					TagGroup<EntityType<?>> tagGroup4 = this.entityTypes.applyReload((Map<Identifier, Tag.Builder>)completableFuture4.join());
-					TagGroup<GameEvent> tagGroup5 = this.field_28094.applyReload((Map<Identifier, Tag.Builder>)completableFuture5.join());
-					TagManager tagManager = TagManager.create(tagGroup, tagGroup2, tagGroup3, tagGroup4, tagGroup5);
-					Multimap<Identifier, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
+					TagManager.class_5749 lv = new TagManager.class_5749();
+					list.forEach(arg2 -> arg2.method_33183(lv));
+					TagManager tagManager = lv.method_33171();
+					Multimap<RegistryKey<? extends Registry<?>>, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
 					if (!multimap.isEmpty()) {
 						throw new IllegalStateException(
 							"Missing required tags: "
@@ -65,5 +67,33 @@ public class TagManagerLoader implements ResourceReloadListener {
 				},
 				applyExecutor
 			);
+	}
+
+	@Nullable
+	private <T> TagManagerLoader.class_5751<T> method_33178(ResourceManager resourceManager, Executor executor, RequiredTagList<T> requiredTagList) {
+		Optional<? extends Registry<T>> optional = this.field_28312.getOptional(requiredTagList.getRegistryKey());
+		if (optional.isPresent()) {
+			Registry<T> registry = (Registry<T>)optional.get();
+			TagGroupLoader<T> tagGroupLoader = new TagGroupLoader<>(registry::getOrEmpty, requiredTagList.method_33149());
+			CompletableFuture<? extends TagGroup<T>> completableFuture = CompletableFuture.supplyAsync(() -> tagGroupLoader.method_33176(resourceManager), executor);
+			return new TagManagerLoader.class_5751<>(requiredTagList, completableFuture);
+		} else {
+			field_28311.warn("Can't find registry for {}", requiredTagList.getRegistryKey());
+			return null;
+		}
+	}
+
+	static class class_5751<T> {
+		private final RequiredTagList<T> field_28313;
+		private final CompletableFuture<? extends TagGroup<T>> field_28314;
+
+		private class_5751(RequiredTagList<T> requiredTagList, CompletableFuture<? extends TagGroup<T>> completableFuture) {
+			this.field_28313 = requiredTagList;
+			this.field_28314 = completableFuture;
+		}
+
+		public void method_33183(TagManager.class_5749 arg) {
+			arg.method_33172(this.field_28313.getRegistryKey(), (TagGroup<T>)this.field_28314.join());
+		}
 	}
 }

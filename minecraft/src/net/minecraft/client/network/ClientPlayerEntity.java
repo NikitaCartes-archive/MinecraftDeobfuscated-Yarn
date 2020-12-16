@@ -419,20 +419,20 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private void pushOutOfBlocks(double x, double d) {
-		BlockPos blockPos = new BlockPos(x, this.getY(), d);
+	private void pushOutOfBlocks(double x, double z) {
+		BlockPos blockPos = new BlockPos(x, this.getY(), z);
 		if (this.wouldCollideAt(blockPos)) {
-			double e = x - (double)blockPos.getX();
-			double f = d - (double)blockPos.getZ();
+			double d = x - (double)blockPos.getX();
+			double e = z - (double)blockPos.getZ();
 			Direction direction = null;
-			double g = Double.MAX_VALUE;
+			double f = Double.MAX_VALUE;
 			Direction[] directions = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH};
 
 			for (Direction direction2 : directions) {
-				double h = direction2.getAxis().choose(e, 0.0, f);
-				double i = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - h : h;
-				if (i < g && !this.wouldCollideAt(blockPos.offset(direction2))) {
-					g = i;
+				double g = direction2.getAxis().choose(d, 0.0, e);
+				double h = direction2.getDirection() == Direction.AxisDirection.POSITIVE ? 1.0 - g : g;
+				if (h < f && !this.wouldCollideAt(blockPos.offset(direction2))) {
+					f = h;
 					direction = direction2;
 				}
 			}

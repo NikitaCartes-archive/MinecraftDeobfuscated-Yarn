@@ -106,38 +106,38 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 			if ("map_chest".equals(metadata)) {
-				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.down(), LootTables.SHIPWRECK_MAP_CHEST);
+				LootableContainerBlockEntity.setLootTable(world, random, pos.down(), LootTables.SHIPWRECK_MAP_CHEST);
 			} else if ("treasure_chest".equals(metadata)) {
-				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.down(), LootTables.SHIPWRECK_TREASURE_CHEST);
+				LootableContainerBlockEntity.setLootTable(world, random, pos.down(), LootTables.SHIPWRECK_TREASURE_CHEST);
 			} else if ("supply_chest".equals(metadata)) {
-				LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, pos.down(), LootTables.SHIPWRECK_SUPPLY_CHEST);
+				LootableContainerBlockEntity.setLootTable(world, random, pos.down(), LootTables.SHIPWRECK_SUPPLY_CHEST);
 			}
 		}
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
-			int i = structureWorldAccess.getTopHeightLimit();
+			int i = world.getTopHeightLimit();
 			int j = 0;
-			BlockPos blockPos2 = this.structure.getSize();
+			BlockPos blockPos = this.structure.getSize();
 			Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
-			int k = blockPos2.getX() * blockPos2.getZ();
+			int k = blockPos.getX() * blockPos.getZ();
 			if (k == 0) {
-				j = structureWorldAccess.getTopY(type, this.pos.getX(), this.pos.getZ());
+				j = world.getTopY(type, this.pos.getX(), this.pos.getZ());
 			} else {
-				BlockPos blockPos3 = this.pos.add(blockPos2.getX() - 1, 0, blockPos2.getZ() - 1);
+				BlockPos blockPos2 = this.pos.add(blockPos.getX() - 1, 0, blockPos.getZ() - 1);
 
-				for (BlockPos blockPos4 : BlockPos.iterate(this.pos, blockPos3)) {
-					int l = structureWorldAccess.getTopY(type, blockPos4.getX(), blockPos4.getZ());
+				for (BlockPos blockPos3 : BlockPos.iterate(this.pos, blockPos2)) {
+					int l = world.getTopY(type, blockPos3.getX(), blockPos3.getZ());
 					j += l;
 					i = Math.min(i, l);
 				}
@@ -145,9 +145,9 @@ public class ShipwreckGenerator {
 				j /= k;
 			}
 
-			int m = this.grounded ? i - blockPos2.getY() / 2 - random.nextInt(3) : j;
+			int m = this.grounded ? i - blockPos.getY() / 2 - random.nextInt(3) : j;
 			this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
-			return super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+			return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 		}
 	}
 }

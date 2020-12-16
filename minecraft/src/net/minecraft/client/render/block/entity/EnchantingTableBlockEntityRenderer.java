@@ -22,8 +22,8 @@ public class EnchantingTableBlockEntityRenderer implements BlockEntityRenderer<E
 	);
 	private final BookModel book;
 
-	public EnchantingTableBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		this.book = new BookModel(context.getLayerModelPart(EntityModelLayers.BOOK));
+	public EnchantingTableBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		this.book = new BookModel(ctx.getLayerModelPart(EntityModelLayers.BOOK));
 	}
 
 	public void render(

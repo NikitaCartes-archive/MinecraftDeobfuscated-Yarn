@@ -12,28 +12,28 @@ import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class VertexBuffer implements AutoCloseable {
-	private int id;
-	private int field_27366;
+	private int vertexBufferId;
+	private int indexBufferId;
 	private VertexFormat.IntType field_27367;
 	private int vertexCount;
 	private VertexFormat.DrawMode field_27368;
 	private boolean field_27369;
 
 	public VertexBuffer() {
-		RenderSystem.glGenBuffers(integer -> this.id = integer);
-		RenderSystem.glGenBuffers(integer -> this.field_27366 = integer);
+		RenderSystem.glGenBuffers(integer -> this.vertexBufferId = integer);
+		RenderSystem.glGenBuffers(integer -> this.indexBufferId = integer);
 	}
 
 	public void bind() {
-		RenderSystem.glBindBuffer(34962, () -> this.id);
+		RenderSystem.glBindBuffer(34962, () -> this.vertexBufferId);
 		if (this.field_27369) {
 			RenderSystem.glBindBuffer(34963, () -> {
-				RenderSystem.class_5590 lv = RenderSystem.getSequentialBuffer(this.field_27368, this.vertexCount);
-				this.field_27367 = lv.method_31924();
-				return lv.method_31919();
+				RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(this.field_27368, this.vertexCount);
+				this.field_27367 = indexBuffer.getVertexFormat();
+				return indexBuffer.getId();
 			});
 		} else {
-			RenderSystem.glBindBuffer(34963, () -> this.field_27366);
+			RenderSystem.glBindBuffer(34963, () -> this.indexBufferId);
 		}
 	}
 
@@ -56,7 +56,7 @@ public class VertexBuffer implements AutoCloseable {
 
 	private void uploadInternal(BufferBuilder buffer) {
 		Pair<BufferBuilder.DrawArrayParameters, ByteBuffer> pair = buffer.popData();
-		if (this.id != -1) {
+		if (this.vertexBufferId != -1) {
 			BufferBuilder.DrawArrayParameters drawArrayParameters = pair.getFirst();
 			ByteBuffer byteBuffer = pair.getSecond();
 			int i = drawArrayParameters.method_31957();
@@ -100,14 +100,14 @@ public class VertexBuffer implements AutoCloseable {
 	}
 
 	public void close() {
-		if (this.id >= 0) {
-			RenderSystem.glDeleteBuffers(this.id);
-			this.id = -1;
+		if (this.vertexBufferId >= 0) {
+			RenderSystem.glDeleteBuffers(this.vertexBufferId);
+			this.vertexBufferId = -1;
 		}
 
-		if (this.field_27366 >= 0) {
-			RenderSystem.glDeleteBuffers(this.field_27366);
-			this.field_27366 = -1;
+		if (this.indexBufferId >= 0) {
+			RenderSystem.glDeleteBuffers(this.indexBufferId);
+			this.indexBufferId = -1;
 		}
 	}
 }

@@ -19,23 +19,23 @@ import net.minecraft.world.event.PositionSource;
 public class SculkSensorListener implements GameEventListener {
 	protected final PositionSource positionSource;
 	protected final int range;
-	protected final SculkSensorListener.class_5719 field_28189;
+	protected final SculkSensorListener.Listener listener;
 	protected Optional<GameEvent> event = Optional.empty();
-	protected int field_28191;
+	protected int distance;
 	protected int cooldown = 0;
 
-	public SculkSensorListener(PositionSource positionSource, int range, SculkSensorListener.class_5719 arg) {
+	public SculkSensorListener(PositionSource positionSource, int range, SculkSensorListener.Listener listener) {
 		this.positionSource = positionSource;
 		this.range = range;
-		this.field_28189 = arg;
+		this.listener = listener;
 	}
 
-	public void method_32964(World world) {
+	public void listen(World world) {
 		if (this.event.isPresent()) {
 			this.cooldown--;
 			if (this.cooldown <= 0) {
 				this.cooldown = 0;
-				this.field_28189.listen(world, this, (GameEvent)this.event.get(), this.field_28191);
+				this.listener.listen(world, this, (GameEvent)this.event.get(), this.distance);
 				this.event = Optional.empty();
 			}
 		}
@@ -52,7 +52,7 @@ public class SculkSensorListener implements GameEventListener {
 	}
 
 	@Override
-	public boolean method_32947(World world, GameEvent event, @Nullable Entity entity, BlockPos pos) {
+	public boolean listen(World world, GameEvent event, @Nullable Entity entity, BlockPos pos) {
 		if (!this.shouldActivate(event, entity)) {
 			return false;
 		} else {
@@ -61,12 +61,12 @@ public class SculkSensorListener implements GameEventListener {
 				return false;
 			} else {
 				BlockPos blockPos = (BlockPos)optional.get();
-				if (!this.field_28189.shouldListen(world, this, pos, event, entity)) {
+				if (!this.listener.shouldListen(world, this, pos, event, entity)) {
 					return false;
 				} else if (this.isOccluded(world, pos, blockPos)) {
 					return false;
 				} else {
-					this.method_32965(world, event, pos, blockPos);
+					this.listen(world, event, pos, blockPos);
 					return true;
 				}
 			}
@@ -79,18 +79,26 @@ public class SculkSensorListener implements GameEventListener {
 		} else if (!GameEventTags.VIBRATIONS.contains(event)) {
 			return false;
 		} else {
-			return entity != null && GameEventTags.IGNORE_VIBRATIONS_STEPPING_CAREFULLY.contains(event) && entity.bypassesSteppingEffects()
-				? false
-				: entity == null || !entity.isSpectator();
+			if (entity != null) {
+				if (GameEventTags.IGNORE_VIBRATIONS_STEPPING_CAREFULLY.contains(event) && entity.bypassesSteppingEffects()) {
+					return false;
+				}
+
+				if (entity.occludeVibrationSignals()) {
+					return false;
+				}
+			}
+
+			return entity == null || !entity.isSpectator();
 		}
 	}
 
-	private void method_32965(World world, GameEvent event, BlockPos pos, BlockPos sourcePos) {
+	private void listen(World world, GameEvent event, BlockPos pos, BlockPos sourcePos) {
 		this.event = Optional.of(event);
 		if (world instanceof ServerWorld) {
-			this.field_28191 = MathHelper.floor(MathHelper.sqrt(pos.getSquaredDistance(sourcePos, false)));
-			this.cooldown = this.field_28191;
-			((ServerWorld)world).method_32817(new Vibration(pos, this.positionSource, this.cooldown));
+			this.distance = MathHelper.floor(MathHelper.sqrt(pos.getSquaredDistance(sourcePos, false)));
+			this.cooldown = this.distance;
+			((ServerWorld)world).sendVibrationPacket(new Vibration(pos, this.positionSource, this.cooldown));
 		}
 	}
 
@@ -100,7 +108,7 @@ public class SculkSensorListener implements GameEventListener {
 			== HitResult.Type.BLOCK;
 	}
 
-	public interface class_5719 {
+	public interface Listener {
 		boolean shouldListen(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity);
 
 		void listen(World world, GameEventListener listener, GameEvent event, int i);

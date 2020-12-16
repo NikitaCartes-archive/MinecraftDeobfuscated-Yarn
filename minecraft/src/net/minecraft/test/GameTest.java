@@ -52,39 +52,50 @@ public class GameTest {
 
 	public void tick() {
 		if (!this.isCompleted()) {
-			this.field_21455 = this.world.getTime() - this.expectedStopTime;
-			if (this.field_21455 >= 0L) {
-				if (this.field_21455 == 0L) {
-					this.start();
-				}
-
-				ObjectIterator<Entry<Runnable>> objectIterator = this.field_21453.object2LongEntrySet().iterator();
-
-				while (objectIterator.hasNext()) {
-					Entry<Runnable> entry = (Entry<Runnable>)objectIterator.next();
-					if (entry.getLongValue() <= this.field_21455) {
-						try {
-							((Runnable)entry.getKey()).run();
-						} catch (Exception var4) {
-							this.fail(var4);
-						}
-
-						objectIterator.remove();
-					}
-				}
-
-				if (this.field_21455 > (long)this.ticksLeft) {
-					if (this.field_21452.isEmpty()) {
-						this.fail(new TickLimitExceededException("Didn't succeed or fail within " + this.testFunction.getTickLimit() + " ticks"));
-					} else {
-						this.field_21452.forEach(timedTaskRunner -> timedTaskRunner.runReported(this.field_21455));
-						if (this.throwable == null) {
-							this.fail(new TickLimitExceededException("No sequences finished"));
-						}
-					}
+			this.method_33315();
+			if (this.isCompleted()) {
+				if (this.throwable != null) {
+					this.listeners.forEach(testListener -> testListener.onFailed(this));
 				} else {
-					this.field_21452.forEach(timedTaskRunner -> timedTaskRunner.runSilently(this.field_21455));
+					this.listeners.forEach(testListener -> testListener.method_33317(this));
 				}
+			}
+		}
+	}
+
+	private void method_33315() {
+		this.field_21455 = this.world.getTime() - this.expectedStopTime;
+		if (this.field_21455 >= 0L) {
+			if (this.field_21455 == 0L) {
+				this.start();
+			}
+
+			ObjectIterator<Entry<Runnable>> objectIterator = this.field_21453.object2LongEntrySet().iterator();
+
+			while (objectIterator.hasNext()) {
+				Entry<Runnable> entry = (Entry<Runnable>)objectIterator.next();
+				if (entry.getLongValue() <= this.field_21455) {
+					try {
+						((Runnable)entry.getKey()).run();
+					} catch (Exception var4) {
+						this.fail(var4);
+					}
+
+					objectIterator.remove();
+				}
+			}
+
+			if (this.field_21455 > (long)this.ticksLeft) {
+				if (this.field_21452.isEmpty()) {
+					this.fail(new TickLimitExceededException("Didn't succeed or fail within " + this.testFunction.getTickLimit() + " ticks"));
+				} else {
+					this.field_21452.forEach(timedTaskRunner -> timedTaskRunner.runReported(this.field_21455));
+					if (this.throwable == null) {
+						this.fail(new TickLimitExceededException("No sequences finished"));
+					}
+				}
+			} else {
+				this.field_21452.forEach(timedTaskRunner -> timedTaskRunner.runSilently(this.field_21455));
 			}
 		}
 	}
@@ -139,9 +150,8 @@ public class GameTest {
 	}
 
 	public void fail(Throwable throwable) {
-		this.complete();
 		this.throwable = throwable;
-		this.listeners.forEach(testListener -> testListener.onFailed(this));
+		this.complete();
 	}
 
 	@Nullable

@@ -12,7 +12,7 @@ public class ThreeLayersFeatureSize extends FeatureSize {
 					Codec.intRange(0, 16).fieldOf("lower_size").orElse(0).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.lowerSize),
 					Codec.intRange(0, 16).fieldOf("middle_size").orElse(1).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.middleSize),
 					Codec.intRange(0, 16).fieldOf("upper_size").orElse(1).forGetter(threeLayersFeatureSize -> threeLayersFeatureSize.upperSize),
-					createCodecBuilder()
+					createCodec()
 				)
 				.apply(instance, ThreeLayersFeatureSize::new)
 	);
@@ -37,11 +37,11 @@ public class ThreeLayersFeatureSize extends FeatureSize {
 	}
 
 	@Override
-	public int method_27378(int i, int j) {
-		if (j < this.limit) {
+	public int getRadius(int height, int y) {
+		if (y < this.limit) {
 			return this.lowerSize;
 		} else {
-			return j >= i - this.upperLimit ? this.upperSize : this.middleSize;
+			return y >= height - this.upperLimit ? this.upperSize : this.middleSize;
 		}
 	}
 }

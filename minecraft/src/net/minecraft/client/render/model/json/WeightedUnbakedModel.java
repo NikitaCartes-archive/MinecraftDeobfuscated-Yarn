@@ -82,7 +82,7 @@ public class WeightedUnbakedModel implements UnbakedModel {
 				builder.add(bakedModel, modelVariant.getWeight());
 			}
 
-			return builder.getFirst();
+			return builder.build();
 		}
 	}
 

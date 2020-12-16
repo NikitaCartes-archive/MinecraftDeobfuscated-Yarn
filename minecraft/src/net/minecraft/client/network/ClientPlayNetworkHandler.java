@@ -66,8 +66,8 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.input.KeyboardInput;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.ServerList;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
@@ -173,7 +173,6 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
@@ -217,6 +216,7 @@ import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
@@ -473,7 +473,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onHeldItemChange(HeldItemChangeS2CPacket packet) {
+	public void onHeldItemChange(UpdateSelectedSlotS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (PlayerInventory.isValidHotbarIndex(packet.getSlot())) {
 			this.client.player.getInventory().selectedSlot = packet.getSlot();
@@ -902,7 +902,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		RegistryKey<World> registryKey = packet.getDimension();
 		DimensionType dimensionType = packet.method_29445();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
-		int i = clientPlayerEntity.getEntityId();
+		int i = clientPlayerEntity.getId();
 		this.positionLookSetup = false;
 		if (registryKey != clientPlayerEntity.world.getRegistryKey()) {
 			Scoreboard scoreboard = this.world.getScoreboard();
@@ -943,7 +943,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		clientPlayerEntity2.yaw = -180.0F;
 		clientPlayerEntity2.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(clientPlayerEntity2);
-		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.getReducedDebugInfo());
+		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.hasReducedDebugInfo());
 		clientPlayerEntity2.setShowsDeathScreen(clientPlayerEntity.showsDeathScreen());
 		if (this.client.currentScreen instanceof DeathScreen) {
 			this.client.openScreen(null);
@@ -1368,8 +1368,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		TagManager tagManager = packet.getTagManager();
-		Multimap<Identifier, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
+		TagManager tagManager = TagManager.fromPacket(this.registryManager, packet.getTagManager());
+		Multimap<RegistryKey<? extends Registry<?>>, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
 		if (!multimap.isEmpty()) {
 			LOGGER.warn("Incomplete server tags, disconnecting. Missing: {}", multimap);
 			this.connection.disconnect(new TranslatableText("multiplayer.disconnect.missing_tags"));
@@ -1724,7 +1724,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				this.client.debugRenderer.caveDebugRenderer.method_3704(blockPos2, list, list2);
 			} else if (CustomPayloadS2CPacket.DEBUG_STRUCTURES.equals(identifier)) {
-				DimensionType dimensionType = this.registryManager.getDimensionTypes().get(packetByteBuf.readIdentifier());
+				DimensionType dimensionType = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).get(packetByteBuf.readIdentifier());
 				BlockBox blockBox = new BlockBox(
 					packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt(), packetByteBuf.readInt()
 				);

@@ -160,8 +160,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private static double getSquaredDistance(ChunkPos pos, Entity entity) {
-		double d = (double)ChunkSectionPos.method_32205(pos.x, 8);
-		double e = (double)ChunkSectionPos.method_32205(pos.z, 8);
+		double d = (double)ChunkSectionPos.getOffsetPos(pos.x, 8);
+		double e = (double)ChunkSectionPos.getOffsetPos(pos.z, 8);
 		double f = d - entity.getX();
 		double g = e - entity.getZ();
 		return f * f + g * g;
@@ -627,7 +627,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private boolean save(Chunk chunk) {
-		this.pointOfInterestStorage.method_20436(chunk.getPos());
+		this.pointOfInterestStorage.saveChunk(chunk.getPos());
 		if (!chunk.needsSaving()) {
 			return false;
 		} else {
@@ -926,11 +926,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			EntityType<?> entityType = entity.getType();
 			int i = entityType.getMaxTrackDistance() * 16;
 			int j = entityType.getTrackTickInterval();
-			if (this.entityTrackers.containsKey(entity.getEntityId())) {
+			if (this.entityTrackers.containsKey(entity.getId())) {
 				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Entity is already tracked!"));
 			} else {
 				ThreadedAnvilChunkStorage.EntityTracker entityTracker = new ThreadedAnvilChunkStorage.EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
-				this.entityTrackers.put(entity.getEntityId(), entityTracker);
+				this.entityTrackers.put(entity.getId(), entityTracker);
 				entityTracker.updateCameraPosition(this.world.getPlayers());
 				if (entity instanceof ServerPlayerEntity) {
 					ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
@@ -956,7 +956,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		ThreadedAnvilChunkStorage.EntityTracker entityTracker2 = this.entityTrackers.remove(entity.getEntityId());
+		ThreadedAnvilChunkStorage.EntityTracker entityTracker2 = this.entityTrackers.remove(entity.getId());
 		if (entityTracker2 != null) {
 			entityTracker2.stopTracking();
 		}
@@ -990,14 +990,14 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	protected void sendToOtherNearbyPlayers(Entity entity, Packet<?> packet) {
-		ThreadedAnvilChunkStorage.EntityTracker entityTracker = this.entityTrackers.get(entity.getEntityId());
+		ThreadedAnvilChunkStorage.EntityTracker entityTracker = this.entityTrackers.get(entity.getId());
 		if (entityTracker != null) {
 			entityTracker.sendToOtherNearbyPlayers(packet);
 		}
 	}
 
 	protected void sendToNearbyPlayers(Entity entity, Packet<?> packet) {
-		ThreadedAnvilChunkStorage.EntityTracker entityTracker = this.entityTrackers.get(entity.getEntityId());
+		ThreadedAnvilChunkStorage.EntityTracker entityTracker = this.entityTrackers.get(entity.getId());
 		if (entityTracker != null) {
 			entityTracker.sendToNearbyPlayers(packet);
 		}
@@ -1068,13 +1068,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 
 		public boolean equals(Object o) {
-			return o instanceof ThreadedAnvilChunkStorage.EntityTracker
-				? ((ThreadedAnvilChunkStorage.EntityTracker)o).entity.getEntityId() == this.entity.getEntityId()
-				: false;
+			return o instanceof ThreadedAnvilChunkStorage.EntityTracker ? ((ThreadedAnvilChunkStorage.EntityTracker)o).entity.getId() == this.entity.getId() : false;
 		}
 
 		public int hashCode() {
-			return this.entity.getEntityId();
+			return this.entity.getId();
 		}
 
 		public void sendToOtherNearbyPlayers(Packet<?> packet) {

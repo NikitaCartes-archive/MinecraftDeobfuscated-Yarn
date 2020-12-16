@@ -12,13 +12,13 @@ import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
-import net.minecraft.client.gui.screen.options.NarratorOptionsScreen;
+import net.minecraft.client.gui.screen.option.ControlsOptionsScreen;
+import net.minecraft.client.gui.screen.option.NarratorOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.options.NarratorMode;
-import net.minecraft.client.options.Option;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.NarratorMode;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
@@ -97,7 +97,7 @@ public class Keyboard {
 					this.debugWarn(bl ? "debug.show_hitboxes.on" : "debug.show_hitboxes.off");
 					return true;
 				case 67:
-					if (this.client.player.getReducedDebugInfo()) {
+					if (this.client.player.hasReducedDebugInfo()) {
 						return false;
 					} else {
 						ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
@@ -146,7 +146,7 @@ public class Keyboard {
 					this.client.options.write();
 					return true;
 				case 73:
-					if (!this.client.player.getReducedDebugInfo()) {
+					if (!this.client.player.hasReducedDebugInfo()) {
 						this.copyLookAt(this.client.player.hasPermissionLevel(2), !Screen.hasShiftDown());
 					}
 
@@ -233,7 +233,7 @@ public class Keyboard {
 					Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
 					if (bl) {
 						if (bl2) {
-							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getEntityId(), compoundTagx -> {
+							this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), compoundTagx -> {
 								this.copyEntity(identifier, entity.getPos(), compoundTagx);
 								this.debugWarn("debug.inspect.server.entity");
 							});

@@ -86,9 +86,9 @@ public class VideoWarningManager extends SinglePreparationResourceReloadListener
 	}
 
 	@Nullable
-	public String method_30920() {
+	public String getWarningsAsString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		this.warnings.forEach((string, string2) -> stringBuilder.append(string).append(": ").append(string2));
+		this.warnings.forEach((key, value) -> stringBuilder.append(key).append(": ").append(value));
 		return stringBuilder.length() == 0 ? null : stringBuilder.toString();
 	}
 
@@ -115,7 +115,7 @@ public class VideoWarningManager extends SinglePreparationResourceReloadListener
 	}
 
 	private static void compilePatterns(JsonArray array, List<Pattern> patterns) {
-		array.forEach(jsonElement -> patterns.add(Pattern.compile(jsonElement.getAsString(), 2)));
+		array.forEach(json -> patterns.add(Pattern.compile(json.getAsString(), 2)));
 	}
 
 	@Nullable

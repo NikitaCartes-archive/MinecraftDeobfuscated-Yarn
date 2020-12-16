@@ -318,7 +318,7 @@ public abstract class AbstractBlock {
 		if (f == -1.0F) {
 			return 0.0F;
 		} else {
-			int i = player.isUsingEffectiveTool(state) ? 30 : 100;
+			int i = player.canHarvest(state) ? 30 : 100;
 			return player.getBlockBreakingSpeed(state) / f / (float)i;
 		}
 	}

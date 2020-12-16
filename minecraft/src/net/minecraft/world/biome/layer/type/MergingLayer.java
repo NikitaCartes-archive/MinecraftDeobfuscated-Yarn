@@ -11,9 +11,9 @@ public interface MergingLayer extends CoordinateTransformer {
 		return () -> {
 			R layerSampler = layer1.make();
 			R layerSampler2 = layer2.make();
-			return context.createSampler((i, j) -> {
-				context.initSeed((long)i, (long)j);
-				return this.sample(context, layerSampler, layerSampler2, i, j);
+			return context.createSampler((x, z) -> {
+				context.initSeed((long)x, (long)z);
+				return this.sample(context, layerSampler, layerSampler2, x, z);
 			}, layerSampler, layerSampler2);
 		};
 	}

@@ -186,7 +186,7 @@ public class ParrotEntityModel extends SinglePartEntityModel<ParrotEntity> {
 	}
 
 	private static ParrotEntityModel.Pose getPose(ParrotEntity parrot) {
-		if (parrot.getSongPlaying()) {
+		if (parrot.isSongPlaying()) {
 			return ParrotEntityModel.Pose.PARTY;
 		} else if (parrot.isInSittingPose()) {
 			return ParrotEntityModel.Pose.SITTING;

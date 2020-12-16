@@ -17,12 +17,12 @@ public class EntityPassengersSetS2CPacket implements Packet<ClientPlayPacketList
 	}
 
 	public EntityPassengersSetS2CPacket(Entity entity) {
-		this.id = entity.getEntityId();
+		this.id = entity.getId();
 		List<Entity> list = entity.getPassengerList();
 		this.passengerIds = new int[list.size()];
 
 		for (int i = 0; i < list.size(); i++) {
-			this.passengerIds[i] = ((Entity)list.get(i)).getEntityId();
+			this.passengerIds[i] = ((Entity)list.get(i)).getId();
 		}
 	}
 

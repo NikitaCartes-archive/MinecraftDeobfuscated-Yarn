@@ -68,15 +68,14 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, JumpingMount, Saddleable {
-	private static final Predicate<LivingEntity> IS_BRED_HORSE = livingEntity -> livingEntity instanceof HorseBaseEntity
-			&& ((HorseBaseEntity)livingEntity).isBred();
+	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
 	private static final TargetPredicate PARENT_HORSE_PREDICATE = new TargetPredicate()
 		.setBaseMaxDistance(16.0)
 		.includeInvulnerable()
 		.includeTeammates()
 		.includeHidden()
 		.setPredicate(IS_BRED_HORSE);
-	private static final Ingredient field_25374 = Ingredient.ofItems(
+	private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(
 		Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE
 	);
 	private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -406,10 +405,10 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 	}
 
-	public ActionResult method_30009(PlayerEntity playerEntity, ItemStack itemStack) {
-		boolean bl = this.receiveFood(playerEntity, itemStack);
-		if (!playerEntity.getAbilities().creativeMode) {
-			itemStack.decrement(1);
+	public ActionResult interactHorse(PlayerEntity player, ItemStack stack) {
+		boolean bl = this.receiveFood(player, stack);
+		if (!player.getAbilities().creativeMode) {
+			stack.decrement(1);
 		}
 
 		if (this.world.isClient) {
@@ -502,7 +501,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return field_25374.test(stack);
+		return BREEDING_INGREDIENT.test(stack);
 	}
 
 	private void wagTail() {
@@ -739,7 +738,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 					this.setInAir(false);
 				}
 
-				this.method_29242(this, false);
+				this.updateLimbs(this, false);
 			} else {
 				this.flyingSpeed = 0.02F;
 				super.travel(movementInput);
@@ -918,7 +917,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 			float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 			float h = 0.7F * this.lastAngryAnimationProgress;
 			float i = 0.15F * this.lastAngryAnimationProgress;
-			passenger.updatePosition(
+			passenger.setPosition(
 				this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g)
 			);
 			if (passenger instanceof LivingEntity) {

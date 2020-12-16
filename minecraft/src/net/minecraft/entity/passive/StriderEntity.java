@@ -446,7 +446,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 			Object var7;
 			if (this.random.nextInt(30) == 0) {
 				MobEntity mobEntity = EntityType.ZOMBIFIED_PIGLIN.create(world.toServerWorld());
-				var7 = this.method_30336(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.method_29936(this.random), false));
+				var7 = this.method_30336(world, difficulty, mobEntity, new ZombieEntity.ZombieData(ZombieEntity.shouldBeBaby(this.random), false));
 				mobEntity.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.WARPED_FUNGUS_ON_A_STICK));
 				this.saddle(null);
 			} else if (this.random.nextInt(10) == 0) {

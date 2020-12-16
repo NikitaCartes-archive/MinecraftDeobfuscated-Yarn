@@ -298,7 +298,7 @@ public class ZombieEntity extends HostileEntity {
 					SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
 					if (SpawnHelper.canSpawn(location, this.world, blockPos, entityType)
 						&& SpawnRestriction.canSpawn(entityType, serverWorld, SpawnReason.REINFORCEMENT, blockPos, this.world.random)) {
-						zombieEntity.updatePosition((double)m, (double)n, (double)o);
+						zombieEntity.setPosition((double)m, (double)n, (double)o);
 						if (!this.world.isPlayerInRange((double)m, (double)n, (double)o, 7.0)
 							&& this.world.intersectsEntities(zombieEntity)
 							&& this.world.isSpaceEmpty(zombieEntity)
@@ -396,24 +396,24 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
-		super.onKilledOther(serverWorld, livingEntity);
-		if ((serverWorld.getDifficulty() == Difficulty.NORMAL || serverWorld.getDifficulty() == Difficulty.HARD) && livingEntity instanceof VillagerEntity) {
-			if (serverWorld.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
+	public void onKilledOther(ServerWorld world, LivingEntity other) {
+		super.onKilledOther(world, other);
+		if ((world.getDifficulty() == Difficulty.NORMAL || world.getDifficulty() == Difficulty.HARD) && other instanceof VillagerEntity) {
+			if (world.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
 				return;
 			}
 
-			VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
+			VillagerEntity villagerEntity = (VillagerEntity)other;
 			ZombieVillagerEntity zombieVillagerEntity = villagerEntity.method_29243(EntityType.ZOMBIE_VILLAGER, false);
 			zombieVillagerEntity.initialize(
-				serverWorld, serverWorld.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
+				world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
 			);
 			zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
 			zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
 			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
 			zombieVillagerEntity.setXp(villagerEntity.getExperience());
 			if (!this.isSilent()) {
-				serverWorld.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
+				world.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
 			}
 		}
 	}
@@ -437,14 +437,14 @@ public class ZombieEntity extends HostileEntity {
 		float f = difficulty.getClampedLocalDifficulty();
 		this.setCanPickUpLoot(this.random.nextFloat() < 0.55F * f);
 		if (entityData == null) {
-			entityData = new ZombieEntity.ZombieData(method_29936(world.getRandom()), true);
+			entityData = new ZombieEntity.ZombieData(shouldBeBaby(world.getRandom()), true);
 		}
 
 		if (entityData instanceof ZombieEntity.ZombieData) {
 			ZombieEntity.ZombieData zombieData = (ZombieEntity.ZombieData)entityData;
 			if (zombieData.baby) {
 				this.setBaby(true);
-				if (zombieData.field_25607) {
+				if (zombieData.tryChickenJockey) {
 					if ((double)world.getRandom().nextFloat() < 0.05) {
 						List<ChickenEntity> list = world.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
 						if (!list.isEmpty()) {
@@ -482,7 +482,7 @@ public class ZombieEntity extends HostileEntity {
 		return entityData;
 	}
 
-	public static boolean method_29936(Random random) {
+	public static boolean shouldBeBaby(Random random) {
 		return random.nextFloat() < 0.05F;
 	}
 
@@ -564,11 +564,11 @@ public class ZombieEntity extends HostileEntity {
 
 	public static class ZombieData implements EntityData {
 		public final boolean baby;
-		public final boolean field_25607;
+		public final boolean tryChickenJockey;
 
-		public ZombieData(boolean baby, boolean bl) {
+		public ZombieData(boolean baby, boolean tryChickenJockey) {
 			this.baby = baby;
-			this.field_25607 = bl;
+			this.tryChickenJockey = tryChickenJockey;
 		}
 	}
 }

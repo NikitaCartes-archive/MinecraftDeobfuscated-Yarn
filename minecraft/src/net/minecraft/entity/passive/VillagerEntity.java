@@ -855,7 +855,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			if (list2.size() >= i) {
 				IronGolemEntity ironGolemEntity = this.spawnIronGolem(world);
 				if (ironGolemEntity != null) {
-					list.forEach(GolemLastSeenSensor::method_30233);
+					list.forEach(GolemLastSeenSensor::rememberIronGolem);
 				}
 			}
 		}

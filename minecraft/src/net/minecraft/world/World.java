@@ -567,7 +567,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public List<Entity> getOtherEntities(@Nullable Entity except, Box box, Predicate<? super Entity> predicate) {
 		this.getProfiler().visit("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
-		this.method_31592().method_31807(box, entity2 -> {
+		this.getEntityIdMap().method_31807(box, entity2 -> {
 			if (entity2 != except && predicate.test(entity2)) {
 				list.add(entity2);
 			}
@@ -587,7 +587,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public <T extends Entity> List<T> getEntitiesByType(class_5575<Entity, T> arg, Box box, Predicate<? super T> predicate) {
 		this.getProfiler().visit("getEntities");
 		List<T> list = Lists.<T>newArrayList();
-		this.method_31592().method_31805(arg, box, entity -> {
+		this.getEntityIdMap().method_31805(arg, box, entity -> {
 			if (predicate.test(entity)) {
 				list.add(entity);
 			}
@@ -771,7 +771,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	@Nullable
 	public abstract MapState getMapState(String id);
 
-	public abstract void putMapState(String string, MapState mapState);
+	public abstract void putMapState(String id, MapState state);
 
 	public abstract int getNextMapId();
 
@@ -904,9 +904,9 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return this.debugWorld;
 	}
 
-	protected abstract class_5577<Entity> method_31592();
+	protected abstract class_5577<Entity> getEntityIdMap();
 
-	protected void method_32886(@Nullable Entity entity, GameEvent gameEvent, BlockPos blockPos, int i) {
+	protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos blockPos, int i) {
 		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
 		int k = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
 		int l = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
@@ -919,7 +919,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				Chunk chunk = this.getChunkManager().getWorldChunk(p, q);
 				if (chunk != null) {
 					for (int r = n; r <= o; r++) {
-						chunk.method_32914(r).method_32943(gameEvent, entity, blockPos);
+						chunk.method_32914(r).listen(gameEvent, entity, blockPos);
 					}
 				}
 			}

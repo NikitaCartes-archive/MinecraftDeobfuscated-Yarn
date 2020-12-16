@@ -71,15 +71,15 @@ public class CreateWorldScreen extends Screen {
 	private CreateWorldScreen.Mode currentMode = CreateWorldScreen.Mode.SURVIVAL;
 	@Nullable
 	private CreateWorldScreen.Mode lastMode;
-	private Difficulty field_27998 = Difficulty.NORMAL;
+	private Difficulty currentDifficulty = Difficulty.NORMAL;
 	private boolean cheatsEnabled;
 	private boolean tweakedCheats;
 	public boolean hardcore;
-	protected DataPackSettings field_25479;
+	protected DataPackSettings dataPackSettings;
 	@Nullable
 	private Path field_25477;
 	@Nullable
-	private ResourcePackManager field_25792;
+	private ResourcePackManager packManager;
 	private boolean moreOptionsOpen;
 	private ButtonWidget createLevelButton;
 	private CyclingButtonWidget<CreateWorldScreen.Mode> gameModeSwitchButton;
@@ -95,22 +95,22 @@ public class CreateWorldScreen extends Screen {
 	public final MoreOptionsDialog moreOptionsDialog;
 
 	public CreateWorldScreen(
-		@Nullable Screen screen,
+		@Nullable Screen parent,
 		LevelInfo levelInfo,
 		GeneratorOptions generatorOptions,
 		@Nullable Path path,
 		DataPackSettings dataPackSettings,
-		DynamicRegistryManager.Impl impl
+		DynamicRegistryManager.Impl registryManager
 	) {
 		this(
-			screen,
+			parent,
 			dataPackSettings,
-			new MoreOptionsDialog(impl, generatorOptions, GeneratorType.fromGeneratorOptions(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
+			new MoreOptionsDialog(registryManager, generatorOptions, GeneratorType.fromGeneratorOptions(generatorOptions), OptionalLong.of(generatorOptions.getSeed()))
 		);
 		this.levelName = levelInfo.getLevelName();
 		this.cheatsEnabled = levelInfo.areCommandsAllowed();
 		this.tweakedCheats = true;
-		this.field_27998 = levelInfo.getDifficulty();
+		this.currentDifficulty = levelInfo.getDifficulty();
 		this.gameRules.setAllValues(levelInfo.getGameRules(), null);
 		if (levelInfo.isHardcore()) {
 			this.currentMode = CreateWorldScreen.Mode.HARDCORE;
@@ -123,10 +123,10 @@ public class CreateWorldScreen extends Screen {
 		this.field_25477 = path;
 	}
 
-	public static CreateWorldScreen method_31130(@Nullable Screen screen) {
+	public static CreateWorldScreen create(@Nullable Screen parent) {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 		return new CreateWorldScreen(
-			screen,
+			parent,
 			DataPackSettings.SAFE_MODE,
 			new MoreOptionsDialog(
 				impl,
@@ -137,11 +137,11 @@ public class CreateWorldScreen extends Screen {
 		);
 	}
 
-	private CreateWorldScreen(@Nullable Screen screen, DataPackSettings dataPackSettings, MoreOptionsDialog moreOptionsDialog) {
+	private CreateWorldScreen(@Nullable Screen parent, DataPackSettings dataPackSettings, MoreOptionsDialog moreOptionsDialog) {
 		super(new TranslatableText("selectWorld.create"));
-		this.parent = screen;
+		this.parent = parent;
 		this.levelName = I18n.translate("selectWorld.newWorld");
-		this.field_25479 = dataPackSettings;
+		this.dataPackSettings = dataPackSettings;
 		this.moreOptionsDialog = moreOptionsDialog;
 	}
 
@@ -190,7 +190,7 @@ public class CreateWorldScreen extends Screen {
 			CyclingButtonWidget.<Difficulty>method_32606(Difficulty::getTranslatableName)
 				.method_32624(Difficulty.values())
 				.value(this.method_32672())
-				.build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> this.field_27998 = difficulty)
+				.build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> this.currentDifficulty = difficulty)
 		);
 		this.enableCheatsButton = this.addButton(
 			CyclingButtonWidget.method_32613(this.cheatsEnabled && !this.hardcore)
@@ -230,7 +230,7 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private Difficulty method_32672() {
-		return this.currentMode == CreateWorldScreen.Mode.HARDCORE ? Difficulty.HARD : this.field_27998;
+		return this.currentMode == CreateWorldScreen.Mode.HARDCORE ? Difficulty.HARD : this.currentDifficulty;
 	}
 
 	private void updateSettingsLabels() {
@@ -280,7 +280,7 @@ public class CreateWorldScreen extends Screen {
 					this.method_32672(),
 					this.cheatsEnabled && !this.hardcore,
 					this.gameRules,
-					this.field_25479
+					this.dataPackSettings
 				);
 			}
 
@@ -302,15 +302,15 @@ public class CreateWorldScreen extends Screen {
 			this.hardcore = true;
 			this.enableCheatsButton.active = false;
 			this.enableCheatsButton.method_32605(false);
-			this.moreOptionsDialog.method_32682();
+			this.moreOptionsDialog.disableBonusItems();
 			this.difficultyButton.method_32605(Difficulty.HARD);
 			this.difficultyButton.active = false;
 		} else {
 			this.hardcore = false;
 			this.enableCheatsButton.active = true;
 			this.enableCheatsButton.method_32605(this.cheatsEnabled);
-			this.moreOptionsDialog.method_32684();
-			this.difficultyButton.method_32605(this.field_27998);
+			this.moreOptionsDialog.enableBonusItems();
+			this.difficultyButton.method_32605(this.currentDifficulty);
 			this.difficultyButton.active = true;
 		}
 
@@ -383,8 +383,8 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	private void method_30298() {
-		if (this.field_25792 != null) {
-			this.field_25792.close();
+		if (this.packManager != null) {
+			this.packManager.close();
 		}
 
 		this.method_29695();
@@ -450,12 +450,17 @@ public class CreateWorldScreen extends Screen {
 		List<String> list = ImmutableList.copyOf(resourcePackManager.getEnabledNames());
 		List<String> list2 = (List<String>)resourcePackManager.getNames().stream().filter(string -> !list.contains(string)).collect(ImmutableList.toImmutableList());
 		DataPackSettings dataPackSettings = new DataPackSettings(list, list2);
-		if (list.equals(this.field_25479.getEnabled())) {
-			this.field_25479 = dataPackSettings;
+		if (list.equals(this.dataPackSettings.getEnabled())) {
+			this.dataPackSettings = dataPackSettings;
 		} else {
 			this.client.send(() -> this.client.openScreen(new SaveLevelScreen(new TranslatableText("dataPack.validation.working"))));
 			ServerResourceManager.reload(
-					resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), this.client
+					resourcePackManager.createResourcePacks(),
+					this.moreOptionsDialog.getRegistryManager(),
+					CommandManager.RegistrationEnvironment.INTEGRATED,
+					2,
+					Util.getMainWorkerExecutor(),
+					this.client
 				)
 				.handle(
 					(serverResourceManager, throwable) -> {
@@ -470,7 +475,7 @@ public class CreateWorldScreen extends Screen {
 														if (bl) {
 															this.method_29694();
 														} else {
-															this.field_25479 = DataPackSettings.SAFE_MODE;
+															this.dataPackSettings = DataPackSettings.SAFE_MODE;
 															this.client.openScreen(this);
 														}
 													},
@@ -483,7 +488,7 @@ public class CreateWorldScreen extends Screen {
 								);
 						} else {
 							this.client.send(() -> {
-								this.field_25479 = dataPackSettings;
+								this.dataPackSettings = dataPackSettings;
 								this.moreOptionsDialog.loadDatapacks(serverResourceManager);
 								serverResourceManager.close();
 								this.client.openScreen(this);
@@ -634,15 +639,15 @@ public class CreateWorldScreen extends Screen {
 		Path path = this.method_29693();
 		if (path != null) {
 			File file = path.toFile();
-			if (this.field_25792 == null) {
-				this.field_25792 = new ResourcePackManager(
+			if (this.packManager == null) {
+				this.packManager = new ResourcePackManager(
 					ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(file, ResourcePackSource.PACK_SOURCE_NONE)
 				);
-				this.field_25792.scanPacks();
+				this.packManager.scanPacks();
 			}
 
-			this.field_25792.setEnabledProfiles(this.field_25479.getEnabled());
-			return Pair.of(file, this.field_25792);
+			this.packManager.setEnabledProfiles(this.dataPackSettings.getEnabled());
+			return Pair.of(file, this.packManager);
 		} else {
 			return null;
 		}

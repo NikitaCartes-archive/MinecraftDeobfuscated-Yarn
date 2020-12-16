@@ -94,6 +94,10 @@ public abstract class DrawableHelper {
 	}
 
 	protected void fillGradient(MatrixStack matrices, int xStart, int yStart, int xEnd, int yEnd, int colorStart, int colorEnd) {
+		method_33284(matrices, xStart, yStart, xEnd, yEnd, colorStart, colorEnd, this.zOffset);
+	}
+
+	protected static void method_33284(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o) {
 		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.disableAlphaTest();
@@ -102,7 +106,7 @@ public abstract class DrawableHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
-		fillGradient(matrices.peek().getModel(), bufferBuilder, xStart, yStart, xEnd, yEnd, this.zOffset, colorStart, colorEnd);
+		fillGradient(matrixStack.peek().getModel(), bufferBuilder, i, j, k, l, o, m, n);
 		tessellator.draw();
 		RenderSystem.shadeModel(7424);
 		RenderSystem.disableBlend();

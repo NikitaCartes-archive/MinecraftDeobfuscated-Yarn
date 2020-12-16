@@ -44,21 +44,21 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 	private final ModelPart doubleChestLeftLatch;
 	private boolean christmas;
 
-	public ChestBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+	public ChestBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
 		Calendar calendar = Calendar.getInstance();
 		if (calendar.get(2) + 1 == 12 && calendar.get(5) >= 24 && calendar.get(5) <= 26) {
 			this.christmas = true;
 		}
 
-		ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.CHEST);
+		ModelPart modelPart = ctx.getLayerModelPart(EntityModelLayers.CHEST);
 		this.singleChestBase = modelPart.getChild("bottom");
 		this.singleChestLid = modelPart.getChild("lid");
 		this.singleChestLatch = modelPart.getChild("lock");
-		ModelPart modelPart2 = context.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_LEFT);
+		ModelPart modelPart2 = ctx.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_LEFT);
 		this.doubleChestRightBase = modelPart2.getChild("bottom");
 		this.doubleChestRightLid = modelPart2.getChild("lid");
 		this.doubleChestRightLatch = modelPart2.getChild("lock");
-		ModelPart modelPart3 = context.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_RIGHT);
+		ModelPart modelPart3 = ctx.getLayerModelPart(EntityModelLayers.DOUBLE_CHEST_RIGHT);
 		this.doubleChestLeftBase = modelPart3.getChild("bottom");
 		this.doubleChestLeftLid = modelPart3.getChild("lid");
 		this.doubleChestLeftLatch = modelPart3.getChild("lock");

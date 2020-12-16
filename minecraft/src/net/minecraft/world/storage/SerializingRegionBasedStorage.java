@@ -47,7 +47,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		Function<Runnable, R> factory,
 		DataFixer dataFixer,
 		DataFixTypes dataFixTypes,
-		boolean bl,
+		boolean dsync,
 		HeightLimitView heightLimitView
 	) {
 		this.codecFactory = codecFactory;
@@ -55,7 +55,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		this.dataFixer = dataFixer;
 		this.dataFixType = dataFixTypes;
 		this.field_27240 = heightLimitView;
-		this.worker = new StorageIoWorker(directory, bl, directory.getName());
+		this.worker = new StorageIoWorker(directory, dsync, directory.getName());
 	}
 
 	protected void tick(BooleanSupplier shouldKeepTicking) {
@@ -202,12 +202,12 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		return dynamic.get("DataVersion").asInt(1945);
 	}
 
-	public void method_20436(ChunkPos chunkPos) {
+	public void saveChunk(ChunkPos pos) {
 		if (!this.unsavedElements.isEmpty()) {
 			for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); i++) {
-				long l = ChunkSectionPos.from(chunkPos, i).asLong();
+				long l = ChunkSectionPos.from(pos, i).asLong();
 				if (this.unsavedElements.contains(l)) {
-					this.save(chunkPos);
+					this.save(pos);
 					return;
 				}
 			}

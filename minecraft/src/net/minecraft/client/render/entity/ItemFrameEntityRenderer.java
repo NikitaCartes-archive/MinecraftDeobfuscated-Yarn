@@ -93,7 +93,7 @@ public class ItemFrameEntityRenderer extends EntityRenderer<ItemFrameEntity> {
 			} else {
 				matrixStack.scale(0.5F, 0.5F, 0.5F);
 				this.itemRenderer
-					.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, itemFrameEntity.getEntityId());
+					.renderItem(itemStack, ModelTransformation.Mode.FIXED, i, OverlayTexture.DEFAULT_UV, matrixStack, vertexConsumerProvider, itemFrameEntity.getId());
 			}
 		}
 

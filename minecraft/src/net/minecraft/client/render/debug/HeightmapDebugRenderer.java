@@ -51,8 +51,8 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 
 					for (int k = 0; k < 16; k++) {
 						for (int l = 0; l < 16; l++) {
-							int m = ChunkSectionPos.method_32205(chunkPos.x, k);
-							int n = ChunkSectionPos.method_32205(chunkPos.z, l);
+							int m = ChunkSectionPos.getOffsetPos(chunkPos.x, k);
+							int n = ChunkSectionPos.getOffsetPos(chunkPos.z, l);
 							float f = (float)((double)((float)worldAccess.getTopY(type, m, n) + (float)type.ordinal() * 0.09375F) - cameraY);
 							WorldRenderer.drawBox(
 								bufferBuilder,

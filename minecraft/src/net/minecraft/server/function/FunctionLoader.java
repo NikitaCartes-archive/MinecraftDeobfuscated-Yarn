@@ -35,7 +35,7 @@ public class FunctionLoader implements ResourceReloadListener {
 	private static final int PATH_PREFIX_LENGTH = "functions/".length();
 	private static final int PATH_SUFFIX_LENGTH = ".mcfunction".length();
 	private volatile Map<Identifier, CommandFunction> functions = ImmutableMap.of();
-	private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader<>(this::get, "tags/functions", "function");
+	private final TagGroupLoader<CommandFunction> tagLoader = new TagGroupLoader<>(this::get, "tags/functions");
 	private volatile TagGroup<CommandFunction> tags = TagGroup.createEmpty();
 	private final int level;
 	private final CommandDispatcher<ServerCommandSource> commandDispatcher;
@@ -70,7 +70,7 @@ public class FunctionLoader implements ResourceReloadListener {
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = this.tagLoader.prepareReload(manager, prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.method_33174(manager), prepareExecutor);
 		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction>>> completableFuture2 = CompletableFuture.supplyAsync(
 				() -> manager.findResources("functions", string -> string.endsWith(".mcfunction")), prepareExecutor
 			)

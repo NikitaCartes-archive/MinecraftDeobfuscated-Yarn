@@ -6,6 +6,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.ImmutableSet.Builder;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +17,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.DefaultedRegistry;
 import net.minecraft.util.registry.Registry;
 
 /**
@@ -33,15 +34,6 @@ public interface TagGroup<T> {
 
 	@Nullable
 	Identifier getUncheckedTagId(Tag<T> tag);
-
-	default Identifier getTagId(Tag<T> tag) {
-		Identifier identifier = this.getUncheckedTagId(tag);
-		if (identifier == null) {
-			throw new IllegalStateException("Unrecognized tag");
-		} else {
-			return identifier;
-		}
-	}
 
 	default Collection<Identifier> getTagIds() {
 		return this.getTags().keySet();
@@ -63,36 +55,34 @@ public interface TagGroup<T> {
 		return list;
 	}
 
-	default void toPacket(PacketByteBuf buf, DefaultedRegistry<T> registry) {
+	default TagGroup.class_5748 toPacket(Registry<T> registry) {
 		Map<Identifier, Tag<T>> map = this.getTags();
-		buf.writeVarInt(map.size());
+		Map<Identifier, IntList> map2 = Maps.<Identifier, IntList>newHashMapWithExpectedSize(map.size());
+		map.forEach((identifier, tag) -> {
+			List<T> list = tag.values();
+			IntList intList = new IntArrayList(list.size());
 
-		for (Entry<Identifier, Tag<T>> entry : map.entrySet()) {
-			buf.writeIdentifier((Identifier)entry.getKey());
-			buf.writeVarInt(((Tag)entry.getValue()).values().size());
-
-			for (T object : ((Tag)entry.getValue()).values()) {
-				buf.writeVarInt(registry.getRawId(object));
+			for (T object : list) {
+				intList.add(registry.getRawId(object));
 			}
-		}
+
+			map2.put(identifier, intList);
+		});
+		return new TagGroup.class_5748(map2);
 	}
 
-	static <T> TagGroup<T> fromPacket(PacketByteBuf buf, Registry<T> registry) {
-		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMap();
-		int i = buf.readVarInt();
-
-		for (int j = 0; j < i; j++) {
-			Identifier identifier = buf.readIdentifier();
-			int k = buf.readVarInt();
+	@Environment(EnvType.CLIENT)
+	static <T> TagGroup<T> method_33155(TagGroup.class_5748 arg, Registry<? extends T> registry) {
+		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMapWithExpectedSize(arg.field_28304.size());
+		arg.field_28304.forEach((identifier, intList) -> {
 			Builder<T> builder = ImmutableSet.builder();
 
-			for (int l = 0; l < k; l++) {
-				builder.add(registry.get(buf.readVarInt()));
+			for (int i : intList) {
+				builder.add((T)registry.get(i));
 			}
 
 			map.put(identifier, Tag.of(builder.build()));
-		}
-
+		});
 		return create(map);
 	}
 
@@ -121,5 +111,42 @@ public interface TagGroup<T> {
 				return biMap;
 			}
 		};
+	}
+
+	public static class class_5748 {
+		private final Map<Identifier, IntList> field_28304;
+
+		private class_5748(Map<Identifier, IntList> map) {
+			this.field_28304 = map;
+		}
+
+		public void method_33159(PacketByteBuf packetByteBuf) {
+			packetByteBuf.writeVarInt(this.field_28304.size());
+
+			for (Entry<Identifier, IntList> entry : this.field_28304.entrySet()) {
+				packetByteBuf.writeIdentifier((Identifier)entry.getKey());
+				packetByteBuf.writeVarInt(((IntList)entry.getValue()).size());
+				((IntList)entry.getValue()).forEach(packetByteBuf::writeVarInt);
+			}
+		}
+
+		public static TagGroup.class_5748 method_33160(PacketByteBuf packetByteBuf) {
+			Map<Identifier, IntList> map = Maps.<Identifier, IntList>newHashMap();
+			int i = packetByteBuf.readVarInt();
+
+			for (int j = 0; j < i; j++) {
+				Identifier identifier = packetByteBuf.readIdentifier();
+				int k = packetByteBuf.readVarInt();
+				IntList intList = new IntArrayList(k);
+
+				for (int l = 0; l < k; l++) {
+					intList.add(packetByteBuf.readVarInt());
+				}
+
+				map.put(identifier, intList);
+			}
+
+			return new TagGroup.class_5748(map);
+		}
 	}
 }

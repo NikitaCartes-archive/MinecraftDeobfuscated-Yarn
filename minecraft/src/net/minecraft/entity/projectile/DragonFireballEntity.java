@@ -44,7 +44,7 @@ public class DragonFireballEntity extends ExplosiveProjectileEntity {
 					for (LivingEntity livingEntity : list) {
 						double d = this.squaredDistanceTo(livingEntity);
 						if (d < 16.0) {
-							areaEffectCloudEntity.updatePosition(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
+							areaEffectCloudEntity.setPosition(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
 							break;
 						}
 					}

@@ -35,17 +35,17 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEntity> {
-	private final Map<SignType, SignBlockEntityRenderer.SignModel> field_27754;
-	private final TextRenderer field_27755;
+	private final Map<SignType, SignBlockEntityRenderer.SignModel> typeToModel;
+	private final TextRenderer textRenderer;
 
-	public SignBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		this.field_27754 = (Map<SignType, SignBlockEntityRenderer.SignModel>)SignType.stream()
+	public SignBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		this.typeToModel = (Map<SignType, SignBlockEntityRenderer.SignModel>)SignType.stream()
 			.collect(
 				ImmutableMap.toImmutableMap(
-					signType -> signType, signType -> new SignBlockEntityRenderer.SignModel(context.getLayerModelPart(EntityModelLayers.createSign(signType)))
+					signType -> signType, signType -> new SignBlockEntityRenderer.SignModel(ctx.getLayerModelPart(EntityModelLayers.createSign(signType)))
 				)
 			);
-		this.field_27755 = context.getTextRenderer();
+		this.textRenderer = ctx.getTextRenderer();
 	}
 
 	public void render(SignBlockEntity signBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
@@ -53,25 +53,25 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		matrixStack.push();
 		float g = 0.6666667F;
 		SignType signType = method_32155(blockState.getBlock());
-		SignBlockEntityRenderer.SignModel signModel = (SignBlockEntityRenderer.SignModel)this.field_27754.get(signType);
+		SignBlockEntityRenderer.SignModel signModel = (SignBlockEntityRenderer.SignModel)this.typeToModel.get(signType);
 		if (blockState.getBlock() instanceof SignBlock) {
 			matrixStack.translate(0.5, 0.5, 0.5);
 			float h = -((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F);
 			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-			signModel.foot.visible = true;
+			signModel.stick.visible = true;
 		} else {
 			matrixStack.translate(0.5, 0.5, 0.5);
 			float h = -((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
 			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
 			matrixStack.translate(0.0, -0.3125, -0.4375);
-			signModel.foot.visible = false;
+			signModel.stick.visible = false;
 		}
 
 		matrixStack.push();
 		matrixStack.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.method_33082(signType);
 		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, signModel::getLayer);
-		signModel.field_27756.render(matrixStack, vertexConsumer, i, j);
+		signModel.root.render(matrixStack, vertexConsumer, i, j);
 		matrixStack.pop();
 		float k = 0.010416667F;
 		matrixStack.translate(0.0, 0.33333334F, 0.046666667F);
@@ -86,12 +86,12 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 
 		for (int r = 0; r < 4; r++) {
 			OrderedText orderedText = signBlockEntity.getTextBeingEditedOnRow(r, text -> {
-				List<OrderedText> list = this.field_27755.wrapLines(text, 90);
+				List<OrderedText> list = this.textRenderer.wrapLines(text, 90);
 				return list.isEmpty() ? OrderedText.EMPTY : (OrderedText)list.get(0);
 			});
 			if (orderedText != null) {
-				float s = (float)(-this.field_27755.getWidth(orderedText) / 2);
-				this.field_27755.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
+				float s = (float)(-this.textRenderer.getWidth(orderedText) / 2);
+				this.textRenderer.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
 			}
 		}
 
@@ -109,8 +109,8 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		return signType;
 	}
 
-	public static SignBlockEntityRenderer.SignModel method_32157(EntityModelLoader entityModelLoader, SignType signType) {
-		return new SignBlockEntityRenderer.SignModel(entityModelLoader.getModelPart(EntityModelLayers.createSign(signType)));
+	public static SignBlockEntityRenderer.SignModel createSignModel(EntityModelLoader entityModelLoader, SignType type) {
+		return new SignBlockEntityRenderer.SignModel(entityModelLoader.getModelPart(EntityModelLayers.createSign(type)));
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -123,18 +123,18 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 
 	@Environment(EnvType.CLIENT)
 	public static final class SignModel extends Model {
-		public final ModelPart field_27756;
-		public final ModelPart foot;
+		public final ModelPart root;
+		public final ModelPart stick;
 
-		public SignModel(ModelPart modelPart) {
+		public SignModel(ModelPart root) {
 			super(RenderLayer::getEntityCutoutNoCull);
-			this.field_27756 = modelPart;
-			this.foot = modelPart.getChild("stick");
+			this.root = root;
+			this.stick = root.getChild("stick");
 		}
 
 		@Override
 		public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-			this.field_27756.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+			this.root.render(matrices, vertices, light, overlay, red, green, blue, alpha);
 		}
 	}
 }

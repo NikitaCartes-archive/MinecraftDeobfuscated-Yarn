@@ -189,7 +189,7 @@ public class HorseEntity extends HorseBaseEntity {
 
 		if (!itemStack.isEmpty()) {
 			if (this.isBreedingItem(itemStack)) {
-				return this.method_30009(player, itemStack);
+				return this.interactHorse(player, itemStack);
 			}
 
 			ActionResult actionResult = itemStack.useOnEntity(player, this, hand);

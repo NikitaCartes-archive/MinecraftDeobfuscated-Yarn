@@ -110,7 +110,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		}
 
 		if (this.levels.isEmpty()) {
-			this.client.openScreen(CreateWorldScreen.method_31130(null));
+			this.client.openScreen(CreateWorldScreen.create(null));
 		} else {
 			String string = ((String)supplier.get()).toLowerCase(Locale.ROOT);
 
@@ -209,7 +209,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				string = I18n.translate("selectWorld.world") + " " + (index + 1);
 			}
 
-			Text text = this.level.method_27429();
+			Text text = this.level.getDetails();
 			this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 16777215);
 			this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + 9 + 3), 8421504);
 			this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + 9 + 9 + 3), 8421504);
@@ -388,7 +388,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 			try (
 				LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
 				MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client
-					.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);
+					.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, session);
 			) {
 				LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
 				DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();

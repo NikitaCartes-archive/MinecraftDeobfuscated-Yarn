@@ -39,7 +39,6 @@ import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
-import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerListS2CPacket;
@@ -48,6 +47,7 @@ import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -124,7 +124,7 @@ public abstract class PlayerManager {
 		userCache.add(gameProfile);
 		CompoundTag compoundTag = this.loadPlayerData(player);
 		RegistryKey<World> registryKey = compoundTag != null
-			? (RegistryKey)DimensionType.method_28521(new Dynamic<>(NbtOps.INSTANCE, compoundTag.get("Dimension")))
+			? (RegistryKey)DimensionType.worldFromDimensionTag(new Dynamic<>(NbtOps.INSTANCE, compoundTag.get("Dimension")))
 				.resultOrPartial(LOGGER::error)
 				.orElse(World.OVERWORLD)
 			: World.OVERWORLD;
@@ -144,13 +144,7 @@ public abstract class PlayerManager {
 		}
 
 		LOGGER.info(
-			"{}[{}] logged in with entity id {} at ({}, {}, {})",
-			player.getName().getString(),
-			string2,
-			player.getEntityId(),
-			player.getX(),
-			player.getY(),
-			player.getZ()
+			"{}[{}] logged in with entity id {} at ({}, {}, {})", player.getName().getString(), string2, player.getId(), player.getX(), player.getY(), player.getZ()
 		);
 		WorldProperties worldProperties = serverWorld2.getLevelProperties();
 		player.setGameMode(compoundTag);
@@ -160,7 +154,7 @@ public abstract class PlayerManager {
 		boolean bl2 = gameRules.getBoolean(GameRules.REDUCED_DEBUG_INFO);
 		serverPlayNetworkHandler.sendPacket(
 			new GameJoinS2CPacket(
-				player.getEntityId(),
+				player.getId(),
 				player.interactionManager.getGameMode(),
 				player.interactionManager.getPreviousGameMode(),
 				BiomeAccess.hashSeed(serverWorld2.getSeed()),
@@ -182,9 +176,9 @@ public abstract class PlayerManager {
 		);
 		serverPlayNetworkHandler.sendPacket(new DifficultyS2CPacket(worldProperties.getDifficulty(), worldProperties.isDifficultyLocked()));
 		serverPlayNetworkHandler.sendPacket(new PlayerAbilitiesS2CPacket(player.getAbilities()));
-		serverPlayNetworkHandler.sendPacket(new HeldItemChangeS2CPacket(player.getInventory().selectedSlot));
+		serverPlayNetworkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
 		serverPlayNetworkHandler.sendPacket(new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values()));
-		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(this.server.getTagManager()));
+		serverPlayNetworkHandler.sendPacket(new SynchronizeTagsS2CPacket(this.server.getTagManager().toPacket(this.registryManager)));
 		this.sendCommandTree(player);
 		player.getStatHandler().updateStatSet();
 		player.getRecipeBook().sendInitRecipesPacket(player);
@@ -215,7 +209,7 @@ public abstract class PlayerManager {
 		}
 
 		for (StatusEffectInstance statusEffectInstance : player.getStatusEffects()) {
-			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getEntityId(), statusEffectInstance));
+			serverPlayNetworkHandler.sendPacket(new EntityStatusEffectS2CPacket(player.getId(), statusEffectInstance));
 		}
 
 		if (compoundTag != null && compoundTag.contains("RootVehicle", 10)) {
@@ -349,7 +343,7 @@ public abstract class PlayerManager {
 			if (entity.hasPlayerRider()) {
 				LOGGER.debug("Removing player mount");
 				player.stopRiding();
-				entity.method_31748().forEach(entityx -> entityx.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
+				entity.streamPassengers().forEach(entityx -> entityx.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
 			}
 		}
 
@@ -435,7 +429,7 @@ public abstract class PlayerManager {
 		ServerPlayerEntity serverPlayerEntity = new ServerPlayerEntity(this.server, serverWorld2, player.getGameProfile());
 		serverPlayerEntity.networkHandler = player.networkHandler;
 		serverPlayerEntity.copyFrom(player, alive);
-		serverPlayerEntity.setEntityId(player.getEntityId());
+		serverPlayerEntity.setEntityId(player.getId());
 		serverPlayerEntity.setMainArm(player.getMainArm());
 
 		for (String string : player.getScoreboardTags()) {
@@ -463,7 +457,7 @@ public abstract class PlayerManager {
 		}
 
 		while (!serverWorld2.isSpaceEmpty(serverPlayerEntity) && serverPlayerEntity.getY() < (double)serverWorld2.getTopHeightLimit()) {
-			serverPlayerEntity.updatePosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
+			serverPlayerEntity.setPosition(serverPlayerEntity.getX(), serverPlayerEntity.getY() + 1.0, serverPlayerEntity.getZ());
 		}
 
 		WorldProperties worldProperties = serverPlayerEntity.world.getLevelProperties();
@@ -684,7 +678,7 @@ public abstract class PlayerManager {
 	public void sendPlayerStatus(ServerPlayerEntity player) {
 		player.refreshScreenHandler(player.playerScreenHandler);
 		player.markHealthDirty();
-		player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(player.getInventory().selectedSlot));
+		player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
 	}
 
 	public int getCurrentPlayerCount() {
@@ -815,7 +809,7 @@ public abstract class PlayerManager {
 			playerAdvancementTracker.reload(this.server.getAdvancementLoader());
 		}
 
-		this.sendToAll(new SynchronizeTagsS2CPacket(this.server.getTagManager()));
+		this.sendToAll(new SynchronizeTagsS2CPacket(this.server.getTagManager().toPacket(this.registryManager)));
 		SynchronizeRecipesS2CPacket synchronizeRecipesS2CPacket = new SynchronizeRecipesS2CPacket(this.server.getRecipeManager().values());
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {

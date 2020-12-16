@@ -22,7 +22,7 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public PlayerSpawnS2CPacket(PlayerEntity player) {
-		this.id = player.getEntityId();
+		this.id = player.getId();
 		this.uuid = player.getGameProfile().getId();
 		this.x = player.getX();
 		this.y = player.getY();

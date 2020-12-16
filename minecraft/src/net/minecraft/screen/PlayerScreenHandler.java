@@ -59,7 +59,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 
 				@Override
 				public boolean canInsert(ItemStack stack) {
-					return equipmentSlot == MobEntity.method_32326(stack);
+					return equipmentSlot == MobEntity.getPreferredEquipmentSlot(stack);
 				}
 
 				@Override
@@ -137,7 +137,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 		if (slot != null && slot.hasStack()) {
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
-			EquipmentSlot equipmentSlot = MobEntity.method_32326(itemStack);
+			EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
 			if (index == 0) {
 				if (!this.insertItem(itemStack2, 9, 45, true)) {
 					return ItemStack.EMPTY;

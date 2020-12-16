@@ -5,9 +5,9 @@ public class ColumnChunkNibbleArray extends ChunkNibbleArray {
 		super(128);
 	}
 
-	public ColumnChunkNibbleArray(ChunkNibbleArray chunkNibbleArray, int i) {
+	public ColumnChunkNibbleArray(ChunkNibbleArray chunkNibbleArray, int offset) {
 		super(128);
-		System.arraycopy(chunkNibbleArray.asByteArray(), i * 128, this.byteArray, 0, 128);
+		System.arraycopy(chunkNibbleArray.asByteArray(), offset * 128, this.bytes, 0, 128);
 	}
 
 	@Override
@@ -20,7 +20,7 @@ public class ColumnChunkNibbleArray extends ChunkNibbleArray {
 		byte[] bs = new byte[2048];
 
 		for (int i = 0; i < 16; i++) {
-			System.arraycopy(this.byteArray, 0, bs, i * 128, 128);
+			System.arraycopy(this.bytes, 0, bs, i * 128, 128);
 		}
 
 		return bs;

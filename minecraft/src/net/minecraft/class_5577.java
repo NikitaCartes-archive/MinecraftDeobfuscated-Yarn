@@ -3,16 +3,17 @@ package net.minecraft;
 import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLike;
 import net.minecraft.util.math.Box;
 
-public interface class_5577<T extends class_5568> {
+public interface class_5577<T extends EntityLike> {
 	@Nullable
-	T method_31804(int i);
+	T getById(int id);
 
 	@Nullable
-	T method_31808(UUID uUID);
+	T getByUuid(UUID uuid);
 
-	Iterable<T> method_31803();
+	Iterable<T> iterate();
 
 	<U extends T> void method_31806(class_5575<T, U> arg, Consumer<U> consumer);
 

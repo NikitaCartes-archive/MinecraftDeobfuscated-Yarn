@@ -102,35 +102,35 @@ public class LevelStorage {
 		return new LevelStorage(path, path.resolve("../backups"), Schemas.getFixer());
 	}
 
-	private static <T> Pair<GeneratorOptions, Lifecycle> readGeneratorProperties(Dynamic<T> dynamic, DataFixer dataFixer, int i) {
-		Dynamic<T> dynamic2 = dynamic.get("WorldGenSettings").orElseEmptyMap();
+	private static <T> Pair<GeneratorOptions, Lifecycle> readGeneratorProperties(Dynamic<T> levelData, DataFixer dataFixer, int version) {
+		Dynamic<T> dynamic = levelData.get("WorldGenSettings").orElseEmptyMap();
 
 		for (String string : GENERATOR_OPTION_KEYS) {
-			Optional<? extends Dynamic<?>> optional = dynamic.get(string).result();
+			Optional<? extends Dynamic<?>> optional = levelData.get(string).result();
 			if (optional.isPresent()) {
-				dynamic2 = dynamic2.set(string, (Dynamic<?>)optional.get());
+				dynamic = dynamic.set(string, (Dynamic<?>)optional.get());
 			}
 		}
 
-		Dynamic<T> dynamic3 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic2, i, SharedConstants.getGameVersion().getWorldVersion());
-		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC.parse(dynamic3);
+		Dynamic<T> dynamic2 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
+		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC.parse(dynamic2);
 		return Pair.of(
 			(GeneratorOptions)dataResult.resultOrPartial(Util.addPrefix("WorldGenSettings: ", LOGGER::error))
 				.orElseGet(
 					() -> {
 						Registry<DimensionType> registry = (Registry<DimensionType>)RegistryLookupCodec.of(Registry.DIMENSION_TYPE_KEY)
 							.codec()
-							.parse(dynamic3)
+							.parse(dynamic2)
 							.resultOrPartial(Util.addPrefix("Dimension type registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get dimension registry"));
 						Registry<Biome> registry2 = (Registry<Biome>)RegistryLookupCodec.of(Registry.BIOME_KEY)
 							.codec()
-							.parse(dynamic3)
+							.parse(dynamic2)
 							.resultOrPartial(Util.addPrefix("Biome registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get biome registry"));
 						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)RegistryLookupCodec.of(Registry.NOISE_SETTINGS_WORLDGEN)
 							.codec()
-							.parse(dynamic3)
+							.parse(dynamic2)
 							.resultOrPartial(Util.addPrefix("Noise settings registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get noise settings registry"));
 						return GeneratorOptions.getDefaultOptions(registry, registry2, registry3);

@@ -14,28 +14,28 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 	INSTANCE;
 
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Int2IntMap field_26727 = Util.make(new Int2IntOpenHashMap(), int2IntOpenHashMap -> {
-		int2IntOpenHashMap.put(1, 129);
-		int2IntOpenHashMap.put(2, 130);
-		int2IntOpenHashMap.put(3, 131);
-		int2IntOpenHashMap.put(4, 132);
-		int2IntOpenHashMap.put(5, 133);
-		int2IntOpenHashMap.put(6, 134);
-		int2IntOpenHashMap.put(12, 140);
-		int2IntOpenHashMap.put(21, 149);
-		int2IntOpenHashMap.put(23, 151);
-		int2IntOpenHashMap.put(27, 155);
-		int2IntOpenHashMap.put(28, 156);
-		int2IntOpenHashMap.put(29, 157);
-		int2IntOpenHashMap.put(30, 158);
-		int2IntOpenHashMap.put(32, 160);
-		int2IntOpenHashMap.put(33, 161);
-		int2IntOpenHashMap.put(34, 162);
-		int2IntOpenHashMap.put(35, 163);
-		int2IntOpenHashMap.put(36, 164);
-		int2IntOpenHashMap.put(37, 165);
-		int2IntOpenHashMap.put(38, 166);
-		int2IntOpenHashMap.put(39, 167);
+	private static final Int2IntMap MUTATED_BIOMES = Util.make(new Int2IntOpenHashMap(), map -> {
+		map.put(1, 129);
+		map.put(2, 130);
+		map.put(3, 131);
+		map.put(4, 132);
+		map.put(5, 133);
+		map.put(6, 134);
+		map.put(12, 140);
+		map.put(21, 149);
+		map.put(23, 151);
+		map.put(27, 155);
+		map.put(28, 156);
+		map.put(29, 157);
+		map.put(30, 158);
+		map.put(32, 160);
+		map.put(33, 161);
+		map.put(34, 162);
+		map.put(35, 163);
+		map.put(36, 164);
+		map.put(37, 165);
+		map.put(38, 166);
+		map.put(39, 167);
 	});
 
 	@Override
@@ -48,7 +48,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 
 		int k = (j - 2) % 29;
 		if (!BiomeLayers.isShallowOcean(i) && j >= 2 && k == 1) {
-			return field_26727.getOrDefault(i, i);
+			return MUTATED_BIOMES.getOrDefault(i, i);
 		} else {
 			if (context.nextInt(3) == 0 || k == 0) {
 				int l = i;
@@ -93,7 +93,7 @@ public enum AddHillsLayer implements MergingLayer, NorthWestCoordinateTransforme
 				}
 
 				if (k == 0 && l != i) {
-					l = field_26727.getOrDefault(l, i);
+					l = MUTATED_BIOMES.getOrDefault(l, i);
 				}
 
 				if (l != i) {

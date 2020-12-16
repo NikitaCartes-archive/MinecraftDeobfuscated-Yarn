@@ -117,7 +117,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Deprecated
 	default float getBrightness(BlockPos pos) {
-		return this.getDimension().method_28516(this.getLightLevel(pos));
+		return this.getDimension().getBrightness(this.getLightLevel(pos));
 	}
 
 	default int getStrongRedstonePower(BlockPos pos, Direction direction) {

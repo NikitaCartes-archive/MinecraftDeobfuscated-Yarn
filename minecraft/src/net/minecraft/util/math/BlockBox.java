@@ -105,8 +105,8 @@ public class BlockBox {
 		return new BlockBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
 
-	public void move(Vec3i vec3i) {
-		this.move(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+	public void move(Vec3i vec) {
+		this.move(vec.getX(), vec.getY(), vec.getZ());
 	}
 
 	public boolean contains(Vec3i vec) {

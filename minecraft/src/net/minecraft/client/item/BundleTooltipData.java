@@ -8,18 +8,18 @@ import net.minecraft.util.collection.DefaultedList;
 @Environment(EnvType.CLIENT)
 public class BundleTooltipData implements TooltipData {
 	private final DefaultedList<ItemStack> inventory;
-	private final boolean hasSpace;
+	private final int field_28353;
 
-	public BundleTooltipData(DefaultedList<ItemStack> inventory, boolean hasSpace) {
+	public BundleTooltipData(DefaultedList<ItemStack> inventory, int i) {
 		this.inventory = inventory;
-		this.hasSpace = hasSpace;
+		this.field_28353 = i;
 	}
 
 	public DefaultedList<ItemStack> getInventory() {
 		return this.inventory;
 	}
 
-	public boolean hasSpace() {
-		return this.hasSpace;
+	public int hasSpace() {
+		return this.field_28353;
 	}
 }

@@ -221,7 +221,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 						this.yaw = (float)((double)this.yaw + k / (double)this.bodyTrackingIncrements);
 						this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
 						this.bodyTrackingIncrements--;
-						this.updatePosition(d, e, j);
+						this.setPosition(d, e, j);
 						this.setRotation(this.yaw, this.pitch);
 					}
 
@@ -354,7 +354,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	private void movePart(EnderDragonPart enderDragonPart, double dx, double dy, double dz) {
-		enderDragonPart.updatePosition(this.getX() + dx, this.getY() + dy, this.getZ() + dz);
+		enderDragonPart.setPosition(this.getX() + dx, this.getY() + dy, this.getZ() + dz);
 	}
 
 	private float method_6820() {

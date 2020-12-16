@@ -165,7 +165,7 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	public ActionResult interact(PlayerEntity player, Hand hand) {
 		player.openHandledScreen(this);
 		if (!player.world.isClient) {
-			this.method_32875(player, GameEvent.CONTAINER_OPEN);
+			this.emitGameEvent(player, GameEvent.CONTAINER_OPEN);
 			PiglinBrain.onGuardedBlockInteracted(player, true);
 			return ActionResult.CONSUME;
 		} else {

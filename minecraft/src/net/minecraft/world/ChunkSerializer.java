@@ -357,26 +357,26 @@ public class ChunkSerializer {
 		return ChunkStatus.ChunkType.field_12808;
 	}
 
-	private static void writeEntities(ServerWorld serverWorld, CompoundTag compoundTag, WorldChunk worldChunk) {
-		if (compoundTag.contains("Entities", 9)) {
-			ListTag listTag = compoundTag.getList("Entities", 10);
+	private static void writeEntities(ServerWorld world, CompoundTag tag, WorldChunk chunk) {
+		if (tag.contains("Entities", 9)) {
+			ListTag listTag = tag.getList("Entities", 10);
 			if (!listTag.isEmpty()) {
-				serverWorld.method_31423(EntityType.method_31489(listTag, serverWorld));
+				world.method_31423(EntityType.method_31489(listTag, world));
 			}
 		}
 
-		ListTag listTag = compoundTag.getList("TileEntities", 10);
+		ListTag listTag = tag.getList("TileEntities", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag2 = listTag.getCompound(i);
-			boolean bl = compoundTag2.getBoolean("keepPacked");
+			CompoundTag compoundTag = listTag.getCompound(i);
+			boolean bl = compoundTag.getBoolean("keepPacked");
 			if (bl) {
-				worldChunk.addPendingBlockEntityTag(compoundTag2);
+				chunk.addPendingBlockEntityTag(compoundTag);
 			} else {
-				BlockPos blockPos = new BlockPos(compoundTag2.getInt("x"), compoundTag2.getInt("y"), compoundTag2.getInt("z"));
-				BlockEntity blockEntity = BlockEntity.createFromTag(blockPos, worldChunk.getBlockState(blockPos), compoundTag2);
+				BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+				BlockEntity blockEntity = BlockEntity.createFromTag(blockPos, chunk.getBlockState(blockPos), compoundTag);
 				if (blockEntity != null) {
-					worldChunk.setBlockEntity(blockEntity);
+					chunk.setBlockEntity(blockEntity);
 				}
 			}
 		}
@@ -428,15 +428,17 @@ public class ChunkSerializer {
 		CompoundTag compoundTag = tag.getCompound("References");
 
 		for (String string : compoundTag.getKeys()) {
-			map.put(StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), new LongOpenHashSet(Arrays.stream(compoundTag.getLongArray(string)).filter(l -> {
-				ChunkPos chunkPos2 = new ChunkPos(l);
-				if (chunkPos2.method_24022(pos) > 8) {
-					LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", string, chunkPos2, pos);
-					return false;
-				} else {
-					return true;
-				}
-			}).toArray()));
+			map.put(
+				StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), new LongOpenHashSet(Arrays.stream(compoundTag.getLongArray(string)).filter(packedPos -> {
+					ChunkPos chunkPos2 = new ChunkPos(packedPos);
+					if (chunkPos2.method_24022(pos) > 8) {
+						LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", string, chunkPos2, pos);
+						return false;
+					} else {
+						return true;
+					}
+				}).toArray())
+			);
 		}
 
 		return map;

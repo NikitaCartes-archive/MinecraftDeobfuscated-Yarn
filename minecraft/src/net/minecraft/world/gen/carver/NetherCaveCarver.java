@@ -65,9 +65,9 @@ public class NetherCaveCarver extends CaveCarver {
 		Function<BlockPos, Biome> posToBiome,
 		BitSet carvingMask,
 		Random random,
-		BlockPos.Mutable mutable,
-		BlockPos.Mutable mutable2,
-		BlockPos.Mutable mutable3,
+		BlockPos.Mutable currentPos,
+		BlockPos.Mutable upperPos,
+		BlockPos.Mutable lowerPos,
 		int seaLevel,
 		int mainChunkX,
 		int mainChunkZ,
@@ -76,15 +76,15 @@ public class NetherCaveCarver extends CaveCarver {
 		int relativeX,
 		int y,
 		int relativeZ,
-		MutableBoolean mutableBoolean
+		MutableBoolean visitedSurface
 	) {
 		int i = relativeX | relativeZ << 4 | y << 8;
 		if (carvingMask.get(i)) {
 			return false;
 		} else {
 			carvingMask.set(i);
-			mutable.set(x, y, z);
-			if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
+			currentPos.set(x, y, z);
+			if (this.canAlwaysCarveBlock(chunk.getBlockState(currentPos))) {
 				BlockState blockState;
 				if (y <= 31) {
 					blockState = LAVA.getBlockState();
@@ -92,7 +92,7 @@ public class NetherCaveCarver extends CaveCarver {
 					blockState = CAVE_AIR;
 				}
 
-				chunk.setBlockState(mutable, blockState, false);
+				chunk.setBlockState(currentPos, blockState, false);
 				return true;
 			} else {
 				return false;

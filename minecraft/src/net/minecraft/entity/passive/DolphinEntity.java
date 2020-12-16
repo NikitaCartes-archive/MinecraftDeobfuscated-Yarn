@@ -20,8 +20,8 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.control.DolphinLookControl;
-import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.control.AquaticLookControl;
+import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.goal.BreatheAirGoal;
 import net.minecraft.entity.ai.goal.ChaseBoatGoal;
 import net.minecraft.entity.ai.goal.DolphinJumpGoal;
@@ -84,8 +84,8 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
 		super(entityType, world);
-		this.moveControl = new DolphinEntity.DolphinMoveControl(this);
-		this.lookControl = new DolphinLookControl(this, 10);
+		this.moveControl = new AquaticMoveControl(this, 85, 10, 0.02F, 0.1F, true);
+		this.lookControl = new AquaticLookControl(this, 10);
 		this.setCanPickUpLoot(true);
 	}
 
@@ -233,7 +233,7 @@ public class DolphinEntity extends WaterCreatureEntity {
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
 		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canEquip(stack);
 	}
 
@@ -405,55 +405,6 @@ public class DolphinEntity extends WaterCreatureEntity {
 	@Override
 	public boolean canBeLeashedBy(PlayerEntity player) {
 		return true;
-	}
-
-	static class DolphinMoveControl extends MoveControl {
-		private final DolphinEntity dolphin;
-
-		public DolphinMoveControl(DolphinEntity dolphin) {
-			super(dolphin);
-			this.dolphin = dolphin;
-		}
-
-		@Override
-		public void tick() {
-			if (this.dolphin.isTouchingWater()) {
-				this.dolphin.setVelocity(this.dolphin.getVelocity().add(0.0, 0.005, 0.0));
-			}
-
-			if (this.state == MoveControl.State.MOVE_TO && !this.dolphin.getNavigation().isIdle()) {
-				double d = this.targetX - this.dolphin.getX();
-				double e = this.targetY - this.dolphin.getY();
-				double f = this.targetZ - this.dolphin.getZ();
-				double g = d * d + e * e + f * f;
-				if (g < 2.5000003E-7F) {
-					this.entity.setForwardSpeed(0.0F);
-				} else {
-					float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-					this.dolphin.yaw = this.changeAngle(this.dolphin.yaw, h, 10.0F);
-					this.dolphin.bodyYaw = this.dolphin.yaw;
-					this.dolphin.headYaw = this.dolphin.yaw;
-					float i = (float)(this.speed * this.dolphin.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
-					if (this.dolphin.isTouchingWater()) {
-						this.dolphin.setMovementSpeed(i * 0.02F);
-						float j = -((float)(MathHelper.atan2(e, (double)MathHelper.sqrt(d * d + f * f)) * 180.0F / (float)Math.PI));
-						j = MathHelper.clamp(MathHelper.wrapDegrees(j), -85.0F, 85.0F);
-						this.dolphin.pitch = this.changeAngle(this.dolphin.pitch, j, 5.0F);
-						float k = MathHelper.cos(this.dolphin.pitch * (float) (Math.PI / 180.0));
-						float l = MathHelper.sin(this.dolphin.pitch * (float) (Math.PI / 180.0));
-						this.dolphin.forwardSpeed = k * i;
-						this.dolphin.upwardSpeed = -l * i;
-					} else {
-						this.dolphin.setMovementSpeed(i * 0.1F);
-					}
-				}
-			} else {
-				this.dolphin.setMovementSpeed(0.0F);
-				this.dolphin.setSidewaysSpeed(0.0F);
-				this.dolphin.setUpwardSpeed(0.0F);
-				this.dolphin.setForwardSpeed(0.0F);
-			}
-		}
 	}
 
 	static class LeadToNearbyTreasureGoal extends Goal {

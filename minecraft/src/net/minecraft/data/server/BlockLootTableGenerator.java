@@ -439,33 +439,36 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		);
 	}
 
-	private static LootTable.Builder method_30159(Block block) {
+	private static LootTable.Builder seagrassDrops(Block seagrass) {
 		return LootTable.builder()
 			.pool(
-				LootPool.builder().conditionally(WITH_SHEARS).with(ItemEntry.builder(block).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
+				LootPool.builder()
+					.conditionally(WITH_SHEARS)
+					.with(ItemEntry.builder(seagrass).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))))
 			);
 	}
 
-	private static LootTable.Builder method_30158(Block block, Block block2) {
-		LootPoolEntry.Builder<?> builder = ItemEntry.builder(block2)
+	private static LootTable.Builder tallGrassDrops(Block tallGrass, Block grass) {
+		LootPoolEntry.Builder<?> builder = ItemEntry.builder(grass)
 			.apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F)))
 			.conditionally(WITH_SHEARS)
 			.alternatively(
-				((LeafEntry.Builder)addSurvivesExplosionCondition(block, ItemEntry.builder(Items.WHEAT_SEEDS))).conditionally(RandomChanceLootCondition.builder(0.125F))
+				((LeafEntry.Builder)addSurvivesExplosionCondition(tallGrass, ItemEntry.builder(Items.WHEAT_SEEDS)))
+					.conditionally(RandomChanceLootCondition.builder(0.125F))
 			);
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
 					.with(builder)
 					.conditionally(
-						BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))
+						BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))
 					)
 					.conditionally(
 						LocationCheckLootCondition.method_30151(
 							LocationPredicate.Builder.create()
 								.block(
 									BlockPredicate.Builder.create()
-										.block(block)
+										.block(tallGrass)
 										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER).build())
 										.build()
 								),
@@ -477,14 +480,14 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 				LootPool.builder()
 					.with(builder)
 					.conditionally(
-						BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))
+						BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))
 					)
 					.conditionally(
 						LocationCheckLootCondition.method_30151(
 							LocationPredicate.Builder.create()
 								.block(
 									BlockPredicate.Builder.create()
-										.block(block)
+										.block(tallGrass)
 										.state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER).build())
 										.build()
 								),
@@ -494,34 +497,34 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			);
 	}
 
-	private static LootTable.Builder method_32224(Block block) {
+	private static LootTable.Builder candleDrops(Block candle) {
 		return LootTable.builder()
 			.pool(
 				LootPool.builder()
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						(LootPoolEntry.Builder<?>)applyExplosionDecay(
-							block,
-							ItemEntry.builder(block)
+							candle,
+							ItemEntry.builder(candle)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0F))
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 2)))
+										.conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 2)))
 								)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0F))
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 3)))
+										.conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 3)))
 								)
 								.apply(
 									SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0F))
-										.conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 4)))
+										.conditionally(BlockStatePropertyLootCondition.builder(candle).properties(StatePredicate.Builder.create().exactMatch(CandleBlock.CANDLES, 4)))
 								)
 						)
 					)
 			);
 	}
 
-	private static LootTable.Builder method_32225(Block block) {
-		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(block)));
+	private static LootTable.Builder candleCakeDrops(Block candle) {
+		return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(candle)));
 	}
 
 	public static LootTable.Builder dropsNothing() {
@@ -1159,23 +1162,23 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							.conditionally(BlockStatePropertyLootCondition.builder(blockx).properties(StatePredicate.Builder.create().exactMatch(ComposterBlock.LEVEL, 8)))
 					)
 		);
-		this.addDrop(Blocks.CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.WHITE_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.ORANGE_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.MAGENTA_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.LIGHT_BLUE_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.YELLOW_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.LIME_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.PINK_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.GRAY_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.LIGHT_GRAY_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.CYAN_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.PURPLE_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.BLUE_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.BROWN_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.GREEN_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.RED_CANDLE, BlockLootTableGenerator::method_32224);
-		this.addDrop(Blocks.BLACK_CANDLE, BlockLootTableGenerator::method_32224);
+		this.addDrop(Blocks.CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.WHITE_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.ORANGE_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.MAGENTA_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.LIGHT_BLUE_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.YELLOW_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.LIME_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.PINK_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.GRAY_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.LIGHT_GRAY_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.CYAN_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.PURPLE_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.BLUE_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.BROWN_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.GREEN_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.RED_CANDLE, BlockLootTableGenerator::candleDrops);
+		this.addDrop(Blocks.BLACK_CANDLE, BlockLootTableGenerator::candleDrops);
 		this.addDrop(Blocks.BEACON, BlockLootTableGenerator::nameableContainerDrops);
 		this.addDrop(Blocks.BREWING_STAND, BlockLootTableGenerator::nameableContainerDrops);
 		this.addDrop(Blocks.CHEST, BlockLootTableGenerator::nameableContainerDrops);
@@ -1358,9 +1361,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.VINE, BlockLootTableGenerator::dropsWithShears);
-		this.addDrop(Blocks.TALL_SEAGRASS, method_30159(Blocks.SEAGRASS));
-		this.addDrop(Blocks.LARGE_FERN, blockx -> method_30158(blockx, Blocks.FERN));
-		this.addDrop(Blocks.TALL_GRASS, blockx -> method_30158(blockx, Blocks.GRASS));
+		this.addDrop(Blocks.TALL_SEAGRASS, seagrassDrops(Blocks.SEAGRASS));
+		this.addDrop(Blocks.LARGE_FERN, blockx -> tallGrassDrops(blockx, Blocks.FERN));
+		this.addDrop(Blocks.TALL_GRASS, blockx -> tallGrassDrops(blockx, Blocks.GRASS));
 		this.addDrop(Blocks.MELON_STEM, blockx -> cropStemDrops(blockx, Items.MELON_SEEDS));
 		this.addDrop(Blocks.ATTACHED_MELON_STEM, blockx -> attachedCropStemDrops(blockx, Items.MELON_SEEDS));
 		this.addDrop(Blocks.PUMPKIN_STEM, blockx -> cropStemDrops(blockx, Items.PUMPKIN_SEEDS));
@@ -1637,23 +1640,23 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addVinePlantDrop(Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT);
 		this.addVinePlantDrop(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT);
 		this.addDrop(Blocks.CAKE, dropsNothing());
-		this.addDrop(Blocks.CANDLE_CAKE, method_32225(Blocks.CANDLE));
-		this.addDrop(Blocks.WHITE_CANDLE_CAKE, method_32225(Blocks.WHITE_CANDLE));
-		this.addDrop(Blocks.ORANGE_CANDLE_CAKE, method_32225(Blocks.ORANGE_CANDLE));
-		this.addDrop(Blocks.MAGENTA_CANDLE_CAKE, method_32225(Blocks.MAGENTA_CANDLE));
-		this.addDrop(Blocks.LIGHT_BLUE_CANDLE_CAKE, method_32225(Blocks.LIGHT_BLUE_CANDLE));
-		this.addDrop(Blocks.YELLOW_CANDLE_CAKE, method_32225(Blocks.YELLOW_CANDLE));
-		this.addDrop(Blocks.LIME_CANDLE_CAKE, method_32225(Blocks.LIME_CANDLE));
-		this.addDrop(Blocks.PINK_CANDLE_CAKE, method_32225(Blocks.PINK_CANDLE));
-		this.addDrop(Blocks.GRAY_CANDLE_CAKE, method_32225(Blocks.GRAY_CANDLE));
-		this.addDrop(Blocks.LIGHT_GRAY_CANDLE_CAKE, method_32225(Blocks.LIGHT_GRAY_CANDLE));
-		this.addDrop(Blocks.CYAN_CANDLE_CAKE, method_32225(Blocks.CYAN_CANDLE));
-		this.addDrop(Blocks.PURPLE_CANDLE_CAKE, method_32225(Blocks.PURPLE_CANDLE));
-		this.addDrop(Blocks.BLUE_CANDLE_CAKE, method_32225(Blocks.BLUE_CANDLE));
-		this.addDrop(Blocks.BROWN_CANDLE_CAKE, method_32225(Blocks.BROWN_CANDLE));
-		this.addDrop(Blocks.GREEN_CANDLE_CAKE, method_32225(Blocks.GREEN_CANDLE));
-		this.addDrop(Blocks.RED_CANDLE_CAKE, method_32225(Blocks.RED_CANDLE));
-		this.addDrop(Blocks.BLACK_CANDLE_CAKE, method_32225(Blocks.BLACK_CANDLE));
+		this.addDrop(Blocks.CANDLE_CAKE, candleCakeDrops(Blocks.CANDLE));
+		this.addDrop(Blocks.WHITE_CANDLE_CAKE, candleCakeDrops(Blocks.WHITE_CANDLE));
+		this.addDrop(Blocks.ORANGE_CANDLE_CAKE, candleCakeDrops(Blocks.ORANGE_CANDLE));
+		this.addDrop(Blocks.MAGENTA_CANDLE_CAKE, candleCakeDrops(Blocks.MAGENTA_CANDLE));
+		this.addDrop(Blocks.LIGHT_BLUE_CANDLE_CAKE, candleCakeDrops(Blocks.LIGHT_BLUE_CANDLE));
+		this.addDrop(Blocks.YELLOW_CANDLE_CAKE, candleCakeDrops(Blocks.YELLOW_CANDLE));
+		this.addDrop(Blocks.LIME_CANDLE_CAKE, candleCakeDrops(Blocks.LIME_CANDLE));
+		this.addDrop(Blocks.PINK_CANDLE_CAKE, candleCakeDrops(Blocks.PINK_CANDLE));
+		this.addDrop(Blocks.GRAY_CANDLE_CAKE, candleCakeDrops(Blocks.GRAY_CANDLE));
+		this.addDrop(Blocks.LIGHT_GRAY_CANDLE_CAKE, candleCakeDrops(Blocks.LIGHT_GRAY_CANDLE));
+		this.addDrop(Blocks.CYAN_CANDLE_CAKE, candleCakeDrops(Blocks.CYAN_CANDLE));
+		this.addDrop(Blocks.PURPLE_CANDLE_CAKE, candleCakeDrops(Blocks.PURPLE_CANDLE));
+		this.addDrop(Blocks.BLUE_CANDLE_CAKE, candleCakeDrops(Blocks.BLUE_CANDLE));
+		this.addDrop(Blocks.BROWN_CANDLE_CAKE, candleCakeDrops(Blocks.BROWN_CANDLE));
+		this.addDrop(Blocks.GREEN_CANDLE_CAKE, candleCakeDrops(Blocks.GREEN_CANDLE));
+		this.addDrop(Blocks.RED_CANDLE_CAKE, candleCakeDrops(Blocks.RED_CANDLE));
+		this.addDrop(Blocks.BLACK_CANDLE_CAKE, candleCakeDrops(Blocks.BLACK_CANDLE));
 		this.addDrop(Blocks.FROSTED_ICE, dropsNothing());
 		this.addDrop(Blocks.SPAWNER, dropsNothing());
 		this.addDrop(Blocks.FIRE, dropsNothing());

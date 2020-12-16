@@ -51,7 +51,7 @@ public class SnowmanPumpkinFeatureRenderer extends FeatureRenderer<SnowGolemEnti
 					snowGolemEntity.world,
 					i,
 					LivingEntityRenderer.getOverlay(snowGolemEntity, 0.0F),
-					snowGolemEntity.getEntityId()
+					snowGolemEntity.getId()
 				);
 			matrixStack.pop();
 		}

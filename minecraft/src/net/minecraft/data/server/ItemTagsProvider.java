@@ -13,11 +13,11 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class ItemTagsProvider extends AbstractTagProvider<Item> {
-	private final Function<Tag.Identified<Block>, Tag.Builder> field_23783;
+	private final Function<Tag.Identified<Block>, Tag.Builder> blockTags;
 
-	public ItemTagsProvider(DataGenerator dataGenerator, BlockTagsProvider blockTagsProvider) {
-		super(dataGenerator, Registry.ITEM);
-		this.field_23783 = blockTagsProvider::method_27169;
+	public ItemTagsProvider(DataGenerator root, BlockTagsProvider blockTagsProvider) {
+		super(root, Registry.ITEM);
+		this.blockTags = blockTagsProvider::getTagBuilder;
 	}
 
 	@Override
@@ -62,6 +62,7 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.copy(BlockTags.GOLD_ORES, ItemTags.GOLD_ORES);
 		this.copy(BlockTags.SOUL_FIRE_BASE_BLOCKS, ItemTags.SOUL_FIRE_BASE_BLOCKS);
 		this.copy(BlockTags.CANDLES, ItemTags.CANDLES);
+		this.copy(BlockTags.OCCLUDES_VIBRATION_SIGNALS, ItemTags.OCCLUDES_VIBRATION_SIGNALS);
 		this.getOrCreateTagBuilder(ItemTags.BANNERS)
 			.add(
 				Items.WHITE_BANNER,
@@ -166,11 +167,12 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
 		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
 		this.getOrCreateTagBuilder(ItemTags.FREEZE_IMMUNE_WEARABLES).add(Items.LEATHER_BOOTS, Items.LEATHER_LEGGINGS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET);
+		this.getOrCreateTagBuilder(ItemTags.AXOLOTL_TEMPT_ITEMS).add(Items.TROPICAL_FISH, Items.TROPICAL_FISH_BUCKET);
 	}
 
-	protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
-		Tag.Builder builder = this.method_27169(identified2);
-		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(identified);
+	protected void copy(Tag.Identified<Block> blockTag, Tag.Identified<Item> itemTag) {
+		Tag.Builder builder = this.getTagBuilder(itemTag);
+		Tag.Builder builder2 = (Tag.Builder)this.blockTags.apply(blockTag);
 		builder2.streamEntries().forEach(builder::add);
 	}
 

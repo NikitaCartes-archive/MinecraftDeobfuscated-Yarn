@@ -32,7 +32,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 	public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
 		super.render(abstractMinecartEntity, f, g, matrixStack, vertexConsumerProvider, i);
 		matrixStack.push();
-		long l = (long)abstractMinecartEntity.getEntityId() * 493286711L;
+		long l = (long)abstractMinecartEntity.getId() * 493286711L;
 		l = l * l * 4392167121L + l * 98761L;
 		float h = (((float)(l >> 16 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;
 		float j = (((float)(l >> 20 & 7L) + 0.5F) / 8.0F - 0.5F) * 0.004F;

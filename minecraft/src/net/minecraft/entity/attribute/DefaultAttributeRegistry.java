@@ -40,6 +40,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -73,6 +74,7 @@ public class DefaultAttributeRegistry {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Map<EntityType<? extends LivingEntity>, DefaultAttributeContainer> DEFAULT_ATTRIBUTE_REGISTRY = ImmutableMap.<EntityType<? extends LivingEntity>, DefaultAttributeContainer>builder()
 		.put(EntityType.ARMOR_STAND, LivingEntity.createLivingAttributes().build())
+		.put(EntityType.AXOLOTL, AxolotlEntity.createAxolotlAttributes().build())
 		.put(EntityType.BAT, BatEntity.createBatAttributes().build())
 		.put(EntityType.BEE, BeeEntity.createBeeAttributes().build())
 		.put(EntityType.BLAZE, BlazeEntity.createBlazeAttributes().build())

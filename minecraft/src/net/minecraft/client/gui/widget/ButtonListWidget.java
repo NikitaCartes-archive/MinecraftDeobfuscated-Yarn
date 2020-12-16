@@ -10,8 +10,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.Option;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.util.math.MatrixStack;
 
 @Environment(EnvType.CLIENT)

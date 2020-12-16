@@ -19,7 +19,7 @@ public class ExperienceOrbSpawnS2CPacket implements Packet<ClientPlayPacketListe
 	}
 
 	public ExperienceOrbSpawnS2CPacket(ExperienceOrbEntity experienceOrbEntity) {
-		this.id = experienceOrbEntity.getEntityId();
+		this.id = experienceOrbEntity.getId();
 		this.x = experienceOrbEntity.getX();
 		this.y = experienceOrbEntity.getY();
 		this.z = experienceOrbEntity.getZ();

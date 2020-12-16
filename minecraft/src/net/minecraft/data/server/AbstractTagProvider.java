@@ -44,19 +44,19 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 		this.configure();
 		this.tagBuilders
 			.forEach(
-				(identifier, builder) -> {
+				(id, builder) -> {
 					List<Tag.TrackedEntry> list = (List<Tag.TrackedEntry>)builder.streamEntries()
 						.filter(trackedEntry -> !trackedEntry.getEntry().method_32832(this.registry::containsId, this.tagBuilders::containsKey))
 						.collect(Collectors.toList());
 					if (!list.isEmpty()) {
 						throw new IllegalArgumentException(
 							String.format(
-								"Couldn't define tag %s as it is missing following references: %s", identifier, list.stream().map(Objects::toString).collect(Collectors.joining(","))
+								"Couldn't define tag %s as it is missing following references: %s", id, list.stream().map(Objects::toString).collect(Collectors.joining(","))
 							)
 						);
 					} else {
 						JsonObject jsonObject = builder.toJson();
-						Path path = this.getOutput(identifier);
+						Path path = this.getOutput(id);
 
 						try {
 							String string = GSON.toJson((JsonElement)jsonObject);
@@ -97,39 +97,39 @@ public abstract class AbstractTagProvider<T> implements DataProvider {
 
 	protected abstract Path getOutput(Identifier id);
 
-	protected AbstractTagProvider.ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> identified) {
-		Tag.Builder builder = this.method_27169(identified);
+	protected AbstractTagProvider.ObjectBuilder<T> getOrCreateTagBuilder(Tag.Identified<T> tag) {
+		Tag.Builder builder = this.getTagBuilder(tag);
 		return new AbstractTagProvider.ObjectBuilder<>(builder, this.registry, "vanilla");
 	}
 
-	protected Tag.Builder method_27169(Tag.Identified<T> identified) {
-		return (Tag.Builder)this.tagBuilders.computeIfAbsent(identified.getId(), identifier -> new Tag.Builder());
+	protected Tag.Builder getTagBuilder(Tag.Identified<T> tag) {
+		return (Tag.Builder)this.tagBuilders.computeIfAbsent(tag.getId(), id -> new Tag.Builder());
 	}
 
 	public static class ObjectBuilder<T> {
-		private final Tag.Builder field_23960;
-		private final Registry<T> field_23961;
-		private final String field_23962;
+		private final Tag.Builder builder;
+		private final Registry<T> registry;
+		private final String source;
 
-		private ObjectBuilder(Tag.Builder builder, Registry<T> registry, String string) {
-			this.field_23960 = builder;
-			this.field_23961 = registry;
-			this.field_23962 = string;
+		private ObjectBuilder(Tag.Builder builder, Registry<T> registry, String source) {
+			this.builder = builder;
+			this.registry = registry;
+			this.source = source;
 		}
 
 		public AbstractTagProvider.ObjectBuilder<T> add(T element) {
-			this.field_23960.add(this.field_23961.getId(element), this.field_23962);
+			this.builder.add(this.registry.getId(element), this.source);
 			return this;
 		}
 
 		public AbstractTagProvider.ObjectBuilder<T> addTag(Tag.Identified<T> identifiedTag) {
-			this.field_23960.addTag(identifiedTag.getId(), this.field_23962);
+			this.builder.addTag(identifiedTag.getId(), this.source);
 			return this;
 		}
 
 		@SafeVarargs
-		public final AbstractTagProvider.ObjectBuilder<T> add(T... objects) {
-			Stream.of(objects).map(this.field_23961::getId).forEach(identifier -> this.field_23960.add(identifier, this.field_23962));
+		public final AbstractTagProvider.ObjectBuilder<T> add(T... elements) {
+			Stream.of(elements).map(this.registry::getId).forEach(id -> this.builder.add(id, this.source));
 			return this;
 		}
 	}

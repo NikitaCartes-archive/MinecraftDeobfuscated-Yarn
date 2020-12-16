@@ -74,8 +74,8 @@ public class DebugChunkGenerator extends ChunkGenerator {
 
 		for (int k = 0; k < 16; k++) {
 			for (int l = 0; l < 16; l++) {
-				int m = ChunkSectionPos.method_32205(i, k);
-				int n = ChunkSectionPos.method_32205(j, l);
+				int m = ChunkSectionPos.getOffsetPos(i, k);
+				int n = ChunkSectionPos.getOffsetPos(j, l);
 				region.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
 				BlockState blockState = getBlockState(m, n);
 				if (blockState != null) {

@@ -21,8 +21,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -61,8 +61,8 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 	private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
 	private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
 	private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
-	private static final Text field_28000 = new TranslatableText("selectWorld.import_worldgen_settings.select_file");
-	private class_5489 field_26605 = class_5489.field_26528;
+	private static final Text SELECT_SETTINGS_FILE_TEXT = new TranslatableText("selectWorld.import_worldgen_settings.select_file");
+	private MultilineText generatorInfoText = MultilineText.EMPTY;
 	private TextRenderer textRenderer;
 	private int parentWidth;
 	private TextFieldWidget seedTextField;
@@ -71,7 +71,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 	private CyclingButtonWidget<GeneratorType> mapTypeButton;
 	private ButtonWidget field_28001;
 	private ButtonWidget customizeTypeButton;
-	private ButtonWidget importOptionsButton;
+	private ButtonWidget importSettingsButton;
 	private DynamicRegistryManager.Impl registryManager;
 	private GeneratorOptions generatorOptions;
 	private Optional<GeneratorType> generatorType;
@@ -158,7 +158,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 				)
 		);
 		this.bonusItemsButton.visible = false;
-		this.importOptionsButton = parent.addButton(
+		this.importSettingsButton = parent.addButton(
 			new ButtonWidget(
 				i,
 				185,
@@ -166,7 +166,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 				20,
 				new TranslatableText("selectWorld.import_worldgen_settings"),
 				buttonWidget -> {
-					String string = TinyFileDialogs.tinyfd_openFileDialog(field_28000.getString(), null, null, null, false);
+					String string = TinyFileDialogs.tinyfd_openFileDialog(SELECT_SETTINGS_FILE_TEXT.getString(), null, null, null, false);
 					if (string != null) {
 						DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 						ResourcePackManager resourcePackManager = new ResourcePackManager(
@@ -177,9 +177,9 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 
 						ServerResourceManager serverResourceManager;
 						try {
-							MinecraftServer.loadDataPacks(resourcePackManager, parent.field_25479, false);
+							MinecraftServer.loadDataPacks(resourcePackManager, parent.dataPackSettings, false);
 							CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
-								resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), client
+								resourcePackManager.createResourcePacks(), impl, CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), client
 							);
 							client.runTasks(completableFuture::isDone);
 							serverResourceManager = (ServerResourceManager)completableFuture.get();
@@ -267,8 +267,8 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 				}
 			)
 		);
-		this.importOptionsButton.visible = false;
-		this.field_26605 = class_5489.method_30890(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
+		this.importSettingsButton.visible = false;
+		this.generatorInfoText = MultilineText.create(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
 	}
 
 	private void importOptions(DynamicRegistryManager.Impl registryManager, GeneratorOptions generatorOptions) {
@@ -293,7 +293,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 
 		this.seedTextField.render(matrices, mouseX, mouseY, delta);
 		if (this.generatorType.equals(Optional.of(GeneratorType.AMPLIFIED))) {
-			this.field_26605.method_30893(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, 9, 10526880);
+			this.generatorInfoText.drawWithShadow(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, 9, 10526880);
 		}
 	}
 
@@ -345,12 +345,12 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 			this.mapFeaturesButton.visible = false;
 			this.bonusItemsButton.visible = false;
 			this.customizeTypeButton.visible = false;
-			this.importOptionsButton.visible = false;
+			this.importSettingsButton.visible = false;
 		} else {
 			this.mapFeaturesButton.visible = visible;
 			this.bonusItemsButton.visible = visible;
 			this.customizeTypeButton.visible = visible && GeneratorType.SCREEN_PROVIDERS.containsKey(this.generatorType);
-			this.importOptionsButton.visible = visible;
+			this.importSettingsButton.visible = visible;
 		}
 
 		this.seedTextField.setVisible(visible);
@@ -383,12 +383,12 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		});
 	}
 
-	public void method_32682() {
+	public void disableBonusItems() {
 		this.bonusItemsButton.active = false;
 		this.bonusItemsButton.method_32605(false);
 	}
 
-	public void method_32684() {
+	public void enableBonusItems() {
 		this.bonusItemsButton.active = true;
 		this.bonusItemsButton.method_32605(this.generatorOptions.hasBonusChest());
 	}

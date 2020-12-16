@@ -21,6 +21,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
@@ -44,7 +45,7 @@ public class ItemEntity extends Entity {
 
 	public ItemEntity(World world, double x, double y, double z) {
 		this(EntityType.ITEM, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 		this.yaw = this.random.nextFloat() * 360.0F;
 		this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
 	}
@@ -55,12 +56,17 @@ public class ItemEntity extends Entity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	private ItemEntity(ItemEntity itemEntity) {
-		super(itemEntity.getType(), itemEntity.world);
-		this.setStack(itemEntity.getStack().copy());
-		this.copyPositionAndRotation(itemEntity);
-		this.age = itemEntity.age;
-		this.hoverHeight = itemEntity.hoverHeight;
+	private ItemEntity(ItemEntity entity) {
+		super(entity.getType(), entity.world);
+		this.setStack(entity.getStack().copy());
+		this.copyPositionAndRotation(entity);
+		this.age = entity.age;
+		this.hoverHeight = entity.hoverHeight;
+	}
+
+	@Override
+	public boolean occludeVibrationSignals() {
+		return ItemTags.OCCLUDES_VIBRATION_SIGNALS.contains(this.getStack().getItem());
 	}
 
 	@Override
@@ -89,9 +95,9 @@ public class ItemEntity extends Entity {
 			Vec3d vec3d = this.getVelocity();
 			float f = this.getStandingEyeHeight() - 0.11111111F;
 			if (this.isTouchingWater() && this.getFluidHeight(FluidTags.WATER) > (double)f) {
-				this.applyBuoyancy();
+				this.applyWaterBuoyancy();
 			} else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > (double)f) {
-				this.method_24348();
+				this.applyLavaBuoyancy();
 			} else if (!this.hasNoGravity()) {
 				this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
 			}
@@ -105,7 +111,7 @@ public class ItemEntity extends Entity {
 				}
 			}
 
-			if (!this.onGround || squaredHorizontalLength(this.getVelocity()) > 1.0E-5F || (this.age + this.getEntityId()) % 4 == 0) {
+			if (!this.onGround || squaredHorizontalLength(this.getVelocity()) > 1.0E-5F || (this.age + this.getId()) % 4 == 0) {
 				this.move(MovementType.SELF, this.getVelocity());
 				float g = 0.98F;
 				if (this.onGround) {
@@ -153,12 +159,12 @@ public class ItemEntity extends Entity {
 		}
 	}
 
-	private void applyBuoyancy() {
+	private void applyWaterBuoyancy() {
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x * 0.99F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.99F);
 	}
 
-	private void method_24348() {
+	private void applyLavaBuoyancy() {
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x * 0.95F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.95F);
 	}
@@ -243,6 +249,7 @@ public class ItemEntity extends Entity {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - amount);
 			if (this.health <= 0) {
+				this.getStack().onItemEntityDestroyed(this);
 				this.discard();
 			}
 

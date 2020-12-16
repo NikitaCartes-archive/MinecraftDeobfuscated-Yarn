@@ -26,7 +26,7 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 		Validate.notNull(sound, "sound");
 		this.sound = sound;
 		this.category = category;
-		this.entityId = entity.getEntityId();
+		this.entityId = entity.getId();
 		this.volume = volume;
 		this.pitch = pitch;
 	}

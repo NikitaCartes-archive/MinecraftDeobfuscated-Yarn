@@ -16,7 +16,7 @@ public class EntityAnimationS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public EntityAnimationS2CPacket(Entity entity, int animationId) {
-		this.id = entity.getEntityId();
+		this.id = entity.getId();
 		this.animationId = animationId;
 	}
 

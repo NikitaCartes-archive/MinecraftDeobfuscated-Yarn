@@ -372,7 +372,7 @@ public class DebugHud extends DrawableHelper {
 	@Nullable
 	private String getServerWorldDebugString() {
 		ServerWorld serverWorld = this.getServerWorld();
-		return serverWorld != null ? serverWorld.method_31419() : null;
+		return serverWorld != null ? serverWorld.getChunkSourceDebugString() : null;
 	}
 
 	private World getWorld() {
@@ -443,7 +443,7 @@ public class DebugHud extends DrawableHelper {
 					list.add(this.propertyToString(entry));
 				}
 
-				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getBlocks().getTagsFor(blockState.getBlock())) {
+				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.BLOCK_KEY).getTagsFor(blockState.getBlock())) {
 					list.add("#" + identifier);
 				}
 			}
@@ -459,7 +459,7 @@ public class DebugHud extends DrawableHelper {
 					list.add(this.propertyToString(entry));
 				}
 
-				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getFluids().getTagsFor(fluidState.getFluid())) {
+				for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.FLUID_KEY).getTagsFor(fluidState.getFluid())) {
 					list.add("#" + identifier);
 				}
 			}

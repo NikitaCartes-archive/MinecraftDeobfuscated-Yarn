@@ -512,6 +512,11 @@ public class TestCommand {
 		}
 
 		@Override
+		public void method_33317(GameTest gameTest) {
+			TestCommand.onCompletion(this.world, this.tests);
+		}
+
+		@Override
 		public void onFailed(GameTest test) {
 			TestCommand.onCompletion(this.world, this.tests);
 		}

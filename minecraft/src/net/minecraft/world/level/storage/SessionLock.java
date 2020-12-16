@@ -17,7 +17,7 @@ import net.fabricmc.api.Environment;
 public class SessionLock implements AutoCloseable {
 	private final FileChannel channel;
 	private final FileLock lock;
-	private static final ByteBuffer field_25353;
+	private static final ByteBuffer SNOWMAN;
 
 	public static SessionLock create(Path path) throws IOException {
 		Path path2 = path.resolve("session.lock");
@@ -28,7 +28,7 @@ public class SessionLock implements AutoCloseable {
 		FileChannel fileChannel = FileChannel.open(path2, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
 
 		try {
-			fileChannel.write(field_25353.duplicate());
+			fileChannel.write(SNOWMAN.duplicate());
 			fileChannel.force(true);
 			FileLock fileLock = fileChannel.tryLock();
 			if (fileLock == null) {
@@ -126,9 +126,9 @@ public class SessionLock implements AutoCloseable {
 
 	static {
 		byte[] bs = "☃".getBytes(Charsets.UTF_8);
-		field_25353 = ByteBuffer.allocateDirect(bs.length);
-		field_25353.put(bs);
-		field_25353.flip();
+		SNOWMAN = ByteBuffer.allocateDirect(bs.length);
+		SNOWMAN.put(bs);
+		SNOWMAN.flip();
 	}
 
 	public static class AlreadyLockedException extends IOException {

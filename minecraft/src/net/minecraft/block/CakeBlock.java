@@ -49,9 +49,13 @@ public class CakeBlock extends Block {
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		Item item = itemStack.getItem();
-		if (!world.isClient && itemStack.isIn(ItemTags.CANDLES) && (Integer)state.get(BITES) == 0) {
+		if (itemStack.isIn(ItemTags.CANDLES) && (Integer)state.get(BITES) == 0) {
 			Block block = Block.getBlockFromItem(item);
 			if (block instanceof CandleBlock) {
+				if (!player.isCreative()) {
+					itemStack.decrement(1);
+				}
+
 				world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				world.setBlockState(pos, CandleCakeBlock.getCandleCakeFromCandle(block));
 				return ActionResult.SUCCESS;

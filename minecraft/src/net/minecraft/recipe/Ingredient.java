@@ -165,12 +165,9 @@ public final class Ingredient implements Predicate<ItemStack> {
 			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (json.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-			Tag<Item> tag = ServerTagManagerHolder.getTagManager().getItems().getTag(identifier);
-			if (tag == null) {
-				throw new JsonSyntaxException("Unknown item tag '" + identifier + "'");
-			} else {
-				return new Ingredient.TagEntry(tag);
-			}
+			Tag<Item> tag = ServerTagManagerHolder.getTagManager()
+				.getTag(Registry.ITEM_KEY, identifier, identifierx -> new JsonSyntaxException("Unknown item tag '" + identifierx + "'"));
+			return new Ingredient.TagEntry(tag);
 		} else {
 			throw new JsonParseException("An ingredient entry needs either a tag or an item");
 		}
@@ -223,7 +220,9 @@ public final class Ingredient implements Predicate<ItemStack> {
 		@Override
 		public JsonObject toJson() {
 			JsonObject jsonObject = new JsonObject();
-			jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getItems().getTagId(this.tag).toString());
+			jsonObject.addProperty(
+				"tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.ITEM_KEY, this.tag, () -> new IllegalStateException("Unknown item tag")).toString()
+			);
 			return jsonObject;
 		}
 	}

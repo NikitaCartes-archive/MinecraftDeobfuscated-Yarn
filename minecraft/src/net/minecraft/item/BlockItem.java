@@ -12,8 +12,10 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.BlockSoundGroup;
@@ -213,5 +215,16 @@ public class BlockItem extends Item {
 	@Override
 	public boolean hasStoredInventory() {
 		return !(this.block instanceof ShulkerBoxBlock);
+	}
+
+	@Override
+	public void onItemEntityDestroyed(ItemEntity entity) {
+		if (this.block instanceof ShulkerBoxBlock) {
+			CompoundTag compoundTag = entity.getStack().getTag();
+			if (compoundTag != null) {
+				ListTag listTag = compoundTag.getCompound("BlockEntityTag").getList("Items", 10);
+				ItemUsage.spawnItemContents(entity, listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromTag));
+			}
+		}
 	}
 }

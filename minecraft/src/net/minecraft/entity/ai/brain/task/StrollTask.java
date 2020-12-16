@@ -2,6 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
+import javax.annotation.Nullable;
 import net.minecraft.class_5534;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -12,8 +13,8 @@ import net.minecraft.util.math.Vec3d;
 
 public class StrollTask extends Task<PathAwareEntity> {
 	private final float speed;
-	private final int horizontalRadius;
-	private final int verticalRadius;
+	protected final int horizontalRadius;
+	protected final int verticalRadius;
 
 	public StrollTask(float speed) {
 		this(speed, 10, 7);
@@ -27,7 +28,12 @@ public class StrollTask extends Task<PathAwareEntity> {
 	}
 
 	protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-		Optional<Vec3d> optional = Optional.ofNullable(class_5534.method_31527(pathAwareEntity, this.horizontalRadius, this.verticalRadius));
+		Optional<Vec3d> optional = Optional.ofNullable(this.method_33201(pathAwareEntity));
 		pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget(vec3d, this.speed, 0)));
+	}
+
+	@Nullable
+	protected Vec3d method_33201(PathAwareEntity pathAwareEntity) {
+		return class_5534.method_31527(pathAwareEntity, this.horizontalRadius, this.verticalRadius);
 	}
 }

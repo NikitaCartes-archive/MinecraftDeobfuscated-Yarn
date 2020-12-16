@@ -200,7 +200,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	private long lastPlayerSampleUpdate;
 	private final Thread serverThread;
 	private long timeReference = Util.getMeasuringTimeMs();
-	private long field_19248;
+	private long nextTickTimestamp;
 	private boolean waitingForNextTick;
 	@Environment(EnvType.CLIENT)
 	private boolean iconFilePresent;
@@ -331,7 +331,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ChunkGenerator chunkGenerator;
 		DimensionType dimensionType;
 		if (dimensionOptions == null) {
-			dimensionType = this.registryManager.getDimensionTypes().getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
+			dimensionType = this.registryManager.get(Registry.DIMENSION_TYPE_KEY).getOrThrow(DimensionType.OVERWORLD_REGISTRY_KEY);
 			chunkGenerator = GeneratorOptions.createOverworldGenerator(
 				this.registryManager.get(Registry.BIOME_KEY), this.registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN), new Random().nextLong()
 			);
@@ -548,16 +548,25 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 	public abstract boolean shouldBroadcastRconToOps();
 
-	public boolean save(boolean suppressLogs, boolean bl, boolean bl2) {
-		boolean bl3 = false;
+	/**
+	 * Saves the server to the data storage device.
+	 * 
+	 * To store the player data in addition to server data, call {@link PlayerManager#saveAllPlayerData()}.
+	 * 
+	 * @return whether saving was successful
+	 * if it should immediately write all data to storage device
+	 * when set to true, all the {@link ServerWorld}s will be saved even if {@link ServerWorld#savingDisabled} is set to true
+	 */
+	public boolean save(boolean suppressLogs, boolean flush, boolean force) {
+		boolean bl = false;
 
 		for (ServerWorld serverWorld : this.getWorlds()) {
 			if (!suppressLogs) {
 				LOGGER.info("Saving chunks for level '{}'/{}", serverWorld, serverWorld.getRegistryKey().getValue());
 			}
 
-			serverWorld.save(null, bl, serverWorld.savingDisabled && !bl2);
-			bl3 = true;
+			serverWorld.save(null, flush, serverWorld.savingDisabled && !force);
+			bl = true;
 		}
 
 		ServerWorld serverWorld2 = this.getOverworld();
@@ -565,7 +574,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
 		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
 		this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
-		return bl3;
+		return bl;
 	}
 
 	@Override
@@ -666,7 +675,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 					this.tick(this::shouldKeepTicking);
 					this.profiler.swap("nextTickWait");
 					this.waitingForNextTick = true;
-					this.field_19248 = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
+					this.nextTickTimestamp = Math.max(Util.getMeasuringTimeMs() + 50L, this.timeReference);
 					this.method_16208();
 					this.profiler.pop();
 					this.profiler.endTick();
@@ -708,7 +717,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private boolean shouldKeepTicking() {
-		return this.hasRunningTasks() || Util.getMeasuringTimeMs() < (this.waitingForNextTick ? this.field_19248 : this.timeReference);
+		return this.hasRunningTasks() || Util.getMeasuringTimeMs() < (this.waitingForNextTick ? this.nextTickTimestamp : this.timeReference);
 	}
 
 	protected void method_16208() {
@@ -1328,6 +1337,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			.thenCompose(
 				immutableList -> ServerResourceManager.reload(
 						immutableList,
+						this.registryManager,
 						this.isDedicated() ? CommandManager.RegistrationEnvironment.DEDICATED : CommandManager.RegistrationEnvironment.INTEGRATED,
 						this.getFunctionPermissionLevel(),
 						this.workerExecutor,
@@ -1342,7 +1352,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				serverResourceManager.loadRegistryTags();
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
-				this.commandFunctionManager.method_29461(this.serverResourceManager.getFunctionLoader());
+				this.commandFunctionManager.update(this.serverResourceManager.getFunctionLoader());
 				this.structureManager.method_29300(this.serverResourceManager.getResourceManager());
 			}, this);
 		if (this.isOnThread()) {

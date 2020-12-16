@@ -82,7 +82,7 @@ public class BucketItem extends Item implements FluidModificationItem {
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					return TypedActionResult.success(this.getEmptiedStack(itemStack, user), world.isClient());
+					return TypedActionResult.success(getEmptiedStack(itemStack, user), world.isClient());
 				} else {
 					return TypedActionResult.fail(itemStack);
 				}
@@ -90,8 +90,8 @@ public class BucketItem extends Item implements FluidModificationItem {
 		}
 	}
 
-	protected ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
-		return !player.getAbilities().creativeMode ? new ItemStack(Items.BUCKET) : stack;
+	public static ItemStack getEmptiedStack(ItemStack itemStack, PlayerEntity playerEntity) {
+		return !playerEntity.getAbilities().creativeMode ? new ItemStack(Items.BUCKET) : itemStack;
 	}
 
 	@Override

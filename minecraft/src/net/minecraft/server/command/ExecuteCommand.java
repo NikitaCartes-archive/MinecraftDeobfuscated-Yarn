@@ -36,9 +36,9 @@ import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
 import net.minecraft.command.argument.NumberRangeArgumentType;
-import net.minecraft.command.argument.ObjectiveArgumentType;
 import net.minecraft.command.argument.RotationArgumentType;
 import net.minecraft.command.argument.ScoreHolderArgumentType;
+import net.minecraft.command.argument.ScoreboardObjectiveArgumentType;
 import net.minecraft.command.argument.SwizzleArgumentType;
 import net.minecraft.command.argument.Vec3ArgumentType;
 import net.minecraft.entity.Entity;
@@ -222,13 +222,13 @@ public class ExecuteCommand {
 					CommandManager.argument("targets", ScoreHolderArgumentType.scoreHolders())
 						.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 						.then(
-							CommandManager.argument("objective", ObjectiveArgumentType.objective())
+							CommandManager.argument("objective", ScoreboardObjectiveArgumentType.scoreboardObjective())
 								.redirect(
 									node,
 									commandContext -> executeStoreScore(
 											commandContext.getSource(),
 											ScoreHolderArgumentType.getScoreboardScoreHolders(commandContext, "targets"),
-											ObjectiveArgumentType.getObjective(commandContext, "objective"),
+											ScoreboardObjectiveArgumentType.getObjective(commandContext, "objective"),
 											requestResult
 										)
 								)
@@ -421,7 +421,7 @@ public class ExecuteCommand {
 						CommandManager.argument("target", ScoreHolderArgumentType.scoreHolder())
 							.suggests(ScoreHolderArgumentType.SUGGESTION_PROVIDER)
 							.then(
-								CommandManager.argument("targetObjective", ObjectiveArgumentType.objective())
+								CommandManager.argument("targetObjective", ScoreboardObjectiveArgumentType.scoreboardObjective())
 									.then(
 										CommandManager.literal("=")
 											.then(
@@ -430,7 +430,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, Integer::equals)
 														)
@@ -445,7 +445,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer < integer2)
 														)
@@ -460,7 +460,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer <= integer2)
 														)
@@ -475,7 +475,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer > integer2)
 														)
@@ -490,7 +490,7 @@ public class ExecuteCommand {
 													.then(
 														addConditionLogic(
 															root,
-															CommandManager.argument("sourceObjective", ObjectiveArgumentType.objective()),
+															CommandManager.argument("sourceObjective", ScoreboardObjectiveArgumentType.scoreboardObjective()),
 															positive,
 															commandContext -> testScoreCondition(commandContext, (integer, integer2) -> integer >= integer2)
 														)
@@ -502,7 +502,7 @@ public class ExecuteCommand {
 											.then(
 												addConditionLogic(
 													root,
-													CommandManager.argument("range", NumberRangeArgumentType.numberRange()),
+													CommandManager.argument("range", NumberRangeArgumentType.intRange()),
 													positive,
 													commandContext -> testScoreMatch(commandContext, NumberRangeArgumentType.IntRangeArgumentType.getRangeArgument(commandContext, "range"))
 												)
@@ -601,9 +601,9 @@ public class ExecuteCommand {
 
 	private static boolean testScoreCondition(CommandContext<ServerCommandSource> context, BiPredicate<Integer, Integer> condition) throws CommandSyntaxException {
 		String string = ScoreHolderArgumentType.getScoreHolder(context, "target");
-		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjective(context, "targetObjective");
+		ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
 		String string2 = ScoreHolderArgumentType.getScoreHolder(context, "source");
-		ScoreboardObjective scoreboardObjective2 = ObjectiveArgumentType.getObjective(context, "sourceObjective");
+		ScoreboardObjective scoreboardObjective2 = ScoreboardObjectiveArgumentType.getObjective(context, "sourceObjective");
 		Scoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
 		if (scoreboard.playerHasObjective(string, scoreboardObjective) && scoreboard.playerHasObjective(string2, scoreboardObjective2)) {
 			ScoreboardPlayerScore scoreboardPlayerScore = scoreboard.getPlayerScore(string, scoreboardObjective);
@@ -616,7 +616,7 @@ public class ExecuteCommand {
 
 	private static boolean testScoreMatch(CommandContext<ServerCommandSource> context, NumberRange.IntRange range) throws CommandSyntaxException {
 		String string = ScoreHolderArgumentType.getScoreHolder(context, "target");
-		ScoreboardObjective scoreboardObjective = ObjectiveArgumentType.getObjective(context, "targetObjective");
+		ScoreboardObjective scoreboardObjective = ScoreboardObjectiveArgumentType.getObjective(context, "targetObjective");
 		Scoreboard scoreboard = context.getSource().getMinecraftServer().getScoreboard();
 		return !scoreboard.playerHasObjective(string, scoreboardObjective) ? false : range.test(scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
 	}

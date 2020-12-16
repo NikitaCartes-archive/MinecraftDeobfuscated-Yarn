@@ -59,7 +59,7 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			MineshaftFeatureConfig mineshaftFeatureConfig
 		) {
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-				0, this.random, ChunkSectionPos.method_32205(i, 2), ChunkSectionPos.method_32205(j, 2), mineshaftFeatureConfig.type
+				0, this.random, ChunkSectionPos.getOffsetPos(i, 2), ChunkSectionPos.getOffsetPos(j, 2), mineshaftFeatureConfig.type
 			);
 			this.children.add(mineshaftRoom);
 			mineshaftRoom.fillOpenings(mineshaftRoom, this.children, this.random);

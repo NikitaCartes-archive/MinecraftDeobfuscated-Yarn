@@ -37,9 +37,7 @@ public class MinecartCommandBlockScreen extends AbstractCommandBlockScreen {
 			this.client
 				.getNetworkHandler()
 				.sendPacket(
-					new UpdateCommandBlockMinecartC2SPacket(
-						commandExecutor2.getMinecart().getEntityId(), this.consoleCommandTextField.getText(), commandExecutor.isTrackingOutput()
-					)
+					new UpdateCommandBlockMinecartC2SPacket(commandExecutor2.getMinecart().getId(), this.consoleCommandTextField.getText(), commandExecutor.isTrackingOutput())
 				);
 		}
 	}

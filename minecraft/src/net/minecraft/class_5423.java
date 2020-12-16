@@ -24,8 +24,8 @@ public interface class_5423 extends EntityView, WorldView, ModifiableTestableWor
 	}
 
 	@Override
-	default boolean intersectsEntities(@Nullable Entity entity, VoxelShape shape) {
-		return EntityView.super.intersectsEntities(entity, shape);
+	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
+		return EntityView.super.intersectsEntities(except, shape);
 	}
 
 	@Override

@@ -133,29 +133,29 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 
 	@Override
 	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
+		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockBox boundingBox,
 		ChunkPos chunkPos,
-		BlockPos blockPos
+		BlockPos pos
 	) {
 		if (!boundingBox.contains(this.pos)) {
 			return true;
 		} else {
 			boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-			boolean bl = super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
-			this.placeNetherrackBase(random, structureWorldAccess);
-			this.updateNetherracksInBound(random, structureWorldAccess);
+			boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+			this.placeNetherrackBase(random, world);
+			this.updateNetherracksInBound(random, world);
 			if (this.properties.vines || this.properties.overgrown) {
-				BlockPos.stream(this.getBoundingBox()).forEach(blockPosx -> {
+				BlockPos.stream(this.getBoundingBox()).forEach(blockPos -> {
 					if (this.properties.vines) {
-						this.generateVines(random, structureWorldAccess, blockPosx);
+						this.generateVines(random, world, blockPos);
 					}
 
 					if (this.properties.overgrown) {
-						this.generateOvergrownLeaves(random, structureWorldAccess, blockPosx);
+						this.generateOvergrownLeaves(random, world, blockPos);
 					}
 				});
 			}
@@ -165,7 +165,7 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
+	protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 	}
 
 	private void generateVines(Random random, WorldAccess world, BlockPos pos) {

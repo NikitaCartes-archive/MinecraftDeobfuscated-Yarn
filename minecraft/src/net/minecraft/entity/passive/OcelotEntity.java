@@ -173,7 +173,7 @@ public class OcelotEntity extends AnimalEntity {
 	public ActionResult interactMob(PlayerEntity player, Hand hand) {
 		ItemStack itemStack = player.getStackInHand(hand);
 		if ((this.temptGoal == null || this.temptGoal.isActive()) && !this.isTrusting() && this.isBreedingItem(itemStack) && player.squaredDistanceTo(this) < 9.0) {
-			this.eat(player, itemStack);
+			this.eat(player, hand, itemStack);
 			if (!this.world.isClient) {
 				if (this.random.nextInt(3) == 0) {
 					this.setTrusting(true);

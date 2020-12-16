@@ -375,9 +375,9 @@ public class ProtoChunk implements Chunk {
 	}
 
 	public static BlockPos joinBlockPos(short sectionRel, int sectionY, ChunkPos chunkPos) {
-		int i = ChunkSectionPos.method_32205(chunkPos.x, sectionRel & 15);
-		int j = ChunkSectionPos.method_32205(sectionY, sectionRel >>> 4 & 15);
-		int k = ChunkSectionPos.method_32205(chunkPos.z, sectionRel >>> 8 & 15);
+		int i = ChunkSectionPos.getOffsetPos(chunkPos.x, sectionRel & 15);
+		int j = ChunkSectionPos.getOffsetPos(sectionY, sectionRel >>> 4 & 15);
+		int k = ChunkSectionPos.getOffsetPos(chunkPos.z, sectionRel >>> 8 & 15);
 		return new BlockPos(i, j, k);
 	}
 
@@ -394,8 +394,8 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void markBlockForPostProcessing(short s, int i) {
-		Chunk.getList(this.postProcessingLists, i).add(s);
+	public void markBlockForPostProcessing(short packedPos, int index) {
+		Chunk.getList(this.postProcessingLists, index).add(packedPos);
 	}
 
 	public ChunkTickScheduler<Block> getBlockTickScheduler() {

@@ -59,8 +59,12 @@ public class CandleCakeBlock extends AbstractCandleBlock {
 			extinguish(state, world, pos);
 			return ActionResult.success(world.isClient);
 		} else {
-			dropStacks(state, world, pos);
-			return CakeBlock.tryEat(world, pos, Blocks.CAKE.getDefaultState(), player);
+			ActionResult actionResult = CakeBlock.tryEat(world, pos, Blocks.CAKE.getDefaultState(), player);
+			if (actionResult.isAccepted()) {
+				dropStacks(state, world, pos);
+			}
+
+			return actionResult;
 		}
 	}
 

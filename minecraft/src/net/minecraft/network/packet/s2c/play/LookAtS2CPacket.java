@@ -33,7 +33,7 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 
 	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor selfAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor targetAnchor) {
 		this.selfAnchor = selfAnchor;
-		this.entityId = entity.getEntityId();
+		this.entityId = entity.getId();
 		this.targetAnchor = targetAnchor;
 		Vec3d vec3d = targetAnchor.positionAt(entity);
 		this.targetX = vec3d.x;

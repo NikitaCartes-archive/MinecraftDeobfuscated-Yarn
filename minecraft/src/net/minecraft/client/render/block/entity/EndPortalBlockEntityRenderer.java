@@ -20,86 +20,89 @@ public class EndPortalBlockEntityRenderer<T extends EndPortalBlockEntity> implem
 	public static final Identifier SKY_TEXTURE = new Identifier("textures/environment/end_sky.png");
 	public static final Identifier PORTAL_TEXTURE = new Identifier("textures/entity/end_portal.png");
 	private static final Random RANDOM = new Random(31100L);
-	private static final List<RenderLayer> field_21732 = (List<RenderLayer>)IntStream.range(0, 16)
+	private static final List<RenderLayer> PORTAL_RENDER_LAYERS = (List<RenderLayer>)IntStream.range(0, 16)
 		.mapToObj(i -> RenderLayer.getEndPortal(i + 1))
 		.collect(ImmutableList.toImmutableList());
-	private final BlockEntityRenderDispatcher field_27757;
+	private final BlockEntityRenderDispatcher dispatcher;
 
-	public EndPortalBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		this.field_27757 = context.getRenderDispatcher();
+	public EndPortalBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		this.dispatcher = ctx.getRenderDispatcher();
 	}
 
 	public void render(T endPortalBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
 		RANDOM.setSeed(31100L);
-		double d = endPortalBlockEntity.getPos().getSquaredDistance(this.field_27757.camera.getPos(), true);
-		int k = this.method_3592(d);
-		float g = this.method_3594();
+		double d = endPortalBlockEntity.getPos().getSquaredDistance(this.dispatcher.camera.getPos(), true);
+		int k = this.getDetailLevel(d);
+		float g = this.getTopYOffset();
 		Matrix4f matrix4f = matrixStack.peek().getModel();
-		this.method_23084(endPortalBlockEntity, g, 0.15F, matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)field_21732.get(0)));
+		this.renderSides(endPortalBlockEntity, g, 0.15F, matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)PORTAL_RENDER_LAYERS.get(0)));
 
 		for (int l = 1; l < k; l++) {
-			this.method_23084(endPortalBlockEntity, g, 2.0F / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)field_21732.get(l)));
+			this.renderSides(endPortalBlockEntity, g, 2.0F / (float)(18 - l), matrix4f, vertexConsumerProvider.getBuffer((RenderLayer)PORTAL_RENDER_LAYERS.get(l)));
 		}
 	}
 
-	private void method_23084(T endPortalBlockEntity, float f, float g, Matrix4f matrix4f, VertexConsumer vertexConsumer) {
-		float h = (RANDOM.nextFloat() * 0.5F + 0.1F) * g;
-		float i = (RANDOM.nextFloat() * 0.5F + 0.4F) * g;
-		float j = (RANDOM.nextFloat() * 0.5F + 0.5F) * g;
-		this.method_23085(endPortalBlockEntity, matrix4f, vertexConsumer, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, h, i, j, Direction.SOUTH);
-		this.method_23085(endPortalBlockEntity, matrix4f, vertexConsumer, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, h, i, j, Direction.NORTH);
-		this.method_23085(endPortalBlockEntity, matrix4f, vertexConsumer, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, h, i, j, Direction.EAST);
-		this.method_23085(endPortalBlockEntity, matrix4f, vertexConsumer, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 0.0F, h, i, j, Direction.WEST);
-		this.method_23085(endPortalBlockEntity, matrix4f, vertexConsumer, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, h, i, j, Direction.DOWN);
-		this.method_23085(endPortalBlockEntity, matrix4f, vertexConsumer, 0.0F, 1.0F, f, f, 1.0F, 1.0F, 0.0F, 0.0F, h, i, j, Direction.UP);
+	private void renderSides(T entity, float topYOffset, float brightness, Matrix4f model, VertexConsumer vertices) {
+		float f = (RANDOM.nextFloat() * 0.5F + 0.1F) * brightness;
+		float g = (RANDOM.nextFloat() * 0.5F + 0.4F) * brightness;
+		float h = (RANDOM.nextFloat() * 0.5F + 0.5F) * brightness;
+		this.renderSide(entity, model, vertices, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, f, g, h, Direction.SOUTH);
+		this.renderSide(entity, model, vertices, 0.0F, 1.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F, f, g, h, Direction.NORTH);
+		this.renderSide(entity, model, vertices, 1.0F, 1.0F, 1.0F, 0.0F, 0.0F, 1.0F, 1.0F, 0.0F, f, g, h, Direction.EAST);
+		this.renderSide(entity, model, vertices, 0.0F, 0.0F, 0.0F, 1.0F, 0.0F, 1.0F, 1.0F, 0.0F, f, g, h, Direction.WEST);
+		this.renderSide(entity, model, vertices, 0.0F, 1.0F, 0.0F, 0.0F, 0.0F, 0.0F, 1.0F, 1.0F, f, g, h, Direction.DOWN);
+		this.renderSide(entity, model, vertices, 0.0F, 1.0F, topYOffset, topYOffset, 1.0F, 1.0F, 0.0F, 0.0F, f, g, h, Direction.UP);
 	}
 
-	private void method_23085(
-		T endPortalBlockEntity,
-		Matrix4f matrix4f,
-		VertexConsumer vertexConsumer,
-		float f,
-		float g,
-		float h,
-		float i,
-		float j,
-		float k,
-		float l,
-		float m,
-		float n,
-		float o,
-		float p,
+	private void renderSide(
+		T entity,
+		Matrix4f model,
+		VertexConsumer vertices,
+		float x1,
+		float x2,
+		float y1,
+		float y2,
+		float z1,
+		float z2,
+		float z3,
+		float z4,
+		float red,
+		float green,
+		float blue,
 		Direction direction
 	) {
-		if (endPortalBlockEntity.shouldDrawSide(direction)) {
-			vertexConsumer.vertex(matrix4f, f, h, j).color(n, o, p, 1.0F).next();
-			vertexConsumer.vertex(matrix4f, g, h, k).color(n, o, p, 1.0F).next();
-			vertexConsumer.vertex(matrix4f, g, i, l).color(n, o, p, 1.0F).next();
-			vertexConsumer.vertex(matrix4f, f, i, m).color(n, o, p, 1.0F).next();
+		if (entity.shouldDrawSide(direction)) {
+			vertices.vertex(model, x1, y1, z1).color(red, green, blue, 1.0F).next();
+			vertices.vertex(model, x2, y1, z2).color(red, green, blue, 1.0F).next();
+			vertices.vertex(model, x2, y2, z3).color(red, green, blue, 1.0F).next();
+			vertices.vertex(model, x1, y2, z4).color(red, green, blue, 1.0F).next();
 		}
 	}
 
-	protected int method_3592(double d) {
-		if (d > 36864.0) {
+	/**
+	 * Decides how many layers of texture to show on a portal block based on its distance from the camera.
+	 */
+	protected int getDetailLevel(double distance) {
+		if (distance > 36864.0) {
 			return 1;
-		} else if (d > 25600.0) {
+		} else if (distance > 25600.0) {
 			return 3;
-		} else if (d > 16384.0) {
+		} else if (distance > 16384.0) {
 			return 5;
-		} else if (d > 9216.0) {
+		} else if (distance > 9216.0) {
 			return 7;
-		} else if (d > 4096.0) {
+		} else if (distance > 4096.0) {
 			return 9;
-		} else if (d > 1024.0) {
+		} else if (distance > 1024.0) {
 			return 11;
-		} else if (d > 576.0) {
+		} else if (distance > 576.0) {
 			return 13;
 		} else {
-			return d > 256.0 ? 14 : 15;
+			return distance > 256.0 ? 14 : 15;
 		}
 	}
 
-	protected float method_3594() {
+	protected float getTopYOffset() {
 		return 0.75F;
 	}
 }

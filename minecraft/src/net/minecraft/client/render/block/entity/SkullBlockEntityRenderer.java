@@ -67,32 +67,32 @@ public class SkullBlockEntityRenderer implements BlockEntityRenderer<SkullBlockE
 		SkullBlock.SkullType skullType = ((AbstractSkullBlock)blockState.getBlock()).getSkullType();
 		SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.MODELS.get(skullType);
 		RenderLayer renderLayer = getRenderLayer(skullType, skullBlockEntity.getOwner());
-		method_32161(direction, h, g, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
+		renderSkull(direction, h, g, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
 	}
 
-	public static void method_32161(
+	public static void renderSkull(
 		@Nullable Direction direction,
-		float f,
-		float g,
-		MatrixStack matrixStack,
-		VertexConsumerProvider vertexConsumerProvider,
-		int i,
-		SkullBlockEntityModel skullBlockEntityModel,
+		float yaw,
+		float animationProgress,
+		MatrixStack matrices,
+		VertexConsumerProvider vertexConsumers,
+		int light,
+		SkullBlockEntityModel model,
 		RenderLayer renderLayer
 	) {
-		matrixStack.push();
+		matrices.push();
 		if (direction == null) {
-			matrixStack.translate(0.5, 0.0, 0.5);
+			matrices.translate(0.5, 0.0, 0.5);
 		} else {
-			float h = 0.25F;
-			matrixStack.translate((double)(0.5F - (float)direction.getOffsetX() * 0.25F), 0.25, (double)(0.5F - (float)direction.getOffsetZ() * 0.25F));
+			float f = 0.25F;
+			matrices.translate((double)(0.5F - (float)direction.getOffsetX() * 0.25F), 0.25, (double)(0.5F - (float)direction.getOffsetZ() * 0.25F));
 		}
 
-		matrixStack.scale(-1.0F, -1.0F, 1.0F);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
-		skullBlockEntityModel.setHeadRotation(g, f, 0.0F);
-		skullBlockEntityModel.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
-		matrixStack.pop();
+		matrices.scale(-1.0F, -1.0F, 1.0F);
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(renderLayer);
+		model.setHeadRotation(animationProgress, yaw, 0.0F);
+		model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+		matrices.pop();
 	}
 
 	public static RenderLayer getRenderLayer(SkullBlock.SkullType type, @Nullable GameProfile profile) {

@@ -94,7 +94,7 @@ public class PandaEntity extends AnimalEntity {
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
 		return !this.getEquippedStack(equipmentSlot).isEmpty() ? false : equipmentSlot == EquipmentSlot.MAINHAND && super.canEquip(stack);
 	}
 
@@ -602,10 +602,10 @@ public class PandaEntity extends AnimalEntity {
 			}
 
 			if (this.isBaby()) {
-				this.eat(player, itemStack);
+				this.eat(player, hand, itemStack);
 				this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1F), true);
 			} else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
-				this.eat(player, itemStack);
+				this.eat(player, hand, itemStack);
 				this.lovePlayer(player);
 			} else {
 				if (this.world.isClient || this.isScared() || this.isTouchingWater()) {
@@ -620,7 +620,7 @@ public class PandaEntity extends AnimalEntity {
 				}
 
 				this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(itemStack.getItem(), 1));
-				this.eat(player, itemStack);
+				this.eat(player, hand, itemStack);
 			}
 
 			return ActionResult.SUCCESS;

@@ -74,9 +74,9 @@ public final class DimensionOptions {
 		return simpleRegistry2;
 	}
 
-	public static boolean method_29567(long seed, SimpleRegistry<DimensionOptions> simpleRegistry) {
+	public static boolean hasDefaultSettings(long seed, SimpleRegistry<DimensionOptions> options) {
 		List<Entry<RegistryKey<DimensionOptions>, DimensionOptions>> list = Lists.<Entry<RegistryKey<DimensionOptions>, DimensionOptions>>newArrayList(
-			simpleRegistry.getEntries()
+			options.getEntries()
 		);
 		if (list.size() != BASE_DIMENSIONS.size()) {
 			return false;

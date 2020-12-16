@@ -8,19 +8,20 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLike;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class class_5570<T extends class_5568> {
+public class class_5570<T extends EntityLike> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Int2ObjectMap<T> entitiesById = new Int2ObjectLinkedOpenHashMap<>();
 	private final Map<UUID, T> entitiesByUuid = Maps.<UUID, T>newHashMap();
 
 	public <U extends T> void method_31754(class_5575<T, U> arg, Consumer<U> consumer) {
-		for (T lv : this.entitiesById.values()) {
-			U lv2 = (U)arg.method_31796(lv);
-			if (lv2 != null) {
-				consumer.accept(lv2);
+		for (T entityLike : this.entitiesById.values()) {
+			U entityLike2 = (U)arg.method_31796(entityLike);
+			if (entityLike2 != null) {
+				consumer.accept(entityLike2);
 			}
 		}
 	}
@@ -35,13 +36,13 @@ public class class_5570<T extends class_5568> {
 			LOGGER.warn("Duplicate entity UUID {}: {}", uUID, entity);
 		} else {
 			this.entitiesByUuid.put(uUID, entity);
-			this.entitiesById.put(entity.getEntityId(), entity);
+			this.entitiesById.put(entity.getId(), entity);
 		}
 	}
 
 	public void removeEntity(T entity) {
 		this.entitiesByUuid.remove(entity.getUuid());
-		this.entitiesById.remove(entity.getEntityId());
+		this.entitiesById.remove(entity.getId());
 	}
 
 	@Nullable

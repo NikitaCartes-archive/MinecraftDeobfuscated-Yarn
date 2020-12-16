@@ -152,7 +152,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		if (this.canConvert()) {
 			this.timeInOverworld++;
 			if (this.timeInOverworld > 300) {
-				this.method_30081(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED);
+				this.playSound(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED);
 				this.zombify((ServerWorld)this.world);
 			}
 		} else {
@@ -338,7 +338,7 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.world.isClient ? null : (SoundEvent)HoglinBrain.method_30083(this).orElse(null);
+		return this.world.isClient ? null : (SoundEvent)HoglinBrain.getSoundEvent(this).orElse(null);
 	}
 
 	@Override
@@ -366,8 +366,8 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 		this.playSound(SoundEvents.ENTITY_HOGLIN_STEP, 0.15F, 1.0F);
 	}
 
-	protected void method_30081(SoundEvent soundEvent) {
-		this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+	protected void playSound(SoundEvent sound) {
+		this.playSound(sound, this.getSoundVolume(), this.getSoundPitch());
 	}
 
 	@Override

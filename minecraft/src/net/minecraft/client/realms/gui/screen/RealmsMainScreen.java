@@ -13,8 +13,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
@@ -128,7 +128,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private List<KeyCombo> keyCombos;
 	private int clicks;
 	private ReentrantLock connectLock = new ReentrantLock();
-	private class_5489 field_26466 = class_5489.field_26528;
+	private MultilineText field_26466 = MultilineText.EMPTY;
 	private RealmsMainScreen.HoverState hoverState;
 	private ButtonWidget showPopupButton;
 	private ButtonWidget pendingInvitesButton;
@@ -220,7 +220,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 			this.addChild(this.realmSelectionList);
 			this.focusOn(this.realmSelectionList);
-			this.field_26466 = class_5489.method_30890(this.textRenderer, POPUP_TEXT, 100);
+			this.field_26466 = MultilineText.create(this.textRenderer, POPUP_TEXT, 100);
 		}
 	}
 
@@ -822,7 +822,7 @@ public class RealmsMainScreen extends RealmsScreen {
 			}
 		}
 
-		this.field_26466.method_30896(matrices, this.width / 2 + 52, j + 7, 10, 5000268);
+		this.field_26466.draw(matrices, this.width / 2 + 52, j + 7, 10, 5000268);
 	}
 
 	private int popupX0() {

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -11,17 +12,21 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 /**
  * Stores all required tags of a given type, so they can be updated to point to the new tag instances on datapack reload
  */
 public class RequiredTagList<T> {
+	private final RegistryKey<? extends Registry<T>> registryKey;
+	private final String field_28302;
 	private TagGroup<T> group = TagGroup.createEmpty();
 	private final List<RequiredTagList.TagWrapper<T>> tags = Lists.<RequiredTagList.TagWrapper<T>>newArrayList();
-	private final Function<TagManager, TagGroup<T>> groupGetter;
 
-	public RequiredTagList(Function<TagManager, TagGroup<T>> managerGetter) {
-		this.groupGetter = managerGetter;
+	public RequiredTagList(RegistryKey<? extends Registry<T>> registryKey, String string) {
+		this.registryKey = registryKey;
+		this.field_28302 = string;
 	}
 
 	public Tag.Identified<T> add(String id) {
@@ -37,8 +42,8 @@ public class RequiredTagList<T> {
 		this.tags.forEach(tagx -> tagx.updateDelegate(id -> tag));
 	}
 
-	public void updateTagManager(TagManager manager) {
-		TagGroup<T> tagGroup = (TagGroup<T>)this.groupGetter.apply(manager);
+	public void updateTagManager(TagManager tagManager) {
+		TagGroup<T> tagGroup = tagManager.getOrCreateTagGroup(this.registryKey);
 		this.group = tagGroup;
 		this.tags.forEach(tag -> tag.updateDelegate(tagGroup::getTag));
 	}
@@ -47,18 +52,28 @@ public class RequiredTagList<T> {
 		return this.group;
 	}
 
-	public List<? extends Tag.Identified<T>> getTags() {
-		return this.tags;
-	}
-
 	/**
 	 * Gets the required tags which are not supplied by the current datapacks.
 	 */
-	public Set<Identifier> getMissingTags(TagManager manager) {
-		TagGroup<T> tagGroup = (TagGroup<T>)this.groupGetter.apply(manager);
+	public Set<Identifier> getMissingTags(TagManager tagManager) {
+		TagGroup<T> tagGroup = tagManager.getOrCreateTagGroup(this.registryKey);
 		Set<Identifier> set = (Set<Identifier>)this.tags.stream().map(RequiredTagList.TagWrapper::getId).collect(Collectors.toSet());
 		ImmutableSet<Identifier> immutableSet = ImmutableSet.copyOf(tagGroup.getTagIds());
 		return Sets.<Identifier>difference(set, immutableSet);
+	}
+
+	public RegistryKey<? extends Registry<T>> getRegistryKey() {
+		return this.registryKey;
+	}
+
+	public String method_33149() {
+		return this.field_28302;
+	}
+
+	protected void method_33147(TagManager.class_5749 arg) {
+		arg.method_33172(
+			this.registryKey, TagGroup.create((Map<Identifier, Tag<T>>)this.tags.stream().collect(Collectors.toMap(Tag.Identified::getId, tagWrapper -> tagWrapper)))
+		);
 	}
 
 	static class TagWrapper<T> implements Tag.Identified<T> {

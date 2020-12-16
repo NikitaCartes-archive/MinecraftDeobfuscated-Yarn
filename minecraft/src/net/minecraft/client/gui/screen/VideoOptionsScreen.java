@@ -6,13 +6,13 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.options.GameOptionsScreen;
+import net.minecraft.client.gui.screen.option.GameOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.options.FullScreenOption;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.GraphicsMode;
-import net.minecraft.client.options.Option;
+import net.minecraft.client.option.FullscreenOption;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.GraphicsMode;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.resource.VideoWarningManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -69,7 +69,7 @@ public class VideoOptionsScreen extends GameOptionsScreen {
 	@Override
 	protected void init() {
 		this.list = new ButtonListWidget(this.client, this.width, this.height, 32, this.height - 32, 25);
-		this.list.addSingleOptionEntry(new FullScreenOption(this.client.getWindow()));
+		this.list.addSingleOptionEntry(new FullscreenOption(this.client.getWindow()));
 		this.list.addSingleOptionEntry(Option.BIOME_BLEND_RADIUS);
 		this.list.addAll(OPTIONS);
 		this.children.add(this.list);

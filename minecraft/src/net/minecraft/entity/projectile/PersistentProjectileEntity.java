@@ -65,7 +65,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, double x, double y, double z, World world) {
 		this(type, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 	}
 
 	protected PersistentProjectileEntity(EntityType<? extends PersistentProjectileEntity> type, LivingEntity owner, World world) {
@@ -107,7 +107,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 		this.setRotation(yaw, pitch);
 	}
 
@@ -242,7 +242,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				this.setVelocity(vec3d4.x, vec3d4.y - 0.05F, vec3d4.z);
 			}
 
-			this.updatePosition(h, j, k);
+			this.setPosition(h, j, k);
 			this.checkBlockCollision();
 		}
 	}
@@ -303,7 +303,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 				return;
 			}
 
-			this.piercedEntities.add(entity.getEntityId());
+			this.piercedEntities.add(entity.getId());
 		}
 
 		if (this.isCritical()) {
@@ -427,7 +427,7 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 
 	@Override
 	protected boolean method_26958(Entity entity) {
-		return super.method_26958(entity) && (this.piercedEntities == null || !this.piercedEntities.contains(entity.getEntityId()));
+		return super.method_26958(entity) && (this.piercedEntities == null || !this.piercedEntities.contains(entity.getId()));
 	}
 
 	@Override

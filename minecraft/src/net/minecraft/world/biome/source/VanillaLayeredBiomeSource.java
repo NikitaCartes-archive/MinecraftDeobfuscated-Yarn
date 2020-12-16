@@ -101,7 +101,7 @@ public class VanillaLayeredBiomeSource extends BiomeSource {
 	private final Registry<Biome> biomeRegistry;
 
 	public VanillaLayeredBiomeSource(long seed, boolean legacyBiomeInitLayer, boolean largeBiomes, Registry<Biome> biomeRegistry) {
-		super(BIOMES.stream().map(registryKey -> () -> biomeRegistry.getOrThrow(registryKey)));
+		super(BIOMES.stream().map(key -> () -> biomeRegistry.getOrThrow(key)));
 		this.seed = seed;
 		this.legacyBiomeInitLayer = legacyBiomeInitLayer;
 		this.largeBiomes = largeBiomes;

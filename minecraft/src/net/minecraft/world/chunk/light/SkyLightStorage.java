@@ -225,14 +225,14 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							for (int s = 0; s < 16; s++) {
 								for (int t = 0; t < 16; t++) {
 									long u = BlockPos.asLong(
-										ChunkSectionPos.method_32205(ChunkSectionPos.unpackX(l), s),
+										ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackX(l), s),
 										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)),
-										ChunkSectionPos.method_32205(ChunkSectionPos.unpackZ(l), t)
+										ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackZ(l), t)
 									);
 									long n = BlockPos.asLong(
-										ChunkSectionPos.method_32205(ChunkSectionPos.unpackX(l), s),
+										ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackX(l), s),
 										ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l)) - 1,
-										ChunkSectionPos.method_32205(ChunkSectionPos.unpackZ(l), t)
+										ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackZ(l), t)
 									);
 									lightProvider.updateLevel(u, n, lightProvider.getPropagatedLevel(u, n, 0), true);
 								}
@@ -241,9 +241,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 							for (int j = 0; j < 16; j++) {
 								for (int k = 0; k < 16; k++) {
 									long v = BlockPos.asLong(
-										ChunkSectionPos.method_32205(ChunkSectionPos.unpackX(l), j),
-										ChunkSectionPos.method_32205(ChunkSectionPos.unpackY(l), 15),
-										ChunkSectionPos.method_32205(ChunkSectionPos.unpackZ(l), k)
+										ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackX(l), j),
+										ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackY(l), 15),
+										ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackZ(l), k)
 									);
 									lightProvider.updateLevel(Long.MAX_VALUE, v, 0, true);
 								}
@@ -263,9 +263,9 @@ public class SkyLightStorage extends LightStorage<SkyLightStorage.Data> {
 						for (int i = 0; i < 16; i++) {
 							for (int j = 0; j < 16; j++) {
 								long w = BlockPos.asLong(
-									ChunkSectionPos.method_32205(ChunkSectionPos.unpackX(l), i),
-									ChunkSectionPos.method_32205(ChunkSectionPos.unpackY(l), 15),
-									ChunkSectionPos.method_32205(ChunkSectionPos.unpackZ(l), j)
+									ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackX(l), i),
+									ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackY(l), 15),
+									ChunkSectionPos.getOffsetPos(ChunkSectionPos.unpackZ(l), j)
 								);
 								lightProvider.updateLevel(Long.MAX_VALUE, w, 15, false);
 							}

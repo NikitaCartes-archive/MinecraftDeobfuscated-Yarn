@@ -15,6 +15,7 @@ import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.registry.Registry;
 
 public class TagEntry extends LeafEntry {
 	private final Tag<Item> name;
@@ -65,7 +66,9 @@ public class TagEntry extends LeafEntry {
 	public static class Serializer extends LeafEntry.Serializer<TagEntry> {
 		public void addEntryFields(JsonObject jsonObject, TagEntry tagEntry, JsonSerializationContext jsonSerializationContext) {
 			super.addEntryFields(jsonObject, tagEntry, jsonSerializationContext);
-			jsonObject.addProperty("name", ServerTagManagerHolder.getTagManager().getItems().getTagId(tagEntry.name).toString());
+			jsonObject.addProperty(
+				"name", ServerTagManagerHolder.getTagManager().getTagId(Registry.ITEM_KEY, tagEntry.name, () -> new IllegalStateException("Unknown item tag")).toString()
+			);
 			jsonObject.addProperty("expand", tagEntry.expand);
 		}
 
@@ -73,13 +76,10 @@ public class TagEntry extends LeafEntry {
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			Tag<Item> tag = ServerTagManagerHolder.getTagManager().getItems().getTag(identifier);
-			if (tag == null) {
-				throw new JsonParseException("Can't find tag: " + identifier);
-			} else {
-				boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
-				return new TagEntry(tag, bl, i, j, lootConditions, lootFunctions);
-			}
+			Tag<Item> tag = ServerTagManagerHolder.getTagManager()
+				.getTag(Registry.ITEM_KEY, identifier, identifierx -> new JsonParseException("Can't find tag: " + identifierx));
+			boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
+			return new TagEntry(tag, bl, i, j, lootConditions, lootFunctions);
 		}
 	}
 }

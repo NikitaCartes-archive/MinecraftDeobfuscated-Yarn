@@ -117,7 +117,7 @@ public class Util {
 				};
 				forkJoinWorkerThread.setName("Worker-" + name + "-" + NEXT_WORKER_ID.getAndIncrement());
 				return forkJoinWorkerThread;
-			}, Util::method_18347, true);
+			}, Util::uncaughtExceptionHandler, true);
 		}
 
 		return executorService;
@@ -159,7 +159,7 @@ public class Util {
 		return Executors.newCachedThreadPool(runnable -> {
 			Thread thread = new Thread(runnable);
 			thread.setName("IO-Worker-" + NEXT_WORKER_ID.getAndIncrement());
-			thread.setUncaughtExceptionHandler(Util::method_18347);
+			thread.setUncaughtExceptionHandler(Util::uncaughtExceptionHandler);
 			return thread;
 		});
 	}
@@ -172,22 +172,22 @@ public class Util {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void throwUnchecked(Throwable throwable) {
-		throw throwable instanceof RuntimeException ? (RuntimeException)throwable : new RuntimeException(throwable);
+	public static void throwUnchecked(Throwable t) {
+		throw t instanceof RuntimeException ? (RuntimeException)t : new RuntimeException(t);
 	}
 
-	private static void method_18347(Thread thread, Throwable throwable) {
-		throwOrPause(throwable);
-		if (throwable instanceof CompletionException) {
-			throwable = throwable.getCause();
+	private static void uncaughtExceptionHandler(Thread thread, Throwable t) {
+		throwOrPause(t);
+		if (t instanceof CompletionException) {
+			t = t.getCause();
 		}
 
-		if (throwable instanceof CrashException) {
-			Bootstrap.println(((CrashException)throwable).getReport().asString());
+		if (t instanceof CrashException) {
+			Bootstrap.println(((CrashException)t).getReport().asString());
 			System.exit(-1);
 		}
 
-		LOGGER.error(String.format("Caught exception in thread %s", thread), throwable);
+		LOGGER.error(String.format("Caught exception in thread %s", thread), t);
 	}
 
 	@Nullable
@@ -358,7 +358,7 @@ public class Util {
 		return array[random.nextInt(array.length)];
 	}
 
-	public static <T> T method_32309(List<T> list, Random random) {
+	public static <T> T getRandom(List<T> list, Random random) {
 		return (T)list.get(random.nextInt(list.size()));
 	}
 

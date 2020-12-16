@@ -36,7 +36,7 @@ public abstract class BlockStateVariantMap {
 		Stream<PropertiesMap> stream = Stream.of(PropertiesMap.empty());
 
 		for (Property<?> property : list) {
-			stream = stream.flatMap(propertiesMap -> property.stream().map(propertiesMap::method_25819));
+			stream = stream.flatMap(propertiesMap -> property.stream().map(propertiesMap::withValue));
 		}
 
 		List<PropertiesMap> list2 = (List<PropertiesMap>)stream.filter(propertiesMap -> !this.variants.containsKey(propertiesMap)).collect(Collectors.toList());
@@ -90,7 +90,7 @@ public abstract class BlockStateVariantMap {
 		}
 
 		public BlockStateVariantMap.DoubleProperty<T1, T2> register(T1 comparable, T2 comparable2, List<BlockStateVariant> list) {
-			PropertiesMap propertiesMap = PropertiesMap.method_25821(this.first.createValue(comparable), this.second.createValue(comparable2));
+			PropertiesMap propertiesMap = PropertiesMap.withValues(this.first.createValue(comparable), this.second.createValue(comparable2));
 			this.register(propertiesMap, list);
 			return this;
 		}
@@ -144,7 +144,7 @@ public abstract class BlockStateVariantMap {
 		public BlockStateVariantMap.QuadrupleProperty<T1, T2, T3, T4> register(
 			T1 comparable, T2 comparable2, T3 comparable3, T4 comparable4, List<BlockStateVariant> list
 		) {
-			PropertiesMap propertiesMap = PropertiesMap.method_25821(
+			PropertiesMap propertiesMap = PropertiesMap.withValues(
 				this.first.createValue(comparable), this.second.createValue(comparable2), this.third.createValue(comparable3), this.fourth.createValue(comparable4)
 			);
 			this.register(propertiesMap, list);
@@ -182,7 +182,7 @@ public abstract class BlockStateVariantMap {
 		public BlockStateVariantMap.QuintupleProperty<T1, T2, T3, T4, T5> register(
 			T1 comparable, T2 comparable2, T3 comparable3, T4 comparable4, T5 comparable5, List<BlockStateVariant> list
 		) {
-			PropertiesMap propertiesMap = PropertiesMap.method_25821(
+			PropertiesMap propertiesMap = PropertiesMap.withValues(
 				this.first.createValue(comparable),
 				this.second.createValue(comparable2),
 				this.third.createValue(comparable3),
@@ -213,7 +213,7 @@ public abstract class BlockStateVariantMap {
 		}
 
 		public BlockStateVariantMap.SingleProperty<T1> register(T1 value, List<BlockStateVariant> variants) {
-			PropertiesMap propertiesMap = PropertiesMap.method_25821(this.property.createValue(value));
+			PropertiesMap propertiesMap = PropertiesMap.withValues(this.property.createValue(value));
 			this.register(propertiesMap, variants);
 			return this;
 		}
@@ -250,7 +250,7 @@ public abstract class BlockStateVariantMap {
 		}
 
 		public BlockStateVariantMap.TripleProperty<T1, T2, T3> register(T1 comparable, T2 comparable2, T3 comparable3, List<BlockStateVariant> list) {
-			PropertiesMap propertiesMap = PropertiesMap.method_25821(
+			PropertiesMap propertiesMap = PropertiesMap.withValues(
 				this.first.createValue(comparable), this.second.createValue(comparable2), this.third.createValue(comparable3)
 			);
 			this.register(propertiesMap, list);

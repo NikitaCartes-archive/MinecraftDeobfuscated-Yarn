@@ -68,11 +68,11 @@ public class ChunkPos {
 	}
 
 	public int getEndX() {
-		return ChunkSectionPos.method_32205(this.x, 15);
+		return ChunkSectionPos.getOffsetPos(this.x, 15);
 	}
 
 	public int getEndZ() {
-		return ChunkSectionPos.method_32205(this.z, 15);
+		return ChunkSectionPos.getOffsetPos(this.z, 15);
 	}
 
 	public int getRegionX() {

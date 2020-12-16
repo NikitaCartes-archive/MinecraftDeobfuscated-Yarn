@@ -406,9 +406,9 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 		private void renderInvitedItem(MatrixStack matrices, PlayerInfo playerInfo, int x, int y, int mouseX, int mouseY) {
 			int i;
-			if (!playerInfo.getAccepted()) {
+			if (!playerInfo.isAccepted()) {
 				i = 10526880;
-			} else if (playerInfo.getOnline()) {
+			} else if (playerInfo.isOnline()) {
 				i = 8388479;
 			} else {
 				i = 16777215;

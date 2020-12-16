@@ -7,7 +7,6 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
 
 public abstract class TrackTargetGoal extends Goal {
@@ -59,7 +58,7 @@ public abstract class TrackTargetGoal extends Goal {
 						}
 					}
 
-					if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable) {
+					if (!livingEntity.canTakeDamage()) {
 						return false;
 					} else {
 						this.mob.setTarget(livingEntity);

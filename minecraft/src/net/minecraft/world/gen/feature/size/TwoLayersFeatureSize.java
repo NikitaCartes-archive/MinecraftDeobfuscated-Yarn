@@ -10,7 +10,7 @@ public class TwoLayersFeatureSize extends FeatureSize {
 					Codec.intRange(0, 81).fieldOf("limit").orElse(1).forGetter(twoLayersFeatureSize -> twoLayersFeatureSize.limit),
 					Codec.intRange(0, 16).fieldOf("lower_size").orElse(0).forGetter(twoLayersFeatureSize -> twoLayersFeatureSize.lowerSize),
 					Codec.intRange(0, 16).fieldOf("upper_size").orElse(1).forGetter(twoLayersFeatureSize -> twoLayersFeatureSize.upperSize),
-					createCodecBuilder()
+					createCodec()
 				)
 				.apply(instance, TwoLayersFeatureSize::new)
 	);
@@ -35,7 +35,7 @@ public class TwoLayersFeatureSize extends FeatureSize {
 	}
 
 	@Override
-	public int method_27378(int i, int j) {
-		return j < this.limit ? this.lowerSize : this.upperSize;
+	public int getRadius(int height, int y) {
+		return y < this.limit ? this.lowerSize : this.upperSize;
 	}
 }

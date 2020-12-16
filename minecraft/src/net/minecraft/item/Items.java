@@ -818,16 +818,23 @@ public class Items {
 		"milk_bucket", new MilkBucketItem(new Item.Settings().recipeRemainder(BUCKET).maxCount(1).group(ItemGroup.MISC))
 	);
 	public static final Item PUFFERFISH_BUCKET = register(
-		"pufferfish_bucket", new FishBucketItem(EntityType.PUFFERFISH, Fluids.WATER, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
+		"pufferfish_bucket",
+		new EntityBucketItem(EntityType.PUFFERFISH, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
 	public static final Item SALMON_BUCKET = register(
-		"salmon_bucket", new FishBucketItem(EntityType.SALMON, Fluids.WATER, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
+		"salmon_bucket",
+		new EntityBucketItem(EntityType.SALMON, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
 	public static final Item COD_BUCKET = register(
-		"cod_bucket", new FishBucketItem(EntityType.COD, Fluids.WATER, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
+		"cod_bucket", new EntityBucketItem(EntityType.COD, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
 	public static final Item TROPICAL_FISH_BUCKET = register(
-		"tropical_fish_bucket", new FishBucketItem(EntityType.TROPICAL_FISH, Fluids.WATER, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
+		"tropical_fish_bucket",
+		new EntityBucketItem(EntityType.TROPICAL_FISH, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_FISH, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
+	);
+	public static final Item AXOLOTL_BUCKET = register(
+		"axolotl_bucket",
+		new EntityBucketItem(EntityType.AXOLOTL, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_AXOLOTL, new Item.Settings().maxCount(1).group(ItemGroup.MISC))
 	);
 	public static final Item BRICK = register("brick", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 	public static final Item CLAY_BALL = register("clay_ball", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -919,6 +926,9 @@ public class Items {
 	public static final Item CAULDRON = register(Blocks.CAULDRON, ItemGroup.BREWING);
 	public static final Item ENDER_EYE = register("ender_eye", new EnderEyeItem(new Item.Settings().group(ItemGroup.MISC)));
 	public static final Item GLISTERING_MELON_SLICE = register("glistering_melon_slice", new Item(new Item.Settings().group(ItemGroup.BREWING)));
+	public static final Item AXOLOTL_SPAWN_EGG = register(
+		"axolotl_spawn_egg", new SpawnEggItem(EntityType.AXOLOTL, 16499171, 10890612, new Item.Settings().group(ItemGroup.MISC))
+	);
 	public static final Item BAT_SPAWN_EGG = register(
 		"bat_spawn_egg", new SpawnEggItem(EntityType.BAT, 4996656, 986895, new Item.Settings().group(ItemGroup.MISC))
 	);

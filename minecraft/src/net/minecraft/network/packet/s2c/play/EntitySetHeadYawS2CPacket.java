@@ -17,7 +17,7 @@ public class EntitySetHeadYawS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public EntitySetHeadYawS2CPacket(Entity entity, byte headYaw) {
-		this.entity = entity.getEntityId();
+		this.entity = entity.getId();
 		this.headYaw = headYaw;
 	}
 

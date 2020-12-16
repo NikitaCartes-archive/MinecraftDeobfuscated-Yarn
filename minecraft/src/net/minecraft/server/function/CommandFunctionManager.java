@@ -21,12 +21,12 @@ public class CommandFunctionManager {
 	private final List<CommandFunctionManager.Entry> pending = Lists.<CommandFunctionManager.Entry>newArrayList();
 	private final List<CommandFunction> tickFunctions = Lists.<CommandFunction>newArrayList();
 	private boolean needToRunLoadFunctions;
-	private FunctionLoader field_25333;
+	private FunctionLoader loader;
 
-	public CommandFunctionManager(MinecraftServer minecraftServer, FunctionLoader functionLoader) {
-		this.server = minecraftServer;
-		this.field_25333 = functionLoader;
-		this.method_29773(functionLoader);
+	public CommandFunctionManager(MinecraftServer server, FunctionLoader loader) {
+		this.server = server;
+		this.loader = loader;
+		this.initialize(loader);
 	}
 
 	public int getMaxCommandChainLength() {
@@ -38,18 +38,18 @@ public class CommandFunctionManager {
 	}
 
 	public void tick() {
-		this.method_29460(this.tickFunctions, TICK_FUNCTION);
+		this.executeAll(this.tickFunctions, TICK_FUNCTION);
 		if (this.needToRunLoadFunctions) {
 			this.needToRunLoadFunctions = false;
-			Collection<CommandFunction> collection = this.field_25333.getTags().getTagOrEmpty(LOAD_FUNCTION).values();
-			this.method_29460(collection, LOAD_FUNCTION);
+			Collection<CommandFunction> collection = this.loader.getTags().getTagOrEmpty(LOAD_FUNCTION).values();
+			this.executeAll(collection, LOAD_FUNCTION);
 		}
 	}
 
-	private void method_29460(Collection<CommandFunction> collection, Identifier identifier) {
-		this.server.getProfiler().push(identifier::toString);
+	private void executeAll(Collection<CommandFunction> functions, Identifier label) {
+		this.server.getProfiler().push(label::toString);
 
-		for (CommandFunction commandFunction : collection) {
+		for (CommandFunction commandFunction : functions) {
 			this.execute(commandFunction, this.getTaggedFunctionSource());
 		}
 
@@ -104,14 +104,19 @@ public class CommandFunctionManager {
 		}
 	}
 
-	public void method_29461(FunctionLoader functionLoader) {
-		this.field_25333 = functionLoader;
-		this.method_29773(functionLoader);
+	/**
+	 * Called to update the loaded functions on datapack reload.
+	 * 
+	 * @param loader the new loader functions will be taken from
+	 */
+	public void update(FunctionLoader loader) {
+		this.loader = loader;
+		this.initialize(loader);
 	}
 
-	private void method_29773(FunctionLoader functionLoader) {
+	private void initialize(FunctionLoader loader) {
 		this.tickFunctions.clear();
-		this.tickFunctions.addAll(functionLoader.getTags().getTagOrEmpty(TICK_FUNCTION).values());
+		this.tickFunctions.addAll(loader.getTags().getTagOrEmpty(TICK_FUNCTION).values());
 		this.needToRunLoadFunctions = true;
 	}
 
@@ -120,19 +125,19 @@ public class CommandFunctionManager {
 	}
 
 	public Optional<CommandFunction> getFunction(Identifier id) {
-		return this.field_25333.get(id);
+		return this.loader.get(id);
 	}
 
-	public Tag<CommandFunction> method_29462(Identifier identifier) {
-		return this.field_25333.getOrCreateTag(identifier);
+	public Tag<CommandFunction> getTaggedFunctions(Identifier tag) {
+		return this.loader.getOrCreateTag(tag);
 	}
 
-	public Iterable<Identifier> method_29463() {
-		return this.field_25333.getFunctions().keySet();
+	public Iterable<Identifier> getAllFunctions() {
+		return this.loader.getFunctions().keySet();
 	}
 
-	public Iterable<Identifier> method_29464() {
-		return this.field_25333.getTags().getTagIds();
+	public Iterable<Identifier> getFunctionTags() {
+		return this.loader.getTags().getTagIds();
 	}
 
 	public static class Entry {

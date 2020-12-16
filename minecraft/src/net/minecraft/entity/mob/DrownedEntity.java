@@ -28,6 +28,7 @@ import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.ai.pathing.SwimNavigation;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.passive.TurtleEntity;
@@ -79,6 +80,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		this.targetSelector.add(2, new FollowTargetGoal(this, PlayerEntity.class, 10, true, false, this::canDrownedAttackTarget));
 		this.targetSelector.add(3, new FollowTargetGoal(this, MerchantEntity.class, false));
 		this.targetSelector.add(3, new FollowTargetGoal(this, IronGolemEntity.class, true));
+		this.targetSelector.add(3, new FollowTargetGoal(this, AxolotlEntity.class, 10, true, false, AxolotlEntity.AXOLOTL_NOT_PLAYING_DEAD));
 		this.targetSelector.add(5, new FollowTargetGoal(this, TurtleEntity.class, 10, true, false, TurtleEntity.BABY_TURTLE_ON_LAND_FILTER));
 	}
 

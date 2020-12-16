@@ -218,24 +218,24 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
-			int i = Math.max(structureWorldAccess.getSeaLevel(), 64) - this.boundingBox.minY;
-			this.setAirAndWater(structureWorldAccess, boundingBox, 0, 0, 0, 58, i, 58);
-			this.method_14761(false, 0, structureWorldAccess, random, boundingBox);
-			this.method_14761(true, 33, structureWorldAccess, random, boundingBox);
-			this.method_14763(structureWorldAccess, random, boundingBox);
-			this.method_14762(structureWorldAccess, random, boundingBox);
-			this.method_14765(structureWorldAccess, random, boundingBox);
-			this.method_14764(structureWorldAccess, random, boundingBox);
-			this.method_14766(structureWorldAccess, random, boundingBox);
-			this.method_14767(structureWorldAccess, random, boundingBox);
+			int i = Math.max(world.getSeaLevel(), 64) - this.boundingBox.minY;
+			this.setAirAndWater(world, boundingBox, 0, 0, 0, 58, i, 58);
+			this.method_14761(false, 0, world, random, boundingBox);
+			this.method_14761(true, 33, world, random, boundingBox);
+			this.method_14763(world, random, boundingBox);
+			this.method_14762(world, random, boundingBox);
+			this.method_14765(world, random, boundingBox);
+			this.method_14764(world, random, boundingBox);
+			this.method_14766(world, random, boundingBox);
+			this.method_14767(world, random, boundingBox);
 
 			for (int j = 0; j < 7; j++) {
 				int k = 0;
@@ -250,8 +250,8 @@ public class OceanMonumentGenerator {
 
 					for (int n = 0; n < 4; n++) {
 						for (int o = 0; o < 4; o++) {
-							this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, l + n, 0, m + o, boundingBox);
-							this.fillDownwards(structureWorldAccess, PRISMARINE_BRICKS, l + n, -1, m + o, boundingBox);
+							this.addBlock(world, PRISMARINE_BRICKS, l + n, 0, m + o, boundingBox);
+							this.fillDownwards(world, PRISMARINE_BRICKS, l + n, -1, m + o, boundingBox);
 						}
 					}
 
@@ -264,15 +264,15 @@ public class OceanMonumentGenerator {
 			}
 
 			for (int j = 0; j < 5; j++) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, -1 - j, 0 + j * 2, -1 - j, -1 - j, 23, 58 + j);
-				this.setAirAndWater(structureWorldAccess, boundingBox, 58 + j, 0 + j * 2, -1 - j, 58 + j, 23, 58 + j);
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0 - j, 0 + j * 2, -1 - j, 57 + j, 23, -1 - j);
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0 - j, 0 + j * 2, 58 + j, 57 + j, 23, 58 + j);
+				this.setAirAndWater(world, boundingBox, -1 - j, 0 + j * 2, -1 - j, -1 - j, 23, 58 + j);
+				this.setAirAndWater(world, boundingBox, 58 + j, 0 + j * 2, -1 - j, 58 + j, 23, 58 + j);
+				this.setAirAndWater(world, boundingBox, 0 - j, 0 + j * 2, -1 - j, 57 + j, 23, -1 - j);
+				this.setAirAndWater(world, boundingBox, 0 - j, 0 + j * 2, 58 + j, 57 + j, 23, 58 + j);
 			}
 
 			for (OceanMonumentGenerator.Piece piece : this.field_14465) {
 				if (piece.getBoundingBox().intersects(boundingBox)) {
-					piece.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+					piece.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 				}
 			}
 
@@ -607,21 +607,21 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
-			this.method_14771(structureWorldAccess, boundingBox, 1, 8, 0, 14, 8, 14, PRISMARINE);
+			this.method_14771(world, boundingBox, 1, 8, 0, 14, 8, 14, PRISMARINE);
 			int i = 7;
 			BlockState blockState = PRISMARINE_BRICKS;
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 7, 0, 0, 7, 15, blockState, blockState, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 15, 7, 0, 15, 7, 15, blockState, blockState, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 7, 0, 15, 7, 0, blockState, blockState, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 7, 15, 14, 7, 15, blockState, blockState, false);
+			this.fillWithOutline(world, boundingBox, 0, 7, 0, 0, 7, 15, blockState, blockState, false);
+			this.fillWithOutline(world, boundingBox, 15, 7, 0, 15, 7, 15, blockState, blockState, false);
+			this.fillWithOutline(world, boundingBox, 1, 7, 0, 15, 7, 0, blockState, blockState, false);
+			this.fillWithOutline(world, boundingBox, 1, 7, 15, 14, 7, 15, blockState, blockState, false);
 
 			for (int ix = 1; ix <= 6; ix++) {
 				blockState = PRISMARINE_BRICKS;
@@ -630,55 +630,55 @@ public class OceanMonumentGenerator {
 				}
 
 				for (int j = 0; j <= 15; j += 15) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, j, ix, 0, j, ix, 1, blockState, blockState, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, j, ix, 6, j, ix, 9, blockState, blockState, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, j, ix, 14, j, ix, 15, blockState, blockState, false);
+					this.fillWithOutline(world, boundingBox, j, ix, 0, j, ix, 1, blockState, blockState, false);
+					this.fillWithOutline(world, boundingBox, j, ix, 6, j, ix, 9, blockState, blockState, false);
+					this.fillWithOutline(world, boundingBox, j, ix, 14, j, ix, 15, blockState, blockState, false);
 				}
 
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, ix, 0, 1, ix, 0, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, ix, 0, 9, ix, 0, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 14, ix, 0, 14, ix, 0, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, ix, 15, 14, ix, 15, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 1, ix, 0, 1, ix, 0, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 6, ix, 0, 9, ix, 0, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 14, ix, 0, 14, ix, 0, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 1, ix, 15, 14, ix, 15, blockState, blockState, false);
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 3, 6, 9, 6, 9, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 4, 7, 8, 5, 8, Blocks.GOLD_BLOCK.getDefaultState(), Blocks.GOLD_BLOCK.getDefaultState(), false);
+			this.fillWithOutline(world, boundingBox, 6, 3, 6, 9, 6, 9, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 7, 4, 7, 8, 5, 8, Blocks.GOLD_BLOCK.getDefaultState(), Blocks.GOLD_BLOCK.getDefaultState(), false);
 
 			for (int ix = 3; ix <= 6; ix += 3) {
 				for (int k = 6; k <= 9; k += 3) {
-					this.addBlock(structureWorldAccess, SEA_LANTERN, k, ix, 6, boundingBox);
-					this.addBlock(structureWorldAccess, SEA_LANTERN, k, ix, 9, boundingBox);
+					this.addBlock(world, SEA_LANTERN, k, ix, 6, boundingBox);
+					this.addBlock(world, SEA_LANTERN, k, ix, 9, boundingBox);
 				}
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 6, 5, 2, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 9, 5, 2, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 1, 6, 10, 2, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 1, 9, 10, 2, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 5, 6, 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 9, 1, 5, 9, 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 10, 6, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 9, 1, 10, 9, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 2, 5, 5, 6, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 2, 10, 5, 6, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 2, 5, 10, 6, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 2, 10, 10, 6, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 7, 1, 5, 7, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 7, 1, 10, 7, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 7, 9, 5, 7, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 7, 9, 10, 7, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 7, 5, 6, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 7, 10, 6, 7, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 9, 7, 5, 14, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 9, 7, 10, 14, 7, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 1, 2, 2, 1, 3, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 2, 3, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 13, 1, 2, 13, 1, 3, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 12, 1, 2, 12, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 1, 12, 2, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 13, 3, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 13, 1, 12, 13, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 12, 1, 13, 12, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 1, 6, 5, 2, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 1, 9, 5, 2, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 1, 6, 10, 2, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 1, 9, 10, 2, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 1, 5, 6, 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 9, 1, 5, 9, 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 1, 10, 6, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 9, 1, 10, 9, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 2, 5, 5, 6, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 2, 10, 5, 6, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 2, 5, 10, 6, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 2, 10, 10, 6, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 7, 1, 5, 7, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 7, 1, 10, 7, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 7, 9, 5, 7, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 7, 9, 10, 7, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 7, 5, 6, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 7, 10, 6, 7, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 9, 7, 5, 14, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 9, 7, 10, 14, 7, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 2, 1, 2, 2, 1, 3, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 3, 1, 2, 3, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 13, 1, 2, 13, 1, 3, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 12, 1, 2, 12, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 2, 1, 12, 2, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 3, 1, 13, 3, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 13, 1, 12, 13, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 12, 1, 13, 12, 1, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			return true;
 		}
 	}
@@ -694,68 +694,68 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 			if (this.setting.roomIndex / 25 > 0) {
-				this.method_14774(structureWorldAccess, boundingBox, 8, 0, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
-				this.method_14774(structureWorldAccess, boundingBox, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 8, 0, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
 			}
 
 			if (pieceSetting2.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 4, 1, 7, 4, 6, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 4, 1, 7, 4, 6, PRISMARINE);
 			}
 
 			if (pieceSetting.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 8, 4, 1, 14, 4, 6, PRISMARINE);
+				this.method_14771(world, boundingBox, 8, 4, 1, 14, 4, 6, PRISMARINE);
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 0, 0, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 15, 3, 0, 15, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 0, 15, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 7, 14, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 0, 0, 2, 7, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 15, 2, 0, 15, 2, 7, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 0, 15, 2, 0, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 7, 14, 2, 7, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 0, 0, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 15, 1, 0, 15, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 0, 15, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 7, 14, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 0, 10, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 2, 0, 9, 2, 3, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 3, 0, 10, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 6, 2, 3, boundingBox);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 9, 2, 3, boundingBox);
+			this.fillWithOutline(world, boundingBox, 0, 3, 0, 0, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 15, 3, 0, 15, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 3, 0, 15, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 3, 7, 14, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 2, 7, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 15, 2, 0, 15, 2, 7, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 1, 2, 0, 15, 2, 0, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 1, 2, 7, 14, 2, 7, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 0, 1, 0, 0, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 15, 1, 0, 15, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 0, 15, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 7, 14, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 1, 0, 10, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 2, 0, 9, 2, 3, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 5, 3, 0, 10, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.addBlock(world, SEA_LANTERN, 6, 2, 3, boundingBox);
+			this.addBlock(world, SEA_LANTERN, 9, 2, 3, boundingBox);
 			if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 0, 4, 2, 0);
+				this.setAirAndWater(world, boundingBox, 3, 1, 0, 4, 2, 0);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 7, 4, 2, 7);
+				this.setAirAndWater(world, boundingBox, 3, 1, 7, 4, 2, 7);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 1, 3, 0, 2, 4);
+				this.setAirAndWater(world, boundingBox, 0, 1, 3, 0, 2, 4);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 11, 1, 0, 12, 2, 0);
+				this.setAirAndWater(world, boundingBox, 11, 1, 0, 12, 2, 0);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 11, 1, 7, 12, 2, 7);
+				this.setAirAndWater(world, boundingBox, 11, 1, 7, 12, 2, 7);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 15, 1, 3, 15, 2, 4);
+				this.setAirAndWater(world, boundingBox, 15, 1, 3, 15, 2, 4);
 			}
 
 			return true;
@@ -790,29 +790,29 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.EAST.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 			OceanMonumentGenerator.PieceSetting pieceSetting3 = pieceSetting2.neighbors[Direction.UP.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting4 = pieceSetting.neighbors[Direction.UP.getId()];
 			if (this.setting.roomIndex / 25 > 0) {
-				this.method_14774(structureWorldAccess, boundingBox, 8, 0, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
-				this.method_14774(structureWorldAccess, boundingBox, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 8, 0, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
 			}
 
 			if (pieceSetting3.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 8, 1, 7, 8, 6, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 8, 1, 7, 8, 6, PRISMARINE);
 			}
 
 			if (pieceSetting4.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 8, 8, 1, 14, 8, 6, PRISMARINE);
+				this.method_14771(world, boundingBox, 8, 8, 1, 14, 8, 6, PRISMARINE);
 			}
 
 			for (int i = 1; i <= 7; i++) {
@@ -821,81 +821,81 @@ public class OceanMonumentGenerator {
 					blockState = PRISMARINE;
 				}
 
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, i, 0, 0, i, 7, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 15, i, 0, 15, i, 7, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, i, 0, 15, i, 0, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, i, 7, 14, i, 7, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 0, i, 0, 0, i, 7, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 15, i, 0, 15, i, 7, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 1, i, 0, 15, i, 0, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 1, i, 7, 14, i, 7, blockState, blockState, false);
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 1, 3, 2, 7, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 2, 4, 7, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 5, 4, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 13, 1, 3, 13, 7, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 11, 1, 2, 12, 7, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 11, 1, 5, 12, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 3, 5, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 1, 3, 10, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 7, 2, 10, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 5, 2, 5, 7, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 5, 2, 10, 7, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 5, 5, 5, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 5, 5, 10, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 6, 6, 2, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 9, 6, 2, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 6, 6, 5, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 9, 6, 5, boundingBox);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 4, 3, 6, 4, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 9, 4, 3, 10, 4, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 5, 4, 2, boundingBox);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 5, 4, 5, boundingBox);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 10, 4, 2, boundingBox);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 10, 4, 5, boundingBox);
+			this.fillWithOutline(world, boundingBox, 2, 1, 3, 2, 7, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 3, 1, 2, 4, 7, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 3, 1, 5, 4, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 13, 1, 3, 13, 7, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 11, 1, 2, 12, 7, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 11, 1, 5, 12, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 1, 3, 5, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 1, 3, 10, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 7, 2, 10, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 5, 2, 5, 7, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 5, 2, 10, 7, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 5, 5, 5, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 10, 5, 5, 10, 7, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.addBlock(world, PRISMARINE_BRICKS, 6, 6, 2, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 9, 6, 2, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 6, 6, 5, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 9, 6, 5, boundingBox);
+			this.fillWithOutline(world, boundingBox, 5, 4, 3, 6, 4, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 9, 4, 3, 10, 4, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.addBlock(world, SEA_LANTERN, 5, 4, 2, boundingBox);
+			this.addBlock(world, SEA_LANTERN, 5, 4, 5, boundingBox);
+			this.addBlock(world, SEA_LANTERN, 10, 4, 2, boundingBox);
+			this.addBlock(world, SEA_LANTERN, 10, 4, 5, boundingBox);
 			if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 0, 4, 2, 0);
+				this.setAirAndWater(world, boundingBox, 3, 1, 0, 4, 2, 0);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 7, 4, 2, 7);
+				this.setAirAndWater(world, boundingBox, 3, 1, 7, 4, 2, 7);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 1, 3, 0, 2, 4);
+				this.setAirAndWater(world, boundingBox, 0, 1, 3, 0, 2, 4);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 11, 1, 0, 12, 2, 0);
+				this.setAirAndWater(world, boundingBox, 11, 1, 0, 12, 2, 0);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 11, 1, 7, 12, 2, 7);
+				this.setAirAndWater(world, boundingBox, 11, 1, 7, 12, 2, 7);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 15, 1, 3, 15, 2, 4);
+				this.setAirAndWater(world, boundingBox, 15, 1, 3, 15, 2, 4);
 			}
 
 			if (pieceSetting3.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 5, 0, 4, 6, 0);
+				this.setAirAndWater(world, boundingBox, 3, 5, 0, 4, 6, 0);
 			}
 
 			if (pieceSetting3.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 5, 7, 4, 6, 7);
+				this.setAirAndWater(world, boundingBox, 3, 5, 7, 4, 6, 7);
 			}
 
 			if (pieceSetting3.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 5, 3, 0, 6, 4);
+				this.setAirAndWater(world, boundingBox, 0, 5, 3, 0, 6, 4);
 			}
 
 			if (pieceSetting4.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 11, 5, 0, 12, 6, 0);
+				this.setAirAndWater(world, boundingBox, 11, 5, 0, 12, 6, 0);
 			}
 
 			if (pieceSetting4.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 11, 5, 7, 12, 6, 7);
+				this.setAirAndWater(world, boundingBox, 11, 5, 7, 12, 6, 7);
 			}
 
 			if (pieceSetting4.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 15, 5, 3, 15, 6, 4);
+				this.setAirAndWater(world, boundingBox, 15, 5, 3, 15, 6, 4);
 			}
 
 			return true;
@@ -940,76 +940,76 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
 			if (this.setting.roomIndex / 25 > 0) {
-				this.method_14774(structureWorldAccess, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
 
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.UP.getId()];
 			if (pieceSetting.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 8, 1, 6, 8, 6, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 8, 1, 6, 8, 6, PRISMARINE);
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 4, 0, 0, 4, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 4, 0, 7, 4, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 4, 0, 6, 4, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 4, 7, 6, 4, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 4, 1, 2, 4, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 4, 2, 1, 4, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 4, 1, 5, 4, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 4, 2, 6, 4, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 4, 5, 2, 4, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 4, 5, 1, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 4, 5, 5, 4, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 4, 5, 6, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 4, 0, 0, 4, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 7, 4, 0, 7, 4, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 4, 0, 6, 4, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 4, 7, 6, 4, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 2, 4, 1, 2, 4, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 4, 2, 1, 4, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 4, 1, 5, 4, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 4, 2, 6, 4, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 2, 4, 5, 2, 4, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 4, 5, 1, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 4, 5, 5, 4, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 4, 5, 6, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 
 			for (int i = 1; i <= 5; i += 4) {
 				int j = 0;
 				if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 2, i, j, 2, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 5, i, j, 5, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, i + 2, j, 4, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 2, i, j, 2, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 5, i, j, 5, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 3, i + 2, j, 4, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, i, j, 7, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, i + 1, j, 7, i + 1, j, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 0, i, j, 7, i + 2, j, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 0, i + 1, j, 7, i + 1, j, PRISMARINE, PRISMARINE, false);
 				}
 
 				int var13 = 7;
 				if (pieceSetting2.neighborPresences[Direction.NORTH.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 2, i, var13, 2, i + 2, var13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 5, i, var13, 5, i + 2, var13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, i + 2, var13, 4, i + 2, var13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 2, i, var13, 2, i + 2, var13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 5, i, var13, 5, i + 2, var13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 3, i + 2, var13, 4, i + 2, var13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, i, var13, 7, i + 2, var13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, i + 1, var13, 7, i + 1, var13, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 0, i, var13, 7, i + 2, var13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 0, i + 1, var13, 7, i + 1, var13, PRISMARINE, PRISMARINE, false);
 				}
 
 				int k = 0;
 				if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, k, i, 2, k, i + 2, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, k, i, 5, k, i + 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, k, i + 2, 3, k, i + 2, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, k, i, 2, k, i + 2, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, k, i, 5, k, i + 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, k, i + 2, 3, k, i + 2, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, k, i, 0, k, i + 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, k, i + 1, 0, k, i + 1, 7, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, k, i, 0, k, i + 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, k, i + 1, 0, k, i + 1, 7, PRISMARINE, PRISMARINE, false);
 				}
 
 				int var14 = 7;
 				if (pieceSetting2.neighborPresences[Direction.EAST.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, i, 2, var14, i + 2, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, i, 5, var14, i + 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, i + 2, 3, var14, i + 2, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, var14, i, 2, var14, i + 2, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, var14, i, 5, var14, i + 2, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, var14, i + 2, 3, var14, i + 2, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, i, 0, var14, i + 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, i + 1, 0, var14, i + 1, 7, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, var14, i, 0, var14, i + 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, var14, i + 1, 0, var14, i + 1, 7, PRISMARINE, PRISMARINE, false);
 				}
 
 				pieceSetting2 = pieceSetting;
@@ -1047,29 +1047,29 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 			OceanMonumentGenerator.PieceSetting pieceSetting3 = pieceSetting.neighbors[Direction.UP.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting4 = pieceSetting2.neighbors[Direction.UP.getId()];
 			if (this.setting.roomIndex / 25 > 0) {
-				this.method_14774(structureWorldAccess, boundingBox, 0, 8, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
-				this.method_14774(structureWorldAccess, boundingBox, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 8, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
 			}
 
 			if (pieceSetting4.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 8, 1, 6, 8, 7, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 8, 1, 6, 8, 7, PRISMARINE);
 			}
 
 			if (pieceSetting3.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 8, 8, 6, 8, 14, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 8, 8, 6, 8, 14, PRISMARINE);
 			}
 
 			for (int i = 1; i <= 7; i++) {
@@ -1078,10 +1078,10 @@ public class OceanMonumentGenerator {
 					blockState = PRISMARINE;
 				}
 
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, i, 0, 0, i, 15, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, i, 0, 7, i, 15, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, i, 0, 6, i, 0, blockState, blockState, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, i, 15, 6, i, 15, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 0, i, 0, 0, i, 15, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 7, i, 0, 7, i, 15, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 1, i, 0, 6, i, 0, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 1, i, 15, 6, i, 15, blockState, blockState, false);
 			}
 
 			for (int i = 1; i <= 7; i++) {
@@ -1090,67 +1090,67 @@ public class OceanMonumentGenerator {
 					blockState = SEA_LANTERN;
 				}
 
-				this.fillWithOutline(structureWorldAccess, boundingBox, 3, i, 7, 4, i, 8, blockState, blockState, false);
+				this.fillWithOutline(world, boundingBox, 3, i, 7, 4, i, 8, blockState, blockState, false);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 0, 4, 2, 0);
+				this.setAirAndWater(world, boundingBox, 3, 1, 0, 4, 2, 0);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 7, 1, 3, 7, 2, 4);
+				this.setAirAndWater(world, boundingBox, 7, 1, 3, 7, 2, 4);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 1, 3, 0, 2, 4);
+				this.setAirAndWater(world, boundingBox, 0, 1, 3, 0, 2, 4);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 15, 4, 2, 15);
+				this.setAirAndWater(world, boundingBox, 3, 1, 15, 4, 2, 15);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 1, 11, 0, 2, 12);
+				this.setAirAndWater(world, boundingBox, 0, 1, 11, 0, 2, 12);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 7, 1, 11, 7, 2, 12);
+				this.setAirAndWater(world, boundingBox, 7, 1, 11, 7, 2, 12);
 			}
 
 			if (pieceSetting4.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 5, 0, 4, 6, 0);
+				this.setAirAndWater(world, boundingBox, 3, 5, 0, 4, 6, 0);
 			}
 
 			if (pieceSetting4.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 7, 5, 3, 7, 6, 4);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 4, 2, 6, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 2, 6, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 5, 6, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.setAirAndWater(world, boundingBox, 7, 5, 3, 7, 6, 4);
+				this.fillWithOutline(world, boundingBox, 5, 4, 2, 6, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 6, 1, 2, 6, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 6, 1, 5, 6, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			}
 
 			if (pieceSetting4.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 5, 3, 0, 6, 4);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 4, 2, 2, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 2, 1, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 5, 1, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.setAirAndWater(world, boundingBox, 0, 5, 3, 0, 6, 4);
+				this.fillWithOutline(world, boundingBox, 1, 4, 2, 2, 4, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 1, 1, 2, 1, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 1, 1, 5, 1, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			}
 
 			if (pieceSetting3.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 5, 15, 4, 6, 15);
+				this.setAirAndWater(world, boundingBox, 3, 5, 15, 4, 6, 15);
 			}
 
 			if (pieceSetting3.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 5, 11, 0, 6, 12);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 4, 10, 2, 4, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 10, 1, 3, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 13, 1, 3, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.setAirAndWater(world, boundingBox, 0, 5, 11, 0, 6, 12);
+				this.fillWithOutline(world, boundingBox, 1, 4, 10, 2, 4, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 1, 1, 10, 1, 3, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 1, 1, 13, 1, 3, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			}
 
 			if (pieceSetting3.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 7, 5, 11, 7, 6, 12);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 4, 10, 6, 4, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 10, 6, 3, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 13, 6, 3, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.setAirAndWater(world, boundingBox, 7, 5, 11, 7, 6, 12);
+				this.fillWithOutline(world, boundingBox, 5, 4, 10, 6, 4, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 6, 1, 10, 6, 3, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 6, 1, 13, 6, 3, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			}
 
 			return true;
@@ -1195,87 +1195,87 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
 			OceanMonumentGenerator.PieceSetting pieceSetting = this.setting.neighbors[Direction.NORTH.getId()];
 			OceanMonumentGenerator.PieceSetting pieceSetting2 = this.setting;
 			if (this.setting.roomIndex / 25 > 0) {
-				this.method_14774(structureWorldAccess, boundingBox, 0, 8, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
-				this.method_14774(structureWorldAccess, boundingBox, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 8, pieceSetting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 0, pieceSetting2.neighborPresences[Direction.DOWN.getId()]);
 			}
 
 			if (pieceSetting2.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 4, 1, 6, 4, 7, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 4, 1, 6, 4, 7, PRISMARINE);
 			}
 
 			if (pieceSetting.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 4, 8, 6, 4, 14, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 4, 8, 6, 4, 14, PRISMARINE);
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 0, 0, 3, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 3, 0, 7, 3, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 0, 7, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 15, 6, 3, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 0, 0, 2, 15, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 2, 0, 7, 2, 15, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 0, 7, 2, 0, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 15, 6, 2, 15, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 0, 0, 1, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 0, 7, 1, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 0, 7, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 15, 6, 1, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 1, 1, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 1, 6, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 1, 1, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 3, 1, 6, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 13, 1, 1, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 13, 6, 1, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 13, 1, 3, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 3, 13, 6, 3, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 1, 6, 2, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 6, 5, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 1, 9, 2, 3, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 9, 5, 3, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 2, 6, 4, 2, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 2, 9, 4, 2, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 2, 7, 2, 2, 8, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 2, 7, 5, 2, 8, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 2, 2, 5, boundingBox);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 5, 2, 5, boundingBox);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 2, 2, 10, boundingBox);
-			this.addBlock(structureWorldAccess, SEA_LANTERN, 5, 2, 10, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 2, 3, 5, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 5, 3, 5, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 2, 3, 10, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 5, 3, 10, boundingBox);
+			this.fillWithOutline(world, boundingBox, 0, 3, 0, 0, 3, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 7, 3, 0, 7, 3, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 3, 0, 7, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 3, 15, 6, 3, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 2, 15, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 7, 2, 0, 7, 2, 15, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 1, 2, 0, 7, 2, 0, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 1, 2, 15, 6, 2, 15, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 0, 1, 0, 0, 1, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 7, 1, 0, 7, 1, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 0, 7, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 15, 6, 1, 15, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 1, 1, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 1, 1, 6, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 3, 1, 1, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 3, 1, 6, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 13, 1, 1, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 1, 13, 6, 1, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 3, 13, 1, 3, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 3, 13, 6, 3, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 2, 1, 6, 2, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 1, 6, 5, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 2, 1, 9, 2, 3, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 1, 9, 5, 3, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 3, 2, 6, 4, 2, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 3, 2, 9, 4, 2, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 2, 2, 7, 2, 2, 8, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 2, 7, 5, 2, 8, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.addBlock(world, SEA_LANTERN, 2, 2, 5, boundingBox);
+			this.addBlock(world, SEA_LANTERN, 5, 2, 5, boundingBox);
+			this.addBlock(world, SEA_LANTERN, 2, 2, 10, boundingBox);
+			this.addBlock(world, SEA_LANTERN, 5, 2, 10, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 2, 3, 5, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 5, 3, 5, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 2, 3, 10, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 5, 3, 10, boundingBox);
 			if (pieceSetting2.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 0, 4, 2, 0);
+				this.setAirAndWater(world, boundingBox, 3, 1, 0, 4, 2, 0);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 7, 1, 3, 7, 2, 4);
+				this.setAirAndWater(world, boundingBox, 7, 1, 3, 7, 2, 4);
 			}
 
 			if (pieceSetting2.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 1, 3, 0, 2, 4);
+				this.setAirAndWater(world, boundingBox, 0, 1, 3, 0, 2, 4);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 15, 4, 2, 15);
+				this.setAirAndWater(world, boundingBox, 3, 1, 15, 4, 2, 15);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 1, 11, 0, 2, 12);
+				this.setAirAndWater(world, boundingBox, 0, 1, 11, 0, 2, 12);
 			}
 
 			if (pieceSetting.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 7, 1, 11, 7, 2, 12);
+				this.setAirAndWater(world, boundingBox, 7, 1, 11, 7, 2, 12);
 			}
 
 			return true;
@@ -1315,33 +1315,33 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 0, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 0, 1, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 2, 0, 7, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 0, 0, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 0, 7, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 7, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 0, 2, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 3, 0, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 2, 0, 1, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, 2, 0, 7, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 1, 0, 0, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 7, 1, 0, 7, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 1, 7, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 0, 2, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 5, 1, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			if (this.setting.neighborPresences[Direction.NORTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 7, 4, 2, 7);
+				this.setAirAndWater(world, boundingBox, 3, 1, 7, 4, 2, 7);
 			}
 
 			if (this.setting.neighborPresences[Direction.WEST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 0, 1, 3, 1, 2, 4);
+				this.setAirAndWater(world, boundingBox, 0, 1, 3, 1, 2, 4);
 			}
 
 			if (this.setting.neighborPresences[Direction.EAST.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 6, 1, 3, 7, 2, 4);
+				this.setAirAndWater(world, boundingBox, 6, 1, 3, 7, 2, 4);
 			}
 
 			return true;
@@ -1359,55 +1359,55 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, -1, 2, 11, -1, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, -1, 0, 1, -1, 11, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 12, -1, 0, 13, -1, 11, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, -1, 0, 11, -1, 1, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, -1, 12, 11, -1, 13, PRISMARINE, PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 0, 0, 0, 0, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 13, 0, 0, 13, 0, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 0, 0, 12, 0, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 0, 13, 12, 0, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 2, -1, 2, 11, -1, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, -1, 0, 1, -1, 11, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 12, -1, 0, 13, -1, 11, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 2, -1, 0, 11, -1, 1, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 2, -1, 12, 11, -1, 13, PRISMARINE, PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 0, 0, 0, 0, 0, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 13, 0, 0, 13, 0, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 0, 0, 12, 0, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 0, 13, 12, 0, 13, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 
 			for (int i = 2; i <= 11; i += 3) {
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 0, 0, i, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 13, 0, i, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, i, 0, 0, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 0, 0, i, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 13, 0, i, boundingBox);
+				this.addBlock(world, SEA_LANTERN, i, 0, 0, boundingBox);
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 2, 0, 3, 4, 0, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 9, 0, 3, 11, 0, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 4, 0, 9, 9, 0, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 5, 0, 8, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 8, 0, 8, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 10, 0, 10, boundingBox);
-			this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 3, 0, 10, boundingBox);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 0, 3, 3, 0, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 10, 0, 3, 10, 0, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, 0, 10, 7, 0, 10, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 2, 0, 3, 4, 0, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 9, 0, 3, 11, 0, 9, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 4, 0, 9, 9, 0, 11, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.addBlock(world, PRISMARINE_BRICKS, 5, 0, 8, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 8, 0, 8, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 10, 0, 10, boundingBox);
+			this.addBlock(world, PRISMARINE_BRICKS, 3, 0, 10, boundingBox);
+			this.fillWithOutline(world, boundingBox, 3, 0, 3, 3, 0, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 10, 0, 3, 10, 0, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 6, 0, 10, 7, 0, 10, DARK_PRISMARINE, DARK_PRISMARINE, false);
 			int i = 3;
 
 			for (int j = 0; j < 2; j++) {
 				for (int k = 2; k <= 8; k += 3) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, i, 0, k, i, 2, k, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, i, 0, k, i, 2, k, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
 				i = 10;
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 5, 0, 10, 5, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 8, 0, 10, 8, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 6, -1, 7, 7, -1, 8, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.setAirAndWater(structureWorldAccess, boundingBox, 6, -1, 3, 7, -1, 4);
-			this.method_14772(structureWorldAccess, boundingBox, 6, 1, 6);
+			this.fillWithOutline(world, boundingBox, 5, 0, 10, 5, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 8, 0, 10, 8, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 6, -1, 7, 7, -1, 8, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.setAirAndWater(world, boundingBox, 6, -1, 3, 7, -1, 4);
+			this.method_14772(world, boundingBox, 6, 1, 6);
 			return true;
 		}
 	}
@@ -1629,20 +1629,20 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
 			if (this.setting.roomIndex / 25 > 0) {
-				this.method_14774(structureWorldAccess, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
 
 			if (this.setting.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 4, 1, 6, 4, 6, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 4, 1, 6, 4, 6, PRISMARINE);
 			}
 
 			boolean bl = this.field_14480 != 0
@@ -1651,143 +1651,143 @@ public class OceanMonumentGenerator {
 				&& !this.setting.neighborPresences[Direction.UP.getId()]
 				&& this.setting.countNeighbors() > 1;
 			if (this.field_14480 == 0) {
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 0, 2, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 0, 2, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 0, 0, 2, 2, PRISMARINE, PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 0, 2, 2, 0, PRISMARINE, PRISMARINE, false);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 1, 2, 1, boundingBox);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 0, 7, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 3, 0, 7, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 2, 0, 7, 2, 2, PRISMARINE, PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 2, 0, 6, 2, 0, PRISMARINE, PRISMARINE, false);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 6, 2, 1, boundingBox);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 5, 2, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 5, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 5, 0, 2, 7, PRISMARINE, PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 7, 2, 2, 7, PRISMARINE, PRISMARINE, false);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 1, 2, 6, boundingBox);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 5, 7, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 3, 5, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 2, 5, 7, 2, 7, PRISMARINE, PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 2, 7, 6, 2, 7, PRISMARINE, PRISMARINE, false);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 6, 2, 6, boundingBox);
+				this.fillWithOutline(world, boundingBox, 0, 1, 0, 2, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 3, 0, 2, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 2, 2, PRISMARINE, PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 1, 2, 0, 2, 2, 0, PRISMARINE, PRISMARINE, false);
+				this.addBlock(world, SEA_LANTERN, 1, 2, 1, boundingBox);
+				this.fillWithOutline(world, boundingBox, 5, 1, 0, 7, 1, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 5, 3, 0, 7, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 2, 0, 7, 2, 2, PRISMARINE, PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 5, 2, 0, 6, 2, 0, PRISMARINE, PRISMARINE, false);
+				this.addBlock(world, SEA_LANTERN, 6, 2, 1, boundingBox);
+				this.fillWithOutline(world, boundingBox, 0, 1, 5, 2, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 3, 5, 2, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 2, 5, 0, 2, 7, PRISMARINE, PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 1, 2, 7, 2, 2, 7, PRISMARINE, PRISMARINE, false);
+				this.addBlock(world, SEA_LANTERN, 1, 2, 6, boundingBox);
+				this.fillWithOutline(world, boundingBox, 5, 1, 5, 7, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 5, 3, 5, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 2, 5, 7, 2, 7, PRISMARINE, PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 5, 2, 7, 6, 2, 7, PRISMARINE, PRISMARINE, false);
+				this.addBlock(world, SEA_LANTERN, 6, 2, 6, boundingBox);
 				if (this.setting.neighborPresences[Direction.SOUTH.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 0, 4, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 3, 3, 0, 4, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 0, 4, 3, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, 2, 0, 4, 2, 0, PRISMARINE, PRISMARINE, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 0, 4, 1, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 3, 3, 0, 4, 3, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 3, 2, 0, 4, 2, 0, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 3, 1, 0, 4, 1, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
 				if (this.setting.neighborPresences[Direction.NORTH.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 7, 4, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 3, 3, 7, 4, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 6, 4, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, 2, 7, 4, 2, 7, PRISMARINE, PRISMARINE, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 6, 4, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 3, 3, 6, 4, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 3, 2, 7, 4, 2, 7, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 3, 1, 6, 4, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
 				if (this.setting.neighborPresences[Direction.WEST.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 3, 0, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 0, 3, 3, 0, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 3, 1, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 3, 0, 2, 4, PRISMARINE, PRISMARINE, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 3, 1, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 0, 3, 3, 1, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 0, 2, 3, 0, 2, 4, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 0, 1, 3, 1, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
 				if (this.setting.neighborPresences[Direction.EAST.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 7, 3, 3, 7, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 7, 3, 3, 7, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 6, 3, 3, 7, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 7, 2, 3, 7, 2, 4, PRISMARINE, PRISMARINE, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 3, 7, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 6, 3, 3, 7, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 7, 2, 3, 7, 2, 4, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 6, 1, 3, 7, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 			} else if (this.field_14480 == 1) {
-				this.fillWithOutline(structureWorldAccess, boundingBox, 2, 1, 2, 2, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 2, 1, 5, 2, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 5, 5, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 5, 1, 2, 5, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 2, 2, 2, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 2, 2, 5, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 5, 2, 5, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 5, 2, 2, boundingBox);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 0, 1, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 1, 0, 3, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 7, 1, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 6, 0, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 7, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 6, 7, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, 1, 0, 7, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 1, 7, 3, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.addBlock(structureWorldAccess, PRISMARINE, 1, 2, 0, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE, 0, 2, 1, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE, 1, 2, 7, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE, 0, 2, 6, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE, 6, 2, 7, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE, 7, 2, 6, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE, 6, 2, 0, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE, 7, 2, 1, boundingBox);
+				this.fillWithOutline(world, boundingBox, 2, 1, 2, 2, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 2, 1, 5, 2, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 5, 1, 5, 5, 3, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 5, 1, 2, 5, 3, 2, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.addBlock(world, SEA_LANTERN, 2, 2, 2, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 2, 2, 5, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 5, 2, 5, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 5, 2, 2, boundingBox);
+				this.fillWithOutline(world, boundingBox, 0, 1, 0, 1, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 1, 1, 0, 3, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 1, 7, 1, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 1, 6, 0, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 6, 1, 7, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 1, 6, 7, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 6, 1, 0, 7, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 1, 1, 7, 3, 1, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.addBlock(world, PRISMARINE, 1, 2, 0, boundingBox);
+				this.addBlock(world, PRISMARINE, 0, 2, 1, boundingBox);
+				this.addBlock(world, PRISMARINE, 1, 2, 7, boundingBox);
+				this.addBlock(world, PRISMARINE, 0, 2, 6, boundingBox);
+				this.addBlock(world, PRISMARINE, 6, 2, 7, boundingBox);
+				this.addBlock(world, PRISMARINE, 7, 2, 6, boundingBox);
+				this.addBlock(world, PRISMARINE, 6, 2, 0, boundingBox);
+				this.addBlock(world, PRISMARINE, 7, 2, 1, boundingBox);
 				if (!this.setting.neighborPresences[Direction.SOUTH.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 0, 6, 2, 0, PRISMARINE, PRISMARINE, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 0, 6, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 1, 3, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 1, 2, 0, 6, 2, 0, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 1, 1, 0, 6, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
 				if (!this.setting.neighborPresences[Direction.NORTH.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 7, 6, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 7, 6, 2, 7, PRISMARINE, PRISMARINE, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 7, 6, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 1, 3, 7, 6, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 1, 2, 7, 6, 2, 7, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 1, 1, 7, 6, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
 				if (!this.setting.neighborPresences[Direction.WEST.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 1, 0, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 1, 0, 2, 6, PRISMARINE, PRISMARINE, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 1, 0, 1, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 0, 3, 1, 0, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 0, 2, 1, 0, 2, 6, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 0, 1, 1, 0, 1, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
 				if (!this.setting.neighborPresences[Direction.EAST.getId()]) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 7, 3, 1, 7, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 7, 2, 1, 7, 2, 6, PRISMARINE, PRISMARINE, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 1, 7, 1, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 7, 3, 1, 7, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 7, 2, 1, 7, 2, 6, PRISMARINE, PRISMARINE, false);
+					this.fillWithOutline(world, boundingBox, 7, 1, 1, 7, 1, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 			} else if (this.field_14480 == 2) {
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 0, 0, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 0, 7, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 0, 6, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 7, 6, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 0, 0, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 2, 0, 7, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 0, 6, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 7, 6, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 0, 0, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 7, 6, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 3, 0, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 3, 7, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 0, 4, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 7, 4, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 0, 1, 0, 0, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 1, 0, 7, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 1, 1, 0, 6, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 1, 1, 7, 6, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 7, 2, 0, 7, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 1, 2, 0, 6, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 1, 2, 7, 6, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 0, 3, 0, 0, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 1, 3, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 1, 3, 7, 6, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 0, 1, 3, 0, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 7, 1, 3, 7, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 3, 1, 0, 4, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 3, 1, 7, 4, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
 				if (this.setting.neighborPresences[Direction.SOUTH.getId()]) {
-					this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 0, 4, 2, 0);
+					this.setAirAndWater(world, boundingBox, 3, 1, 0, 4, 2, 0);
 				}
 
 				if (this.setting.neighborPresences[Direction.NORTH.getId()]) {
-					this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 7, 4, 2, 7);
+					this.setAirAndWater(world, boundingBox, 3, 1, 7, 4, 2, 7);
 				}
 
 				if (this.setting.neighborPresences[Direction.WEST.getId()]) {
-					this.setAirAndWater(structureWorldAccess, boundingBox, 0, 1, 3, 0, 2, 4);
+					this.setAirAndWater(world, boundingBox, 0, 1, 3, 0, 2, 4);
 				}
 
 				if (this.setting.neighborPresences[Direction.EAST.getId()]) {
-					this.setAirAndWater(structureWorldAccess, boundingBox, 7, 1, 3, 7, 2, 4);
+					this.setAirAndWater(world, boundingBox, 7, 1, 3, 7, 2, 4);
 				}
 			}
 
 			if (bl) {
-				this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 3, 4, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 3, 2, 3, 4, 2, 4, PRISMARINE, PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 3, 3, 3, 4, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 3, 1, 3, 4, 1, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 3, 2, 3, 4, 2, 4, PRISMARINE, PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 3, 3, 3, 4, 3, 4, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 			}
 
 			return true;
@@ -1821,20 +1821,20 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
 			if (this.setting.roomIndex / 25 > 0) {
-				this.method_14774(structureWorldAccess, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
+				this.method_14774(world, boundingBox, 0, 0, this.setting.neighborPresences[Direction.DOWN.getId()]);
 			}
 
 			if (this.setting.neighbors[Direction.UP.getId()] == null) {
-				this.method_14771(structureWorldAccess, boundingBox, 1, 4, 1, 6, 4, 6, PRISMARINE);
+				this.method_14771(world, boundingBox, 1, 4, 1, 6, 4, 6, PRISMARINE);
 			}
 
 			for (int i = 1; i <= 6; i++) {
@@ -1842,29 +1842,29 @@ public class OceanMonumentGenerator {
 					if (random.nextInt(3) != 0) {
 						int k = 2 + (random.nextInt(4) == 0 ? 0 : 1);
 						BlockState blockState = Blocks.WET_SPONGE.getDefaultState();
-						this.fillWithOutline(structureWorldAccess, boundingBox, i, k, j, i, 3, j, blockState, blockState, false);
+						this.fillWithOutline(world, boundingBox, i, k, j, i, 3, j, blockState, blockState, false);
 					}
 				}
 			}
 
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 0, 0, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 0, 7, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 0, 6, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 1, 7, 6, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 2, 0, 0, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 2, 0, 7, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 0, 6, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 2, 7, 6, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 3, 0, 0, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 1, 3, 7, 6, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 0, 1, 3, 0, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 3, 7, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 0, 4, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
-			this.fillWithOutline(structureWorldAccess, boundingBox, 3, 1, 7, 4, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 0, 1, 0, 0, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 7, 1, 0, 7, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 0, 6, 1, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 1, 7, 6, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 2, 0, 0, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 7, 2, 0, 7, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 1, 2, 0, 6, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 1, 2, 7, 6, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 0, 3, 0, 0, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 7, 3, 0, 7, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 3, 0, 6, 3, 0, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 1, 3, 7, 6, 3, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+			this.fillWithOutline(world, boundingBox, 0, 1, 3, 0, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 7, 1, 3, 7, 2, 4, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 3, 1, 0, 4, 2, 0, DARK_PRISMARINE, DARK_PRISMARINE, false);
+			this.fillWithOutline(world, boundingBox, 3, 1, 7, 4, 2, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
 			if (this.setting.neighborPresences[Direction.SOUTH.getId()]) {
-				this.setAirAndWater(structureWorldAccess, boundingBox, 3, 1, 0, 4, 2, 0);
+				this.setAirAndWater(world, boundingBox, 3, 1, 0, 4, 2, 0);
 			}
 
 			return true;
@@ -1905,100 +1905,100 @@ public class OceanMonumentGenerator {
 
 		@Override
 		public boolean generate(
-			StructureWorldAccess structureWorldAccess,
+			StructureWorldAccess world,
 			StructureAccessor structureAccessor,
 			ChunkGenerator chunkGenerator,
 			Random random,
 			BlockBox boundingBox,
 			ChunkPos chunkPos,
-			BlockPos blockPos
+			BlockPos pos
 		) {
 			if (this.field_14481 == 0) {
 				for (int i = 0; i < 4; i++) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, 10 - i, 3 - i, 20 - i, 12 + i, 3 - i, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, 10 - i, 3 - i, 20 - i, 12 + i, 3 - i, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				}
 
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 0, 6, 15, 0, 16, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, 0, 6, 6, 3, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 16, 0, 6, 16, 3, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 7, 7, 1, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 15, 1, 7, 15, 1, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 1, 6, 9, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 13, 1, 6, 15, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 8, 1, 7, 9, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 13, 1, 7, 14, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 9, 0, 5, 13, 0, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 10, 0, 7, 12, 0, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 8, 0, 10, 8, 0, 12, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 14, 0, 10, 14, 0, 12, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 7, 0, 6, 15, 0, 16, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 6, 0, 6, 6, 3, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 16, 0, 6, 16, 3, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 1, 7, 7, 1, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 15, 1, 7, 15, 1, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 1, 6, 9, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 13, 1, 6, 15, 3, 6, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 8, 1, 7, 9, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 13, 1, 7, 14, 1, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 9, 0, 5, 13, 0, 5, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 10, 0, 7, 12, 0, 7, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 8, 0, 10, 8, 0, 12, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 14, 0, 10, 14, 0, 12, DARK_PRISMARINE, DARK_PRISMARINE, false);
 
 				for (int i = 18; i >= 7; i -= 3) {
-					this.addBlock(structureWorldAccess, SEA_LANTERN, 6, 3, i, boundingBox);
-					this.addBlock(structureWorldAccess, SEA_LANTERN, 16, 3, i, boundingBox);
+					this.addBlock(world, SEA_LANTERN, 6, 3, i, boundingBox);
+					this.addBlock(world, SEA_LANTERN, 16, 3, i, boundingBox);
 				}
 
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 10, 0, 10, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 12, 0, 10, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 10, 0, 12, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 12, 0, 12, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 8, 3, 6, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 14, 3, 6, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 4, 2, 4, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 4, 1, 4, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 4, 0, 4, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 18, 2, 4, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 18, 1, 4, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 18, 0, 4, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 4, 2, 18, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 4, 1, 18, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 4, 0, 18, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 18, 2, 18, boundingBox);
-				this.addBlock(structureWorldAccess, SEA_LANTERN, 18, 1, 18, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 18, 0, 18, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 9, 7, 20, boundingBox);
-				this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, 13, 7, 20, boundingBox);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 6, 0, 21, 7, 4, 21, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 15, 0, 21, 16, 4, 21, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.method_14772(structureWorldAccess, boundingBox, 11, 2, 16);
+				this.addBlock(world, SEA_LANTERN, 10, 0, 10, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 12, 0, 10, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 10, 0, 12, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 12, 0, 12, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 8, 3, 6, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 14, 3, 6, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 4, 2, 4, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 4, 1, 4, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 4, 0, 4, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 18, 2, 4, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 18, 1, 4, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 18, 0, 4, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 4, 2, 18, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 4, 1, 18, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 4, 0, 18, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 18, 2, 18, boundingBox);
+				this.addBlock(world, SEA_LANTERN, 18, 1, 18, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 18, 0, 18, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 9, 7, 20, boundingBox);
+				this.addBlock(world, PRISMARINE_BRICKS, 13, 7, 20, boundingBox);
+				this.fillWithOutline(world, boundingBox, 6, 0, 21, 7, 4, 21, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 15, 0, 21, 16, 4, 21, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.method_14772(world, boundingBox, 11, 2, 16);
 			} else if (this.field_14481 == 1) {
-				this.fillWithOutline(structureWorldAccess, boundingBox, 9, 3, 18, 13, 3, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 9, 0, 18, 9, 2, 18, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 13, 0, 18, 13, 2, 18, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 9, 3, 18, 13, 3, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 9, 0, 18, 9, 2, 18, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 13, 0, 18, 13, 2, 18, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				int i = 9;
 				int j = 20;
 				int k = 5;
 
 				for (int l = 0; l < 2; l++) {
-					this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, i, 6, 20, boundingBox);
-					this.addBlock(structureWorldAccess, SEA_LANTERN, i, 5, 20, boundingBox);
-					this.addBlock(structureWorldAccess, PRISMARINE_BRICKS, i, 4, 20, boundingBox);
+					this.addBlock(world, PRISMARINE_BRICKS, i, 6, 20, boundingBox);
+					this.addBlock(world, SEA_LANTERN, i, 5, 20, boundingBox);
+					this.addBlock(world, PRISMARINE_BRICKS, i, 4, 20, boundingBox);
 					i = 13;
 				}
 
-				this.fillWithOutline(structureWorldAccess, boundingBox, 7, 3, 7, 15, 3, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+				this.fillWithOutline(world, boundingBox, 7, 3, 7, 15, 3, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 				int var14 = 10;
 
 				for (int l = 0; l < 2; l++) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, 0, 10, var14, 6, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, 0, 12, var14, 6, 12, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.addBlock(structureWorldAccess, SEA_LANTERN, var14, 0, 10, boundingBox);
-					this.addBlock(structureWorldAccess, SEA_LANTERN, var14, 0, 12, boundingBox);
-					this.addBlock(structureWorldAccess, SEA_LANTERN, var14, 4, 10, boundingBox);
-					this.addBlock(structureWorldAccess, SEA_LANTERN, var14, 4, 12, boundingBox);
+					this.fillWithOutline(world, boundingBox, var14, 0, 10, var14, 6, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, var14, 0, 12, var14, 6, 12, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.addBlock(world, SEA_LANTERN, var14, 0, 10, boundingBox);
+					this.addBlock(world, SEA_LANTERN, var14, 0, 12, boundingBox);
+					this.addBlock(world, SEA_LANTERN, var14, 4, 10, boundingBox);
+					this.addBlock(world, SEA_LANTERN, var14, 4, 12, boundingBox);
 					var14 = 12;
 				}
 
 				var14 = 8;
 
 				for (int l = 0; l < 2; l++) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, 0, 7, var14, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, var14, 0, 14, var14, 2, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, var14, 0, 7, var14, 2, 7, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
+					this.fillWithOutline(world, boundingBox, var14, 0, 14, var14, 2, 14, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
 					var14 = 14;
 				}
 
-				this.fillWithOutline(structureWorldAccess, boundingBox, 8, 3, 8, 8, 3, 13, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.fillWithOutline(structureWorldAccess, boundingBox, 14, 3, 8, 14, 3, 13, DARK_PRISMARINE, DARK_PRISMARINE, false);
-				this.method_14772(structureWorldAccess, boundingBox, 11, 5, 13);
+				this.fillWithOutline(world, boundingBox, 8, 3, 8, 8, 3, 13, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.fillWithOutline(world, boundingBox, 14, 3, 8, 14, 3, 13, DARK_PRISMARINE, DARK_PRISMARINE, false);
+				this.method_14772(world, boundingBox, 11, 5, 13);
 			}
 
 			return true;

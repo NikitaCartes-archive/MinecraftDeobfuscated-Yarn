@@ -355,6 +355,7 @@ public interface DispenserBehavior {
 		DispenserBlock.registerBehavior(Items.COD_BUCKET, dispenserBehavior);
 		DispenserBlock.registerBehavior(Items.PUFFERFISH_BUCKET, dispenserBehavior);
 		DispenserBlock.registerBehavior(Items.TROPICAL_FISH_BUCKET, dispenserBehavior);
+		DispenserBlock.registerBehavior(Items.AXOLOTL_BUCKET, dispenserBehavior);
 		DispenserBlock.registerBehavior(Items.BUCKET, new ItemDispenserBehavior() {
 			private final ItemDispenserBehavior field_13368 = new ItemDispenserBehavior();
 
@@ -576,7 +577,7 @@ public interface DispenserBehavior {
 	}
 
 	static void method_27042(BlockPointer blockPointer, Entity entity, Direction direction) {
-		entity.updatePosition(
+		entity.setPosition(
 			blockPointer.getX() + (double)direction.getOffsetX() * (0.5000099999997474 - (double)entity.getWidth() / 2.0),
 			blockPointer.getY() + (double)direction.getOffsetY() * (0.5000099999997474 - (double)entity.getHeight() / 2.0) - (double)entity.getHeight() / 2.0,
 			blockPointer.getZ() + (double)direction.getOffsetZ() * (0.5000099999997474 - (double)entity.getWidth() / 2.0)

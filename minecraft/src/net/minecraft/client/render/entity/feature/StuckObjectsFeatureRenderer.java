@@ -28,7 +28,7 @@ public abstract class StuckObjectsFeatureRenderer<T extends LivingEntity, M exte
 		MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l
 	) {
 		int m = this.getObjectCount(livingEntity);
-		Random random = new Random((long)livingEntity.getEntityId());
+		Random random = new Random((long)livingEntity.getId());
 		if (m > 0) {
 			for (int n = 0; n < m; n++) {
 				matrixStack.push();

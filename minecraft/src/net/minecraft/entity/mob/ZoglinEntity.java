@@ -81,32 +81,32 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	@Override
 	protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
 		Brain<ZoglinEntity> brain = this.createBrainProfile().deserialize(dynamic);
-		method_26928(brain);
-		method_26929(brain);
-		method_26930(brain);
+		addCoreTasks(brain);
+		addIdleTasks(brain);
+		addFightTasks(brain);
 		brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
 		brain.setDefaultActivity(Activity.IDLE);
 		brain.resetPossibleActivities();
 		return brain;
 	}
 
-	private static void method_26928(Brain<ZoglinEntity> brain) {
+	private static void addCoreTasks(Brain<ZoglinEntity> brain) {
 		brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
 	}
 
-	private static void method_26929(Brain<ZoglinEntity> brain) {
+	private static void addIdleTasks(Brain<ZoglinEntity> brain) {
 		brain.setTaskList(
 			Activity.IDLE,
 			10,
 			ImmutableList.of(
-				new UpdateAttackTargetTask<>(ZoglinEntity::method_26934),
+				new UpdateAttackTargetTask<>(ZoglinEntity::getHoglinTarget),
 				new TimeLimitedTask(new FollowMobTask(8.0F), IntRange.between(30, 60)),
 				new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.4F), 2), Pair.of(new GoTowardsLookTarget(0.4F, 3), 2), Pair.of(new WaitTask(30, 60), 1)))
 			)
 		);
 	}
 
-	private static void method_26930(Brain<ZoglinEntity> brain) {
+	private static void addFightTasks(Brain<ZoglinEntity> brain) {
 		brain.setTaskList(
 			Activity.FIGHT,
 			10,
@@ -120,16 +120,16 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 		);
 	}
 
-	private Optional<? extends LivingEntity> method_26934() {
+	private Optional<? extends LivingEntity> getHoglinTarget() {
 		return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of()))
 			.stream()
-			.filter(ZoglinEntity::method_26936)
+			.filter(ZoglinEntity::shouldAttack)
 			.findFirst();
 	}
 
-	private static boolean method_26936(LivingEntity livingEntity) {
-		EntityType<?> entityType = livingEntity.getType();
-		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity);
+	private static boolean shouldAttack(LivingEntity entity) {
+		EntityType<?> entityType = entity.getType();
+		return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity);
 	}
 
 	@Override

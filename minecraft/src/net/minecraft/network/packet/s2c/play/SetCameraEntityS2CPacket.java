@@ -17,7 +17,7 @@ public class SetCameraEntityS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	public SetCameraEntityS2CPacket(Entity entity) {
-		this.entityId = entity.getEntityId();
+		this.entityId = entity.getId();
 	}
 
 	@Override

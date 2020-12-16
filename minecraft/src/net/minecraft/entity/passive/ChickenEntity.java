@@ -160,7 +160,7 @@ public class ChickenEntity extends AnimalEntity {
 		float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 		float h = 0.1F;
 		float i = 0.0F;
-		passenger.updatePosition(this.getX() + (double)(0.1F * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
+		passenger.setPosition(this.getX() + (double)(0.1F * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
 		if (passenger instanceof LivingEntity) {
 			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
 		}

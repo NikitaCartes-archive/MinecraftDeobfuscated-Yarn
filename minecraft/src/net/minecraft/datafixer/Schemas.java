@@ -186,6 +186,7 @@ import net.minecraft.datafixer.schema.Schema2522;
 import net.minecraft.datafixer.schema.Schema2551;
 import net.minecraft.datafixer.schema.Schema2568;
 import net.minecraft.datafixer.schema.Schema2684;
+import net.minecraft.datafixer.schema.Schema2686;
 import net.minecraft.datafixer.schema.Schema501;
 import net.minecraft.datafixer.schema.Schema700;
 import net.minecraft.datafixer.schema.Schema701;
@@ -663,6 +664,8 @@ public class Schemas {
 		);
 		Schema schema128 = builder.addSchema(2684, Schema2684::new);
 		builder.addFixer(new ChoiceTypesFix(schema128, "Added Sculk Sensor", TypeReferences.BLOCK_ENTITY));
+		Schema schema129 = builder.addSchema(2686, Schema2686::new);
+		builder.addFixer(new ChoiceTypesFix(schema129, "Added Axolotl", TypeReferences.ENTITY));
 	}
 
 	private static UnaryOperator<String> method_30070(Map<String, String> map) {

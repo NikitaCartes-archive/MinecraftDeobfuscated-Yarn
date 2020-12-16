@@ -31,6 +31,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.SquidEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -324,7 +325,7 @@ public class GuardianEntity extends HostileEntity {
 
 	@Override
 	public boolean damage(DamageSource source, float amount) {
-		if (!this.areSpikesRetracted() && !source.getMagic() && source.getSource() instanceof LivingEntity) {
+		if (!this.areSpikesRetracted() && !source.isMagic() && source.getSource() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)source.getSource();
 			if (!source.isExplosive()) {
 				livingEntity.damage(DamageSource.thorns(this), 2.0F);
@@ -404,7 +405,7 @@ public class GuardianEntity extends HostileEntity {
 			} else {
 				this.beamTicks++;
 				if (this.beamTicks == 0) {
-					this.guardian.setBeamTarget(this.guardian.getTarget().getEntityId());
+					this.guardian.setBeamTarget(this.guardian.getTarget().getId());
 					if (!this.guardian.isSilent()) {
 						this.guardian.world.sendEntityStatus(this.guardian, (byte)21);
 					}
@@ -450,10 +451,10 @@ public class GuardianEntity extends HostileEntity {
 				float i = (float)(this.speed * this.guardian.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				float j = MathHelper.lerp(0.125F, this.guardian.getMovementSpeed(), i);
 				this.guardian.setMovementSpeed(j);
-				double k = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.5) * 0.05;
+				double k = Math.sin((double)(this.guardian.age + this.guardian.getId()) * 0.5) * 0.05;
 				double l = Math.cos((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
 				double m = Math.sin((double)(this.guardian.yaw * (float) (Math.PI / 180.0)));
-				double n = Math.sin((double)(this.guardian.age + this.guardian.getEntityId()) * 0.75) * 0.05;
+				double n = Math.sin((double)(this.guardian.age + this.guardian.getId()) * 0.75) * 0.05;
 				this.guardian.setVelocity(this.guardian.getVelocity().add(k * l, n * (m + l) * 0.25 + (double)j * f * 0.1, k * m));
 				LookControl lookControl = this.guardian.getLookControl();
 				double o = this.guardian.getX() + e * 2.0;
@@ -485,7 +486,12 @@ public class GuardianEntity extends HostileEntity {
 		}
 
 		public boolean test(@Nullable LivingEntity livingEntity) {
-			return (livingEntity instanceof PlayerEntity || livingEntity instanceof SquidEntity) && livingEntity.squaredDistanceTo(this.owner) > 9.0;
+			return (
+					livingEntity instanceof PlayerEntity
+						|| livingEntity instanceof SquidEntity
+						|| livingEntity != null && AxolotlEntity.AXOLOTL_NOT_PLAYING_DEAD.test(livingEntity)
+				)
+				&& livingEntity.squaredDistanceTo(this.owner) > 9.0;
 		}
 	}
 }
