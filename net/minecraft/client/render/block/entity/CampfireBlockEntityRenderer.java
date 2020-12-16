@@ -21,7 +21,7 @@ import net.minecraft.util.math.Vec3f;
 @Environment(value=EnvType.CLIENT)
 public class CampfireBlockEntityRenderer
 implements BlockEntityRenderer<CampfireBlockEntity> {
-    public CampfireBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+    public CampfireBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
     }
 
     @Override

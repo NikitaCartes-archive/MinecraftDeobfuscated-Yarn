@@ -76,8 +76,8 @@ extends StructurePiece {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-        return this.method_27236(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, blockPos, false);
+    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+        return this.method_27236(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
     }
 
     public boolean method_27236(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, BlockPos blockPos, boolean keepJigsaws) {

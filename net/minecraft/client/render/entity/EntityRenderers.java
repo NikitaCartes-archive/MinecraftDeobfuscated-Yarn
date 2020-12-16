@@ -12,6 +12,7 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.AreaEffectCloudEntityRenderer;
 import net.minecraft.client.render.entity.ArmorStandEntityRenderer;
 import net.minecraft.client.render.entity.ArrowEntityRenderer;
+import net.minecraft.client.render.entity.AxolotlEntityRenderer;
 import net.minecraft.client.render.entity.BatEntityRenderer;
 import net.minecraft.client.render.entity.BeeEntityRenderer;
 import net.minecraft.client.render.entity.BlazeEntityRenderer;
@@ -158,6 +159,7 @@ public class EntityRenderers {
         EntityRenderers.register(EntityType.AREA_EFFECT_CLOUD, AreaEffectCloudEntityRenderer::new);
         EntityRenderers.register(EntityType.ARMOR_STAND, ArmorStandEntityRenderer::new);
         EntityRenderers.register(EntityType.ARROW, ArrowEntityRenderer::new);
+        EntityRenderers.register(EntityType.AXOLOTL, AxolotlEntityRenderer::new);
         EntityRenderers.register(EntityType.BAT, BatEntityRenderer::new);
         EntityRenderers.register(EntityType.BEE, BeeEntityRenderer::new);
         EntityRenderers.register(EntityType.BLAZE, BlazeEntityRenderer::new);

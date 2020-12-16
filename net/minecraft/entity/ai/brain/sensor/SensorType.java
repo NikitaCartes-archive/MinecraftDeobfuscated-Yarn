@@ -4,6 +4,8 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
+import net.minecraft.entity.ai.brain.sensor.AxolotlHostilesSensor;
+import net.minecraft.entity.ai.brain.sensor.AxolotlTemptationsSensor;
 import net.minecraft.entity.ai.brain.sensor.DummySensor;
 import net.minecraft.entity.ai.brain.sensor.GolemLastSeenSensor;
 import net.minecraft.entity.ai.brain.sensor.HoglinSpecificSensor;
@@ -19,6 +21,7 @@ import net.minecraft.entity.ai.brain.sensor.SecondaryPointsOfInterestSensor;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.VillagerBabiesSensor;
 import net.minecraft.entity.ai.brain.sensor.VillagerHostilesSensor;
+import net.minecraft.entity.passive.AxolotlBrain;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -37,18 +40,20 @@ public class SensorType<U extends Sensor<?>> {
     public static final SensorType<PiglinBruteSpecificSensor> PIGLIN_BRUTE_SPECIFIC_SENSOR = SensorType.register("piglin_brute_specific_sensor", PiglinBruteSpecificSensor::new);
     public static final SensorType<HoglinSpecificSensor> HOGLIN_SPECIFIC_SENSOR = SensorType.register("hoglin_specific_sensor", HoglinSpecificSensor::new);
     public static final SensorType<NearestVisibleAdultSensor> NEAREST_ADULT = SensorType.register("nearest_adult", NearestVisibleAdultSensor::new);
+    public static final SensorType<AxolotlHostilesSensor> AXOLOTL_HOSTILES = SensorType.register("axolotl_hostiles", AxolotlHostilesSensor::new);
+    public static final SensorType<AxolotlTemptationsSensor> AXOLOTL_TEMPTATIONS = SensorType.register("axolotl_temptations", () -> new AxolotlTemptationsSensor(AxolotlBrain.getTemptItems()));
     private final Supplier<U> factory;
 
-    private SensorType(Supplier<U> supplier) {
-        this.factory = supplier;
+    private SensorType(Supplier<U> factory) {
+        this.factory = factory;
     }
 
     public U create() {
         return (U)((Sensor)this.factory.get());
     }
 
-    private static <U extends Sensor<?>> SensorType<U> register(String id, Supplier<U> supplier) {
-        return Registry.register(Registry.SENSOR_TYPE, new Identifier(id), new SensorType<U>(supplier));
+    private static <U extends Sensor<?>> SensorType<U> register(String id, Supplier<U> factory) {
+        return Registry.register(Registry.SENSOR_TYPE, new Identifier(id), new SensorType<U>(factory));
     }
 }
 

@@ -359,7 +359,7 @@ extends AnimalEntity {
 
         @Override
         protected PathNodeNavigator createPathNodeNavigator(int range) {
-            this.nodeMaker = new AmphibiousPathNodeMaker();
+            this.nodeMaker = new AmphibiousPathNodeMaker(true);
             return new PathNodeNavigator(this.nodeMaker, range);
         }
 

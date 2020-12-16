@@ -284,23 +284,23 @@ public class ChunkSerializer {
         return ChunkStatus.ChunkType.field_12808;
     }
 
-    private static void writeEntities(ServerWorld serverWorld, CompoundTag compoundTag, WorldChunk worldChunk) {
+    private static void writeEntities(ServerWorld world, CompoundTag tag, WorldChunk chunk) {
         ListTag listTag;
-        if (compoundTag.contains("Entities", 9) && !(listTag = compoundTag.getList("Entities", 10)).isEmpty()) {
-            serverWorld.method_31423(EntityType.method_31489(listTag, serverWorld));
+        if (tag.contains("Entities", 9) && !(listTag = tag.getList("Entities", 10)).isEmpty()) {
+            world.method_31423(EntityType.method_31489(listTag, world));
         }
-        listTag = compoundTag.getList("TileEntities", 10);
+        listTag = tag.getList("TileEntities", 10);
         for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag2 = listTag.getCompound(i);
-            boolean bl = compoundTag2.getBoolean("keepPacked");
+            CompoundTag compoundTag = listTag.getCompound(i);
+            boolean bl = compoundTag.getBoolean("keepPacked");
             if (bl) {
-                worldChunk.addPendingBlockEntityTag(compoundTag2);
+                chunk.addPendingBlockEntityTag(compoundTag);
                 continue;
             }
-            BlockPos blockPos = new BlockPos(compoundTag2.getInt("x"), compoundTag2.getInt("y"), compoundTag2.getInt("z"));
-            BlockEntity blockEntity = BlockEntity.createFromTag(blockPos, worldChunk.getBlockState(blockPos), compoundTag2);
+            BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+            BlockEntity blockEntity = BlockEntity.createFromTag(blockPos, chunk.getBlockState(blockPos), compoundTag);
             if (blockEntity == null) continue;
-            worldChunk.setBlockEntity(blockEntity);
+            chunk.setBlockEntity(blockEntity);
         }
     }
 
@@ -340,8 +340,8 @@ public class ChunkSerializer {
         HashMap<StructureFeature<?>, LongSet> map = Maps.newHashMap();
         CompoundTag compoundTag = tag.getCompound("References");
         for (String string : compoundTag.getKeys()) {
-            map.put((StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), new LongOpenHashSet(Arrays.stream(compoundTag.getLongArray(string)).filter(l -> {
-                ChunkPos chunkPos2 = new ChunkPos(l);
+            map.put((StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), new LongOpenHashSet(Arrays.stream(compoundTag.getLongArray(string)).filter(packedPos -> {
+                ChunkPos chunkPos2 = new ChunkPos(packedPos);
                 if (chunkPos2.method_24022(pos) > 8) {
                     LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", (Object)string, (Object)chunkPos2, (Object)pos);
                     return false;

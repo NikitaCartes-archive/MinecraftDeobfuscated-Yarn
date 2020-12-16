@@ -60,7 +60,7 @@ implements Runnable {
                 crashReportSection.add("Threads", stringBuilder);
                 CrashReportSection crashReportSection2 = crashReport.addElement("Performance stats");
                 crashReportSection2.add("Random tick rate", () -> this.server.getSaveProperties().getGameRules().get(GameRules.RANDOM_TICK_SPEED).toString());
-                crashReportSection2.add("Level stats", () -> Streams.stream(this.server.getWorlds()).map(serverWorld -> serverWorld.getRegistryKey() + ": " + serverWorld.method_31268()).collect(Collectors.joining(",\n")));
+                crashReportSection2.add("Level stats", () -> Streams.stream(this.server.getWorlds()).map(serverWorld -> serverWorld.getRegistryKey() + ": " + serverWorld.getDebugString()).collect(Collectors.joining(",\n")));
                 Bootstrap.println("Crash report:\n" + crashReport.asString());
                 File file = new File(new File(this.server.getRunDirectory(), "crash-reports"), "crash-" + new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss").format(new Date()) + "-server.txt");
                 if (crashReport.writeToFile(file)) {

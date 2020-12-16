@@ -67,8 +67,8 @@ public final class DimensionOptions {
         return simpleRegistry2;
     }
 
-    public static boolean method_29567(long seed, SimpleRegistry<DimensionOptions> simpleRegistry) {
-        ArrayList<Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions>> list = Lists.newArrayList(simpleRegistry.getEntries());
+    public static boolean hasDefaultSettings(long seed, SimpleRegistry<DimensionOptions> options) {
+        ArrayList<Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions>> list = Lists.newArrayList(options.getEntries());
         if (list.size() != BASE_DIMENSIONS.size()) {
             return false;
         }

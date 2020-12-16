@@ -37,8 +37,8 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        this.playStopUsingSound(entity);
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity livingEntity) {
+        this.playStopUsingSound(livingEntity);
         return stack;
     }
 

@@ -36,7 +36,6 @@ import net.minecraft.item.Items;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
@@ -163,7 +162,7 @@ extends Screen {
         this.listText = new TranslatableText("createWorld.customize.presets.list");
         this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
         this.customPresetField.setMaxLength(1230);
-        MutableRegistry<Biome> registry = this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
+        Registry<Biome> registry = this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
         this.customPresetField.setText(PresetsScreen.method_29062(registry, this.parent.method_29055()));
         this.field_25044 = this.parent.method_29055();
         this.children.add(this.customPresetField);
@@ -332,7 +331,7 @@ extends Screen {
             private void setPreset() {
                 SuperflatPresetsListWidget.this.setSelected(this);
                 SuperflatPreset superflatPreset = (SuperflatPreset)PRESETS.get(SuperflatPresetsListWidget.this.children().indexOf(this));
-                MutableRegistry<Biome> registry = ((PresetsScreen)PresetsScreen.this).parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
+                Registry<Biome> registry = ((PresetsScreen)PresetsScreen.this).parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
                 PresetsScreen.this.field_25044 = superflatPreset.field_25045.apply(registry);
                 PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(registry, PresetsScreen.this.field_25044));
                 PresetsScreen.this.customPresetField.setCursorToStart();

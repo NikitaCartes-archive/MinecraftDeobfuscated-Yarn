@@ -121,16 +121,13 @@ public class ItemPredicate {
         NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
         Item item = null;
         if (jsonObject.has("item")) {
-            Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
-            item = Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item id '" + identifier + "'"));
+            Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "item"));
+            item = Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown item id '" + identifier2 + "'"));
         }
         Tag<Item> tag = null;
         if (jsonObject.has("tag")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-            tag = ServerTagManagerHolder.getTagManager().getItems().getTag(identifier2);
-            if (tag == null) {
-                throw new JsonSyntaxException("Unknown item tag '" + identifier2 + "'");
-            }
+            tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown item tag '" + identifier + "'"));
         }
         Potion potion = null;
         if (jsonObject.has("potion")) {
@@ -152,7 +149,7 @@ public class ItemPredicate {
             jsonObject.addProperty("item", Registry.ITEM.getId(this.item).toString());
         }
         if (this.tag != null) {
-            jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getItems().getTagId(this.tag).toString());
+            jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.ITEM_KEY, this.tag, () -> new IllegalStateException("Unknown item tag")).toString());
         }
         jsonObject.add("count", this.count.toJson());
         jsonObject.add("durability", this.durability.toJson());

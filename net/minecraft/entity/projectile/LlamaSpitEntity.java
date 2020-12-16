@@ -31,7 +31,7 @@ extends ProjectileEntity {
     public LlamaSpitEntity(World world, LlamaEntity owner) {
         this((EntityType<? extends LlamaSpitEntity>)EntityType.LLAMA_SPIT, world);
         super.setOwner(owner);
-        this.updatePosition(owner.getX() - (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(owner.bodyYaw * ((float)Math.PI / 180)), owner.getEyeY() - (double)0.1f, owner.getZ() + (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(owner.bodyYaw * ((float)Math.PI / 180)));
+        this.setPosition(owner.getX() - (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(owner.bodyYaw * ((float)Math.PI / 180)), owner.getEyeY() - (double)0.1f, owner.getZ() + (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(owner.bodyYaw * ((float)Math.PI / 180)));
     }
 
     @Override
@@ -60,7 +60,7 @@ extends ProjectileEntity {
         if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.06f, 0.0));
         }
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     @Override

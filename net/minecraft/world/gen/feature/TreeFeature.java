@@ -101,28 +101,28 @@ extends Feature<TreeFeatureConfig> {
             return false;
         }
         OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
-        n = this.method_29963(world, i, blockPos, config);
+        n = this.getTopPosition(world, i, blockPos, config);
         if (!(n >= i || optionalInt.isPresent() && n >= optionalInt.getAsInt())) {
             return false;
         }
         List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, n, blockPos, logPositions, box, config);
-        list.forEach(treeNode -> treeFeatureConfig.foliagePlacer.generate(world, random, config, n, (FoliagePlacer.TreeNode)treeNode, j, l, leavesPositions, box));
+        list.forEach(node -> treeFeatureConfig.foliagePlacer.generate(world, random, config, n, (FoliagePlacer.TreeNode)node, j, l, leavesPositions, box));
         return true;
     }
 
-    private int method_29963(TestableWorld testableWorld, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
+    private int getTopPosition(TestableWorld world, int height, BlockPos pos, TreeFeatureConfig config) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int j = 0; j <= i + 1; ++j) {
-            int k = treeFeatureConfig.minimumSize.method_27378(i, j);
-            for (int l = -k; l <= k; ++l) {
-                for (int m = -k; m <= k; ++m) {
-                    mutable.set(blockPos, l, j, m);
-                    if (TreeFeature.canTreeReplace(testableWorld, mutable) && (treeFeatureConfig.ignoreVines || !TreeFeature.isVine(testableWorld, mutable))) continue;
-                    return j - 2;
+        for (int i = 0; i <= height + 1; ++i) {
+            int j = config.minimumSize.getRadius(height, i);
+            for (int k = -j; k <= j; ++k) {
+                for (int l = -j; l <= j; ++l) {
+                    mutable.set(pos, k, i, l);
+                    if (TreeFeature.canTreeReplace(world, mutable) && (config.ignoreVines || !TreeFeature.isVine(world, mutable))) continue;
+                    return i - 2;
                 }
             }
         }
-        return i;
+        return height;
     }
 
     @Override

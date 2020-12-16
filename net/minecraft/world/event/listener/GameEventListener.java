@@ -15,6 +15,6 @@ public interface GameEventListener {
 
     public int getRange();
 
-    public boolean method_32947(World var1, GameEvent var2, @Nullable Entity var3, BlockPos var4);
+    public boolean listen(World var1, GameEvent var2, @Nullable Entity var3, BlockPos var4);
 }
 

@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.class_5532;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
@@ -18,7 +19,9 @@ import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -27,6 +30,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 
 public class LookTargetUtil {
     public static void lookAtAndWalkTowardsEachOther(LivingEntity first, LivingEntity second, float speed) {
@@ -98,10 +102,9 @@ public class LookTargetUtil {
         return LookTargetUtil.method_25941(mobEntity, livingEntity);
     }
 
-    public static boolean method_25941(LivingEntity livingEntity, LivingEntity livingEntity2) {
-        double e;
-        double d = livingEntity.squaredDistanceTo(livingEntity2.getX(), livingEntity2.getY(), livingEntity2.getZ());
-        return d <= (e = (double)(livingEntity.getWidth() * 2.0f * (livingEntity.getWidth() * 2.0f) + livingEntity2.getWidth()));
+    public static boolean method_25941(MobEntity mobEntity, LivingEntity livingEntity) {
+        double d = mobEntity.squaredDistanceTo(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ());
+        return d <= mobEntity.method_33191(livingEntity);
     }
 
     /**
@@ -149,6 +152,16 @@ public class LookTargetUtil {
 
     public static Stream<VillagerEntity> streamSeenVillagers(VillagerEntity villager, Predicate<VillagerEntity> filter) {
         return villager.getBrain().getOptionalMemory(MemoryModuleType.MOBS).map(list -> list.stream().filter(livingEntity -> livingEntity instanceof VillagerEntity && livingEntity != villager).map(livingEntity -> (VillagerEntity)livingEntity).filter(LivingEntity::isAlive).filter(filter)).orElseGet(Stream::empty);
+    }
+
+    @Nullable
+    public static Vec3d method_33193(PathAwareEntity pathAwareEntity, int i, int j) {
+        Vec3d vec3d = class_5532.method_31510(pathAwareEntity, i, j);
+        int k = 0;
+        while (vec3d != null && !pathAwareEntity.world.getBlockState(new BlockPos(vec3d)).canPathfindThrough(pathAwareEntity.world, new BlockPos(vec3d), NavigationType.WATER) && k++ < 10) {
+            vec3d = class_5532.method_31510(pathAwareEntity, i, j);
+        }
+        return vec3d;
     }
 }
 

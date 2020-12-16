@@ -40,6 +40,7 @@ import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.mob.MobVisibilityCache;
 import net.minecraft.entity.mob.Monster;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
@@ -490,7 +491,7 @@ extends LivingEntity {
     }
 
     public boolean tryEquip(ItemStack equipment) {
-        EquipmentSlot equipmentSlot = MobEntity.method_32326(equipment);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(equipment);
         ItemStack itemStack = this.getEquippedStack(equipmentSlot);
         boolean bl = this.prefersNewEquipment(equipment, itemStack);
         if (bl && this.canPickupItem(equipment)) {
@@ -919,23 +920,23 @@ extends LivingEntity {
 
     protected void updateEnchantments(LocalDifficulty difficulty) {
         float f = difficulty.getClampedLocalDifficulty();
-        this.method_30759(f);
+        this.enchantMainHandItem(f);
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             if (equipmentSlot.getType() != EquipmentSlot.Type.ARMOR) continue;
-            this.method_30758(f, equipmentSlot);
+            this.enchantEquipment(f, equipmentSlot);
         }
     }
 
-    protected void method_30759(float f) {
-        if (!this.getMainHandStack().isEmpty() && this.random.nextFloat() < 0.25f * f) {
-            this.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0f + f * (float)this.random.nextInt(18)), false));
+    protected void enchantMainHandItem(float power) {
+        if (!this.getMainHandStack().isEmpty() && this.random.nextFloat() < 0.25f * power) {
+            this.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(this.random, this.getMainHandStack(), (int)(5.0f + power * (float)this.random.nextInt(18)), false));
         }
     }
 
-    protected void method_30758(float f, EquipmentSlot equipmentSlot) {
-        ItemStack itemStack = this.getEquippedStack(equipmentSlot);
-        if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5f * f) {
-            this.equipStack(equipmentSlot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0f + f * (float)this.random.nextInt(18)), false));
+    protected void enchantEquipment(float power, EquipmentSlot slot) {
+        ItemStack itemStack = this.getEquippedStack(slot);
+        if (!itemStack.isEmpty() && this.random.nextFloat() < 0.5f * power) {
+            this.equipStack(slot, EnchantmentHelper.enchant(this.random, itemStack, (int)(5.0f + power * (float)this.random.nextInt(18)), false));
         }
     }
 
@@ -980,7 +981,7 @@ extends LivingEntity {
 
     @Override
     public boolean canEquip(ItemStack stack) {
-        EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
         return this.getEquippedStack(equipmentSlot).isEmpty() && this.canPickUpLoot();
     }
 
@@ -997,7 +998,7 @@ extends LivingEntity {
             this.detachLeash(true, !player.getAbilities().creativeMode);
             return ActionResult.success(this.world.isClient);
         }
-        ActionResult actionResult = this.method_29506(player, hand);
+        ActionResult actionResult = this.interactWithItem(player, hand);
         if (actionResult.isAccepted()) {
             return actionResult;
         }
@@ -1008,22 +1009,22 @@ extends LivingEntity {
         return super.interact(player, hand);
     }
 
-    private ActionResult method_29506(PlayerEntity playerEntity, Hand hand) {
+    private ActionResult interactWithItem(PlayerEntity player, Hand hand) {
         ActionResult actionResult;
-        ItemStack itemStack = playerEntity.getStackInHand(hand);
-        if (itemStack.isOf(Items.LEAD) && this.canBeLeashedBy(playerEntity)) {
-            this.attachLeash(playerEntity, true);
+        ItemStack itemStack = player.getStackInHand(hand);
+        if (itemStack.isOf(Items.LEAD) && this.canBeLeashedBy(player)) {
+            this.attachLeash(player, true);
             itemStack.decrement(1);
             return ActionResult.success(this.world.isClient);
         }
-        if (itemStack.isOf(Items.NAME_TAG) && (actionResult = itemStack.useOnEntity(playerEntity, this, hand)).isAccepted()) {
+        if (itemStack.isOf(Items.NAME_TAG) && (actionResult = itemStack.useOnEntity(player, this, hand)).isAccepted()) {
             return actionResult;
         }
         if (itemStack.getItem() instanceof SpawnEggItem) {
             if (this.world instanceof ServerWorld) {
                 SpawnEggItem spawnEggItem = (SpawnEggItem)itemStack.getItem();
-                Optional<MobEntity> optional = spawnEggItem.spawnBaby(playerEntity, this, this.getType(), (ServerWorld)this.world, this.getPos(), itemStack);
-                optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(playerEntity, (MobEntity)mobEntity));
+                Optional<MobEntity> optional = spawnEggItem.spawnBaby(player, this, this.getType(), (ServerWorld)this.world, this.getPos(), itemStack);
+                optional.ifPresent(mobEntity -> this.onPlayerSpawnedChild(player, (MobEntity)mobEntity));
                 return optional.isPresent() ? ActionResult.SUCCESS : ActionResult.PASS;
             }
             return ActionResult.CONSUME;
@@ -1236,9 +1237,16 @@ extends LivingEntity {
         return this.isLeftHanded() ? Arm.LEFT : Arm.RIGHT;
     }
 
+    public double method_33191(LivingEntity livingEntity) {
+        return this.getWidth() * 2.0f * (this.getWidth() * 2.0f) + livingEntity.getWidth();
+    }
+
     @Override
     public boolean canTarget(LivingEntity target) {
         if (target.getType() == EntityType.PLAYER && ((PlayerEntity)target).getAbilities().invulnerable) {
+            return false;
+        }
+        if (target.getType() == EntityType.AXOLOTL && ((AxolotlEntity)target).isPlayingDead()) {
             return false;
         }
         return super.canTarget(target);
@@ -1305,8 +1313,8 @@ extends LivingEntity {
     }
 
     @Override
-    protected void method_30076() {
-        super.method_30076();
+    protected void removeFromDimension() {
+        super.removeFromDimension();
         this.detachLeash(true, false);
     }
 

@@ -24,23 +24,23 @@ public class SculkSensorListener
 implements GameEventListener {
     protected final PositionSource positionSource;
     protected final int range;
-    protected final class_5719 field_28189;
+    protected final Listener listener;
     protected Optional<GameEvent> event = Optional.empty();
-    protected int field_28191;
+    protected int distance;
     protected int cooldown = 0;
 
-    public SculkSensorListener(PositionSource positionSource, int range, class_5719 arg) {
+    public SculkSensorListener(PositionSource positionSource, int range, Listener listener) {
         this.positionSource = positionSource;
         this.range = range;
-        this.field_28189 = arg;
+        this.listener = listener;
     }
 
-    public void method_32964(World world) {
+    public void listen(World world) {
         if (this.event.isPresent()) {
             --this.cooldown;
             if (this.cooldown <= 0) {
                 this.cooldown = 0;
-                this.field_28189.listen(world, this, this.event.get(), this.field_28191);
+                this.listener.listen(world, this, this.event.get(), this.distance);
                 this.event = Optional.empty();
             }
         }
@@ -57,7 +57,7 @@ implements GameEventListener {
     }
 
     @Override
-    public boolean method_32947(World world, GameEvent event, @Nullable Entity entity, BlockPos pos) {
+    public boolean listen(World world, GameEvent event, @Nullable Entity entity, BlockPos pos) {
         if (!this.shouldActivate(event, entity)) {
             return false;
         }
@@ -66,13 +66,13 @@ implements GameEventListener {
             return false;
         }
         BlockPos blockPos = optional.get();
-        if (!this.field_28189.shouldListen(world, this, pos, event, entity)) {
+        if (!this.listener.shouldListen(world, this, pos, event, entity)) {
             return false;
         }
         if (this.isOccluded(world, pos, blockPos)) {
             return false;
         }
-        this.method_32965(world, event, pos, blockPos);
+        this.listen(world, event, pos, blockPos);
         return true;
     }
 
@@ -83,17 +83,22 @@ implements GameEventListener {
         if (!GameEventTags.VIBRATIONS.contains(event)) {
             return false;
         }
-        if (entity != null && GameEventTags.IGNORE_VIBRATIONS_STEPPING_CAREFULLY.contains(event) && entity.bypassesSteppingEffects()) {
-            return false;
+        if (entity != null) {
+            if (GameEventTags.IGNORE_VIBRATIONS_STEPPING_CAREFULLY.contains(event) && entity.bypassesSteppingEffects()) {
+                return false;
+            }
+            if (entity.occludeVibrationSignals()) {
+                return false;
+            }
         }
         return entity == null || !entity.isSpectator();
     }
 
-    private void method_32965(World world, GameEvent event, BlockPos pos, BlockPos sourcePos) {
+    private void listen(World world, GameEvent event, BlockPos pos, BlockPos sourcePos) {
         this.event = Optional.of(event);
         if (world instanceof ServerWorld) {
-            this.cooldown = this.field_28191 = MathHelper.floor(MathHelper.sqrt(pos.getSquaredDistance(sourcePos, false)));
-            ((ServerWorld)world).method_32817(new Vibration(pos, this.positionSource, this.cooldown));
+            this.cooldown = this.distance = MathHelper.floor(MathHelper.sqrt(pos.getSquaredDistance(sourcePos, false)));
+            ((ServerWorld)world).sendVibrationPacket(new Vibration(pos, this.positionSource, this.cooldown));
         }
     }
 
@@ -101,7 +106,7 @@ implements GameEventListener {
         return world.raycast(new BlockStateRaycastContext(Vec3d.ofCenter(pos), Vec3d.ofCenter(sourcePos), state -> state.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS))).getType() == HitResult.Type.BLOCK;
     }
 
-    public static interface class_5719 {
+    public static interface Listener {
         public boolean shouldListen(World var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5);
 
         public void listen(World var1, GameEventListener var2, GameEvent var3, int var4);

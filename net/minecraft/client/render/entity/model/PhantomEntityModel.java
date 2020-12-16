@@ -58,7 +58,7 @@ extends SinglePartEntityModel<T> {
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        float f = ((float)(((Entity)entity).getEntityId() * 3) + animationProgress) * 0.13f;
+        float f = ((float)(((Entity)entity).getId() * 3) + animationProgress) * 0.13f;
         float g = 16.0f;
         this.leftWingBase.roll = MathHelper.cos(f) * 16.0f * ((float)Math.PI / 180);
         this.leftWingTip.roll = MathHelper.cos(f) * 16.0f * ((float)Math.PI / 180);

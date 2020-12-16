@@ -32,7 +32,7 @@ extends BiomeSource {
     private final Registry<Biome> biomeRegistry;
 
     public VanillaLayeredBiomeSource(long seed, boolean legacyBiomeInitLayer, boolean largeBiomes, Registry<Biome> biomeRegistry) {
-        super(BIOMES.stream().map(registryKey -> () -> (Biome)biomeRegistry.getOrThrow((RegistryKey<Biome>)registryKey)));
+        super(BIOMES.stream().map(key -> () -> (Biome)biomeRegistry.getOrThrow((RegistryKey<Biome>)key)));
         this.seed = seed;
         this.legacyBiomeInitLayer = legacyBiomeInitLayer;
         this.largeBiomes = largeBiomes;

@@ -56,8 +56,8 @@ extends StructureFeature<DefaultFeatureConfig> {
         } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
             j = -5;
         }
-        int k = ChunkSectionPos.method_32205(chunkX, 7);
-        int l = ChunkSectionPos.method_32205(chunkZ, 7);
+        int k = ChunkSectionPos.getOffsetPos(chunkX, 7);
+        int l = ChunkSectionPos.getOffsetPos(chunkZ, 7);
         int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG);
         int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG);
         int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG);
@@ -78,7 +78,7 @@ extends StructureFeature<DefaultFeatureConfig> {
             if (k < 60) {
                 return;
             }
-            BlockPos blockPos = new BlockPos(ChunkSectionPos.method_32205(i, 8), k, ChunkSectionPos.method_32205(j, 8));
+            BlockPos blockPos = new BlockPos(ChunkSectionPos.getOffsetPos(i, 8), k, ChunkSectionPos.getOffsetPos(j, 8));
             EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
             this.setBoundingBoxFromChildren();
         }

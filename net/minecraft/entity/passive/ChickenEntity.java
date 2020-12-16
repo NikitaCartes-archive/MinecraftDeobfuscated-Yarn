@@ -169,7 +169,7 @@ extends AnimalEntity {
         float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.1f;
         float i = 0.0f;
-        passenger.updatePosition(this.getX() + (double)(0.1f * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1f * g));
+        passenger.setPosition(this.getX() + (double)(0.1f * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1f * g));
         if (passenger instanceof LivingEntity) {
             ((LivingEntity)passenger).bodyYaw = this.bodyYaw;
         }

@@ -64,7 +64,7 @@ implements DebugRenderer.Renderer {
                 String[] strings = string.split("\n");
                 int i = 0;
                 for (String string2 : strings) {
-                    DebugRenderer.drawString(string2, ChunkSectionPos.method_32205(chunkPos.x, 8), e + (double)i, ChunkSectionPos.method_32205(chunkPos.z, 8), -1, 0.15f);
+                    DebugRenderer.drawString(string2, ChunkSectionPos.getOffsetPos(chunkPos.x, 8), e + (double)i, ChunkSectionPos.getOffsetPos(chunkPos.z, 8), -1, 0.15f);
                     i -= 2;
                 }
             }

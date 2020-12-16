@@ -35,9 +35,9 @@ implements Packet<ClientPlayPacketListener> {
         this.percent = bossBar.getPercent();
         this.color = bossBar.getColor();
         this.overlay = bossBar.getOverlay();
-        this.darkenSky = bossBar.getDarkenSky();
+        this.darkenSky = bossBar.shouldDarkenSky();
         this.dragonMusic = bossBar.hasDragonMusic();
-        this.thickenFog = bossBar.getThickenFog();
+        this.thickenFog = bossBar.shouldThickenFog();
     }
 
     @Override

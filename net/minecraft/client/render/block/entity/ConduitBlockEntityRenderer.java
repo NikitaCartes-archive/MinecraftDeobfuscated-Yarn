@@ -38,18 +38,18 @@ implements BlockEntityRenderer<ConduitBlockEntity> {
     public static final SpriteIdentifier WIND_VERTICAL_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/wind_vertical"));
     public static final SpriteIdentifier OPEN_EYE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/open_eye"));
     public static final SpriteIdentifier CLOSED_EYE_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/conduit/closed_eye"));
-    private final ModelPart field_20823;
-    private final ModelPart field_20824;
-    private final ModelPart field_20825;
-    private final ModelPart field_20826;
-    private final BlockEntityRenderDispatcher field_27753;
+    private final ModelPart conduitEye;
+    private final ModelPart conduitWind;
+    private final ModelPart conduitShell;
+    private final ModelPart conduit;
+    private final BlockEntityRenderDispatcher dispatcher;
 
-    public ConduitBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        this.field_27753 = context.getRenderDispatcher();
-        this.field_20823 = context.getLayerModelPart(EntityModelLayers.CONDUIT_EYE);
-        this.field_20824 = context.getLayerModelPart(EntityModelLayers.CONDUIT_WIND);
-        this.field_20825 = context.getLayerModelPart(EntityModelLayers.CONDUIT_SHELL);
-        this.field_20826 = context.getLayerModelPart(EntityModelLayers.CONDUIT);
+    public ConduitBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        this.dispatcher = ctx.getRenderDispatcher();
+        this.conduitEye = ctx.getLayerModelPart(EntityModelLayers.CONDUIT_EYE);
+        this.conduitWind = ctx.getLayerModelPart(EntityModelLayers.CONDUIT_WIND);
+        this.conduitShell = ctx.getLayerModelPart(EntityModelLayers.CONDUIT_SHELL);
+        this.conduit = ctx.getLayerModelPart(EntityModelLayers.CONDUIT);
     }
 
     public static TexturedModelData getEyeTexturedModelData() {
@@ -89,7 +89,7 @@ implements BlockEntityRenderer<ConduitBlockEntity> {
             matrixStack.push();
             matrixStack.translate(0.5, 0.5, 0.5);
             matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
-            this.field_20825.render(matrixStack, vertexConsumer, i, j);
+            this.conduitShell.render(matrixStack, vertexConsumer, i, j);
             matrixStack.pop();
             return;
         }
@@ -101,7 +101,7 @@ implements BlockEntityRenderer<ConduitBlockEntity> {
         Vec3f vec3f = new Vec3f(0.5f, 1.0f, 0.5f);
         vec3f.normalize();
         matrixStack.multiply(new Quaternion(vec3f, h, true));
-        this.field_20826.render(matrixStack, CAGE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
+        this.conduit.render(matrixStack, CAGE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
         matrixStack.pop();
         int l = conduitBlockEntity.ticks / 66 % 3;
         matrixStack.push();
@@ -112,16 +112,16 @@ implements BlockEntityRenderer<ConduitBlockEntity> {
             matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
         }
         VertexConsumer vertexConsumer2 = (l == 1 ? WIND_VERTICAL_TEXTURE : WIND_TEXTURE).getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
-        this.field_20824.render(matrixStack, vertexConsumer2, i, j);
+        this.conduitWind.render(matrixStack, vertexConsumer2, i, j);
         matrixStack.pop();
         matrixStack.push();
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.scale(0.875f, 0.875f, 0.875f);
         matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f));
         matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
-        this.field_20824.render(matrixStack, vertexConsumer2, i, j);
+        this.conduitWind.render(matrixStack, vertexConsumer2, i, j);
         matrixStack.pop();
-        Camera camera = this.field_27753.camera;
+        Camera camera = this.dispatcher.camera;
         matrixStack.push();
         matrixStack.translate(0.5, 0.3f + k * 0.2f, 0.5);
         matrixStack.scale(0.5f, 0.5f, 0.5f);
@@ -131,7 +131,7 @@ implements BlockEntityRenderer<ConduitBlockEntity> {
         matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         float n = 1.3333334f;
         matrixStack.scale(1.3333334f, 1.3333334f, 1.3333334f);
-        this.field_20823.render(matrixStack, (conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE).getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
+        this.conduitEye.render(matrixStack, (conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE).getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
         matrixStack.pop();
     }
 }

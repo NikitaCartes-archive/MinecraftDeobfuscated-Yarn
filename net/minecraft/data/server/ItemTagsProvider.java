@@ -19,10 +19,10 @@ import net.minecraft.util.registry.Registry;
 
 public class ItemTagsProvider
 extends AbstractTagProvider<Item> {
-    private final Function<Tag.Identified<Block>, Tag.Builder> field_23783 = blockTagsProvider::method_27169;
+    private final Function<Tag.Identified<Block>, Tag.Builder> blockTags = blockTagsProvider::getTagBuilder;
 
-    public ItemTagsProvider(DataGenerator dataGenerator, BlockTagsProvider blockTagsProvider) {
-        super(dataGenerator, Registry.ITEM);
+    public ItemTagsProvider(DataGenerator root, BlockTagsProvider blockTagsProvider) {
+        super(root, Registry.ITEM);
     }
 
     @Override
@@ -67,6 +67,7 @@ extends AbstractTagProvider<Item> {
         this.copy(BlockTags.GOLD_ORES, ItemTags.GOLD_ORES);
         this.copy(BlockTags.SOUL_FIRE_BASE_BLOCKS, ItemTags.SOUL_FIRE_BASE_BLOCKS);
         this.copy(BlockTags.CANDLES, ItemTags.CANDLES);
+        this.copy(BlockTags.OCCLUDES_VIBRATION_SIGNALS, ItemTags.OCCLUDES_VIBRATION_SIGNALS);
         this.getOrCreateTagBuilder(ItemTags.BANNERS).add((Item[])new Item[]{Items.WHITE_BANNER, Items.ORANGE_BANNER, Items.MAGENTA_BANNER, Items.LIGHT_BLUE_BANNER, Items.YELLOW_BANNER, Items.LIME_BANNER, Items.PINK_BANNER, Items.GRAY_BANNER, Items.LIGHT_GRAY_BANNER, Items.CYAN_BANNER, Items.PURPLE_BANNER, Items.BLUE_BANNER, Items.BROWN_BANNER, Items.GREEN_BANNER, Items.RED_BANNER, Items.BLACK_BANNER});
         this.getOrCreateTagBuilder(ItemTags.BOATS).add((Item[])new Item[]{Items.OAK_BOAT, Items.SPRUCE_BOAT, Items.BIRCH_BOAT, Items.JUNGLE_BOAT, Items.ACACIA_BOAT, Items.DARK_OAK_BOAT});
         this.getOrCreateTagBuilder(ItemTags.FISHES).add((Item[])new Item[]{Items.COD, Items.COOKED_COD, Items.SALMON, Items.COOKED_SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH});
@@ -85,11 +86,12 @@ extends AbstractTagProvider<Item> {
         this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add((Item[])new Item[]{Items.COBBLESTONE, Items.BLACKSTONE});
         this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add((Item[])new Item[]{Items.COBBLESTONE, Items.BLACKSTONE});
         this.getOrCreateTagBuilder(ItemTags.FREEZE_IMMUNE_WEARABLES).add((Item[])new Item[]{Items.LEATHER_BOOTS, Items.LEATHER_LEGGINGS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET});
+        this.getOrCreateTagBuilder(ItemTags.AXOLOTL_TEMPT_ITEMS).add((Item[])new Item[]{Items.TROPICAL_FISH, Items.TROPICAL_FISH_BUCKET});
     }
 
-    protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
-        Tag.Builder builder = this.method_27169(identified2);
-        Tag.Builder builder2 = this.field_23783.apply(identified);
+    protected void copy(Tag.Identified<Block> blockTag, Tag.Identified<Item> itemTag) {
+        Tag.Builder builder = this.getTagBuilder(itemTag);
+        Tag.Builder builder2 = this.blockTags.apply(blockTag);
         builder2.streamEntries().forEach(builder::add);
     }
 

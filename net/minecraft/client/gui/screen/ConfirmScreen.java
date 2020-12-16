@@ -6,19 +6,20 @@ package net.minecraft.client.gui.screen;
 import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 
 @Environment(value=EnvType.CLIENT)
 public class ConfirmScreen
 extends Screen {
     private final Text message;
-    private class_5489 messageSplit = class_5489.field_26528;
+    private MultilineText messageSplit = MultilineText.EMPTY;
     protected Text yesTranslated;
     protected Text noTranslated;
     private int buttonEnableTimer;
@@ -46,14 +47,14 @@ extends Screen {
         super.init();
         this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, this.yesTranslated, buttonWidget -> this.callback.accept(true)));
         this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, this.noTranslated, buttonWidget -> this.callback.accept(false)));
-        this.messageSplit = class_5489.method_30890(this.textRenderer, this.message, this.width - 50);
+        this.messageSplit = MultilineText.create(this.textRenderer, (StringVisitable)this.message, this.width - 50);
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         ConfirmScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 70, 0xFFFFFF);
-        this.messageSplit.method_30888(matrices, this.width / 2, 90);
+        this.messageSplit.drawCenterWithShadow(matrices, this.width / 2, 90);
         super.render(matrices, mouseX, mouseY, delta);
     }
 

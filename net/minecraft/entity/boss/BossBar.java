@@ -61,7 +61,7 @@ public abstract class BossBar {
         this.style = style;
     }
 
-    public boolean getDarkenSky() {
+    public boolean shouldDarkenSky() {
         return this.darkenSky;
     }
 
@@ -84,7 +84,7 @@ public abstract class BossBar {
         return this;
     }
 
-    public boolean getThickenFog() {
+    public boolean shouldThickenFog() {
         return this.thickenFog;
     }
 

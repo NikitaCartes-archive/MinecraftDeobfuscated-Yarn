@@ -6,8 +6,8 @@ package net.minecraft.client.gui.screen.pack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -66,9 +66,9 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         protected final Screen screen;
         private final ResourcePackOrganizer.Pack pack;
         private final OrderedText field_26590;
-        private final class_5489 field_26591;
+        private final MultilineText field_26591;
         private final OrderedText field_26784;
-        private final class_5489 field_26785;
+        private final MultilineText field_26785;
 
         public ResourcePackEntry(MinecraftClient minecraftClient, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
             this.client = minecraftClient;
@@ -90,8 +90,8 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             return text.asOrderedText();
         }
 
-        private static class_5489 method_31230(MinecraftClient minecraftClient, Text text) {
-            return class_5489.method_30891(minecraftClient.textRenderer, text, 157, 2);
+        private static MultilineText method_31230(MinecraftClient minecraftClient, Text text) {
+            return MultilineText.create(minecraftClient.textRenderer, (StringVisitable)text, 157, 2);
         }
 
         @Override
@@ -105,7 +105,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             OrderedText orderedText = this.field_26590;
-            class_5489 lv = this.field_26591;
+            MultilineText multilineText = this.field_26591;
             if (this.isSelectable() && (this.client.options.touchscreen || hovered)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
@@ -114,7 +114,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 int j = mouseY - y;
                 if (!this.pack.getCompatibility().isCompatible()) {
                     orderedText = this.field_26784;
-                    lv = this.field_26785;
+                    multilineText = this.field_26785;
                 }
                 if (this.pack.canBeEnabled()) {
                     if (i < 32) {
@@ -147,7 +147,7 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 }
             }
             this.client.textRenderer.drawWithShadow(matrices, orderedText, (float)(x + 32 + 2), (float)(y + 1), 0xFFFFFF);
-            lv.method_30893(matrices, x + 32 + 2, y + 12, 10, 0x808080);
+            multilineText.drawWithShadow(matrices, x + 32 + 2, y + 12, 10, 0x808080);
         }
 
         private boolean isSelectable() {

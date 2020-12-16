@@ -139,7 +139,7 @@ public abstract class LivingEntity
 extends Entity {
     private static final UUID SPRINTING_SPEED_BOOST_ID = UUID.fromString("662A6B8D-DA3E-4C1C-8813-96EA6097278D");
     private static final UUID SOUL_SPEED_BOOST_ID = UUID.fromString("87f46a96-686f-4796-b035-22e16ee9e038");
-    private static final UUID field_27859 = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
+    private static final UUID POWDER_SNOW_SLOW_ID = UUID.fromString("1eaf83ff-7207-4596-b37a-d7a07b3ec4ce");
     private static final EntityAttributeModifier SPRINTING_SPEED_BOOST = new EntityAttributeModifier(SPRINTING_SPEED_BOOST_ID, "Sprinting speed boost", (double)0.3f, EntityAttributeModifier.Operation.MULTIPLY_TOTAL);
     protected static final TrackedData<Byte> LIVING_FLAGS = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Float> HEALTH = DataTracker.registerData(LivingEntity.class, TrackedDataHandlerRegistry.FLOAT);
@@ -415,8 +415,8 @@ extends Entity {
         return super.getVelocityMultiplier();
     }
 
-    protected boolean method_29500(BlockState blockState) {
-        return !blockState.isAir() || this.isFallFlying();
+    protected boolean method_29500(BlockState state) {
+        return !state.isAir() || this.isFallFlying();
     }
 
     protected void removeSoulSpeedBoost() {
@@ -444,17 +444,17 @@ extends Entity {
         }
     }
 
-    protected void method_32324() {
+    protected void removePowderSnowSlow() {
         EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
         if (entityAttributeInstance == null) {
             return;
         }
-        if (entityAttributeInstance.getModifier(field_27859) != null) {
-            entityAttributeInstance.removeModifier(field_27859);
+        if (entityAttributeInstance.getModifier(POWDER_SNOW_SLOW_ID) != null) {
+            entityAttributeInstance.removeModifier(POWDER_SNOW_SLOW_ID);
         }
     }
 
-    protected void method_32325() {
+    protected void addPowderSnowSlowIfNeeded() {
         int i;
         if (!this.getLandingBlockState().isAir() && (i = this.getFrozenTicks()) > 0) {
             EntityAttributeInstance entityAttributeInstance = this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
@@ -462,7 +462,7 @@ extends Entity {
                 return;
             }
             float f = -0.05f * this.getFreezingScale();
-            entityAttributeInstance.addTemporaryModifier(new EntityAttributeModifier(field_27859, "Powder snow slow", (double)f, EntityAttributeModifier.Operation.ADDITION));
+            entityAttributeInstance.addTemporaryModifier(new EntityAttributeModifier(POWDER_SNOW_SLOW_ID, "Powder snow slow", (double)f, EntityAttributeModifier.Operation.ADDITION));
         }
     }
 
@@ -741,6 +741,10 @@ extends Entity {
         return predicate.test(this, entity);
     }
 
+    public boolean canTakeDamage() {
+        return true;
+    }
+
     public static boolean containsOnlyAmbientEffects(Collection<StatusEffectInstance> effects) {
         for (StatusEffectInstance statusEffectInstance : effects) {
             if (statusEffectInstance.isAmbient()) continue;
@@ -1011,7 +1015,7 @@ extends Entity {
         if (entity2 instanceof ServerPlayerEntity) {
             Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
         }
-        this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
+        this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
         return bl3;
     }
 
@@ -1532,7 +1536,7 @@ extends Entity {
                 break;
             }
             case 55: {
-                this.method_30127();
+                this.swapHandStacks();
                 break;
             }
             default: {
@@ -1542,7 +1546,7 @@ extends Entity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void method_30127() {
+    private void swapHandStacks() {
         ItemStack itemStack = this.getEquippedStack(EquipmentSlot.OFFHAND);
         this.equipStack(EquipmentSlot.OFFHAND, this.getEquippedStack(EquipmentSlot.MAINHAND));
         this.equipStack(EquipmentSlot.MAINHAND, itemStack);
@@ -1853,20 +1857,20 @@ extends Entity {
                 this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
             }
         }
-        this.method_29242(this, this instanceof Flutterer);
+        this.updateLimbs(this, this instanceof Flutterer);
     }
 
-    public void method_29242(LivingEntity livingEntity, boolean bl) {
+    public void updateLimbs(LivingEntity entity, boolean flutter) {
         double f;
         double e;
-        livingEntity.lastLimbDistance = livingEntity.limbDistance;
-        double d = livingEntity.getX() - livingEntity.prevX;
-        float g = MathHelper.sqrt(d * d + (e = bl ? livingEntity.getY() - livingEntity.prevY : 0.0) * e + (f = livingEntity.getZ() - livingEntity.prevZ) * f) * 4.0f;
+        entity.lastLimbDistance = entity.limbDistance;
+        double d = entity.getX() - entity.prevX;
+        float g = MathHelper.sqrt(d * d + (e = flutter ? entity.getY() - entity.prevY : 0.0) * e + (f = entity.getZ() - entity.prevZ) * f) * 4.0f;
         if (g > 1.0f) {
             g = 1.0f;
         }
-        livingEntity.limbDistance += (g - livingEntity.limbDistance) * 0.4f;
-        livingEntity.limbAngle += livingEntity.limbDistance;
+        entity.limbDistance += (g - entity.limbDistance) * 0.4f;
+        entity.limbAngle += entity.limbDistance;
     }
 
     public Vec3d method_26318(Vec3d vec3d, float f) {
@@ -2038,11 +2042,11 @@ extends Entity {
             ItemStack itemStack;
             switch (equipmentSlot.getType()) {
                 case HAND: {
-                    itemStack = this.method_30126(equipmentSlot);
+                    itemStack = this.getStackInHandSlot(equipmentSlot);
                     break;
                 }
                 case ARMOR: {
-                    itemStack = this.method_30125(equipmentSlot);
+                    itemStack = this.getArmorInSlot(equipmentSlot);
                     break;
                 }
                 default: {
@@ -2067,12 +2071,12 @@ extends Entity {
     private void method_30121(Map<EquipmentSlot, ItemStack> map) {
         ItemStack itemStack = map.get((Object)EquipmentSlot.MAINHAND);
         ItemStack itemStack2 = map.get((Object)EquipmentSlot.OFFHAND);
-        if (itemStack != null && itemStack2 != null && ItemStack.areEqual(itemStack, this.method_30126(EquipmentSlot.OFFHAND)) && ItemStack.areEqual(itemStack2, this.method_30126(EquipmentSlot.MAINHAND))) {
+        if (itemStack != null && itemStack2 != null && ItemStack.areEqual(itemStack, this.getStackInHandSlot(EquipmentSlot.OFFHAND)) && ItemStack.areEqual(itemStack2, this.getStackInHandSlot(EquipmentSlot.MAINHAND))) {
             ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityStatusS2CPacket(this, 55));
             map.remove((Object)EquipmentSlot.MAINHAND);
             map.remove((Object)EquipmentSlot.OFFHAND);
-            this.method_30124(EquipmentSlot.MAINHAND, itemStack.copy());
-            this.method_30124(EquipmentSlot.OFFHAND, itemStack2.copy());
+            this.setStackInHandSlot(EquipmentSlot.MAINHAND, itemStack.copy());
+            this.setStackInHandSlot(EquipmentSlot.OFFHAND, itemStack2.copy());
         }
     }
 
@@ -2083,31 +2087,31 @@ extends Entity {
             list.add(Pair.of(equipmentSlot, itemStack2));
             switch (equipmentSlot.getType()) {
                 case HAND: {
-                    this.method_30124((EquipmentSlot)((Object)equipmentSlot), itemStack2);
+                    this.setStackInHandSlot((EquipmentSlot)((Object)equipmentSlot), itemStack2);
                     break;
                 }
                 case ARMOR: {
-                    this.method_30122((EquipmentSlot)((Object)equipmentSlot), itemStack2);
+                    this.setArmorInSlot((EquipmentSlot)((Object)equipmentSlot), itemStack2);
                 }
             }
         });
-        ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getEntityId(), list));
+        ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(this, new EntityEquipmentUpdateS2CPacket(this.getId(), list));
     }
 
-    private ItemStack method_30125(EquipmentSlot equipmentSlot) {
-        return this.equippedArmor.get(equipmentSlot.getEntitySlotId());
+    private ItemStack getArmorInSlot(EquipmentSlot slot) {
+        return this.equippedArmor.get(slot.getEntitySlotId());
     }
 
-    private void method_30122(EquipmentSlot equipmentSlot, ItemStack itemStack) {
-        this.equippedArmor.set(equipmentSlot.getEntitySlotId(), itemStack);
+    private void setArmorInSlot(EquipmentSlot slot, ItemStack armor) {
+        this.equippedArmor.set(slot.getEntitySlotId(), armor);
     }
 
-    private ItemStack method_30126(EquipmentSlot equipmentSlot) {
-        return this.equippedHand.get(equipmentSlot.getEntitySlotId());
+    private ItemStack getStackInHandSlot(EquipmentSlot slot) {
+        return this.equippedHand.get(slot.getEntitySlotId());
     }
 
-    private void method_30124(EquipmentSlot equipmentSlot, ItemStack itemStack) {
-        this.equippedHand.set(equipmentSlot.getEntitySlotId(), itemStack);
+    private void setStackInHandSlot(EquipmentSlot slot, ItemStack stack) {
+        this.equippedHand.set(slot.getEntitySlotId(), stack);
     }
 
     protected float turnHead(float bodyRotation, float headRotation) {
@@ -2148,7 +2152,7 @@ extends Entity {
             this.yaw = (float)((double)this.yaw + g / (double)this.bodyTrackingIncrements);
             this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
             --this.bodyTrackingIncrements;
-            this.updatePosition(d, e, f);
+            this.setPosition(d, e, f);
             this.setRotation(this.yaw, this.pitch);
         } else if (!this.canMoveVoluntarily()) {
             this.setVelocity(this.getVelocity().multiply(0.98));
@@ -2213,8 +2217,8 @@ extends Entity {
         } else {
             this.setFrozenTicks(Math.max(0, m - 2));
         }
-        this.method_32324();
-        this.method_32325();
+        this.removePowderSnowSlow();
+        this.addPowderSnowSlowIfNeeded();
         if (this.age % 60 == 0 && this.isFreezing() && this.canFreeze()) {
             this.damage(DamageSource.FREEZE, 1.0f);
         }
@@ -2376,7 +2380,7 @@ extends Entity {
 
     public void sendPickup(Entity item, int count) {
         if (!item.isRemoved() && !this.world.isClient && (item instanceof ItemEntity || item instanceof PersistentProjectileEntity || item instanceof ExperienceOrbEntity)) {
-            ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(item, new ItemPickupAnimationS2CPacket(item.getEntityId(), this.getEntityId(), count));
+            ((ServerWorld)this.world).getChunkManager().sendToOtherNearbyPlayers(item, new ItemPickupAnimationS2CPacket(item.getId(), this.getId(), count));
         }
     }
 
@@ -2768,7 +2772,7 @@ extends Entity {
     }
 
     private void setPositionInBed(BlockPos pos) {
-        this.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.6875, (double)pos.getZ() + 0.5);
+        this.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.6875, (double)pos.getZ() + 0.5);
     }
 
     private boolean isSleepingInBed() {
@@ -2786,14 +2790,14 @@ extends Entity {
                 });
                 Vec3d vec3d2 = Vec3d.ofBottomCenter(blockPos).subtract(vec3d).normalize();
                 float f = (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d2.z, vec3d2.x) * 57.2957763671875 - 90.0);
-                this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
+                this.setPosition(vec3d.x, vec3d.y, vec3d.z);
                 this.yaw = f;
                 this.pitch = 0.0f;
             }
         });
         Vec3d vec3d = this.getPos();
         this.setPose(EntityPose.STANDING);
-        this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
+        this.setPosition(vec3d.x, vec3d.y, vec3d.z);
         this.clearSleepingPosition();
     }
 
@@ -2829,6 +2833,7 @@ extends Entity {
             if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).getAbilities().creativeMode) {
                 stack.decrement(1);
             }
+            this.emitGameEvent(GameEvent.EATING_FINISH);
         }
         return stack;
     }
@@ -2886,18 +2891,18 @@ extends Entity {
         return super.getVisibilityBoundingBox();
     }
 
-    public static EquipmentSlot method_32326(ItemStack itemStack) {
-        Item item = itemStack.getItem();
-        if (itemStack.isOf(Items.CARVED_PUMPKIN) || item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
+    public static EquipmentSlot getPreferredEquipmentSlot(ItemStack stack) {
+        Item item = stack.getItem();
+        if (stack.isOf(Items.CARVED_PUMPKIN) || item instanceof BlockItem && ((BlockItem)item).getBlock() instanceof AbstractSkullBlock) {
             return EquipmentSlot.HEAD;
         }
         if (item instanceof ArmorItem) {
             return ((ArmorItem)item).getSlotType();
         }
-        if (itemStack.isOf(Items.ELYTRA)) {
+        if (stack.isOf(Items.ELYTRA)) {
             return EquipmentSlot.CHEST;
         }
-        if (itemStack.isOf(Items.SHIELD)) {
+        if (stack.isOf(Items.SHIELD)) {
             return EquipmentSlot.OFFHAND;
         }
         return EquipmentSlot.MAINHAND;
@@ -2907,27 +2912,27 @@ extends Entity {
         if (equipmentSlot == EquipmentSlot.HEAD || equipmentSlot == EquipmentSlot.MAINHAND || equipmentSlot == EquipmentSlot.OFFHAND) {
             return class_5630.method_32330(livingEntity, equipmentSlot);
         }
-        return class_5630.method_32331(livingEntity, equipmentSlot, itemStack -> itemStack.isEmpty() || MobEntity.method_32326(itemStack) == equipmentSlot);
+        return class_5630.method_32331(livingEntity, equipmentSlot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == equipmentSlot);
     }
 
     @Nullable
-    private static EquipmentSlot method_32322(int i) {
-        if (i == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
+    private static EquipmentSlot getEquipmentSlot(int slotId) {
+        if (slotId == 100 + EquipmentSlot.HEAD.getEntitySlotId()) {
             return EquipmentSlot.HEAD;
         }
-        if (i == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
+        if (slotId == 100 + EquipmentSlot.CHEST.getEntitySlotId()) {
             return EquipmentSlot.CHEST;
         }
-        if (i == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
+        if (slotId == 100 + EquipmentSlot.LEGS.getEntitySlotId()) {
             return EquipmentSlot.LEGS;
         }
-        if (i == 100 + EquipmentSlot.FEET.getEntitySlotId()) {
+        if (slotId == 100 + EquipmentSlot.FEET.getEntitySlotId()) {
             return EquipmentSlot.FEET;
         }
-        if (i == 98) {
+        if (slotId == 98) {
             return EquipmentSlot.MAINHAND;
         }
-        if (i == 99) {
+        if (slotId == 99) {
             return EquipmentSlot.OFFHAND;
         }
         return null;
@@ -2935,7 +2940,7 @@ extends Entity {
 
     @Override
     public class_5630 method_32318(int i) {
-        EquipmentSlot equipmentSlot = LivingEntity.method_32322(i);
+        EquipmentSlot equipmentSlot = LivingEntity.getEquipmentSlot(i);
         if (equipmentSlot != null) {
             return LivingEntity.method_32321(this, equipmentSlot);
         }

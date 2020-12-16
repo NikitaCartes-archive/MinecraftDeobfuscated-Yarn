@@ -79,7 +79,7 @@ extends Carver<ProbabilityConfig> {
         this.carveRegion(chunk, posToBiome, seed, seaLevel, mainChunkX, mainChunkZ, x + 1.0, y, z, d, e, carvingMask);
     }
 
-    protected void carveTunnels(Chunk chunk, Function<BlockPos, Biome> postToBiome, long seed, int seaLevel, int mainChunkX, int mainChunkZ, double x, double y, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask) {
+    protected void carveTunnels(Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, int seaLevel, int mainChunkX, int mainChunkZ, double x, double y, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask) {
         Random random = new Random(seed);
         int i = random.nextInt(branchCount / 2) + branchCount / 4;
         boolean bl = random.nextInt(6) == 0;
@@ -100,15 +100,15 @@ extends Carver<ProbabilityConfig> {
             g += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 2.0f;
             f += (random.nextFloat() - random.nextFloat()) * random.nextFloat() * 4.0f;
             if (j == i && width > 1.0f) {
-                this.carveTunnels(chunk, postToBiome, random.nextLong(), seaLevel, mainChunkX, mainChunkZ, x, y, z, random.nextFloat() * 0.5f + 0.5f, yaw - 1.5707964f, pitch / 3.0f, j, branchCount, 1.0, carvingMask);
-                this.carveTunnels(chunk, postToBiome, random.nextLong(), seaLevel, mainChunkX, mainChunkZ, x, y, z, random.nextFloat() * 0.5f + 0.5f, yaw + 1.5707964f, pitch / 3.0f, j, branchCount, 1.0, carvingMask);
+                this.carveTunnels(chunk, posToBiome, random.nextLong(), seaLevel, mainChunkX, mainChunkZ, x, y, z, random.nextFloat() * 0.5f + 0.5f, yaw - 1.5707964f, pitch / 3.0f, j, branchCount, 1.0, carvingMask);
+                this.carveTunnels(chunk, posToBiome, random.nextLong(), seaLevel, mainChunkX, mainChunkZ, x, y, z, random.nextFloat() * 0.5f + 0.5f, yaw + 1.5707964f, pitch / 3.0f, j, branchCount, 1.0, carvingMask);
                 return;
             }
             if (random.nextInt(4) == 0) continue;
             if (!this.canCarveBranch(mainChunkX, mainChunkZ, x, z, j, branchCount, width)) {
                 return;
             }
-            this.carveRegion(chunk, postToBiome, seed, seaLevel, mainChunkX, mainChunkZ, x, y, z, d, e, carvingMask);
+            this.carveRegion(chunk, posToBiome, seed, seaLevel, mainChunkX, mainChunkZ, x, y, z, d, e, carvingMask);
         }
     }
 

@@ -205,7 +205,7 @@ implements Flutterer {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean getSongPlaying() {
+    public boolean isSongPlaying() {
         return this.songPlaying;
     }
 

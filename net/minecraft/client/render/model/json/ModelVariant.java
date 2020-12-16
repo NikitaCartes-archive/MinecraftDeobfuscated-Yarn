@@ -26,9 +26,9 @@ implements ModelBakeSettings {
     private final boolean uvLock;
     private final int weight;
 
-    public ModelVariant(Identifier location, AffineTransformation affineTransformation, boolean uvLock, int weight) {
+    public ModelVariant(Identifier location, AffineTransformation rotation, boolean uvLock, int weight) {
         this.location = location;
-        this.rotation = affineTransformation;
+        this.rotation = rotation;
         this.uvLock = uvLock;
         this.weight = weight;
     }
@@ -43,7 +43,7 @@ implements ModelBakeSettings {
     }
 
     @Override
-    public boolean isShaded() {
+    public boolean isUvLocked() {
         return this.uvLock;
     }
 

@@ -19,6 +19,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -52,14 +53,13 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class Item
 implements ItemConvertible {
-    private static final Logger field_27017 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final Map<Block, Item> BLOCK_ITEMS = Maps.newHashMap();
     protected static final UUID ATTACK_DAMAGE_MODIFIER_ID = UUID.fromString("CB3F55D3-645C-4F38-A497-9C13A33DB5CF");
     protected static final UUID ATTACK_SPEED_MODIFIER_ID = UUID.fromString("FA233E1C-4180-4865-B01B-BCCE9785ACA3");
@@ -100,11 +100,14 @@ implements ItemConvertible {
         this.foodComponent = settings.foodComponent;
         this.fireproof = settings.fireproof;
         if (SharedConstants.isDevelopment && !(string = this.getClass().getSimpleName()).endsWith("Item")) {
-            field_27017.error("Item classes should end with Item and {} doesn't.", (Object)string);
+            LOGGER.error("Item classes should end with Item and {} doesn't.", (Object)string);
         }
     }
 
     public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
+    }
+
+    public void onItemEntityDestroyed(ItemEntity entity) {
     }
 
     public boolean postProcessTag(CompoundTag tag) {
@@ -159,7 +162,6 @@ implements ItemConvertible {
         if (this.isFood()) {
             ItemStack itemStack = user.getStackInHand(hand);
             if (user.canConsume(this.getFoodComponent().isAlwaysEdible())) {
-                world.emitGameEvent((Entity)user, GameEvent.EATING_START, user);
                 user.setCurrentHand(hand);
                 return TypedActionResult.consume(itemStack);
             }
@@ -168,10 +170,9 @@ implements ItemConvertible {
         return TypedActionResult.pass(user.getStackInHand(hand));
     }
 
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity livingEntity) {
         if (this.isFood()) {
-            world.emitGameEvent((Entity)entity, GameEvent.EATING_FINISH, entity);
-            return entity.eatFood(world, stack);
+            return livingEntity.eatFood(world, stack);
         }
         return stack;
     }
@@ -220,7 +221,17 @@ implements ItemConvertible {
         return false;
     }
 
-    public boolean isEffectiveOn(BlockState state) {
+    /**
+     * Determines whether this item can be used as a suitable tool for mining the specified block.
+     * Depending on block implementation, when combined together, the correct item and block may achieve a better mining speed and yield
+     * drops that would not be obtained when mining otherwise.
+     * <p>
+     * Note that this is not the <b>only</b> way to achieve "effectiveness" when mining.
+     * Other items, such as shears on string, may use their own logic
+     * and calls to this method might not return a value consistent to this rule for those items.
+     * </p>
+     */
+    public boolean isSuitableFor(BlockState state) {
         return false;
     }
 

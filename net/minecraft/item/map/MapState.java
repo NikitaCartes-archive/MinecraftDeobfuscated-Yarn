@@ -55,14 +55,14 @@ extends PersistentState {
     private final Map<String, MapIcon> icons = Maps.newLinkedHashMap();
     private final Map<String, MapFrameMarker> frames = Maps.newHashMap();
 
-    private MapState(int i, int j, byte b, boolean bl, boolean bl2, boolean bl3, RegistryKey<World> registryKey) {
-        this.scale = b;
-        this.xCenter = i;
-        this.zCenter = j;
-        this.dimension = registryKey;
-        this.showIcons = bl;
-        this.unlimitedTracking = bl2;
-        this.locked = bl3;
+    private MapState(int xCenter, int zCenter, byte scale, boolean showIcons, boolean unlimitedTracking, boolean locked, RegistryKey<World> dimension) {
+        this.scale = scale;
+        this.xCenter = xCenter;
+        this.zCenter = zCenter;
+        this.dimension = dimension;
+        this.showIcons = showIcons;
+        this.unlimitedTracking = unlimitedTracking;
+        this.locked = locked;
         this.markDirty();
     }
 
@@ -81,7 +81,7 @@ extends PersistentState {
     }
 
     public static MapState method_32371(CompoundTag compoundTag) {
-        RegistryKey<World> registryKey = DimensionType.method_28521(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.get("dimension"))).resultOrPartial(field_25019::error).orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + compoundTag.get("dimension")));
+        RegistryKey<World> registryKey = DimensionType.worldFromDimensionTag(new Dynamic<Tag>(NbtOps.INSTANCE, compoundTag.get("dimension"))).resultOrPartial(field_25019::error).orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + compoundTag.get("dimension")));
         int i = compoundTag.getInt("xCenter");
         int j = compoundTag.getInt("zCenter");
         byte b = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
@@ -170,11 +170,11 @@ extends PersistentState {
             ItemFrameEntity itemFrameEntity = stack.getFrame();
             BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
             MapFrameMarker mapFrameMarker = this.frames.get(MapFrameMarker.getKey(blockPos));
-            if (mapFrameMarker != null && itemFrameEntity.getEntityId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
+            if (mapFrameMarker != null && itemFrameEntity.getId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
                 this.method_32368("frame-" + mapFrameMarker.getEntityId());
             }
-            MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getEntityId());
-            this.addIcon(MapIcon.Type.FRAME, player.world, "frame-" + itemFrameEntity.getEntityId(), blockPos.getX(), blockPos.getZ(), itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, null);
+            MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getId());
+            this.addIcon(MapIcon.Type.FRAME, player.world, "frame-" + itemFrameEntity.getId(), blockPos.getX(), blockPos.getZ(), itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, null);
             this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
         }
         if ((compoundTag = stack.getTag()) != null && compoundTag.contains("Decorations", 9)) {

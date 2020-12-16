@@ -22,18 +22,18 @@ import org.jetbrains.annotations.Nullable;
 public class LevelSummary
 implements Comparable<LevelSummary> {
     private final LevelInfo levelInfo;
-    private final SaveVersionInfo field_25023;
+    private final SaveVersionInfo versionInfo;
     private final String name;
     private final boolean requiresConversion;
     private final boolean locked;
     private final File file;
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    private Text field_24191;
+    private Text details;
 
     public LevelSummary(LevelInfo levelInfo, SaveVersionInfo saveVersionInfo, String string, boolean bl, boolean bl2, File file) {
         this.levelInfo = levelInfo;
-        this.field_25023 = saveVersionInfo;
+        this.versionInfo = saveVersionInfo;
         this.name = string;
         this.locked = bl2;
         this.file = file;
@@ -62,15 +62,15 @@ implements Comparable<LevelSummary> {
 
     @Environment(value=EnvType.CLIENT)
     public long getLastPlayed() {
-        return this.field_25023.getLastPlayed();
+        return this.versionInfo.getLastPlayed();
     }
 
     @Override
     public int compareTo(LevelSummary levelSummary) {
-        if (this.field_25023.getLastPlayed() < levelSummary.field_25023.getLastPlayed()) {
+        if (this.versionInfo.getLastPlayed() < levelSummary.versionInfo.getLastPlayed()) {
             return 1;
         }
-        if (this.field_25023.getLastPlayed() > levelSummary.field_25023.getLastPlayed()) {
+        if (this.versionInfo.getLastPlayed() > levelSummary.versionInfo.getLastPlayed()) {
             return -1;
         }
         return this.name.compareTo(levelSummary.name);
@@ -93,29 +93,29 @@ implements Comparable<LevelSummary> {
 
     @Environment(value=EnvType.CLIENT)
     public MutableText getVersion() {
-        if (ChatUtil.isEmpty(this.field_25023.getVersionName())) {
+        if (ChatUtil.isEmpty(this.versionInfo.getVersionName())) {
             return new TranslatableText("selectWorld.versionUnknown");
         }
-        return new LiteralText(this.field_25023.getVersionName());
+        return new LiteralText(this.versionInfo.getVersionName());
     }
 
     public SaveVersionInfo method_29586() {
-        return this.field_25023;
+        return this.versionInfo;
     }
 
     @Environment(value=EnvType.CLIENT)
     public boolean isDifferentVersion() {
-        return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.field_25023.isStable() || this.isOutdatedLevel();
+        return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.versionInfo.isStable() || this.isOutdatedLevel();
     }
 
     @Environment(value=EnvType.CLIENT)
     public boolean isFutureLevel() {
-        return this.field_25023.getVersionId() > SharedConstants.getGameVersion().getWorldVersion();
+        return this.versionInfo.getVersionId() > SharedConstants.getGameVersion().getWorldVersion();
     }
 
     @Environment(value=EnvType.CLIENT)
     public boolean isOutdatedLevel() {
-        return this.field_25023.getVersionId() < SharedConstants.getGameVersion().getWorldVersion();
+        return this.versionInfo.getVersionId() < SharedConstants.getGameVersion().getWorldVersion();
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -124,15 +124,15 @@ implements Comparable<LevelSummary> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Text method_27429() {
-        if (this.field_24191 == null) {
-            this.field_24191 = this.method_27430();
+    public Text getDetails() {
+        if (this.details == null) {
+            this.details = this.createDetails();
         }
-        return this.field_24191;
+        return this.details;
     }
 
     @Environment(value=EnvType.CLIENT)
-    private Text method_27430() {
+    private Text createDetails() {
         MutableText mutableText;
         if (this.isLocked()) {
             return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);

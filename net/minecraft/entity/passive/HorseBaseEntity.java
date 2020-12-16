@@ -77,9 +77,9 @@ extends AnimalEntity
 implements InventoryChangedListener,
 JumpingMount,
 Saddleable {
-    private static final Predicate<LivingEntity> IS_BRED_HORSE = livingEntity -> livingEntity instanceof HorseBaseEntity && ((HorseBaseEntity)livingEntity).isBred();
+    private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
     private static final TargetPredicate PARENT_HORSE_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().includeTeammates().includeHidden().setPredicate(IS_BRED_HORSE);
-    private static final Ingredient field_25374 = Ingredient.ofItems(Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
+    private static final Ingredient BREEDING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Items.SUGAR, Blocks.HAY_BLOCK.asItem(), Items.APPLE, Items.GOLDEN_CARROT, Items.GOLDEN_APPLE, Items.ENCHANTED_GOLDEN_APPLE);
     private static final TrackedData<Byte> HORSE_FLAGS = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.BYTE);
     private static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(HorseBaseEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private int eatingGrassTicks;
@@ -392,10 +392,10 @@ Saddleable {
         }
     }
 
-    public ActionResult method_30009(PlayerEntity playerEntity, ItemStack itemStack) {
-        boolean bl = this.receiveFood(playerEntity, itemStack);
-        if (!playerEntity.getAbilities().creativeMode) {
-            itemStack.decrement(1);
+    public ActionResult interactHorse(PlayerEntity player, ItemStack stack) {
+        boolean bl = this.receiveFood(player, stack);
+        if (!player.getAbilities().creativeMode) {
+            stack.decrement(1);
         }
         if (this.world.isClient) {
             return ActionResult.CONSUME;
@@ -480,7 +480,7 @@ Saddleable {
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        return field_25374.test(stack);
+        return BREEDING_INGREDIENT.test(stack);
     }
 
     private void wagTail() {
@@ -690,7 +690,7 @@ Saddleable {
             this.jumpStrength = 0.0f;
             this.setInAir(false);
         }
-        this.method_29242(this, false);
+        this.updateLimbs(this, false);
     }
 
     protected void playJumpSound() {
@@ -846,7 +846,7 @@ Saddleable {
             float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
             float h = 0.7f * this.lastAngryAnimationProgress;
             float i = 0.15f * this.lastAngryAnimationProgress;
-            passenger.updatePosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
+            passenger.setPosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
             if (passenger instanceof LivingEntity) {
                 ((LivingEntity)passenger).bodyYaw = this.bodyYaw;
             }

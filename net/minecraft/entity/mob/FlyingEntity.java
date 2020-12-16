@@ -50,7 +50,7 @@ extends MobEntity {
             this.move(MovementType.SELF, this.getVelocity());
             this.setVelocity(this.getVelocity().multiply(f));
         }
-        this.method_29242(this, false);
+        this.updateLimbs(this, false);
     }
 
     @Override

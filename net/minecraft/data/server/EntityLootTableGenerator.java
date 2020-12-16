@@ -54,13 +54,14 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     private static final Set<EntityType<?>> ENTITY_TYPES_IN_MISC_GROUP_TO_CHECK = ImmutableSet.of(EntityType.PLAYER, EntityType.ARMOR_STAND, EntityType.IRON_GOLEM, EntityType.SNOW_GOLEM, EntityType.VILLAGER);
     private final Map<Identifier, LootTable.Builder> lootTables = Maps.newHashMap();
 
-    private static LootTable.Builder createForSheep(ItemConvertible itemConvertible) {
-        return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with(ItemEntry.builder(itemConvertible))).pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
+    private static LootTable.Builder createForSheep(ItemConvertible item) {
+        return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with(ItemEntry.builder(item))).pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
     }
 
     @Override
     public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
         this.register(EntityType.ARMOR_STAND, LootTable.builder());
+        this.register(EntityType.AXOLOTL, LootTable.builder());
         this.register(EntityType.BAT, LootTable.builder());
         this.register(EntityType.BEE, LootTable.builder());
         this.register(EntityType.BLAZE, LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(Items.BLAZE_ROD).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f)))).apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0f, 1.0f)))).conditionally(KilledByPlayerLootCondition.builder())));

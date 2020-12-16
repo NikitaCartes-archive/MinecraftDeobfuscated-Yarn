@@ -31,9 +31,9 @@ public class TextureUtil {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         if (SharedConstants.isDevelopment) {
             int[] is = new int[ThreadLocalRandom.current().nextInt(15) + 1];
-            GlStateManager.method_30498(is);
+            GlStateManager.genTextures(is);
             int i = GlStateManager.genTextures();
-            GlStateManager.method_30499(is);
+            GlStateManager.deleteTextures(is);
             return i;
         }
         return GlStateManager.genTextures();

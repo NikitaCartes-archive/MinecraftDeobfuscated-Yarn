@@ -11,10 +11,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -89,7 +91,7 @@ extends Item {
     @Override
     @Environment(value=EnvType.CLIENT)
     public int getItemBarStep(ItemStack stack) {
-        return Math.min(13 * BundleItem.getBundleOccupancy(stack) / 64, 13);
+        return Math.min(1 + 12 * BundleItem.getBundleOccupancy(stack) / 64, 13);
     }
 
     @Override
@@ -196,13 +198,18 @@ extends Item {
     public Optional<TooltipData> getTooltipData(ItemStack stack) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         BundleItem.getBundledStacks(stack).forEach(defaultedList::add);
-        return Optional.of(new BundleTooltipData(defaultedList, BundleItem.getBundleOccupancy(stack) < 64));
+        return Optional.of(new BundleTooltipData(defaultedList, BundleItem.getBundleOccupancy(stack)));
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
         tooltip.add(new TranslatableText("item.minecraft.bundle.fullness", BundleItem.getBundleOccupancy(stack), 64).formatted(Formatting.GRAY));
+    }
+
+    @Override
+    public void onItemEntityDestroyed(ItemEntity entity) {
+        ItemUsage.spawnItemContents(entity, BundleItem.getBundledStacks(entity.getStack()));
     }
 }
 

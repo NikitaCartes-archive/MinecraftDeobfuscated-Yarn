@@ -46,13 +46,13 @@ implements AutoCloseable {
     private final DataFixTypes dataFixType;
     protected final HeightLimitView field_27240;
 
-    public SerializingRegionBasedStorage(File directory, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean bl, HeightLimitView heightLimitView) {
+    public SerializingRegionBasedStorage(File directory, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, HeightLimitView heightLimitView) {
         this.codecFactory = codecFactory;
         this.factory = factory;
         this.dataFixer = dataFixer;
         this.dataFixType = dataFixTypes;
         this.field_27240 = heightLimitView;
-        this.worker = new StorageIoWorker(directory, bl, directory.getName());
+        this.worker = new StorageIoWorker(directory, dsync, directory.getName());
     }
 
     protected void tick(BooleanSupplier shouldKeepTicking) {
@@ -179,12 +179,12 @@ implements AutoCloseable {
         return dynamic.get("DataVersion").asInt(1945);
     }
 
-    public void method_20436(ChunkPos chunkPos) {
+    public void saveChunk(ChunkPos pos) {
         if (!this.unsavedElements.isEmpty()) {
             for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); ++i) {
-                long l = ChunkSectionPos.from(chunkPos, i).asLong();
+                long l = ChunkSectionPos.from(pos, i).asLong();
                 if (!this.unsavedElements.contains(l)) continue;
-                this.save(chunkPos);
+                this.save(pos);
                 return;
             }
         }

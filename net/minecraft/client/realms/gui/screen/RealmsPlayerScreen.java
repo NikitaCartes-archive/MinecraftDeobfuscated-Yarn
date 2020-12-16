@@ -280,7 +280,7 @@ extends RealmsScreen {
         }
 
         private void renderInvitedItem(MatrixStack matrices, PlayerInfo playerInfo, int x, int y, int mouseX, int mouseY) {
-            int i = !playerInfo.getAccepted() ? 0xA0A0A0 : (playerInfo.getOnline() ? 0x7FFF7F : 0xFFFFFF);
+            int i = !playerInfo.isAccepted() ? 0xA0A0A0 : (playerInfo.isOnline() ? 0x7FFF7F : 0xFFFFFF);
             RealmsPlayerScreen.this.textRenderer.draw(matrices, playerInfo.getName(), (float)(RealmsPlayerScreen.this.column1_x + 3 + 12), (float)(y + 1), i);
             if (playerInfo.isOperator()) {
                 RealmsPlayerScreen.this.drawOpped(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 10, y + 1, mouseX, mouseY);

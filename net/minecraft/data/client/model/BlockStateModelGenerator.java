@@ -551,10 +551,10 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(cooker).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.LIT, identifier3, identifier)).coordinate(BlockStateModelGenerator.createNorthDefaultHorizontalRotationStates()));
     }
 
-    private void method_27166(Block ... blocks) {
+    private void registerCampfire(Block ... blocks) {
         Identifier identifier = ModelIds.getMinecraftNamespacedBlock("campfire_off");
         for (Block block : blocks) {
-            Identifier identifier2 = Models.TEMPLATE_CAMPFIRE.upload(block, Texture.method_27167(block), this.modelCollector);
+            Identifier identifier2 = Models.TEMPLATE_CAMPFIRE.upload(block, Texture.campfire(block), this.modelCollector);
             this.registerItemModel(block.asItem());
             this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block).coordinate(BlockStateModelGenerator.createBooleanModelMap(Properties.LIT, identifier2, identifier)).coordinate(BlockStateModelGenerator.createSouthDefaultHorizontalRotationStates()));
         }
@@ -689,7 +689,7 @@ public class BlockStateModelGenerator {
         this.method_32229(Blocks.AMETHYST_CLUSTER);
     }
 
-    private void method_32802() {
+    private void registerPointedDripstone() {
         this.registerItemModel(Blocks.POINTED_DRIPSTONE.asItem());
         BlockStateVariantMap.DoubleProperty<Direction, Thickness> doubleProperty = BlockStateVariantMap.create(Properties.VERTICAL_DIRECTION, Properties.THICKNESS);
         for (Thickness thickness : Thickness.values()) {
@@ -719,7 +719,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.DAYLIGHT_DETECTOR).coordinate(BlockStateVariantMap.create(Properties.INVERTED).register((Boolean)false, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_DAYLIGHT_DETECTOR.upload(Blocks.DAYLIGHT_DETECTOR, texture, this.modelCollector))).register((Boolean)true, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_DAYLIGHT_DETECTOR.upload(ModelIds.getBlockSubModelId(Blocks.DAYLIGHT_DETECTOR, "_inverted"), texture2, this.modelCollector)))));
     }
 
-    private void method_31064(Block block) {
+    private void registerRod(Block block) {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(block))).coordinate(this.createUpDefaultFacingVariantMap()));
     }
 
@@ -896,7 +896,7 @@ public class BlockStateModelGenerator {
         this.blockStateCollector.accept(VariantsBlockStateSupplier.create(Blocks.PISTON_HEAD).coordinate(BlockStateVariantMap.create(Properties.SHORT, Properties.PISTON_TYPE).register((Boolean)false, PistonType.DEFAULT, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD.upload(Blocks.PISTON, "_head", texture3, this.modelCollector))).register((Boolean)false, PistonType.STICKY, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD.upload(Blocks.PISTON, "_head_sticky", texture2, this.modelCollector))).register((Boolean)true, PistonType.DEFAULT, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD_SHORT.upload(Blocks.PISTON, "_head_short", texture3, this.modelCollector))).register((Boolean)true, PistonType.STICKY, BlockStateVariant.create().put(VariantSettings.MODEL, Models.TEMPLATE_PISTON_HEAD_SHORT.upload(Blocks.PISTON, "_head_short_sticky", texture2, this.modelCollector)))).coordinate(BlockStateModelGenerator.createNorthDefaultRotationStates()));
     }
 
-    private void method_33128() {
+    private void registerSculkSensor() {
         Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_inactive");
         Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_active");
         this.registerParentedItemModel(Blocks.SCULK_SENSOR, identifier);
@@ -1252,7 +1252,7 @@ public class BlockStateModelGenerator {
         this.registerBookshelf();
         this.registerBrewingStand();
         this.registerCake();
-        this.method_27166(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
+        this.registerCampfire(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
         this.registerCartographyTable();
         this.registerCauldron();
         this.registerChorusFlower();
@@ -1260,8 +1260,8 @@ public class BlockStateModelGenerator {
         this.registerComposter();
         this.registerDaylightDetector();
         this.registerEndPortalFrame();
-        this.method_31064(Blocks.END_ROD);
-        this.method_31064(Blocks.LIGHTNING_ROD);
+        this.registerRod(Blocks.END_ROD);
+        this.registerRod(Blocks.LIGHTNING_ROD);
         this.registerFarmland();
         this.registerFire();
         this.registerSoulFire();
@@ -1295,7 +1295,7 @@ public class BlockStateModelGenerator {
         this.registerVine();
         this.registerMagmaBlock();
         this.registerJigsaw();
-        this.method_33128();
+        this.registerSculkSensor();
         this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
         this.registerItemModel(Blocks.LADDER);
         this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
@@ -1456,7 +1456,7 @@ public class BlockStateModelGenerator {
         this.registerFlowerPotPlant(Blocks.RED_MUSHROOM, Blocks.POTTED_RED_MUSHROOM, TintType.NOT_TINTED);
         this.registerFlowerPotPlant(Blocks.BROWN_MUSHROOM, Blocks.POTTED_BROWN_MUSHROOM, TintType.NOT_TINTED);
         this.registerFlowerPotPlant(Blocks.DEAD_BUSH, Blocks.POTTED_DEAD_BUSH, TintType.NOT_TINTED);
-        this.method_32802();
+        this.registerPointedDripstone();
         this.registerMushroomBlock(Blocks.BROWN_MUSHROOM_BLOCK);
         this.registerMushroomBlock(Blocks.RED_MUSHROOM_BLOCK);
         this.registerMushroomBlock(Blocks.MUSHROOM_STEM);

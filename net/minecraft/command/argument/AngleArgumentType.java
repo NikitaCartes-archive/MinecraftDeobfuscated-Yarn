@@ -19,7 +19,7 @@ public class AngleArgumentType
 implements ArgumentType<Angle> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0", "~", "~-5");
     public static final SimpleCommandExceptionType INCOMPLETE_ANGLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.angle.incomplete"));
-    public static final SimpleCommandExceptionType field_27345 = new SimpleCommandExceptionType(new TranslatableText("argument.angle.invalid"));
+    public static final SimpleCommandExceptionType INVALID_ANGLE_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.angle.invalid"));
 
     public static AngleArgumentType angle() {
         return new AngleArgumentType();
@@ -38,7 +38,7 @@ implements ArgumentType<Angle> {
         boolean bl = CoordinateArgument.isRelative(stringReader);
         float f2 = f = stringReader.canRead() && stringReader.peek() != ' ' ? stringReader.readFloat() : 0.0f;
         if (Float.isNaN(f) || Float.isInfinite(f)) {
-            throw field_27345.createWithContext(stringReader);
+            throw INVALID_ANGLE_EXCEPTION.createWithContext(stringReader);
         }
         return new Angle(f, bl);
     }

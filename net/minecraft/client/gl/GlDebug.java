@@ -113,8 +113,8 @@ public class GlDebug {
         return GlDebug.unknown(opcode);
     }
 
-    private static void info(int source, int type, int id, int severity, int i, long l, long m) {
-        LOGGER.info("OpenGL debug message, id={}, source={}, type={}, severity={}, message={}", (Object)id, (Object)GlDebug.getSource(source), (Object)GlDebug.getType(type), (Object)GlDebug.getSeverity(severity), (Object)GLDebugMessageCallback.getMessage(i, l));
+    private static void info(int source, int type, int id, int severity, int messageLength, long message, long l) {
+        LOGGER.info("OpenGL debug message, id={}, source={}, type={}, severity={}, message={}", (Object)id, (Object)GlDebug.getSource(source), (Object)GlDebug.getType(type), (Object)GlDebug.getSeverity(severity), (Object)GLDebugMessageCallback.getMessage(messageLength, message));
     }
 
     private static void registerConstant(int constant, String description) {

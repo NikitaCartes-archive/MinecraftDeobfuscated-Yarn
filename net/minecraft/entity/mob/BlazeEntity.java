@@ -216,7 +216,7 @@ extends HostileEntity {
                         }
                         for (int i = 0; i < 1; ++i) {
                             SmallFireballEntity smallFireballEntity = new SmallFireballEntity(this.blaze.world, this.blaze, e + this.blaze.getRandom().nextGaussian() * (double)h, f, g + this.blaze.getRandom().nextGaussian() * (double)h);
-                            smallFireballEntity.updatePosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
+                            smallFireballEntity.setPosition(smallFireballEntity.getX(), this.blaze.getBodyY(0.5) + 0.5, smallFireballEntity.getZ());
                             this.blaze.world.spawnEntity(smallFireballEntity);
                         }
                     }

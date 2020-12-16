@@ -19,6 +19,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer ARMOR_STAND = EntityModelLayers.registerMain("armor_stand");
     public static final EntityModelLayer ARMOR_STAND_INNER_ARMOR = EntityModelLayers.createInnerArmor("armor_stand");
     public static final EntityModelLayer ARMOR_STAND_OUTER_ARMOR = EntityModelLayers.createOuterArmor("armor_stand");
+    public static final EntityModelLayer AXOLOTL = EntityModelLayers.registerMain("axolotl");
     public static final EntityModelLayer BANNER = EntityModelLayers.registerMain("banner");
     public static final EntityModelLayer BAT = EntityModelLayers.registerMain("bat");
     public static final EntityModelLayer BED_FOOT = EntityModelLayers.registerMain("bed_foot");

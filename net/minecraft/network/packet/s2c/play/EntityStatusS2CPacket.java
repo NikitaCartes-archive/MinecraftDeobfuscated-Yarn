@@ -22,7 +22,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public EntityStatusS2CPacket(Entity entity, byte status) {
-        this.id = entity.getEntityId();
+        this.id = entity.getId();
         this.status = status;
     }
 

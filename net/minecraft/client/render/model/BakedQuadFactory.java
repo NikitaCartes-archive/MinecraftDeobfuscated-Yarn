@@ -32,7 +32,7 @@ public class BakedQuadFactory {
 
     public BakedQuad bake(Vec3f from, Vec3f to, ModelElementFace face, Sprite texture, Direction side, ModelBakeSettings settings, @Nullable ModelRotation rotation, boolean shade, Identifier modelId) {
         ModelElementTexture modelElementTexture = face.textureData;
-        if (settings.isShaded()) {
+        if (settings.isUvLocked()) {
             modelElementTexture = BakedQuadFactory.uvLock(face.textureData, side, settings.getRotation(), modelId);
         }
         float[] fs = new float[modelElementTexture.uvs.length];

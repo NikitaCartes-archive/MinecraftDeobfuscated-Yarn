@@ -175,7 +175,7 @@ extends NetworkSyncedItem {
                 if (f < -0.6) {
                     y = 0;
                 }
-                if ((mapColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.CLEAR)) == MapColor.WATER) {
+                if ((mapColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.CLEAR)) == MapColor.WATER_BLUE) {
                     f = (double)w * 0.1 + (double)(o + p & 1) * 0.2;
                     y = 1;
                     if (f < 0.5) {

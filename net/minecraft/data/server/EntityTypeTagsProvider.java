@@ -13,8 +13,8 @@ import net.minecraft.util.registry.Registry;
 
 public class EntityTypeTagsProvider
 extends AbstractTagProvider<EntityType<?>> {
-    public EntityTypeTagsProvider(DataGenerator dataGenerator) {
-        super(dataGenerator, Registry.ENTITY_TYPE);
+    public EntityTypeTagsProvider(DataGenerator root) {
+        super(root, Registry.ENTITY_TYPE);
     }
 
     @Override
@@ -25,6 +25,8 @@ extends AbstractTagProvider<EntityType<?>> {
         this.getOrCreateTagBuilder(EntityTypeTags.ARROWS).add(EntityType.ARROW, EntityType.SPECTRAL_ARROW);
         this.getOrCreateTagBuilder(EntityTypeTags.IMPACT_PROJECTILES).addTag(EntityTypeTags.ARROWS).add(EntityType.SNOWBALL, EntityType.FIREBALL, EntityType.SMALL_FIREBALL, EntityType.EGG, EntityType.TRIDENT, EntityType.DRAGON_FIREBALL, EntityType.WITHER_SKULL);
         this.getOrCreateTagBuilder(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(EntityType.RABBIT, EntityType.ENDERMITE, EntityType.SILVERFISH);
+        this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES).add(EntityType.TROPICAL_FISH, EntityType.PUFFERFISH, EntityType.SALMON, EntityType.COD, EntityType.SQUID);
+        this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_TEMPTED_HOSTILES).add(EntityType.DROWNED, EntityType.GUARDIAN);
     }
 
     @Override

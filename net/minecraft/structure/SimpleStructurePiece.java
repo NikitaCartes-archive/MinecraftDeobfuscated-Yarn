@@ -60,15 +60,15 @@ extends StructurePiece {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
+    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
         this.placementData.setBoundingBox(boundingBox);
         this.boundingBox = this.structure.calculateBoundingBox(this.placementData, this.pos);
-        if (this.structure.place(structureWorldAccess, this.pos, blockPos, this.placementData, random, 2)) {
+        if (this.structure.place(world, this.pos, pos, this.placementData, random, 2)) {
             List<Structure.StructureBlockInfo> list = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.STRUCTURE_BLOCK);
             for (Structure.StructureBlockInfo structureBlockInfo : list) {
                 StructureBlockMode structureBlockMode;
                 if (structureBlockInfo.tag == null || (structureBlockMode = StructureBlockMode.valueOf(structureBlockInfo.tag.getString("mode"))) != StructureBlockMode.DATA) continue;
-                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, structureWorldAccess, random, boundingBox);
+                this.handleMetadata(structureBlockInfo.tag.getString("metadata"), structureBlockInfo.pos, world, random, boundingBox);
             }
             List<Structure.StructureBlockInfo> list2 = this.structure.getInfosForBlock(this.pos, this.placementData, Blocks.JIGSAW);
             for (Structure.StructureBlockInfo structureBlockInfo2 : list2) {
@@ -87,7 +87,7 @@ extends StructurePiece {
                 } catch (CommandSyntaxException commandSyntaxException) {
                     LOGGER.error("Error while parsing blockstate {} in jigsaw block @ {}", (Object)string, (Object)structureBlockInfo2.pos);
                 }
-                structureWorldAccess.setBlockState(structureBlockInfo2.pos, blockState, 3);
+                world.setBlockState(structureBlockInfo2.pos, blockState, 3);
             }
         }
         return true;

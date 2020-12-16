@@ -3,12 +3,12 @@
  */
 package net.minecraft.test;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Streams;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
@@ -47,19 +47,15 @@ public class TestUtil {
     }
 
     public static Collection<GameTestBatch> createBatches(Collection<TestFunction> testFunctions) {
-        HashMap map = Maps.newHashMap();
-        testFunctions.forEach(testFunction -> {
-            String string2 = testFunction.getBatchId();
-            Collection collection = map.computeIfAbsent(string2, string -> Lists.newArrayList());
-            collection.add(testFunction);
-        });
-        return map.keySet().stream().flatMap(string -> {
-            Collection collection = (Collection)map.get(string);
+        Map<String, List<TestFunction>> map = testFunctions.stream().collect(Collectors.groupingBy(TestFunction::getBatchId));
+        return map.entrySet().stream().flatMap(entry -> {
+            String string = (String)entry.getKey();
             Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(string);
             Consumer<ServerWorld> consumer2 = TestFunctions.method_32244(string);
             MutableInt mutableInt = new MutableInt();
-            return Streams.stream(Iterables.partition(collection, 100)).map(list -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), (Collection<TestFunction>)list, consumer, consumer2));
-        }).collect(Collectors.toList());
+            Collection collection = (Collection)entry.getValue();
+            return Streams.stream(Iterables.partition(collection, 100)).map(list -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), ImmutableList.copyOf(list), consumer, consumer2));
+        }).collect(ImmutableList.toImmutableList());
     }
 
     public static void clearTests(ServerWorld world, BlockPos pos, TestManager testManager, int radius) {

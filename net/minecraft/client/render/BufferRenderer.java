@@ -42,30 +42,30 @@ public class BufferRenderer {
             field_27364 = GlStateManager.genBuffers();
         }
         int k = i * vertexFormat.getVertexSize();
-        GlStateManager.bindBuffers(34962, field_27364);
+        GlStateManager.bindBuffer(34962, field_27364);
         buffer.position(0);
         buffer.limit(k);
         GlStateManager.bufferData(34962, buffer, 35044);
         if (bl) {
-            RenderSystem.class_5590 lv = RenderSystem.getSequentialBuffer(drawMode, j);
-            GlStateManager.bindBuffers(34963, lv.method_31919());
-            l = lv.method_31924().field_27374;
+            RenderSystem.IndexBuffer indexBuffer = RenderSystem.getSequentialBuffer(drawMode, j);
+            GlStateManager.bindBuffer(34963, indexBuffer.getId());
+            l = indexBuffer.getVertexFormat().field_27374;
         } else {
             if (field_27365 == 0) {
                 field_27365 = GlStateManager.genBuffers();
             }
-            GlStateManager.bindBuffers(34963, field_27365);
+            GlStateManager.bindBuffer(34963, field_27365);
             buffer.position(k);
             buffer.limit(k + j * intType.size);
             GlStateManager.bufferData(34963, buffer, 35044);
             l = intType.field_27374;
         }
         vertexFormat.startDrawing(0L);
-        GlStateManager.drawArrays(drawMode.mode, j, l, 0L);
+        GlStateManager.drawElements(drawMode.mode, j, l, 0L);
         vertexFormat.endDrawing();
         buffer.position(0);
-        GlStateManager.bindBuffers(34963, 0);
-        GlStateManager.bindBuffers(34962, 0);
+        GlStateManager.bindBuffer(34963, 0);
+        GlStateManager.bindBuffer(34962, 0);
     }
 }
 

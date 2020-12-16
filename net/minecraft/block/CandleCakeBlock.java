@@ -68,8 +68,11 @@ extends AbstractCandleBlock {
             return ActionResult.PASS;
         }
         if (!(CandleCakeBlock.isHittingCandle(hit) && player.getStackInHand(hand).isEmpty() && state.get(LIT).booleanValue())) {
-            CandleCakeBlock.dropStacks(state, world, pos);
-            return CakeBlock.tryEat(world, pos, Blocks.CAKE.getDefaultState(), player);
+            ActionResult actionResult = CakeBlock.tryEat(world, pos, Blocks.CAKE.getDefaultState(), player);
+            if (actionResult.isAccepted()) {
+                CandleCakeBlock.dropStacks(state, world, pos);
+            }
+            return actionResult;
         }
         CandleCakeBlock.extinguish(state, world, pos);
         return ActionResult.success(world.isClient);

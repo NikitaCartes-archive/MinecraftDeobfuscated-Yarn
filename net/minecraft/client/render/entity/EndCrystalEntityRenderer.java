@@ -66,7 +66,7 @@ extends EntityRenderer<EndCrystalEntity> {
         matrixStack.scale(2.0f, 2.0f, 2.0f);
         matrixStack.translate(0.0, -0.5, 0.0);
         int k = OverlayTexture.DEFAULT_UV;
-        if (endCrystalEntity.getShowBottom()) {
+        if (endCrystalEntity.shouldShowBottom()) {
             this.bottom.render(matrixStack, vertexConsumer, i, k);
         }
         matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));

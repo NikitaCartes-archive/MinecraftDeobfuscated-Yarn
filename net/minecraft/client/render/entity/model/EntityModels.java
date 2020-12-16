@@ -22,6 +22,7 @@ import net.minecraft.client.render.entity.WitherSkullEntityRenderer;
 import net.minecraft.client.render.entity.feature.TridentRiptideFeatureRenderer;
 import net.minecraft.client.render.entity.model.ArmorStandArmorEntityModel;
 import net.minecraft.client.render.entity.model.ArmorStandEntityModel;
+import net.minecraft.client.render.entity.model.AxolotlEntityModel;
 import net.minecraft.client.render.entity.model.BatEntityModel;
 import net.minecraft.client.render.entity.model.BeeEntityModel;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
@@ -124,6 +125,7 @@ public class EntityModels {
         builder.put(EntityModelLayers.ARMOR_STAND, ArmorStandEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.ARMOR_STAND_INNER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(HAT_DILATION));
         builder.put(EntityModelLayers.ARMOR_STAND_OUTER_ARMOR, ArmorStandArmorEntityModel.getTexturedModelData(ARMOR_DILATION));
+        builder.put(EntityModelLayers.AXOLOTL, AxolotlEntityModel.method_33296());
         builder.put(EntityModelLayers.BANNER, BannerBlockEntityRenderer.getTexturedModelData());
         builder.put(EntityModelLayers.BAT, BatEntityModel.getTexturedModelData());
         builder.put(EntityModelLayers.BED_FOOT, BedBlockEntityRenderer.getFootTexturedModelData());

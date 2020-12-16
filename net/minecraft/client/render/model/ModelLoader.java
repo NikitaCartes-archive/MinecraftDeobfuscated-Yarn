@@ -430,7 +430,7 @@ public class ModelLoader {
     @Nullable
     public BakedModel bake(Identifier identifier, ModelBakeSettings settings) {
         JsonUnbakedModel jsonUnbakedModel;
-        Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isShaded());
+        Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isUvLocked());
         if (this.bakedModelCache.containsKey(triple)) {
             return this.bakedModelCache.get(triple);
         }

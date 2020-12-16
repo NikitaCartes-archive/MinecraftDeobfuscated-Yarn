@@ -127,7 +127,7 @@ extends ValueObject {
     }
 
     private static void sortInvited(RealmsServer server) {
-        server.players.sort((playerInfo, playerInfo2) -> ComparisonChain.start().compareFalseFirst(playerInfo2.getAccepted(), playerInfo.getAccepted()).compare((Comparable<?>)((Object)playerInfo.getName().toLowerCase(Locale.ROOT)), (Comparable<?>)((Object)playerInfo2.getName().toLowerCase(Locale.ROOT))).result());
+        server.players.sort((playerInfo, playerInfo2) -> ComparisonChain.start().compareFalseFirst(playerInfo2.isAccepted(), playerInfo.isAccepted()).compare((Comparable<?>)((Object)playerInfo.getName().toLowerCase(Locale.ROOT)), (Comparable<?>)((Object)playerInfo2.getName().toLowerCase(Locale.ROOT))).result());
     }
 
     private static List<PlayerInfo> parseInvited(JsonArray jsonArray) {

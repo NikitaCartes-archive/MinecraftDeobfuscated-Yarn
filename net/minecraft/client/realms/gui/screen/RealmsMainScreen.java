@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -53,6 +53,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -140,7 +141,7 @@ extends RealmsScreen {
     private List<KeyCombo> keyCombos;
     private int clicks;
     private ReentrantLock connectLock = new ReentrantLock();
-    private class_5489 field_26466 = class_5489.field_26528;
+    private MultilineText field_26466 = MultilineText.EMPTY;
     private HoverState hoverState;
     private ButtonWidget showPopupButton;
     private ButtonWidget pendingInvitesButton;
@@ -225,7 +226,7 @@ extends RealmsScreen {
         }
         this.addChild(this.realmSelectionList);
         this.focusOn(this.realmSelectionList);
-        this.field_26466 = class_5489.method_30890(this.textRenderer, POPUP_TEXT, 100);
+        this.field_26466 = MultilineText.create(this.textRenderer, (StringVisitable)POPUP_TEXT, 100);
     }
 
     private static boolean hasParentalConsent() {
@@ -738,7 +739,7 @@ extends RealmsScreen {
                 this.hasSwitchedCarouselImage = false;
             }
         }
-        this.field_26466.method_30896(matrices, this.width / 2 + 52, j + 7, 10, 0x4C4C4C);
+        this.field_26466.draw(matrices, this.width / 2 + 52, j + 7, 10, 0x4C4C4C);
     }
 
     private int popupX0() {

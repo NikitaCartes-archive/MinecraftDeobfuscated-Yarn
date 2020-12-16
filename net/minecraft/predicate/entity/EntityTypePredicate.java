@@ -41,11 +41,11 @@ public abstract class EntityTypePredicate {
         }
         String string = JsonHelper.asString(json, "type");
         if (string.startsWith("#")) {
-            Identifier identifier = new Identifier(string.substring(1));
-            return new Tagged(ServerTagManagerHolder.getTagManager().getEntityTypes().getTagOrEmpty(identifier));
+            Identifier identifier2 = new Identifier(string.substring(1));
+            return new Tagged(ServerTagManagerHolder.getTagManager().getTag(Registry.ENTITY_TYPE_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown entity tag '" + identifier + "'")));
         }
-        Identifier identifier = new Identifier(string);
-        EntityType<?> entityType = Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown entity type '" + identifier + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.getIds())));
+        Identifier identifier3 = new Identifier(string);
+        EntityType<?> entityType = Registry.ENTITY_TYPE.getOrEmpty(identifier3).orElseThrow(() -> new JsonSyntaxException("Unknown entity type '" + identifier3 + "', valid types are: " + COMMA_JOINER.join(Registry.ENTITY_TYPE.getIds())));
         return new Single(entityType);
     }
 
@@ -72,7 +72,7 @@ public abstract class EntityTypePredicate {
 
         @Override
         public JsonElement toJson() {
-            return new JsonPrimitive("#" + ServerTagManagerHolder.getTagManager().getEntityTypes().getTagId(this.tag));
+            return new JsonPrimitive("#" + ServerTagManagerHolder.getTagManager().getTagId(Registry.ENTITY_TYPE_KEY, this.tag, () -> new IllegalStateException("Unknown entity type tag")));
         }
     }
 

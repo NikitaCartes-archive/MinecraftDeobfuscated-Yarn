@@ -116,7 +116,7 @@ implements SkinOverlayOwner {
         }
         tag.putShort("Fuse", (short)this.fuseTime);
         tag.putByte("ExplosionRadius", (byte)this.explosionRadius);
-        tag.putBoolean("ignited", this.getIgnited());
+        tag.putBoolean("ignited", this.isIgnited());
     }
 
     @Override
@@ -139,7 +139,7 @@ implements SkinOverlayOwner {
         if (this.isAlive()) {
             int i;
             this.lastFuseTime = this.currentFuseTime;
-            if (this.getIgnited()) {
+            if (this.isIgnited()) {
                 this.setFuseSpeed(1);
             }
             if ((i = this.getFuseSpeed()) > 0 && this.currentFuseTime == 0) {
@@ -248,7 +248,7 @@ implements SkinOverlayOwner {
         }
     }
 
-    public boolean getIgnited() {
+    public boolean isIgnited() {
         return this.dataTracker.get(IGNITED);
     }
 

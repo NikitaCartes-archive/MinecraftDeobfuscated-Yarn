@@ -10,7 +10,7 @@ import net.minecraft.world.event.listener.GameEventListener;
 import org.jetbrains.annotations.Nullable;
 
 public interface class_5713 {
-    public static final class_5713 field_28181 = new class_5713(){
+    public static final class_5713 EMPTY = new class_5713(){
 
         @Override
         public boolean isEmpty() {
@@ -26,7 +26,7 @@ public interface class_5713 {
         }
 
         @Override
-        public void method_32943(GameEvent gameEvent, @Nullable Entity entity, BlockPos blockPos) {
+        public void listen(GameEvent event, @Nullable Entity entity, BlockPos pos) {
         }
     };
 
@@ -36,6 +36,6 @@ public interface class_5713 {
 
     public void removeListener(GameEventListener var1);
 
-    public void method_32943(GameEvent var1, @Nullable Entity var2, BlockPos var3);
+    public void listen(GameEvent var1, @Nullable Entity var2, BlockPos var3);
 }
 

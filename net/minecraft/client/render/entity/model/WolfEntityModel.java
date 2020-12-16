@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 public class WolfEntityModel<T extends WolfEntity>
 extends TintableAnimalModel<T> {
     /**
-     * This is the main bone used to animate the head. It contains the {@link #real_head} as one of its children.
+     * The main bone used to animate the head. Contains {@link #realHead} as one of its children.
      */
     private final ModelPart head;
     private final ModelPart realHead;
@@ -31,7 +31,7 @@ extends TintableAnimalModel<T> {
     private final ModelPart rightFrontLeg;
     private final ModelPart leftFrontLeg;
     /**
-     * This is the main bone used to animate the tail. It contains {@link #real_tail} as one of its children.
+     * The main bone used to animate the tail. Contains {@link #realTail} as one of its children.
      */
     private final ModelPart tail;
     private final ModelPart realTail;

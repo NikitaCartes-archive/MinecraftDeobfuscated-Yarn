@@ -3,25 +3,29 @@
  */
 package net.minecraft.tag;
 
+import com.google.common.collect.Lists;
 import java.util.List;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.tag.RequiredTagList;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.Tag;
-import net.minecraft.tag.TagManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public final class FluidTags {
-    protected static final RequiredTagList<Fluid> REQUIRED_TAGS = RequiredTagListRegistry.register(new Identifier("fluid"), TagManager::getFluids);
+    protected static final RequiredTagList<Fluid> REQUIRED_TAGS = RequiredTagListRegistry.register(Registry.FLUID_KEY, "tags/fluids");
+    private static final List<Tag<Fluid>> TAGS = Lists.newArrayList();
     public static final Tag.Identified<Fluid> WATER = FluidTags.register("water");
     public static final Tag.Identified<Fluid> LAVA = FluidTags.register("lava");
 
     private static Tag.Identified<Fluid> register(String id) {
-        return REQUIRED_TAGS.add(id);
+        Tag.Identified<Fluid> identified = REQUIRED_TAGS.add(id);
+        TAGS.add(identified);
+        return identified;
     }
 
-    public static List<? extends Tag.Identified<Fluid>> getRequiredTags() {
-        return REQUIRED_TAGS.getTags();
+    @Deprecated
+    public static List<Tag<Fluid>> getTags() {
+        return TAGS;
     }
 }
 

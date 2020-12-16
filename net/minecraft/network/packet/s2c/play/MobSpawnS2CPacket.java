@@ -34,7 +34,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public MobSpawnS2CPacket(LivingEntity entity) {
-        this.id = entity.getEntityId();
+        this.id = entity.getId();
         this.uuid = entity.getUuid();
         this.entityTypeId = Registry.ENTITY_TYPE.getRawId(entity.getType());
         this.x = entity.getX();

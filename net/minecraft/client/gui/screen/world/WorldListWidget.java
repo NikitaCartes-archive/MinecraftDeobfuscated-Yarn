@@ -102,7 +102,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             Collections.sort(this.levels);
         }
         if (this.levels.isEmpty()) {
-            this.client.openScreen(CreateWorldScreen.method_31130(null));
+            this.client.openScreen(CreateWorldScreen.create(null));
             return;
         }
         String string = supplier.get().toLowerCase(Locale.ROOT);
@@ -183,7 +183,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             if (StringUtils.isEmpty(string)) {
                 string = I18n.translate("selectWorld.world", new Object[0]) + " " + (index + 1);
             }
-            Text text = this.level.method_27429();
+            Text text = this.level.getDetails();
             this.client.textRenderer.draw(matrices, string, (float)(x + 32 + 3), (float)(y + 1), 0xFFFFFF);
             this.client.textRenderer.draw(matrices, string2, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + 3), 0x808080);
             this.client.textRenderer.draw(matrices, text, (float)(x + 32 + 3), (float)(y + this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight + 3), 0x808080);
@@ -324,7 +324,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.method_29990();
             DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.level.getName());
-                 MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.method_29604(impl, MinecraftClient::method_29598, MinecraftClient::createSaveProperties, false, session);){
+                 MinecraftClient.IntegratedResourceManager integratedResourceManager = this.client.createIntegratedResourceManager(impl, MinecraftClient::loadDataPackSettings, MinecraftClient::createSaveProperties, false, session);){
                 LevelInfo levelInfo = integratedResourceManager.getSaveProperties().getLevelInfo();
                 DataPackSettings dataPackSettings = levelInfo.getDataPackSettings();
                 GeneratorOptions generatorOptions = integratedResourceManager.getSaveProperties().getGeneratorOptions();

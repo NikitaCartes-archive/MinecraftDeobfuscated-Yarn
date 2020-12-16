@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SculkSensorBlockEntity
 extends BlockEntity
-implements SculkSensorListener.class_5719 {
+implements SculkSensorListener.Listener {
     private final SculkSensorListener listener;
     private int lastVibrationFrequency;
 

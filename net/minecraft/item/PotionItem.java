@@ -42,9 +42,9 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity livingEntity) {
         PlayerEntity playerEntity;
-        PlayerEntity playerEntity2 = playerEntity = entity instanceof PlayerEntity ? (PlayerEntity)entity : null;
+        PlayerEntity playerEntity2 = playerEntity = livingEntity instanceof PlayerEntity ? (PlayerEntity)livingEntity : null;
         if (playerEntity instanceof ServerPlayerEntity) {
             Criteria.CONSUME_ITEM.trigger((ServerPlayerEntity)playerEntity, stack);
         }
@@ -52,10 +52,10 @@ extends Item {
             List<StatusEffectInstance> list = PotionUtil.getPotionEffects(stack);
             for (StatusEffectInstance statusEffectInstance : list) {
                 if (statusEffectInstance.getEffectType().isInstant()) {
-                    statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, entity, statusEffectInstance.getAmplifier(), 1.0);
+                    statusEffectInstance.getEffectType().applyInstantEffect(playerEntity, playerEntity, livingEntity, statusEffectInstance.getAmplifier(), 1.0);
                     continue;
                 }
-                entity.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
+                livingEntity.addStatusEffect(new StatusEffectInstance(statusEffectInstance));
             }
         }
         if (playerEntity != null) {

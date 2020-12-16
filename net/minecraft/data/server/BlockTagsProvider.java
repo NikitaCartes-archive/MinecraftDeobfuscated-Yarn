@@ -14,8 +14,8 @@ import net.minecraft.util.registry.Registry;
 
 public class BlockTagsProvider
 extends AbstractTagProvider<Block> {
-    public BlockTagsProvider(DataGenerator dataGenerator) {
-        super(dataGenerator, Registry.BLOCK);
+    public BlockTagsProvider(DataGenerator root) {
+        super(root, Registry.BLOCK);
     }
 
     @Override

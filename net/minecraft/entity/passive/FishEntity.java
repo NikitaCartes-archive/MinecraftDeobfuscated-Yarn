@@ -4,9 +4,9 @@
 package net.minecraft.entity.passive;
 
 import java.util.Random;
-import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.entity.Bucketable;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -27,10 +27,9 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.ItemUsage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.predicate.entity.EntityPredicates;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -43,7 +42,8 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public abstract class FishEntity
-extends WaterCreatureEntity {
+extends WaterCreatureEntity
+implements Bucketable {
     private static final TrackedData<Boolean> FROM_BUCKET = DataTracker.registerData(FishEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     public FishEntity(EntityType<? extends FishEntity> entityType, World world) {
@@ -85,10 +85,11 @@ extends WaterCreatureEntity {
         this.dataTracker.startTracking(FROM_BUCKET, false);
     }
 
-    private boolean isFromBucket() {
+    public boolean isFromBucket() {
         return this.dataTracker.get(FROM_BUCKET);
     }
 
+    @Override
     public void setFromBucket(boolean fromBucket) {
         this.dataTracker.set(FROM_BUCKET, fromBucket);
     }
@@ -145,24 +146,11 @@ extends WaterCreatureEntity {
 
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
-        ItemStack itemStack = player.getStackInHand(hand);
-        if (itemStack.isOf(Items.WATER_BUCKET) && this.isAlive()) {
-            this.playSound(SoundEvents.ITEM_BUCKET_FILL_FISH, 1.0f, 1.0f);
-            itemStack.decrement(1);
-            ItemStack itemStack2 = this.getFishBucketItem();
-            this.copyDataToStack(itemStack2);
-            if (!this.world.isClient) {
-                Criteria.FILLED_BUCKET.trigger((ServerPlayerEntity)player, itemStack2);
-            }
-            if (itemStack.isEmpty()) {
-                player.setStackInHand(hand, itemStack2);
-            } else if (!player.getInventory().insertStack(itemStack2)) {
-                player.dropItem(itemStack2, false);
-            }
-            this.discard();
-            return ActionResult.success(this.world.isClient);
-        }
-        return super.interactMob(player, hand);
+        return ItemUsage.fillEntityBucket(player, hand, this, SoundEvents.ITEM_BUCKET_FILL_FISH, () -> {
+            ItemStack itemStack = this.getFishBucketItem();
+            this.copyDataToStack(itemStack);
+            return itemStack;
+        }).orElse(super.interactMob(player, hand));
     }
 
     protected void copyDataToStack(ItemStack stack) {

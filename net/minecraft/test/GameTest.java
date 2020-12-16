@@ -62,6 +62,17 @@ public class GameTest {
         if (this.isCompleted()) {
             return;
         }
+        this.method_33315();
+        if (this.isCompleted()) {
+            if (this.throwable != null) {
+                this.listeners.forEach(testListener -> testListener.onFailed(this));
+            } else {
+                this.listeners.forEach(testListener -> testListener.method_33317(this));
+            }
+        }
+    }
+
+    private void method_33315() {
         this.field_21455 = this.world.getTime() - this.expectedStopTime;
         if (this.field_21455 < 0L) {
             return;
@@ -142,9 +153,8 @@ public class GameTest {
     }
 
     public void fail(Throwable throwable) {
-        this.complete();
         this.throwable = throwable;
-        this.listeners.forEach(testListener -> testListener.onFailed(this));
+        this.complete();
     }
 
     @Nullable

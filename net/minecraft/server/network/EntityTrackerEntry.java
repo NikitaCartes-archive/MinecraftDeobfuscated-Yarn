@@ -105,7 +105,7 @@ public class EntityTrackerEntry {
                 int j = MathHelper.floor(this.entity.pitch * 256.0f / 360.0f);
                 boolean bl2 = bl = Math.abs(i - this.lastYaw) >= 1 || Math.abs(j - this.lastPitch) >= 1;
                 if (bl) {
-                    this.receiver.accept(new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.isOnGround()));
+                    this.receiver.accept(new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround()));
                     this.lastYaw = i;
                     this.lastPitch = j;
                 }
@@ -135,16 +135,16 @@ public class EntityTrackerEntry {
                         this.updatesWithoutVehicle = 0;
                         packet2 = new EntityPositionS2CPacket(this.entity);
                     } else if (bl3 && bl4 || this.entity instanceof PersistentProjectileEntity) {
-                        packet2 = new EntityS2CPacket.RotateAndMoveRelative(this.entity.getEntityId(), (short)l, (short)m, (short)n, (byte)i, (byte)j, this.entity.isOnGround());
+                        packet2 = new EntityS2CPacket.RotateAndMoveRelative(this.entity.getId(), (short)l, (short)m, (short)n, (byte)i, (byte)j, this.entity.isOnGround());
                     } else if (bl3) {
-                        packet2 = new EntityS2CPacket.MoveRelative(this.entity.getEntityId(), (short)l, (short)m, (short)n, this.entity.isOnGround());
+                        packet2 = new EntityS2CPacket.MoveRelative(this.entity.getId(), (short)l, (short)m, (short)n, this.entity.isOnGround());
                     } else if (bl4) {
-                        packet2 = new EntityS2CPacket.Rotate(this.entity.getEntityId(), (byte)i, (byte)j, this.entity.isOnGround());
+                        packet2 = new EntityS2CPacket.Rotate(this.entity.getId(), (byte)i, (byte)j, this.entity.isOnGround());
                     }
                 }
                 if ((this.alwaysUpdateVelocity || this.entity.velocityDirty || this.entity instanceof LivingEntity && ((LivingEntity)this.entity).isFallFlying()) && this.trackingTick > 0 && ((d = (vec3d2 = this.entity.getVelocity()).squaredDistanceTo(this.velocity)) > 1.0E-7 || d > 0.0 && vec3d2.lengthSquared() == 0.0)) {
                     this.velocity = vec3d2;
-                    this.receiver.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.velocity));
+                    this.receiver.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
                 }
                 if (packet2 != null) {
                     this.receiver.accept(packet2);
@@ -193,13 +193,13 @@ public class EntityTrackerEntry {
         this.lastHeadPitch = MathHelper.floor(this.entity.getHeadYaw() * 256.0f / 360.0f);
         sender.accept(packet);
         if (!this.entity.getDataTracker().isEmpty()) {
-            sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), this.entity.getDataTracker(), true));
+            sender.accept(new EntityTrackerUpdateS2CPacket(this.entity.getId(), this.entity.getDataTracker(), true));
         }
         boolean bl = this.alwaysUpdateVelocity;
         if (this.entity instanceof LivingEntity) {
             Collection<EntityAttributeInstance> collection = ((LivingEntity)this.entity).getAttributes().getAttributesToSend();
             if (!collection.isEmpty()) {
-                sender.accept(new EntityAttributesS2CPacket(this.entity.getEntityId(), collection));
+                sender.accept(new EntityAttributesS2CPacket(this.entity.getId(), collection));
             }
             if (((LivingEntity)this.entity).isFallFlying()) {
                 bl = true;
@@ -207,7 +207,7 @@ public class EntityTrackerEntry {
         }
         this.velocity = this.entity.getVelocity();
         if (bl && !(packet instanceof MobSpawnS2CPacket)) {
-            sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getEntityId(), this.velocity));
+            sender.accept(new EntityVelocityUpdateS2CPacket(this.entity.getId(), this.velocity));
         }
         if (this.entity instanceof LivingEntity) {
             ArrayList<Pair<EquipmentSlot, ItemStack>> list = Lists.newArrayList();
@@ -217,13 +217,13 @@ public class EntityTrackerEntry {
                 list.add(Pair.of(equipmentSlot, itemStack.copy()));
             }
             if (!list.isEmpty()) {
-                sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getEntityId(), list));
+                sender.accept(new EntityEquipmentUpdateS2CPacket(this.entity.getId(), list));
             }
         }
         if (this.entity instanceof LivingEntity) {
             LivingEntity livingEntity = (LivingEntity)this.entity;
             for (StatusEffectInstance statusEffectInstance : livingEntity.getStatusEffects()) {
-                sender.accept(new EntityStatusEffectS2CPacket(this.entity.getEntityId(), statusEffectInstance));
+                sender.accept(new EntityStatusEffectS2CPacket(this.entity.getId(), statusEffectInstance));
             }
         }
         if (!this.entity.getPassengerList().isEmpty()) {
@@ -243,12 +243,12 @@ public class EntityTrackerEntry {
     private void syncEntityData() {
         DataTracker dataTracker = this.entity.getDataTracker();
         if (dataTracker.isDirty()) {
-            this.sendSyncPacket(new EntityTrackerUpdateS2CPacket(this.entity.getEntityId(), dataTracker, false));
+            this.sendSyncPacket(new EntityTrackerUpdateS2CPacket(this.entity.getId(), dataTracker, false));
         }
         if (this.entity instanceof LivingEntity) {
             Set<EntityAttributeInstance> set = ((LivingEntity)this.entity).getAttributes().getTracked();
             if (!set.isEmpty()) {
-                this.sendSyncPacket(new EntityAttributesS2CPacket(this.entity.getEntityId(), set));
+                this.sendSyncPacket(new EntityAttributesS2CPacket(this.entity.getId(), set));
             }
             set.clear();
         }

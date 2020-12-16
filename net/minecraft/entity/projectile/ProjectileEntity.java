@@ -35,7 +35,7 @@ extends Entity {
     public void setOwner(@Nullable Entity entity) {
         if (entity != null) {
             this.ownerUuid = entity.getUuid();
-            this.ownerEntityId = entity.getEntityId();
+            this.ownerEntityId = entity.getId();
         }
     }
 
@@ -95,7 +95,7 @@ extends Entity {
         this.pitch = (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875);
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
-        this.method_32875(this.getOwner(), GameEvent.PROJECTILE_SHOOT);
+        this.emitGameEvent(this.getOwner(), GameEvent.PROJECTILE_SHOOT);
     }
 
     public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
@@ -115,7 +115,7 @@ extends Entity {
             this.onBlockHit((BlockHitResult)hitResult);
         }
         if (type != HitResult.Type.MISS) {
-            this.method_32875(this.getOwner(), GameEvent.PROJECTILE_LAND);
+            this.emitGameEvent(this.getOwner(), GameEvent.PROJECTILE_LAND);
         }
     }
 
@@ -170,7 +170,7 @@ extends Entity {
     @Override
     public Packet<?> createSpawnPacket() {
         Entity entity = this.getOwner();
-        return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getEntityId());
+        return new EntitySpawnS2CPacket(this, entity == null ? 0 : entity.getId());
     }
 
     @Override

@@ -268,17 +268,17 @@ RangedAttackMob {
                 if (livingEntity != this && livingEntity.isAlive() && this.canSee(livingEntity)) {
                     if (livingEntity instanceof PlayerEntity) {
                         if (((PlayerEntity)livingEntity).getAbilities().invulnerable) continue block0;
-                        this.setTrackedEntityId(i, livingEntity.getEntityId());
+                        this.setTrackedEntityId(i, livingEntity.getId());
                         continue block0;
                     }
-                    this.setTrackedEntityId(i, livingEntity.getEntityId());
+                    this.setTrackedEntityId(i, livingEntity.getId());
                     continue block0;
                 }
                 list.remove(livingEntity);
             }
         }
         if (this.getTarget() != null) {
-            this.setTrackedEntityId(0, this.getTarget().getEntityId());
+            this.setTrackedEntityId(0, this.getTarget().getId());
         } else {
             this.setTrackedEntityId(0, 0);
         }

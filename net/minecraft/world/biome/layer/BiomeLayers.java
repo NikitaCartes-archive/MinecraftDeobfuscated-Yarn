@@ -36,75 +36,75 @@ import net.minecraft.world.biome.layer.util.LayerSampler;
 import net.minecraft.world.biome.source.BiomeLayerSampler;
 
 public class BiomeLayers {
-    private static final Int2IntMap field_26709 = Util.make(new Int2IntOpenHashMap(), int2IntOpenHashMap -> {
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.BEACH, 16);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.BEACH, 26);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.DESERT, 2);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.DESERT, 17);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.DESERT, 130);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.EXTREME_HILLS, 131);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.EXTREME_HILLS, 162);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.EXTREME_HILLS, 20);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.EXTREME_HILLS, 3);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.EXTREME_HILLS, 34);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 27);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 28);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 29);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 157);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 132);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 4);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 155);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 156);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.FOREST, 18);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.ICY, 140);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.ICY, 13);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.ICY, 12);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.JUNGLE, 168);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.JUNGLE, 169);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.JUNGLE, 21);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.JUNGLE, 23);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.JUNGLE, 22);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.JUNGLE, 149);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.JUNGLE, 151);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.MESA, 37);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.MESA, 165);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.MESA, 167);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.MESA, 166);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.BADLANDS_PLATEAU, 39);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.BADLANDS_PLATEAU, 38);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.MUSHROOM, 14);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.MUSHROOM, 15);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.NONE, 25);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 46);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 49);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 50);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 48);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 24);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 47);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 10);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 45);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 0);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.OCEAN, 44);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.PLAINS, 1);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.PLAINS, 129);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.RIVER, 11);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.RIVER, 7);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.SAVANNA, 35);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.SAVANNA, 36);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.SAVANNA, 163);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.SAVANNA, 164);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.SWAMP, 6);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.SWAMP, 134);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 160);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 161);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 32);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 33);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 30);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 31);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 158);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 5);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 19);
-        BiomeLayers.method_31117(int2IntOpenHashMap, Category.TAIGA, 133);
+    private static final Int2IntMap BY_CATEGORY = Util.make(new Int2IntOpenHashMap(), map -> {
+        BiomeLayers.putCategory(map, Category.BEACH, 16);
+        BiomeLayers.putCategory(map, Category.BEACH, 26);
+        BiomeLayers.putCategory(map, Category.DESERT, 2);
+        BiomeLayers.putCategory(map, Category.DESERT, 17);
+        BiomeLayers.putCategory(map, Category.DESERT, 130);
+        BiomeLayers.putCategory(map, Category.EXTREME_HILLS, 131);
+        BiomeLayers.putCategory(map, Category.EXTREME_HILLS, 162);
+        BiomeLayers.putCategory(map, Category.EXTREME_HILLS, 20);
+        BiomeLayers.putCategory(map, Category.EXTREME_HILLS, 3);
+        BiomeLayers.putCategory(map, Category.EXTREME_HILLS, 34);
+        BiomeLayers.putCategory(map, Category.FOREST, 27);
+        BiomeLayers.putCategory(map, Category.FOREST, 28);
+        BiomeLayers.putCategory(map, Category.FOREST, 29);
+        BiomeLayers.putCategory(map, Category.FOREST, 157);
+        BiomeLayers.putCategory(map, Category.FOREST, 132);
+        BiomeLayers.putCategory(map, Category.FOREST, 4);
+        BiomeLayers.putCategory(map, Category.FOREST, 155);
+        BiomeLayers.putCategory(map, Category.FOREST, 156);
+        BiomeLayers.putCategory(map, Category.FOREST, 18);
+        BiomeLayers.putCategory(map, Category.ICY, 140);
+        BiomeLayers.putCategory(map, Category.ICY, 13);
+        BiomeLayers.putCategory(map, Category.ICY, 12);
+        BiomeLayers.putCategory(map, Category.JUNGLE, 168);
+        BiomeLayers.putCategory(map, Category.JUNGLE, 169);
+        BiomeLayers.putCategory(map, Category.JUNGLE, 21);
+        BiomeLayers.putCategory(map, Category.JUNGLE, 23);
+        BiomeLayers.putCategory(map, Category.JUNGLE, 22);
+        BiomeLayers.putCategory(map, Category.JUNGLE, 149);
+        BiomeLayers.putCategory(map, Category.JUNGLE, 151);
+        BiomeLayers.putCategory(map, Category.MESA, 37);
+        BiomeLayers.putCategory(map, Category.MESA, 165);
+        BiomeLayers.putCategory(map, Category.MESA, 167);
+        BiomeLayers.putCategory(map, Category.MESA, 166);
+        BiomeLayers.putCategory(map, Category.BADLANDS_PLATEAU, 39);
+        BiomeLayers.putCategory(map, Category.BADLANDS_PLATEAU, 38);
+        BiomeLayers.putCategory(map, Category.MUSHROOM, 14);
+        BiomeLayers.putCategory(map, Category.MUSHROOM, 15);
+        BiomeLayers.putCategory(map, Category.NONE, 25);
+        BiomeLayers.putCategory(map, Category.OCEAN, 46);
+        BiomeLayers.putCategory(map, Category.OCEAN, 49);
+        BiomeLayers.putCategory(map, Category.OCEAN, 50);
+        BiomeLayers.putCategory(map, Category.OCEAN, 48);
+        BiomeLayers.putCategory(map, Category.OCEAN, 24);
+        BiomeLayers.putCategory(map, Category.OCEAN, 47);
+        BiomeLayers.putCategory(map, Category.OCEAN, 10);
+        BiomeLayers.putCategory(map, Category.OCEAN, 45);
+        BiomeLayers.putCategory(map, Category.OCEAN, 0);
+        BiomeLayers.putCategory(map, Category.OCEAN, 44);
+        BiomeLayers.putCategory(map, Category.PLAINS, 1);
+        BiomeLayers.putCategory(map, Category.PLAINS, 129);
+        BiomeLayers.putCategory(map, Category.RIVER, 11);
+        BiomeLayers.putCategory(map, Category.RIVER, 7);
+        BiomeLayers.putCategory(map, Category.SAVANNA, 35);
+        BiomeLayers.putCategory(map, Category.SAVANNA, 36);
+        BiomeLayers.putCategory(map, Category.SAVANNA, 163);
+        BiomeLayers.putCategory(map, Category.SAVANNA, 164);
+        BiomeLayers.putCategory(map, Category.SWAMP, 6);
+        BiomeLayers.putCategory(map, Category.SWAMP, 134);
+        BiomeLayers.putCategory(map, Category.TAIGA, 160);
+        BiomeLayers.putCategory(map, Category.TAIGA, 161);
+        BiomeLayers.putCategory(map, Category.TAIGA, 32);
+        BiomeLayers.putCategory(map, Category.TAIGA, 33);
+        BiomeLayers.putCategory(map, Category.TAIGA, 30);
+        BiomeLayers.putCategory(map, Category.TAIGA, 31);
+        BiomeLayers.putCategory(map, Category.TAIGA, 158);
+        BiomeLayers.putCategory(map, Category.TAIGA, 5);
+        BiomeLayers.putCategory(map, Category.TAIGA, 19);
+        BiomeLayers.putCategory(map, Category.TAIGA, 133);
     });
 
     private static <T extends LayerSampler, C extends LayerSampleContext<T>> LayerFactory<T> stack(long seed, ParentedLayer layer, LayerFactory<T> parent, int count, LongFunction<C> contextProvider) {
@@ -176,11 +176,11 @@ public class BiomeLayers {
         if (id1 == id2) {
             return true;
         }
-        return field_26709.get(id1) == field_26709.get(id2);
+        return BY_CATEGORY.get(id1) == BY_CATEGORY.get(id2);
     }
 
-    private static void method_31117(Int2IntOpenHashMap int2IntOpenHashMap, Category category, int i) {
-        int2IntOpenHashMap.put(i, category.ordinal());
+    private static void putCategory(Int2IntOpenHashMap map, Category category, int id) {
+        map.put(id, category.ordinal());
     }
 
     protected static boolean isOcean(int id) {

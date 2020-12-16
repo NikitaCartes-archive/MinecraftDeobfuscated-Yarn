@@ -27,22 +27,22 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        super.finishUsing(stack, world, entity);
-        if (entity instanceof ServerPlayerEntity) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity livingEntity) {
+        super.finishUsing(stack, world, livingEntity);
+        if (livingEntity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
             Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
         if (!world.isClient) {
-            entity.removeStatusEffect(StatusEffects.POISON);
+            livingEntity.removeStatusEffect(StatusEffects.POISON);
         }
         if (stack.isEmpty()) {
             return new ItemStack(Items.GLASS_BOTTLE);
         }
-        if (entity instanceof PlayerEntity && !((PlayerEntity)entity).getAbilities().creativeMode) {
+        if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).getAbilities().creativeMode) {
             ItemStack itemStack = new ItemStack(Items.GLASS_BOTTLE);
-            PlayerEntity playerEntity = (PlayerEntity)entity;
+            PlayerEntity playerEntity = (PlayerEntity)livingEntity;
             if (!playerEntity.getInventory().insertStack(itemStack)) {
                 playerEntity.dropItem(itemStack, false);
             }

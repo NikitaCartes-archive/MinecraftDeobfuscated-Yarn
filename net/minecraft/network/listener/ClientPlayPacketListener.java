@@ -45,7 +45,6 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
@@ -89,6 +88,7 @@ import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
@@ -193,7 +193,7 @@ extends PacketListener {
 
     public void onEntitySetHeadYaw(EntitySetHeadYawS2CPacket var1);
 
-    public void onHeldItemChange(HeldItemChangeS2CPacket var1);
+    public void onHeldItemChange(UpdateSelectedSlotS2CPacket var1);
 
     public void onScoreboardDisplay(ScoreboardDisplayS2CPacket var1);
 

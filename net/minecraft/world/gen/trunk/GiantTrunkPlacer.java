@@ -39,18 +39,18 @@ extends TrunkPlacer {
         GiantTrunkPlacer.setToDirt(world, blockPos.south().east());
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < trunkHeight; ++i) {
-            GiantTrunkPlacer.method_27399(world, random, mutable, placedStates, box, config, pos, 0, i, 0);
+            GiantTrunkPlacer.setLog(world, random, mutable, placedStates, box, config, pos, 0, i, 0);
             if (i >= trunkHeight - 1) continue;
-            GiantTrunkPlacer.method_27399(world, random, mutable, placedStates, box, config, pos, 1, i, 0);
-            GiantTrunkPlacer.method_27399(world, random, mutable, placedStates, box, config, pos, 1, i, 1);
-            GiantTrunkPlacer.method_27399(world, random, mutable, placedStates, box, config, pos, 0, i, 1);
+            GiantTrunkPlacer.setLog(world, random, mutable, placedStates, box, config, pos, 1, i, 0);
+            GiantTrunkPlacer.setLog(world, random, mutable, placedStates, box, config, pos, 1, i, 1);
+            GiantTrunkPlacer.setLog(world, random, mutable, placedStates, box, config, pos, 0, i, 1);
         }
         return ImmutableList.of(new FoliagePlacer.TreeNode(pos.up(trunkHeight), 0, true));
     }
 
-    private static void method_27399(ModifiableTestableWorld modifiableTestableWorld, Random random, BlockPos.Mutable mutable, Set<BlockPos> set, BlockBox blockBox, TreeFeatureConfig treeFeatureConfig, BlockPos blockPos, int i, int j, int k) {
-        mutable.set(blockPos, i, j, k);
-        GiantTrunkPlacer.trySetState(modifiableTestableWorld, random, mutable, set, blockBox, treeFeatureConfig);
+    private static void setLog(ModifiableTestableWorld world, Random random, BlockPos.Mutable mutable, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config, BlockPos pos, int x, int y, int z) {
+        mutable.set(pos, x, y, z);
+        GiantTrunkPlacer.trySetState(world, random, mutable, placedStates, box, config);
     }
 }
 

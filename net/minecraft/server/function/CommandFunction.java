@@ -35,11 +35,18 @@ public class CommandFunction {
         return this.elements;
     }
 
-    public static CommandFunction create(Identifier id, CommandDispatcher<ServerCommandSource> commandDispatcher, ServerCommandSource serverCommandSource, List<String> list) {
-        ArrayList<CommandElement> list2 = Lists.newArrayListWithCapacity(list.size());
-        for (int i = 0; i < list.size(); ++i) {
+    /**
+     * Parses a function in the context of {@code source}.
+     * 
+     * <p>Any syntax errors, such as improper comment lines or unknown commands, will be thrown at this point.</p>
+     * 
+     * @param lines the raw lines (including comments) read from a function file
+     */
+    public static CommandFunction create(Identifier id, CommandDispatcher<ServerCommandSource> dispatcher, ServerCommandSource source, List<String> lines) {
+        ArrayList<CommandElement> list = Lists.newArrayListWithCapacity(lines.size());
+        for (int i = 0; i < lines.size(); ++i) {
             int j = i + 1;
-            String string = list.get(i).trim();
+            String string = lines.get(i).trim();
             StringReader stringReader = new StringReader(string);
             if (!stringReader.canRead() || stringReader.peek() == '#') continue;
             if (stringReader.peek() == '/') {
@@ -51,17 +58,17 @@ public class CommandFunction {
                 throw new IllegalArgumentException("Unknown or invalid command '" + string + "' on line " + j + " (did you mean '" + string2 + "'? Do not use a preceding forwards slash.)");
             }
             try {
-                ParseResults<ServerCommandSource> parseResults = commandDispatcher.parse(stringReader, serverCommandSource);
+                ParseResults<ServerCommandSource> parseResults = dispatcher.parse(stringReader, source);
                 if (parseResults.getReader().canRead()) {
                     throw CommandManager.getException(parseResults);
                 }
-                list2.add(new CommandElement(parseResults));
+                list.add(new CommandElement(parseResults));
                 continue;
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + commandSyntaxException.getMessage());
             }
         }
-        return new CommandFunction(id, list2.toArray(new Element[0]));
+        return new CommandFunction(id, list.toArray(new Element[0]));
     }
 
     public static class LazyContainer {
@@ -101,18 +108,18 @@ public class CommandFunction {
     implements Element {
         private final LazyContainer function;
 
-        public FunctionElement(CommandFunction commandFunction) {
-            this.function = new LazyContainer(commandFunction);
+        public FunctionElement(CommandFunction function) {
+            this.function = new LazyContainer(function);
         }
 
         @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> deque, int maxChainLength) {
+        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength) {
             this.function.get(manager).ifPresent(commandFunction -> {
                 Element[] elements = commandFunction.getElements();
-                int j = maxChainLength - deque.size();
+                int j = maxChainLength - entries.size();
                 int k = Math.min(elements.length, j);
                 for (int l = k - 1; l >= 0; --l) {
-                    deque.addFirst(new CommandFunctionManager.Entry(manager, source, elements[l]));
+                    entries.addFirst(new CommandFunctionManager.Entry(manager, source, elements[l]));
                 }
             });
         }
@@ -131,7 +138,7 @@ public class CommandFunction {
         }
 
         @Override
-        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> deque, int maxChainLength) throws CommandSyntaxException {
+        public void execute(CommandFunctionManager manager, ServerCommandSource source, Deque<CommandFunctionManager.Entry> entries, int maxChainLength) throws CommandSyntaxException {
             manager.getDispatcher().execute(new ParseResults<ServerCommandSource>(this.parsed.getContext().withSource(source), this.parsed.getReader(), this.parsed.getExceptions()));
         }
 

@@ -30,7 +30,7 @@ extends FeatureRenderer<T, M> {
     @Override
     public void render(MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, T livingEntity, float f, float g, float h, float j, float k, float l) {
         int m = this.getObjectCount(livingEntity);
-        Random random = new Random(((Entity)livingEntity).getEntityId());
+        Random random = new Random(((Entity)livingEntity).getId());
         if (m <= 0) {
             return;
         }

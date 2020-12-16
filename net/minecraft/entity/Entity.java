@@ -33,7 +33,6 @@ import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.class_5459;
-import net.minecraft.class_5568;
 import net.minecraft.class_5569;
 import net.minecraft.class_5630;
 import net.minecraft.class_5715;
@@ -41,6 +40,7 @@ import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.EntityDimensions;
+import net.minecraft.entity.EntityLike;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -127,7 +127,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class Entity
 implements Nameable,
-class_5568,
+EntityLike,
 CommandOutput {
     protected static final Logger LOGGER = LogManager.getLogger();
     private static final AtomicInteger ENTITY_ID_COUNTER = new AtomicInteger();
@@ -179,7 +179,7 @@ CommandOutput {
     protected Object2DoubleMap<Tag<Fluid>> fluidHeight = new Object2DoubleArrayMap<Tag<Fluid>>(2);
     protected boolean submergedInWater;
     @Nullable
-    protected Tag<Fluid> field_25599;
+    protected Tag<Fluid> submergedFluidTag;
     public int timeUntilRegen;
     protected boolean firstUpdate = true;
     protected final DataTracker dataTracker;
@@ -210,7 +210,7 @@ CommandOutput {
     private float standingEyeHeight;
     protected boolean inPowderSnow;
     private float field_26997;
-    private int field_26994;
+    private int prevAge;
 
     public Entity(EntityType<?> type, World world) {
         this.type = type;
@@ -219,7 +219,7 @@ CommandOutput {
         this.pos = Vec3d.ZERO;
         this.blockPos = BlockPos.ORIGIN;
         this.trackedPosition = Vec3d.ZERO;
-        this.updatePosition(0.0, 0.0, 0.0);
+        this.setPosition(0.0, 0.0, 0.0);
         this.dataTracker = new DataTracker(this);
         this.dataTracker.startTracking(FLAGS, (byte)0);
         this.dataTracker.startTracking(AIR, this.getMaxAir());
@@ -234,9 +234,9 @@ CommandOutput {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_30632(BlockPos blockPos, BlockState blockState) {
-        VoxelShape voxelShape = blockState.getCollisionShape(this.world, blockPos, ShapeContext.of(this));
-        VoxelShape voxelShape2 = voxelShape.offset(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    public boolean collidesWithStateAtPos(BlockPos pos, BlockState state) {
+        VoxelShape voxelShape = state.getCollisionShape(this.world, pos, ShapeContext.of(this));
+        VoxelShape voxelShape2 = voxelShape.offset(pos.getX(), pos.getY(), pos.getZ());
         return VoxelShapes.matchesAnywhere(voxelShape2, VoxelShapes.cuboid(this.getBoundingBox()), BooleanBiFunction.AND);
     }
 
@@ -283,7 +283,7 @@ CommandOutput {
     }
 
     @Override
-    public int getEntityId() {
+    public int getId() {
         return this.entityId;
     }
 
@@ -337,7 +337,7 @@ CommandOutput {
             return;
         }
         for (double d = this.getY(); d > (double)this.world.getSectionCount() && d < (double)this.world.getTopHeightLimit(); d += 1.0) {
-            this.updatePosition(this.getX(), d, this.getZ());
+            this.setPosition(this.getX(), d, this.getZ());
             if (this.world.isSpaceEmpty(this)) break;
         }
         this.setVelocity(Vec3d.ZERO);
@@ -368,13 +368,13 @@ CommandOutput {
         this.pitch = pitch % 360.0f;
     }
 
-    public void updatePosition(double x, double y, double z) {
+    public void setPosition(double x, double y, double z) {
         this.setPos(x, y, z);
-        this.setBoundingBox(this.dimensions.method_30231(x, y, z));
+        this.setBoundingBox(this.dimensions.getBoxAt(x, y, z));
     }
 
     protected void refreshPosition() {
-        this.updatePosition(this.pos.x, this.pos.y, this.pos.z);
+        this.setPosition(this.pos.x, this.pos.y, this.pos.z);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -438,7 +438,7 @@ CommandOutput {
             this.setOnFireFromLava();
             this.fallDistance *= 0.5f;
         }
-        this.method_31473();
+        this.destroyInVoid();
         if (!this.world.isClient) {
             this.setFlag(0, this.fireTicks > 0);
         }
@@ -446,7 +446,7 @@ CommandOutput {
         this.world.getProfiler().pop();
     }
 
-    public void method_31473() {
+    public void destroyInVoid() {
         if (this.getY() < (double)(this.world.getSectionCount() - 64)) {
             this.destroy();
         }
@@ -585,7 +585,9 @@ CommandOutput {
                     this.emitGameEvent(GameEvent.SWIM);
                 } else {
                     this.playStepSound(blockPos, blockState2);
-                    this.emitGameEvent(GameEvent.STEP);
+                    if (!blockState2.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
+                        this.emitGameEvent(GameEvent.STEP);
+                    }
                 }
             } else if (this.distanceTraveled > this.nextFlySoundDistance && this.hasWings() && blockState2.isAir()) {
                 this.nextFlySoundDistance = this.playFlySound(this.distanceTraveled);
@@ -822,12 +824,12 @@ CommandOutput {
     protected void onBlockCollision(BlockState state) {
     }
 
-    protected void method_32875(@Nullable Entity entity, GameEvent gameEvent) {
-        this.world.emitGameEvent(entity, gameEvent, this.blockPos);
+    protected void emitGameEvent(@Nullable Entity entity, GameEvent event) {
+        this.world.emitGameEvent(entity, event, this.blockPos);
     }
 
-    protected void emitGameEvent(GameEvent gameEvent) {
-        this.world.emitGameEvent(this, gameEvent, this.blockPos);
+    protected void emitGameEvent(GameEvent event) {
+        this.world.emitGameEvent(this, event, this.blockPos);
     }
 
     protected void playStepSound(BlockPos pos, BlockState state) {
@@ -835,13 +837,13 @@ CommandOutput {
         if (state.getMaterial().isLiquid()) {
             return;
         }
-        if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.field_26994 + 20) {
-            this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997f, this.age - this.field_26994));
+        if (state.isIn(BlockTags.CRYSTAL_SOUND_BLOCKS) && this.age >= this.prevAge + 20) {
+            this.field_26997 = (float)((double)this.field_26997 * Math.pow(0.997f, this.age - this.prevAge));
             this.field_26997 = Math.min(1.0f, this.field_26997 + 0.07f);
             float f = 0.5f + this.field_26997 * this.random.nextFloat() * 1.2f;
             float g = 0.1f + this.field_26997 * 1.2f;
             this.playSound(SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, g, f);
-            this.field_26994 = this.age;
+            this.prevAge = this.age;
         }
         BlockSoundGroup blockSoundGroup = (blockState = this.world.getBlockState(pos.up())).isIn(BlockTags.INSIDE_STEP_SOUND_BLOCKS) ? blockState.getSoundGroup() : state.getSoundGroup();
         this.playSound(blockSoundGroup.getStepSound(), blockSoundGroup.getVolume() * 0.15f, blockSoundGroup.getPitch());
@@ -885,11 +887,17 @@ CommandOutput {
         return true;
     }
 
+    public boolean occludeVibrationSignals() {
+        return false;
+    }
+
     protected void fall(double heightDifference, boolean onGround, BlockState landedState, BlockPos landedPosition) {
         if (onGround) {
             if (this.fallDistance > 0.0f) {
                 landedState.getBlock().onLandedUpon(this.world, landedPosition, this, this.fallDistance);
-                this.emitGameEvent(GameEvent.HIT_GROUND);
+                if (!landedState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
+                    this.emitGameEvent(GameEvent.HIT_GROUND);
+                }
             }
             this.fallDistance = 0.0f;
         } else if (heightDifference < 0.0) {
@@ -986,7 +994,7 @@ CommandOutput {
     private void updateSubmergedInWaterState() {
         BoatEntity boatEntity;
         this.submergedInWater = this.isSubmergedIn(FluidTags.WATER);
-        this.field_25599 = null;
+        this.submergedFluidTag = null;
         double d = this.getEyeY() - 0.1111111119389534;
         Entity entity = this.getVehicle();
         if (entity instanceof BoatEntity && !(boatEntity = (BoatEntity)entity).isSubmergedInWater() && boatEntity.getBoundingBox().maxY >= d && boatEntity.getBoundingBox().minY <= d) {
@@ -994,11 +1002,11 @@ CommandOutput {
         }
         BlockPos blockPos = new BlockPos(this.getX(), d, this.getZ());
         FluidState fluidState = this.world.getFluidState(blockPos);
-        for (Tag tag : FluidTags.getRequiredTags()) {
+        for (Tag<Fluid> tag : FluidTags.getTags()) {
             if (!fluidState.isIn(tag)) continue;
             double e = (float)blockPos.getY() + fluidState.getHeight(this.world, blockPos);
             if (e > d) {
-                this.field_25599 = tag;
+                this.submergedFluidTag = tag;
             }
             return;
         }
@@ -1057,8 +1065,8 @@ CommandOutput {
         }
     }
 
-    public boolean isSubmergedIn(Tag<Fluid> tag) {
-        return this.field_25599 == tag;
+    public boolean isSubmergedIn(Tag<Fluid> fluidTag) {
+        return this.submergedFluidTag == fluidTag;
     }
 
     public boolean isInLava() {
@@ -1091,24 +1099,24 @@ CommandOutput {
     }
 
     public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-        this.method_30634(x, y, z);
+        this.updatePosition(x, y, z);
         this.yaw = yaw % 360.0f;
         this.pitch = MathHelper.clamp(pitch, -90.0f, 90.0f) % 360.0f;
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
     }
 
-    public void method_30634(double x, double y, double z) {
+    public void updatePosition(double x, double y, double z) {
         double d = MathHelper.clamp(x, -3.0E7, 3.0E7);
         double e = MathHelper.clamp(z, -3.0E7, 3.0E7);
         this.prevX = d;
         this.prevY = y;
         this.prevZ = e;
-        this.updatePosition(d, y, e);
+        this.setPosition(d, y, e);
     }
 
-    public void refreshPositionAfterTeleport(Vec3d vec3d) {
-        this.refreshPositionAfterTeleport(vec3d.x, vec3d.y, vec3d.z);
+    public void refreshPositionAfterTeleport(Vec3d pos) {
+        this.refreshPositionAfterTeleport(pos.x, pos.y, pos.z);
     }
 
     public void refreshPositionAfterTeleport(double x, double y, double z) {
@@ -1210,7 +1218,7 @@ CommandOutput {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
+        this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
         this.scheduleVelocityUpdate();
         return false;
     }
@@ -1262,16 +1270,16 @@ CommandOutput {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Vec3d method_31166(float tickDelta) {
+    public Vec3d getClientCameraPosVec(float tickDelta) {
         return this.getCameraPosVec(tickDelta);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public final Vec3d method_30950(float f) {
-        double d = MathHelper.lerp((double)f, this.prevX, this.getX());
-        double e = MathHelper.lerp((double)f, this.prevY, this.getY());
-        double g = MathHelper.lerp((double)f, this.prevZ, this.getZ());
-        return new Vec3d(d, e, g);
+    public final Vec3d getLerpedPos(float delta) {
+        double d = MathHelper.lerp((double)delta, this.prevX, this.getX());
+        double e = MathHelper.lerp((double)delta, this.prevY, this.getY());
+        double f = MathHelper.lerp((double)delta, this.prevZ, this.getZ());
+        return new Vec3d(d, e, f);
     }
 
     public HitResult raycast(double maxDistance, float tickDelta, boolean includeFluids) {
@@ -1568,7 +1576,7 @@ CommandOutput {
     }
 
     public void updatePassengerPosition(Entity passenger) {
-        this.updatePassengerPosition(passenger, Entity::updatePosition);
+        this.updatePassengerPosition(passenger, Entity::setPosition);
     }
 
     private void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater) {
@@ -1684,7 +1692,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
 
@@ -1986,7 +1994,7 @@ CommandOutput {
         this.fallDistance = 0.0f;
     }
 
-    public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
+    public void onKilledOther(ServerWorld world, LivingEntity other) {
     }
 
     protected void pushOutOfBlocks(double x, double y, double z) {
@@ -2123,7 +2131,7 @@ CommandOutput {
                 ServerWorld.createEndSpawnPlatform(destination);
             }
         }
-        this.method_30076();
+        this.removeFromDimension();
         this.world.getProfiler().pop();
         ((ServerWorld)this.world).resetIdleTimeout();
         destination.resetIdleTimeout();
@@ -2131,7 +2139,7 @@ CommandOutput {
         return entity;
     }
 
-    protected void method_30076() {
+    protected void removeFromDimension() {
         this.setRemoved(RemovalReason.CHANGED_DIMENSION);
     }
 
@@ -2154,7 +2162,7 @@ CommandOutput {
         double e = Math.max(-2.9999872E7, worldBorder.getBoundNorth() + 16.0);
         double f = Math.min(2.9999872E7, worldBorder.getBoundEast() - 16.0);
         double g = Math.min(2.9999872E7, worldBorder.getBoundSouth() - 16.0);
-        double h = DimensionType.method_31109(this.world.getDimension(), destination.getDimension());
+        double h = DimensionType.getCoordinateScaleFactor(this.world.getDimension(), destination.getDimension());
         BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
         return this.method_30330(destination, blockPos2, bl3).map(arg -> {
             Vec3d vec3d;
@@ -2282,7 +2290,7 @@ CommandOutput {
             return;
         }
         ChunkPos chunkPos = new ChunkPos(new BlockPos(destX, destY, destZ));
-        ((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getEntityId());
+        ((ServerWorld)this.world).getChunkManager().addTicket(ChunkTicketType.POST_TELEPORT, chunkPos, 0, this.getId());
         this.world.getChunk(chunkPos.x, chunkPos.z);
         this.requestTeleport(destX, destY, destZ);
     }
@@ -2483,24 +2491,24 @@ CommandOutput {
         return false;
     }
 
-    private Stream<Entity> method_31484() {
+    private Stream<Entity> getPassengersStream() {
         return this.passengerList.stream().flatMap(Entity::streamPassengersRecursively);
     }
 
     public Stream<Entity> streamPassengersRecursively() {
-        return Stream.concat(Stream.of(this), this.method_31484());
+        return Stream.concat(Stream.of(this), this.getPassengersStream());
     }
 
-    public Stream<Entity> method_31748() {
-        return Stream.concat(this.passengerList.stream().flatMap(Entity::method_31748), Stream.of(this));
+    public Stream<Entity> streamPassengers() {
+        return Stream.concat(this.passengerList.stream().flatMap(Entity::streamPassengers), Stream.of(this));
     }
 
     public Iterable<Entity> getPassengersDeep() {
-        return () -> this.method_31484().iterator();
+        return () -> this.getPassengersStream().iterator();
     }
 
     public boolean hasPlayerRider() {
-        return this.method_31484().filter(entity -> entity instanceof PlayerEntity).count() == 1L;
+        return this.getPassengersStream().filter(entity -> entity instanceof PlayerEntity).count() == 1L;
     }
 
     /**
@@ -2525,7 +2533,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public boolean hasPassengerDeep(Entity passenger) {
-        return this.method_31484().anyMatch(entity2 -> entity2 == passenger);
+        return this.getPassengersStream().anyMatch(entity2 -> entity2 == passenger);
     }
 
     public boolean isLogicalSideForUpdatingMovement() {
@@ -2781,7 +2789,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public Vec3d method_30951(float f) {
-        return this.method_30950(f).add(0.0, (double)this.standingEyeHeight * 0.7, 0.0);
+        return this.getLerpedPos(f).add(0.0, (double)this.standingEyeHeight * 0.7, 0.0);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -2835,7 +2843,7 @@ CommandOutput {
     }
 
     @Override
-    public boolean method_31746() {
+    public boolean shouldSave() {
         if (this.removalReason != null && !this.removalReason.shouldSave()) {
             return false;
         }

@@ -33,19 +33,19 @@ extends Sensor<LivingEntity> {
         return ImmutableSet.of(MemoryModuleType.MOBS);
     }
 
-    public static void senseIronGolem(LivingEntity livingEntity2) {
-        Optional<List<LivingEntity>> optional = livingEntity2.getBrain().getOptionalMemory(MemoryModuleType.MOBS);
+    public static void senseIronGolem(LivingEntity entity) {
+        Optional<List<LivingEntity>> optional = entity.getBrain().getOptionalMemory(MemoryModuleType.MOBS);
         if (!optional.isPresent()) {
             return;
         }
         boolean bl = optional.get().stream().anyMatch(livingEntity -> livingEntity.getType().equals(EntityType.IRON_GOLEM));
         if (bl) {
-            GolemLastSeenSensor.method_30233(livingEntity2);
+            GolemLastSeenSensor.rememberIronGolem(entity);
         }
     }
 
-    public static void method_30233(LivingEntity livingEntity) {
-        livingEntity.getBrain().remember(MemoryModuleType.GOLEM_DETECTED_RECENTLY, true, 600L);
+    public static void rememberIronGolem(LivingEntity entity) {
+        entity.getBrain().remember(MemoryModuleType.GOLEM_DETECTED_RECENTLY, true, 600L);
     }
 }
 

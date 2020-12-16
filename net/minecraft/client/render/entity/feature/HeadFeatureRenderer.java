@@ -96,7 +96,7 @@ extends FeatureRenderer<T, M> {
             SkullBlock.SkullType skullType = ((AbstractSkullBlock)((BlockItem)item).getBlock()).getSkullType();
             SkullBlockEntityModel skullBlockEntityModel = this.headModels.get(skullType);
             RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
-            SkullBlockEntityRenderer.method_32161(null, 180.0f, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
+            SkullBlockEntityRenderer.renderSkull(null, 180.0f, f, matrixStack, vertexConsumerProvider, i, skullBlockEntityModel, renderLayer);
         } else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
             HeadFeatureRenderer.translate(matrixStack, bl);
             MinecraftClient.getInstance().getHeldItemRenderer().renderItem((LivingEntity)livingEntity, itemStack, ModelTransformation.Mode.HEAD, false, matrixStack, vertexConsumerProvider, i);

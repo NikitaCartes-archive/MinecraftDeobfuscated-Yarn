@@ -37,7 +37,7 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.class_5629;
-import net.minecraft.client.options.ChatVisibility;
+import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -112,11 +112,11 @@ import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -548,7 +548,7 @@ ServerPlayPacketListener {
         this.player.getInventory().swapSlotWithHotbar(packet.getSlot());
         this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.player.getInventory().selectedSlot, this.player.getInventory().getStack(this.player.getInventory().selectedSlot)));
         this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, packet.getSlot(), this.player.getInventory().getStack(packet.getSlot())));
-        this.player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(this.player.getInventory().selectedSlot));
+        this.player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.player.getInventory().selectedSlot));
     }
 
     @Override
@@ -589,7 +589,7 @@ ServerPlayPacketListener {
             structureBlockBlockEntity.setMirror(packet.getMirror());
             structureBlockBlockEntity.setRotation(packet.getRotation());
             structureBlockBlockEntity.setMetadata(packet.getMetadata());
-            structureBlockBlockEntity.setIgnoreEntities(packet.getIgnoreEntities());
+            structureBlockBlockEntity.setIgnoreEntities(packet.shouldIgnoreEntities());
             structureBlockBlockEntity.setShowAir(packet.shouldShowAir());
             structureBlockBlockEntity.setShowBoundingBox(packet.shouldShowBoundingBox());
             structureBlockBlockEntity.setIntegrity(packet.getIntegrity());

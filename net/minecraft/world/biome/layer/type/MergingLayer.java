@@ -15,9 +15,9 @@ extends CoordinateTransformer {
         return () -> {
             Object layerSampler = layer1.make();
             Object layerSampler2 = layer2.make();
-            return context.createSampler((i, j) -> {
-                context.initSeed(i, j);
-                return this.sample(context, (LayerSampler)layerSampler, (LayerSampler)layerSampler2, i, j);
+            return context.createSampler((x, z) -> {
+                context.initSeed(x, z);
+                return this.sample(context, (LayerSampler)layerSampler, (LayerSampler)layerSampler2, x, z);
             }, layerSampler, layerSampler2);
         };
     }

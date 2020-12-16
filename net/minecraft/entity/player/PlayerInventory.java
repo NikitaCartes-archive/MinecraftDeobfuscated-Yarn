@@ -89,11 +89,11 @@ Nameable {
         }
     }
 
-    public void swapSlotWithHotbar(int hotbarSlot) {
+    public void swapSlotWithHotbar(int slot) {
         this.selectedSlot = this.getSwappableHotbarSlot();
         ItemStack itemStack = this.main.get(this.selectedSlot);
-        this.main.set(this.selectedSlot, this.main.get(hotbarSlot));
-        this.main.set(hotbarSlot, itemStack);
+        this.main.set(this.selectedSlot, this.main.get(slot));
+        this.main.set(slot, itemStack);
     }
 
     public static boolean isValidHotbarIndex(int slot) {
@@ -109,10 +109,10 @@ Nameable {
         return -1;
     }
 
-    public int method_7371(ItemStack itemStack) {
+    public int indexOf(ItemStack stack) {
         for (int i = 0; i < this.main.size(); ++i) {
-            ItemStack itemStack2 = this.main.get(i);
-            if (this.main.get(i).isEmpty() || !ItemStack.canCombine(itemStack, this.main.get(i)) || this.main.get(i).isDamaged() || itemStack2.hasEnchantments() || itemStack2.hasCustomName()) continue;
+            ItemStack itemStack = this.main.get(i);
+            if (this.main.get(i).isEmpty() || !ItemStack.canCombine(stack, this.main.get(i)) || this.main.get(i).isDamaged() || itemStack.hasEnchantments() || itemStack.hasCustomName()) continue;
             return i;
         }
         return -1;

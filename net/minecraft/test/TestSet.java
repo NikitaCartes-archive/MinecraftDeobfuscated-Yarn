@@ -40,6 +40,10 @@ public class TestSet {
             }
 
             @Override
+            public void method_33317(GameTest gameTest) {
+            }
+
+            @Override
             public void onFailed(GameTest test) {
                 consumer.accept(test);
             }

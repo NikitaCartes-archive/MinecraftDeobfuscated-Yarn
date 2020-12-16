@@ -130,7 +130,7 @@ BiomeAccess.Storage {
 
     @Deprecated
     default public float getBrightness(BlockPos pos) {
-        return this.getDimension().method_28516(this.getLightLevel(pos));
+        return this.getDimension().getBrightness(this.getLightLevel(pos));
     }
 
     default public int getStrongRedstonePower(BlockPos pos, Direction direction) {

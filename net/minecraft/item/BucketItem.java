@@ -87,18 +87,18 @@ implements FluidModificationItem {
                     Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, itemStack);
                 }
                 user.incrementStat(Stats.USED.getOrCreateStat(this));
-                return TypedActionResult.success(this.getEmptiedStack(itemStack, user), world.isClient());
+                return TypedActionResult.success(BucketItem.getEmptiedStack(itemStack, user), world.isClient());
             }
             return TypedActionResult.fail(itemStack);
         }
         return TypedActionResult.pass(itemStack);
     }
 
-    protected ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
-        if (!player.getAbilities().creativeMode) {
+    public static ItemStack getEmptiedStack(ItemStack itemStack, PlayerEntity playerEntity) {
+        if (!playerEntity.getAbilities().creativeMode) {
             return new ItemStack(Items.BUCKET);
         }
-        return stack;
+        return itemStack;
     }
 
     @Override

@@ -15,7 +15,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
     @Override
     public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
         int[] is = new int[1];
-        if (this.method_15841(is, center) || this.method_15840(is, n, e, s, w, center, 38, 37) || this.method_15840(is, n, e, s, w, center, 39, 37) || this.method_15840(is, n, e, s, w, center, 32, 5)) {
+        if (this.isMountain(is, center) || this.areEdgesSimilar(is, n, e, s, w, center, 38, 37) || this.areEdgesSimilar(is, n, e, s, w, center, 39, 37) || this.areEdgesSimilar(is, n, e, s, w, center, 32, 5)) {
             return is[0];
         }
         if (center == 2 && (n == 12 || e == 12 || w == 12 || s == 12)) {
@@ -32,19 +32,19 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
         return center;
     }
 
-    private boolean method_15841(int[] is, int i) {
-        if (!BiomeLayers.areSimilar(i, 3)) {
+    private boolean isMountain(int[] ids, int id) {
+        if (!BiomeLayers.areSimilar(id, 3)) {
             return false;
         }
-        is[0] = i;
+        ids[0] = id;
         return true;
     }
 
-    private boolean method_15840(int[] is, int i, int j, int k, int l, int m, int n, int o) {
-        if (m != n) {
+    private boolean areEdgesSimilar(int[] ids, int n, int e, int s, int w, int center, int id1, int id2) {
+        if (center != id1) {
             return false;
         }
-        is[0] = BiomeLayers.areSimilar(i, n) && BiomeLayers.areSimilar(j, n) && BiomeLayers.areSimilar(l, n) && BiomeLayers.areSimilar(k, n) ? m : o;
+        ids[0] = BiomeLayers.areSimilar(n, id1) && BiomeLayers.areSimilar(e, id1) && BiomeLayers.areSimilar(w, id1) && BiomeLayers.areSimilar(s, id1) ? center : id2;
         return true;
     }
 }

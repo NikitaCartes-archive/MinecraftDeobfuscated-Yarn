@@ -30,6 +30,7 @@ import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class BlockPredicateArgumentType
@@ -50,10 +51,7 @@ implements ArgumentType<BlockPredicate> {
         }
         Identifier identifier = blockArgumentParser.getTagId();
         return tagManager -> {
-            Tag<Block> tag = tagManager.getBlocks().getTag(identifier);
-            if (tag == null) {
-                throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
-            }
+            Tag<Block> tag = tagManager.getTag(Registry.BLOCK_KEY, identifier, identifier -> UNKNOWN_TAG_EXCEPTION.create(identifier.toString()));
             return new TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
         };
     }

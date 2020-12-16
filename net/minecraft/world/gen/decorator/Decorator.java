@@ -35,8 +35,6 @@ import net.minecraft.world.gen.decorator.EndGatewayDecorator;
 import net.minecraft.world.gen.decorator.EndIslandDecorator;
 import net.minecraft.world.gen.decorator.FireDecorator;
 import net.minecraft.world.gen.decorator.GlowstoneDecorator;
-import net.minecraft.world.gen.decorator.HeightmapSpreadDoubleDecorator;
-import net.minecraft.world.gen.decorator.HeightmapWorldSurfaceDecorator;
 import net.minecraft.world.gen.decorator.IcebergDecorator;
 import net.minecraft.world.gen.decorator.LavaLakeDecorator;
 import net.minecraft.world.gen.decorator.MagmaDecorator;
@@ -48,9 +46,11 @@ import net.minecraft.world.gen.decorator.RangeDecorator;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeVeryBiasedDecorator;
 import net.minecraft.world.gen.decorator.Spread32AboveDecorator;
+import net.minecraft.world.gen.decorator.SpreadDoubleHeightmapDecorator;
 import net.minecraft.world.gen.decorator.SquareDecorator;
 import net.minecraft.world.gen.decorator.TopSolidHeightmapDecorator;
 import net.minecraft.world.gen.decorator.WaterLakeDecorator;
+import net.minecraft.world.gen.decorator.WorldSurfaceHeightmapDecorator;
 
 public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<NopeDecoratorConfig> NOPE = Decorator.register("nope", new NopeDecorator(NopeDecoratorConfig.CODEC));
@@ -61,9 +61,9 @@ public abstract class Decorator<DC extends DecoratorConfig> {
     public static final Decorator<CountExtraDecoratorConfig> COUNT_EXTRA = Decorator.register("count_extra", new CountExtraDecorator(CountExtraDecoratorConfig.CODEC));
     public static final Decorator<NopeDecoratorConfig> SQUARE = Decorator.register("square", new SquareDecorator(NopeDecoratorConfig.CODEC));
     public static final Decorator<NopeDecoratorConfig> HEIGHTMAP = Decorator.register("heightmap", new MotionBlockingHeightmapDecorator<NopeDecoratorConfig>(NopeDecoratorConfig.CODEC));
-    public static final Decorator<NopeDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = Decorator.register("heightmap_spread_double", new HeightmapSpreadDoubleDecorator<NopeDecoratorConfig>(NopeDecoratorConfig.CODEC));
+    public static final Decorator<NopeDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = Decorator.register("heightmap_spread_double", new SpreadDoubleHeightmapDecorator<NopeDecoratorConfig>(NopeDecoratorConfig.CODEC));
     public static final Decorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.register("top_solid_heightmap", new TopSolidHeightmapDecorator(NopeDecoratorConfig.CODEC));
-    public static final Decorator<NopeDecoratorConfig> HEIGHTMAP_WORLD_SURFACE = Decorator.register("heightmap_world_surface", new HeightmapWorldSurfaceDecorator(NopeDecoratorConfig.CODEC));
+    public static final Decorator<NopeDecoratorConfig> HEIGHTMAP_WORLD_SURFACE = Decorator.register("heightmap_world_surface", new WorldSurfaceHeightmapDecorator(NopeDecoratorConfig.CODEC));
     public static final Decorator<RangeDecoratorConfig> RANGE = Decorator.register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));
     public static final Decorator<RangeDecoratorConfig> RANGE_BIASED = Decorator.register("range_biased", new RangeBiasedDecorator(RangeDecoratorConfig.CODEC));
     public static final Decorator<RangeDecoratorConfig> RANGE_VERY_BIASED = Decorator.register("range_very_biased", new RangeVeryBiasedDecorator(RangeDecoratorConfig.CODEC));

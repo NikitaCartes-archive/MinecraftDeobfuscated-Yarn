@@ -25,42 +25,42 @@ extends Feature<DefaultFeatureConfig> {
 
     @Override
     public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig) {
-        return TwistingVinesFeature.method_26265(structureWorldAccess, random, blockPos, 8, 4, 8);
+        return TwistingVinesFeature.tryGenerateVines(structureWorldAccess, random, blockPos, 8, 4, 8);
     }
 
-    public static boolean method_26265(WorldAccess worldAccess, Random random, BlockPos blockPos, int i, int j, int k) {
-        if (TwistingVinesFeature.isNotSuitable(worldAccess, blockPos)) {
+    public static boolean tryGenerateVines(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {
+        if (TwistingVinesFeature.isNotSuitable(world, pos)) {
             return false;
         }
-        TwistingVinesFeature.generateVinesInArea(worldAccess, random, blockPos, i, j, k);
+        TwistingVinesFeature.generateVinesInArea(world, random, pos, horizontalSpread, verticalSpread, length);
         return true;
     }
 
-    private static void generateVinesInArea(WorldAccess worldAccess, Random random, BlockPos blockPos, int i, int j, int k) {
+    private static void generateVinesInArea(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int l = 0; l < i * i; ++l) {
-            mutable.set(blockPos).move(MathHelper.nextInt(random, -i, i), MathHelper.nextInt(random, -j, j), MathHelper.nextInt(random, -i, i));
-            if (!TwistingVinesFeature.method_27220(worldAccess, mutable) || TwistingVinesFeature.isNotSuitable(worldAccess, mutable)) continue;
-            int m = MathHelper.nextInt(random, 1, k);
+        for (int i = 0; i < horizontalSpread * horizontalSpread; ++i) {
+            mutable.set(pos).move(MathHelper.nextInt(random, -horizontalSpread, horizontalSpread), MathHelper.nextInt(random, -verticalSpread, verticalSpread), MathHelper.nextInt(random, -horizontalSpread, horizontalSpread));
+            if (!TwistingVinesFeature.canGenerate(world, mutable) || TwistingVinesFeature.isNotSuitable(world, mutable)) continue;
+            int j = MathHelper.nextInt(random, 1, length);
             if (random.nextInt(6) == 0) {
-                m *= 2;
+                j *= 2;
             }
             if (random.nextInt(5) == 0) {
-                m = 1;
+                j = 1;
             }
-            int n = 17;
-            int o = 25;
-            TwistingVinesFeature.generateVineColumn(worldAccess, random, mutable, m, 17, 25);
+            int k = 17;
+            int l = 25;
+            TwistingVinesFeature.generateVineColumn(world, random, mutable, j, 17, 25);
         }
     }
 
-    private static boolean method_27220(WorldAccess worldAccess, BlockPos.Mutable mutable) {
+    private static boolean canGenerate(WorldAccess world, BlockPos.Mutable pos) {
         do {
-            mutable.move(0, -1, 0);
-            if (!worldAccess.isOutOfHeightLimit(mutable)) continue;
+            pos.move(0, -1, 0);
+            if (!world.isOutOfHeightLimit(pos)) continue;
             return false;
-        } while (worldAccess.getBlockState(mutable).isAir());
-        mutable.move(0, 1, 0);
+        } while (world.getBlockState(pos).isAir());
+        pos.move(0, 1, 0);
         return true;
     }
 
@@ -77,11 +77,11 @@ extends Feature<DefaultFeatureConfig> {
         }
     }
 
-    private static boolean isNotSuitable(WorldAccess worldAccess, BlockPos blockPos) {
-        if (!worldAccess.isAir(blockPos)) {
+    private static boolean isNotSuitable(WorldAccess world, BlockPos pos) {
+        if (!world.isAir(pos)) {
             return true;
         }
-        BlockState blockState = worldAccess.getBlockState(blockPos.down());
+        BlockState blockState = world.getBlockState(pos.down());
         return !blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.WARPED_NYLIUM) && !blockState.isOf(Blocks.WARPED_WART_BLOCK);
     }
 }

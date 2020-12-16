@@ -24,17 +24,17 @@ extends Item {
     }
 
     @Override
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity entity) {
-        if (entity instanceof ServerPlayerEntity) {
-            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity livingEntity) {
+        if (livingEntity instanceof ServerPlayerEntity) {
+            ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
             Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
             serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
         }
-        if (entity instanceof PlayerEntity && !((PlayerEntity)entity).getAbilities().creativeMode) {
+        if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).getAbilities().creativeMode) {
             stack.decrement(1);
         }
         if (!world.isClient) {
-            entity.clearStatusEffects();
+            livingEntity.clearStatusEffects();
         }
         if (stack.isEmpty()) {
             return new ItemStack(Items.BUCKET);

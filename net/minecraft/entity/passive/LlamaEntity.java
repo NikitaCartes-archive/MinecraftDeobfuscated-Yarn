@@ -166,7 +166,7 @@ implements RangedAttackMob {
         float f = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
         float g = MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.3f;
-        passenger.updatePosition(this.getX() + (double)(0.3f * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3f * f));
+        passenger.setPosition(this.getX() + (double)(0.3f * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3f * f));
     }
 
     @Override

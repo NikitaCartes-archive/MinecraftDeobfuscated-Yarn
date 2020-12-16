@@ -28,7 +28,7 @@ extends ProjectileEntity {
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> type, double x, double y, double z, World world) {
         this(type, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
     }
 
     protected ThrownEntity(EntityType<? extends ThrownEntity> type, LivingEntity owner, World world) {
@@ -89,7 +89,7 @@ extends ProjectileEntity {
             Vec3d vec3d2 = this.getVelocity();
             this.setVelocity(vec3d2.x, vec3d2.y - (double)this.getGravity(), vec3d2.z);
         }
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     protected float getGravity() {

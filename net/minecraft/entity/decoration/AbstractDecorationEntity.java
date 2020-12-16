@@ -87,7 +87,7 @@ extends Entity {
     @Override
     public void tick() {
         if (!this.world.isClient) {
-            this.method_31473();
+            this.destroyInVoid();
             if (this.obstructionCheckCounter++ == 100) {
                 this.obstructionCheckCounter = 0;
                 if (!this.isRemoved() && !this.canStayAttached()) {
@@ -206,7 +206,7 @@ extends Entity {
     }
 
     @Override
-    public void updatePosition(double x, double y, double z) {
+    public void setPosition(double x, double y, double z) {
         this.attachmentPos = new BlockPos(x, y, z);
         this.updateAttachmentPosition();
         this.velocityDirty = true;

@@ -21,5 +21,9 @@ implements TestCompletionListener {
             LOGGER.warn("(optional) {} failed. {}", (Object)gameTest.getStructurePath(), (Object)Util.getInnermostMessage(gameTest.getThrowable()));
         }
     }
+
+    @Override
+    public void method_33322(GameTest gameTest) {
+    }
 }
 

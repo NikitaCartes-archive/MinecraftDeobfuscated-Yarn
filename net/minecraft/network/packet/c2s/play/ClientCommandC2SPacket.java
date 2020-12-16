@@ -27,7 +27,7 @@ implements Packet<ServerPlayPacketListener> {
 
     @Environment(value=EnvType.CLIENT)
     public ClientCommandC2SPacket(Entity entity, Mode mode, int mountJumpHeight) {
-        this.entityId = entity.getEntityId();
+        this.entityId = entity.getId();
         this.mode = mode;
         this.mountJumpHeight = mountJumpHeight;
     }

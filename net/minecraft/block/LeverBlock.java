@@ -91,18 +91,18 @@ extends WallMountedBlock {
             }
             return ActionResult.SUCCESS;
         }
-        BlockState blockState = this.method_21846(state, world, pos);
+        BlockState blockState = this.togglePower(state, world, pos);
         float f = blockState.get(POWERED) != false ? 0.6f : 0.5f;
         world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3f, f);
         world.emitGameEvent((Entity)player, blockState.get(POWERED) != false ? GameEvent.BLOCK_SWITCH : GameEvent.BLOCK_UNSWITCH, pos);
         return ActionResult.CONSUME;
     }
 
-    public BlockState method_21846(BlockState blockState, World world, BlockPos blockPos) {
-        blockState = (BlockState)blockState.cycle(POWERED);
-        world.setBlockState(blockPos, blockState, 3);
-        this.updateNeighbors(blockState, world, blockPos);
-        return blockState;
+    public BlockState togglePower(BlockState state, World world, BlockPos pos) {
+        state = (BlockState)state.cycle(POWERED);
+        world.setBlockState(pos, state, 3);
+        this.updateNeighbors(state, world, pos);
+        return state;
     }
 
     private static void spawnParticles(BlockState state, WorldAccess world, BlockPos pos, float alpha) {

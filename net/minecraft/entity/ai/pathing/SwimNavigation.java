@@ -3,11 +3,11 @@
  */
 package net.minecraft.entity.ai.pathing;
 
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeNavigator;
 import net.minecraft.entity.ai.pathing.WaterPathNodeMaker;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.HitResult;
@@ -28,7 +28,7 @@ extends EntityNavigation {
 
     @Override
     protected PathNodeNavigator createPathNodeNavigator(int range) {
-        this.canJumpOutOfWater = this.entity instanceof DolphinEntity;
+        this.canJumpOutOfWater = this.entity.getType() == EntityType.DOLPHIN || this.entity.getType() == EntityType.AXOLOTL;
         this.nodeMaker = new WaterPathNodeMaker(this.canJumpOutOfWater);
         return new PathNodeNavigator(this.nodeMaker, range);
     }

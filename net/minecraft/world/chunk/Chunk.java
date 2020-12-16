@@ -38,7 +38,7 @@ public interface Chunk
 extends BlockView,
 StructureHolder {
     default public class_5713 method_32914(int i) {
-        return class_5713.field_28181;
+        return class_5713.EMPTY;
     }
 
     @Nullable
@@ -113,8 +113,8 @@ StructureHolder {
 
     public ShortList[] getPostProcessingLists();
 
-    default public void markBlockForPostProcessing(short s, int i) {
-        Chunk.getList(this.getPostProcessingLists(), i).add(s);
+    default public void markBlockForPostProcessing(short packedPos, int index) {
+        Chunk.getList(this.getPostProcessingLists(), index).add(packedPos);
     }
 
     default public void addPendingBlockEntityTag(CompoundTag tag) {

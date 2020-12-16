@@ -24,8 +24,8 @@ public class LecternBlockEntityRenderer
 implements BlockEntityRenderer<LecternBlockEntity> {
     private final BookModel book;
 
-    public LecternBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        this.book = new BookModel(context.getLayerModelPart(EntityModelLayers.BOOK));
+    public LecternBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        this.book = new BookModel(ctx.getLayerModelPart(EntityModelLayers.BOOK));
     }
 
     @Override

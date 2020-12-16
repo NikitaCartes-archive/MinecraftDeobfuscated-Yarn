@@ -19,8 +19,8 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.GraphicsMode;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.util.math.MathHelper;
@@ -44,8 +44,8 @@ public class RenderSystem {
     private static int MAX_SUPPORTED_TEXTURE_SIZE;
     private static boolean isInInit;
     private static double lastDrawTime;
-    private static final class_5590 sharedSequential;
-    private static final class_5590 sharedSequentialQuad;
+    private static final IndexBuffer sharedSequential;
+    private static final IndexBuffer sharedSequentialQuad;
 
     public static void initRenderThread() {
         if (renderThread != null || gameThread == Thread.currentThread()) {
@@ -204,8 +204,8 @@ public class RenderSystem {
 
     public static void enableScissor(int i, int j, int k, int l) {
         RenderSystem.assertThread(RenderSystem::isOnGameThreadOrInit);
-        GlStateManager.method_31319();
-        GlStateManager.method_31317(i, j, k, l);
+        GlStateManager.enableScissorTest();
+        GlStateManager.scissor(i, j, k, l);
     }
 
     public static void disableScissor() {
@@ -549,7 +549,7 @@ public class RenderSystem {
 
     public static void drawElements(int mode, int first, int count) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.drawArrays(mode, first, count, 0L);
+        GlStateManager.drawElements(mode, first, count, 0L);
     }
 
     public static void lineWidth(float width) {
@@ -655,7 +655,7 @@ public class RenderSystem {
     }
 
     public static void glBindBuffer(int target, Supplier<Integer> buffer) {
-        GlStateManager.bindBuffers(target, buffer.get());
+        GlStateManager.bindBuffer(target, buffer.get());
     }
 
     public static void glBufferData(int target, ByteBuffer data, int usage) {
@@ -827,11 +827,11 @@ public class RenderSystem {
         gameOptions.graphicsMode = graphicsMode;
     }
 
-    public static class_5590 getSequentialBuffer(VertexFormat.DrawMode drawMode, int i) {
+    public static IndexBuffer getSequentialBuffer(VertexFormat.DrawMode drawMode, int i) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        class_5590 lv = drawMode == VertexFormat.DrawMode.QUADS ? sharedSequentialQuad : sharedSequential;
-        lv.method_31920(i);
-        return lv;
+        IndexBuffer indexBuffer = drawMode == VertexFormat.DrawMode.QUADS ? sharedSequentialQuad : sharedSequential;
+        indexBuffer.grow(i);
+        return indexBuffer;
     }
 
     private static /* synthetic */ void lambda$setupGui3DDiffuseLighting$72(Vec3f vec3f, Vec3f vec3f2) {
@@ -903,7 +903,7 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$glBindBuffer$55(int i, Supplier supplier) {
-        GlStateManager.bindBuffers(i, (Integer)supplier.get());
+        GlStateManager.bindBuffer(i, (Integer)supplier.get());
     }
 
     private static /* synthetic */ void lambda$glMultiTexCoord2f$54(int i, float f, float g) {
@@ -936,7 +936,7 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$drawElements$47(int i, int j, int k) {
-        GlStateManager.drawArrays(i, j, k, 0L);
+        GlStateManager.drawElements(i, j, k, 0L);
     }
 
     private static /* synthetic */ void lambda$color3f$46(float f, float g, float h) {
@@ -1108,8 +1108,8 @@ public class RenderSystem {
     }
 
     private static /* synthetic */ void lambda$enableScissor$4(int i, int j, int k, int l) {
-        GlStateManager.method_31319();
-        GlStateManager.method_31317(i, j, k, l);
+        GlStateManager.enableScissorTest();
+        GlStateManager.scissor(i, j, k, l);
     }
 
     private static /* synthetic */ void lambda$normal3f$3(float f, float g, float h) {
@@ -1127,8 +1127,8 @@ public class RenderSystem {
     static {
         MAX_SUPPORTED_TEXTURE_SIZE = -1;
         lastDrawTime = Double.MIN_VALUE;
-        sharedSequential = new class_5590(1, 1, IntConsumer::accept);
-        sharedSequentialQuad = new class_5590(4, 6, (intConsumer, i) -> {
+        sharedSequential = new IndexBuffer(1, 1, IntConsumer::accept);
+        sharedSequentialQuad = new IndexBuffer(4, 6, (intConsumer, i) -> {
             intConsumer.accept(i + 0);
             intConsumer.accept(i + 1);
             intConsumer.accept(i + 2);
@@ -1139,64 +1139,64 @@ public class RenderSystem {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static final class class_5590 {
+    public static final class IndexBuffer {
         private final int field_27332;
         private final int field_27333;
         private final class_5591 field_27334;
-        private int field_27335;
-        private VertexFormat.IntType field_27336 = VertexFormat.IntType.BYTE;
-        private int field_27337;
+        private int id;
+        private VertexFormat.IntType vertexFormat = VertexFormat.IntType.BYTE;
+        private int size;
 
-        private class_5590(int i, int j, class_5591 arg) {
+        private IndexBuffer(int i, int j, class_5591 arg) {
             this.field_27332 = i;
             this.field_27333 = j;
             this.field_27334 = arg;
         }
 
-        private void method_31920(int i) {
-            if (i <= this.field_27337) {
+        private void grow(int newSize) {
+            if (newSize <= this.size) {
                 return;
             }
-            LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", (Object)this.field_27337, (Object)i);
-            if (this.field_27335 == 0) {
-                this.field_27335 = GlStateManager.genBuffers();
+            LOGGER.debug("Growing IndexBuffer: Old limit {}, new limit {}.", (Object)this.size, (Object)newSize);
+            if (this.id == 0) {
+                this.id = GlStateManager.genBuffers();
             }
-            VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(i);
-            int j = MathHelper.roundUpToMultiple(i * intType.size, 4);
-            GlStateManager.bindBuffers(34963, this.field_27335);
-            GlStateManager.method_31945(34963, j, 35044);
-            ByteBuffer byteBuffer = GlStateManager.method_31946(34963, 35001);
+            VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(newSize);
+            int i = MathHelper.roundUpToMultiple(newSize * intType.size, 4);
+            GlStateManager.bindBuffer(34963, this.id);
+            GlStateManager.bufferData(34963, i, 35044);
+            ByteBuffer byteBuffer = GlStateManager.mapBuffer(34963, 35001);
             if (byteBuffer == null) {
                 throw new RuntimeException("Failed to map GL buffer");
             }
-            this.field_27336 = intType;
+            this.vertexFormat = intType;
             it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.method_31922(byteBuffer);
-            for (int k = 0; k < i; k += this.field_27333) {
-                this.field_27334.accept(intConsumer, k * this.field_27332 / this.field_27333);
+            for (int j = 0; j < newSize; j += this.field_27333) {
+                this.field_27334.accept(intConsumer, j * this.field_27332 / this.field_27333);
             }
-            GlStateManager.method_31947(34963);
-            GlStateManager.bindBuffers(34963, 0);
-            this.field_27337 = i;
+            GlStateManager.unmapBuffer(34963);
+            GlStateManager.bindBuffer(34963, 0);
+            this.size = newSize;
         }
 
-        private it.unimi.dsi.fastutil.ints.IntConsumer method_31922(ByteBuffer byteBuffer) {
-            switch (this.field_27336) {
+        private it.unimi.dsi.fastutil.ints.IntConsumer method_31922(ByteBuffer indicesBuffer) {
+            switch (this.vertexFormat) {
                 case BYTE: {
-                    return i -> byteBuffer.put((byte)i);
+                    return i -> indicesBuffer.put((byte)i);
                 }
                 case SHORT: {
-                    return i -> byteBuffer.putShort((short)i);
+                    return i -> indicesBuffer.putShort((short)i);
                 }
             }
-            return byteBuffer::putInt;
+            return indicesBuffer::putInt;
         }
 
-        public int method_31919() {
-            return this.field_27335;
+        public int getId() {
+            return this.id;
         }
 
-        public VertexFormat.IntType method_31924() {
-            return this.field_27336;
+        public VertexFormat.IntType getVertexFormat() {
+            return this.vertexFormat;
         }
 
         @Environment(value=EnvType.CLIENT)

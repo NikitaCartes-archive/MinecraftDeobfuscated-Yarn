@@ -79,7 +79,7 @@ implements UnbakedModel {
             BakedModel bakedModel = loader.bake(modelVariant.getLocation(), modelVariant);
             builder.add(bakedModel, modelVariant.getWeight());
         }
-        return builder.getFirst();
+        return builder.build();
     }
 
     @Environment(value=EnvType.CLIENT)

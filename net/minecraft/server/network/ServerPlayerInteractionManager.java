@@ -45,9 +45,9 @@ public class ServerPlayerInteractionManager {
     private int failedStartMiningTime;
     private int blockBreakingProgress = -1;
 
-    public ServerPlayerInteractionManager(ServerPlayerEntity serverPlayerEntity) {
-        this.player = serverPlayerEntity;
-        this.world = serverPlayerEntity.getServerWorld();
+    public ServerPlayerInteractionManager(ServerPlayerEntity player) {
+        this.player = player;
+        this.world = player.getServerWorld();
     }
 
     /**
@@ -105,7 +105,7 @@ public class ServerPlayerInteractionManager {
         } else if (this.mining) {
             BlockState blockState = this.world.getBlockState(this.miningPos);
             if (blockState.isAir()) {
-                this.world.setBlockBreakingInfo(this.player.getEntityId(), this.miningPos, -1);
+                this.world.setBlockBreakingInfo(this.player.getId(), this.miningPos, -1);
                 this.blockBreakingProgress = -1;
                 this.mining = false;
             } else {
@@ -119,7 +119,7 @@ public class ServerPlayerInteractionManager {
         float f = state.calcBlockBreakingDelta(this.player, this.player.world, pos) * (float)(j + 1);
         int k = (int)(f * 10.0f);
         if (k != this.blockBreakingProgress) {
-            this.world.setBlockBreakingInfo(this.player.getEntityId(), pos, k);
+            this.world.setBlockBreakingInfo(this.player.getId(), pos, k);
             this.blockBreakingProgress = k;
         }
         return f;
@@ -167,7 +167,7 @@ public class ServerPlayerInteractionManager {
                 this.mining = true;
                 this.miningPos = pos.toImmutable();
                 int i = (int)(h * 10.0f);
-                this.world.setBlockBreakingInfo(this.player.getEntityId(), pos, i);
+                this.world.setBlockBreakingInfo(this.player.getId(), pos, i);
                 this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, true, "actual start of destroying"));
                 this.blockBreakingProgress = i;
             }
@@ -179,7 +179,7 @@ public class ServerPlayerInteractionManager {
                     float k = blockState.calcBlockBreakingDelta(this.player, this.player.world, pos) * (float)(j + 1);
                     if (k >= 0.7f) {
                         this.mining = false;
-                        this.world.setBlockBreakingInfo(this.player.getEntityId(), pos, -1);
+                        this.world.setBlockBreakingInfo(this.player.getId(), pos, -1);
                         this.finishMining(pos, action, "destroyed");
                         return;
                     }
@@ -196,10 +196,10 @@ public class ServerPlayerInteractionManager {
             this.mining = false;
             if (!Objects.equals(this.miningPos, pos)) {
                 LOGGER.warn("Mismatch in destroy block pos: {} {}", (Object)this.miningPos, (Object)pos);
-                this.world.setBlockBreakingInfo(this.player.getEntityId(), this.miningPos, -1);
+                this.world.setBlockBreakingInfo(this.player.getId(), this.miningPos, -1);
                 this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(this.miningPos, this.world.getBlockState(this.miningPos), action, true, "aborted mismatched destroying"));
             }
-            this.world.setBlockBreakingInfo(this.player.getEntityId(), pos, -1);
+            this.world.setBlockBreakingInfo(this.player.getId(), pos, -1);
             this.player.networkHandler.sendPacket(new PlayerActionResponseS2CPacket(pos, this.world.getBlockState(pos), action, true, "aborted destroying"));
         }
     }
@@ -236,7 +236,7 @@ public class ServerPlayerInteractionManager {
         }
         ItemStack itemStack = this.player.getMainHandStack();
         ItemStack itemStack2 = itemStack.copy();
-        boolean bl2 = this.player.isUsingEffectiveTool(blockState);
+        boolean bl2 = this.player.canHarvest(blockState);
         itemStack.postMine(this.world, blockState, pos, this.player);
         if (bl && bl2) {
             block.afterBreak(this.world, this.player, pos, blockState, blockEntity, itemStack2);

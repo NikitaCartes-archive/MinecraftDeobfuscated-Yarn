@@ -27,7 +27,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.registry.SimpleRegistry;
@@ -46,7 +45,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class GeneratorOptions {
-    public static final Codec<GeneratorOptions> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(GeneratorOptions::getSeed), ((MapCodec)Codec.BOOL.fieldOf("generate_features")).orElse(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures), ((MapCodec)Codec.BOOL.fieldOf("bonus_chest")).orElse(false).stable().forGetter(GeneratorOptions::hasBonusChest), ((MapCodec)SimpleRegistry.createRegistryCodec(Registry.DIMENSION_OPTIONS, Lifecycle.stable(), DimensionOptions.CODEC).xmap(DimensionOptions::method_29569, Function.identity()).fieldOf("dimensions")).forGetter(GeneratorOptions::getDimensions), Codec.STRING.optionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)).apply((Applicative<GeneratorOptions, ?>)instance, instance.stable(GeneratorOptions::new))).comapFlatMap(GeneratorOptions::method_28610, Function.identity());
+    public static final Codec<GeneratorOptions> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(GeneratorOptions::getSeed), ((MapCodec)Codec.BOOL.fieldOf("generate_features")).orElse(true).stable().forGetter(GeneratorOptions::shouldGenerateStructures), ((MapCodec)Codec.BOOL.fieldOf("bonus_chest")).orElse(false).stable().forGetter(GeneratorOptions::hasBonusChest), ((MapCodec)SimpleRegistry.createRegistryCodec(Registry.DIMENSION_OPTIONS, Lifecycle.stable(), DimensionOptions.CODEC).xmap(DimensionOptions::method_29569, Function.identity()).fieldOf("dimensions")).forGetter(GeneratorOptions::getDimensions), Codec.STRING.optionalFieldOf("legacy_custom_options").stable().forGetter(generatorOptions -> generatorOptions.legacyCustomOptions)).apply((Applicative<GeneratorOptions, ?>)instance, instance.stable(GeneratorOptions::new))).comapFlatMap(GeneratorOptions::validate, Function.identity());
     private static final Logger LOGGER = LogManager.getLogger();
     private final long seed;
     private final boolean generateStructures;
@@ -54,42 +53,42 @@ public class GeneratorOptions {
     private final SimpleRegistry<DimensionOptions> options;
     private final Optional<String> legacyCustomOptions;
 
-    private DataResult<GeneratorOptions> method_28610() {
+    private DataResult<GeneratorOptions> validate() {
         DimensionOptions dimensionOptions = this.options.get(DimensionOptions.OVERWORLD);
         if (dimensionOptions == null) {
             return DataResult.error("Overworld settings missing");
         }
-        if (this.method_28611()) {
+        if (this.isStable()) {
             return DataResult.success(this, Lifecycle.stable());
         }
         return DataResult.success(this);
     }
 
-    private boolean method_28611() {
-        return DimensionOptions.method_29567(this.seed, this.options);
+    private boolean isStable() {
+        return DimensionOptions.hasDefaultSettings(this.seed, this.options);
     }
 
-    public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> simpleRegistry) {
-        this(seed, generateStructures, bonusChest, simpleRegistry, Optional.empty());
-        DimensionOptions dimensionOptions = simpleRegistry.get(DimensionOptions.OVERWORLD);
+    public GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> options) {
+        this(seed, generateStructures, bonusChest, options, Optional.empty());
+        DimensionOptions dimensionOptions = options.get(DimensionOptions.OVERWORLD);
         if (dimensionOptions == null) {
             throw new IllegalStateException("Overworld settings missing");
         }
     }
 
-    private GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> simpleRegistry, Optional<String> legacyCustomOptions) {
+    private GeneratorOptions(long seed, boolean generateStructures, boolean bonusChest, SimpleRegistry<DimensionOptions> options, Optional<String> legacyCustomOptions) {
         this.seed = seed;
         this.generateStructures = generateStructures;
         this.bonusChest = bonusChest;
-        this.options = simpleRegistry;
+        this.options = options;
         this.legacyCustomOptions = legacyCustomOptions;
     }
 
     public static GeneratorOptions method_31112(DynamicRegistryManager dynamicRegistryManager) {
-        MutableRegistry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
+        Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
         int i = "North Carolina".hashCode();
-        MutableRegistry<DimensionType> registry2 = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
-        MutableRegistry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+        Registry<DimensionType> registry2 = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
+        Registry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
         return new GeneratorOptions(i, true, true, GeneratorOptions.method_28608(registry2, DimensionType.createDefaultDimensionOptions(registry2, registry, registry3, i), GeneratorOptions.createOverworldGenerator(registry, registry3, i)));
     }
 
@@ -196,9 +195,9 @@ public class GeneratorOptions {
                 l = string22.hashCode();
             }
         }
-        MutableRegistry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
-        MutableRegistry<Biome> registry2 = dynamicRegistryManager.get(Registry.BIOME_KEY);
-        MutableRegistry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+        Registry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
+        Registry<Biome> registry2 = dynamicRegistryManager.get(Registry.BIOME_KEY);
+        Registry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
         SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(registry, registry2, registry3, l);
         switch (string5) {
             case "flat": {

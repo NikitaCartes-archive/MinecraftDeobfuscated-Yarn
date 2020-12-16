@@ -122,7 +122,7 @@ implements RecipeGridAligner<Integer> {
     }
 
     protected void fillInputSlot(Slot slot, ItemStack itemStack) {
-        int i = this.inventory.method_7371(itemStack);
+        int i = this.inventory.indexOf(itemStack);
         if (i == -1) {
             return;
         }

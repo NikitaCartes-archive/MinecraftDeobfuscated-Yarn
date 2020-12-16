@@ -288,7 +288,7 @@ extends DrawableHelper {
     private String getServerWorldDebugString() {
         ServerWorld serverWorld = this.getServerWorld();
         if (serverWorld != null) {
-            return serverWorld.method_31419();
+            return serverWorld.getChunkSourceDebugString();
         }
         return null;
     }
@@ -338,7 +338,7 @@ extends DrawableHelper {
             for (Map.Entry entry : blockState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
             }
-            for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getBlocks().getTagsFor(blockState.getBlock())) {
+            for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.BLOCK_KEY).getTagsFor(blockState.getBlock())) {
                 list.add("#" + identifier);
             }
         }
@@ -351,7 +351,7 @@ extends DrawableHelper {
             for (Map.Entry entry : fluidState.getEntries().entrySet()) {
                 list.add(this.propertyToString(entry));
             }
-            for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getFluids().getTagsFor(fluidState.getFluid())) {
+            for (Identifier identifier : this.client.getNetworkHandler().getTagManager().getOrCreateTagGroup(Registry.FLUID_KEY).getTagsFor(fluidState.getFluid())) {
                 list.add("#" + identifier);
             }
         }

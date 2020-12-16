@@ -219,7 +219,7 @@ public class Texture {
         return new Texture().put(TextureKey.PARTICLE, Texture.getSubId(frontTopSideBlock, "_front")).put(TextureKey.DOWN, Texture.getId(downBlock)).put(TextureKey.UP, Texture.getSubId(frontTopSideBlock, "_top")).put(TextureKey.NORTH, Texture.getSubId(frontTopSideBlock, "_front")).put(TextureKey.SOUTH, Texture.getSubId(frontTopSideBlock, "_front")).put(TextureKey.EAST, Texture.getSubId(frontTopSideBlock, "_side")).put(TextureKey.WEST, Texture.getSubId(frontTopSideBlock, "_side"));
     }
 
-    public static Texture method_27167(Block block) {
+    public static Texture campfire(Block block) {
         return new Texture().put(TextureKey.LIT_LOG, Texture.getSubId(block, "_log_lit")).put(TextureKey.FIRE, Texture.getSubId(block, "_fire"));
     }
 

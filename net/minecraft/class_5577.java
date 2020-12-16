@@ -5,19 +5,19 @@ package net.minecraft;
 
 import java.util.UUID;
 import java.util.function.Consumer;
-import net.minecraft.class_5568;
 import net.minecraft.class_5575;
+import net.minecraft.entity.EntityLike;
 import net.minecraft.util.math.Box;
 import org.jetbrains.annotations.Nullable;
 
-public interface class_5577<T extends class_5568> {
+public interface class_5577<T extends EntityLike> {
     @Nullable
-    public T method_31804(int var1);
+    public T getById(int var1);
 
     @Nullable
-    public T method_31808(UUID var1);
+    public T getByUuid(UUID var1);
 
-    public Iterable<T> method_31803();
+    public Iterable<T> iterate();
 
     public <U extends T> void method_31806(class_5575<T, U> var1, Consumer<U> var2);
 

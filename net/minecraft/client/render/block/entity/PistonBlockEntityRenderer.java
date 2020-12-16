@@ -29,8 +29,8 @@ public class PistonBlockEntityRenderer
 implements BlockEntityRenderer<PistonBlockEntity> {
     private final BlockRenderManager manager;
 
-    public PistonBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        this.manager = context.getRenderManager();
+    public PistonBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        this.manager = ctx.getRenderManager();
     }
 
     @Override
@@ -49,28 +49,28 @@ implements BlockEntityRenderer<PistonBlockEntity> {
         matrixStack.translate(pistonBlockEntity.getRenderOffsetX(f), pistonBlockEntity.getRenderOffsetY(f), pistonBlockEntity.getRenderOffsetZ(f));
         if (blockState.isOf(Blocks.PISTON_HEAD) && pistonBlockEntity.getProgress(f) <= 4.0f) {
             blockState = (BlockState)blockState.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(f) <= 0.5f);
-            this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
+            this.renderModel(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
         } else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
             PistonType pistonType = blockState.isOf(Blocks.STICKY_PISTON) ? PistonType.STICKY : PistonType.DEFAULT;
             BlockState blockState2 = (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.TYPE, pistonType)).with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
             blockState2 = (BlockState)blockState2.with(PistonHeadBlock.SHORT, pistonBlockEntity.getProgress(f) >= 0.5f);
-            this.method_3575(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);
+            this.renderModel(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);
             BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.getMovementDirection());
             matrixStack.pop();
             matrixStack.push();
             blockState = (BlockState)blockState.with(PistonBlock.EXTENDED, true);
-            this.method_3575(blockPos2, blockState, matrixStack, vertexConsumerProvider, world, true, j);
+            this.renderModel(blockPos2, blockState, matrixStack, vertexConsumerProvider, world, true, j);
         } else {
-            this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
+            this.renderModel(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
         }
         matrixStack.pop();
         BlockModelRenderer.disableBrightnessCache();
     }
 
-    private void method_3575(BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i) {
-        RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(blockState);
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
-        this.manager.getModelRenderer().render(world, this.manager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, new Random(), blockState.getRenderingSeed(blockPos), i);
+    private void renderModel(BlockPos pos, BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, World world, boolean cull, int overlay) {
+        RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(state);
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(renderLayer);
+        this.manager.getModelRenderer().render(world, this.manager.getModel(state), state, pos, matrices, vertexConsumer, cull, new Random(), state.getRenderingSeed(pos), overlay);
     }
 }
 

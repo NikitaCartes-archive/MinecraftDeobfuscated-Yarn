@@ -24,7 +24,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public EntityVelocityUpdateS2CPacket(Entity entity) {
-        this(entity.getEntityId(), entity.getVelocity());
+        this(entity.getId(), entity.getVelocity());
     }
 
     public EntityVelocityUpdateS2CPacket(int id, Vec3d velocity) {

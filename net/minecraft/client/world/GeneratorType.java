@@ -18,7 +18,6 @@ import net.minecraft.client.gui.screen.world.CreateWorldScreen;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
@@ -74,9 +73,9 @@ public abstract class GeneratorType {
 
         @Override
         public GeneratorOptions createDefaultOptions(DynamicRegistryManager.Impl registryManager, long seed, boolean generateStructures, boolean bonusChest) {
-            MutableRegistry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
-            MutableRegistry<DimensionType> registry2 = registryManager.get(Registry.DIMENSION_TYPE_KEY);
-            MutableRegistry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+            Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
+            Registry<DimensionType> registry2 = registryManager.get(Registry.DIMENSION_TYPE_KEY);
+            Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
             return new GeneratorOptions(seed, generateStructures, bonusChest, GeneratorOptions.method_29962(DimensionType.createDefaultDimensionOptions(registry2, registry, registry3, seed), () -> registry2.getOrThrow(DimensionType.OVERWORLD_CAVES_REGISTRY_KEY), this.getChunkGenerator(registry, registry3, seed)));
         }
 
@@ -112,8 +111,8 @@ public abstract class GeneratorType {
 
     private static GeneratorOptions createFixedBiomeOptions(DynamicRegistryManager registryManager, GeneratorOptions generatorOptions, GeneratorType type, Biome biome) {
         FixedBiomeSource biomeSource = new FixedBiomeSource(biome);
-        MutableRegistry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
-        MutableRegistry<ChunkGeneratorSettings> registry2 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+        Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
+        Registry<ChunkGeneratorSettings> registry2 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
         Supplier<ChunkGeneratorSettings> supplier = type == SINGLE_BIOME_CAVES ? () -> registry2.getOrThrow(ChunkGeneratorSettings.CAVES) : (type == SINGLE_BIOME_FLOATING_ISLANDS ? () -> registry2.getOrThrow(ChunkGeneratorSettings.FLOATING_ISLANDS) : () -> registry2.getOrThrow(ChunkGeneratorSettings.OVERWORLD));
         return new GeneratorOptions(generatorOptions.getSeed(), generatorOptions.shouldGenerateStructures(), generatorOptions.hasBonusChest(), GeneratorOptions.method_28608(registry, generatorOptions.getDimensions(), new NoiseChunkGenerator(biomeSource, generatorOptions.getSeed(), supplier)));
     }
@@ -138,9 +137,9 @@ public abstract class GeneratorType {
     }
 
     public GeneratorOptions createDefaultOptions(DynamicRegistryManager.Impl registryManager, long seed, boolean generateStructures, boolean bonusChest) {
-        MutableRegistry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
-        MutableRegistry<DimensionType> registry2 = registryManager.get(Registry.DIMENSION_TYPE_KEY);
-        MutableRegistry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+        Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
+        Registry<DimensionType> registry2 = registryManager.get(Registry.DIMENSION_TYPE_KEY);
+        Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
         return new GeneratorOptions(seed, generateStructures, bonusChest, GeneratorOptions.method_28608(registry2, DimensionType.createDefaultDimensionOptions(registry2, registry, registry3, seed), this.getChunkGenerator(registry, registry3, seed)));
     }
 

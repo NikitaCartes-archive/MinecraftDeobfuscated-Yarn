@@ -48,7 +48,7 @@ implements RealmsSerializable {
         this.operator = operator;
     }
 
-    public boolean getAccepted() {
+    public boolean isAccepted() {
         return this.accepted;
     }
 
@@ -56,7 +56,7 @@ implements RealmsSerializable {
         this.accepted = accepted;
     }
 
-    public boolean getOnline() {
+    public boolean isOnline() {
         return this.online;
     }
 

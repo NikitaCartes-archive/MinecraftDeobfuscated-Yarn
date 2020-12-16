@@ -26,8 +26,8 @@ implements BlockEntityRenderer<EnchantingTableBlockEntity> {
     public static final SpriteIdentifier BOOK_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/enchanting_table_book"));
     private final BookModel book;
 
-    public EnchantingTableBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        this.book = new BookModel(context.getLayerModelPart(EntityModelLayers.BOOK));
+    public EnchantingTableBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        this.book = new BookModel(ctx.getLayerModelPart(EntityModelLayers.BOOK));
     }
 
     @Override

@@ -29,7 +29,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -46,7 +45,7 @@ public class StructurePoolBasedGenerator {
 
     public static void method_30419(DynamicRegistryManager dynamicRegistryManager, StructurePoolFeatureConfig structurePoolFeatureConfig, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<? super PoolStructurePiece> list, Random random, boolean bl, boolean bl2) {
         StructureFeature.method_28664();
-        MutableRegistry<StructurePool> mutableRegistry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
+        Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
         BlockRotation blockRotation = BlockRotation.random(random);
         StructurePool structurePool = structurePoolFeatureConfig.getStartPool().get();
         StructurePoolElement structurePoolElement = structurePool.getRandomElement(random);
@@ -63,7 +62,7 @@ public class StructurePoolBasedGenerator {
         }
         int m = 80;
         Box box = new Box(i - 80, k - 80, j - 80, i + 80 + 1, k + 80 + 1, j + 80 + 1);
-        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(mutableRegistry, structurePoolFeatureConfig.getSize(), pieceFactory, chunkGenerator, structureManager, list, random);
+        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(registry, structurePoolFeatureConfig.getSize(), pieceFactory, chunkGenerator, structureManager, list, random);
         structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(poolStructurePiece, new MutableObject<VoxelShape>(VoxelShapes.combineAndSimplify(VoxelShapes.cuboid(box), VoxelShapes.cuboid(Box.from(blockBox)), BooleanBiFunction.ONLY_FIRST)), k + 80, 0));
         while (!structurePoolGenerator.structurePieces.isEmpty()) {
             ShapedPoolStructurePiece shapedPoolStructurePiece = (ShapedPoolStructurePiece)structurePoolGenerator.structurePieces.removeFirst();
@@ -72,8 +71,8 @@ public class StructurePoolBasedGenerator {
     }
 
     public static void method_27230(DynamicRegistryManager dynamicRegistryManager, PoolStructurePiece poolStructurePiece, int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
-        MutableRegistry<StructurePool> mutableRegistry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
-        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(mutableRegistry, i, pieceFactory, chunkGenerator, structureManager, list, random);
+        Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
+        StructurePoolGenerator structurePoolGenerator = new StructurePoolGenerator(registry, i, pieceFactory, chunkGenerator, structureManager, list, random);
         structurePoolGenerator.structurePieces.addLast(new ShapedPoolStructurePiece(poolStructurePiece, new MutableObject<VoxelShape>(VoxelShapes.UNBOUNDED), 0, 0));
         while (!structurePoolGenerator.structurePieces.isEmpty()) {
             ShapedPoolStructurePiece shapedPoolStructurePiece = (ShapedPoolStructurePiece)structurePoolGenerator.structurePieces.removeFirst();

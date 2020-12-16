@@ -55,7 +55,7 @@ implements FlyingItemEntity {
     public FireworkRocketEntity(World world, double x, double y, double z, ItemStack stack) {
         super((EntityType<? extends ProjectileEntity>)EntityType.FIREWORK_ROCKET, world);
         this.life = 0;
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         int i = 1;
         if (!stack.isEmpty() && stack.hasTag()) {
             this.dataTracker.set(ITEM, stack.copy());
@@ -72,7 +72,7 @@ implements FlyingItemEntity {
 
     public FireworkRocketEntity(World world, ItemStack stack, LivingEntity shooter) {
         this(world, shooter, shooter.getX(), shooter.getY(), shooter.getZ(), stack);
-        this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getEntityId()));
+        this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getId()));
         this.shooter = shooter;
     }
 
@@ -126,7 +126,7 @@ implements FlyingItemEntity {
                     Vec3d vec3d2 = this.shooter.getVelocity();
                     this.shooter.setVelocity(vec3d2.add(vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5));
                 }
-                this.updatePosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
+                this.setPosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
                 this.setVelocity(this.shooter.getVelocity());
             }
         } else {
@@ -158,7 +158,7 @@ implements FlyingItemEntity {
 
     private void explodeAndRemove() {
         this.world.sendEntityStatus(this, (byte)17);
-        this.method_32875(this.getOwner(), GameEvent.EXPLODE);
+        this.emitGameEvent(this.getOwner(), GameEvent.EXPLODE);
         this.explode();
         this.discard();
     }

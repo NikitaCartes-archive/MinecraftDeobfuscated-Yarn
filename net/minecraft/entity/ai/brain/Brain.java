@@ -162,11 +162,11 @@ public class Brain<E extends LivingEntity> {
         return this.memories.get(type).map(Memory::getValue);
     }
 
-    public <U> boolean method_29519(MemoryModuleType<U> memoryModuleType, U object) {
-        if (!this.hasMemoryModule(memoryModuleType)) {
+    public <U> boolean hasMemoryModuleWithValue(MemoryModuleType<U> type, U value) {
+        if (!this.hasMemoryModule(type)) {
             return false;
         }
-        return this.getOptionalMemory(memoryModuleType).filter(object2 -> object2.equals(object)).isPresent();
+        return this.getOptionalMemory(type).filter(object2 -> object2.equals(value)).isPresent();
     }
 
     public boolean isMemoryInState(MemoryModuleType<?> type, MemoryModuleState state) {
@@ -283,7 +283,7 @@ public class Brain<E extends LivingEntity> {
         this.setTaskList(activity, indexedTasks, requiredMemories, Sets.newHashSet());
     }
 
-    private void setTaskList(Activity activity2, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks, Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemories, Set<MemoryModuleType<?>> forgettingMemories) {
+    public void setTaskList(Activity activity2, ImmutableList<? extends Pair<Integer, ? extends Task<? super E>>> indexedTasks, Set<Pair<MemoryModuleType<?>, MemoryModuleState>> requiredMemories, Set<MemoryModuleType<?>> forgettingMemories) {
         this.requiredActivityMemories.put(activity2, requiredMemories);
         if (!forgettingMemories.isEmpty()) {
             this.forgettingActivityMemories.put(activity2, forgettingMemories);

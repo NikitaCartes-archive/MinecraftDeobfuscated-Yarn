@@ -122,14 +122,14 @@ extends AbstractDecorationEntity {
 
     @Override
     public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
         BlockPos blockPos = this.attachmentPos.add(x - this.getX(), y - this.getY(), z - this.getZ());
-        this.updatePosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        this.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
     }
 
     @Override

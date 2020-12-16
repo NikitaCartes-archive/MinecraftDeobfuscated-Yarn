@@ -12,8 +12,8 @@ import net.minecraft.server.world.ServerWorld;
 
 public abstract class Sensor<E extends LivingEntity> {
     private static final Random RANDOM = new Random();
-    private static final TargetPredicate field_26630 = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules();
-    private static final TargetPredicate field_26631 = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules().ignoreDistanceScalingFactor();
+    private static final TargetPredicate TARGET_PREDICATE = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules();
+    private static final TargetPredicate TARGET_PREDICATE_IGNORE_DISTANCE_SCALING = new TargetPredicate().setBaseMaxDistance(16.0).includeTeammates().ignoreEntityTargetRules().ignoreDistanceScalingFactor();
     private final int senseInterval;
     private long lastSenseTime;
 
@@ -26,10 +26,10 @@ public abstract class Sensor<E extends LivingEntity> {
         this(20);
     }
 
-    public final void tick(ServerWorld serverWorld, E entity) {
+    public final void tick(ServerWorld world, E entity) {
         if (--this.lastSenseTime <= 0L) {
             this.lastSenseTime = this.senseInterval;
-            this.sense(serverWorld, entity);
+            this.sense(world, entity);
         }
     }
 
@@ -37,11 +37,11 @@ public abstract class Sensor<E extends LivingEntity> {
 
     public abstract Set<MemoryModuleType<?>> getOutputMemoryModules();
 
-    protected static boolean method_30954(LivingEntity livingEntity, LivingEntity livingEntity2) {
-        if (livingEntity.getBrain().method_29519(MemoryModuleType.ATTACK_TARGET, livingEntity2)) {
-            return field_26631.test(livingEntity, livingEntity2);
+    protected static boolean method_30954(LivingEntity entity, LivingEntity target) {
+        if (entity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, target)) {
+            return TARGET_PREDICATE_IGNORE_DISTANCE_SCALING.test(entity, target);
         }
-        return field_26630.test(livingEntity, livingEntity2);
+        return TARGET_PREDICATE.test(entity, target);
     }
 }
 

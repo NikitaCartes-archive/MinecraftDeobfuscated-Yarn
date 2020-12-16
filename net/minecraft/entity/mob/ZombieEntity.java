@@ -291,7 +291,7 @@ extends HostileEntity {
                 EntityType<?> entityType = zombieEntity.getType();
                 SpawnRestriction.Location location = SpawnRestriction.getLocation(entityType);
                 if (!SpawnHelper.canSpawn(location, this.world, blockPos, entityType) || !SpawnRestriction.canSpawn(entityType, serverWorld, SpawnReason.REINFORCEMENT, blockPos, this.world.random)) continue;
-                zombieEntity.updatePosition(m, n, o);
+                zombieEntity.setPosition(m, n, o);
                 if (this.world.isPlayerInRange(m, n, o, 7.0) || !this.world.intersectsEntities(zombieEntity) || !this.world.isSpaceEmpty(zombieEntity) || this.world.containsFluid(zombieEntity.getBoundingBox())) continue;
                 zombieEntity.setTarget(livingEntity);
                 zombieEntity.initialize(serverWorld, this.world.getLocalDifficulty(zombieEntity.getBlockPos()), SpawnReason.REINFORCEMENT, null, null);
@@ -381,21 +381,21 @@ extends HostileEntity {
     }
 
     @Override
-    public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
-        super.onKilledOther(serverWorld, livingEntity);
-        if ((serverWorld.getDifficulty() == Difficulty.NORMAL || serverWorld.getDifficulty() == Difficulty.HARD) && livingEntity instanceof VillagerEntity) {
-            if (serverWorld.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
+    public void onKilledOther(ServerWorld world, LivingEntity other) {
+        super.onKilledOther(world, other);
+        if ((world.getDifficulty() == Difficulty.NORMAL || world.getDifficulty() == Difficulty.HARD) && other instanceof VillagerEntity) {
+            if (world.getDifficulty() != Difficulty.HARD && this.random.nextBoolean()) {
                 return;
             }
-            VillagerEntity villagerEntity = (VillagerEntity)livingEntity;
+            VillagerEntity villagerEntity = (VillagerEntity)other;
             ZombieVillagerEntity zombieVillagerEntity = villagerEntity.method_29243(EntityType.ZOMBIE_VILLAGER, false);
-            zombieVillagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieData(false, true), null);
+            zombieVillagerEntity.initialize(world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieData(false, true), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
             zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
             zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
             zombieVillagerEntity.setXp(villagerEntity.getExperience());
             if (!this.isSilent()) {
-                serverWorld.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
+                world.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
             }
         }
     }
@@ -420,13 +420,13 @@ extends HostileEntity {
         float f = difficulty.getClampedLocalDifficulty();
         this.setCanPickUpLoot(this.random.nextFloat() < 0.55f * f);
         if (entityData == null) {
-            entityData = new ZombieData(ZombieEntity.method_29936(world.getRandom()), true);
+            entityData = new ZombieData(ZombieEntity.shouldBeBaby(world.getRandom()), true);
         }
         if (entityData instanceof ZombieData) {
             ZombieData zombieData = (ZombieData)entityData;
             if (zombieData.baby) {
                 this.setBaby(true);
-                if (zombieData.field_25607) {
+                if (zombieData.tryChickenJockey) {
                     if ((double)world.getRandom().nextFloat() < 0.05) {
                         List<Entity> list = world.getEntitiesByClass(ChickenEntity.class, this.getBoundingBox().expand(5.0, 3.0, 5.0), EntityPredicates.NOT_MOUNTED);
                         if (!list.isEmpty()) {
@@ -461,7 +461,7 @@ extends HostileEntity {
         return entityData;
     }
 
-    public static boolean method_29936(Random random) {
+    public static boolean shouldBeBaby(Random random) {
         return random.nextFloat() < 0.05f;
     }
 
@@ -532,11 +532,11 @@ extends HostileEntity {
     public static class ZombieData
     implements EntityData {
         public final boolean baby;
-        public final boolean field_25607;
+        public final boolean tryChickenJockey;
 
-        public ZombieData(boolean baby, boolean bl) {
+        public ZombieData(boolean baby, boolean tryChickenJockey) {
             this.baby = baby;
-            this.field_25607 = bl;
+            this.tryChickenJockey = tryChickenJockey;
         }
     }
 }

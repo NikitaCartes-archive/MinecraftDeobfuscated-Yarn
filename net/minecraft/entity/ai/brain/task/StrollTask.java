@@ -13,12 +13,13 @@ import net.minecraft.entity.ai.brain.task.Task;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Vec3d;
+import org.jetbrains.annotations.Nullable;
 
 public class StrollTask
 extends Task<PathAwareEntity> {
     private final float speed;
-    private final int horizontalRadius;
-    private final int verticalRadius;
+    protected final int horizontalRadius;
+    protected final int verticalRadius;
 
     public StrollTask(float speed) {
         this(speed, 10, 7);
@@ -33,8 +34,13 @@ extends Task<PathAwareEntity> {
 
     @Override
     protected void run(ServerWorld serverWorld, PathAwareEntity pathAwareEntity, long l) {
-        Optional<Vec3d> optional = Optional.ofNullable(class_5534.method_31527(pathAwareEntity, this.horizontalRadius, this.verticalRadius));
+        Optional<Vec3d> optional = Optional.ofNullable(this.method_33201(pathAwareEntity));
         pathAwareEntity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.speed, 0)));
+    }
+
+    @Nullable
+    protected Vec3d method_33201(PathAwareEntity pathAwareEntity) {
+        return class_5534.method_31527(pathAwareEntity, this.horizontalRadius, this.verticalRadius);
     }
 }
 

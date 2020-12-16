@@ -30,7 +30,7 @@ implements Packet<ClientPlayPacketListener> {
         Validate.notNull(sound, "sound", new Object[0]);
         this.sound = sound;
         this.category = category;
-        this.entityId = entity.getEntityId();
+        this.entityId = entity.getId();
         this.volume = volume;
         this.pitch = pitch;
     }

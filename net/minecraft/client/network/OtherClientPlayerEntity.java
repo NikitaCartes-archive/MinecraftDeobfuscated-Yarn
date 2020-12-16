@@ -43,7 +43,7 @@ extends AbstractClientPlayerEntity {
     @Override
     public void tick() {
         super.tick();
-        this.method_29242(this, false);
+        this.updateLimbs(this, false);
     }
 
     @Override
@@ -55,7 +55,7 @@ extends AbstractClientPlayerEntity {
             this.yaw = (float)((double)this.yaw + MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw) / (double)this.bodyTrackingIncrements);
             this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
             --this.bodyTrackingIncrements;
-            this.updatePosition(d, e, f);
+            this.setPosition(d, e, f);
             this.setRotation(this.yaw, this.pitch);
         }
         if (this.headTrackingIncrements > 0) {

@@ -23,8 +23,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -44,77 +42,76 @@ public class TagGroupLoader<T> {
     private static final int JSON_EXTENSION_LENGTH = ".json".length();
     private final Function<Identifier, Optional<T>> registryGetter;
     private final String dataType;
-    private final String entryType;
 
-    public TagGroupLoader(Function<Identifier, Optional<T>> registryGetter, String dataType, String entryType) {
+    public TagGroupLoader(Function<Identifier, Optional<T>> registryGetter, String dataType) {
         this.registryGetter = registryGetter;
         this.dataType = dataType;
-        this.entryType = entryType;
     }
 
-    public CompletableFuture<Map<Identifier, Tag.Builder>> prepareReload(ResourceManager manager, Executor prepareExecutor) {
-        return CompletableFuture.supplyAsync(() -> {
-            HashMap<Identifier, Tag.Builder> map = Maps.newHashMap();
-            for (Identifier identifier2 : manager.findResources(this.dataType, string -> string.endsWith(".json"))) {
-                String string2 = identifier2.getPath();
-                Identifier identifier22 = new Identifier(identifier2.getNamespace(), string2.substring(this.dataType.length() + 1, string2.length() - JSON_EXTENSION_LENGTH));
-                try {
-                    for (Resource resource : manager.getAllResources(identifier2)) {
+    /*
+     * WARNING - Removed try catching itself - possible behaviour change.
+     */
+    public Map<Identifier, Tag.Builder> method_33174(ResourceManager resourceManager) {
+        HashMap<Identifier, Tag.Builder> map = Maps.newHashMap();
+        for (Identifier identifier2 : resourceManager.findResources(this.dataType, string -> string.endsWith(".json"))) {
+            String string2 = identifier2.getPath();
+            Identifier identifier22 = new Identifier(identifier2.getNamespace(), string2.substring(this.dataType.length() + 1, string2.length() - JSON_EXTENSION_LENGTH));
+            try {
+                for (Resource resource : resourceManager.getAllResources(identifier2)) {
+                    try {
+                        InputStream inputStream = resource.getInputStream();
+                        Throwable throwable = null;
                         try {
-                            InputStream inputStream = resource.getInputStream();
-                            Throwable throwable = null;
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                            Throwable throwable2 = null;
                             try {
-                                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-                                Throwable throwable2 = null;
-                                try {
-                                    JsonObject jsonObject = JsonHelper.deserialize(GSON, (Reader)reader, JsonObject.class);
-                                    if (jsonObject == null) {
-                                        LOGGER.error("Couldn't load {} tag list {} from {} in data pack {} as it is empty or null", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
-                                        continue;
-                                    }
-                                    map.computeIfAbsent(identifier22, identifier -> Tag.Builder.create()).read(jsonObject, resource.getResourcePackName());
-                                } catch (Throwable throwable3) {
-                                    throwable2 = throwable3;
-                                    throw throwable3;
-                                } finally {
-                                    if (reader == null) continue;
-                                    if (throwable2 != null) {
-                                        try {
-                                            ((Reader)reader).close();
-                                        } catch (Throwable throwable4) {
-                                            throwable2.addSuppressed(throwable4);
-                                        }
-                                        continue;
-                                    }
-                                    ((Reader)reader).close();
+                                JsonObject jsonObject = JsonHelper.deserialize(GSON, (Reader)reader, JsonObject.class);
+                                if (jsonObject == null) {
+                                    LOGGER.error("Couldn't load tag list {} from {} in data pack {} as it is empty or null", (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName());
+                                    continue;
                                 }
-                            } catch (Throwable throwable5) {
-                                throwable = throwable5;
-                                throw throwable5;
+                                map.computeIfAbsent(identifier22, identifier -> Tag.Builder.create()).read(jsonObject, resource.getResourcePackName());
+                            } catch (Throwable throwable3) {
+                                throwable2 = throwable3;
+                                throw throwable3;
                             } finally {
-                                if (inputStream == null) continue;
-                                if (throwable != null) {
+                                if (reader == null) continue;
+                                if (throwable2 != null) {
                                     try {
-                                        inputStream.close();
-                                    } catch (Throwable throwable6) {
-                                        throwable.addSuppressed(throwable6);
+                                        ((Reader)reader).close();
+                                    } catch (Throwable throwable4) {
+                                        throwable2.addSuppressed(throwable4);
                                     }
                                     continue;
                                 }
-                                inputStream.close();
+                                ((Reader)reader).close();
                             }
-                        } catch (IOException | RuntimeException exception) {
-                            LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName(), (Object)exception);
+                        } catch (Throwable throwable5) {
+                            throwable = throwable5;
+                            throw throwable5;
                         } finally {
-                            IOUtils.closeQuietly((Closeable)resource);
+                            if (inputStream == null) continue;
+                            if (throwable != null) {
+                                try {
+                                    inputStream.close();
+                                } catch (Throwable throwable6) {
+                                    throwable.addSuppressed(throwable6);
+                                }
+                                continue;
+                            }
+                            inputStream.close();
                         }
+                    } catch (IOException | RuntimeException exception) {
+                        LOGGER.error("Couldn't read tag list {} from {} in data pack {}", (Object)identifier22, (Object)identifier2, (Object)resource.getResourcePackName(), (Object)exception);
+                    } finally {
+                        IOUtils.closeQuietly((Closeable)resource);
                     }
-                } catch (IOException iOException) {
-                    LOGGER.error("Couldn't read {} tag list {} from {}", (Object)this.entryType, (Object)identifier22, (Object)identifier2, (Object)iOException);
                 }
+            } catch (IOException iOException) {
+                LOGGER.error("Couldn't read tag list {} from {}", (Object)identifier22, (Object)identifier2, (Object)iOException);
             }
-            return map;
-        }, prepareExecutor);
+        }
+        return map;
     }
 
     private static void method_32839(Map<Identifier, Tag.Builder> map, Multimap<Identifier, Identifier> multimap, Set<Identifier> set, Identifier identifier2, BiConsumer<Identifier, Tag.Builder> biConsumer) {
@@ -150,8 +147,12 @@ public class TagGroupLoader<T> {
         tags.forEach((identifier, builder) -> builder.method_32826(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
         tags.forEach((identifier, builder) -> builder.method_32828(identifier2 -> TagGroupLoader.method_32844(multimap, identifier, identifier2)));
         HashSet set = Sets.newHashSet();
-        tags.keySet().forEach(identifier2 -> TagGroupLoader.method_32839(tags, multimap, set, identifier2, (identifier, builder) -> builder.build(function, function2).ifLeft(collection -> LOGGER.error("Couldn't load {} tag {} as it is missing following references: {}", (Object)this.entryType, identifier, (Object)collection.stream().map(Objects::toString).collect(Collectors.joining(",")))).ifRight(tag -> map.put((Identifier)identifier, tag))));
+        tags.keySet().forEach(identifier2 -> TagGroupLoader.method_32839(tags, multimap, set, identifier2, (identifier, builder) -> builder.build(function, function2).ifLeft(collection -> LOGGER.error("Couldn't load tag {} as it is missing following references: {}", identifier, (Object)collection.stream().map(Objects::toString).collect(Collectors.joining(",")))).ifRight(tag -> map.put((Identifier)identifier, tag))));
         return TagGroup.create(map);
+    }
+
+    public TagGroup<T> method_33176(ResourceManager resourceManager) {
+        return this.applyReload(this.method_33174(resourceManager));
     }
 }
 

@@ -10,7 +10,6 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.AbstractTeam;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,7 +62,7 @@ extends Goal {
                 return false;
             }
         }
-        if (livingEntity instanceof PlayerEntity && ((PlayerEntity)livingEntity).getAbilities().invulnerable) {
+        if (!livingEntity.canTakeDamage()) {
             return false;
         }
         this.mob.setTarget(livingEntity);

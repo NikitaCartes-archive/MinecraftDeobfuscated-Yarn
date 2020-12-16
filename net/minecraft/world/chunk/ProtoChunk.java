@@ -354,9 +354,9 @@ implements Chunk {
     }
 
     public static BlockPos joinBlockPos(short sectionRel, int sectionY, ChunkPos chunkPos) {
-        int i = ChunkSectionPos.method_32205(chunkPos.x, sectionRel & 0xF);
-        int j = ChunkSectionPos.method_32205(sectionY, sectionRel >>> 4 & 0xF);
-        int k = ChunkSectionPos.method_32205(chunkPos.z, sectionRel >>> 8 & 0xF);
+        int i = ChunkSectionPos.getOffsetPos(chunkPos.x, sectionRel & 0xF);
+        int j = ChunkSectionPos.getOffsetPos(sectionY, sectionRel >>> 4 & 0xF);
+        int k = ChunkSectionPos.getOffsetPos(chunkPos.z, sectionRel >>> 8 & 0xF);
         return new BlockPos(i, j, k);
     }
 
@@ -373,8 +373,8 @@ implements Chunk {
     }
 
     @Override
-    public void markBlockForPostProcessing(short s, int i) {
-        Chunk.getList(this.postProcessingLists, i).add(s);
+    public void markBlockForPostProcessing(short packedPos, int index) {
+        Chunk.getList(this.postProcessingLists, index).add(packedPos);
     }
 
     public ChunkTickScheduler<Block> getBlockTickScheduler() {

@@ -44,14 +44,14 @@ extends StructureFeature<ProbabilityConfig> {
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, ProbabilityConfig probabilityConfig) {
-            BlockPos blockPos = new BlockPos(ChunkSectionPos.method_32205(i, 9), 90, ChunkSectionPos.method_32205(j, 9));
+            BlockPos blockPos = new BlockPos(ChunkSectionPos.getOffsetPos(i, 9), 90, ChunkSectionPos.getOffsetPos(j, 9));
             this.children.add(new BuriedTreasureGenerator.Piece(blockPos));
             this.setBoundingBoxFromChildren();
         }
 
         @Override
         public BlockPos getPos() {
-            return new BlockPos(ChunkSectionPos.method_32205(this.getChunkX(), 9), 0, ChunkSectionPos.method_32205(this.getChunkZ(), 9));
+            return new BlockPos(ChunkSectionPos.getOffsetPos(this.getChunkX(), 9), 0, ChunkSectionPos.getOffsetPos(this.getChunkZ(), 9));
         }
     }
 }

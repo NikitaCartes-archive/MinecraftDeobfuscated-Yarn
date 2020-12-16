@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.sound.AudioStream;
 import net.minecraft.client.sound.Channel;

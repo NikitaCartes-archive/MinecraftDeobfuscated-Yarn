@@ -118,18 +118,18 @@ public final class ChunkGeneratorSettings {
     }
 
     private static ChunkGeneratorSettings createIslandSettings(StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid, Identifier id, boolean mobGenerationDisabled, boolean islandNoiseOverride) {
-        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.method_32994(0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-3000, 64, -46), new SlideConfig(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, islandNoiseOverride, false), defaultBlock, defaultFluid, Integer.MIN_VALUE, Integer.MIN_VALUE, 0, mobGenerationDisabled);
+        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(2.0, 1.0, 80.0, 160.0), new SlideConfig(-3000, 64, -46), new SlideConfig(-30, 7, 1), 2, 1, 0.0, 0.0, true, false, islandNoiseOverride, false), defaultBlock, defaultFluid, Integer.MIN_VALUE, Integer.MIN_VALUE, 0, mobGenerationDisabled);
     }
 
     private static ChunkGeneratorSettings createUndergroundSettings(StructuresConfig structuresConfig, BlockState defaultBlock, BlockState defaultFluid, Identifier id) {
         HashMap<StructureFeature<?>, StructureConfig> map = Maps.newHashMap(StructuresConfig.DEFAULT_STRUCTURES);
         map.put(StructureFeature.RUINED_PORTAL, new StructureConfig(25, 10, 34222645));
-        return new ChunkGeneratorSettings(new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map), GenerationShapeConfig.method_32994(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(120, 3, 0), new SlideConfig(320, 4, -1), 1, 2, 0.0, 0.019921875, false, false, false, false), defaultBlock, defaultFluid, 0, 0, 32, false);
+        return new ChunkGeneratorSettings(new StructuresConfig(Optional.ofNullable(structuresConfig.getStronghold()), map), GenerationShapeConfig.create(0, 128, new NoiseSamplingConfig(1.0, 3.0, 80.0, 60.0), new SlideConfig(120, 3, 0), new SlideConfig(320, 4, -1), 1, 2, 0.0, 0.019921875, false, false, false, false), defaultBlock, defaultFluid, 0, 0, 32, false);
     }
 
     private static ChunkGeneratorSettings createSurfaceSettings(StructuresConfig structuresConfig, boolean amplified, Identifier id) {
         double d = 0.9999999814507745;
-        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.method_32994(0, 256, new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new SlideConfig(-10, 3, 0), new SlideConfig(-30, 0, 0), 1, 2, 1.0, -0.46875, true, true, false, amplified), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), Integer.MIN_VALUE, 0, 63, false);
+        return new ChunkGeneratorSettings(structuresConfig, GenerationShapeConfig.create(0, 256, new NoiseSamplingConfig(0.9999999814507745, 0.9999999814507745, 80.0, 160.0), new SlideConfig(-10, 3, 0), new SlideConfig(-30, 0, 0), 1, 2, 1.0, -0.46875, true, true, false, amplified), Blocks.STONE.getDefaultState(), Blocks.WATER.getDefaultState(), Integer.MIN_VALUE, 0, 63, false);
     }
 
     static {

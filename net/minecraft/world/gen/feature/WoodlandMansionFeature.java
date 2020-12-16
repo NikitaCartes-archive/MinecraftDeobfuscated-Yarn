@@ -42,7 +42,7 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     @Override
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig) {
-        Set<Biome> set = biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 32);
+        Set<Biome> set = biomeSource.getBiomesInArea(ChunkSectionPos.getOffsetPos(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.getOffsetPos(j, 9), 32);
         for (Biome biome2 : set) {
             if (biome2.getGenerationSettings().hasStructureFeature(this)) continue;
             return false;
@@ -74,8 +74,8 @@ extends StructureFeature<DefaultFeatureConfig> {
             } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
                 l = -5;
             }
-            int m = ChunkSectionPos.method_32205(i, 7);
-            int n = ChunkSectionPos.method_32205(j, 7);
+            int m = ChunkSectionPos.getOffsetPos(i, 7);
+            int n = ChunkSectionPos.getOffsetPos(j, 7);
             int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG);
             int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG);
             int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG);
@@ -84,7 +84,7 @@ extends StructureFeature<DefaultFeatureConfig> {
             if (s < 60) {
                 return;
             }
-            BlockPos blockPos = new BlockPos(ChunkSectionPos.method_32205(i, 8), s + 1, ChunkSectionPos.method_32205(j, 8));
+            BlockPos blockPos = new BlockPos(ChunkSectionPos.getOffsetPos(i, 8), s + 1, ChunkSectionPos.getOffsetPos(j, 8));
             LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
             WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
             this.children.addAll(list);

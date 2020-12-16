@@ -58,16 +58,13 @@ public class FluidPredicate {
         JsonObject jsonObject = JsonHelper.asObject(json, "fluid");
         Fluid fluid = null;
         if (jsonObject.has("fluid")) {
-            Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "fluid"));
-            fluid = Registry.FLUID.get(identifier);
+            Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "fluid"));
+            fluid = Registry.FLUID.get(identifier2);
         }
         Tag<Fluid> tag = null;
         if (jsonObject.has("tag")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-            tag = ServerTagManagerHolder.getTagManager().getFluids().getTag(identifier2);
-            if (tag == null) {
-                throw new JsonSyntaxException("Unknown fluid tag '" + identifier2 + "'");
-            }
+            tag = ServerTagManagerHolder.getTagManager().getTag(Registry.FLUID_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown fluid tag '" + identifier + "'"));
         }
         StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
         return new FluidPredicate(tag, fluid, statePredicate);
@@ -82,7 +79,7 @@ public class FluidPredicate {
             jsonObject.addProperty("fluid", Registry.FLUID.getId(this.fluid).toString());
         }
         if (this.tag != null) {
-            jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getFluids().getTagId(this.tag).toString());
+            jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.FLUID_KEY, this.tag, () -> new IllegalStateException("Unknown fluid tag")).toString());
         }
         jsonObject.add("state", this.state.toJson());
         return jsonObject;

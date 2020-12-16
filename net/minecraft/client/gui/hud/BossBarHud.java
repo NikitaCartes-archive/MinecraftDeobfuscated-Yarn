@@ -92,7 +92,7 @@ extends DrawableHelper {
     public boolean shouldDarkenSky() {
         if (!this.bossBars.isEmpty()) {
             for (BossBar bossBar : this.bossBars.values()) {
-                if (!bossBar.getDarkenSky()) continue;
+                if (!bossBar.shouldDarkenSky()) continue;
                 return true;
             }
         }
@@ -102,7 +102,7 @@ extends DrawableHelper {
     public boolean shouldThickenFog() {
         if (!this.bossBars.isEmpty()) {
             for (BossBar bossBar : this.bossBars.values()) {
-                if (!bossBar.getThickenFog()) continue;
+                if (!bossBar.shouldThickenFog()) continue;
                 return true;
             }
         }

@@ -24,6 +24,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class ItemPredicateArgumentType
@@ -44,10 +45,7 @@ implements ArgumentType<ItemPredicateArgument> {
         }
         Identifier identifier = itemStringReader.getId();
         return commandContext -> {
-            Tag<Item> tag = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getTagManager().getItems().getTag(identifier);
-            if (tag == null) {
-                throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
-            }
+            Tag<Item> tag = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getTagManager().getTag(Registry.ITEM_KEY, identifier, identifier -> UNKNOWN_TAG_EXCEPTION.create(identifier.toString()));
             return new TagPredicate(tag, itemStringReader.getTag());
         };
     }

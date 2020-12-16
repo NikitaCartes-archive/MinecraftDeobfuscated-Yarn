@@ -63,7 +63,7 @@ extends Screen {
         }, SelectionManager.makeClipboardGetter(this.client), SelectionManager.makeClipboardSetter(this.client), string -> this.client.textRenderer.getWidth((String)string) <= 90);
         BlockState blockState = this.sign.getCachedState();
         this.field_27390 = SignBlockEntityRenderer.method_32155(blockState.getBlock());
-        this.model = SignBlockEntityRenderer.method_32157(this.client.getEntityModelLoader(), this.field_27390);
+        this.model = SignBlockEntityRenderer.createSignModel(this.client.getEntityModelLoader(), this.field_27390);
     }
 
     @Override
@@ -144,8 +144,8 @@ extends Screen {
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
         SpriteIdentifier spriteIdentifier = TexturedRenderLayers.method_33082(this.field_27390);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
-        this.model.foot.visible = bl;
-        this.model.field_27756.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
+        this.model.stick.visible = bl;
+        this.model.root.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);
         matrices.pop();
         float h = 0.010416667f;
         matrices.translate(0.0, 0.3333333432674408, 0.046666666865348816);

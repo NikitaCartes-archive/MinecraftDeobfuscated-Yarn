@@ -27,8 +27,8 @@ public class ShulkerBoxBlockEntityRenderer
 implements BlockEntityRenderer<ShulkerBoxBlockEntity> {
     private final ShulkerEntityModel<?> model;
 
-    public ShulkerBoxBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-        this.model = new ShulkerEntityModel(context.getLayerModelPart(EntityModelLayers.SHULKER));
+    public ShulkerBoxBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+        this.model = new ShulkerEntityModel(ctx.getLayerModelPart(EntityModelLayers.SHULKER));
     }
 
     @Override

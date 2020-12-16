@@ -159,8 +159,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     private static double getSquaredDistance(ChunkPos pos, Entity entity) {
-        double d = ChunkSectionPos.method_32205(pos.x, 8);
-        double e = ChunkSectionPos.method_32205(pos.z, 8);
+        double d = ChunkSectionPos.getOffsetPos(pos.x, 8);
+        double e = ChunkSectionPos.getOffsetPos(pos.z, 8);
         double f = d - entity.getX();
         double g = e - entity.getZ();
         return f * f + g * g;
@@ -571,7 +571,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     private boolean save(Chunk chunk) {
-        this.pointOfInterestStorage.method_20436(chunk.getPos());
+        this.pointOfInterestStorage.saveChunk(chunk.getPos());
         if (!chunk.needsSaving()) {
             return false;
         }
@@ -840,11 +840,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         EntityType<?> entityType = entity.getType();
         int i = entityType.getMaxTrackDistance() * 16;
         int j = entityType.getTrackTickInterval();
-        if (this.entityTrackers.containsKey(entity.getEntityId())) {
+        if (this.entityTrackers.containsKey(entity.getId())) {
             throw Util.throwOrPause(new IllegalStateException("Entity is already tracked!"));
         }
         EntityTracker entityTracker = new EntityTracker(entity, i, j, entityType.alwaysUpdateVelocity());
-        this.entityTrackers.put(entity.getEntityId(), entityTracker);
+        this.entityTrackers.put(entity.getId(), entityTracker);
         entityTracker.updateCameraPosition(this.world.getPlayers());
         if (entity instanceof ServerPlayerEntity) {
             ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
@@ -865,7 +865,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 entityTracker.stopTracking(serverPlayerEntity);
             }
         }
-        if ((entityTracker2 = (EntityTracker)this.entityTrackers.remove(entity.getEntityId())) != null) {
+        if ((entityTracker2 = (EntityTracker)this.entityTrackers.remove(entity.getId())) != null) {
             entityTracker2.stopTracking();
         }
     }
@@ -894,14 +894,14 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     protected void sendToOtherNearbyPlayers(Entity entity, Packet<?> packet) {
-        EntityTracker entityTracker = (EntityTracker)this.entityTrackers.get(entity.getEntityId());
+        EntityTracker entityTracker = (EntityTracker)this.entityTrackers.get(entity.getId());
         if (entityTracker != null) {
             entityTracker.sendToOtherNearbyPlayers(packet);
         }
     }
 
     protected void sendToNearbyPlayers(Entity entity, Packet<?> packet) {
-        EntityTracker entityTracker = (EntityTracker)this.entityTrackers.get(entity.getEntityId());
+        EntityTracker entityTracker = (EntityTracker)this.entityTrackers.get(entity.getId());
         if (entityTracker != null) {
             entityTracker.sendToNearbyPlayers(packet);
         }
@@ -966,13 +966,13 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
         public boolean equals(Object o) {
             if (o instanceof EntityTracker) {
-                return ((EntityTracker)o).entity.getEntityId() == this.entity.getEntityId();
+                return ((EntityTracker)o).entity.getId() == this.entity.getId();
             }
             return false;
         }
 
         public int hashCode() {
-            return this.entity.getEntityId();
+            return this.entity.getId();
         }
 
         public void sendToOtherNearbyPlayers(Packet<?> packet) {

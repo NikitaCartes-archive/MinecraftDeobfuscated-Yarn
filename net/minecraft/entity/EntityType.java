@@ -77,6 +77,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -164,6 +165,7 @@ implements class_5575<Entity, T> {
     public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = EntityType.register("area_effect_cloud", Builder.create(AreaEffectCloudEntity::new, SpawnGroup.MISC).makeFireImmune().setDimensions(6.0f, 0.5f).maxTrackingRange(10).trackingTickInterval(Integer.MAX_VALUE));
     public static final EntityType<ArmorStandEntity> ARMOR_STAND = EntityType.register("armor_stand", Builder.create(ArmorStandEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 1.975f).maxTrackingRange(10));
     public static final EntityType<ArrowEntity> ARROW = EntityType.register("arrow", Builder.create(ArrowEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 0.5f).maxTrackingRange(4).trackingTickInterval(20));
+    public static final EntityType<AxolotlEntity> AXOLOTL = EntityType.register("axolotl", Builder.create(AxolotlEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.75f, 0.42f).maxTrackingRange(10));
     public static final EntityType<BatEntity> BAT = EntityType.register("bat", Builder.create(BatEntity::new, SpawnGroup.AMBIENT).setDimensions(0.5f, 0.9f).maxTrackingRange(5));
     public static final EntityType<BeeEntity> BEE = EntityType.register("bee", Builder.create(BeeEntity::new, SpawnGroup.CREATURE).setDimensions(0.7f, 0.6f).maxTrackingRange(8));
     public static final EntityType<BlazeEntity> BLAZE = EntityType.register("blaze", Builder.create(BlazeEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(0.6f, 1.8f).maxTrackingRange(8));
@@ -333,7 +335,7 @@ implements class_5575<Entity, T> {
             return null;
         }
         if (alignPosition) {
-            ((Entity)entity).updatePosition((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5);
+            ((Entity)entity).setPosition((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5);
             d = EntityType.getOriginY(serverWorld, pos, invertY, ((Entity)entity).getBoundingBox());
         } else {
             d = 0.0;
@@ -468,14 +470,14 @@ implements class_5575<Entity, T> {
      * 
      * <p>This can be overwritten via {@link EntityType.Builder#allowSpawningInside(Block[])}
      */
-    public boolean isInvalidSpawn(BlockState blockState) {
-        if (this.canSpawnInside.contains(blockState.getBlock())) {
+    public boolean isInvalidSpawn(BlockState state) {
+        if (this.canSpawnInside.contains(state.getBlock())) {
             return false;
         }
-        if (!this.fireImmune && (blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState) || blockState.isOf(Blocks.LAVA))) {
+        if (!this.fireImmune && (state.isIn(BlockTags.FIRE) || state.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(state) || state.isOf(Blocks.LAVA))) {
             return true;
         }
-        return blockState.isOf(Blocks.WITHER_ROSE) || blockState.isOf(Blocks.SWEET_BERRY_BUSH) || blockState.isOf(Blocks.CACTUS);
+        return state.isOf(Blocks.WITHER_ROSE) || state.isOf(Blocks.SWEET_BERRY_BUSH) || state.isOf(Blocks.CACTUS);
     }
 
     public EntityDimensions getDimensions() {

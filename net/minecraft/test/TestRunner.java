@@ -3,10 +3,9 @@
  */
 package net.minecraft.test;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -33,26 +32,21 @@ public class TestRunner {
     private final ServerWorld world;
     private final TestManager testManager;
     private final int sizeZ;
-    private final List<GameTest> tests = Lists.newArrayList();
-    private final List<Pair<GameTestBatch, Collection<GameTest>>> batches = Lists.newArrayList();
+    private final List<GameTest> tests;
+    private final List<Pair<GameTestBatch, Collection<GameTest>>> batches;
     private final BlockPos.Mutable reusablePos;
 
-    public TestRunner(Collection<GameTestBatch> collection, BlockPos pos, BlockRotation blockRotation, ServerWorld serverWorld, TestManager testManager, int i) {
-        this.reusablePos = pos.mutableCopy();
-        this.pos = pos;
+    public TestRunner(Collection<GameTestBatch> collection, BlockPos blockPos, BlockRotation blockRotation, ServerWorld serverWorld, TestManager testManager, int i) {
+        this.reusablePos = blockPos.mutableCopy();
+        this.pos = blockPos;
         this.world = serverWorld;
         this.testManager = testManager;
         this.sizeZ = i;
-        collection.forEach(gameTestBatch -> {
-            ArrayList<GameTest> collection = Lists.newArrayList();
-            Collection<TestFunction> collection2 = gameTestBatch.getTestFunctions();
-            for (TestFunction testFunction : collection2) {
-                GameTest gameTest = new GameTest(testFunction, blockRotation, serverWorld);
-                collection.add(gameTest);
-                this.tests.add(gameTest);
-            }
-            this.batches.add(Pair.of(gameTestBatch, collection));
-        });
+        this.batches = collection.stream().map(gameTestBatch -> {
+            Collection collection = gameTestBatch.getTestFunctions().stream().map(testFunction -> new GameTest((TestFunction)testFunction, blockRotation, serverWorld)).collect(ImmutableList.toImmutableList());
+            return Pair.of(gameTestBatch, collection);
+        }).collect(ImmutableList.toImmutableList());
+        this.tests = this.batches.stream().flatMap(pair -> ((Collection)pair.getSecond()).stream()).collect(ImmutableList.toImmutableList());
     }
 
     public List<GameTest> getTests() {
@@ -87,6 +81,11 @@ public class TestRunner {
 
             @Override
             public void onStarted(GameTest test) {
+            }
+
+            @Override
+            public void method_33317(GameTest gameTest) {
+                this.method_32239();
             }
 
             @Override

@@ -28,14 +28,14 @@ implements Packet<ServerPlayPacketListener> {
 
     @Environment(value=EnvType.CLIENT)
     public PlayerInteractEntityC2SPacket(Entity target, boolean playerSneaking) {
-        this.entityId = target.getEntityId();
+        this.entityId = target.getId();
         this.type = InteractionType.ATTACK;
         this.playerSneaking = playerSneaking;
     }
 
     @Environment(value=EnvType.CLIENT)
     public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, boolean playerSneaking) {
-        this.entityId = entity.getEntityId();
+        this.entityId = entity.getId();
         this.type = InteractionType.INTERACT;
         this.hand = hand;
         this.playerSneaking = playerSneaking;
@@ -43,7 +43,7 @@ implements Packet<ServerPlayPacketListener> {
 
     @Environment(value=EnvType.CLIENT)
     public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d hitPos, boolean playerSneaking) {
-        this.entityId = entity.getEntityId();
+        this.entityId = entity.getId();
         this.type = InteractionType.INTERACT_AT;
         this.hand = hand;
         this.hitPos = hitPos;

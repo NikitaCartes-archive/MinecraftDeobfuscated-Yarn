@@ -45,7 +45,7 @@ public class GlStateManager {
     private static final LogicOpState COLOR_LOGIC = new LogicOpState();
     private static final TexGenState TEX_GEN = new TexGenState();
     private static final StencilState STENCIL = new StencilState();
-    private static final class_5518 field_26839 = new class_5518();
+    private static final ScissorTestState SCISSOR_TEST = new ScissorTestState();
     private static final FloatBuffer colorBuffer = GlAllocationUtils.allocateFloatBuffer(4);
     private static int activeTexture;
     private static final Texture2DState[] TEXTURES;
@@ -156,17 +156,17 @@ public class GlStateManager {
 
     public static void method_31318() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        GlStateManager.field_26839.field_26840.disable();
+        GlStateManager.SCISSOR_TEST.capState.disable();
     }
 
-    public static void method_31319() {
+    public static void enableScissorTest() {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        GlStateManager.field_26839.field_26840.enable();
+        GlStateManager.SCISSOR_TEST.capState.enable();
     }
 
-    public static void method_31317(int i, int j, int k, int l) {
+    public static void scissor(int x, int y, int width, int height) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        GL20.glScissor(i, j, k, l);
+        GL20.glScissor(x, y, width, height);
     }
 
     public static void disableDepthTest() {
@@ -416,7 +416,7 @@ public class GlStateManager {
         return GL15.glGenBuffers();
     }
 
-    public static void bindBuffers(int target, int buffer) {
+    public static void bindBuffer(int target, int buffer) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         GL15.glBindBuffer(target, buffer);
     }
@@ -426,20 +426,20 @@ public class GlStateManager {
         GL15.glBufferData(target, data, usage);
     }
 
-    public static void method_31945(int i, long l, int j) {
+    public static void bufferData(int target, long size, int usage) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        GL15.glBufferData(i, l, j);
+        GL15.glBufferData(target, size, usage);
     }
 
     @Nullable
-    public static ByteBuffer method_31946(int i, int j) {
+    public static ByteBuffer mapBuffer(int target, int access) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        return GL15.glMapBuffer(i, j);
+        return GL15.glMapBuffer(target, access);
     }
 
-    public static void method_31947(int i) {
+    public static void unmapBuffer(int target) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        GL15.glUnmapBuffer(i);
+        GL15.glUnmapBuffer(target);
     }
 
     public static void deleteBuffers(int buffer) {
@@ -447,9 +447,9 @@ public class GlStateManager {
         GL15.glDeleteBuffers(buffer);
     }
 
-    public static void copyTexSubImage2d(int i, int j, int k, int l, int m, int n, int o, int p) {
+    public static void copyTexSubImage2d(int target, int level, int xOffset, int yOffset, int x, int y, int width, int height) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        GL20.glCopyTexSubImage2D(i, j, k, l, m, n, o, p);
+        GL20.glCopyTexSubImage2D(target, level, xOffset, yOffset, x, y, width, height);
     }
 
     public static void bindFramebuffer(int target, int framebuffer) {
@@ -488,15 +488,15 @@ public class GlStateManager {
         return 0;
     }
 
-    public static void blitFramebuffer(int i, int j, int k, int l, int m, int n, int o, int p, int q, int r) {
+    public static void blitFramebuffer(int srcX0, int srcY0, int srcX1, int srcY1, int dstX0, int dstY0, int dstX1, int dstY1, int mask, int filter) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         switch (fboBlitMode) {
             case BASE: {
-                GL30.glBlitFramebuffer(i, j, k, l, m, n, o, p, q, r);
+                GL30.glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
                 break;
             }
             case EXT: {
-                EXTFramebufferBlit.glBlitFramebufferEXT(i, j, k, l, m, n, o, p, q, r);
+                EXTFramebufferBlit.glBlitFramebufferEXT(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
                 break;
             }
         }
@@ -959,7 +959,7 @@ public class GlStateManager {
         return GL11.glGenTextures();
     }
 
-    public static void method_30498(int[] is) {
+    public static void genTextures(int[] is) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         GL11.glGenTextures(is);
     }
@@ -973,7 +973,7 @@ public class GlStateManager {
         }
     }
 
-    public static void method_30499(int[] is) {
+    public static void deleteTextures(int[] is) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         for (Texture2DState texture2DState : TEXTURES) {
             for (int i : is) {
@@ -1251,9 +1251,9 @@ public class GlStateManager {
         GL20.glEnableVertexAttribArray(index);
     }
 
-    public static void drawArrays(int mode, int first, int count, long l) {
+    public static void drawElements(int mode, int first, int type, long indices) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-        GL11.glDrawElements(mode, first, count, l);
+        GL11.glDrawElements(mode, first, type, indices);
     }
 
     public static void lineWidth(float width) {
@@ -1449,10 +1449,10 @@ public class GlStateManager {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_5518 {
-        public final CapabilityTracker field_26840 = new CapabilityTracker(3089);
+    static class ScissorTestState {
+        public final CapabilityTracker capState = new CapabilityTracker(3089);
 
-        private class_5518() {
+        private ScissorTestState() {
         }
     }
 

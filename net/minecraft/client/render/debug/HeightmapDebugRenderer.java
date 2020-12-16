@@ -53,8 +53,8 @@ implements DebugRenderer.Renderer {
                     Vec3f vec3f = this.method_27037(type);
                     for (int k = 0; k < 16; ++k) {
                         for (int l = 0; l < 16; ++l) {
-                            int m = ChunkSectionPos.method_32205(chunkPos.x, k);
-                            int n = ChunkSectionPos.method_32205(chunkPos.z, l);
+                            int m = ChunkSectionPos.getOffsetPos(chunkPos.x, k);
+                            int n = ChunkSectionPos.getOffsetPos(chunkPos.z, l);
                             float f = (float)((double)((float)worldAccess.getTopY(type, m, n) + (float)type.ordinal() * 0.09375f) - cameraY);
                             WorldRenderer.drawBox(bufferBuilder, (double)((float)m + 0.25f) - cameraX, f, (double)((float)n + 0.25f) - cameraZ, (double)((float)m + 0.75f) - cameraX, f + 0.09375f, (double)((float)n + 0.75f) - cameraZ, vec3f.getX(), vec3f.getY(), vec3f.getZ(), 1.0f);
                         }

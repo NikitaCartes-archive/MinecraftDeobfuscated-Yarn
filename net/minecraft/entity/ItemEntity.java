@@ -27,6 +27,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
@@ -52,7 +53,7 @@ extends Entity {
 
     public ItemEntity(World world, double x, double y, double z) {
         this((EntityType<? extends ItemEntity>)EntityType.ITEM, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         this.yaw = this.random.nextFloat() * 360.0f;
         this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
     }
@@ -63,12 +64,17 @@ extends Entity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    private ItemEntity(ItemEntity itemEntity) {
-        super(itemEntity.getType(), itemEntity.world);
-        this.setStack(itemEntity.getStack().copy());
-        this.copyPositionAndRotation(itemEntity);
-        this.age = itemEntity.age;
-        this.hoverHeight = itemEntity.hoverHeight;
+    private ItemEntity(ItemEntity entity) {
+        super(entity.getType(), entity.world);
+        this.setStack(entity.getStack().copy());
+        this.copyPositionAndRotation(entity);
+        this.age = entity.age;
+        this.hoverHeight = entity.hoverHeight;
+    }
+
+    @Override
+    public boolean occludeVibrationSignals() {
+        return ItemTags.OCCLUDES_VIBRATION_SIGNALS.contains(this.getStack().getItem());
     }
 
     @Override
@@ -99,9 +105,9 @@ extends Entity {
         Vec3d vec3d = this.getVelocity();
         float f = this.getStandingEyeHeight() - 0.11111111f;
         if (this.isTouchingWater() && this.getFluidHeight(FluidTags.WATER) > (double)f) {
-            this.applyBuoyancy();
+            this.applyWaterBuoyancy();
         } else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > (double)f) {
-            this.method_24348();
+            this.applyLavaBuoyancy();
         } else if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
         }
@@ -113,7 +119,7 @@ extends Entity {
                 this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
             }
         }
-        if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getEntityId()) % 4 == 0) {
+        if (!this.onGround || ItemEntity.squaredHorizontalLength(this.getVelocity()) > (double)1.0E-5f || (this.age + this.getId()) % 4 == 0) {
             this.move(MovementType.SELF, this.getVelocity());
             float g = 0.98f;
             if (this.onGround) {
@@ -149,12 +155,12 @@ extends Entity {
         }
     }
 
-    private void applyBuoyancy() {
+    private void applyWaterBuoyancy() {
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(vec3d.x * (double)0.99f, vec3d.y + (double)(vec3d.y < (double)0.06f ? 5.0E-4f : 0.0f), vec3d.z * (double)0.99f);
     }
 
-    private void method_24348() {
+    private void applyLavaBuoyancy() {
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(vec3d.x * (double)0.95f, vec3d.y + (double)(vec3d.y < (double)0.06f ? 5.0E-4f : 0.0f), vec3d.z * (double)0.95f);
     }
@@ -244,6 +250,7 @@ extends Entity {
         this.scheduleVelocityUpdate();
         this.health = (int)((float)this.health - amount);
         if (this.health <= 0) {
+            this.getStack().onItemEntityDestroyed(this);
             this.discard();
         }
         return false;

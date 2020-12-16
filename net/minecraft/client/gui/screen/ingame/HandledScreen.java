@@ -115,13 +115,9 @@ implements ScreenHandlerProvider<T> {
             }
             if (!this.isPointOverSlot(slot, mouseX, mouseY) || !slot.doDrawHoveringEffect()) continue;
             this.focusedSlot = slot;
-            RenderSystem.disableDepthTest();
             n = slot.x;
             o = slot.y;
-            RenderSystem.colorMask(true, true, true, false);
-            this.fillGradient(matrices, n, o, n + 16, o + 16, -2130706433, -2130706433);
-            RenderSystem.colorMask(true, true, true, true);
-            RenderSystem.enableDepthTest();
+            HandledScreen.method_33285(matrices, n, o, this.getZOffset());
         }
         this.drawForeground(matrices, mouseX, mouseY);
         PlayerInventory playerInventory = this.client.player.getInventory();
@@ -155,6 +151,14 @@ implements ScreenHandlerProvider<T> {
             this.drawItem(this.touchDropReturningStack, q, r, null);
         }
         RenderSystem.popMatrix();
+        RenderSystem.enableDepthTest();
+    }
+
+    public static void method_33285(MatrixStack matrixStack, int i, int j, int k) {
+        RenderSystem.disableDepthTest();
+        RenderSystem.colorMask(true, true, true, false);
+        HandledScreen.method_33284(matrixStack, i, j, i + 16, j + 16, -2130706433, -2130706433, k);
+        RenderSystem.colorMask(true, true, true, true);
         RenderSystem.enableDepthTest();
     }
 

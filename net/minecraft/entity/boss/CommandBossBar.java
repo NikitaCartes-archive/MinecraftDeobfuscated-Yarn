@@ -128,9 +128,9 @@ extends ServerBossBar {
         compoundTag.putInt("Max", this.maxValue);
         compoundTag.putString("Color", this.getColor().getName());
         compoundTag.putString("Overlay", this.getOverlay().getName());
-        compoundTag.putBoolean("DarkenScreen", this.getDarkenSky());
+        compoundTag.putBoolean("DarkenScreen", this.shouldDarkenSky());
         compoundTag.putBoolean("PlayBossMusic", this.hasDragonMusic());
-        compoundTag.putBoolean("CreateWorldFog", this.getThickenFog());
+        compoundTag.putBoolean("CreateWorldFog", this.shouldThickenFog());
         ListTag listTag = new ListTag();
         for (UUID uUID : this.playerUuids) {
             listTag.add(NbtHelper.fromUuid(uUID));

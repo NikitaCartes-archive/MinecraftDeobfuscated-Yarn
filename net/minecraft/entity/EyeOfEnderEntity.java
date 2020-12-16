@@ -45,7 +45,7 @@ implements FlyingItemEntity {
 
     public EyeOfEnderEntity(World world, double x, double y, double z) {
         this((EntityType<? extends EyeOfEnderEntity>)EntityType.EYE_OF_ENDER, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
     }
 
     public void setItem(ItemStack stack2) {
@@ -152,7 +152,7 @@ implements FlyingItemEntity {
             this.world.addParticle(ParticleTypes.PORTAL, d - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3, e - vec3d.y * 0.25 - 0.5, f - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3, vec3d.x, vec3d.y, vec3d.z);
         }
         if (!this.world.isClient) {
-            this.updatePosition(d, e, f);
+            this.setPosition(d, e, f);
             ++this.lifespan;
             if (this.lifespan > 80 && !this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0f, 1.0f);

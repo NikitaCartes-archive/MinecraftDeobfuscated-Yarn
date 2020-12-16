@@ -183,9 +183,9 @@ implements CrossbowUser {
     }
 
     @Override
-    protected void method_30759(float f) {
+    protected void enchantMainHandItem(float power) {
         ItemStack itemStack;
-        super.method_30759(f);
+        super.enchantMainHandItem(power);
         if (this.random.nextInt(300) == 0 && (itemStack = this.getMainHandStack()).isOf(Items.CROSSBOW)) {
             Map<Enchantment, Integer> map = EnchantmentHelper.get(itemStack);
             map.putIfAbsent(Enchantments.PIERCING, 1);

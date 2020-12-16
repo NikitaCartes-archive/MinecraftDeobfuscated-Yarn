@@ -13,9 +13,9 @@ extends CoordinateTransformer {
     default public <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> context, LayerFactory<R> parent) {
         return () -> {
             Object layerSampler = parent.make();
-            return context.createSampler((i, j) -> {
-                context.initSeed(i, j);
-                return this.sample(context, (LayerSampler)layerSampler, i, j);
+            return context.createSampler((x, z) -> {
+                context.initSeed(x, z);
+                return this.sample(context, (LayerSampler)layerSampler, x, z);
             }, layerSampler);
         };
     }

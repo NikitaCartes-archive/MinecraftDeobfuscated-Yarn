@@ -13,7 +13,7 @@ public interface ModelBakeSettings {
         return AffineTransformation.identity();
     }
 
-    default public boolean isShaded() {
+    default public boolean isUvLocked() {
         return false;
     }
 }

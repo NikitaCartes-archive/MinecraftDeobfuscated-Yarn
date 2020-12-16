@@ -178,7 +178,7 @@ extends SinglePartEntityModel<ParrotEntity> {
     }
 
     private static Pose getPose(ParrotEntity parrot) {
-        if (parrot.getSongPlaying()) {
+        if (parrot.isSongPlaying()) {
             return Pose.PARTY;
         }
         if (parrot.isInSittingPose()) {

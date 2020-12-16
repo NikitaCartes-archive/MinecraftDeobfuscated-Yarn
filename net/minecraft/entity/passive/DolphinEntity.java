@@ -22,8 +22,8 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.TargetPredicate;
-import net.minecraft.entity.ai.control.DolphinLookControl;
-import net.minecraft.entity.ai.control.MoveControl;
+import net.minecraft.entity.ai.control.AquaticLookControl;
+import net.minecraft.entity.ai.control.AquaticMoveControl;
 import net.minecraft.entity.ai.goal.BreatheAirGoal;
 import net.minecraft.entity.ai.goal.ChaseBoatGoal;
 import net.minecraft.entity.ai.goal.DolphinJumpGoal;
@@ -85,8 +85,8 @@ extends WaterCreatureEntity {
 
     public DolphinEntity(EntityType<? extends DolphinEntity> entityType, World world) {
         super((EntityType<? extends WaterCreatureEntity>)entityType, world);
-        this.moveControl = new DolphinMoveControl(this);
-        this.lookControl = new DolphinLookControl(this, 10);
+        this.moveControl = new AquaticMoveControl(this, 85, 10, 0.02f, 0.1f, true);
+        this.lookControl = new AquaticLookControl(this, 10);
         this.setCanPickUpLoot(true);
     }
 
@@ -228,7 +228,7 @@ extends WaterCreatureEntity {
 
     @Override
     public boolean canEquip(ItemStack stack) {
-        EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
         if (!this.getEquippedStack(equipmentSlot).isEmpty()) {
             return false;
         }
@@ -578,54 +578,6 @@ extends WaterCreatureEntity {
             float h = 0.02f * DolphinEntity.this.random.nextFloat();
             itemEntity.setVelocity(0.3f * -MathHelper.sin(DolphinEntity.this.yaw * ((float)Math.PI / 180)) * MathHelper.cos(DolphinEntity.this.pitch * ((float)Math.PI / 180)) + MathHelper.cos(g) * h, 0.3f * MathHelper.sin(DolphinEntity.this.pitch * ((float)Math.PI / 180)) * 1.5f, 0.3f * MathHelper.cos(DolphinEntity.this.yaw * ((float)Math.PI / 180)) * MathHelper.cos(DolphinEntity.this.pitch * ((float)Math.PI / 180)) + MathHelper.sin(g) * h);
             DolphinEntity.this.world.spawnEntity(itemEntity);
-        }
-    }
-
-    static class DolphinMoveControl
-    extends MoveControl {
-        private final DolphinEntity dolphin;
-
-        public DolphinMoveControl(DolphinEntity dolphin) {
-            super(dolphin);
-            this.dolphin = dolphin;
-        }
-
-        @Override
-        public void tick() {
-            double f;
-            double e;
-            if (this.dolphin.isTouchingWater()) {
-                this.dolphin.setVelocity(this.dolphin.getVelocity().add(0.0, 0.005, 0.0));
-            }
-            if (this.state != MoveControl.State.MOVE_TO || this.dolphin.getNavigation().isIdle()) {
-                this.dolphin.setMovementSpeed(0.0f);
-                this.dolphin.setSidewaysSpeed(0.0f);
-                this.dolphin.setUpwardSpeed(0.0f);
-                this.dolphin.setForwardSpeed(0.0f);
-                return;
-            }
-            double d = this.targetX - this.dolphin.getX();
-            double g = d * d + (e = this.targetY - this.dolphin.getY()) * e + (f = this.targetZ - this.dolphin.getZ()) * f;
-            if (g < 2.500000277905201E-7) {
-                this.entity.setForwardSpeed(0.0f);
-                return;
-            }
-            float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-            this.dolphin.bodyYaw = this.dolphin.yaw = this.changeAngle(this.dolphin.yaw, h, 10.0f);
-            this.dolphin.headYaw = this.dolphin.yaw;
-            float i = (float)(this.speed * this.dolphin.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
-            if (this.dolphin.isTouchingWater()) {
-                this.dolphin.setMovementSpeed(i * 0.02f);
-                float j = -((float)(MathHelper.atan2(e, MathHelper.sqrt(d * d + f * f)) * 57.2957763671875));
-                j = MathHelper.clamp(MathHelper.wrapDegrees(j), -85.0f, 85.0f);
-                this.dolphin.pitch = this.changeAngle(this.dolphin.pitch, j, 5.0f);
-                float k = MathHelper.cos(this.dolphin.pitch * ((float)Math.PI / 180));
-                float l = MathHelper.sin(this.dolphin.pitch * ((float)Math.PI / 180));
-                this.dolphin.forwardSpeed = k * i;
-                this.dolphin.upwardSpeed = -l * i;
-            } else {
-                this.dolphin.setMovementSpeed(i * 0.1f);
-            }
         }
     }
 }

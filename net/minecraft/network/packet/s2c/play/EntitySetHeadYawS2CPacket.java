@@ -21,7 +21,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public EntitySetHeadYawS2CPacket(Entity entity, byte headYaw) {
-        this.entity = entity.getEntityId();
+        this.entity = entity.getId();
         this.headYaw = headYaw;
     }
 

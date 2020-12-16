@@ -71,7 +71,7 @@ extends ForwardingDynamicOps<T> {
      * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, Codec)
      */
     protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean allowInlineDefinitions) {
-        Optional optional = this.registryManager.getOptional(registryKey);
+        Optional optional = this.registryManager.getOptionalMutable(registryKey);
         if (!optional.isPresent()) {
             return DataResult.error("Unknown registry: " + registryKey);
         }
@@ -148,7 +148,7 @@ extends ForwardingDynamicOps<T> {
     }
 
     protected <E> DataResult<Registry<E>> method_31152(RegistryKey<? extends Registry<E>> registryKey) {
-        return this.registryManager.getOptional(registryKey).map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle())).orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
+        return this.registryManager.getOptionalMutable(registryKey).map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle())).orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
     }
 
     public static interface EntryLoader {

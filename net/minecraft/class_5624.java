@@ -53,6 +53,21 @@ implements TestListener {
     }
 
     @Override
+    public void method_33317(GameTest gameTest) {
+        ++this.field_27809;
+        if (!gameTest.method_32241()) {
+            class_5624.method_33320(gameTest, gameTest.getStructurePath() + " passed!");
+            return;
+        }
+        if (this.field_27809 >= gameTest.method_32243()) {
+            class_5624.method_33320(gameTest, gameTest + " passed " + this.field_27809 + " times of " + this.field_27808 + " attempts.");
+        } else {
+            class_5624.method_32248(this.field_27810.getWorld(), Formatting.GREEN, "Flaky test " + this.field_27810 + " succeeded, attempt: " + this.field_27808 + " successes: " + this.field_27809);
+            this.method_32246();
+        }
+    }
+
+    @Override
     public void onFailed(GameTest test) {
         if (!test.method_32241()) {
             class_5624.method_32254(test, test.getThrowable());
@@ -69,6 +84,16 @@ implements TestListener {
         } else {
             class_5624.method_32254(test, new class_5622(this.field_27808, this.field_27809, test));
         }
+    }
+
+    public static void method_33320(GameTest gameTest, String string) {
+        class_5624.method_32253(gameTest, Blocks.LIME_STAINED_GLASS);
+        class_5624.method_33321(gameTest, string);
+    }
+
+    private static void method_33321(GameTest gameTest, String string) {
+        class_5624.method_32248(gameTest.getWorld(), Formatting.GREEN, string);
+        class_5623.method_33319(gameTest);
     }
 
     protected static void method_32254(GameTest gameTest, Throwable throwable) {

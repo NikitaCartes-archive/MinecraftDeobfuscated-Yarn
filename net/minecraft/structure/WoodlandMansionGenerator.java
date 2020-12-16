@@ -948,7 +948,7 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
             if (metadata.startsWith("Chest")) {
                 BlockRotation blockRotation = this.placementData.getRotation();
                 BlockState blockState = Blocks.CHEST.getDefaultState();
@@ -961,16 +961,16 @@ public class WoodlandMansionGenerator {
                 } else if ("ChestNorth".equals(metadata)) {
                     blockState = (BlockState)blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.NORTH));
                 }
-                this.addChest(serverWorldAccess, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
+                this.addChest(world, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
             } else {
                 IllagerEntity illagerEntity;
                 switch (metadata) {
                     case "Mage": {
-                        illagerEntity = EntityType.EVOKER.create(serverWorldAccess.toServerWorld());
+                        illagerEntity = EntityType.EVOKER.create(world.toServerWorld());
                         break;
                     }
                     case "Warrior": {
-                        illagerEntity = EntityType.VINDICATOR.create(serverWorldAccess.toServerWorld());
+                        illagerEntity = EntityType.VINDICATOR.create(world.toServerWorld());
                         break;
                     }
                     default: {
@@ -979,9 +979,9 @@ public class WoodlandMansionGenerator {
                 }
                 illagerEntity.setPersistent();
                 illagerEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-                illagerEntity.initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
-                serverWorldAccess.spawnEntityAndPassengers(illagerEntity);
-                serverWorldAccess.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+                illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+                world.spawnEntityAndPassengers(illagerEntity);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
             }
         }
     }

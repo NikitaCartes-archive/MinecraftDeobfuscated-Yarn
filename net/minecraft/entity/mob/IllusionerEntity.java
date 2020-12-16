@@ -229,7 +229,7 @@ implements RangedAttackMob {
             if (IllusionerEntity.this.getTarget() == null) {
                 return false;
             }
-            if (IllusionerEntity.this.getTarget().getEntityId() == this.targetId) {
+            if (IllusionerEntity.this.getTarget().getId() == this.targetId) {
                 return false;
             }
             return IllusionerEntity.this.world.getLocalDifficulty(IllusionerEntity.this.getBlockPos()).isHarderThan(Difficulty.NORMAL.ordinal());
@@ -238,7 +238,7 @@ implements RangedAttackMob {
         @Override
         public void start() {
             super.start();
-            this.targetId = IllusionerEntity.this.getTarget().getEntityId();
+            this.targetId = IllusionerEntity.this.getTarget().getId();
         }
 
         @Override

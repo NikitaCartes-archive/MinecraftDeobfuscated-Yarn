@@ -39,7 +39,7 @@ extends Entity {
 
     public ExperienceOrbEntity(World world, double x, double y, double z, int amount) {
         this((EntityType<? extends ExperienceOrbEntity>)EntityType.EXPERIENCE_ORB, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         this.yaw = (float)(this.random.nextDouble() * 360.0);
         this.setVelocity((this.random.nextDouble() * (double)0.2f - (double)0.1f) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * (double)0.2f - (double)0.1f) * 2.0);
         this.amount = amount;
@@ -138,11 +138,11 @@ extends Entity {
     }
 
     private boolean isMergeable(ExperienceOrbEntity other) {
-        return other != this && ExperienceOrbEntity.isMergeable(other, this.getEntityId(), this.amount);
+        return other != this && ExperienceOrbEntity.isMergeable(other, this.getId(), this.amount);
     }
 
     private static boolean isMergeable(ExperienceOrbEntity orb, int seed, int amount) {
-        return !orb.isRemoved() && (orb.getEntityId() - seed) % 40 == 0 && orb.amount == amount;
+        return !orb.isRemoved() && (orb.getId() - seed) % 40 == 0 && orb.amount == amount;
     }
 
     private void merge(ExperienceOrbEntity other) {

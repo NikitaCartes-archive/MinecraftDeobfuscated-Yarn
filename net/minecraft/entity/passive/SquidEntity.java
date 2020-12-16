@@ -62,7 +62,7 @@ extends WaterCreatureEntity {
 
     public SquidEntity(EntityType<? extends SquidEntity> entityType, World world) {
         super((EntityType<? extends WaterCreatureEntity>)entityType, world);
-        this.random.setSeed(this.getEntityId());
+        this.random.setSeed(this.getId());
         this.thrustTimerSpeed = 1.0f / (this.random.nextFloat() + 1.0f) * 0.2f;
     }
 

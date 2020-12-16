@@ -14,8 +14,8 @@ public class SpecialRecipeSerializer<T extends Recipe<?>>
 implements RecipeSerializer<T> {
     private final Function<Identifier, T> id;
 
-    public SpecialRecipeSerializer(Function<Identifier, T> function) {
-        this.id = function;
+    public SpecialRecipeSerializer(Function<Identifier, T> id) {
+        this.id = id;
     }
 
     @Override

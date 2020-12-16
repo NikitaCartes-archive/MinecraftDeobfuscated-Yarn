@@ -519,7 +519,7 @@ AutoCloseable {
     public List<Entity> getOtherEntities(@Nullable Entity except, Box box, Predicate<? super Entity> predicate) {
         this.getProfiler().visit("getEntities");
         ArrayList<Entity> list = Lists.newArrayList();
-        this.method_31592().method_31807(box, entity2 -> {
+        this.getEntityIdMap().method_31807(box, entity2 -> {
             if (entity2 != except && predicate.test((Entity)entity2)) {
                 list.add((Entity)entity2);
             }
@@ -537,7 +537,7 @@ AutoCloseable {
     public <T extends Entity> List<T> getEntitiesByType(class_5575<Entity, T> arg, Box box, Predicate<? super T> predicate) {
         this.getProfiler().visit("getEntities");
         ArrayList list = Lists.newArrayList();
-        this.method_31592().method_31805(arg, box, entity -> {
+        this.getEntityIdMap().method_31805(arg, box, entity -> {
             if (predicate.test(entity)) {
                 list.add(entity);
             }
@@ -845,9 +845,9 @@ AutoCloseable {
         return this.debugWorld;
     }
 
-    protected abstract class_5577<Entity> method_31592();
+    protected abstract class_5577<Entity> getEntityIdMap();
 
-    protected void method_32886(@Nullable Entity entity, GameEvent gameEvent, BlockPos blockPos, int i) {
+    protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos blockPos, int i) {
         int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
         int k = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
         int l = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
@@ -859,7 +859,7 @@ AutoCloseable {
                 WorldChunk chunk = this.getChunkManager().getWorldChunk(p, q);
                 if (chunk == null) continue;
                 for (int r = n; r <= o; ++r) {
-                    chunk.method_32914(r).method_32943(gameEvent, entity, blockPos);
+                    chunk.method_32914(r).listen(gameEvent, entity, blockPos);
                 }
             }
         }

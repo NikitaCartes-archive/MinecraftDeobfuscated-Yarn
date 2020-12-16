@@ -357,7 +357,7 @@ implements CrossbowUser {
      * Returns whether this piglin can equip into or replace current equipment slot.
      */
     protected boolean canEquipStack(ItemStack stack) {
-        EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
         ItemStack itemStack = this.getEquippedStack(equipmentSlot);
         return this.prefersNewEquipment(stack, itemStack);
     }

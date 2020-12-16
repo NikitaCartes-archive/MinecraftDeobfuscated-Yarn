@@ -31,13 +31,13 @@ public class StorageIoWorker
 implements AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private final AtomicBoolean closed = new AtomicBoolean();
-    private final TaskExecutor<TaskQueue.PrioritizedTask> field_24468;
+    private final TaskExecutor<TaskQueue.PrioritizedTask> executor;
     private final RegionBasedStorage storage;
     private final Map<ChunkPos, Result> results = Maps.newLinkedHashMap();
 
-    protected StorageIoWorker(File file, boolean bl, String string) {
-        this.storage = new RegionBasedStorage(file, bl);
-        this.field_24468 = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + string);
+    protected StorageIoWorker(File directory, boolean dsync, String name) {
+        this.storage = new RegionBasedStorage(directory, dsync);
+        this.executor = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
     }
 
     public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable CompoundTag nbt) {
@@ -91,7 +91,7 @@ implements AutoCloseable {
     }
 
     private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> supplier) {
-        return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(Priority.FOREGROUND.ordinal(), () -> this.method_27939(messageListener, (Supplier)supplier)));
+        return this.executor.method_27918(messageListener -> new TaskQueue.PrioritizedTask(Priority.FOREGROUND.ordinal(), () -> this.method_27939(messageListener, (Supplier)supplier)));
     }
 
     private void writeResult() {
@@ -106,7 +106,7 @@ implements AutoCloseable {
     }
 
     private void method_27945() {
-        this.field_24468.send(new TaskQueue.PrioritizedTask(Priority.BACKGROUND.ordinal(), this::writeResult));
+        this.executor.send(new TaskQueue.PrioritizedTask(Priority.BACKGROUND.ordinal(), this::writeResult));
     }
 
     private void write(ChunkPos pos, Result result) {
@@ -124,8 +124,8 @@ implements AutoCloseable {
         if (!this.closed.compareAndSet(false, true)) {
             return;
         }
-        this.field_24468.ask(messageListener -> new TaskQueue.PrioritizedTask(Priority.SHUTDOWN.ordinal(), () -> messageListener.send(Unit.INSTANCE))).join();
-        this.field_24468.close();
+        this.executor.ask(messageListener -> new TaskQueue.PrioritizedTask(Priority.SHUTDOWN.ordinal(), () -> messageListener.send(Unit.INSTANCE))).join();
+        this.executor.close();
         try {
             this.storage.close();
         } catch (Exception exception) {

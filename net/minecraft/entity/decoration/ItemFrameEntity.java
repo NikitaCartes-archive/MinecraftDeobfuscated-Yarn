@@ -238,7 +238,7 @@ extends AbstractDecorationEntity {
     private void removeFromFrame(ItemStack map) {
         MapState mapState;
         if (map.isOf(Items.FILLED_MAP) && (mapState = FilledMapItem.getOrCreateMapState(map, this.world)) != null) {
-            mapState.removeFrame(this.attachmentPos, this.getEntityId());
+            mapState.removeFrame(this.attachmentPos, this.getId());
             mapState.setDirty(true);
         }
         map.setHolder(null);

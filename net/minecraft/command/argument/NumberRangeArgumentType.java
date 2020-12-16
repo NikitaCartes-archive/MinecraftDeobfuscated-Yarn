@@ -14,11 +14,11 @@ import net.minecraft.server.command.ServerCommandSource;
 
 public interface NumberRangeArgumentType<T extends NumberRange<?>>
 extends ArgumentType<T> {
-    public static IntRangeArgumentType numberRange() {
+    public static IntRangeArgumentType intRange() {
         return new IntRangeArgumentType();
     }
 
-    public static FloatRangeArgumentType method_30918() {
+    public static FloatRangeArgumentType floatRange() {
         return new FloatRangeArgumentType();
     }
 

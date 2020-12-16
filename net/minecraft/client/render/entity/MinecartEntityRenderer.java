@@ -40,7 +40,7 @@ extends EntityRenderer<T> {
     public void render(T abstractMinecartEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         super.render(abstractMinecartEntity, f, g, matrixStack, vertexConsumerProvider, i);
         matrixStack.push();
-        long l = (long)((Entity)abstractMinecartEntity).getEntityId() * 493286711L;
+        long l = (long)((Entity)abstractMinecartEntity).getId() * 493286711L;
         l = l * l * 4392167121L + l * 98761L;
         float h = (((float)(l >> 16 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;
         float j = (((float)(l >> 20 & 7L) + 0.5f) / 8.0f - 0.5f) * 0.004f;

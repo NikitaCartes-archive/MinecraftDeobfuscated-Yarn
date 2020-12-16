@@ -135,12 +135,12 @@ extends PassiveEntity {
         if (this.isBreedingItem(itemStack)) {
             int i = this.getBreedingAge();
             if (!this.world.isClient && i == 0 && this.canEat()) {
-                this.eat(player, itemStack);
+                this.eat(player, hand, itemStack);
                 this.lovePlayer(player);
                 return ActionResult.SUCCESS;
             }
             if (this.isBaby()) {
-                this.eat(player, itemStack);
+                this.eat(player, hand, itemStack);
                 this.growUp((int)((float)(-i / 20) * 0.1f), true);
                 return ActionResult.success(this.world.isClient);
             }
@@ -151,7 +151,7 @@ extends PassiveEntity {
         return super.interactMob(player, hand);
     }
 
-    protected void eat(PlayerEntity player, ItemStack stack) {
+    protected void eat(PlayerEntity player, Hand hand, ItemStack stack) {
         if (!player.getAbilities().creativeMode) {
             stack.decrement(1);
         }
@@ -207,8 +207,8 @@ extends PassiveEntity {
         return this.isInLove() && other.isInLove();
     }
 
-    public void breed(ServerWorld serverWorld, AnimalEntity other) {
-        PassiveEntity passiveEntity = this.createChild(serverWorld, other);
+    public void breed(ServerWorld world, AnimalEntity other) {
+        PassiveEntity passiveEntity = this.createChild(world, other);
         if (passiveEntity == null) {
             return;
         }
@@ -226,10 +226,10 @@ extends PassiveEntity {
         other.resetLoveTicks();
         passiveEntity.setBaby(true);
         passiveEntity.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0f, 0.0f);
-        serverWorld.spawnEntityAndPassengers(passiveEntity);
-        serverWorld.sendEntityStatus(this, (byte)18);
-        if (serverWorld.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
-            serverWorld.spawnEntity(new ExperienceOrbEntity(serverWorld, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
+        world.spawnEntityAndPassengers(passiveEntity);
+        world.sendEntityStatus(this, (byte)18);
+        if (world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT)) {
+            world.spawnEntity(new ExperienceOrbEntity(world, this.getX(), this.getY(), this.getZ(), this.getRandom().nextInt(7) + 1));
         }
     }
 

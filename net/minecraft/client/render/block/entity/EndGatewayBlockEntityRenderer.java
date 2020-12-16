@@ -33,18 +33,18 @@ extends EndPortalBlockEntityRenderer<EndGatewayBlockEntity> {
             int k = MathHelper.floor((double)g * d);
             float[] fs = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
             long l = endGatewayBlockEntity.getWorld().getTime();
-            BeaconBlockEntityRenderer.renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, -k, k * 2, fs, 0.15f, 0.175f);
+            BeaconBlockEntityRenderer.renderBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, -k, k * 2, fs, 0.15f, 0.175f);
         }
         super.render(endGatewayBlockEntity, f, matrixStack, vertexConsumerProvider, i, j);
     }
 
     @Override
-    protected int method_3592(double d) {
-        return super.method_3592(d) + 1;
+    protected int getDetailLevel(double distance) {
+        return super.getDetailLevel(distance) + 1;
     }
 
     @Override
-    protected float method_3594() {
+    protected float getTopYOffset() {
         return 1.0f;
     }
 }

@@ -120,9 +120,9 @@ implements PaletteResizeListener<T> {
         return object == null ? this.defaultValue : object;
     }
 
-    protected void set(int i, T object) {
-        int j = this.palette.getIndex(object);
-        this.data.set(i, j);
+    protected void set(int index, T object) {
+        int i = this.palette.getIndex(object);
+        this.data.set(index, i);
     }
 
     public T get(int x, int y, int z) {
@@ -180,7 +180,7 @@ implements PaletteResizeListener<T> {
         this.unlock();
     }
 
-    public void write(CompoundTag compoundTag, String string, String string2) {
+    public void write(CompoundTag tag, String paletteKey, String dataKey) {
         this.lock();
         BiMapPalette<T> biMapPalette = new BiMapPalette<T>(this.idList, this.paletteSize, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer);
         T object = this.defaultValue;
@@ -196,13 +196,13 @@ implements PaletteResizeListener<T> {
         }
         ListTag listTag = new ListTag();
         biMapPalette.toTag(listTag);
-        compoundTag.put(string, listTag);
+        tag.put(paletteKey, listTag);
         int k = Math.max(4, MathHelper.log2DeBruijn(listTag.size()));
         PackedIntegerArray packedIntegerArray = new PackedIntegerArray(k, 4096);
         for (int l = 0; l < is.length; ++l) {
             packedIntegerArray.set(l, is[l]);
         }
-        compoundTag.putLongArray(string2, packedIntegerArray.getStorage());
+        tag.putLongArray(dataKey, packedIntegerArray.getStorage());
         this.unlock();
     }
 

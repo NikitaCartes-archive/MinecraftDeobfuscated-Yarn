@@ -156,16 +156,13 @@ implements Predicate<ItemStack> {
             throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
         }
         if (json.has("item")) {
-            Identifier identifier = new Identifier(JsonHelper.getString(json, "item"));
-            Item item = Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
+            Identifier identifier2 = new Identifier(JsonHelper.getString(json, "item"));
+            Item item = Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier2 + "'"));
             return new StackEntry(new ItemStack(item));
         }
         if (json.has("tag")) {
-            Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getItems().getTag(identifier);
-            if (tag == null) {
-                throw new JsonSyntaxException("Unknown item tag '" + identifier + "'");
-            }
+            Identifier identifier3 = new Identifier(JsonHelper.getString(json, "tag"));
+            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier3, identifier -> new JsonSyntaxException("Unknown item tag '" + identifier + "'"));
             return new TagEntry(tag);
         }
         throw new JsonParseException("An ingredient entry needs either a tag or an item");
@@ -196,7 +193,7 @@ implements Predicate<ItemStack> {
         @Override
         public JsonObject toJson() {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getItems().getTagId(this.tag).toString());
+            jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.ITEM_KEY, this.tag, () -> new IllegalStateException("Unknown item tag")).toString());
             return jsonObject;
         }
     }

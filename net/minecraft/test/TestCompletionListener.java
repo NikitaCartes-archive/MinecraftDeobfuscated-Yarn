@@ -7,5 +7,7 @@ import net.minecraft.test.GameTest;
 
 public interface TestCompletionListener {
     public void onTestFailed(GameTest var1);
+
+    public void method_33322(GameTest var1);
 }
 

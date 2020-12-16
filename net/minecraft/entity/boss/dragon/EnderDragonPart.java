@@ -66,7 +66,7 @@ extends Entity {
     }
 
     @Override
-    public boolean method_31746() {
+    public boolean shouldSave() {
         return false;
     }
 }

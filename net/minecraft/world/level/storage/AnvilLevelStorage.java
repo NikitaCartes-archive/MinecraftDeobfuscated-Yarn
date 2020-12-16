@@ -23,7 +23,6 @@ import net.minecraft.util.WorldSavePath;
 import net.minecraft.util.dynamic.RegistryOps;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
-import net.minecraft.util.registry.MutableRegistry;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
@@ -63,7 +62,7 @@ public class AnvilLevelStorage {
         RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, ResourceManager.Empty.INSTANCE, impl);
         SaveProperties saveProperties = session.readLevelProperties(registryOps, DataPackSettings.SAFE_MODE);
         long l = saveProperties != null ? saveProperties.getGeneratorOptions().getSeed() : 0L;
-        MutableRegistry<Biome> registry = impl.get(Registry.BIOME_KEY);
+        Registry<Biome> registry = impl.get(Registry.BIOME_KEY);
         BiomeSource biomeSource = saveProperties != null && saveProperties.getGeneratorOptions().isFlatWorld() ? new FixedBiomeSource(registry.getOrThrow(BiomeKeys.PLAINS)) : new VanillaLayeredBiomeSource(l, false, false, registry);
         AnvilLevelStorage.convertRegions(impl, new File(file, "region"), list, biomeSource, 0, i, progressListener);
         AnvilLevelStorage.convertRegions(impl, new File(file2, "region"), list2, new FixedBiomeSource(registry.getOrThrow(BiomeKeys.NETHER_WASTES)), list.size(), i, progressListener);

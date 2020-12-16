@@ -19,7 +19,7 @@ import net.minecraft.world.MobSpawnerLogic;
 @Environment(value=EnvType.CLIENT)
 public class MobSpawnerBlockEntityRenderer
 implements BlockEntityRenderer<MobSpawnerBlockEntity> {
-    public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+    public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
     }
 
     @Override

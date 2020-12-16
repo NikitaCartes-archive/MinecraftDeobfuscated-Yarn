@@ -58,7 +58,7 @@ implements Wearable {
             return false;
         }
         LivingEntity livingEntity = (LivingEntity)list.get(0);
-        EquipmentSlot equipmentSlot = MobEntity.method_32326(armor);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(armor);
         ItemStack itemStack = armor.split(1);
         livingEntity.equipStack(equipmentSlot, itemStack);
         if (livingEntity instanceof MobEntity) {
@@ -107,7 +107,7 @@ implements Wearable {
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        EquipmentSlot equipmentSlot = MobEntity.method_32326(itemStack);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
         ItemStack itemStack2 = user.getEquippedStack(equipmentSlot);
         if (itemStack2.isEmpty()) {
             user.equipStack(equipmentSlot, itemStack.copy());

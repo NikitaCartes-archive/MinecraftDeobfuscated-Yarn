@@ -66,7 +66,7 @@ public class DamageSourcePredicate {
         if (this.isFire != null && this.isFire.booleanValue() != damageSource.isFire()) {
             return false;
         }
-        if (this.isMagic != null && this.isMagic.booleanValue() != damageSource.getMagic()) {
+        if (this.isMagic != null && this.isMagic.booleanValue() != damageSource.isMagic()) {
             return false;
         }
         if (this.isLightning != null && this.isLightning != (damageSource == DamageSource.LIGHTNING_BOLT)) {

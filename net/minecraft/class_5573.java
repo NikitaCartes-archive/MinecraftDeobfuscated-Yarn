@@ -18,17 +18,17 @@ import java.util.function.Predicate;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import net.minecraft.class_5568;
 import net.minecraft.class_5572;
 import net.minecraft.class_5575;
 import net.minecraft.class_5584;
+import net.minecraft.entity.EntityLike;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import org.jetbrains.annotations.Nullable;
 
-public class class_5573<T extends class_5568> {
+public class class_5573<T extends EntityLike> {
     private final Class<T> field_27250;
     private final Long2ObjectFunction<class_5584> field_27251;
     private final Long2ObjectMap<class_5572<T>> field_27252 = new Long2ObjectOpenHashMap<class_5572<T>>();
@@ -112,8 +112,8 @@ public class class_5573<T extends class_5568> {
         return longSet;
     }
 
-    private static <T extends class_5568> Predicate<T> method_31775(Box box) {
-        return arg -> arg.getBoundingBox().intersects(box);
+    private static <T extends EntityLike> Predicate<T> method_31775(Box box) {
+        return entityLike -> entityLike.getBoundingBox().intersects(box);
     }
 
     public void method_31783(Box box, Consumer<T> consumer) {

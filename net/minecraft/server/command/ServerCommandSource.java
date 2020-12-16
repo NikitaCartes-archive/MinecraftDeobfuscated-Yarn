@@ -142,7 +142,7 @@ implements CommandSource {
         if (world == this.world) {
             return this;
         }
-        double d = DimensionType.method_31109(this.world.getDimension(), world.getDimension());
+        double d = DimensionType.getCoordinateScaleFactor(this.world.getDimension(), world.getDimension());
         Vec3d vec3d = new Vec3d(this.position.x * d, this.position.y, this.position.z * d);
         return new ServerCommandSource(this.output, vec3d, this.rotation, world, this.level, this.simpleName, this.name, this.server, this.entity, this.silent, this.resultConsumer, this.entityAnchor);
     }

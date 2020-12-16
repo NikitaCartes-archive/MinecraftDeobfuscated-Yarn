@@ -39,7 +39,7 @@ extends AbstractCommandBlockScreen {
     protected void syncSettingsToServer(CommandBlockExecutor commandExecutor) {
         if (commandExecutor instanceof CommandBlockMinecartEntity.CommandExecutor) {
             CommandBlockMinecartEntity.CommandExecutor commandExecutor2 = (CommandBlockMinecartEntity.CommandExecutor)commandExecutor;
-            this.client.getNetworkHandler().sendPacket(new UpdateCommandBlockMinecartC2SPacket(commandExecutor2.getMinecart().getEntityId(), this.consoleCommandTextField.getText(), commandExecutor.isTrackingOutput()));
+            this.client.getNetworkHandler().sendPacket(new UpdateCommandBlockMinecartC2SPacket(commandExecutor2.getMinecart().getId(), this.consoleCommandTextField.getText(), commandExecutor.isTrackingOutput()));
         }
     }
 }

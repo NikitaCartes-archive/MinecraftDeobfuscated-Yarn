@@ -756,14 +756,14 @@ Flutterer {
         private int ticks;
 
         PollinateGoal() {
-            this.flowerPredicate = blockState -> {
-                if (blockState.isIn(BlockTags.TALL_FLOWERS)) {
-                    if (blockState.isOf(Blocks.SUNFLOWER)) {
-                        return blockState.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;
+            this.flowerPredicate = state -> {
+                if (state.isIn(BlockTags.TALL_FLOWERS)) {
+                    if (state.isOf(Blocks.SUNFLOWER)) {
+                        return state.get(TallPlantBlock.HALF) == DoubleBlockHalf.UPPER;
                     }
                     return true;
                 }
-                return blockState.isIn(BlockTags.SMALL_FLOWERS);
+                return state.isIn(BlockTags.SMALL_FLOWERS);
             };
             this.setControls(EnumSet.of(Goal.Control.MOVE));
         }

@@ -43,8 +43,8 @@ implements DataProvider {
     private final DataGenerator root;
     private final List<Pair<Supplier<Consumer<BiConsumer<Identifier, LootTable.Builder>>>, LootContextType>> lootTypeGenerators = ImmutableList.of(Pair.of(FishingLootTableGenerator::new, LootContextTypes.FISHING), Pair.of(ChestLootTableGenerator::new, LootContextTypes.CHEST), Pair.of(EntityLootTableGenerator::new, LootContextTypes.ENTITY), Pair.of(BlockLootTableGenerator::new, LootContextTypes.BLOCK), Pair.of(BarterLootTableGenerator::new, LootContextTypes.BARTER), Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT));
 
-    public LootTablesProvider(DataGenerator dataGenerator) {
-        this.root = dataGenerator;
+    public LootTablesProvider(DataGenerator root) {
+        this.root = root;
     }
 
     @Override

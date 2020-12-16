@@ -260,7 +260,7 @@ public class EntitySelectorOptions {
             }
             if (entitySelectorReader.readTagCharacter()) {
                 Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
-                entitySelectorReader.setPredicate(entity -> entity.getType().isIn(entity.getServer().getTagManager().getEntityTypes().getTagOrEmpty(identifier)) != bl);
+                entitySelectorReader.setPredicate(entity -> entity.getType().isIn(entity.getServer().getTagManager().getOrCreateTagGroup(Registry.ENTITY_TYPE_KEY).getTagOrEmpty(identifier)) != bl);
             } else {
                 Identifier identifier = Identifier.fromCommandInput(entitySelectorReader.getReader());
                 EntityType<?> entityType = Registry.ENTITY_TYPE.getOrEmpty(identifier).orElseThrow(() -> {

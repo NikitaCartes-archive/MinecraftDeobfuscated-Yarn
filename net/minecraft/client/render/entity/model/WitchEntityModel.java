@@ -42,7 +42,7 @@ extends VillagerResemblingModel<T> {
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         this.nose.setPivot(0.0f, -2.0f, 0.0f);
-        float f = 0.01f * (float)(((Entity)entity).getEntityId() % 10);
+        float f = 0.01f * (float)(((Entity)entity).getId() % 10);
         this.nose.pitch = MathHelper.sin((float)((Entity)entity).age * f) * 4.5f * ((float)Math.PI / 180);
         this.nose.yaw = 0.0f;
         this.nose.roll = MathHelper.cos((float)((Entity)entity).age * f) * 2.5f * ((float)Math.PI / 180);

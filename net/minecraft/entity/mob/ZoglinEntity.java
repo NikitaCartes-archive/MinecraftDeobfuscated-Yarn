@@ -77,34 +77,34 @@ Hoglin {
     @Override
     protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
         Brain<ZoglinEntity> brain = this.createBrainProfile().deserialize(dynamic);
-        ZoglinEntity.method_26928(brain);
-        ZoglinEntity.method_26929(brain);
-        ZoglinEntity.method_26930(brain);
+        ZoglinEntity.addCoreTasks(brain);
+        ZoglinEntity.addIdleTasks(brain);
+        ZoglinEntity.addFightTasks(brain);
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
         brain.resetPossibleActivities();
         return brain;
     }
 
-    private static void method_26928(Brain<ZoglinEntity> brain) {
+    private static void addCoreTasks(Brain<ZoglinEntity> brain) {
         brain.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask()));
     }
 
-    private static void method_26929(Brain<ZoglinEntity> brain) {
-        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new UpdateAttackTargetTask<ZoglinEntity>(ZoglinEntity::method_26934), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.4f), 2), Pair.of(new GoTowardsLookTarget(0.4f, 3), 2), Pair.of(new WaitTask(30, 60), 1)))));
+    private static void addIdleTasks(Brain<ZoglinEntity> brain) {
+        brain.setTaskList(Activity.IDLE, 10, ImmutableList.of(new UpdateAttackTargetTask<ZoglinEntity>(ZoglinEntity::getHoglinTarget), new TimeLimitedTask<LivingEntity>(new FollowMobTask(8.0f), IntRange.between(30, 60)), new RandomTask(ImmutableList.of(Pair.of(new StrollTask(0.4f), 2), Pair.of(new GoTowardsLookTarget(0.4f, 3), 2), Pair.of(new WaitTask(30, 60), 1)))));
     }
 
-    private static void method_26930(Brain<ZoglinEntity> brain) {
+    private static void addFightTasks(Brain<ZoglinEntity> brain) {
         brain.setTaskList(Activity.FIGHT, 10, ImmutableList.of(new RangedApproachTask(1.0f), new ConditionalTask<MobEntity>(ZoglinEntity::isAdult, new MeleeAttackTask(40)), new ConditionalTask<MobEntity>(ZoglinEntity::isBaby, new MeleeAttackTask(15)), new ForgetAttackTargetTask()), MemoryModuleType.ATTACK_TARGET);
     }
 
-    private Optional<? extends LivingEntity> method_26934() {
-        return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())).stream().filter(ZoglinEntity::method_26936).findFirst();
+    private Optional<? extends LivingEntity> getHoglinTarget() {
+        return ((List)this.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).orElse(ImmutableList.of())).stream().filter(ZoglinEntity::shouldAttack).findFirst();
     }
 
-    private static boolean method_26936(LivingEntity livingEntity) {
-        EntityType<?> entityType = livingEntity.getType();
-        return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(livingEntity);
+    private static boolean shouldAttack(LivingEntity entity) {
+        EntityType<?> entityType = entity.getType();
+        return entityType != EntityType.ZOGLIN && entityType != EntityType.CREEPER && EntityPredicates.EXCEPT_CREATIVE_SPECTATOR_OR_PEACEFUL.test(entity);
     }
 
     @Override

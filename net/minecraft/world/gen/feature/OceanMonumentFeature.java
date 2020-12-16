@@ -42,12 +42,12 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     @Override
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig) {
-        Set<Biome> set = biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 16);
+        Set<Biome> set = biomeSource.getBiomesInArea(ChunkSectionPos.getOffsetPos(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.getOffsetPos(j, 9), 16);
         for (Biome biome2 : set) {
             if (biome2.getGenerationSettings().hasStructureFeature(this)) continue;
             return false;
         }
-        Set<Biome> set2 = biomeSource.getBiomesInArea(ChunkSectionPos.method_32205(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.method_32205(j, 9), 29);
+        Set<Biome> set2 = biomeSource.getBiomesInArea(ChunkSectionPos.getOffsetPos(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.getOffsetPos(j, 9), 29);
         for (Biome biome3 : set2) {
             if (biome3.getCategory() == Biome.Category.OCEAN || biome3.getCategory() == Biome.Category.RIVER) continue;
             return false;

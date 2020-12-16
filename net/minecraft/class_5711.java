@@ -41,11 +41,14 @@ implements class_5713 {
     }
 
     @Override
-    public void method_32943(GameEvent gameEvent, @Nullable Entity entity, BlockPos blockPos) {
-        boolean bl;
-        boolean bl2 = bl = this.listeners.stream().filter(gameEventListener -> this.method_32936(this.world, gameEvent, entity, blockPos, (GameEventListener)gameEventListener)).count() > 0L;
+    public void listen(GameEvent event, @Nullable Entity entity, BlockPos pos) {
+        boolean bl = false;
+        for (GameEventListener gameEventListener : this.listeners) {
+            if (!this.method_32936(this.world, event, entity, pos, gameEventListener)) continue;
+            bl = true;
+        }
         if (bl) {
-            DebugInfoSender.method_33139(this.world, gameEvent, blockPos);
+            DebugInfoSender.method_33139(this.world, event, pos);
         }
     }
 
@@ -56,7 +59,7 @@ implements class_5713 {
             return false;
         }
         double d = optional.get().getSquaredDistance(blockPos, false);
-        return d <= (double)(i = gameEventListener.getRange() * gameEventListener.getRange()) && gameEventListener.method_32947(world, gameEvent, entity, blockPos);
+        return d <= (double)(i = gameEventListener.getRange() * gameEventListener.getRange()) && gameEventListener.listen(world, gameEvent, entity, blockPos);
     }
 }
 

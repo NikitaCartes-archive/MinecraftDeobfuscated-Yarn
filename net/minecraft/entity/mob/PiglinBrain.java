@@ -86,8 +86,8 @@ public class PiglinBrain {
     private static final IntRange MEMORY_TRANSFER_TASK_DURATION = Durations.betweenSeconds(10, 40);
     private static final IntRange RIDE_TARGET_MEMORY_DURATION = Durations.betweenSeconds(10, 30);
     private static final IntRange AVOID_MEMORY_DURATION = Durations.betweenSeconds(5, 20);
-    private static final IntRange field_25384 = Durations.betweenSeconds(5, 7);
-    private static final IntRange field_25698 = Durations.betweenSeconds(5, 7);
+    private static final IntRange GO_TO_ZOMBIFIED_MEMORY_DURATION = Durations.betweenSeconds(5, 7);
+    private static final IntRange GO_TO_NEMESIS_MEMORY_DURATION = Durations.betweenSeconds(5, 7);
 
     protected static Brain<?> create(PiglinEntity piglin, Brain<PiglinEntity> brain) {
         PiglinBrain.addCoreActivities(brain);
@@ -109,7 +109,7 @@ public class PiglinBrain {
     }
 
     private static void addCoreActivities(Brain<PiglinEntity> piglin) {
-        piglin.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(), new OpenDoorsTask(), PiglinBrain.method_30090(), PiglinBrain.makeGoToZombifiedPiglinTask(), new RemoveOffHandItemTask(), new AdmireItemTask(120), new DefeatTargetTask(300, PiglinBrain::method_29276), new ForgetAngryAtTargetTask()));
+        piglin.setTaskList(Activity.CORE, 0, ImmutableList.of(new LookAroundTask(45, 90), new WanderAroundTask(), new OpenDoorsTask(), PiglinBrain.goToNemesisTask(), PiglinBrain.makeGoToZombifiedPiglinTask(), new RemoveOffHandItemTask(), new AdmireItemTask(120), new DefeatTargetTask(300, PiglinBrain::isHuntingTarget), new ForgetAngryAtTargetTask()));
     }
 
     private static void addIdleActivities(Brain<PiglinEntity> piglin) {
@@ -148,12 +148,12 @@ public class PiglinBrain {
         return GoToRememberedPositionTask.toBlock(MemoryModuleType.NEAREST_REPELLENT, 1.0f, 8, false);
     }
 
-    private static MemoryTransferTask<PiglinEntity, LivingEntity> method_30090() {
-        return new MemoryTransferTask<PiglinEntity, LivingEntity>(PiglinEntity::isBaby, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.AVOID_TARGET, field_25698);
+    private static MemoryTransferTask<PiglinEntity, LivingEntity> goToNemesisTask() {
+        return new MemoryTransferTask<PiglinEntity, LivingEntity>(PiglinEntity::isBaby, MemoryModuleType.NEAREST_VISIBLE_NEMESIS, MemoryModuleType.AVOID_TARGET, GO_TO_NEMESIS_MEMORY_DURATION);
     }
 
     private static MemoryTransferTask<PiglinEntity, LivingEntity> makeGoToZombifiedPiglinTask() {
-        return new MemoryTransferTask<PiglinEntity, LivingEntity>(PiglinBrain::getNearestZombifiedPiglin, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.AVOID_TARGET, field_25384);
+        return new MemoryTransferTask<PiglinEntity, LivingEntity>(PiglinBrain::getNearestZombifiedPiglin, MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, MemoryModuleType.AVOID_TARGET, GO_TO_ZOMBIFIED_MEMORY_DURATION);
     }
 
     protected static void tickActivities(PiglinEntity piglin) {
@@ -297,11 +297,11 @@ public class PiglinBrain {
         return list;
     }
 
-    private static boolean method_29276(LivingEntity livingEntity, LivingEntity livingEntity2) {
-        if (livingEntity2.getType() != EntityType.HOGLIN) {
+    private static boolean isHuntingTarget(LivingEntity piglin, LivingEntity target) {
+        if (target.getType() != EntityType.HOGLIN) {
             return false;
         }
-        return new Random(livingEntity.world.getTime()).nextFloat() < 0.1f;
+        return new Random(piglin.world.getTime()).nextFloat() < 0.1f;
     }
 
     protected static boolean canGather(PiglinEntity piglin, ItemStack stack) {
@@ -617,7 +617,7 @@ public class PiglinBrain {
             return PiglinBrain.hasNoAdvantageAgainstHoglins(piglin);
         }
         if (PiglinBrain.isZombified(entityType)) {
-            return !brain.method_29519(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, livingEntity);
+            return !brain.hasMemoryModuleWithValue(MemoryModuleType.NEAREST_VISIBLE_ZOMBIFIED, livingEntity);
         }
         return false;
     }

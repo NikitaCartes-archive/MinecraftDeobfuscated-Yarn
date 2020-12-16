@@ -3,17 +3,15 @@
  */
 package net.minecraft.tag;
 
-import java.util.List;
 import net.minecraft.block.Block;
 import net.minecraft.tag.RequiredTagList;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagGroup;
-import net.minecraft.tag.TagManager;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public final class BlockTags {
-    protected static final RequiredTagList<Block> REQUIRED_TAGS = RequiredTagListRegistry.register(new Identifier("block"), TagManager::getBlocks);
+    protected static final RequiredTagList<Block> REQUIRED_TAGS = RequiredTagListRegistry.register(Registry.BLOCK_KEY, "tags/blocks");
     public static final Tag.Identified<Block> WOOL = BlockTags.register("wool");
     public static final Tag.Identified<Block> PLANKS = BlockTags.register("planks");
     public static final Tag.Identified<Block> STONE_BRICKS = BlockTags.register("stone_bricks");
@@ -114,10 +112,6 @@ public final class BlockTags {
 
     public static TagGroup<Block> getTagGroup() {
         return REQUIRED_TAGS.getGroup();
-    }
-
-    public static List<? extends Tag.Identified<Block>> getRequiredTags() {
-        return REQUIRED_TAGS.getTags();
     }
 }
 

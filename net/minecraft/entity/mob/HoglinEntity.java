@@ -131,7 +131,7 @@ Hoglin {
         if (this.canConvert()) {
             ++this.timeInOverworld;
             if (this.timeInOverworld > 300) {
-                this.method_30081(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED);
+                this.playSound(SoundEvents.ENTITY_HOGLIN_CONVERTED_TO_ZOMBIFIED);
                 this.zombify((ServerWorld)this.world);
             }
         } else {
@@ -315,7 +315,7 @@ Hoglin {
         if (this.world.isClient) {
             return null;
         }
-        return HoglinBrain.method_30083(this).orElse(null);
+        return HoglinBrain.getSoundEvent(this).orElse(null);
     }
 
     @Override
@@ -343,8 +343,8 @@ Hoglin {
         this.playSound(SoundEvents.ENTITY_HOGLIN_STEP, 0.15f, 1.0f);
     }
 
-    protected void method_30081(SoundEvent soundEvent) {
-        this.playSound(soundEvent, this.getSoundVolume(), this.getSoundPitch());
+    protected void playSound(SoundEvent sound) {
+        this.playSound(sound, this.getSoundVolume(), this.getSoundPitch());
     }
 
     @Override

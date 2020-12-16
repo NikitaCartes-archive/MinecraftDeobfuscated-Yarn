@@ -64,7 +64,7 @@ extends Task<E> {
         return "(" + this.getClass().getSimpleName() + "): " + set;
     }
 
-    static enum RunMode {
+    public static enum RunMode {
         RUN_ONE{
 
             @Override
@@ -85,7 +85,7 @@ extends Task<E> {
         public abstract <E extends LivingEntity> void run(WeightedList<Task<? super E>> var1, ServerWorld var2, E var3, long var4);
     }
 
-    static enum Order {
+    public static enum Order {
         ORDERED(weightedList -> {}),
         SHUFFLED(WeightedList::shuffle);
 

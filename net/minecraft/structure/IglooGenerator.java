@@ -85,32 +85,32 @@ public class IglooGenerator {
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
             if (!"chest".equals(metadata)) {
                 return;
             }
-            serverWorldAccess.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
-            BlockEntity blockEntity = serverWorldAccess.getBlockEntity(pos.down());
+            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+            BlockEntity blockEntity = world.getBlockEntity(pos.down());
             if (blockEntity instanceof ChestBlockEntity) {
                 ((ChestBlockEntity)blockEntity).setLootTable(LootTables.IGLOO_CHEST_CHEST, random.nextLong());
             }
         }
 
         @Override
-        public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
-            BlockPos blockPos5;
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
+            BlockPos blockPos4;
             BlockState blockState;
             StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(this.rotation).setMirror(BlockMirror.NONE).setPosition((BlockPos)field_14408.get(this.template)).addProcessor(BlockIgnoreStructureProcessor.IGNORE_STRUCTURE_BLOCKS);
-            BlockPos blockPos2 = (BlockPos)field_14406.get(this.template);
-            BlockPos blockPos3 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos2.getX(), 0, 0 - blockPos2.getZ())));
-            int i = structureWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos3.getX(), blockPos3.getZ());
-            BlockPos blockPos4 = this.pos;
+            BlockPos blockPos = (BlockPos)field_14406.get(this.template);
+            BlockPos blockPos2 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3 - blockPos.getX(), 0, 0 - blockPos.getZ())));
+            int i = world.getTopY(Heightmap.Type.WORLD_SURFACE_WG, blockPos2.getX(), blockPos2.getZ());
+            BlockPos blockPos3 = this.pos;
             this.pos = this.pos.add(0, i - 90 - 1, 0);
-            boolean bl = super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
-            if (this.template.equals(TOP_TEMPLATE) && !(blockState = structureWorldAccess.getBlockState((blockPos5 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && !blockState.isOf(Blocks.LADDER)) {
-                structureWorldAccess.setBlockState(blockPos5, Blocks.SNOW_BLOCK.getDefaultState(), 3);
+            boolean bl = super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
+            if (this.template.equals(TOP_TEMPLATE) && !(blockState = world.getBlockState((blockPos4 = this.pos.add(Structure.transform(structurePlacementData, new BlockPos(3, 0, 5)))).down())).isAir() && !blockState.isOf(Blocks.LADDER)) {
+                world.setBlockState(blockPos4, Blocks.SNOW_BLOCK.getDefaultState(), 3);
             }
-            this.pos = blockPos4;
+            this.pos = blockPos3;
             return bl;
         }
     }

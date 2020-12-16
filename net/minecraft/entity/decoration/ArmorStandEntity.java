@@ -84,7 +84,7 @@ extends LivingEntity {
 
     public ArmorStandEntity(World world, double x, double y, double z) {
         this((EntityType<? extends ArmorStandEntity>)EntityType.ARMOR_STAND, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
     }
 
     @Override
@@ -93,7 +93,7 @@ extends LivingEntity {
         double e = this.getY();
         double f = this.getZ();
         super.calculateDimensions();
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     private boolean canClip() {
@@ -145,13 +145,13 @@ extends LivingEntity {
         switch (slot.getType()) {
             case HAND: {
                 this.onEquipStack(stack);
-                this.method_32875(null, GameEvent.ARMOR_STAND_ADD_ITEM);
+                this.emitGameEvent(null, GameEvent.ARMOR_STAND_ADD_ITEM);
                 this.heldItems.set(slot.getEntitySlotId(), stack);
                 break;
             }
             case ARMOR: {
                 this.onEquipStack(stack);
-                this.method_32875(null, GameEvent.ARMOR_STAND_ADD_ITEM);
+                this.emitGameEvent(null, GameEvent.ARMOR_STAND_ADD_ITEM);
                 this.armorItems.set(slot.getEntitySlotId(), stack);
             }
         }
@@ -159,7 +159,7 @@ extends LivingEntity {
 
     @Override
     public boolean canEquip(ItemStack stack) {
-        EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
         return this.getEquippedStack(equipmentSlot).isEmpty() && !this.isSlotDisabled(equipmentSlot);
     }
 
@@ -292,7 +292,7 @@ extends LivingEntity {
         if (player.world.isClient) {
             return ActionResult.CONSUME;
         }
-        EquipmentSlot equipmentSlot = MobEntity.method_32326(itemStack);
+        EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(itemStack);
         if (itemStack.isEmpty()) {
             EquipmentSlot equipmentSlot3;
             EquipmentSlot equipmentSlot2 = this.slotFromPosition(hitPos);
@@ -423,7 +423,7 @@ extends LivingEntity {
         }
         if (source.isSourceCreativePlayer()) {
             this.playBreakSound();
-            this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
+            this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
             this.spawnBreakParticles();
             this.kill();
             return bl2;
@@ -435,7 +435,7 @@ extends LivingEntity {
             this.kill();
         } else {
             this.world.sendEntityStatus(this, (byte)32);
-            this.method_32875(source.getAttacker(), GameEvent.ENTITY_HIT);
+            this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
             this.lastHitTime = l;
         }
         return true;
@@ -489,7 +489,7 @@ extends LivingEntity {
         ItemStack itemStack;
         int i;
         this.playBreakSound();
-        this.method_32875(damageSource.getAttacker(), GameEvent.BLOCK_DESTROY);
+        this.emitGameEvent(damageSource.getAttacker(), GameEvent.BLOCK_DESTROY);
         this.drop(damageSource);
         for (i = 0; i < this.heldItems.size(); ++i) {
             itemStack = this.heldItems.get(i);
@@ -773,9 +773,9 @@ extends LivingEntity {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public Vec3d method_31166(float tickDelta) {
+    public Vec3d getClientCameraPosVec(float tickDelta) {
         if (this.isMarker()) {
-            Box box = this.method_31168(false).method_30757(this.getPos());
+            Box box = this.method_31168(false).getBoxAt(this.getPos());
             BlockPos blockPos = this.getBlockPos();
             int i = Integer.MIN_VALUE;
             for (BlockPos blockPos2 : BlockPos.iterate(new BlockPos(box.minX, box.minY, box.minZ), new BlockPos(box.maxX, box.maxY, box.maxZ))) {
@@ -789,7 +789,7 @@ extends LivingEntity {
             }
             return Vec3d.ofCenter(blockPos);
         }
-        return super.method_31166(tickDelta);
+        return super.getClientCameraPosVec(tickDelta);
     }
 
     @Override

@@ -763,7 +763,7 @@ VillagerDataContainer {
         if (ironGolemEntity == null) {
             return;
         }
-        list.forEach(GolemLastSeenSensor::method_30233);
+        list.forEach(GolemLastSeenSensor::rememberIronGolem);
     }
 
     public boolean canSummonGolem(long time) {

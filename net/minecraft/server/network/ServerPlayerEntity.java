@@ -25,7 +25,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.class_5459;
-import net.minecraft.client.options.ChatVisibility;
+import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
@@ -229,7 +229,7 @@ implements ScreenHandlerListener {
         } else {
             this.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
             while (!world.isSpaceEmpty(this) && this.getY() < (double)(world.getTopHeightLimit() - 1)) {
-                this.updatePosition(this.getX(), this.getY() + 1.0, this.getZ());
+                this.setPosition(this.getX(), this.getY() + 1.0, this.getZ());
             }
         }
     }
@@ -613,7 +613,7 @@ implements ScreenHandlerListener {
             playerManager.sendWorldInfo(this, destination);
             playerManager.sendPlayerStatus(this);
             for (StatusEffectInstance statusEffectInstance : this.getStatusEffects()) {
-                this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), statusEffectInstance));
+                this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), statusEffectInstance));
             }
             this.networkHandler.sendPacket(new WorldEventS2CPacket(1032, BlockPos.ORIGIN, 0, false));
             this.syncedExperience = -1;
@@ -641,7 +641,7 @@ implements ScreenHandlerListener {
         if (optional.isPresent()) {
             return optional;
         }
-        Direction.Axis axis = this.world.getBlockState(this.lastNetherPortalPosition).method_28500(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
+        Direction.Axis axis = this.world.getBlockState(this.lastNetherPortalPosition).getOrEmpty(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
         Optional<class_5459.class_5460> optional2 = serverWorld.getPortalForcer().method_30482(blockPos, axis);
         if (!optional2.isPresent()) {
             LOGGER.error("Unable to create a portal, likely target out of worldborder");
@@ -717,6 +717,9 @@ implements ScreenHandlerListener {
             this.incrementStat(Stats.SLEEP_IN_BED);
             Criteria.SLEPT_IN_BED.trigger(this);
         });
+        if (!this.getServerWorld().isSleepingEnabled()) {
+            this.sendMessage(new TranslatableText("sleep.not_possible"), true);
+        }
         ((ServerWorld)this.world).updateSleepingPlayers();
         return either;
     }
@@ -842,7 +845,7 @@ implements ScreenHandlerListener {
             this.closeHandledScreen();
         }
         this.incrementScreenHandlerSyncId();
-        this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getEntityId()));
+        this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getId()));
         this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.getInventory(), inventory, horse);
         this.currentScreenHandler.addListener(this);
     }
@@ -1043,7 +1046,7 @@ implements ScreenHandlerListener {
     @Override
     protected void onStatusEffectApplied(StatusEffectInstance effect) {
         super.onStatusEffectApplied(effect);
-        this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), effect));
+        this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
         if (effect.getEffectType() == StatusEffects.LEVITATION) {
             this.levitationStartTick = this.age;
             this.levitationStartPos = this.getPos();
@@ -1054,14 +1057,14 @@ implements ScreenHandlerListener {
     @Override
     protected void onStatusEffectUpgraded(StatusEffectInstance effect, boolean reapplyEffect) {
         super.onStatusEffectUpgraded(effect, reapplyEffect);
-        this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getEntityId(), effect));
+        this.networkHandler.sendPacket(new EntityStatusEffectS2CPacket(this.getId(), effect));
         Criteria.EFFECTS_CHANGED.trigger(this);
     }
 
     @Override
     protected void onStatusEffectRemoved(StatusEffectInstance effect) {
         super.onStatusEffectRemoved(effect);
-        this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getEntityId(), effect.getEffectType()));
+        this.networkHandler.sendPacket(new RemoveEntityStatusEffectS2CPacket(this.getId(), effect.getEffectType()));
         if (effect.getEffectType() == StatusEffects.LEVITATION) {
             this.levitationStartPos = null;
         }
@@ -1185,14 +1188,14 @@ implements ScreenHandlerListener {
 
     public void onStoppedTracking(Entity entity) {
         if (entity instanceof PlayerEntity) {
-            this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(entity.getEntityId()));
+            this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(entity.getId()));
         } else {
-            this.removedEntities.add(entity.getEntityId());
+            this.removedEntities.add(entity.getId());
         }
     }
 
     public void onStartedTracking(Entity entity) {
-        this.removedEntities.rem(entity.getEntityId());
+        this.removedEntities.rem(entity.getId());
     }
 
     @Override
