@@ -15,4 +15,8 @@ public class FailureLoggingTestCompletionListener implements TestCompletionListe
 			LOGGER.warn("(optional) {} failed. {}", gameTest.getStructurePath(), Util.getInnermostMessage(gameTest.getThrowable()));
 		}
 	}
+
+	@Override
+	public void method_33322(GameTest gameTest) {
+	}
 }

@@ -108,8 +108,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	public void tick() {
 		super.tick();
 		if (this.world.isClient) {
-			float f = MathHelper.cos((float)(this.getEntityId() * 3 + this.age) * 0.13F + (float) Math.PI);
-			float g = MathHelper.cos((float)(this.getEntityId() * 3 + this.age + 1) * 0.13F + (float) Math.PI);
+			float f = MathHelper.cos((float)(this.getId() * 3 + this.age) * 0.13F + (float) Math.PI);
+			float g = MathHelper.cos((float)(this.getId() * 3 + this.age + 1) * 0.13F + (float) Math.PI);
 			if (f > 0.0F && g <= 0.0F) {
 				this.world
 					.playSound(

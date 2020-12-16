@@ -1,6 +1,7 @@
 package net.minecraft.entity.ai.brain.sensor;
 
 import java.util.function.Supplier;
+import net.minecraft.entity.passive.AxolotlBrain;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
@@ -21,17 +22,21 @@ public class SensorType<U extends Sensor<?>> {
 	);
 	public static final SensorType<HoglinSpecificSensor> HOGLIN_SPECIFIC_SENSOR = register("hoglin_specific_sensor", HoglinSpecificSensor::new);
 	public static final SensorType<NearestVisibleAdultSensor> NEAREST_ADULT = register("nearest_adult", NearestVisibleAdultSensor::new);
+	public static final SensorType<AxolotlHostilesSensor> AXOLOTL_HOSTILES = register("axolotl_hostiles", AxolotlHostilesSensor::new);
+	public static final SensorType<AxolotlTemptationsSensor> AXOLOTL_TEMPTATIONS = register(
+		"axolotl_temptations", () -> new AxolotlTemptationsSensor(AxolotlBrain.getTemptItems())
+	);
 	private final Supplier<U> factory;
 
-	private SensorType(Supplier<U> supplier) {
-		this.factory = supplier;
+	private SensorType(Supplier<U> factory) {
+		this.factory = factory;
 	}
 
 	public U create() {
 		return (U)this.factory.get();
 	}
 
-	private static <U extends Sensor<?>> SensorType<U> register(String id, Supplier<U> supplier) {
-		return Registry.register(Registry.SENSOR_TYPE, new Identifier(id), new SensorType<>(supplier));
+	private static <U extends Sensor<?>> SensorType<U> register(String id, Supplier<U> factory) {
+		return Registry.register(Registry.SENSOR_TYPE, new Identifier(id), new SensorType<>(factory));
 	}
 }

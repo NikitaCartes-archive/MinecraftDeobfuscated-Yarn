@@ -251,7 +251,7 @@ public class Texture {
 			.put(TextureKey.WEST, getSubId(frontTopSideBlock, "_side"));
 	}
 
-	public static Texture method_27167(Block block) {
+	public static Texture campfire(Block block) {
 		return new Texture().put(TextureKey.LIT_LOG, getSubId(block, "_log_lit")).put(TextureKey.FIRE, getSubId(block, "_fire"));
 	}
 

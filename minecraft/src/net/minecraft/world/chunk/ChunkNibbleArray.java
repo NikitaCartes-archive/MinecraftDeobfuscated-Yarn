@@ -5,20 +5,20 @@ import net.minecraft.util.Util;
 
 public class ChunkNibbleArray {
 	@Nullable
-	protected byte[] byteArray;
+	protected byte[] bytes;
 
 	public ChunkNibbleArray() {
 	}
 
-	public ChunkNibbleArray(byte[] bs) {
-		this.byteArray = bs;
-		if (bs.length != 2048) {
-			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + bs.length));
+	public ChunkNibbleArray(byte[] bytes) {
+		this.bytes = bytes;
+		if (bytes.length != 2048) {
+			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("ChunkNibbleArrays should be 2048 bytes not: " + bytes.length));
 		}
 	}
 
-	protected ChunkNibbleArray(int i) {
-		this.byteArray = new byte[i];
+	protected ChunkNibbleArray(int size) {
+		this.bytes = new byte[size];
 	}
 
 	public int get(int x, int y, int z) {
@@ -33,25 +33,25 @@ public class ChunkNibbleArray {
 		return y << 8 | z << 4 | x;
 	}
 
-	private int get(int i) {
-		if (this.byteArray == null) {
+	private int get(int index) {
+		if (this.bytes == null) {
 			return 0;
 		} else {
-			int j = this.divideByTwo(i);
-			return this.isEven(i) ? this.byteArray[j] & 15 : this.byteArray[j] >> 4 & 15;
+			int i = this.divideByTwo(index);
+			return this.isEven(index) ? this.bytes[i] & 15 : this.bytes[i] >> 4 & 15;
 		}
 	}
 
 	private void set(int index, int value) {
-		if (this.byteArray == null) {
-			this.byteArray = new byte[2048];
+		if (this.bytes == null) {
+			this.bytes = new byte[2048];
 		}
 
 		int i = this.divideByTwo(index);
 		if (this.isEven(index)) {
-			this.byteArray[i] = (byte)(this.byteArray[i] & 240 | value & 15);
+			this.bytes[i] = (byte)(this.bytes[i] & 240 | value & 15);
 		} else {
-			this.byteArray[i] = (byte)(this.byteArray[i] & 15 | (value & 15) << 4);
+			this.bytes[i] = (byte)(this.bytes[i] & 15 | (value & 15) << 4);
 		}
 	}
 
@@ -64,15 +64,15 @@ public class ChunkNibbleArray {
 	}
 
 	public byte[] asByteArray() {
-		if (this.byteArray == null) {
-			this.byteArray = new byte[2048];
+		if (this.bytes == null) {
+			this.bytes = new byte[2048];
 		}
 
-		return this.byteArray;
+		return this.bytes;
 	}
 
 	public ChunkNibbleArray copy() {
-		return this.byteArray == null ? new ChunkNibbleArray() : new ChunkNibbleArray((byte[])this.byteArray.clone());
+		return this.bytes == null ? new ChunkNibbleArray() : new ChunkNibbleArray((byte[])this.bytes.clone());
 	}
 
 	public String toString() {
@@ -93,6 +93,6 @@ public class ChunkNibbleArray {
 	}
 
 	public boolean isUninitialized() {
-		return this.byteArray == null;
+		return this.bytes == null;
 	}
 }

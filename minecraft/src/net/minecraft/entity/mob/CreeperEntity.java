@@ -111,7 +111,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 
 		tag.putShort("Fuse", (short)this.fuseTime);
 		tag.putByte("ExplosionRadius", (byte)this.explosionRadius);
-		tag.putBoolean("ignited", this.getIgnited());
+		tag.putBoolean("ignited", this.isIgnited());
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	public void tick() {
 		if (this.isAlive()) {
 			this.lastFuseTime = this.currentFuseTime;
-			if (this.getIgnited()) {
+			if (this.isIgnited()) {
 				this.setFuseSpeed(1);
 			}
 
@@ -260,7 +260,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		}
 	}
 
-	public boolean getIgnited() {
+	public boolean isIgnited() {
 		return this.dataTracker.get(IGNITED);
 	}
 

@@ -52,7 +52,7 @@ import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 import net.minecraft.world.gen.tree.AlterGroundTreeDecorator;
 import net.minecraft.world.gen.tree.BeehiveTreeDecorator;
 import net.minecraft.world.gen.tree.CocoaBeansTreeDecorator;
-import net.minecraft.world.gen.tree.LeaveVineTreeDecorator;
+import net.minecraft.world.gen.tree.LeavesVineTreeDecorator;
 import net.minecraft.world.gen.tree.TrunkVineTreeDecorator;
 import net.minecraft.world.gen.trunk.DarkOakTrunkPlacer;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
@@ -1074,7 +1074,7 @@ public class ConfiguredFeatures {
 						new StraightTrunkPlacer(4, 8, 0),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
-					.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.INSTANCE, LeaveVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.INSTANCE, LeavesVineTreeDecorator.INSTANCE))
 					.ignoreVines()
 					.build()
 			)
@@ -1121,7 +1121,7 @@ public class ConfiguredFeatures {
 						new MegaJungleTrunkPlacer(10, 2, 19),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
-					.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, LeaveVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, LeavesVineTreeDecorator.INSTANCE))
 					.build()
 			)
 	);
@@ -1183,7 +1183,7 @@ public class ConfiguredFeatures {
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
 					.maxWaterDepth(1)
-					.decorators(ImmutableList.of(LeaveVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(LeavesVineTreeDecorator.INSTANCE))
 					.build()
 			)
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)

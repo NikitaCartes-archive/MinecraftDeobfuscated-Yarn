@@ -32,7 +32,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 
 	public LeashKnotEntity(World world, BlockPos pos) {
 		super(EntityType.LEASH_KNOT, world, pos);
-		this.updatePosition((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
+		this.setPosition((double)pos.getX(), (double)pos.getY(), (double)pos.getZ());
 	}
 
 	@Override
@@ -152,7 +152,7 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public Vec3d method_30951(float f) {
-		return this.method_30950(f).add(0.0, 0.2, 0.0);
+		return this.getLerpedPos(f).add(0.0, 0.2, 0.0);
 	}
 
 	@Environment(EnvType.CLIENT)

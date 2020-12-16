@@ -30,16 +30,16 @@ public class EntityList {
 
 	public void addEntity(Entity entity) {
 		this.method_31789();
-		this.entities.put(entity.getEntityId(), entity);
+		this.entities.put(entity.getId(), entity);
 	}
 
 	public void removeEntity(Entity entity) {
 		this.method_31789();
-		this.entities.remove(entity.getEntityId());
+		this.entities.remove(entity.getId());
 	}
 
 	public boolean hasEntity(Entity entity) {
-		return this.entities.containsKey(entity.getEntityId());
+		return this.entities.containsKey(entity.getId());
 	}
 
 	/**

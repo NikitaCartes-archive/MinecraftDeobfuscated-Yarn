@@ -33,7 +33,7 @@ public class BiomeAccess {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Biome getBiome(double x, double y, double z) {
+	public Biome getBiomeForNoiseGen(double x, double y, double z) {
 		int i = class_5742.method_33100(MathHelper.floor(x));
 		int j = class_5742.method_33100(MathHelper.floor(y));
 		int k = class_5742.method_33100(MathHelper.floor(z));
@@ -41,7 +41,7 @@ public class BiomeAccess {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Biome method_27344(BlockPos pos) {
+	public Biome getBiomeForNoiseGen(BlockPos pos) {
 		int i = class_5742.method_33100(pos.getX());
 		int j = class_5742.method_33100(pos.getY());
 		int k = class_5742.method_33100(pos.getZ());

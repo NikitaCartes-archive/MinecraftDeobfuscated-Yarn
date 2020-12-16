@@ -49,14 +49,15 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 	);
 	private final Map<Identifier, LootTable.Builder> lootTables = Maps.<Identifier, LootTable.Builder>newHashMap();
 
-	private static LootTable.Builder createForSheep(ItemConvertible itemConvertible) {
+	private static LootTable.Builder createForSheep(ItemConvertible item) {
 		return LootTable.builder()
-			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(itemConvertible)))
+			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(ItemEntry.builder(item)))
 			.pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0F)).with(LootTableEntry.builder(EntityType.SHEEP.getLootTableId())));
 	}
 
 	public void accept(BiConsumer<Identifier, LootTable.Builder> biConsumer) {
 		this.register(EntityType.ARMOR_STAND, LootTable.builder());
+		this.register(EntityType.AXOLOTL, LootTable.builder());
 		this.register(EntityType.BAT, LootTable.builder());
 		this.register(EntityType.BEE, LootTable.builder());
 		this.register(

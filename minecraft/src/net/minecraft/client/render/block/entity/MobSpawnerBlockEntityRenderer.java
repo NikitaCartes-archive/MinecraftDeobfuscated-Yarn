@@ -13,7 +13,7 @@ import net.minecraft.world.MobSpawnerLogic;
 
 @Environment(EnvType.CLIENT)
 public class MobSpawnerBlockEntityRenderer implements BlockEntityRenderer<MobSpawnerBlockEntity> {
-	public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+	public MobSpawnerBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
 	}
 
 	public void render(MobSpawnerBlockEntity mobSpawnerBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

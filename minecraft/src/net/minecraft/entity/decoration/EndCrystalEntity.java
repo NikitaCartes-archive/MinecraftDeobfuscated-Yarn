@@ -39,7 +39,7 @@ public class EndCrystalEntity extends Entity {
 
 	public EndCrystalEntity(World world, double x, double y, double z) {
 		this(EntityType.END_CRYSTAL, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public class EndCrystalEntity extends Entity {
 			tag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
 		}
 
-		tag.putBoolean("ShowBottom", this.getShowBottom());
+		tag.putBoolean("ShowBottom", this.shouldShowBottom());
 	}
 
 	@Override
@@ -137,7 +137,7 @@ public class EndCrystalEntity extends Entity {
 		this.getDataTracker().set(SHOW_BOTTOM, showBottom);
 	}
 
-	public boolean getShowBottom() {
+	public boolean shouldShowBottom() {
 		return this.getDataTracker().get(SHOW_BOTTOM);
 	}
 

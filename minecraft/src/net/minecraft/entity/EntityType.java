@@ -63,6 +63,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -158,6 +159,9 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 	);
 	public static final EntityType<ArrowEntity> ARROW = register(
 		"arrow", EntityType.Builder.<ArrowEntity>create(ArrowEntity::new, SpawnGroup.MISC).setDimensions(0.5F, 0.5F).maxTrackingRange(4).trackingTickInterval(20)
+	);
+	public static final EntityType<AxolotlEntity> AXOLOTL = register(
+		"axolotl", EntityType.Builder.<AxolotlEntity>create(AxolotlEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.75F, 0.42F).maxTrackingRange(10)
 	);
 	public static final EntityType<BatEntity> BAT = register(
 		"bat", EntityType.Builder.<BatEntity>create(BatEntity::new, SpawnGroup.AMBIENT).setDimensions(0.5F, 0.9F).maxTrackingRange(5)
@@ -702,7 +706,7 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 		} else {
 			double d;
 			if (alignPosition) {
-				entity.updatePosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
+				entity.setPosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
 				d = getOriginY(serverWorld, pos, invertY, entity.getBoundingBox());
 			} else {
 				d = 0.0;
@@ -848,12 +852,12 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 	 * 
 	 * <p>This can be overwritten via {@link EntityType.Builder#allowSpawningInside(Block[])}
 	 */
-	public boolean isInvalidSpawn(BlockState blockState) {
-		if (this.canSpawnInside.contains(blockState.getBlock())) {
+	public boolean isInvalidSpawn(BlockState state) {
+		if (this.canSpawnInside.contains(state.getBlock())) {
 			return false;
 		} else if (this.fireImmune
-			|| !blockState.isIn(BlockTags.FIRE) && !blockState.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(blockState) && !blockState.isOf(Blocks.LAVA)) {
-			return blockState.isOf(Blocks.WITHER_ROSE) || blockState.isOf(Blocks.SWEET_BERRY_BUSH) || blockState.isOf(Blocks.CACTUS);
+			|| !state.isIn(BlockTags.FIRE) && !state.isOf(Blocks.MAGMA_BLOCK) && !CampfireBlock.isLitCampfire(state) && !state.isOf(Blocks.LAVA)) {
+			return state.isOf(Blocks.WITHER_ROSE) || state.isOf(Blocks.SWEET_BERRY_BUSH) || state.isOf(Blocks.CACTUS);
 		} else {
 			return true;
 		}

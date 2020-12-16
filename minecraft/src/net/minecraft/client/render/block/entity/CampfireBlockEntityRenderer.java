@@ -15,7 +15,7 @@ import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class CampfireBlockEntityRenderer implements BlockEntityRenderer<CampfireBlockEntity> {
-	public CampfireBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
+	public CampfireBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
 	}
 
 	public void render(CampfireBlockEntity campfireBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

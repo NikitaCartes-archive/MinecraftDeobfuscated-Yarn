@@ -31,7 +31,7 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloadLis
 	private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
 	private final BufferBuilder bufferBuilder = new BufferBuilder(256);
 	private final TextRenderer textRenderer;
-	private final EntityModelLoader field_27746;
+	private final EntityModelLoader entityModelLoader;
 	public World world;
 	public Camera camera;
 	public HitResult crosshairTarget;
@@ -39,7 +39,7 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloadLis
 
 	public BlockEntityRenderDispatcher(TextRenderer textRenderer, EntityModelLoader entityModelLoader, Supplier<BlockRenderManager> supplier) {
 		this.textRenderer = textRenderer;
-		this.field_27746 = entityModelLoader;
+		this.entityModelLoader = entityModelLoader;
 		this.field_27747 = supplier;
 	}
 
@@ -113,7 +113,7 @@ public class BlockEntityRenderDispatcher implements SynchronousResourceReloadLis
 	@Override
 	public void apply(ResourceManager manager) {
 		BlockEntityRendererFactory.Context context = new BlockEntityRendererFactory.Context(
-			this, (BlockRenderManager)this.field_27747.get(), this.field_27746, this.textRenderer
+			this, (BlockRenderManager)this.field_27747.get(), this.entityModelLoader, this.textRenderer
 		);
 		this.renderers = BlockEntityRendererFactories.reload(context);
 	}

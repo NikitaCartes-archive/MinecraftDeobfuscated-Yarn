@@ -131,10 +131,8 @@ public class ItemPredicate {
 				Tag<Item> tag = null;
 				if (jsonObject.has("tag")) {
 					Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-					tag = ServerTagManagerHolder.getTagManager().getItems().getTag(identifier2);
-					if (tag == null) {
-						throw new JsonSyntaxException("Unknown item tag '" + identifier2 + "'");
-					}
+					tag = ServerTagManagerHolder.getTagManager()
+						.getTag(Registry.ITEM_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown item tag '" + identifier + "'"));
 				}
 
 				Potion potion = null;
@@ -162,7 +160,9 @@ public class ItemPredicate {
 			}
 
 			if (this.tag != null) {
-				jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getItems().getTagId(this.tag).toString());
+				jsonObject.addProperty(
+					"tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.ITEM_KEY, this.tag, () -> new IllegalStateException("Unknown item tag")).toString()
+				);
 			}
 
 			jsonObject.add("count", this.count.toJson());

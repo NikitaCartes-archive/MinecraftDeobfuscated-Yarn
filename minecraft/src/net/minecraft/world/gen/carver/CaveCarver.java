@@ -92,7 +92,7 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 
 	protected void carveTunnels(
 		Chunk chunk,
-		Function<BlockPos, Biome> postToBiome,
+		Function<BlockPos, Biome> posToBiome,
 		long seed,
 		int seaLevel,
 		int mainChunkX,
@@ -131,7 +131,7 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 			if (j == i && width > 1.0F) {
 				this.carveTunnels(
 					chunk,
-					postToBiome,
+					posToBiome,
 					random.nextLong(),
 					seaLevel,
 					mainChunkX,
@@ -149,7 +149,7 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 				);
 				this.carveTunnels(
 					chunk,
-					postToBiome,
+					posToBiome,
 					random.nextLong(),
 					seaLevel,
 					mainChunkX,
@@ -173,7 +173,7 @@ public class CaveCarver extends Carver<ProbabilityConfig> {
 					return;
 				}
 
-				this.carveRegion(chunk, postToBiome, seed, seaLevel, mainChunkX, mainChunkZ, x, y, z, d, e, carvingMask);
+				this.carveRegion(chunk, posToBiome, seed, seaLevel, mainChunkX, mainChunkZ, x, y, z, d, e, carvingMask);
 			}
 		}
 	}

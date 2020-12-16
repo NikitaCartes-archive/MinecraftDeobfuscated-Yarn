@@ -233,7 +233,7 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		if (map.isOf(Items.FILLED_MAP)) {
 			MapState mapState = FilledMapItem.getOrCreateMapState(map, this.world);
 			if (mapState != null) {
-				mapState.removeFrame(this.attachmentPos, this.getEntityId());
+				mapState.removeFrame(this.attachmentPos, this.getId());
 				mapState.setDirty(true);
 			}
 		}

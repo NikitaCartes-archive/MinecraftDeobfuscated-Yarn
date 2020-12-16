@@ -3,9 +3,10 @@ package net.minecraft;
 import java.util.UUID;
 import java.util.function.Consumer;
 import javax.annotation.Nullable;
+import net.minecraft.entity.EntityLike;
 import net.minecraft.util.math.Box;
 
-public class class_5578<T extends class_5568> implements class_5577<T> {
+public class class_5578<T extends EntityLike> implements class_5577<T> {
 	private final class_5570<T> field_27258;
 	private final class_5573<T> field_27259;
 
@@ -16,18 +17,18 @@ public class class_5578<T extends class_5568> implements class_5577<T> {
 
 	@Nullable
 	@Override
-	public T method_31804(int i) {
-		return this.field_27258.getEntity(i);
+	public T getById(int id) {
+		return this.field_27258.getEntity(id);
 	}
 
 	@Nullable
 	@Override
-	public T method_31808(UUID uUID) {
-		return this.field_27258.getEntity(uUID);
+	public T getByUuid(UUID uuid) {
+		return this.field_27258.getEntity(uuid);
 	}
 
 	@Override
-	public Iterable<T> method_31803() {
+	public Iterable<T> iterate() {
 		return this.field_27258.method_31751();
 	}
 

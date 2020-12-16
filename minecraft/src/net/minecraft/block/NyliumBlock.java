@@ -51,7 +51,7 @@ public class NyliumBlock extends Block implements Fertilizable {
 			NetherForestVegetationFeature.generate(world, random, blockPos, ConfiguredFeatures.Configs.WARPED_ROOTS_CONFIG, 3, 1);
 			NetherForestVegetationFeature.generate(world, random, blockPos, ConfiguredFeatures.Configs.NETHER_SPROUTS_CONFIG, 3, 1);
 			if (random.nextInt(8) == 0) {
-				TwistingVinesFeature.method_26265(world, random, blockPos, 3, 1, 2);
+				TwistingVinesFeature.tryGenerateVines(world, random, blockPos, 3, 1, 2);
 			}
 		}
 	}

@@ -30,7 +30,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public final int getLight(T entity, float tickDelta) {
-		BlockPos blockPos = new BlockPos(entity.method_31166(tickDelta));
+		BlockPos blockPos = new BlockPos(entity.getClientCameraPosVec(tickDelta));
 		return LightmapTextureManager.pack(this.getBlockLight(entity, blockPos), this.getSkyLight(entity, blockPos));
 	}
 

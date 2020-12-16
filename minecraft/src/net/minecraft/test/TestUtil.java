@@ -1,12 +1,12 @@
 package net.minecraft.test;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Streams;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.class_5624;
@@ -42,25 +42,21 @@ public class TestUtil {
 	}
 
 	public static Collection<GameTestBatch> createBatches(Collection<TestFunction> testFunctions) {
-		Map<String, Collection<TestFunction>> map = Maps.newHashMap();
-		testFunctions.forEach(testFunction -> {
-			String string = testFunction.getBatchId();
-			Collection<TestFunction> collection = (Collection)map.computeIfAbsent(string, stringx -> Lists.newArrayList());
-			collection.add(testFunction);
-		});
-		return (Collection<GameTestBatch>)map.keySet()
+		Map<String, List<TestFunction>> map = (Map)testFunctions.stream().collect(Collectors.groupingBy(TestFunction::getBatchId));
+		return (Collection<GameTestBatch>)map.entrySet()
 			.stream()
 			.flatMap(
-				string -> {
-					Collection<TestFunction> collection = (Collection)map.get(string);
+				entry -> {
+					String string = (String)entry.getKey();
 					Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(string);
 					Consumer<ServerWorld> consumer2 = TestFunctions.method_32244(string);
 					MutableInt mutableInt = new MutableInt();
+					Collection<TestFunction> collection = (Collection)entry.getValue();
 					return Streams.stream(Iterables.partition(collection, 100))
-						.map(list -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), list, consumer, consumer2));
+						.map(list -> new GameTestBatch(string + ":" + mutableInt.incrementAndGet(), ImmutableList.<TestFunction>copyOf(list), consumer, consumer2));
 				}
 			)
-			.collect(Collectors.toList());
+			.collect(ImmutableList.toImmutableList());
 	}
 
 	public static void clearTests(ServerWorld world, BlockPos pos, TestManager testManager, int radius) {

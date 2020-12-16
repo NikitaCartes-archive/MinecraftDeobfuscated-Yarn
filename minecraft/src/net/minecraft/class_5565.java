@@ -48,7 +48,7 @@ public class class_5565 implements class_5571<Entity> {
 					return method_31735(chunkPos);
 				} else {
 					try {
-						ChunkPos chunkPos2 = method_31736(compoundTag);
+						ChunkPos chunkPos2 = getChunkPos(compoundTag);
 						if (!Objects.equals(chunkPos, chunkPos2)) {
 							field_27232.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", chunkPos, chunkPos, chunkPos2);
 						}
@@ -64,13 +64,13 @@ public class class_5565 implements class_5571<Entity> {
 			}, this.field_27236);
 	}
 
-	private static ChunkPos method_31736(CompoundTag compoundTag) {
-		int[] is = compoundTag.getIntArray("Position");
+	private static ChunkPos getChunkPos(CompoundTag tag) {
+		int[] is = tag.getIntArray("Position");
 		return new ChunkPos(is[0], is[1]);
 	}
 
-	private static void method_31733(CompoundTag compoundTag, ChunkPos chunkPos) {
-		compoundTag.put("Position", new IntArrayTag(new int[]{chunkPos.x, chunkPos.z}));
+	private static void putChunkPos(CompoundTag tag, ChunkPos chunkPos) {
+		tag.put("Position", new IntArrayTag(new int[]{chunkPos.x, chunkPos.z}));
 	}
 
 	private static class_5566<Entity> method_31735(ChunkPos chunkPos) {
@@ -95,7 +95,7 @@ public class class_5565 implements class_5571<Entity> {
 			CompoundTag compoundTag = new CompoundTag();
 			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 			compoundTag.put("Entities", listTag);
-			method_31733(compoundTag, chunkPos);
+			putChunkPos(compoundTag, chunkPos);
 			this.field_27234.setResult(chunkPos, compoundTag).exceptionally(throwable -> {
 				field_27232.error("Failed to store chunk {}", chunkPos, throwable);
 				return null;
@@ -110,12 +110,12 @@ public class class_5565 implements class_5571<Entity> {
 	}
 
 	private CompoundTag method_31737(CompoundTag compoundTag) {
-		int i = method_31732(compoundTag);
+		int i = getDataVersion(compoundTag);
 		return NbtHelper.update(this.field_27231, DataFixTypes.ENTITY_CHUNK, compoundTag, i);
 	}
 
-	public static int method_31732(CompoundTag compoundTag) {
-		return compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : -1;
+	public static int getDataVersion(CompoundTag tag) {
+		return tag.contains("DataVersion", 99) ? tag.getInt("DataVersion") : -1;
 	}
 
 	@Override

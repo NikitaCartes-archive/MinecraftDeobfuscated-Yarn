@@ -40,8 +40,8 @@ public class LootTablesProvider implements DataProvider {
 		Pair.of(GiftLootTableGenerator::new, LootContextTypes.GIFT)
 	);
 
-	public LootTablesProvider(DataGenerator dataGenerator) {
-		this.root = dataGenerator;
+	public LootTablesProvider(DataGenerator root) {
+		this.root = root;
 	}
 
 	@Override

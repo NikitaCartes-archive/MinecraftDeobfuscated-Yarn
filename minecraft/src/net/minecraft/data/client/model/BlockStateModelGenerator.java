@@ -1581,11 +1581,11 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void method_27166(Block... blocks) {
+	private void registerCampfire(Block... blocks) {
 		Identifier identifier = ModelIds.getMinecraftNamespacedBlock("campfire_off");
 
 		for(Block block : blocks) {
-			Identifier identifier2 = Models.TEMPLATE_CAMPFIRE.upload(block, Texture.method_27167(block), this.modelCollector);
+			Identifier identifier2 = Models.TEMPLATE_CAMPFIRE.upload(block, Texture.campfire(block), this.modelCollector);
 			this.registerItemModel(block.asItem());
 			this.blockStateCollector
 				.accept(
@@ -2197,7 +2197,7 @@ public class BlockStateModelGenerator {
 		this.method_32229(Blocks.AMETHYST_CLUSTER);
 	}
 
-	private void method_32802() {
+	private void registerPointedDripstone() {
 		this.registerItemModel(Blocks.POINTED_DRIPSTONE.asItem());
 		BlockStateVariantMap.DoubleProperty<Direction, Thickness> doubleProperty = BlockStateVariantMap.create(Properties.VERTICAL_DIRECTION, Properties.THICKNESS);
 
@@ -2253,7 +2253,7 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void method_31064(Block block) {
+	private void registerRod(Block block) {
 		this.blockStateCollector
 			.accept(
 				VariantsBlockStateSupplier.create(block, BlockStateVariant.create().put(VariantSettings.MODEL, ModelIds.getBlockModelId(block)))
@@ -2699,7 +2699,7 @@ public class BlockStateModelGenerator {
 			);
 	}
 
-	private void method_33128() {
+	private void registerSculkSensor() {
 		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_inactive");
 		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SCULK_SENSOR, "_active");
 		this.registerParentedItemModel(Blocks.SCULK_SENSOR, identifier);
@@ -3628,7 +3628,7 @@ public class BlockStateModelGenerator {
 		this.registerBookshelf();
 		this.registerBrewingStand();
 		this.registerCake();
-		this.method_27166(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
+		this.registerCampfire(Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE);
 		this.registerCartographyTable();
 		this.registerCauldron();
 		this.registerChorusFlower();
@@ -3636,8 +3636,8 @@ public class BlockStateModelGenerator {
 		this.registerComposter();
 		this.registerDaylightDetector();
 		this.registerEndPortalFrame();
-		this.method_31064(Blocks.END_ROD);
-		this.method_31064(Blocks.LIGHTNING_ROD);
+		this.registerRod(Blocks.END_ROD);
+		this.registerRod(Blocks.LIGHTNING_ROD);
 		this.registerFarmland();
 		this.registerFire();
 		this.registerSoulFire();
@@ -3671,7 +3671,7 @@ public class BlockStateModelGenerator {
 		this.registerVine();
 		this.registerMagmaBlock();
 		this.registerJigsaw();
-		this.method_33128();
+		this.registerSculkSensor();
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
@@ -3933,7 +3933,7 @@ public class BlockStateModelGenerator {
 		this.registerFlowerPotPlant(Blocks.RED_MUSHROOM, Blocks.POTTED_RED_MUSHROOM, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerFlowerPotPlant(Blocks.BROWN_MUSHROOM, Blocks.POTTED_BROWN_MUSHROOM, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerFlowerPotPlant(Blocks.DEAD_BUSH, Blocks.POTTED_DEAD_BUSH, BlockStateModelGenerator.TintType.NOT_TINTED);
-		this.method_32802();
+		this.registerPointedDripstone();
 		this.registerMushroomBlock(Blocks.BROWN_MUSHROOM_BLOCK);
 		this.registerMushroomBlock(Blocks.RED_MUSHROOM_BLOCK);
 		this.registerMushroomBlock(Blocks.MUSHROOM_STEM);

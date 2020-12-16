@@ -52,7 +52,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	public FireworkRocketEntity(World world, double x, double y, double z, ItemStack stack) {
 		super(EntityType.FIREWORK_ROCKET, world);
 		this.life = 0;
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 		int i = 1;
 		if (!stack.isEmpty() && stack.hasTag()) {
 			this.dataTracker.set(ITEM, stack.copy());
@@ -70,7 +70,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	public FireworkRocketEntity(World world, ItemStack stack, LivingEntity shooter) {
 		this(world, shooter, shooter.getX(), shooter.getY(), shooter.getZ(), stack);
-		this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getEntityId()));
+		this.dataTracker.set(SHOOTER_ENTITY_ID, OptionalInt.of(shooter.getId()));
 		this.shooter = shooter;
 	}
 
@@ -130,7 +130,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 						);
 				}
 
-				this.updatePosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
+				this.setPosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
 				this.setVelocity(this.shooter.getVelocity());
 			}
 		} else {
@@ -176,7 +176,7 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 
 	private void explodeAndRemove() {
 		this.world.sendEntityStatus(this, (byte)17);
-		this.method_32875(this.getOwner(), GameEvent.EXPLODE);
+		this.emitGameEvent(this.getOwner(), GameEvent.EXPLODE);
 		this.explode();
 		this.discard();
 	}

@@ -72,10 +72,8 @@ public class BlockPredicate {
 			Tag<Block> tag = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tag = ServerTagManagerHolder.getTagManager().getBlocks().getTag(identifier2);
-				if (tag == null) {
-					throw new JsonSyntaxException("Unknown block tag '" + identifier2 + "'");
-				}
+				tag = ServerTagManagerHolder.getTagManager()
+					.getTag(Registry.BLOCK_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown block tag '" + identifier + "'"));
 			}
 
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
@@ -95,7 +93,9 @@ public class BlockPredicate {
 			}
 
 			if (this.tag != null) {
-				jsonObject.addProperty("tag", ServerTagManagerHolder.getTagManager().getBlocks().getTagId(this.tag).toString());
+				jsonObject.addProperty(
+					"tag", ServerTagManagerHolder.getTagManager().getTagId(Registry.BLOCK_KEY, this.tag, () -> new IllegalStateException("Unknown block tag")).toString()
+				);
 			}
 
 			jsonObject.add("nbt", this.nbt.toJson());

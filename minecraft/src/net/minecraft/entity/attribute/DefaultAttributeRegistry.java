@@ -40,6 +40,7 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.mob.ZombieHorseEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AbstractDonkeyEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.BeeEntity;
 import net.minecraft.entity.passive.CatEntity;
@@ -76,6 +77,7 @@ public class DefaultAttributeRegistry {
 			
 		)
 		.put(EntityType.ARMOR_STAND, LivingEntity.createLivingAttributes().build())
+		.put(EntityType.AXOLOTL, AxolotlEntity.createAxolotlAttributes().build())
 		.put(EntityType.BAT, BatEntity.createBatAttributes().build())
 		.put(EntityType.BEE, BeeEntity.createBeeAttributes().build())
 		.put(EntityType.BLAZE, BlazeEntity.createBlazeAttributes().build())

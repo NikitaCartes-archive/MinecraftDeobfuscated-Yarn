@@ -8,8 +8,8 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.event.GameEvent;
 
 public class GameEventTagsProvider extends AbstractTagProvider<GameEvent> {
-	public GameEventTagsProvider(DataGenerator dataGenerator) {
-		super(dataGenerator, Registry.GAME_EVENT);
+	public GameEventTagsProvider(DataGenerator root) {
+		super(root, Registry.GAME_EVENT);
 	}
 
 	@Override
@@ -48,7 +48,6 @@ public class GameEventTagsProvider extends AbstractTagProvider<GameEvent> {
 				GameEvent.PISTON_EXTEND,
 				GameEvent.PISTON_CONTRACT,
 				GameEvent.FLINT_AND_STEEL_USE,
-				GameEvent.EATING_START,
 				GameEvent.EATING_FINISH,
 				GameEvent.LIGHTNING_STRIKE
 			);

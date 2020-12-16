@@ -59,6 +59,11 @@ public enum DyeColor implements StringIdentifiable {
 		return this.name;
 	}
 
+	/**
+	 * Returns the red, blue and green components of this dye color.
+	 * 
+	 * @return an array composed of the red, blue and green floats
+	 */
 	public float[] getColorComponents() {
 		return this.colorComponents;
 	}

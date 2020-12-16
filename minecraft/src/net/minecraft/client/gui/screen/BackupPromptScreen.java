@@ -3,7 +3,7 @@ package net.minecraft.client.gui.screen;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.math.MatrixStack;
@@ -17,7 +17,7 @@ public class BackupPromptScreen extends Screen {
 	protected final BackupPromptScreen.Callback callback;
 	private final Text subtitle;
 	private final boolean showEraseCacheCheckbox;
-	private class_5489 wrappedText = class_5489.field_26528;
+	private MultilineText wrappedText = MultilineText.EMPTY;
 	private CheckboxWidget eraseCacheCheckbox;
 
 	public BackupPromptScreen(@Nullable Screen parent, BackupPromptScreen.Callback callback, Text title, Text subtitle, boolean showEraseCacheCheckBox) {
@@ -31,8 +31,8 @@ public class BackupPromptScreen extends Screen {
 	@Override
 	protected void init() {
 		super.init();
-		this.wrappedText = class_5489.method_30890(this.textRenderer, this.subtitle, this.width - 50);
-		int i = (this.wrappedText.method_30887() + 1) * 9;
+		this.wrappedText = MultilineText.create(this.textRenderer, this.subtitle, this.width - 50);
+		int i = (this.wrappedText.count() + 1) * 9;
 		this.addButton(
 			new ButtonWidget(
 				this.width / 2 - 155,
@@ -64,7 +64,7 @@ public class BackupPromptScreen extends Screen {
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 50, 16777215);
-		this.wrappedText.method_30888(matrices, this.width / 2, 70);
+		this.wrappedText.drawCenterWithShadow(matrices, this.width / 2, 70);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

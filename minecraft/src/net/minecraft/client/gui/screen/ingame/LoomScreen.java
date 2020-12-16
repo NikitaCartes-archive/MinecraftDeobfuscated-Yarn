@@ -102,7 +102,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			matrices.scale(0.6666667F, -0.6666667F, -0.6666667F);
 			this.bannerField.pitch = 0.0F;
 			this.bannerField.pivotY = -32.0F;
-			BannerBlockEntityRenderer.method_29999(
+			BannerBlockEntityRenderer.renderCanvas(
 				matrices, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.field_21841
 			);
 			matrices.pop();
@@ -160,7 +160,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
 		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.getPatternListTag(itemStack));
-		BannerBlockEntityRenderer.method_29999(matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
+		BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
 		matrixStack.pop();
 		immediate.draw();
 	}

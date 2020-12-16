@@ -47,8 +47,8 @@ public class WeightedPicker {
 	public static class Entry {
 		protected final int weight;
 
-		public Entry(int i) {
-			this.weight = i;
+		public Entry(int weight) {
+			this.weight = weight;
 		}
 	}
 }

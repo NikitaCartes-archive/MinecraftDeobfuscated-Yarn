@@ -24,14 +24,14 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractEntityC2SPacket(Entity target, boolean playerSneaking) {
-		this.entityId = target.getEntityId();
+		this.entityId = target.getId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.ATTACK;
 		this.playerSneaking = playerSneaking;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, boolean playerSneaking) {
-		this.entityId = entity.getEntityId();
+		this.entityId = entity.getId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT;
 		this.hand = hand;
 		this.playerSneaking = playerSneaking;
@@ -39,7 +39,7 @@ public class PlayerInteractEntityC2SPacket implements Packet<ServerPlayPacketLis
 
 	@Environment(EnvType.CLIENT)
 	public PlayerInteractEntityC2SPacket(Entity entity, Hand hand, Vec3d hitPos, boolean playerSneaking) {
-		this.entityId = entity.getEntityId();
+		this.entityId = entity.getId();
 		this.type = PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT;
 		this.hand = hand;
 		this.hitPos = hitPos;

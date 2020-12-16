@@ -7,7 +7,7 @@ import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.GameEventListener;
 
 public interface class_5713 {
-	class_5713 field_28181 = new class_5713() {
+	class_5713 EMPTY = new class_5713() {
 		@Override
 		public boolean isEmpty() {
 			return true;
@@ -22,7 +22,7 @@ public interface class_5713 {
 		}
 
 		@Override
-		public void method_32943(GameEvent gameEvent, @Nullable Entity entity, BlockPos blockPos) {
+		public void listen(GameEvent event, @Nullable Entity entity, BlockPos pos) {
 		}
 	};
 
@@ -32,5 +32,5 @@ public interface class_5713 {
 
 	void removeListener(GameEventListener listener);
 
-	void method_32943(GameEvent gameEvent, @Nullable Entity entity, BlockPos blockPos);
+	void listen(GameEvent event, @Nullable Entity entity, BlockPos pos);
 }

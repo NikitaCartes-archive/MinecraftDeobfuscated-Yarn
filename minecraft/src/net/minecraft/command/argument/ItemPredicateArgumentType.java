@@ -21,6 +21,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgumentType.ItemPredicateArgument> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stick", "minecraft:stick", "#stick", "#stick{foo=bar}");
@@ -40,12 +41,11 @@ public class ItemPredicateArgumentType implements ArgumentType<ItemPredicateArgu
 		} else {
 			Identifier identifier = itemStringReader.getId();
 			return commandContext -> {
-				Tag<Item> tag = commandContext.getSource().getMinecraftServer().getTagManager().getItems().getTag(identifier);
-				if (tag == null) {
-					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
-				} else {
-					return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.getTag());
-				}
+				Tag<Item> tag = commandContext.getSource()
+					.getMinecraftServer()
+					.getTagManager()
+					.getTag(Registry.ITEM_KEY, identifier, identifierxx -> UNKNOWN_TAG_EXCEPTION.create(identifierxx.toString()));
+				return new ItemPredicateArgumentType.TagPredicate(tag, itemStringReader.getTag());
 			};
 		}
 	}

@@ -81,7 +81,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 	protected <E> DataResult<Pair<Supplier<E>, T>> decodeOrId(
 		T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean allowInlineDefinitions
 	) {
-		Optional<MutableRegistry<E>> optional = this.registryManager.getOptional(registryKey);
+		Optional<MutableRegistry<E>> optional = this.registryManager.getOptionalMutable(registryKey);
 		if (!optional.isPresent()) {
 			return DataResult.error("Unknown registry: " + registryKey);
 		} else {
@@ -171,7 +171,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 
 	public <E> DataResult<Registry<E>> method_31152(RegistryKey<? extends Registry<E>> registryKey) {
 		return (DataResult<Registry<E>>)this.registryManager
-			.getOptional(registryKey)
+			.getOptionalMutable(registryKey)
 			.map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle()))
 			.orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
 	}

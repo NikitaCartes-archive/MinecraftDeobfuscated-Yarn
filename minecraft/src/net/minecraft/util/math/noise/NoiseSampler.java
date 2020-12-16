@@ -1,5 +1,5 @@
 package net.minecraft.util.math.noise;
 
 public interface NoiseSampler {
-	double sample(double x, double y, double d, double e);
+	double sample(double x, double y, double yScale, double yMax);
 }

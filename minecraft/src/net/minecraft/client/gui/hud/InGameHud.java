@@ -24,8 +24,8 @@ import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.options.AttackIndicator;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.AttackIndicator;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
@@ -366,7 +366,7 @@ public class InGameHud extends DrawableHelper {
 		GameOptions gameOptions = this.client.options;
 		if (gameOptions.getPerspective().isFirstPerson()) {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
-				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
+				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getZOffset());
 					Camera camera = this.client.gameRenderer.getCamera();

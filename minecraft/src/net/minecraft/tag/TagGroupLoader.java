@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -36,101 +34,88 @@ public class TagGroupLoader<T> {
 	private static final int JSON_EXTENSION_LENGTH = ".json".length();
 	private final Function<Identifier, Optional<T>> registryGetter;
 	private final String dataType;
-	private final String entryType;
 
-	public TagGroupLoader(Function<Identifier, Optional<T>> registryGetter, String dataType, String entryType) {
+	public TagGroupLoader(Function<Identifier, Optional<T>> registryGetter, String dataType) {
 		this.registryGetter = registryGetter;
 		this.dataType = dataType;
-		this.entryType = entryType;
 	}
 
-	public CompletableFuture<Map<Identifier, Tag.Builder>> prepareReload(ResourceManager manager, Executor prepareExecutor) {
-		return CompletableFuture.supplyAsync(
-			() -> {
-				Map<Identifier, Tag.Builder> map = Maps.<Identifier, Tag.Builder>newHashMap();
-	
-				for(Identifier identifier : manager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
-					String string = identifier.getPath();
-					Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.dataType.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
-	
+	public Map<Identifier, Tag.Builder> method_33174(ResourceManager resourceManager) {
+		Map<Identifier, Tag.Builder> map = Maps.<Identifier, Tag.Builder>newHashMap();
+
+		for(Identifier identifier : resourceManager.findResources(this.dataType, stringx -> stringx.endsWith(".json"))) {
+			String string = identifier.getPath();
+			Identifier identifier2 = new Identifier(identifier.getNamespace(), string.substring(this.dataType.length() + 1, string.length() - JSON_EXTENSION_LENGTH));
+
+			try {
+				for(Resource resource : resourceManager.getAllResources(identifier)) {
 					try {
-						for(Resource resource : manager.getAllResources(identifier)) {
+						InputStream inputStream;
+						try {
+							inputStream = resource.getInputStream();
+							Throwable var10 = null;
+
 							try {
-								InputStream inputStream;
+								Reader reader;
 								try {
-									inputStream = resource.getInputStream();
-									Throwable var10 = null;
-	
+									reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+									Throwable var12 = null;
+
 									try {
-										Reader reader;
-										try {
-											reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-											Throwable var12 = null;
-	
-											try {
-												JsonObject jsonObject = JsonHelper.deserialize(GSON, reader, JsonObject.class);
-												if (jsonObject == null) {
-													LOGGER.error(
-														"Couldn't load {} tag list {} from {} in data pack {} as it is empty or null",
-														this.entryType,
-														identifier2,
-														identifier,
-														resource.getResourcePackName()
-													);
-												} else {
-													((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject, resource.getResourcePackName());
-												}
-											} catch (Throwable var53) {
-												var12 = var53;
-												throw var53;
-											} finally {
-												if (reader != null) {
-													if (var12 != null) {
-														try {
-															reader.close();
-														} catch (Throwable var52) {
-															var12.addSuppressed(var52);
-														}
-													} else {
-														reader.close();
-													}
-												}
-											}
-										} catch (Throwable var55) {
-											reader = var55;
-											var10 = var55;
-											throw var55;
+										JsonObject jsonObject = JsonHelper.deserialize(GSON, reader, JsonObject.class);
+										if (jsonObject == null) {
+											LOGGER.error("Couldn't load tag list {} from {} in data pack {} as it is empty or null", identifier2, identifier, resource.getResourcePackName());
+										} else {
+											((Tag.Builder)map.computeIfAbsent(identifier2, identifierx -> Tag.Builder.create())).read(jsonObject, resource.getResourcePackName());
 										}
+									} catch (Throwable var53) {
+										var12 = var53;
+										throw var53;
 									} finally {
-										if (inputStream != null) {
-											if (var10 != null) {
+										if (reader != null) {
+											if (var12 != null) {
 												try {
-													inputStream.close();
-												} catch (Throwable var51) {
-													var10.addSuppressed(var51);
+													reader.close();
+												} catch (Throwable var52) {
+													var12.addSuppressed(var52);
 												}
 											} else {
-												inputStream.close();
+												reader.close();
 											}
 										}
 									}
-								} catch (RuntimeException | IOException var57) {
-									inputStream = var57;
-									LOGGER.error("Couldn't read {} tag list {} from {} in data pack {}", this.entryType, identifier2, identifier, resource.getResourcePackName(), var57);
+								} catch (Throwable var55) {
+									reader = var55;
+									var10 = var55;
+									throw var55;
 								}
 							} finally {
-								IOUtils.closeQuietly(resource);
+								if (inputStream != null) {
+									if (var10 != null) {
+										try {
+											inputStream.close();
+										} catch (Throwable var51) {
+											var10.addSuppressed(var51);
+										}
+									} else {
+										inputStream.close();
+									}
+								}
 							}
+						} catch (RuntimeException | IOException var57) {
+							inputStream = var57;
+							LOGGER.error("Couldn't read tag list {} from {} in data pack {}", identifier2, identifier, resource.getResourcePackName(), var57);
 						}
-					} catch (IOException var59) {
-						LOGGER.error("Couldn't read {} tag list {} from {}", this.entryType, identifier2, identifier, var59);
+					} finally {
+						IOUtils.closeQuietly(resource);
 					}
 				}
-	
-				return map;
-			},
-			prepareExecutor
-		);
+			} catch (IOException var59) {
+				LOGGER.error("Couldn't read tag list {} from {}", identifier2, identifier, var59);
+			}
+		}
+
+		return map;
 	}
 
 	private static void method_32839(
@@ -178,8 +163,7 @@ public class TagGroupLoader<T> {
 						(identifierx, builder) -> builder.build(function, function2)
 								.ifLeft(
 									collection -> LOGGER.error(
-											"Couldn't load {} tag {} as it is missing following references: {}",
-											this.entryType,
+											"Couldn't load tag {} as it is missing following references: {}",
 											identifierx,
 											collection.stream().map(Objects::toString).collect(Collectors.joining(","))
 										)
@@ -189,5 +173,9 @@ public class TagGroupLoader<T> {
 					)
 			);
 		return TagGroup.create(map);
+	}
+
+	public TagGroup<T> method_33176(ResourceManager resourceManager) {
+		return this.applyReload(this.method_33174(resourceManager));
 	}
 }

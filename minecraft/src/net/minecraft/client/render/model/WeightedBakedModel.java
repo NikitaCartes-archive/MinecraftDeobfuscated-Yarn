@@ -78,7 +78,7 @@ public class WeightedBakedModel implements BakedModel {
 		}
 
 		@Nullable
-		public BakedModel getFirst() {
+		public BakedModel build() {
 			if (this.models.isEmpty()) {
 				return null;
 			} else {

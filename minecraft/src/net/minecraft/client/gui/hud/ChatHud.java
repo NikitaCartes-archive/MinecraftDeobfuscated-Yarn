@@ -11,7 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.ChatScreen;
-import net.minecraft.client.options.ChatVisibility;
+import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.client.util.ChatMessages;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;

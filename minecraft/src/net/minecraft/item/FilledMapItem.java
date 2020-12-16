@@ -180,7 +180,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 								}
 
 								MapColor mapColor = Iterables.getFirst(Multisets.copyHighestCountFirst(multiset), MapColor.CLEAR);
-								if (mapColor == MapColor.WATER) {
+								if (mapColor == MapColor.WATER_BLUE) {
 									f = (double)w * 0.1 + (double)(o + p & 1) * 0.2;
 									y = 1;
 									if (f < 0.5) {

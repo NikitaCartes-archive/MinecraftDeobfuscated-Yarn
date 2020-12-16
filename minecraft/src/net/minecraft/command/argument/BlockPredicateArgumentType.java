@@ -28,6 +28,7 @@ import net.minecraft.tag.Tag;
 import net.minecraft.tag.TagManager;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateArgumentType.BlockPredicate> {
 	private static final Collection<String> EXAMPLES = Arrays.asList("stone", "minecraft:stone", "stone[foo=bar]", "#stone", "#stone[foo=bar]{baz=nbt}");
@@ -49,12 +50,8 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 		} else {
 			Identifier identifier = blockArgumentParser.getTagId();
 			return tagManager -> {
-				Tag<Block> tag = tagManager.getBlocks().getTag(identifier);
-				if (tag == null) {
-					throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
-				} else {
-					return new BlockPredicateArgumentType.TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
-				}
+				Tag<Block> tag = tagManager.getTag(Registry.BLOCK_KEY, identifier, identifierxx -> UNKNOWN_TAG_EXCEPTION.create(identifierxx.toString()));
+				return new BlockPredicateArgumentType.TagPredicate(tag, blockArgumentParser.getProperties(), blockArgumentParser.getNbtData());
 			};
 		}
 	}

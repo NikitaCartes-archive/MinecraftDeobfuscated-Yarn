@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class StructureValidatorProvider implements SnbtProvider.Tweaker {
-	private static final Logger field_24617 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	@Override
 	public CompoundTag write(String name, CompoundTag nbt) {
@@ -29,16 +29,16 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 		return nbt;
 	}
 
-	private static CompoundTag update(String string, CompoundTag compoundTag) {
+	private static CompoundTag update(String name, CompoundTag tag) {
 		Structure structure = new Structure();
-		int i = compoundTag.getInt("DataVersion");
+		int i = tag.getInt("DataVersion");
 		int j = 2678;
 		if (i < 2678) {
-			field_24617.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 2678, string);
+			LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", i, 2678, name);
 		}
 
-		CompoundTag compoundTag2 = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, compoundTag, i);
-		structure.fromTag(compoundTag2);
+		CompoundTag compoundTag = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, tag, i);
+		structure.fromTag(compoundTag);
 		return structure.toTag(new CompoundTag());
 	}
 }

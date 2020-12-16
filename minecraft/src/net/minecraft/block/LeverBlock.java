@@ -85,7 +85,7 @@ public class LeverBlock extends WallMountedBlock {
 
 			return ActionResult.SUCCESS;
 		} else {
-			BlockState blockState = this.method_21846(state, world, pos);
+			BlockState blockState = this.togglePower(state, world, pos);
 			float f = blockState.get(POWERED) ? 0.6F : 0.5F;
 			world.playSound(null, pos, SoundEvents.BLOCK_LEVER_CLICK, SoundCategory.BLOCKS, 0.3F, f);
 			world.emitGameEvent(player, blockState.get(POWERED) ? GameEvent.BLOCK_SWITCH : GameEvent.BLOCK_UNSWITCH, pos);
@@ -93,11 +93,11 @@ public class LeverBlock extends WallMountedBlock {
 		}
 	}
 
-	public BlockState method_21846(BlockState blockState, World world, BlockPos blockPos) {
-		blockState = blockState.cycle(POWERED);
-		world.setBlockState(blockPos, blockState, 3);
-		this.updateNeighbors(blockState, world, blockPos);
-		return blockState;
+	public BlockState togglePower(BlockState state, World world, BlockPos pos) {
+		state = state.cycle(POWERED);
+		world.setBlockState(pos, state, 3);
+		this.updateNeighbors(state, world, pos);
+		return state;
 	}
 
 	private static void spawnParticles(BlockState state, WorldAccess world, BlockPos pos, float alpha) {

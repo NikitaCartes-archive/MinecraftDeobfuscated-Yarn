@@ -20,6 +20,7 @@ import net.minecraft.entity.mob.SlimeEntity;
 import net.minecraft.entity.mob.StrayEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.BatEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.FishEntity;
@@ -66,6 +67,7 @@ public class SpawnRestriction {
 	}
 
 	static {
+		register(EntityType.AXOLOTL, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AxolotlEntity::canSpawn);
 		register(EntityType.COD, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, FishEntity::canSpawn);
 		register(EntityType.DOLPHIN, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, DolphinEntity::canSpawn);
 		register(EntityType.DROWNED, SpawnRestriction.Location.IN_WATER, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, DrownedEntity::canSpawn);

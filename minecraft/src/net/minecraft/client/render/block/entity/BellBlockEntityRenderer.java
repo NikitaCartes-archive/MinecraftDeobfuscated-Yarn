@@ -23,11 +23,11 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class BellBlockEntityRenderer implements BlockEntityRenderer<BellBlockEntity> {
 	public static final SpriteIdentifier BELL_BODY_TEXTURE = new SpriteIdentifier(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, new Identifier("entity/bell/bell_body"));
-	private final ModelPart field_20816;
+	private final ModelPart bellBody;
 
-	public BellBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		ModelPart modelPart = context.getLayerModelPart(EntityModelLayers.BELL);
-		this.field_20816 = modelPart.getChild("bell_body");
+	public BellBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		ModelPart modelPart = ctx.getLayerModelPart(EntityModelLayers.BELL);
+		this.bellBody = modelPart.getChild("bell_body");
 	}
 
 	public static TexturedModelData getTexturedModelData() {
@@ -59,9 +59,9 @@ public class BellBlockEntityRenderer implements BlockEntityRenderer<BellBlockEnt
 			}
 		}
 
-		this.field_20816.pitch = h;
-		this.field_20816.roll = k;
+		this.bellBody.pitch = h;
+		this.bellBody.roll = k;
 		VertexConsumer vertexConsumer = BELL_BODY_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-		this.field_20816.render(matrixStack, vertexConsumer, i, j);
+		this.bellBody.render(matrixStack, vertexConsumer, i, j);
 	}
 }

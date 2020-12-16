@@ -108,13 +108,9 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 
 			if (this.isPointOverSlot(slot, (double)mouseX, (double)mouseY) && slot.doDrawHoveringEffect()) {
 				this.focusedSlot = slot;
-				RenderSystem.disableDepthTest();
 				int n = slot.x;
 				int o = slot.y;
-				RenderSystem.colorMask(true, true, true, false);
-				this.fillGradient(matrices, n, o, n + 16, o + 16, -2130706433, -2130706433);
-				RenderSystem.colorMask(true, true, true, true);
-				RenderSystem.enableDepthTest();
+				method_33285(matrices, n, o, this.getZOffset());
 			}
 		}
 
@@ -154,6 +150,14 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		}
 
 		RenderSystem.popMatrix();
+		RenderSystem.enableDepthTest();
+	}
+
+	public static void method_33285(MatrixStack matrixStack, int i, int j, int k) {
+		RenderSystem.disableDepthTest();
+		RenderSystem.colorMask(true, true, true, false);
+		method_33284(matrixStack, i, j, i + 16, j + 16, -2130706433, -2130706433, k);
+		RenderSystem.colorMask(true, true, true, true);
 		RenderSystem.enableDepthTest();
 	}
 

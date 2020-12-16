@@ -10,4 +10,8 @@ public class class_5623 {
 	public static void method_32245(GameTest gameTest) {
 		field_27807.onTestFailed(gameTest);
 	}
+
+	public static void method_33319(GameTest gameTest) {
+		field_27807.method_33322(gameTest);
+	}
 }

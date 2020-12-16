@@ -163,7 +163,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 		double e = this.getY();
 		double f = this.getZ();
 		super.calculateDimensions();
-		this.updatePosition(d, e, f);
+		this.setPosition(d, e, f);
 	}
 
 	@Override

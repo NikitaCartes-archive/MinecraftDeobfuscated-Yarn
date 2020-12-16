@@ -12,5 +12,5 @@ public interface GameEventListener {
 
 	int getRange();
 
-	boolean method_32947(World world, GameEvent event, @Nullable Entity entity, BlockPos pos);
+	boolean listen(World world, GameEvent event, @Nullable Entity entity, BlockPos pos);
 }

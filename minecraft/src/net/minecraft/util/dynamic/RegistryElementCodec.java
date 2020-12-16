@@ -26,25 +26,25 @@ import net.minecraft.util.registry.RegistryKey;
 public final class RegistryElementCodec<E> implements Codec<Supplier<E>> {
 	private final RegistryKey<? extends Registry<E>> registryRef;
 	private final Codec<E> elementCodec;
-	private final boolean field_26758;
+	private final boolean allowInlineDefinitions;
 
-	public static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec) {
-		return method_31192(registryRef, codec, true);
+	public static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec) {
+		return of(registryRef, elementCodec, true);
 	}
 
-	public static <E> Codec<List<Supplier<E>>> method_31194(RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec) {
-		return Codec.either(method_31192(registryKey, codec, false).listOf(), codec.xmap(object -> () -> object, Supplier::get).listOf())
+	public static <E> Codec<List<Supplier<E>>> method_31194(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec) {
+		return Codec.either(of(registryRef, elementCodec, false).listOf(), elementCodec.xmap(object -> () -> object, Supplier::get).listOf())
 			.xmap(either -> either.map(list -> list, list -> list), Either::left);
 	}
 
-	private static <E> RegistryElementCodec<E> method_31192(RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean bl) {
-		return new RegistryElementCodec<>(registryKey, codec, bl);
+	private static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec, boolean allowInlineDefinitions) {
+		return new RegistryElementCodec<>(registryRef, elementCodec, allowInlineDefinitions);
 	}
 
-	private RegistryElementCodec(RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec, boolean bl) {
+	private RegistryElementCodec(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec, boolean allowInlineDefinitions) {
 		this.registryRef = registryRef;
-		this.elementCodec = codec;
-		this.field_26758 = bl;
+		this.elementCodec = elementCodec;
+		this.allowInlineDefinitions = allowInlineDefinitions;
 	}
 
 	public <T> DataResult<T> encode(Supplier<E> supplier, DynamicOps<T> dynamicOps, T object) {
@@ -56,7 +56,7 @@ public final class RegistryElementCodec<E> implements Codec<Supplier<E>> {
 	@Override
 	public <T> DataResult<Pair<Supplier<E>, T>> decode(DynamicOps<T> ops, T input) {
 		return ops instanceof RegistryOps
-			? ((RegistryOps)ops).decodeOrId(input, this.registryRef, this.elementCodec, this.field_26758)
+			? ((RegistryOps)ops).decodeOrId(input, this.registryRef, this.elementCodec, this.allowInlineDefinitions)
 			: this.elementCodec.decode(ops, input).map(pair -> pair.mapFirst(object -> () -> object));
 	}
 

@@ -17,8 +17,8 @@ public class EntityAttachS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	public EntityAttachS2CPacket(Entity attachedEntity, @Nullable Entity holdingEntity) {
-		this.attachedId = attachedEntity.getEntityId();
-		this.holdingId = holdingEntity != null ? holdingEntity.getEntityId() : 0;
+		this.attachedId = attachedEntity.getId();
+		this.holdingId = holdingEntity != null ? holdingEntity.getId() : 0;
 	}
 
 	@Override

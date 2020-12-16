@@ -25,10 +25,10 @@ public interface ResourceManager {
 
 	/**
 	 * Finds and returns the corresponding resource for a resource's identifier.
-	 * <br>
-	 * Starts by scanning each resource pack from highest priority to lowest. If no resource packs were found
+	 * 
+	 * <p>Starts by scanning each resource pack from highest priority to lowest. If no resource packs were found
 	 * to contain the requested entry, will throw a {@code FileNotFoundException}.
-	 * <br>
+	 * 
 	 * @throws FileNotFoundException if the identified resource could not be found, or could not be loaded.
 	 * @throws IOException if the identified resource was found but a stream to it could not be opened.
 	 * 
@@ -38,8 +38,8 @@ public interface ResourceManager {
 
 	/**
 	 * Checks whether any of the currently-loaded resource packs contain an entry for the given id.
-	 * <br>
-	 * Starts by querying the resource pack with the highest priority to lowest until it finds one that
+	 * 
+	 * <p>Starts by querying the resource pack with the highest priority to lowest until it finds one that
 	 * responds to the requested identifier.
 	 * 
 	 * @param id the resource identifier to search for
@@ -49,10 +49,10 @@ public interface ResourceManager {
 
 	/**
 	 * Gets all of the available resources to the corresponding resource identifier.
-	 * <br>
-	 * Resources are returned in load order, or ascending order of priority, so the last element in the returned
+	 * 
+	 * <p>Resources are returned in load order, or ascending order of priority, so the last element in the returned
 	 * list is what would be returned normally by {@link #getResource}
-	 * <br>
+	 * 
 	 * @throws FileNotFoundException if no matching resources could be found (i.e. if the list would be empty)
 	 * @throws IOException if resources were found, but any one of them could not be opened to be read.
 	 * 
@@ -62,11 +62,11 @@ public interface ResourceManager {
 
 	/**
 	 * Returns a sorted list of identifiers matching a path predicate.
-	 * <br>
-	 * Scanning begins in {@code startingPath} and each candidate file present under that directory
+	 * 
+	 * <p>Scanning begins in {@code startingPath} and each candidate file present under that directory
 	 * will be offered up to the predicate to decide whether it should be included or not.
-	 * <br>
-	 * Elements in the returned list may not, necessarily be unique. Additional effort is advised to ensure that
+	 * 
+	 * <p>Elements in the returned list may not, necessarily be unique. Additional effort is advised to ensure that
 	 * duplicates in the returned list are discarded before loading.
 	 * 
 	 * @return the list matching identifiers

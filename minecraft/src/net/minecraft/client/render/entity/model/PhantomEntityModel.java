@@ -71,7 +71,7 @@ public class PhantomEntityModel<T extends Entity> extends SinglePartEntityModel<
 
 	@Override
 	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		float f = ((float)(entity.getEntityId() * 3) + animationProgress) * 0.13F;
+		float f = ((float)(entity.getId() * 3) + animationProgress) * 0.13F;
 		float g = 16.0F;
 		this.leftWingBase.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
 		this.leftWingTip.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);

@@ -31,7 +31,7 @@ import org.apache.logging.log4j.LogManager;
  */
 public interface Chunk extends BlockView, StructureHolder {
 	default class_5713 method_32914(int i) {
-		return class_5713.field_28181;
+		return class_5713.EMPTY;
 	}
 
 	@Nullable
@@ -113,8 +113,8 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	ShortList[] getPostProcessingLists();
 
-	default void markBlockForPostProcessing(short s, int i) {
-		getList(this.getPostProcessingLists(), i).add(s);
+	default void markBlockForPostProcessing(short packedPos, int index) {
+		getList(this.getPostProcessingLists(), index).add(packedPos);
 	}
 
 	default void addPendingBlockEntityTag(CompoundTag tag) {

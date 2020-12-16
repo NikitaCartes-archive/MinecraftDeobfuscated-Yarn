@@ -1,11 +1,10 @@
 package net.minecraft.tag;
 
-import java.util.List;
 import net.minecraft.block.Block;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public final class BlockTags {
-	protected static final RequiredTagList<Block> REQUIRED_TAGS = RequiredTagListRegistry.register(new Identifier("block"), TagManager::getBlocks);
+	protected static final RequiredTagList<Block> REQUIRED_TAGS = RequiredTagListRegistry.register(Registry.BLOCK_KEY, "tags/blocks");
 	public static final Tag.Identified<Block> WOOL = register("wool");
 	public static final Tag.Identified<Block> PLANKS = register("planks");
 	public static final Tag.Identified<Block> STONE_BRICKS = register("stone_bricks");
@@ -106,9 +105,5 @@ public final class BlockTags {
 
 	public static TagGroup<Block> getTagGroup() {
 		return REQUIRED_TAGS.getGroup();
-	}
-
-	public static List<? extends Tag.Identified<Block>> getRequiredTags() {
-		return REQUIRED_TAGS.getTags();
 	}
 }

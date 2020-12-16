@@ -180,8 +180,8 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	protected void method_30759(float f) {
-		super.method_30759(f);
+	protected void enchantMainHandItem(float power) {
+		super.enchantMainHandItem(power);
 		if (this.random.nextInt(300) == 0) {
 			ItemStack itemStack = this.getMainHandStack();
 			if (itemStack.isOf(Items.CROSSBOW)) {

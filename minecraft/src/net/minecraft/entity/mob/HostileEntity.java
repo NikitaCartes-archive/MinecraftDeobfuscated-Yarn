@@ -82,21 +82,17 @@ public abstract class HostileEntity extends PathAwareEntity implements Monster {
 		return 0.5F - world.getBrightness(pos);
 	}
 
-	public static boolean isSpawnDark(ServerWorldAccess serverWorldAccess, BlockPos pos, Random random) {
-		if (serverWorldAccess.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
+	public static boolean isSpawnDark(ServerWorldAccess world, BlockPos pos, Random random) {
+		if (world.getLightLevel(LightType.SKY, pos) > random.nextInt(32)) {
 			return false;
 		} else {
-			int i = serverWorldAccess.toServerWorld().isThundering() ? serverWorldAccess.getLightLevel(pos, 10) : serverWorldAccess.getLightLevel(pos);
+			int i = world.toServerWorld().isThundering() ? world.getLightLevel(pos, 10) : world.getLightLevel(pos);
 			return i <= random.nextInt(8);
 		}
 	}
 
-	public static boolean canSpawnInDark(
-		EntityType<? extends HostileEntity> type, ServerWorldAccess serverWorldAccess, SpawnReason spawnReason, BlockPos pos, Random random
-	) {
-		return serverWorldAccess.getDifficulty() != Difficulty.PEACEFUL
-			&& isSpawnDark(serverWorldAccess, pos, random)
-			&& canMobSpawn(type, serverWorldAccess, spawnReason, pos, random);
+	public static boolean canSpawnInDark(EntityType<? extends HostileEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
+		return world.getDifficulty() != Difficulty.PEACEFUL && isSpawnDark(world, pos, random) && canMobSpawn(type, world, spawnReason, pos, random);
 	}
 
 	public static boolean canSpawnIgnoreLightLevel(

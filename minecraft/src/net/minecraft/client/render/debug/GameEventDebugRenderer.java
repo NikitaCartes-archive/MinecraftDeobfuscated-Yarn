@@ -213,7 +213,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		@Override
-		public boolean method_32947(World world, GameEvent event, @Nullable Entity entity, BlockPos pos) {
+		public boolean listen(World world, GameEvent event, @Nullable Entity entity, BlockPos pos) {
 			return false;
 		}
 	}

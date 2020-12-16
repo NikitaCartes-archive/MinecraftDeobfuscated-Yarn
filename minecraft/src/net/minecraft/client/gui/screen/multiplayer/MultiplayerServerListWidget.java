@@ -21,7 +21,7 @@ import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.options.ServerList;
+import net.minecraft.client.option.ServerList;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;

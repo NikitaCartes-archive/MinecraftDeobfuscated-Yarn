@@ -21,7 +21,7 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 	}
 
 	public EntityPositionS2CPacket(Entity entity) {
-		this.id = entity.getEntityId();
+		this.id = entity.getId();
 		this.x = entity.getX();
 		this.y = entity.getY();
 		this.z = entity.getZ();

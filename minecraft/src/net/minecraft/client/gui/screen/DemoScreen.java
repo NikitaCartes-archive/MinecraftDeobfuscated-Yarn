@@ -3,9 +3,9 @@ package net.minecraft.client.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -14,8 +14,8 @@ import net.minecraft.util.Util;
 @Environment(EnvType.CLIENT)
 public class DemoScreen extends Screen {
 	private static final Identifier DEMO_BG = new Identifier("textures/gui/demo_background.png");
-	private class_5489 field_26538 = class_5489.field_26528;
-	private class_5489 field_26539 = class_5489.field_26528;
+	private MultilineText field_26538 = MultilineText.EMPTY;
+	private MultilineText field_26539 = MultilineText.EMPTY;
 
 	public DemoScreen() {
 		super(new TranslatableText("demo.help.title"));
@@ -33,7 +33,7 @@ public class DemoScreen extends Screen {
 			this.client.mouse.lockCursor();
 		}));
 		GameOptions gameOptions = this.client.options;
-		this.field_26538 = class_5489.method_30892(
+		this.field_26538 = MultilineText.create(
 			this.textRenderer,
 			new TranslatableText(
 				"demo.help.movementShort",
@@ -46,7 +46,7 @@ public class DemoScreen extends Screen {
 			new TranslatableText("demo.help.jump", gameOptions.keyJump.getBoundKeyLocalizedText()),
 			new TranslatableText("demo.help.inventory", gameOptions.keyInventory.getBoundKeyLocalizedText())
 		);
-		this.field_26539 = class_5489.method_30890(this.textRenderer, new TranslatableText("demo.help.fullWrapped"), 218);
+		this.field_26539 = MultilineText.create(this.textRenderer, new TranslatableText("demo.help.fullWrapped"), 218);
 	}
 
 	@Override
@@ -65,8 +65,8 @@ public class DemoScreen extends Screen {
 		int i = (this.width - 248) / 2 + 10;
 		int j = (this.height - 166) / 2 + 8;
 		this.textRenderer.draw(matrices, this.title, (float)i, (float)j, 2039583);
-		j = this.field_26538.method_30896(matrices, i, j + 12, 12, 5197647);
-		this.field_26539.method_30896(matrices, i, j + 20, 9, 2039583);
+		j = this.field_26538.draw(matrices, i, j + 12, 12, 5197647);
+		this.field_26539.draw(matrices, i, j + 20, 9, 2039583);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 }

@@ -161,7 +161,7 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	private float getBrightness(World world, int i) {
-		return world.getDimension().method_28516(i);
+		return world.getDimension().getBrightness(i);
 	}
 
 	public static int pack(int block, int sky) {

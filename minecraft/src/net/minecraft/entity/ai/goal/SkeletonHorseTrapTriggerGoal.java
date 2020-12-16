@@ -52,7 +52,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	private HorseBaseEntity getHorse(LocalDifficulty localDifficulty) {
 		SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this.skeletonHorse.world);
 		skeletonHorseEntity.initialize((ServerWorld)this.skeletonHorse.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
-		skeletonHorseEntity.updatePosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
+		skeletonHorseEntity.setPosition(this.skeletonHorse.getX(), this.skeletonHorse.getY(), this.skeletonHorse.getZ());
 		skeletonHorseEntity.timeUntilRegen = 60;
 		skeletonHorseEntity.setPersistent();
 		skeletonHorseEntity.setTame(true);
@@ -63,7 +63,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 	private SkeletonEntity getSkeleton(LocalDifficulty localDifficulty, HorseBaseEntity vehicle) {
 		SkeletonEntity skeletonEntity = EntityType.SKELETON.create(vehicle.world);
 		skeletonEntity.initialize((ServerWorld)vehicle.world, localDifficulty, SpawnReason.TRIGGERED, null, null);
-		skeletonEntity.updatePosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
+		skeletonEntity.setPosition(vehicle.getX(), vehicle.getY(), vehicle.getZ());
 		skeletonEntity.timeUntilRegen = 60;
 		skeletonEntity.setPersistent();
 		if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {

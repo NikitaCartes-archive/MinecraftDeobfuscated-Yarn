@@ -258,7 +258,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		double d = MathHelper.clamp(this.getX(), -2.9999999E7, 2.9999999E7);
 		double e = MathHelper.clamp(this.getZ(), -2.9999999E7, 2.9999999E7);
 		if (d != this.getX() || e != this.getZ()) {
-			this.updatePosition(d, this.getY(), e);
+			this.setPosition(d, this.getY(), e);
 		}
 
 		++this.lastAttackedTicks;
@@ -536,7 +536,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			}
 
 			if (!list2.isEmpty()) {
-				this.collideWithEntity(Util.method_32309(list2, this.random));
+				this.collideWithEntity(Util.getRandom(list2, this.random));
 			}
 		}
 
@@ -754,8 +754,16 @@ public abstract class PlayerEntity extends LivingEntity {
 		return f;
 	}
 
-	public boolean isUsingEffectiveTool(BlockState block) {
-		return !block.isToolRequired() || this.inventory.getMainHandStack().isEffectiveOn(block);
+	/**
+	 * Determines whether the player is able to harvest drops from the specified block state.
+	 * If a block requires a special tool, it will check
+	 * whether the held item is effective for that block, otherwise
+	 * it returns {@code true}.
+	 * 
+	 * @see net.minecraft.item.Item#isSuitableFor(BlockState)
+	 */
+	public boolean canHarvest(BlockState state) {
+		return !state.isToolRequired() || this.inventory.getMainHandStack().isSuitableFor(state);
 	}
 
 	@Override
@@ -869,6 +877,11 @@ public abstract class PlayerEntity extends LivingEntity {
 		if (attacker.getMainHandStack().getItem() instanceof AxeItem) {
 			this.disableShield(true);
 		}
+	}
+
+	@Override
+	public boolean canTakeDamage() {
+		return !this.getAbilities().invulnerable && super.canTakeDamage();
 	}
 
 	public boolean shouldDamagePlayer(PlayerEntity player) {
@@ -1575,8 +1588,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
-		this.incrementStat(Stats.KILLED.getOrCreateStat(livingEntity.getType()));
+	public void onKilledOther(ServerWorld world, LivingEntity other) {
+		this.incrementStat(Stats.KILLED.getOrCreateStat(other.getType()));
 	}
 
 	@Override
@@ -1791,7 +1804,7 @@ public abstract class PlayerEntity extends LivingEntity {
 					((TameableEntity)entity).setOwnerUuid(this.uuid);
 				}
 
-				entity.updatePosition(this.getX(), this.getY() + 0.7F, this.getZ());
+				entity.setPosition(this.getX(), this.getY() + 0.7F, this.getZ());
 				((ServerWorld)this.world).tryLoadEntity(entity);
 			});
 		}
@@ -1896,7 +1909,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean getReducedDebugInfo() {
+	public boolean hasReducedDebugInfo() {
 		return this.reducedDebugInfo;
 	}
 
@@ -1966,7 +1979,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public boolean canEquip(ItemStack stack) {
-		EquipmentSlot equipmentSlot = MobEntity.method_32326(stack);
+		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
 		return this.getEquippedStack(equipmentSlot).isEmpty();
 	}
 
@@ -2019,8 +2032,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected boolean method_29500(BlockState blockState) {
-		return this.abilities.flying || super.method_29500(blockState);
+	protected boolean method_29500(BlockState state) {
+		return this.abilities.flying || super.method_29500(state);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -2043,13 +2056,13 @@ public abstract class PlayerEntity extends LivingEntity {
 				l = 0.0F;
 			}
 
-			return this.method_30950(f).add(new Vec3d(d, -0.11, 0.85).rotateZ(-l).rotateX(-g).rotateY(-h));
+			return this.getLerpedPos(f).add(new Vec3d(d, -0.11, 0.85).rotateZ(-l).rotateX(-g).rotateY(-h));
 		} else if (this.isInSwimmingPose()) {
-			return this.method_30950(f).add(new Vec3d(d, 0.2, -0.15).rotateX(-g).rotateY(-h));
+			return this.getLerpedPos(f).add(new Vec3d(d, 0.2, -0.15).rotateX(-g).rotateY(-h));
 		} else {
 			double m = this.getBoundingBox().getYLength() - 1.0;
 			double e = this.isInSneakingPose() ? -0.2 : 0.07;
-			return this.method_30950(f).add(new Vec3d(d, m, e).rotateY(-h));
+			return this.getLerpedPos(f).add(new Vec3d(d, m, e).rotateY(-h));
 		}
 	}
 

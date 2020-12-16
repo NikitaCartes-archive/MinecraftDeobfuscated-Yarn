@@ -118,19 +118,19 @@ public class ChunkSection {
 		this.nonEmptyBlockCount = 0;
 		this.randomTickableBlockCount = 0;
 		this.nonEmptyFluidCount = 0;
-		this.container.count((blockState, i) -> {
-			FluidState fluidState = blockState.getFluidState();
-			if (!blockState.isAir()) {
-				this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + i);
-				if (blockState.hasRandomTicks()) {
-					this.randomTickableBlockCount = (short)(this.randomTickableBlockCount + i);
+		this.container.count((state, count) -> {
+			FluidState fluidState = state.getFluidState();
+			if (!state.isAir()) {
+				this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + count);
+				if (state.hasRandomTicks()) {
+					this.randomTickableBlockCount = (short)(this.randomTickableBlockCount + count);
 				}
 			}
 
 			if (!fluidState.isEmpty()) {
-				this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + i);
+				this.nonEmptyBlockCount = (short)(this.nonEmptyBlockCount + count);
 				if (fluidState.hasRandomTicks()) {
-					this.nonEmptyFluidCount = (short)(this.nonEmptyFluidCount + i);
+					this.nonEmptyFluidCount = (short)(this.nonEmptyFluidCount + count);
 				}
 			}
 		});

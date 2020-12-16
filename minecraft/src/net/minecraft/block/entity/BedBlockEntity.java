@@ -11,14 +11,14 @@ import net.minecraft.util.math.BlockPos;
 public class BedBlockEntity extends BlockEntity {
 	private DyeColor color;
 
-	public BedBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.BED, blockPos, blockState);
-		this.color = ((BedBlock)blockState.getBlock()).getColor();
+	public BedBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.BED, pos, state);
+		this.color = ((BedBlock)state.getBlock()).getColor();
 	}
 
-	public BedBlockEntity(BlockPos blockPos, BlockState blockState, DyeColor dyeColor) {
-		super(BlockEntityType.BED, blockPos, blockState);
-		this.color = dyeColor;
+	public BedBlockEntity(BlockPos pos, BlockState state, DyeColor color) {
+		super(BlockEntityType.BED, pos, state);
+		this.color = color;
 	}
 
 	@Override

@@ -9,9 +9,9 @@ public interface ParentedLayer extends CoordinateTransformer {
 	default <R extends LayerSampler> LayerFactory<R> create(LayerSampleContext<R> context, LayerFactory<R> parent) {
 		return () -> {
 			R layerSampler = parent.make();
-			return context.createSampler((i, j) -> {
-				context.initSeed((long)i, (long)j);
-				return this.sample(context, layerSampler, i, j);
+			return context.createSampler((x, z) -> {
+				context.initSeed((long)x, (long)z);
+				return this.sample(context, layerSampler, x, z);
 			}, layerSampler);
 		};
 	}

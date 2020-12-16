@@ -96,7 +96,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 
 			this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)g));
 			this.world.addParticle(this.getParticleType(), d, e + 0.5, f, 0.0, 0.0, 0.0);
-			this.updatePosition(d, e, f);
+			this.setPosition(d, e, f);
 		} else {
 			this.discard();
 		}
@@ -177,18 +177,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	@Override
 	public Packet<?> createSpawnPacket() {
 		Entity entity = this.getOwner();
-		int i = entity == null ? 0 : entity.getEntityId();
+		int i = entity == null ? 0 : entity.getId();
 		return new EntitySpawnS2CPacket(
-			this.getEntityId(),
-			this.getUuid(),
-			this.getX(),
-			this.getY(),
-			this.getZ(),
-			this.pitch,
-			this.yaw,
-			this.getType(),
-			i,
-			new Vec3d(this.posX, this.posY, this.posZ)
+			this.getId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.pitch, this.yaw, this.getType(), i, new Vec3d(this.posX, this.posY, this.posZ)
 		);
 	}
 

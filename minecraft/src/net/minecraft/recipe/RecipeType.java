@@ -15,10 +15,10 @@ public interface RecipeType<T extends Recipe<?>> {
 	RecipeType<StonecuttingRecipe> STONECUTTING = register("stonecutting");
 	RecipeType<SmithingRecipe> SMITHING = register("smithing");
 
-	static <T extends Recipe<?>> RecipeType<T> register(String string) {
-		return Registry.register(Registry.RECIPE_TYPE, new Identifier(string), new RecipeType<T>() {
+	static <T extends Recipe<?>> RecipeType<T> register(String id) {
+		return Registry.register(Registry.RECIPE_TYPE, new Identifier(id), new RecipeType<T>() {
 			public String toString() {
-				return string;
+				return id;
 			}
 		});
 	}

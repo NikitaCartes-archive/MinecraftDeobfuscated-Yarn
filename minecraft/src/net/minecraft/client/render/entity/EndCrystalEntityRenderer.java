@@ -58,7 +58,7 @@ public class EndCrystalEntityRenderer extends EntityRenderer<EndCrystalEntity> {
 		matrixStack.scale(2.0F, 2.0F, 2.0F);
 		matrixStack.translate(0.0, -0.5, 0.0);
 		int k = OverlayTexture.DEFAULT_UV;
-		if (endCrystalEntity.getShowBottom()) {
+		if (endCrystalEntity.shouldShowBottom()) {
 			this.bottom.render(matrixStack, vertexConsumer, i, k);
 		}
 

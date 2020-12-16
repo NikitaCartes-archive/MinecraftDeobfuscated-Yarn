@@ -231,7 +231,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 				return false;
 			} else if (IllusionerEntity.this.getTarget() == null) {
 				return false;
-			} else if (IllusionerEntity.this.getTarget().getEntityId() == this.targetId) {
+			} else if (IllusionerEntity.this.getTarget().getId() == this.targetId) {
 				return false;
 			} else {
 				return IllusionerEntity.this.world.getLocalDifficulty(IllusionerEntity.this.getBlockPos()).isHarderThan((float)Difficulty.NORMAL.ordinal());
@@ -241,7 +241,7 @@ public class IllusionerEntity extends SpellcastingIllagerEntity implements Range
 		@Override
 		public void start() {
 			super.start();
-			this.targetId = IllusionerEntity.this.getTarget().getEntityId();
+			this.targetId = IllusionerEntity.this.getTarget().getId();
 		}
 
 		@Override

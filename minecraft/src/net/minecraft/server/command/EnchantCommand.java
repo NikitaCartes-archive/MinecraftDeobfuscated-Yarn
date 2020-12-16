@@ -8,8 +8,8 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Collection;
+import net.minecraft.command.argument.EnchantmentArgumentType;
 import net.minecraft.command.argument.EntityArgumentType;
-import net.minecraft.command.argument.ItemEnchantmentArgumentType;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -39,12 +39,12 @@ public class EnchantCommand {
 				.then(
 					CommandManager.argument("targets", EntityArgumentType.entities())
 						.then(
-							CommandManager.argument("enchantment", ItemEnchantmentArgumentType.itemEnchantment())
+							CommandManager.argument("enchantment", EnchantmentArgumentType.enchantment())
 								.executes(
 									commandContext -> execute(
 											commandContext.getSource(),
 											EntityArgumentType.getEntities(commandContext, "targets"),
-											ItemEnchantmentArgumentType.getEnchantment(commandContext, "enchantment"),
+											EnchantmentArgumentType.getEnchantment(commandContext, "enchantment"),
 											1
 										)
 								)
@@ -54,7 +54,7 @@ public class EnchantCommand {
 											commandContext -> execute(
 													commandContext.getSource(),
 													EntityArgumentType.getEntities(commandContext, "targets"),
-													ItemEnchantmentArgumentType.getEnchantment(commandContext, "enchantment"),
+													EnchantmentArgumentType.getEnchantment(commandContext, "enchantment"),
 													IntegerArgumentType.getInteger(commandContext, "level")
 												)
 										)

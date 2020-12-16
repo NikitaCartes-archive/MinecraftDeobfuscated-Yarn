@@ -21,8 +21,8 @@ import net.minecraft.util.math.Direction;
 public class ShulkerBoxBlockEntityRenderer implements BlockEntityRenderer<ShulkerBoxBlockEntity> {
 	private final ShulkerEntityModel<?> model;
 
-	public ShulkerBoxBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		this.model = new ShulkerEntityModel(context.getLayerModelPart(EntityModelLayers.SHULKER));
+	public ShulkerBoxBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		this.model = new ShulkerEntityModel(ctx.getLayerModelPart(EntityModelLayers.SHULKER));
 	}
 
 	public void render(ShulkerBoxBlockEntity shulkerBoxBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {

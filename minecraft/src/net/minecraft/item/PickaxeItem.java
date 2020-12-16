@@ -209,7 +209,7 @@ public class PickaxeItem extends MiningToolItem {
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState state) {
+	public boolean isSuitableFor(BlockState state) {
 		int i = this.getMaterial().getMiningLevel();
 		int j = BLOCK_MINING_LEVELS.getInt(state.getBlock());
 		if (j != -1) {

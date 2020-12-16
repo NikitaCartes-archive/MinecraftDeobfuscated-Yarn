@@ -9,8 +9,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class FluidTagsProvider extends AbstractTagProvider<Fluid> {
-	public FluidTagsProvider(DataGenerator dataGenerator) {
-		super(dataGenerator, Registry.FLUID);
+	public FluidTagsProvider(DataGenerator root) {
+		super(root, Registry.FLUID);
 	}
 
 	@Override

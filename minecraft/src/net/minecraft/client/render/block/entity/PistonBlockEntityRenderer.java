@@ -23,8 +23,8 @@ import net.minecraft.world.World;
 public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBlockEntity> {
 	private final BlockRenderManager manager;
 
-	public PistonBlockEntityRenderer(BlockEntityRendererFactory.Context context) {
-		this.manager = context.getRenderManager();
+	public PistonBlockEntityRenderer(BlockEntityRendererFactory.Context ctx) {
+		this.manager = ctx.getRenderManager();
 	}
 
 	public void render(PistonBlockEntity pistonBlockEntity, float f, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, int j) {
@@ -40,7 +40,7 @@ public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBloc
 				);
 				if (blockState.isOf(Blocks.PISTON_HEAD) && pistonBlockEntity.getProgress(f) <= 4.0F) {
 					blockState = blockState.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(f) <= 0.5F));
-					this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
+					this.renderModel(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
 				} else if (pistonBlockEntity.isSource() && !pistonBlockEntity.isExtending()) {
 					PistonType pistonType = blockState.isOf(Blocks.STICKY_PISTON) ? PistonType.STICKY : PistonType.DEFAULT;
 					BlockState blockState2 = Blocks.PISTON_HEAD
@@ -48,14 +48,14 @@ public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBloc
 						.with(PistonHeadBlock.TYPE, pistonType)
 						.with(PistonHeadBlock.FACING, blockState.get(PistonBlock.FACING));
 					blockState2 = blockState2.with(PistonHeadBlock.SHORT, Boolean.valueOf(pistonBlockEntity.getProgress(f) >= 0.5F));
-					this.method_3575(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);
+					this.renderModel(blockPos, blockState2, matrixStack, vertexConsumerProvider, world, false, j);
 					BlockPos blockPos2 = blockPos.offset(pistonBlockEntity.getMovementDirection());
 					matrixStack.pop();
 					matrixStack.push();
 					blockState = blockState.with(PistonBlock.EXTENDED, Boolean.valueOf(true));
-					this.method_3575(blockPos2, blockState, matrixStack, vertexConsumerProvider, world, true, j);
+					this.renderModel(blockPos2, blockState, matrixStack, vertexConsumerProvider, world, true, j);
 				} else {
-					this.method_3575(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
+					this.renderModel(blockPos, blockState, matrixStack, vertexConsumerProvider, world, false, j);
 				}
 
 				matrixStack.pop();
@@ -64,15 +64,11 @@ public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBloc
 		}
 	}
 
-	private void method_3575(
-		BlockPos blockPos, BlockState blockState, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, World world, boolean bl, int i
-	) {
-		RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(blockState);
-		VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(renderLayer);
+	private void renderModel(BlockPos pos, BlockState state, MatrixStack matrices, VertexConsumerProvider vertexConsumers, World world, boolean cull, int overlay) {
+		RenderLayer renderLayer = RenderLayers.getMovingBlockLayer(state);
+		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(renderLayer);
 		this.manager
 			.getModelRenderer()
-			.render(
-				world, this.manager.getModel(blockState), blockState, blockPos, matrixStack, vertexConsumer, bl, new Random(), blockState.getRenderingSeed(blockPos), i
-			);
+			.render(world, this.manager.getModel(state), state, pos, matrices, vertexConsumer, cull, new Random(), state.getRenderingSeed(pos), overlay);
 	}
 }

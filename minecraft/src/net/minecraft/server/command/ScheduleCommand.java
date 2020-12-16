@@ -13,7 +13,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.FunctionArgumentType;
+import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.command.argument.TimeArgumentType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
@@ -40,14 +40,14 @@ public class ScheduleCommand {
 				.then(
 					CommandManager.literal("function")
 						.then(
-							CommandManager.argument("function", FunctionArgumentType.function())
+							CommandManager.argument("function", CommandFunctionArgumentType.commandFunction())
 								.suggests(FunctionCommand.SUGGESTION_PROVIDER)
 								.then(
 									((RequiredArgumentBuilder)((RequiredArgumentBuilder)CommandManager.argument("time", TimeArgumentType.time())
 												.executes(
 													commandContext -> execute(
 															(ServerCommandSource)commandContext.getSource(),
-															FunctionArgumentType.getFunctionOrTag(commandContext, "function"),
+															CommandFunctionArgumentType.getFunctionOrTag(commandContext, "function"),
 															IntegerArgumentType.getInteger(commandContext, "time"),
 															true
 														)
@@ -57,7 +57,7 @@ public class ScheduleCommand {
 													.executes(
 														commandContext -> execute(
 																commandContext.getSource(),
-																FunctionArgumentType.getFunctionOrTag(commandContext, "function"),
+																CommandFunctionArgumentType.getFunctionOrTag(commandContext, "function"),
 																IntegerArgumentType.getInteger(commandContext, "time"),
 																false
 															)
@@ -68,7 +68,7 @@ public class ScheduleCommand {
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
-															FunctionArgumentType.getFunctionOrTag(commandContext, "function"),
+															CommandFunctionArgumentType.getFunctionOrTag(commandContext, "function"),
 															IntegerArgumentType.getInteger(commandContext, "time"),
 															true
 														)

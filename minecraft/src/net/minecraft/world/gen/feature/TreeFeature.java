@@ -104,10 +104,10 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 			return false;
 		} else {
 			OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
-			int n = this.method_29963(world, i, blockPos, config);
+			int n = this.getTopPosition(world, i, blockPos, config);
 			if (n >= i || optionalInt.isPresent() && n >= optionalInt.getAsInt()) {
 				List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, n, blockPos, logPositions, box, config);
-				list.forEach(treeNode -> config.foliagePlacer.generate(world, random, config, n, treeNode, j, l, leavesPositions, box));
+				list.forEach(node -> config.foliagePlacer.generate(world, random, config, n, node, j, l, leavesPositions, box));
 				return true;
 			} else {
 				return false;
@@ -115,23 +115,23 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		}
 	}
 
-	private int method_29963(TestableWorld testableWorld, int i, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig) {
+	private int getTopPosition(TestableWorld world, int height, BlockPos pos, TreeFeatureConfig config) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for(int j = 0; j <= i + 1; ++j) {
-			int k = treeFeatureConfig.minimumSize.method_27378(i, j);
+		for(int i = 0; i <= height + 1; ++i) {
+			int j = config.minimumSize.getRadius(height, i);
 
-			for(int l = -k; l <= k; ++l) {
-				for(int m = -k; m <= k; ++m) {
-					mutable.set(blockPos, l, j, m);
-					if (!canTreeReplace(testableWorld, mutable) || !treeFeatureConfig.ignoreVines && isVine(testableWorld, mutable)) {
-						return j - 2;
+			for(int k = -j; k <= j; ++k) {
+				for(int l = -j; l <= j; ++l) {
+					mutable.set(pos, k, i, l);
+					if (!canTreeReplace(world, mutable) || !config.ignoreVines && isVine(world, mutable)) {
+						return i - 2;
 					}
 				}
 			}
 		}
 
-		return i;
+		return height;
 	}
 
 	@Override

@@ -126,6 +126,7 @@ public class Main {
 			);
 			CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
 				resourcePackManager.createResourcePacks(),
+				impl,
 				CommandManager.RegistrationEnvironment.DEDICATED,
 				serverPropertiesLoader.getPropertiesHandler().functionPermissionLevel,
 				Util.getMainWorkerExecutor(),

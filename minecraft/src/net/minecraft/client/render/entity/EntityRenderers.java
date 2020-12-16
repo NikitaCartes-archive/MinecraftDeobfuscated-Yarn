@@ -68,6 +68,7 @@ public class EntityRenderers {
 		register(EntityType.AREA_EFFECT_CLOUD, AreaEffectCloudEntityRenderer::new);
 		register(EntityType.ARMOR_STAND, ArmorStandEntityRenderer::new);
 		register(EntityType.ARROW, ArrowEntityRenderer::new);
+		register(EntityType.AXOLOTL, AxolotlEntityRenderer::new);
 		register(EntityType.BAT, BatEntityRenderer::new);
 		register(EntityType.BEE, BeeEntityRenderer::new);
 		register(EntityType.BLAZE, BlazeEntityRenderer::new);
