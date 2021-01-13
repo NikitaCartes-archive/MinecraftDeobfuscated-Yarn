@@ -181,7 +181,11 @@ extends Block {
             bl = true;
             break;
         }
-        return bl && AreaHelper.method_30485(world, blockPos, direction.rotateYCounterclockwise().getAxis()).isPresent();
+        if (!bl) {
+            return false;
+        }
+        Direction.Axis axis = direction.getAxis().isHorizontal() ? direction.rotateYCounterclockwise().getAxis() : Direction.Type.HORIZONTAL.randomAxis(world.random);
+        return AreaHelper.method_30485(world, blockPos, axis).isPresent();
     }
 }
 

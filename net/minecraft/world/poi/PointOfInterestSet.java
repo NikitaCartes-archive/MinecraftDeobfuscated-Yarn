@@ -20,6 +20,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -71,7 +72,11 @@ public class PointOfInterestSet {
             if (pointOfInterestType2.equals(pointOfInterest.getType())) {
                 return false;
             }
-            throw Util.throwOrPause(new IllegalStateException("POI data mismatch: already registered at " + blockPos));
+            String string = "POI data mismatch: already registered at " + blockPos;
+            if (SharedConstants.isDevelopment) {
+                throw Util.throwOrPause(new IllegalStateException(string));
+            }
+            LOGGER.error(string);
         }
         this.pointsOfInterestByPos.put(s, poi);
         this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType2, pointOfInterestType -> Sets.newHashSet()).add(poi);
