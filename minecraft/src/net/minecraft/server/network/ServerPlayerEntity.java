@@ -993,9 +993,6 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
 	}
 
-	/**
-	 * Closes the current handled screen and sends a screen closing packet to the client.
-	 */
 	@Override
 	public void closeHandledScreen() {
 		this.networkHandler.sendPacket(new CloseScreenS2CPacket(this.currentScreenHandler.syncId));
