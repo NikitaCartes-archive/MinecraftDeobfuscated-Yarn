@@ -26,11 +26,11 @@ public interface RecipeType<T extends Recipe<?>> {
     public static final RecipeType<StonecuttingRecipe> STONECUTTING = RecipeType.register("stonecutting");
     public static final RecipeType<SmithingRecipe> SMITHING = RecipeType.register("smithing");
 
-    public static <T extends Recipe<?>> RecipeType<T> register(final String string) {
-        return Registry.register(Registry.RECIPE_TYPE, new Identifier(string), new RecipeType<T>(){
+    public static <T extends Recipe<?>> RecipeType<T> register(final String id) {
+        return Registry.register(Registry.RECIPE_TYPE, new Identifier(id), new RecipeType<T>(){
 
             public String toString() {
-                return string;
+                return id;
             }
         });
     }

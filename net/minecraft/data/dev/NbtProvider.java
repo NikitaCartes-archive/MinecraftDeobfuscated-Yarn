@@ -13,7 +13,7 @@ import java.nio.file.attribute.FileAttribute;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.text.Text;
 import org.apache.logging.log4j.LogManager;
@@ -50,8 +50,8 @@ implements DataProvider {
     @Nullable
     public static Path convertNbtToSnbt(Path inputPath, String location, Path outputPath) {
         try {
-            CompoundTag compoundTag = NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]));
-            Text text = compoundTag.toText("    ", 0);
+            NbtCompound nbtCompound = NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]));
+            Text text = nbtCompound.toText("    ", 0);
             String string = text.getString() + "\n";
             Path path = outputPath.resolve(location + ".snbt");
             Files.createDirectories(path.getParent(), new FileAttribute[0]);

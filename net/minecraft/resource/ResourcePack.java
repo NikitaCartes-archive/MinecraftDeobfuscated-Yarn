@@ -15,6 +15,12 @@ import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A resource pack, providing resources to resource managers.
+ * 
+ * <p>They are single-use in each reload cycle of a reloadable resource manager.
+ * {@link ResourcePackProfile} is a persistent version of the resource packs.
+ */
 public interface ResourcePack
 extends AutoCloseable {
     @Environment(value=EnvType.CLIENT)

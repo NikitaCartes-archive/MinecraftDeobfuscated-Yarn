@@ -12,19 +12,19 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.screen.GameModeSelectionScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
-import net.minecraft.client.gui.screen.options.NarratorOptionsScreen;
+import net.minecraft.client.gui.screen.option.ControlsOptionsScreen;
+import net.minecraft.client.gui.screen.option.NarratorOptionsScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.options.Option;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.util.Clipboard;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -56,12 +56,12 @@ public class Keyboard {
         this.client = client;
     }
 
-    private void debugWarn(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
+    private void debugWarn(String key, Object ... args) {
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.YELLOW, Formatting.BOLD)).append(" ").append(new TranslatableText(key, args)));
     }
 
-    private void debugError(String string, Object ... objects) {
-        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(string, objects)));
+    private void debugError(String key, Object ... args) {
+        this.client.inGameHud.getChatHud().addMessage(new LiteralText("").append(new TranslatableText("debug.prefix").formatted(Formatting.RED, Formatting.BOLD)).append(" ").append(new TranslatableText(key, args)));
     }
 
     private boolean processF3(int key) {
@@ -103,7 +103,7 @@ public class Keyboard {
                 return true;
             }
             case 73: {
-                if (!this.client.player.getReducedDebugInfo()) {
+                if (!this.client.player.hasReducedDebugInfo()) {
                     this.copyLookAt(this.client.player.hasPermissionLevel(2), !Screen.hasShiftDown());
                 }
                 return true;
@@ -157,7 +157,7 @@ public class Keyboard {
                 return true;
             }
             case 67: {
-                if (this.client.player.getReducedDebugInfo()) {
+                if (this.client.player.hasReducedDebugInfo()) {
                     return false;
                 }
                 ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
@@ -183,15 +183,15 @@ public class Keyboard {
                 BlockState blockState = this.client.player.world.getBlockState(blockPos);
                 if (bl) {
                     if (bl2) {
-                        this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, compoundTag -> {
-                            this.copyBlock(blockState, blockPos, (CompoundTag)compoundTag);
+                        this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, nbtCompound -> {
+                            this.copyBlock(blockState, blockPos, (NbtCompound)nbtCompound);
                             this.debugWarn("debug.inspect.server.block", new Object[0]);
                         });
                         break;
                     }
                     BlockEntity blockEntity = this.client.player.world.getBlockEntity(blockPos);
-                    CompoundTag compoundTag2 = blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
-                    this.copyBlock(blockState, blockPos, compoundTag2);
+                    NbtCompound nbtCompound2 = blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
+                    this.copyBlock(blockState, blockPos, nbtCompound2);
                     this.debugWarn("debug.inspect.client.block", new Object[0]);
                     break;
                 }
@@ -204,14 +204,14 @@ public class Keyboard {
                 Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
                 if (bl) {
                     if (bl2) {
-                        this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getEntityId(), compoundTag -> {
-                            this.copyEntity(identifier, entity.getPos(), (CompoundTag)compoundTag);
+                        this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getEntityId(), nbtCompound -> {
+                            this.copyEntity(identifier, entity.getPos(), (NbtCompound)nbtCompound);
                             this.debugWarn("debug.inspect.server.entity", new Object[0]);
                         });
                         break;
                     }
-                    CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
-                    this.copyEntity(identifier, entity.getPos(), compoundTag2);
+                    NbtCompound nbtCompound2 = entity.writeNbt(new NbtCompound());
+                    this.copyEntity(identifier, entity.getPos(), nbtCompound2);
                     this.debugWarn("debug.inspect.client.entity", new Object[0]);
                     break;
                 }
@@ -222,28 +222,28 @@ public class Keyboard {
         }
     }
 
-    private void copyBlock(BlockState state, BlockPos pos, @Nullable CompoundTag tag) {
-        if (tag != null) {
-            tag.remove("x");
-            tag.remove("y");
-            tag.remove("z");
-            tag.remove("id");
+    private void copyBlock(BlockState state, BlockPos pos, @Nullable NbtCompound nbt) {
+        if (nbt != null) {
+            nbt.remove("x");
+            nbt.remove("y");
+            nbt.remove("z");
+            nbt.remove("id");
         }
         StringBuilder stringBuilder = new StringBuilder(BlockArgumentParser.stringifyBlockState(state));
-        if (tag != null) {
-            stringBuilder.append(tag);
+        if (nbt != null) {
+            stringBuilder.append(nbt);
         }
         String string = String.format(Locale.ROOT, "/setblock %d %d %d %s", pos.getX(), pos.getY(), pos.getZ(), stringBuilder);
         this.setClipboard(string);
     }
 
-    private void copyEntity(Identifier id, Vec3d pos, @Nullable CompoundTag tag) {
+    private void copyEntity(Identifier id, Vec3d pos, @Nullable NbtCompound nbt) {
         String string2;
-        if (tag != null) {
-            tag.remove("UUID");
-            tag.remove("Pos");
-            tag.remove("Dimension");
-            String string = tag.toText().getString();
+        if (nbt != null) {
+            nbt.remove("UUID");
+            nbt.remove("Pos");
+            nbt.remove("Dimension");
+            String string = nbt.toText().getString();
             string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f %s", id.toString(), pos.x, pos.y, pos.z, string);
         } else {
             string2 = String.format(Locale.ROOT, "/summon %s %.2f %.2f %.2f", id.toString(), pos.x, pos.y, pos.z);
@@ -251,7 +251,7 @@ public class Keyboard {
         this.setClipboard(string2);
     }
 
-    public void onKey(long window, int key, int scancode, int i, int j) {
+    public void onKey(long window, int key, int scancode, int i, int modifiers) {
         boolean bl;
         if (window != this.client.getWindow().getHandle()) {
             return;
@@ -293,9 +293,9 @@ public class Keyboard {
             boolean[] bls = new boolean[]{false};
             Screen.wrapScreenError(() -> {
                 if (i == 1 || i == 2 && this.repeatEvents) {
-                    bls[0] = parentElement.keyPressed(key, scancode, j);
+                    bls[0] = parentElement.keyPressed(key, scancode, modifiers);
                 } else if (i == 0) {
-                    bls[0] = parentElement.keyReleased(key, scancode, j);
+                    bls[0] = parentElement.keyReleased(key, scancode, modifiers);
                 }
             }, "keyPressed event handler", parentElement.getClass().getCanonicalName());
             if (bls[0]) {
@@ -344,7 +344,7 @@ public class Keyboard {
         }
     }
 
-    private void onChar(long window, int i, int j) {
+    private void onChar(long window, int i, int modifiers) {
         if (window != this.client.getWindow().getHandle()) {
             return;
         }
@@ -353,10 +353,10 @@ public class Keyboard {
             return;
         }
         if (Character.charCount(i) == 1) {
-            Screen.wrapScreenError(() -> element.charTyped((char)i, j), "charTyped event handler", element.getClass().getCanonicalName());
+            Screen.wrapScreenError(() -> element.charTyped((char)i, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
         } else {
             for (char c : Character.toChars(i)) {
-                Screen.wrapScreenError(() -> element.charTyped(c, j), "charTyped event handler", element.getClass().getCanonicalName());
+                Screen.wrapScreenError(() -> element.charTyped(c, modifiers), "charTyped event handler", element.getClass().getCanonicalName());
             }
         }
     }
@@ -365,8 +365,8 @@ public class Keyboard {
         this.repeatEvents = repeatEvents;
     }
 
-    public void setup(long l2) {
-        InputUtil.setKeyboardCallbacks(l2, (l, i, j, k, m) -> this.client.execute(() -> this.onKey(l, i, j, k, m)), (l, i, j) -> this.client.execute(() -> this.onChar(l, i, j)));
+    public void setup(long window) {
+        InputUtil.setKeyboardCallbacks(window, (l, i, j, k, m) -> this.client.execute(() -> this.onKey(l, i, j, k, m)), (l, i, j) -> this.client.execute(() -> this.onChar(l, i, j)));
     }
 
     public String getClipboard() {
@@ -377,8 +377,8 @@ public class Keyboard {
         });
     }
 
-    public void setClipboard(String string) {
-        this.clipboard.setClipboard(this.client.getWindow().getHandle(), string);
+    public void setClipboard(String clipboard) {
+        this.clipboard.setClipboard(this.client.getWindow().getHandle(), clipboard);
     }
 
     public void pollDebugCrash() {

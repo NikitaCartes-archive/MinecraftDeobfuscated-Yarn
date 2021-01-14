@@ -112,7 +112,7 @@ extends RealmsScreen {
     }
 
     private void reject(final int slot) {
-        if (slot < this.pendingInvitationSelectionList.getItemCount()) {
+        if (slot < this.pendingInvitationSelectionList.getEntryCount()) {
             new Thread("Realms-reject-invitation"){
 
                 @Override
@@ -130,7 +130,7 @@ extends RealmsScreen {
     }
 
     private void accept(final int slot) {
-        if (slot < this.pendingInvitationSelectionList.getItemCount()) {
+        if (slot < this.pendingInvitationSelectionList.getEntryCount()) {
             new Thread("Realms-accept-invitation"){
 
                 @Override
@@ -156,21 +156,21 @@ extends RealmsScreen {
         if (this.toolTip != null) {
             this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
         }
-        if (this.pendingInvitationSelectionList.getItemCount() == 0 && this.loaded) {
+        if (this.pendingInvitationSelectionList.getEntryCount() == 0 && this.loaded) {
             RealmsPendingInvitesScreen.drawCenteredText(matrices, this.textRenderer, field_26493, this.width / 2, this.height / 2 - 20, 0xFFFFFF);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
+    protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
         if (text == null) {
             return;
         }
         int k = i + 12;
         int l = j - 12;
         int m = this.textRenderer.getWidth(text);
-        this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 0xFFFFFF);
+        this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
+        this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 0xFFFFFF);
     }
 
     private void updateButtonStates() {
@@ -224,11 +224,11 @@ extends RealmsScreen {
             }
 
             @Override
-            protected void render(MatrixStack matrixStack, int y, int i, boolean bl) {
+            protected void render(MatrixStack matrices, int x, int y, boolean bl) {
                 RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(REJECT_ICON);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = bl ? 19.0f : 0.0f;
-                DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0f, 18, 18, 37, 18);
+                DrawableHelper.drawTexture(matrices, x, y, f, 0.0f, 18, 18, 37, 18);
                 if (bl) {
                     RealmsPendingInvitesScreen.this.toolTip = field_26495;
                 }
@@ -248,11 +248,11 @@ extends RealmsScreen {
             }
 
             @Override
-            protected void render(MatrixStack matrixStack, int y, int i, boolean bl) {
+            protected void render(MatrixStack matrices, int x, int y, boolean bl) {
                 RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(ACCEPT_ICON);
                 RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = bl ? 19.0f : 0.0f;
-                DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0f, 18, 18, 37, 18);
+                DrawableHelper.drawTexture(matrices, x, y, f, 0.0f, 18, 18, 37, 18);
                 if (bl) {
                     RealmsPendingInvitesScreen.this.toolTip = field_26494;
                 }
@@ -278,7 +278,7 @@ extends RealmsScreen {
 
         @Override
         public int getMaxPosition() {
-            return this.getItemCount() * 36;
+            return this.getEntryCount() * 36;
         }
 
         @Override

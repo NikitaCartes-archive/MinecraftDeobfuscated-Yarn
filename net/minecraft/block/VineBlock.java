@@ -137,9 +137,9 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN) {
-            return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
         }
         BlockState blockState = this.getPlacementShape(state, world, pos);
         if (!this.hasAdjacentBlocks(blockState)) {

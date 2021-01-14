@@ -23,7 +23,7 @@ import java.util.concurrent.CompletableFuture;
 import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.Util;
@@ -50,12 +50,12 @@ implements DataProvider {
         return this;
     }
 
-    private CompoundTag write(String string, CompoundTag compoundTag) {
-        CompoundTag compoundTag2 = compoundTag;
+    private NbtCompound write(String key, NbtCompound compound) {
+        NbtCompound nbtCompound = compound;
         for (Tweaker tweaker : this.write) {
-            compoundTag2 = tweaker.write(string, compoundTag2);
+            nbtCompound = tweaker.write(key, nbtCompound);
         }
-        return compoundTag2;
+        return nbtCompound;
     }
 
     @Override
@@ -87,12 +87,12 @@ implements DataProvider {
     private CompressedData toCompressedNbt(Path path, String name) {
         try (BufferedReader bufferedReader = Files.newBufferedReader(path);){
             String string = IOUtils.toString(bufferedReader);
-            CompoundTag compoundTag = this.write(name, StringNbtReader.parse(string));
+            NbtCompound nbtCompound = this.write(name, StringNbtReader.parse(string));
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(compoundTag, byteArrayOutputStream);
+            NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
             byte[] bs = byteArrayOutputStream.toByteArray();
             String string2 = SHA1.hashBytes(bs).toString();
-            String string3 = field_24615 != null ? compoundTag.toText("    ", 0).getString() + "\n" : null;
+            String string3 = field_24615 != null ? nbtCompound.toText("    ", 0).getString() + "\n" : null;
             CompressedData compressedData = new CompressedData(name, bs, string3, string2);
             return compressedData;
         } catch (CommandSyntaxException commandSyntaxException) {
@@ -104,33 +104,33 @@ implements DataProvider {
         return null;
     }
 
-    private void write(DataCache dataCache, CompressedData compressedData, Path path) {
-        Path path2;
-        if (compressedData.field_24616 != null) {
-            path2 = field_24615.resolve(compressedData.name + ".snbt");
+    private void write(DataCache cache, CompressedData data, Path root) {
+        Path path;
+        if (data.field_24616 != null) {
+            path = field_24615.resolve(data.name + ".snbt");
             try {
-                FileUtils.write(path2.toFile(), (CharSequence)compressedData.field_24616, StandardCharsets.UTF_8);
+                FileUtils.write(path.toFile(), (CharSequence)data.field_24616, StandardCharsets.UTF_8);
             } catch (IOException iOException) {
-                LOGGER.error("Couldn't write structure SNBT {} at {}", (Object)compressedData.name, (Object)path2, (Object)iOException);
+                LOGGER.error("Couldn't write structure SNBT {} at {}", (Object)data.name, (Object)path, (Object)iOException);
             }
         }
-        path2 = path.resolve(compressedData.name + ".nbt");
+        path = root.resolve(data.name + ".nbt");
         try {
-            if (!Objects.equals(dataCache.getOldSha1(path2), compressedData.sha1) || !Files.exists(path2, new LinkOption[0])) {
-                Files.createDirectories(path2.getParent(), new FileAttribute[0]);
-                try (OutputStream outputStream = Files.newOutputStream(path2, new OpenOption[0]);){
-                    outputStream.write(compressedData.bytes);
+            if (!Objects.equals(cache.getOldSha1(path), data.sha1) || !Files.exists(path, new LinkOption[0])) {
+                Files.createDirectories(path.getParent(), new FileAttribute[0]);
+                try (OutputStream outputStream = Files.newOutputStream(path, new OpenOption[0]);){
+                    outputStream.write(data.bytes);
                 }
             }
-            dataCache.updateSha1(path2, compressedData.sha1);
+            cache.updateSha1(path, data.sha1);
         } catch (IOException iOException) {
-            LOGGER.error("Couldn't write structure {} at {}", (Object)compressedData.name, (Object)path2, (Object)iOException);
+            LOGGER.error("Couldn't write structure {} at {}", (Object)data.name, (Object)path, (Object)iOException);
         }
     }
 
     @FunctionalInterface
     public static interface Tweaker {
-        public CompoundTag write(String var1, CompoundTag var2);
+        public NbtCompound write(String var1, NbtCompound var2);
     }
 
     static class CompressedData {

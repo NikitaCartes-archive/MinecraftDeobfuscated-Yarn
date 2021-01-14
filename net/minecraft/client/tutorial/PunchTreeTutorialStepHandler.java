@@ -25,7 +25,7 @@ import net.minecraft.world.GameMode;
 public class PunchTreeTutorialStepHandler
 implements TutorialStepHandler {
     private static final Text TITLE = new TranslatableText("tutorial.punch_tree.title");
-    private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.getKeybindName("attack"));
+    private static final Text DESCRIPTION = new TranslatableText("tutorial.punch_tree.description", TutorialManager.keyToText("attack"));
     private final TutorialManager manager;
     private TutorialToast toast;
     private int ticks;
@@ -68,13 +68,13 @@ implements TutorialStepHandler {
     }
 
     @Override
-    public void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
+    public void onBlockBreaking(ClientWorld client, BlockPos pos, BlockState state, float progress) {
         boolean bl = state.isIn(BlockTags.LOGS);
-        if (bl && f > 0.0f) {
+        if (bl && progress > 0.0f) {
             if (this.toast != null) {
-                this.toast.setProgress(f);
+                this.toast.setProgress(progress);
             }
-            if (f >= 1.0f) {
+            if (progress >= 1.0f) {
                 this.manager.setStep(TutorialStep.OPEN_INVENTORY);
             }
         } else if (this.toast != null) {

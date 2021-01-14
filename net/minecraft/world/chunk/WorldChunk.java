@@ -34,7 +34,7 @@ import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerTickScheduler;
@@ -74,7 +74,7 @@ implements Chunk {
     public static final ChunkSection EMPTY_SECTION = null;
     private final ChunkSection[] sections = new ChunkSection[16];
     private BiomeArray biomeArray;
-    private final Map<BlockPos, CompoundTag> pendingBlockEntityTags = Maps.newHashMap();
+    private final Map<BlockPos, NbtCompound> pendingBlockEntityNbts = Maps.newHashMap();
     private boolean loadedToWorld;
     private final World world;
     private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
@@ -129,8 +129,8 @@ implements Chunk {
 
     public WorldChunk(World world, ProtoChunk protoChunk) {
         this(world, protoChunk.getPos(), protoChunk.getBiomeArray(), protoChunk.getUpgradeData(), protoChunk.getBlockTickScheduler(), protoChunk.getFluidTickScheduler(), protoChunk.getInhabitedTime(), protoChunk.getSectionArray(), null);
-        for (CompoundTag compoundTag : protoChunk.getEntities()) {
-            EntityType.loadEntityWithPassengers(compoundTag, world, entity -> {
+        for (NbtCompound nbtCompound : protoChunk.getEntities()) {
+            EntityType.loadEntityWithPassengers(nbtCompound, world, entity -> {
                 this.addEntity((Entity)entity);
                 return entity;
             });
@@ -138,7 +138,7 @@ implements Chunk {
         for (BlockEntity blockEntity : protoChunk.getBlockEntities().values()) {
             this.addBlockEntity(blockEntity);
         }
-        this.pendingBlockEntityTags.putAll(protoChunk.getBlockEntityTags());
+        this.pendingBlockEntityNbts.putAll(protoChunk.getBlockEntityNbts());
         for (int i = 0; i < protoChunk.getPostProcessingLists().length; ++i) {
             this.postProcessingLists[i] = protoChunk.getPostProcessingLists()[i];
         }
@@ -159,7 +159,7 @@ implements Chunk {
 
     @Override
     public Set<BlockPos> getBlockEntityPositions() {
-        HashSet<BlockPos> set = Sets.newHashSet(this.pendingBlockEntityTags.keySet());
+        HashSet<BlockPos> set = Sets.newHashSet(this.pendingBlockEntityNbts.keySet());
         set.addAll(this.blockEntities.keySet());
         return set;
     }
@@ -345,9 +345,9 @@ implements Chunk {
     @Nullable
     public BlockEntity getBlockEntity(BlockPos pos, CreationType creationType) {
         BlockEntity blockEntity2;
-        CompoundTag compoundTag;
+        NbtCompound nbtCompound;
         BlockEntity blockEntity = this.blockEntities.get(pos);
-        if (blockEntity == null && (compoundTag = this.pendingBlockEntityTags.remove(pos)) != null && (blockEntity2 = this.loadBlockEntity(pos, compoundTag)) != null) {
+        if (blockEntity == null && (nbtCompound = this.pendingBlockEntityNbts.remove(pos)) != null && (blockEntity2 = this.loadBlockEntity(pos, nbtCompound)) != null) {
             return blockEntity2;
         }
         if (blockEntity == null) {
@@ -383,25 +383,25 @@ implements Chunk {
     }
 
     @Override
-    public void addPendingBlockEntityTag(CompoundTag tag) {
-        this.pendingBlockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
+    public void addPendingBlockEntityNbt(NbtCompound nbt) {
+        this.pendingBlockEntityNbts.put(new BlockPos(nbt.getInt("x"), nbt.getInt("y"), nbt.getInt("z")), nbt);
     }
 
     @Override
     @Nullable
-    public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+    public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
         BlockEntity blockEntity = this.getBlockEntity(pos);
         if (blockEntity != null && !blockEntity.isRemoved()) {
-            CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
-            compoundTag.putBoolean("keepPacked", false);
-            return compoundTag;
+            NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+            nbtCompound.putBoolean("keepPacked", false);
+            return nbtCompound;
         }
-        CompoundTag compoundTag = this.pendingBlockEntityTags.get(pos);
-        if (compoundTag != null) {
-            compoundTag = compoundTag.copy();
-            compoundTag.putBoolean("keepPacked", true);
+        NbtCompound nbtCompound = this.pendingBlockEntityNbts.get(pos);
+        if (nbtCompound != null) {
+            nbtCompound = nbtCompound.copy();
+            nbtCompound.putBoolean("keepPacked", true);
         }
-        return compoundTag;
+        return nbtCompound;
     }
 
     @Override
@@ -506,7 +506,7 @@ implements Chunk {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask) {
+    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, NbtCompound tag, int verticalStripBitmask) {
         boolean bl = biomes != null;
         Predicate<BlockPos> predicate = bl ? pos -> true : pos -> (verticalStripBitmask & 1 << (pos.getY() >> 4)) != 0;
         Sets.newHashSet(this.blockEntities.keySet()).stream().filter(predicate).forEach(this.world::removeBlockEntity);
@@ -562,8 +562,8 @@ implements Chunk {
     }
 
     @Override
-    public CompoundTag getBlockEntityTag(BlockPos pos) {
-        return this.pendingBlockEntityTags.get(pos);
+    public NbtCompound getBlockEntityNbt(BlockPos pos) {
+        return this.pendingBlockEntityNbts.get(pos);
     }
 
     @Override
@@ -666,18 +666,18 @@ implements Chunk {
             this.postProcessingLists[i].clear();
         }
         this.disableTickSchedulers();
-        for (BlockPos blockPos2 : Sets.newHashSet(this.pendingBlockEntityTags.keySet())) {
+        for (BlockPos blockPos2 : Sets.newHashSet(this.pendingBlockEntityNbts.keySet())) {
             this.getBlockEntity(blockPos2);
         }
-        this.pendingBlockEntityTags.clear();
+        this.pendingBlockEntityNbts.clear();
         this.upgradeData.upgrade(this);
     }
 
     @Nullable
-    private BlockEntity loadBlockEntity(BlockPos pos, CompoundTag tag) {
+    private BlockEntity loadBlockEntity(BlockPos pos, NbtCompound nbt) {
         BlockEntity blockEntity;
         BlockState blockState = this.getBlockState(pos);
-        if ("DUMMY".equals(tag.getString("id"))) {
+        if ("DUMMY".equals(nbt.getString("id"))) {
             Block block = blockState.getBlock();
             if (block instanceof BlockEntityProvider) {
                 blockEntity = ((BlockEntityProvider)((Object)block)).createBlockEntity(this.world);
@@ -686,7 +686,7 @@ implements Chunk {
                 LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", (Object)pos, (Object)blockState);
             }
         } else {
-            blockEntity = BlockEntity.createFromTag(blockState, tag);
+            blockEntity = BlockEntity.createFromTag(blockState, nbt);
         }
         if (blockEntity != null) {
             blockEntity.setLocation(this.world, pos);

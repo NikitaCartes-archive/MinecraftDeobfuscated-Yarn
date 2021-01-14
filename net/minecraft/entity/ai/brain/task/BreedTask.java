@@ -22,10 +22,10 @@ extends Task<AnimalEntity> {
     private final float field_23129;
     private long breedTime;
 
-    public BreedTask(EntityType<? extends AnimalEntity> targetType, float f) {
+    public BreedTask(EntityType<? extends AnimalEntity> targetType, float speed) {
         super(ImmutableMap.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED), 325);
         this.targetType = targetType;
-        this.field_23129 = f;
+        this.field_23129 = speed;
     }
 
     @Override

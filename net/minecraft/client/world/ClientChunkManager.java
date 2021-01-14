@@ -10,7 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -52,12 +52,12 @@ extends ChunkManager {
         return this.lightingProvider;
     }
 
-    private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int y) {
+    private static boolean positionEquals(@Nullable WorldChunk chunk, int x, int z) {
         if (chunk == null) {
             return false;
         }
         ChunkPos chunkPos = chunk.getPos();
-        return chunkPos.x == x && chunkPos.z == y;
+        return chunkPos.x == x && chunkPos.z == z;
     }
 
     public void unload(int chunkX, int chunkZ) {
@@ -90,7 +90,7 @@ extends ChunkManager {
     }
 
     @Nullable
-    public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask, boolean complete) {
+    public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, NbtCompound tag, int verticalStripBitmask, boolean complete) {
         if (!this.chunks.isInRadius(x, z)) {
             LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)x, (Object)z);
             return null;

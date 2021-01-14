@@ -164,7 +164,7 @@ public class PiglinBrain {
         brain.resetPossibleActivities(ImmutableList.of(Activity.ADMIRE_ITEM, Activity.FIGHT, Activity.AVOID, Activity.CELEBRATE, Activity.RIDE, Activity.IDLE));
         Activity activity2 = brain.getFirstPossibleNonCoreActivity().orElse(null);
         if (activity != activity2) {
-            PiglinBrain.method_30091(piglin).ifPresent(piglin::playSound);
+            PiglinBrain.getCurrentActivitySound(piglin).ifPresent(piglin::playSound);
         }
         piglin.setAttacking(brain.hasMemoryModule(MemoryModuleType.ATTACK_TARGET));
         if (!brain.hasMemoryModule(MemoryModuleType.RIDE_TARGET) && PiglinBrain.canRideHoglin(piglin)) {
@@ -231,20 +231,20 @@ public class PiglinBrain {
         return itemStack2;
     }
 
-    protected static void consumeOffHandItem(PiglinEntity piglin, boolean bl) {
+    protected static void consumeOffHandItem(PiglinEntity piglin, boolean barter) {
         ItemStack itemStack = piglin.getStackInHand(Hand.OFF_HAND);
         piglin.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
         if (piglin.isAdult()) {
-            boolean bl3;
-            boolean bl2 = PiglinBrain.acceptsForBarter(itemStack.getItem());
-            if (bl && bl2) {
+            boolean bl2;
+            boolean bl = PiglinBrain.acceptsForBarter(itemStack.getItem());
+            if (barter && bl) {
                 PiglinBrain.doBarter(piglin, PiglinBrain.getBarteredItem(piglin));
-            } else if (!bl2 && !(bl3 = piglin.tryEquip(itemStack))) {
+            } else if (!bl && !(bl2 = piglin.tryEquip(itemStack))) {
                 PiglinBrain.barterItem(piglin, itemStack);
             }
         } else {
-            boolean bl2 = piglin.tryEquip(itemStack);
-            if (!bl2) {
+            boolean bl = piglin.tryEquip(itemStack);
+            if (!bl) {
                 ItemStack itemStack2 = piglin.getMainHandStack();
                 if (PiglinBrain.isGoldenItem(itemStack2.getItem())) {
                     PiglinBrain.barterItem(piglin, itemStack2);
@@ -328,7 +328,7 @@ public class PiglinBrain {
         if (PiglinBrain.isGoldenItem(item)) {
             return PiglinBrain.doesNotHaveGoldInOffHand(piglin) && bl;
         }
-        return piglin.method_24846(stack);
+        return piglin.canEquipStack(stack);
     }
 
     protected static boolean isGoldenItem(Item item) {
@@ -441,30 +441,30 @@ public class PiglinBrain {
         PiglinBrain.tryRevenge(piglin, attacker);
     }
 
-    protected static void tryRevenge(AbstractPiglinEntity abstractPiglinEntity, LivingEntity livingEntity) {
-        if (abstractPiglinEntity.getBrain().hasActivity(Activity.AVOID)) {
+    protected static void tryRevenge(AbstractPiglinEntity piglin, LivingEntity target) {
+        if (piglin.getBrain().hasActivity(Activity.AVOID)) {
             return;
         }
-        if (!PiglinBrain.shouldAttack(livingEntity)) {
+        if (!PiglinBrain.shouldAttack(target)) {
             return;
         }
-        if (LookTargetUtil.isNewTargetTooFar(abstractPiglinEntity, livingEntity, 4.0)) {
+        if (LookTargetUtil.isNewTargetTooFar(piglin, target, 4.0)) {
             return;
         }
-        if (livingEntity.getType() == EntityType.PLAYER && abstractPiglinEntity.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
-            PiglinBrain.becomeAngryWithPlayer(abstractPiglinEntity, livingEntity);
-            PiglinBrain.angerNearbyPiglins(abstractPiglinEntity);
+        if (target.getType() == EntityType.PLAYER && piglin.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER)) {
+            PiglinBrain.becomeAngryWithPlayer(piglin, target);
+            PiglinBrain.angerNearbyPiglins(piglin);
         } else {
-            PiglinBrain.becomeAngryWith(abstractPiglinEntity, livingEntity);
-            PiglinBrain.angerAtCloserTargets(abstractPiglinEntity, livingEntity);
+            PiglinBrain.becomeAngryWith(piglin, target);
+            PiglinBrain.angerAtCloserTargets(piglin, target);
         }
     }
 
-    public static Optional<SoundEvent> method_30091(PiglinEntity piglin) {
-        return piglin.getBrain().getFirstPossibleNonCoreActivity().map(activity -> PiglinBrain.method_30087(piglin, activity));
+    public static Optional<SoundEvent> getCurrentActivitySound(PiglinEntity piglin) {
+        return piglin.getBrain().getFirstPossibleNonCoreActivity().map(activity -> PiglinBrain.getSound(piglin, activity));
     }
 
-    private static SoundEvent method_30087(PiglinEntity piglin, Activity activity) {
+    private static SoundEvent getSound(PiglinEntity piglin, Activity activity) {
         if (activity == Activity.FIGHT) {
             return SoundEvents.ENTITY_PIGLIN_ANGRY;
         }

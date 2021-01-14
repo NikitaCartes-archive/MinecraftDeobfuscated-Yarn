@@ -10,7 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import net.minecraft.block.DoorBlock;
-import net.minecraft.class_5493;
+import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.TargetFinder;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.MobNavigation;
@@ -34,21 +34,21 @@ extends Goal {
     private final int distance;
     private final BooleanSupplier doorPassingThroughGetter;
 
-    public MoveThroughVillageGoal(PathAwareEntity pathAwareEntity, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
-        this.mob = pathAwareEntity;
+    public MoveThroughVillageGoal(PathAwareEntity entity, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
+        this.mob = entity;
         this.speed = speed;
         this.requiresNighttime = requiresNighttime;
         this.distance = distance;
         this.doorPassingThroughGetter = doorPassingThroughGetter;
         this.setControls(EnumSet.of(Goal.Control.MOVE));
-        if (!class_5493.method_30955(pathAwareEntity)) {
+        if (!NavigationConditions.hasMobNavigation(entity)) {
             throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
         }
     }
 
     @Override
     public boolean canStart() {
-        if (!class_5493.method_30955(this.mob)) {
+        if (!NavigationConditions.hasMobNavigation(this.mob)) {
             return false;
         }
         this.forgetOldTarget();

@@ -26,7 +26,7 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public abstract class TrunkPlacer {
-    public static final Codec<TrunkPlacer> CODEC = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::getType, TrunkPlacerType::getCodec);
+    public static final Codec<TrunkPlacer> TYPE_CODEC = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::getType, TrunkPlacerType::getCodec);
     protected final int baseHeight;
     protected final int firstRandomHeight;
     protected final int secondRandomHeight;

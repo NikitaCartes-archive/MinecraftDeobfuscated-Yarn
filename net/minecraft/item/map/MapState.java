@@ -16,10 +16,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapBannerMarker;
 import net.minecraft.item.map.MapFrameMarker;
 import net.minecraft.item.map.MapIcon;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.text.Text;
@@ -39,8 +39,18 @@ import org.jetbrains.annotations.Nullable;
 public class MapState
 extends PersistentState {
     private static final Logger field_25019 = LogManager.getLogger();
-    public int xCenter;
-    public int zCenter;
+    /**
+     * The scaled center coordinate of the map state on the X axis.
+     * <p>
+     * Always {@code 0} for the client.
+     */
+    public int centerX;
+    /**
+     * The scaled center coordinate of the map state on the Z axis.
+     * <p>
+     * Always {@code 0} for the client.
+     */
+    public int centerZ;
     public RegistryKey<World> dimension;
     public boolean showIcons;
     public boolean unlimitedTracking;
@@ -49,6 +59,11 @@ extends PersistentState {
     public boolean locked;
     public final List<PlayerUpdateTracker> updateTrackers = Lists.newArrayList();
     private final Map<PlayerEntity, PlayerUpdateTracker> updateTrackersByPlayer = Maps.newHashMap();
+    /**
+     * The banner markers to track in world.
+     * <p>
+     * Empty for the client.
+     */
     private final Map<String, MapBannerMarker> banners = Maps.newHashMap();
     public final Map<String, MapIcon> icons = Maps.newLinkedHashMap();
     private final Map<String, MapFrameMarker> frames = Maps.newHashMap();
@@ -70,15 +85,15 @@ extends PersistentState {
         int i = 128 * (1 << scale);
         int j = MathHelper.floor((x + 64.0) / (double)i);
         int k = MathHelper.floor((z + 64.0) / (double)i);
-        this.xCenter = j * i + i / 2 - 64;
-        this.zCenter = k * i + i / 2 - 64;
+        this.centerX = j * i + i / 2 - 64;
+        this.centerZ = k * i + i / 2 - 64;
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        this.dimension = DimensionType.method_28521(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("dimension"))).resultOrPartial(field_25019::error).orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + tag.get("dimension")));
-        this.xCenter = tag.getInt("xCenter");
-        this.zCenter = tag.getInt("zCenter");
+    public void fromTag(NbtCompound tag) {
+        this.dimension = DimensionType.method_28521(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag.get("dimension"))).resultOrPartial(field_25019::error).orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + tag.get("dimension")));
+        this.centerX = tag.getInt("xCenter");
+        this.centerZ = tag.getInt("zCenter");
         this.scale = (byte)MathHelper.clamp(tag.getByte("scale"), 0, 4);
         this.showIcons = !tag.contains("trackingPosition", 1) || tag.getBoolean("trackingPosition");
         this.unlimitedTracking = tag.getBoolean("unlimitedTracking");
@@ -87,47 +102,47 @@ extends PersistentState {
         if (this.colors.length != 16384) {
             this.colors = new byte[16384];
         }
-        ListTag listTag = tag.getList("banners", 10);
-        for (int i = 0; i < listTag.size(); ++i) {
-            MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompound(i));
+        NbtList nbtList = tag.getList("banners", 10);
+        for (int i = 0; i < nbtList.size(); ++i) {
+            MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(nbtList.getCompound(i));
             this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
             this.addIcon(mapBannerMarker.getIconType(), null, mapBannerMarker.getKey(), mapBannerMarker.getPos().getX(), mapBannerMarker.getPos().getZ(), 180.0, mapBannerMarker.getName());
         }
-        ListTag listTag2 = tag.getList("frames", 10);
-        for (int j = 0; j < listTag2.size(); ++j) {
-            MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompound(j));
+        NbtList nbtList2 = tag.getList("frames", 10);
+        for (int j = 0; j < nbtList2.size(); ++j) {
+            MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(nbtList2.getCompound(j));
             this.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
             this.addIcon(MapIcon.Type.FRAME, null, "frame-" + mapFrameMarker.getEntityId(), mapFrameMarker.getPos().getX(), mapFrameMarker.getPos().getZ(), mapFrameMarker.getRotation(), null);
         }
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag2) {
-        Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(tag -> tag2.put("dimension", (Tag)tag));
-        tag2.putInt("xCenter", this.xCenter);
-        tag2.putInt("zCenter", this.zCenter);
-        tag2.putByte("scale", this.scale);
-        tag2.putByteArray("colors", this.colors);
-        tag2.putBoolean("trackingPosition", this.showIcons);
-        tag2.putBoolean("unlimitedTracking", this.unlimitedTracking);
-        tag2.putBoolean("locked", this.locked);
-        ListTag listTag = new ListTag();
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(nbtElement -> nbt.put("dimension", (NbtElement)nbtElement));
+        nbt.putInt("xCenter", this.centerX);
+        nbt.putInt("zCenter", this.centerZ);
+        nbt.putByte("scale", this.scale);
+        nbt.putByteArray("colors", this.colors);
+        nbt.putBoolean("trackingPosition", this.showIcons);
+        nbt.putBoolean("unlimitedTracking", this.unlimitedTracking);
+        nbt.putBoolean("locked", this.locked);
+        NbtList nbtList = new NbtList();
         for (MapBannerMarker mapBannerMarker : this.banners.values()) {
-            listTag.add(mapBannerMarker.getNbt());
+            nbtList.add(mapBannerMarker.getNbt());
         }
-        tag2.put("banners", listTag);
-        ListTag listTag2 = new ListTag();
+        nbt.put("banners", nbtList);
+        NbtList nbtList2 = new NbtList();
         for (MapFrameMarker mapFrameMarker : this.frames.values()) {
-            listTag2.add(mapFrameMarker.toTag());
+            nbtList2.add(mapFrameMarker.toNbt());
         }
-        tag2.put("frames", listTag2);
-        return tag2;
+        nbt.put("frames", nbtList2);
+        return nbt;
     }
 
     public void copyFrom(MapState state) {
         this.locked = true;
-        this.xCenter = state.xCenter;
-        this.zCenter = state.zCenter;
+        this.centerX = state.centerX;
+        this.centerZ = state.centerZ;
         this.banners.putAll(state.banners);
         this.icons.putAll(state.icons);
         System.arraycopy(state.colors, 0, this.colors, 0, state.colors.length);
@@ -135,7 +150,7 @@ extends PersistentState {
     }
 
     public void update(PlayerEntity player, ItemStack stack) {
-        CompoundTag compoundTag;
+        NbtCompound nbtCompound;
         if (!this.updateTrackersByPlayer.containsKey(player)) {
             PlayerUpdateTracker playerUpdateTracker = new PlayerUpdateTracker(player);
             this.updateTrackersByPlayer.put(player, playerUpdateTracker);
@@ -167,42 +182,42 @@ extends PersistentState {
             this.addIcon(MapIcon.Type.FRAME, player.world, "frame-" + itemFrameEntity.getEntityId(), blockPos.getX(), blockPos.getZ(), itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, null);
             this.frames.put(mapFrameMarker2.getKey(), mapFrameMarker2);
         }
-        if ((compoundTag = stack.getTag()) != null && compoundTag.contains("Decorations", 9)) {
-            ListTag listTag = compoundTag.getList("Decorations", 10);
-            for (int j = 0; j < listTag.size(); ++j) {
-                CompoundTag compoundTag2 = listTag.getCompound(j);
-                if (this.icons.containsKey(compoundTag2.getString("id"))) continue;
-                this.addIcon(MapIcon.Type.byId(compoundTag2.getByte("type")), player.world, compoundTag2.getString("id"), compoundTag2.getDouble("x"), compoundTag2.getDouble("z"), compoundTag2.getDouble("rot"), null);
+        if ((nbtCompound = stack.getTag()) != null && nbtCompound.contains("Decorations", 9)) {
+            NbtList nbtList = nbtCompound.getList("Decorations", 10);
+            for (int j = 0; j < nbtList.size(); ++j) {
+                NbtCompound nbtCompound2 = nbtList.getCompound(j);
+                if (this.icons.containsKey(nbtCompound2.getString("id"))) continue;
+                this.addIcon(MapIcon.Type.byId(nbtCompound2.getByte("type")), player.world, nbtCompound2.getString("id"), nbtCompound2.getDouble("x"), nbtCompound2.getDouble("z"), nbtCompound2.getDouble("rot"), null);
             }
         }
     }
 
-    public static void addDecorationsTag(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
-        ListTag listTag;
+    public static void addDecorationsNbt(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
+        NbtList nbtList;
         if (stack.hasTag() && stack.getTag().contains("Decorations", 9)) {
-            listTag = stack.getTag().getList("Decorations", 10);
+            nbtList = stack.getTag().getList("Decorations", 10);
         } else {
-            listTag = new ListTag();
-            stack.putSubTag("Decorations", listTag);
+            nbtList = new NbtList();
+            stack.putSubTag("Decorations", nbtList);
         }
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putByte("type", type.getId());
-        compoundTag.putString("id", id);
-        compoundTag.putDouble("x", pos.getX());
-        compoundTag.putDouble("z", pos.getZ());
-        compoundTag.putDouble("rot", 180.0);
-        listTag.add(compoundTag);
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putByte("type", type.getId());
+        nbtCompound.putString("id", id);
+        nbtCompound.putDouble("x", pos.getX());
+        nbtCompound.putDouble("z", pos.getZ());
+        nbtCompound.putDouble("rot", 180.0);
+        nbtList.add(nbtCompound);
         if (type.hasTintColor()) {
-            CompoundTag compoundTag2 = stack.getOrCreateSubTag("display");
-            compoundTag2.putInt("MapColor", type.getTintColor());
+            NbtCompound nbtCompound2 = stack.getOrCreateSubTag("display");
+            nbtCompound2.putInt("MapColor", type.getTintColor());
         }
     }
 
     private void addIcon(MapIcon.Type type, @Nullable WorldAccess world, String key, double x, double z, double rotation, @Nullable Text text) {
         byte d;
         int i = 1 << this.scale;
-        float f = (float)(x - (double)this.xCenter) / (float)i;
-        float g = (float)(z - (double)this.zCenter) / (float)i;
+        float f = (float)(x - (double)this.centerX) / (float)i;
+        float g = (float)(z - (double)this.centerZ) / (float)i;
         byte b = (byte)((double)(f * 2.0f) + 0.5);
         byte c = (byte)((double)(g * 2.0f) + 0.5);
         int j = 63;
@@ -272,8 +287,8 @@ extends PersistentState {
         double d = (double)pos.getX() + 0.5;
         double e = (double)pos.getZ() + 0.5;
         int i = 1 << this.scale;
-        double f = (d - (double)this.xCenter) / (double)i;
-        double g = (e - (double)this.zCenter) / (double)i;
+        double f = (d - (double)this.centerX) / (double)i;
+        double g = (e - (double)this.centerZ) / (double)i;
         int j = 63;
         boolean bl = false;
         if (f >= -63.0 && g >= -63.0 && f <= 63.0 && g <= 63.0) {

@@ -68,13 +68,13 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         boolean bl;
         Direction.Axis axis = direction.getAxis();
         Direction.Axis axis2 = state.get(AXIS);
         boolean bl2 = bl = axis2 != axis && axis.isHorizontal();
-        if (bl || newState.isOf(this) || new AreaHelper(world, pos, axis2).wasAlreadyValid()) {
-            return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        if (bl || neighborState.isOf(this) || new AreaHelper(world, pos, axis2).wasAlreadyValid()) {
+            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
         }
         return Blocks.AIR.getDefaultState();
     }

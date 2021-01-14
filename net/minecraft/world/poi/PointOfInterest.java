@@ -67,14 +67,14 @@ public class PointOfInterest {
         return this.type;
     }
 
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || this.getClass() != obj.getClass()) {
+        if (o == null || this.getClass() != o.getClass()) {
             return false;
         }
-        return Objects.equals(this.pos, ((PointOfInterest)obj).pos);
+        return Objects.equals(this.pos, ((PointOfInterest)o).pos);
     }
 
     public int hashCode() {

@@ -21,12 +21,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A few client-side networking utilities.
+ * 
+ * @implNote This is not marked as client-only because it's used by the
+ * {@code /publish} command, which is only available to integrated servers
+ * yet was retained by proguard.
+ */
 public class NetworkUtils {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final ListeningExecutorService downloadExecutor = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).setNameFormat("Downloader %d").build()));
+    public static final ListeningExecutorService EXECUTOR = MoreExecutors.listeningDecorator(Executors.newCachedThreadPool(new ThreadFactoryBuilder().setDaemon(true).setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER)).setNameFormat("Downloader %d").build()));
 
     @Environment(value=EnvType.CLIENT)
-    public static CompletableFuture<?> download(File file, String string, Map<String, String> map, int i, @Nullable ProgressListener progressListener, Proxy proxy) {
+    public static CompletableFuture<?> downloadResourcePack(File file, String string, Map<String, String> map, int i, @Nullable ProgressListener progressListener, Proxy proxy) {
         return CompletableFuture.supplyAsync(() -> {
             /*
              * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
@@ -75,7 +82,7 @@ public class NetworkUtils {
              *     at java.base/java.lang.Thread.run(Thread.java:833)
              */
             throw new IllegalStateException("Decompilation failed");
-        }, downloadExecutor);
+        }, EXECUTOR);
     }
 
     /*

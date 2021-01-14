@@ -15,9 +15,9 @@ import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class EnchantingTableBlockEntityRenderer
@@ -42,15 +42,15 @@ extends BlockEntityRenderer<EnchantingTableBlockEntity> {
             h += (float)Math.PI * 2;
         }
         float k = enchantingTableBlockEntity.field_11963 + h * f;
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(-k));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(80.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(-k));
+        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(80.0f));
         float l = MathHelper.lerp(f, enchantingTableBlockEntity.pageAngle, enchantingTableBlockEntity.nextPageAngle);
         float m = MathHelper.fractionalPart(l + 0.25f) * 1.6f - 0.3f;
         float n = MathHelper.fractionalPart(l + 0.75f) * 1.6f - 0.3f;
         float o = MathHelper.lerp(f, enchantingTableBlockEntity.pageTurningSpeed, enchantingTableBlockEntity.nextPageTurningSpeed);
         this.book.setPageAngles(g, MathHelper.clamp(m, 0.0f, 1.0f), MathHelper.clamp(n, 0.0f, 1.0f), o);
         VertexConsumer vertexConsumer = BOOK_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
-        this.book.method_24184(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
+        this.book.renderBook(matrixStack, vertexConsumer, i, j, 1.0f, 1.0f, 1.0f, 1.0f);
         matrixStack.pop();
     }
 }

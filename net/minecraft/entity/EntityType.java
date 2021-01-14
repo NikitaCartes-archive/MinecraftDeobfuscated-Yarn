@@ -130,8 +130,8 @@ import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
@@ -292,58 +292,58 @@ public class EntityType<T extends Entity> {
         return Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(id));
     }
 
-    public EntityType(EntityFactory<T> factory, SpawnGroup spawnGroup, boolean saveable, boolean summonable, boolean fireImmune, boolean spawnableFarFromPlayer, ImmutableSet<Block> immutableSet, EntityDimensions entityDimensions, int i, int j) {
+    public EntityType(EntityFactory<T> factory, SpawnGroup spawnGroup, boolean saveable, boolean summonable, boolean fireImmune, boolean spawnableFarFromPlayer, ImmutableSet<Block> canSpawnInside, EntityDimensions dimensions, int maxTrackDistance, int trackTickInterval) {
         this.factory = factory;
         this.spawnGroup = spawnGroup;
         this.spawnableFarFromPlayer = spawnableFarFromPlayer;
         this.saveable = saveable;
         this.summonable = summonable;
         this.fireImmune = fireImmune;
-        this.canSpawnInside = immutableSet;
-        this.dimensions = entityDimensions;
-        this.maxTrackDistance = i;
-        this.trackTickInterval = j;
+        this.canSpawnInside = canSpawnInside;
+        this.dimensions = dimensions;
+        this.maxTrackDistance = maxTrackDistance;
+        this.trackTickInterval = trackTickInterval;
     }
 
     @Nullable
-    public Entity spawnFromItemStack(ServerWorld serverWorld, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-        return this.spawn(serverWorld, stack == null ? null : stack.getTag(), stack != null && stack.hasCustomName() ? stack.getName() : null, player, pos, spawnReason, alignPosition, invertY);
+    public Entity spawnFromItemStack(ServerWorld world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+        return this.spawn(world, stack == null ? null : stack.getTag(), stack != null && stack.hasCustomName() ? stack.getName() : null, player, pos, spawnReason, alignPosition, invertY);
     }
 
     @Nullable
-    public T spawn(ServerWorld serverWorld, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-        T entity = this.create(serverWorld, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
+    public T spawn(ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+        T entity = this.create(world, itemNbt, name, player, pos, spawnReason, alignPosition, invertY);
         if (entity != null) {
-            serverWorld.spawnEntityAndPassengers((Entity)entity);
+            world.spawnEntityAndPassengers((Entity)entity);
         }
         return entity;
     }
 
     @Nullable
-    public T create(ServerWorld serverWorld, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+    public T create(ServerWorld world, @Nullable NbtCompound itemNbt, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
         double d;
-        T entity = this.create(serverWorld);
+        T entity = this.create(world);
         if (entity == null) {
             return null;
         }
         if (alignPosition) {
-            ((Entity)entity).updatePosition((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5);
-            d = EntityType.getOriginY(serverWorld, pos, invertY, ((Entity)entity).getBoundingBox());
+            ((Entity)entity).setPosition((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5);
+            d = EntityType.getOriginY(world, pos, invertY, ((Entity)entity).getBoundingBox());
         } else {
             d = 0.0;
         }
-        ((Entity)entity).refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(serverWorld.random.nextFloat() * 360.0f), 0.0f);
+        ((Entity)entity).refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0f), 0.0f);
         if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity)entity;
             mobEntity.headYaw = mobEntity.yaw;
             mobEntity.bodyYaw = mobEntity.yaw;
-            mobEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
+            mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemNbt);
             mobEntity.playAmbientSound();
         }
         if (name != null && entity instanceof LivingEntity) {
             ((Entity)entity).setCustomName(name);
         }
-        EntityType.loadFromEntityTag(serverWorld, player, entity, itemTag);
+        EntityType.loadFromEntityNbt(world, player, entity, itemNbt);
         return entity;
     }
 
@@ -356,8 +356,8 @@ public class EntityType<T extends Entity> {
         return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
     }
 
-    public static void loadFromEntityTag(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
-        if (itemTag == null || !itemTag.contains("EntityTag", 10)) {
+    public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable NbtCompound itemNbt) {
+        if (itemNbt == null || !itemNbt.contains("EntityTag", 10)) {
             return;
         }
         MinecraftServer minecraftServer = world.getServer();
@@ -367,11 +367,11 @@ public class EntityType<T extends Entity> {
         if (!(world.isClient || !entity.entityDataRequiresOperator() || player != null && minecraftServer.getPlayerManager().isOperator(player.getGameProfile()))) {
             return;
         }
-        CompoundTag compoundTag = entity.toTag(new CompoundTag());
+        NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
         UUID uUID = entity.getUuid();
-        compoundTag.copyFrom(itemTag.getCompound("EntityTag"));
+        nbtCompound.copyFrom(itemNbt.getCompound("EntityTag"));
         entity.setUuid(uUID);
-        entity.fromTag(compoundTag);
+        entity.readNbt(nbtCompound);
     }
 
     public boolean isSaveable() {
@@ -439,8 +439,8 @@ public class EntityType<T extends Entity> {
         return EntityType.newInstance(world, Registry.ENTITY_TYPE.get(type));
     }
 
-    public static Optional<Entity> getEntityFromTag(CompoundTag tag, World world) {
-        return Util.ifPresentOrElse(EntityType.fromTag(tag).map(entityType -> entityType.create(world)), entity -> entity.fromTag(tag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)tag.getString("id")));
+    public static Optional<Entity> getEntityFromNbt(NbtCompound nbt, World world) {
+        return Util.ifPresentOrElse(EntityType.fromNbt(nbt).map(entityType -> entityType.create(world)), entity -> entity.readNbt(nbt), () -> LOGGER.warn("Skipping Entity with id {}", (Object)nbt.getString("id")));
     }
 
     @Nullable
@@ -462,31 +462,31 @@ public class EntityType<T extends Entity> {
      * 
      * <p>This can be overwritten via {@link EntityType.Builder#allowSpawningInside(Block[])}
      */
-    public boolean isInvalidSpawn(BlockState blockState) {
-        if (this.canSpawnInside.contains(blockState.getBlock())) {
+    public boolean isInvalidSpawn(BlockState state) {
+        if (this.canSpawnInside.contains(state.getBlock())) {
             return false;
         }
-        if (!this.fireImmune && (blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(blockState) || blockState.isOf(Blocks.LAVA))) {
+        if (!this.fireImmune && (state.isIn(BlockTags.FIRE) || state.isOf(Blocks.MAGMA_BLOCK) || CampfireBlock.isLitCampfire(state) || state.isOf(Blocks.LAVA))) {
             return true;
         }
-        return blockState.isOf(Blocks.WITHER_ROSE) || blockState.isOf(Blocks.SWEET_BERRY_BUSH) || blockState.isOf(Blocks.CACTUS);
+        return state.isOf(Blocks.WITHER_ROSE) || state.isOf(Blocks.SWEET_BERRY_BUSH) || state.isOf(Blocks.CACTUS);
     }
 
     public EntityDimensions getDimensions() {
         return this.dimensions;
     }
 
-    public static Optional<EntityType<?>> fromTag(CompoundTag compoundTag) {
-        return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(compoundTag.getString("id")));
+    public static Optional<EntityType<?>> fromNbt(NbtCompound nbt) {
+        return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(nbt.getString("id")));
     }
 
     @Nullable
-    public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> entityProcessor) {
-        return EntityType.loadEntityFromTag(compoundTag, world).map(entityProcessor).map(entity -> {
-            if (compoundTag.contains("Passengers", 9)) {
-                ListTag listTag = compoundTag.getList("Passengers", 10);
-                for (int i = 0; i < listTag.size(); ++i) {
-                    Entity entity2 = EntityType.loadEntityWithPassengers(listTag.getCompound(i), world, entityProcessor);
+    public static Entity loadEntityWithPassengers(NbtCompound nbt, World world, Function<Entity, Entity> entityProcessor) {
+        return EntityType.loadEntityFromNbt(nbt, world).map(entityProcessor).map(entity -> {
+            if (nbt.contains("Passengers", 9)) {
+                NbtList nbtList = nbt.getList("Passengers", 10);
+                for (int i = 0; i < nbtList.size(); ++i) {
+                    Entity entity2 = EntityType.loadEntityWithPassengers(nbtList.getCompound(i), world, entityProcessor);
                     if (entity2 == null) continue;
                     entity2.startRiding((Entity)entity, true);
                 }
@@ -495,9 +495,9 @@ public class EntityType<T extends Entity> {
         }).orElse(null);
     }
 
-    private static Optional<Entity> loadEntityFromTag(CompoundTag compoundTag, World world) {
+    private static Optional<Entity> loadEntityFromNbt(NbtCompound nbt, World world) {
         try {
-            return EntityType.getEntityFromTag(compoundTag, world);
+            return EntityType.getEntityFromNbt(nbt, world);
         } catch (RuntimeException runtimeException) {
             LOGGER.warn("Exception loading entity: ", (Throwable)runtimeException);
             return Optional.empty();

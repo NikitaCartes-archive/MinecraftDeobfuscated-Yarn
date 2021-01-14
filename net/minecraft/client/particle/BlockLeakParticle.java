@@ -40,11 +40,11 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getColorMultiplier(float tint) {
+    public int getBrightness(float tint) {
         if (this.obsidianTear) {
             return 240;
         }
-        return super.getColorMultiplier(tint);
+        return super.getBrightness(tint);
     }
 
     @Override

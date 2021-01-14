@@ -10,8 +10,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.world.World;
 
 public class SuspiciousStewItem
@@ -21,29 +21,29 @@ extends Item {
     }
 
     public static void addEffectToStew(ItemStack stew, StatusEffect effect, int duration) {
-        CompoundTag compoundTag = stew.getOrCreateTag();
-        ListTag listTag = compoundTag.getList("Effects", 9);
-        CompoundTag compoundTag2 = new CompoundTag();
-        compoundTag2.putByte("EffectId", (byte)StatusEffect.getRawId(effect));
-        compoundTag2.putInt("EffectDuration", duration);
-        listTag.add(compoundTag2);
-        compoundTag.put("Effects", listTag);
+        NbtCompound nbtCompound = stew.getOrCreateTag();
+        NbtList nbtList = nbtCompound.getList("Effects", 9);
+        NbtCompound nbtCompound2 = new NbtCompound();
+        nbtCompound2.putByte("EffectId", (byte)StatusEffect.getRawId(effect));
+        nbtCompound2.putInt("EffectDuration", duration);
+        nbtList.add(nbtCompound2);
+        nbtCompound.put("Effects", nbtList);
     }
 
     @Override
     public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         ItemStack itemStack = super.finishUsing(stack, world, user);
-        CompoundTag compoundTag = stack.getTag();
-        if (compoundTag != null && compoundTag.contains("Effects", 9)) {
-            ListTag listTag = compoundTag.getList("Effects", 10);
-            for (int i = 0; i < listTag.size(); ++i) {
+        NbtCompound nbtCompound = stack.getTag();
+        if (nbtCompound != null && nbtCompound.contains("Effects", 9)) {
+            NbtList nbtList = nbtCompound.getList("Effects", 10);
+            for (int i = 0; i < nbtList.size(); ++i) {
                 StatusEffect statusEffect;
                 int j = 160;
-                CompoundTag compoundTag2 = listTag.getCompound(i);
-                if (compoundTag2.contains("EffectDuration", 3)) {
-                    j = compoundTag2.getInt("EffectDuration");
+                NbtCompound nbtCompound2 = nbtList.getCompound(i);
+                if (nbtCompound2.contains("EffectDuration", 3)) {
+                    j = nbtCompound2.getInt("EffectDuration");
                 }
-                if ((statusEffect = StatusEffect.byRawId(compoundTag2.getByte("EffectId"))) == null) continue;
+                if ((statusEffect = StatusEffect.byRawId(nbtCompound2.getByte("EffectId"))) == null) continue;
                 user.addStatusEffect(new StatusEffectInstance(statusEffect, j));
             }
         }

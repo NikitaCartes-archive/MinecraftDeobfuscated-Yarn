@@ -48,7 +48,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -223,17 +223,17 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putString("MainGene", this.getMainGene().getName());
-        tag.putString("HiddenGene", this.getHiddenGene().getName());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putString("MainGene", this.getMainGene().getName());
+        nbt.putString("HiddenGene", this.getHiddenGene().getName());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        this.setMainGene(Gene.byName(tag.getString("MainGene")));
-        this.setHiddenGene(Gene.byName(tag.getString("HiddenGene")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setMainGene(Gene.byName(nbt.getString("MainGene")));
+        this.setHiddenGene(Gene.byName(nbt.getString("HiddenGene")));
     }
 
     @Override
@@ -485,14 +485,14 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.setMainGene(Gene.createRandom(this.random));
         this.setHiddenGene(Gene.createRandom(this.random));
         this.resetAttributes();
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     public void initGenes(PandaEntity mother, @Nullable PandaEntity father) {

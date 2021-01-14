@@ -7,14 +7,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
 public class ToggleButtonWidget
-extends AbstractButtonWidget {
+extends ClickableWidget {
     protected Identifier texture;
     protected boolean toggled;
     protected int u;

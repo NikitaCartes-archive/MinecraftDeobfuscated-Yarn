@@ -31,7 +31,6 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_5459;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
@@ -53,11 +52,11 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -105,6 +104,7 @@ import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
@@ -121,12 +121,12 @@ public abstract class Entity
 implements Nameable,
 CommandOutput {
     protected static final Logger LOGGER = LogManager.getLogger();
-    private static final AtomicInteger MAX_ENTITY_ID = new AtomicInteger();
+    private static final AtomicInteger ENTITY_ID_COUNTER = new AtomicInteger();
     private static final List<ItemStack> EMPTY_STACK_LIST = Collections.emptyList();
     private static final Box NULL_BOX = new Box(0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
     private static double renderDistanceMultiplier = 1.0;
     private final EntityType<?> type;
-    private int entityId = MAX_ENTITY_ID.incrementAndGet();
+    private int entityId = ENTITY_ID_COUNTER.incrementAndGet();
     public boolean inanimate;
     private final List<Entity> passengerList = Lists.newArrayList();
     protected int ridingCooldown;
@@ -211,7 +211,7 @@ CommandOutput {
         this.pos = Vec3d.ZERO;
         this.blockPos = BlockPos.ORIGIN;
         this.trackedPosition = Vec3d.ZERO;
-        this.updatePosition(0.0, 0.0, 0.0);
+        this.setPosition(0.0, 0.0, 0.0);
         this.dataTracker = new DataTracker(this);
         this.dataTracker.startTracking(FLAGS, (byte)0);
         this.dataTracker.startTracking(AIR, this.getMaxAir());
@@ -323,7 +323,7 @@ CommandOutput {
             return;
         }
         for (double d = this.getY(); d > 0.0 && d < 256.0; d += 1.0) {
-            this.updatePosition(this.getX(), d, this.getZ());
+            this.setPosition(this.getX(), d, this.getZ());
             if (this.world.isSpaceEmpty(this)) break;
         }
         this.setVelocity(Vec3d.ZERO);
@@ -342,6 +342,10 @@ CommandOutput {
         return this.dataTracker.get(POSE);
     }
 
+    /**
+     * Checks if the distance between this entity and the {@code other} entity is less
+     * than {@code radius}.
+     */
     public boolean isInRange(Entity other, double radius) {
         double d = other.pos.x - this.pos.x;
         double e = other.pos.y - this.pos.y;
@@ -354,13 +358,13 @@ CommandOutput {
         this.pitch = pitch % 360.0f;
     }
 
-    public void updatePosition(double x, double y, double z) {
+    public void setPosition(double x, double y, double z) {
         this.setPos(x, y, z);
-        this.setBoundingBox(this.dimensions.method_30231(x, y, z));
+        this.setBoundingBox(this.dimensions.getBoxAt(x, y, z));
     }
 
     protected void refreshPosition() {
-        this.updatePosition(this.pos.x, this.pos.y, this.pos.z);
+        this.setPosition(this.pos.x, this.pos.y, this.pos.z);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -423,7 +427,7 @@ CommandOutput {
             this.fallDistance *= 0.5f;
         }
         if (this.getY() < -64.0) {
-            this.destroy();
+            this.tickInVoid();
         }
         if (!this.world.isClient) {
             this.setFlag(0, this.fireTicks > 0);
@@ -480,7 +484,12 @@ CommandOutput {
         this.setFireTicks(0);
     }
 
-    protected void destroy() {
+    /**
+     * Called when the entity is 64 blocks below the world's minimum Y position which is {@code 0}.
+     * 
+     * <p>{@linkplain LivingEntity Living entities} use this to deal {@linkplain net.minecraft.entity.damage.DamageSource#OUT_OF_WORLD out of world damage}.
+     */
+    protected void tickInVoid() {
         this.remove();
     }
 
@@ -500,14 +509,14 @@ CommandOutput {
         return this.onGround;
     }
 
-    public void move(MovementType type, Vec3d movement) {
+    public void move(MovementType movementType, Vec3d movement) {
         Vec3d vec3d;
         if (this.noClip) {
             this.setBoundingBox(this.getBoundingBox().offset(movement));
             this.moveToBoundingBoxCenter();
             return;
         }
-        if (type == MovementType.PISTON && (movement = this.adjustMovementForPiston(movement)).equals(Vec3d.ZERO)) {
+        if (movementType == MovementType.PISTON && (movement = this.adjustMovementForPiston(movement)).equals(Vec3d.ZERO)) {
             return;
         }
         this.world.getProfiler().push("move");
@@ -516,7 +525,7 @@ CommandOutput {
             this.movementMultiplier = Vec3d.ZERO;
             this.setVelocity(Vec3d.ZERO);
         }
-        if ((vec3d = this.adjustMovementForCollisions(movement = this.adjustMovementForSneaking(movement, type))).lengthSquared() > 1.0E-7) {
+        if ((vec3d = this.adjustMovementForCollisions(movement = this.adjustMovementForSneaking(movement, movementType))).lengthSquared() > 1.0E-7) {
             this.setBoundingBox(this.getBoundingBox().offset(vec3d));
             this.moveToBoundingBoxCenter();
         }
@@ -1017,8 +1026,8 @@ CommandOutput {
         }
     }
 
-    public boolean isSubmergedIn(Tag<Fluid> tag) {
-        return this.field_25599 == tag;
+    public boolean isSubmergedIn(Tag<Fluid> fluidTag) {
+        return this.field_25599 == fluidTag;
     }
 
     public boolean isInLava() {
@@ -1055,24 +1064,24 @@ CommandOutput {
     }
 
     public void updatePositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-        this.method_30634(x, y, z);
+        this.updatePosition(x, y, z);
         this.yaw = yaw % 360.0f;
         this.pitch = MathHelper.clamp(pitch, -90.0f, 90.0f) % 360.0f;
         this.prevYaw = this.yaw;
         this.prevPitch = this.pitch;
     }
 
-    public void method_30634(double x, double y, double z) {
+    public void updatePosition(double x, double y, double z) {
         double d = MathHelper.clamp(x, -3.0E7, 3.0E7);
         double e = MathHelper.clamp(z, -3.0E7, 3.0E7);
         this.prevX = d;
         this.prevY = y;
         this.prevZ = e;
-        this.updatePosition(d, y, e);
+        this.setPosition(d, y, e);
     }
 
-    public void refreshPositionAfterTeleport(Vec3d vec3d) {
-        this.refreshPositionAfterTeleport(vec3d.x, vec3d.y, vec3d.z);
+    public void refreshPositionAfterTeleport(Vec3d pos) {
+        this.refreshPositionAfterTeleport(pos.x, pos.y, pos.z);
     }
 
     public void refreshPositionAfterTeleport(double x, double y, double z) {
@@ -1225,7 +1234,7 @@ CommandOutput {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Vec3d method_31166(float tickDelta) {
+    public Vec3d getClientCameraPosVec(float tickDelta) {
         return this.getCameraPosVec(tickDelta);
     }
 
@@ -1276,74 +1285,74 @@ CommandOutput {
         return distance < (d *= 64.0 * renderDistanceMultiplier) * d;
     }
 
-    public boolean saveSelfToTag(CompoundTag tag) {
+    public boolean saveSelfNbt(NbtCompound nbt) {
         String string = this.getSavedEntityId();
         if (this.removed || string == null) {
             return false;
         }
-        tag.putString("id", string);
-        this.toTag(tag);
+        nbt.putString("id", string);
+        this.writeNbt(nbt);
         return true;
     }
 
-    public boolean saveToTag(CompoundTag tag) {
+    public boolean saveNbt(NbtCompound nbt) {
         if (this.hasVehicle()) {
             return false;
         }
-        return this.saveSelfToTag(tag);
+        return this.saveSelfNbt(nbt);
     }
 
-    public CompoundTag toTag(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound nbt) {
         try {
-            ListTag listTag;
+            NbtList nbtList;
             if (this.vehicle != null) {
-                tag.put("Pos", this.toListTag(this.vehicle.getX(), this.getY(), this.vehicle.getZ()));
+                nbt.put("Pos", this.toNbtList(this.vehicle.getX(), this.getY(), this.vehicle.getZ()));
             } else {
-                tag.put("Pos", this.toListTag(this.getX(), this.getY(), this.getZ()));
+                nbt.put("Pos", this.toNbtList(this.getX(), this.getY(), this.getZ()));
             }
             Vec3d vec3d = this.getVelocity();
-            tag.put("Motion", this.toListTag(vec3d.x, vec3d.y, vec3d.z));
-            tag.put("Rotation", this.toListTag(this.yaw, this.pitch));
-            tag.putFloat("FallDistance", this.fallDistance);
-            tag.putShort("Fire", (short)this.fireTicks);
-            tag.putShort("Air", (short)this.getAir());
-            tag.putBoolean("OnGround", this.onGround);
-            tag.putBoolean("Invulnerable", this.invulnerable);
-            tag.putInt("PortalCooldown", this.netherPortalCooldown);
-            tag.putUuid("UUID", this.getUuid());
+            nbt.put("Motion", this.toNbtList(vec3d.x, vec3d.y, vec3d.z));
+            nbt.put("Rotation", this.toNbtList(this.yaw, this.pitch));
+            nbt.putFloat("FallDistance", this.fallDistance);
+            nbt.putShort("Fire", (short)this.fireTicks);
+            nbt.putShort("Air", (short)this.getAir());
+            nbt.putBoolean("OnGround", this.onGround);
+            nbt.putBoolean("Invulnerable", this.invulnerable);
+            nbt.putInt("PortalCooldown", this.netherPortalCooldown);
+            nbt.putUuid("UUID", this.getUuid());
             Text text = this.getCustomName();
             if (text != null) {
-                tag.putString("CustomName", Text.Serializer.toJson(text));
+                nbt.putString("CustomName", Text.Serializer.toJson(text));
             }
             if (this.isCustomNameVisible()) {
-                tag.putBoolean("CustomNameVisible", this.isCustomNameVisible());
+                nbt.putBoolean("CustomNameVisible", this.isCustomNameVisible());
             }
             if (this.isSilent()) {
-                tag.putBoolean("Silent", this.isSilent());
+                nbt.putBoolean("Silent", this.isSilent());
             }
             if (this.hasNoGravity()) {
-                tag.putBoolean("NoGravity", this.hasNoGravity());
+                nbt.putBoolean("NoGravity", this.hasNoGravity());
             }
             if (this.glowing) {
-                tag.putBoolean("Glowing", this.glowing);
+                nbt.putBoolean("Glowing", this.glowing);
             }
             if (!this.scoreboardTags.isEmpty()) {
-                listTag = new ListTag();
+                nbtList = new NbtList();
                 for (String string : this.scoreboardTags) {
-                    listTag.add(StringTag.of(string));
+                    nbtList.add(NbtString.of(string));
                 }
-                tag.put("Tags", listTag);
+                nbt.put("Tags", nbtList);
             }
-            this.writeCustomDataToTag(tag);
+            this.writeCustomDataToNbt(nbt);
             if (this.hasPassengers()) {
-                listTag = new ListTag();
+                nbtList = new NbtList();
                 for (Entity entity : this.getPassengerList()) {
-                    CompoundTag compoundTag;
-                    if (!entity.saveSelfToTag(compoundTag = new CompoundTag())) continue;
-                    listTag.add(compoundTag);
+                    NbtCompound nbtCompound;
+                    if (!entity.saveSelfNbt(nbtCompound = new NbtCompound())) continue;
+                    nbtList.add(nbtCompound);
                 }
-                if (!listTag.isEmpty()) {
-                    tag.put("Passengers", listTag);
+                if (!nbtList.isEmpty()) {
+                    nbt.put("Passengers", nbtList);
                 }
             }
         } catch (Throwable throwable) {
@@ -1352,33 +1361,33 @@ CommandOutput {
             this.populateCrashReport(crashReportSection);
             throw new CrashException(crashReport);
         }
-        return tag;
+        return nbt;
     }
 
-    public void fromTag(CompoundTag tag) {
+    public void readNbt(NbtCompound nbt) {
         try {
-            ListTag listTag = tag.getList("Pos", 6);
-            ListTag listTag2 = tag.getList("Motion", 6);
-            ListTag listTag3 = tag.getList("Rotation", 5);
-            double d = listTag2.getDouble(0);
-            double e = listTag2.getDouble(1);
-            double f = listTag2.getDouble(2);
+            NbtList nbtList = nbt.getList("Pos", 6);
+            NbtList nbtList2 = nbt.getList("Motion", 6);
+            NbtList nbtList3 = nbt.getList("Rotation", 5);
+            double d = nbtList2.getDouble(0);
+            double e = nbtList2.getDouble(1);
+            double f = nbtList2.getDouble(2);
             this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-            this.resetPosition(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
-            this.yaw = listTag3.getFloat(0);
-            this.pitch = listTag3.getFloat(1);
+            this.resetPosition(nbtList.getDouble(0), nbtList.getDouble(1), nbtList.getDouble(2));
+            this.yaw = nbtList3.getFloat(0);
+            this.pitch = nbtList3.getFloat(1);
             this.prevYaw = this.yaw;
             this.prevPitch = this.pitch;
             this.setHeadYaw(this.yaw);
-            this.setYaw(this.yaw);
-            this.fallDistance = tag.getFloat("FallDistance");
-            this.fireTicks = tag.getShort("Fire");
-            this.setAir(tag.getShort("Air"));
-            this.onGround = tag.getBoolean("OnGround");
-            this.invulnerable = tag.getBoolean("Invulnerable");
-            this.netherPortalCooldown = tag.getInt("PortalCooldown");
-            if (tag.containsUuid("UUID")) {
-                this.uuid = tag.getUuid("UUID");
+            this.setBodyYaw(this.yaw);
+            this.fallDistance = nbt.getFloat("FallDistance");
+            this.fireTicks = nbt.getShort("Fire");
+            this.setAir(nbt.getShort("Air"));
+            this.onGround = nbt.getBoolean("OnGround");
+            this.invulnerable = nbt.getBoolean("Invulnerable");
+            this.netherPortalCooldown = nbt.getInt("PortalCooldown");
+            if (nbt.containsUuid("UUID")) {
+                this.uuid = nbt.getUuid("UUID");
                 this.uuidString = this.uuid.toString();
             }
             if (!(Double.isFinite(this.getX()) && Double.isFinite(this.getY()) && Double.isFinite(this.getZ()))) {
@@ -1389,27 +1398,27 @@ CommandOutput {
             }
             this.refreshPosition();
             this.setRotation(this.yaw, this.pitch);
-            if (tag.contains("CustomName", 8)) {
-                String string = tag.getString("CustomName");
+            if (nbt.contains("CustomName", 8)) {
+                String string = nbt.getString("CustomName");
                 try {
                     this.setCustomName(Text.Serializer.fromJson(string));
                 } catch (Exception exception) {
                     LOGGER.warn("Failed to parse entity custom name {}", (Object)string, (Object)exception);
                 }
             }
-            this.setCustomNameVisible(tag.getBoolean("CustomNameVisible"));
-            this.setSilent(tag.getBoolean("Silent"));
-            this.setNoGravity(tag.getBoolean("NoGravity"));
-            this.setGlowing(tag.getBoolean("Glowing"));
-            if (tag.contains("Tags", 9)) {
+            this.setCustomNameVisible(nbt.getBoolean("CustomNameVisible"));
+            this.setSilent(nbt.getBoolean("Silent"));
+            this.setNoGravity(nbt.getBoolean("NoGravity"));
+            this.setGlowing(nbt.getBoolean("Glowing"));
+            if (nbt.contains("Tags", 9)) {
                 this.scoreboardTags.clear();
-                ListTag listTag4 = tag.getList("Tags", 8);
-                int i = Math.min(listTag4.size(), 1024);
+                NbtList nbtList4 = nbt.getList("Tags", 8);
+                int i = Math.min(nbtList4.size(), 1024);
                 for (int j = 0; j < i; ++j) {
-                    this.scoreboardTags.add(listTag4.getString(j));
+                    this.scoreboardTags.add(nbtList4.getString(j));
                 }
             }
-            this.readCustomDataFromTag(tag);
+            this.readCustomDataFromNbt(nbt);
             if (this.shouldSetPositionOnLoad()) {
                 this.refreshPosition();
             }
@@ -1432,24 +1441,24 @@ CommandOutput {
         return !entityType.isSaveable() || identifier == null ? null : identifier.toString();
     }
 
-    protected abstract void readCustomDataFromTag(CompoundTag var1);
+    protected abstract void readCustomDataFromNbt(NbtCompound var1);
 
-    protected abstract void writeCustomDataToTag(CompoundTag var1);
+    protected abstract void writeCustomDataToNbt(NbtCompound var1);
 
-    protected ListTag toListTag(double ... values) {
-        ListTag listTag = new ListTag();
+    protected NbtList toNbtList(double ... values) {
+        NbtList nbtList = new NbtList();
         for (double d : values) {
-            listTag.add(DoubleTag.of(d));
+            nbtList.add(NbtDouble.of(d));
         }
-        return listTag;
+        return nbtList;
     }
 
-    protected ListTag toListTag(float ... values) {
-        ListTag listTag = new ListTag();
+    protected NbtList toNbtList(float ... values) {
+        NbtList nbtList = new NbtList();
         for (float f : values) {
-            listTag.add(FloatTag.of(f));
+            nbtList.add(NbtFloat.of(f));
         }
-        return listTag;
+        return nbtList;
     }
 
     @Nullable
@@ -1523,7 +1532,7 @@ CommandOutput {
     }
 
     public void updatePassengerPosition(Entity passenger) {
-        this.updatePassengerPosition(passenger, Entity::updatePosition);
+        this.updatePassengerPosition(passenger, Entity::setPosition);
     }
 
     private void updatePassengerPosition(Entity passenger, PositionUpdater positionUpdater) {
@@ -1626,7 +1635,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public void updateTrackedPositionAndAngles(double x, double y, double z, float yaw, float pitch, int interpolationSteps, boolean interpolate) {
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         this.setRotation(yaw, pitch);
     }
 
@@ -1775,10 +1784,10 @@ CommandOutput {
      * 
      * <p>Compared to {@link #isSneaking()}, it only makes the entity appear
      * crouching and does not bring other effects of sneaking, such as no less
-     * obvious name label rendering, no dismounting while riding, etc.</p>
+     * obvious name label rendering, no dismounting while riding, etc.
      * 
      * <p>This is used by vanilla for non-player entities to crouch, such as
-     * for foxes and cats.</p>
+     * for foxes and cats.
      */
     public boolean isInSneakingPose() {
         return this.getPose() == EntityPose.CROUCHING;
@@ -1902,7 +1911,7 @@ CommandOutput {
         this.fallDistance = 0.0f;
     }
 
-    public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
+    public void onKilledOther(ServerWorld world, LivingEntity other) {
     }
 
     protected void pushOutOfBlocks(double x, double y, double z) {
@@ -1970,7 +1979,7 @@ CommandOutput {
     public void setHeadYaw(float headYaw) {
     }
 
-    public void setYaw(float yaw) {
+    public void setBodyYaw(float bodyYaw) {
     }
 
     public boolean isAttackable() {
@@ -2002,9 +2011,9 @@ CommandOutput {
     }
 
     public void copyFrom(Entity original) {
-        CompoundTag compoundTag = original.toTag(new CompoundTag());
-        compoundTag.remove("Dimension");
-        this.fromTag(compoundTag);
+        NbtCompound nbtCompound = original.writeNbt(new NbtCompound());
+        nbtCompound.remove("Dimension");
+        this.readNbt(nbtCompound);
         this.netherPortalCooldown = original.netherPortalCooldown;
         this.lastNetherPortalPosition = original.lastNetherPortalPosition;
     }
@@ -2051,6 +2060,11 @@ CommandOutput {
         this.removed = true;
     }
 
+    /**
+     * Determines a {@link TeleportTarget} for the entity
+     * based on its current and destination worlds, plus
+     * any portals that may be present.
+     */
     @Nullable
     protected TeleportTarget getTeleportTarget(ServerWorld destination) {
         boolean bl3;
@@ -2072,27 +2086,27 @@ CommandOutput {
         double g = Math.min(2.9999872E7, worldBorder.getBoundSouth() - 16.0);
         double h = DimensionType.method_31109(this.world.getDimension(), destination.getDimension());
         BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
-        return this.method_30330(destination, blockPos2, bl3).map(arg -> {
+        return this.method_30330(destination, blockPos2, bl3).map(rectangle -> {
             Vec3d vec3d;
             Direction.Axis axis;
             BlockState blockState = this.world.getBlockState(this.lastNetherPortalPosition);
             if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
                 axis = blockState.get(Properties.HORIZONTAL_AXIS);
-                class_5459.class_5460 lv = class_5459.method_30574(this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
-                vec3d = this.method_30633(axis, lv);
+                PortalUtil.Rectangle rectangle2 = PortalUtil.getLargestRectangle(this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
+                vec3d = this.method_30633(axis, rectangle2);
             } else {
                 axis = Direction.Axis.X;
                 vec3d = new Vec3d(0.5, 0.0, 0.0);
             }
-            return AreaHelper.method_30484(destination, arg, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
+            return AreaHelper.method_30484(destination, rectangle, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
         }).orElse(null);
     }
 
-    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-        return AreaHelper.method_30494(arg, axis, this.getPos(), this.getDimensions(this.getPose()));
+    protected Vec3d method_30633(Direction.Axis axis, PortalUtil.Rectangle rectangle) {
+        return AreaHelper.method_30494(rectangle, axis, this.getPos(), this.getDimensions(this.getPose()));
     }
 
-    protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
+    protected Optional<PortalUtil.Rectangle> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
         return serverWorld.getPortalForcer().method_30483(blockPos, bl);
     }
 
@@ -2150,7 +2164,7 @@ CommandOutput {
         return this.uuidString;
     }
 
-    public boolean canFly() {
+    public boolean isPushedByFluids() {
         return true;
     }
 
@@ -2166,7 +2180,7 @@ CommandOutput {
 
     @Override
     public Text getDisplayName() {
-        return Team.modifyText(this.getScoreboardTeam(), this.getName()).styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
+        return Team.decorateName(this.getScoreboardTeam(), this.getName()).styled(style -> style.withHoverEvent(this.getHoverEvent()).withInsertion(this.getUuidAsString()));
     }
 
     public void setCustomName(@Nullable Text name) {
@@ -2307,7 +2321,7 @@ CommandOutput {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID senderUuid) {
+    public void sendSystemMessage(Text message, UUID sender) {
     }
 
     public World getEntityWorld() {
@@ -2510,6 +2524,9 @@ CommandOutput {
         return 1;
     }
 
+    /**
+     * Creates a command source which represents this entity.
+     */
     public ServerCommandSource getCommandSource() {
         return new ServerCommandSource(this, this.getPos(), this.getRotationClient(), this.world instanceof ServerWorld ? (ServerWorld)this.world : null, this.getPermissionLevel(), this.getName().getString(), this.getDisplayName(), this.world.getServer(), this);
     }
@@ -2562,7 +2579,7 @@ CommandOutput {
             return false;
         }
         double e = 0.0;
-        boolean bl = this.canFly();
+        boolean bl = this.isPushedByFluids();
         boolean bl2 = false;
         Vec3d vec3d = Vec3d.ZERO;
         int o = 0;

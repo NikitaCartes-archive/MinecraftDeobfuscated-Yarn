@@ -164,12 +164,12 @@ implements ScreenHandlerProvider<T> {
         }
     }
 
-    private void drawItem(ItemStack stack, int xPosition, int yPosition, String amountText) {
+    private void drawItem(ItemStack stack, int x, int y, String amountText) {
         RenderSystem.translatef(0.0f, 0.0f, 32.0f);
         this.setZOffset(200);
         this.itemRenderer.zOffset = 200.0f;
-        this.itemRenderer.renderInGuiWithOverrides(stack, xPosition, yPosition);
-        this.itemRenderer.renderGuiItemOverlay(this.textRenderer, stack, xPosition, yPosition - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
+        this.itemRenderer.renderInGuiWithOverrides(stack, x, y);
+        this.itemRenderer.renderGuiItemOverlay(this.textRenderer, stack, x, y - (this.touchDragStack.isEmpty() ? 0 : 8), amountText);
         this.setZOffset(0);
         this.itemRenderer.zOffset = 0.0f;
     }
@@ -255,10 +255,10 @@ implements ScreenHandlerProvider<T> {
     }
 
     @Nullable
-    private Slot getSlotAt(double xPosition, double yPosition) {
+    private Slot getSlotAt(double x, double y) {
         for (int i = 0; i < ((ScreenHandler)this.handler).slots.size(); ++i) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(i);
-            if (!this.isPointOverSlot(slot, xPosition, yPosition) || !slot.doDrawHoveringEffect()) continue;
+            if (!this.isPointOverSlot(slot, x, y) || !slot.doDrawHoveringEffect()) continue;
             return slot;
         }
         return null;
@@ -337,15 +337,15 @@ implements ScreenHandlerProvider<T> {
         return true;
     }
 
-    private void method_30107(int i) {
+    private void method_30107(int button) {
         if (this.focusedSlot != null && this.client.player.inventory.getCursorStack().isEmpty()) {
-            if (this.client.options.keySwapHands.matchesMouse(i)) {
+            if (this.client.options.keySwapHands.matchesMouse(button)) {
                 this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
                 return;
             }
-            for (int j = 0; j < 9; ++j) {
-                if (!this.client.options.keysHotbar[j].matchesMouse(i)) continue;
-                this.onMouseClick(this.focusedSlot, this.focusedSlot.id, j, SlotActionType.SWAP);
+            for (int i = 0; i < 9; ++i) {
+                if (!this.client.options.keysHotbar[i].matchesMouse(button)) continue;
+                this.onMouseClick(this.focusedSlot, this.focusedSlot.id, i, SlotActionType.SWAP);
             }
         }
     }
@@ -483,20 +483,20 @@ implements ScreenHandlerProvider<T> {
         return this.isPointWithinBounds(slot.x, slot.y, 16, 16, pointX, pointY);
     }
 
-    protected boolean isPointWithinBounds(int xPosition, int yPosition, int width, int height, double pointX, double pointY) {
+    protected boolean isPointWithinBounds(int x, int y, int width, int height, double pointX, double pointY) {
         int i = this.x;
         int j = this.y;
-        return (pointX -= (double)i) >= (double)(xPosition - 1) && pointX < (double)(xPosition + width + 1) && (pointY -= (double)j) >= (double)(yPosition - 1) && pointY < (double)(yPosition + height + 1);
+        return (pointX -= (double)i) >= (double)(x - 1) && pointX < (double)(x + width + 1) && (pointY -= (double)j) >= (double)(y - 1) && pointY < (double)(y + height + 1);
     }
 
     /**
      * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int, net.minecraft.screen.slot.SlotActionType, net.minecraft.entity.player.PlayerEntity)
      */
-    protected void onMouseClick(Slot slot, int invSlot, int clickData, SlotActionType actionType) {
+    protected void onMouseClick(Slot slot, int slotId, int button, SlotActionType actionType) {
         if (slot != null) {
-            invSlot = slot.id;
+            slotId = slot.id;
         }
-        this.client.interactionManager.clickSlot(((ScreenHandler)this.handler).syncId, invSlot, clickData, actionType, this.client.player);
+        this.client.interactionManager.clickSlot(((ScreenHandler)this.handler).syncId, slotId, button, actionType, this.client.player);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class TexturedRenderLayers {
     private static final RenderLayer ENTITY_TRANSLUCENT_CULL = RenderLayer.getEntityTranslucentCull(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
     public static final SpriteIdentifier SHULKER_TEXTURE_ID = new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker"));
     public static final List<SpriteIdentifier> COLORED_SHULKER_BOXES_TEXTURES = Stream.of("white", "orange", "magenta", "light_blue", "yellow", "lime", "pink", "gray", "light_gray", "cyan", "purple", "blue", "brown", "green", "red", "black").map(string -> new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker_" + string))).collect(ImmutableList.toImmutableList());
-    public static final Map<SignType, SpriteIdentifier> WOOD_TYPE_TEXTURES = SignType.stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::getSignTextureId));
+    public static final Map<SignType, SpriteIdentifier> WOOD_TYPE_TEXTURES = SignType.stream().collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
     public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map(dyeColor -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, new Identifier("entity/bed/" + dyeColor.getName()))).toArray(SpriteIdentifier[]::new);
     public static final SpriteIdentifier TRAPPED = TexturedRenderLayers.getChestTextureId("trapped");
     public static final SpriteIdentifier TRAPPED_LEFT = TexturedRenderLayers.getChestTextureId("trapped_left");
@@ -122,7 +122,7 @@ public class TexturedRenderLayers {
         adder.accept(ENDER);
     }
 
-    public static SpriteIdentifier getSignTextureId(SignType type) {
+    public static SpriteIdentifier createSignTextureId(SignType type) {
         return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + type.getName()));
     }
 

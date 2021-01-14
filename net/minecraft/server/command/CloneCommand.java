@@ -21,7 +21,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.BlockPredicateArgumentType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerTickScheduler;
@@ -72,8 +72,8 @@ public class CloneCommand {
                     if (!filter.test(cachedBlockPosition)) continue;
                     BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos3);
                     if (blockEntity != null) {
-                        CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
-                        list2.add(new BlockInfo(blockPos4, blockState, compoundTag));
+                        NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+                        list2.add(new BlockInfo(blockPos4, blockState, nbtCompound));
                         deque.addLast(blockPos3);
                         continue;
                     }
@@ -138,9 +138,9 @@ public class CloneCommand {
         public final BlockPos pos;
         public final BlockState state;
         @Nullable
-        public final CompoundTag blockEntityTag;
+        public final NbtCompound blockEntityTag;
 
-        public BlockInfo(BlockPos pos, BlockState state, @Nullable CompoundTag blockEntityTag) {
+        public BlockInfo(BlockPos pos, BlockState state, @Nullable NbtCompound blockEntityTag) {
             this.pos = pos;
             this.state = state;
             this.blockEntityTag = blockEntityTag;

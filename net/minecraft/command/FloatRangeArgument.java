@@ -93,8 +93,8 @@ public class FloatRangeArgument {
     }
 
     @Nullable
-    private static Float mapFloat(@Nullable Float float_, Function<Float, Float> function) {
-        return float_ == null ? null : function.apply(float_);
+    private static Float mapFloat(@Nullable Float value, Function<Float, Float> function) {
+        return value == null ? null : function.apply(value);
     }
 }
 

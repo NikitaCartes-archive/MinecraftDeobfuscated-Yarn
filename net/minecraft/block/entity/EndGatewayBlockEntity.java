@@ -15,7 +15,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -54,20 +54,20 @@ implements Tickable {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
-        tag.putLong("Age", this.age);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.putLong("Age", this.age);
         if (this.exitPortalPos != null) {
-            tag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
+            nbt.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
         }
         if (this.exactTeleport) {
-            tag.putBoolean("ExactTeleport", this.exactTeleport);
+            nbt.putBoolean("ExactTeleport", this.exactTeleport);
         }
-        return tag;
+        return nbt;
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         super.fromTag(state, tag);
         this.age = tag.getLong("Age");
         if (tag.contains("ExitPortal", 10)) {
@@ -78,7 +78,7 @@ implements Tickable {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public double getSquaredRenderDistance() {
+    public double getRenderDistance() {
         return 256.0;
     }
 
@@ -128,12 +128,12 @@ implements Tickable {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 8, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 8, this.toInitialChunkDataNbt());
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.writeNbt(new NbtCompound());
     }
 
     public void startTeleportCooldown() {
@@ -221,15 +221,15 @@ implements Tickable {
         this.markDirty();
     }
 
-    private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean bl) {
+    private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean force) {
         Vec3i blockPos = null;
         for (int i = -searchRadius; i <= searchRadius; ++i) {
             block1: for (int j = -searchRadius; j <= searchRadius; ++j) {
-                if (i == 0 && j == 0 && !bl) continue;
+                if (i == 0 && j == 0 && !force) continue;
                 for (int k = 255; k > (blockPos == null ? 0 : blockPos.getY()); --k) {
                     BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
                     BlockState blockState = world.getBlockState(blockPos2);
-                    if (!blockState.isFullCube(world, blockPos2) || !bl && blockState.isOf(Blocks.BEDROCK)) continue;
+                    if (!blockState.isFullCube(world, blockPos2) || !force && blockState.isOf(Blocks.BEDROCK)) continue;
                     blockPos = blockPos2;
                     continue block1;
                 }

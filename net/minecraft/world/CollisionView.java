@@ -26,7 +26,7 @@ extends BlockView {
     public WorldBorder getWorldBorder();
 
     @Nullable
-    public BlockView getExistingChunk(int var1, int var2);
+    public BlockView getChunkAsView(int var1, int var2);
 
     default public boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
         return true;

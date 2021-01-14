@@ -20,7 +20,7 @@ extends EntityModel<T> {
     private final ModelPart rightFoot;
     private final ModelPart leftBackLeg;
     private final ModelPart rightBackLeg;
-    private final ModelPart torso;
+    private final ModelPart body;
     private final ModelPart leftFrontLeg;
     private final ModelPart rightFrontLeg;
     private final ModelPart head;
@@ -50,11 +50,11 @@ extends EntityModel<T> {
         this.rightBackLeg.setPivot(-3.0f, 17.5f, 3.7f);
         this.rightBackLeg.mirror = true;
         this.setAngle(this.rightBackLeg, -0.34906584f, 0.0f, 0.0f);
-        this.torso = new ModelPart(this, 0, 0);
-        this.torso.addCuboid(-3.0f, -2.0f, -10.0f, 6.0f, 5.0f, 10.0f);
-        this.torso.setPivot(0.0f, 19.0f, 8.0f);
-        this.torso.mirror = true;
-        this.setAngle(this.torso, -0.34906584f, 0.0f, 0.0f);
+        this.body = new ModelPart(this, 0, 0);
+        this.body.addCuboid(-3.0f, -2.0f, -10.0f, 6.0f, 5.0f, 10.0f);
+        this.body.setPivot(0.0f, 19.0f, 8.0f);
+        this.body.mirror = true;
+        this.setAngle(this.body, -0.34906584f, 0.0f, 0.0f);
         this.leftFrontLeg = new ModelPart(this, 8, 15);
         this.leftFrontLeg.addCuboid(-1.0f, 0.0f, -1.0f, 2.0f, 7.0f, 2.0f);
         this.leftFrontLeg.setPivot(3.0f, 17.0f, -1.0f);
@@ -110,13 +110,13 @@ extends EntityModel<T> {
             matrices.push();
             matrices.scale(0.4f, 0.4f, 0.4f);
             matrices.translate(0.0, 2.25, 0.0);
-            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.torso, this.leftFrontLeg, this.rightFrontLeg, this.tail).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.body, this.leftFrontLeg, this.rightFrontLeg, this.tail).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         } else {
             matrices.push();
             matrices.scale(0.6f, 0.6f, 0.6f);
             matrices.translate(0.0, 1.0, 0.0);
-            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.torso, this.leftFrontLeg, this.rightFrontLeg, this.head, this.rightEar, this.leftEar, this.tail, this.nose, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
+            ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.body, this.leftFrontLeg, this.rightFrontLeg, this.head, this.rightEar, this.leftEar, this.tail, this.nose, new ModelPart[0]).forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
             matrices.pop();
         }
     }

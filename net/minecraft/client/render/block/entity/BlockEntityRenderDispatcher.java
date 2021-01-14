@@ -97,7 +97,7 @@ public class BlockEntityRenderDispatcher {
     }
 
     public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
-        if (!Vec3d.ofCenter(blockEntity.getPos()).isInRange(this.camera.getPos(), blockEntity.getSquaredRenderDistance())) {
+        if (!Vec3d.ofCenter(blockEntity.getPos()).isInRange(this.camera.getPos(), blockEntity.getRenderDistance())) {
             return;
         }
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);

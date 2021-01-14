@@ -61,26 +61,26 @@ extends FacingBlock {
         return (VoxelShape[])Arrays.stream(Direction.values()).map(direction -> PistonHeadBlock.getHeadShape(direction, bl)).toArray(VoxelShape[]::new);
     }
 
-    private static VoxelShape getHeadShape(Direction direction, boolean bl) {
+    private static VoxelShape getHeadShape(Direction direction, boolean shortHead) {
         switch (direction) {
             default: {
-                return VoxelShapes.union(DOWN_HEAD_SHAPE, bl ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE);
+                return VoxelShapes.union(DOWN_HEAD_SHAPE, shortHead ? SHORT_DOWN_ARM_SHAPE : DOWN_ARM_SHAPE);
             }
             case UP: {
-                return VoxelShapes.union(UP_HEAD_SHAPE, bl ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE);
+                return VoxelShapes.union(UP_HEAD_SHAPE, shortHead ? SHORT_UP_ARM_SHAPE : UP_ARM_SHAPE);
             }
             case NORTH: {
-                return VoxelShapes.union(NORTH_HEAD_SHAPE, bl ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE);
+                return VoxelShapes.union(NORTH_HEAD_SHAPE, shortHead ? SHORT_NORTH_ARM_SHAPE : NORTH_ARM_SHAPE);
             }
             case SOUTH: {
-                return VoxelShapes.union(SOUTH_HEAD_SHAPE, bl ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE);
+                return VoxelShapes.union(SOUTH_HEAD_SHAPE, shortHead ? SHORT_SOUTH_ARM_SHAPE : SOUTH_ARM_SHAPE);
             }
             case WEST: {
-                return VoxelShapes.union(WEST_HEAD_SHAPE, bl ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE);
+                return VoxelShapes.union(WEST_HEAD_SHAPE, shortHead ? SHORT_WEST_ARM_SHAPE : WEST_ARM_SHAPE);
             }
             case EAST: 
         }
-        return VoxelShapes.union(EAST_HEAD_SHAPE, bl ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE);
+        return VoxelShapes.union(EAST_HEAD_SHAPE, shortHead ? SHORT_EAST_ARM_SHAPE : EAST_ARM_SHAPE);
     }
 
     public PistonHeadBlock(AbstractBlock.Settings settings) {
@@ -125,11 +125,11 @@ extends FacingBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

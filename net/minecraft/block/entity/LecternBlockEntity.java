@@ -14,7 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.LecternScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.PropertyDelegate;
@@ -207,21 +207,21 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         super.fromTag(state, tag);
-        this.book = tag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null) : ItemStack.EMPTY;
+        this.book = tag.contains("Book", 10) ? this.resolveBook(ItemStack.fromNbt(tag.getCompound("Book")), null) : ItemStack.EMPTY;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
         this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         if (!this.getBook().isEmpty()) {
-            tag.put("Book", this.getBook().toTag(new CompoundTag()));
-            tag.putInt("Page", this.currentPage);
+            nbt.put("Book", this.getBook().writeNbt(new NbtCompound()));
+            nbt.putInt("Page", this.currentPage);
         }
-        return tag;
+        return nbt;
     }
 
     @Override

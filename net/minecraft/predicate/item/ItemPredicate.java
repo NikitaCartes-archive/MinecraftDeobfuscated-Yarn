@@ -18,7 +18,7 @@ import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.predicate.NbtPredicate;
@@ -91,14 +91,14 @@ public class ItemPredicate {
             return false;
         }
         if (this.enchantments.length > 0) {
-            map = EnchantmentHelper.fromTag(stack.getEnchantments());
+            map = EnchantmentHelper.fromNbt(stack.getEnchantments());
             for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
                 if (enchantmentPredicate.test(map)) continue;
                 return false;
             }
         }
         if (this.storedEnchantments.length > 0) {
-            map = EnchantmentHelper.fromTag(EnchantedBookItem.getEnchantmentTag(stack));
+            map = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(stack));
             for (EnchantmentPredicate enchantmentPredicate : this.storedEnchantments) {
                 if (enchantmentPredicate.test(map)) continue;
                 return false;
@@ -219,7 +219,7 @@ public class ItemPredicate {
             return this;
         }
 
-        public Builder nbt(CompoundTag nbt) {
+        public Builder nbt(NbtCompound nbt) {
             this.nbt = new NbtPredicate(nbt);
             return this;
         }

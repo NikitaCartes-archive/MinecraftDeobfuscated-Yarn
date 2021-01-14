@@ -38,7 +38,7 @@ import org.jetbrains.annotations.Unmodifiable;
 @Unmodifiable
 public class BlockPos
 extends Vec3i {
-    public static final Codec<BlockPos> CODEC = Codec.INT_STREAM.comapFlatMap(stream -> Util.toIntArray(stream, 3).map(values -> new BlockPos(values[0], values[1], values[2])), pos -> IntStream.of(pos.getX(), pos.getY(), pos.getZ())).stable();
+    public static final Codec<BlockPos> CODEC = Codec.INT_STREAM.comapFlatMap(stream -> Util.toArray(stream, 3).map(values -> new BlockPos(values[0], values[1], values[2])), pos -> IntStream.of(pos.getX(), pos.getY(), pos.getZ())).stable();
     private static final Logger LOGGER = LogManager.getLogger();
     /**
      * The block position which x, y, and z values are all zero.
@@ -303,12 +303,12 @@ extends Vec3i {
      * negative z offset.
      * 
      * @param center the center of iteration
-     * @param xRange the maximum x difference from the center
-     * @param yRange the maximum y difference from the center
-     * @param zRange the maximum z difference from the center
+     * @param rangeX the maximum x difference from the center
+     * @param rangeY the maximum y difference from the center
+     * @param rangeZ the maximum z difference from the center
      */
-    public static Iterable<BlockPos> iterateOutwards(BlockPos center, final int xRange, final int yRange, final int zRange) {
-        final int i = xRange + yRange + zRange;
+    public static Iterable<BlockPos> iterateOutwards(BlockPos center, final int rangeX, final int rangeY, final int rangeZ) {
+        final int i = rangeX + rangeY + rangeZ;
         final int j = center.getX();
         final int k = center.getY();
         final int l = center.getZ();
@@ -337,16 +337,16 @@ extends Vec3i {
                             if (this.manhattanDistance > i) {
                                 return (BlockPos)this.endOfData();
                             }
-                            this.limitX = Math.min(xRange, this.manhattanDistance);
+                            this.limitX = Math.min(rangeX, this.manhattanDistance);
                             this.dx = -this.limitX;
                         }
-                        this.limitY = Math.min(yRange, this.manhattanDistance - Math.abs(this.dx));
+                        this.limitY = Math.min(rangeY, this.manhattanDistance - Math.abs(this.dx));
                         this.dy = -this.limitY;
                     }
                     int i2 = this.dx;
                     int j2 = this.dy;
                     int k2 = this.manhattanDistance - Math.abs(i2) - Math.abs(j2);
-                    if (k2 <= zRange) {
+                    if (k2 <= rangeZ) {
                         this.field_23379 = k2 != 0;
                         blockPos = this.pos.set(j + i2, k + j2, l + k2);
                     }

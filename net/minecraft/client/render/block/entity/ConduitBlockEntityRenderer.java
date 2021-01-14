@@ -16,10 +16,10 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class ConduitBlockEntityRenderer
@@ -54,7 +54,7 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
             VertexConsumer vertexConsumer = BASE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
             matrixStack.push();
             matrixStack.translate(0.5, 0.5, 0.5);
-            matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
             this.field_20825.render(matrixStack, vertexConsumer, i, j);
             matrixStack.pop();
             return;
@@ -64,18 +64,18 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         k = k * k + k;
         matrixStack.push();
         matrixStack.translate(0.5, 0.3f + k * 0.2f, 0.5);
-        Vector3f vector3f = new Vector3f(0.5f, 1.0f, 0.5f);
-        vector3f.normalize();
-        matrixStack.multiply(new Quaternion(vector3f, h, true));
+        Vec3f vec3f = new Vec3f(0.5f, 1.0f, 0.5f);
+        vec3f.normalize();
+        matrixStack.multiply(new Quaternion(vec3f, h, true));
         this.field_20826.render(matrixStack, CAGE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
         matrixStack.pop();
         int l = conduitBlockEntity.ticks / 66 % 3;
         matrixStack.push();
         matrixStack.translate(0.5, 0.5, 0.5);
         if (l == 1) {
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f));
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f));
         } else if (l == 2) {
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
+            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
         }
         VertexConsumer vertexConsumer2 = (l == 1 ? WIND_VERTICAL_TEXTURE : WIND_TEXTURE).getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull);
         this.field_20824.render(matrixStack, vertexConsumer2, i, j);
@@ -83,8 +83,8 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         matrixStack.push();
         matrixStack.translate(0.5, 0.5, 0.5);
         matrixStack.scale(0.875f, 0.875f, 0.875f);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0f));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         this.field_20824.render(matrixStack, vertexConsumer2, i, j);
         matrixStack.pop();
         Camera camera = this.dispatcher.camera;
@@ -92,9 +92,9 @@ extends BlockEntityRenderer<ConduitBlockEntity> {
         matrixStack.translate(0.5, 0.3f + k * 0.2f, 0.5);
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         float m = -camera.getYaw();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(m));
-        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
-        matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(m));
+        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
         float n = 1.3333334f;
         matrixStack.scale(1.3333334f, 1.3333334f, 1.3333334f);
         this.field_20823.render(matrixStack, (conduitBlockEntity.isEyeOpen() ? OPEN_EYE_TEXTURE : CLOSED_EYE_TEXTURE).getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);

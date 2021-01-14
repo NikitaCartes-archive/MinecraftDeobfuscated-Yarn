@@ -18,7 +18,7 @@ import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.LanServerQueryManager;
 import net.minecraft.client.network.MultiplayerServerListPinger;
 import net.minecraft.client.network.ServerInfo;
-import net.minecraft.client.options.ServerList;
+import net.minecraft.client.option.ServerList;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -238,8 +238,8 @@ extends Screen {
         return this.serverListPinger;
     }
 
-    public void setTooltip(List<Text> list) {
-        this.tooltipText = list;
+    public void setTooltip(List<Text> tooltipText) {
+        this.tooltipText = tooltipText;
     }
 
     public ServerList getServerList() {

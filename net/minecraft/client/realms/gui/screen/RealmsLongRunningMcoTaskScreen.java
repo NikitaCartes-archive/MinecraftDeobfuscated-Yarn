@@ -81,7 +81,7 @@ implements Errable {
         RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, RealmsLongRunningMcoTaskScreen.row(3), 0xFFFFFF);
         Text text = this.errorMessage;
         if (text == null) {
-            RealmsLongRunningMcoTaskScreen.drawCenteredString(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
+            RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, symbols[this.animTicks % symbols.length], this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0x808080);
         } else {
             RealmsLongRunningMcoTaskScreen.drawCenteredText(matrices, this.textRenderer, text, this.width / 2, RealmsLongRunningMcoTaskScreen.row(8), 0xFF0000);
         }
@@ -89,9 +89,9 @@ implements Errable {
     }
 
     @Override
-    public void error(Text text) {
-        this.errorMessage = text;
-        Realms.narrateNow(text.getString());
+    public void error(Text errorMessage) {
+        this.errorMessage = errorMessage;
+        Realms.narrateNow(errorMessage.getString());
         this.onError();
         this.addButton(new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, buttonWidget -> this.cancelOrBackButtonClicked()));
     }
@@ -102,8 +102,8 @@ implements Errable {
         this.buttons.clear();
     }
 
-    public void setTitle(Text text) {
-        this.title = text;
+    public void setTitle(Text title) {
+        this.title = title;
     }
 
     public boolean aborted() {

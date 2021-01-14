@@ -28,8 +28,8 @@ public class TeleportSpectatorMenu
 implements SpectatorMenuCommandGroup,
 SpectatorMenuCommand {
     private static final Ordering<PlayerListEntry> ORDERING = Ordering.from((playerListEntry, playerListEntry2) -> ComparisonChain.start().compare(playerListEntry.getProfile().getId(), playerListEntry2.getProfile().getId()).result());
-    private static final Text field_26616 = new TranslatableText("spectatorMenu.teleport");
-    private static final Text field_26617 = new TranslatableText("spectatorMenu.teleport.prompt");
+    private static final Text TELEPORT_TEXT = new TranslatableText("spectatorMenu.teleport");
+    private static final Text PROMPT_TEXT = new TranslatableText("spectatorMenu.teleport.prompt");
     private final List<SpectatorMenuCommand> elements = Lists.newArrayList();
 
     public TeleportSpectatorMenu() {
@@ -50,7 +50,7 @@ SpectatorMenuCommand {
 
     @Override
     public Text getPrompt() {
-        return field_26617;
+        return PROMPT_TEXT;
     }
 
     @Override
@@ -60,13 +60,13 @@ SpectatorMenuCommand {
 
     @Override
     public Text getName() {
-        return field_26616;
+        return TELEPORT_TEXT;
     }
 
     @Override
-    public void renderIcon(MatrixStack matrixStack, float f, int i) {
+    public void renderIcon(MatrixStack matrices, float f, int i) {
         MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
-        DrawableHelper.drawTexture(matrixStack, 0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
+        DrawableHelper.drawTexture(matrices, 0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
     }
 
     @Override

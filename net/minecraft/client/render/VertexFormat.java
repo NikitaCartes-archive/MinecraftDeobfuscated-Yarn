@@ -23,7 +23,7 @@ public class VertexFormat {
         int i = 0;
         for (VertexFormatElement vertexFormatElement : immutableList) {
             this.offsets.add(i);
-            i += vertexFormatElement.getSize();
+            i += vertexFormatElement.getByteLength();
         }
         this.size = i;
     }

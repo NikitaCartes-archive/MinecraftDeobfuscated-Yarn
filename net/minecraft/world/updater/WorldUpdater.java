@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -113,25 +113,25 @@ public class WorldUpdater {
                     ChunkPos chunkPos = (ChunkPos)listIterator.next();
                     boolean bl2 = false;
                     try {
-                        CompoundTag compoundTag = versionedChunkStorage.getNbt(chunkPos);
-                        if (compoundTag != null) {
+                        NbtCompound nbtCompound = versionedChunkStorage.getNbt(chunkPos);
+                        if (nbtCompound != null) {
                             boolean bl3;
-                            int i = VersionedChunkStorage.getDataVersion(compoundTag);
-                            CompoundTag compoundTag2 = versionedChunkStorage.updateChunkTag(registryKey, () -> this.persistentStateManager, compoundTag);
-                            CompoundTag compoundTag3 = compoundTag2.getCompound("Level");
-                            ChunkPos chunkPos2 = new ChunkPos(compoundTag3.getInt("xPos"), compoundTag3.getInt("zPos"));
+                            int i = VersionedChunkStorage.getDataVersion(nbtCompound);
+                            NbtCompound nbtCompound2 = versionedChunkStorage.updateChunkNbt(registryKey, () -> this.persistentStateManager, nbtCompound);
+                            NbtCompound nbtCompound3 = nbtCompound2.getCompound("Level");
+                            ChunkPos chunkPos2 = new ChunkPos(nbtCompound3.getInt("xPos"), nbtCompound3.getInt("zPos"));
                             if (!chunkPos2.equals(chunkPos)) {
                                 LOGGER.warn("Chunk {} has invalid position {}", (Object)chunkPos, (Object)chunkPos2);
                             }
                             boolean bl4 = bl3 = i < SharedConstants.getGameVersion().getWorldVersion();
                             if (this.eraseCache) {
-                                bl3 = bl3 || compoundTag3.contains("Heightmaps");
-                                compoundTag3.remove("Heightmaps");
-                                bl3 = bl3 || compoundTag3.contains("isLightOn");
-                                compoundTag3.remove("isLightOn");
+                                bl3 = bl3 || nbtCompound3.contains("Heightmaps");
+                                nbtCompound3.remove("Heightmaps");
+                                bl3 = bl3 || nbtCompound3.contains("isLightOn");
+                                nbtCompound3.remove("isLightOn");
                             }
                             if (bl3) {
-                                versionedChunkStorage.setTagAt(chunkPos, compoundTag2);
+                                versionedChunkStorage.setNbt(chunkPos, nbtCompound2);
                                 bl2 = true;
                             }
                         }
@@ -173,8 +173,8 @@ public class WorldUpdater {
         this.done = true;
     }
 
-    private List<ChunkPos> getChunkPositions(RegistryKey<World> registryKey) {
-        File file2 = this.session.getWorldDirectory(registryKey);
+    private List<ChunkPos> getChunkPositions(RegistryKey<World> world) {
+        File file2 = this.session.getWorldDirectory(world);
         File file22 = new File(file2, "region");
         File[] files = file22.listFiles((file, string) -> string.endsWith(".mca"));
         if (files == null) {
@@ -211,8 +211,8 @@ public class WorldUpdater {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float getProgress(RegistryKey<World> registryKey) {
-        return this.dimensionProgress.getFloat(registryKey);
+    public float getProgress(RegistryKey<World> world) {
+        return this.dimensionProgress.getFloat(world);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -10,7 +10,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.LocalDifficulty;
@@ -30,7 +30,7 @@ extends PathAwareEntity {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         PassiveData passiveData;
         if (entityData == null) {
             entityData = new PassiveData(true);
@@ -39,7 +39,7 @@ extends PathAwareEntity {
             this.setBreedingAge(-24000);
         }
         passiveData.countSpawned();
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Nullable
@@ -95,17 +95,17 @@ extends PathAwareEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putInt("Age", this.getBreedingAge());
-        tag.putInt("ForcedAge", this.forcedAge);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Age", this.getBreedingAge());
+        nbt.putInt("ForcedAge", this.forcedAge);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        this.setBreedingAge(tag.getInt("Age"));
-        this.forcedAge = tag.getInt("ForcedAge");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setBreedingAge(nbt.getInt("Age"));
+        this.forcedAge = nbt.getInt("ForcedAge");
     }
 
     @Override

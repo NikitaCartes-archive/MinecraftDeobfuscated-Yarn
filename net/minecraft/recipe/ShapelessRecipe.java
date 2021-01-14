@@ -14,7 +14,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.ShapedRecipe;
 import net.minecraft.util.Identifier;
@@ -58,21 +58,21 @@ implements CraftingRecipe {
     }
 
     @Override
-    public DefaultedList<Ingredient> getPreviewInputs() {
+    public DefaultedList<Ingredient> getIngredients() {
         return this.input;
     }
 
     @Override
     public boolean matches(CraftingInventory craftingInventory, World world) {
-        RecipeFinder recipeFinder = new RecipeFinder();
+        RecipeMatcher recipeMatcher = new RecipeMatcher();
         int i = 0;
         for (int j = 0; j < craftingInventory.size(); ++j) {
             ItemStack itemStack = craftingInventory.getStack(j);
             if (itemStack.isEmpty()) continue;
             ++i;
-            recipeFinder.method_20478(itemStack, 1);
+            recipeMatcher.method_20478(itemStack, 1);
         }
-        return i == this.input.size() && recipeFinder.findRecipe(this, null);
+        return i == this.input.size() && recipeMatcher.match(this, null);
     }
 
     @Override

@@ -8,7 +8,6 @@ import java.util.Optional;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
-import net.minecraft.class_5459;
 import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.Properties;
@@ -17,6 +16,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.poi.PointOfInterest;
 import net.minecraft.world.poi.PointOfInterestStorage;
@@ -29,7 +29,7 @@ public class PortalForcer {
         this.world = world;
     }
 
-    public Optional<class_5459.class_5460> method_30483(BlockPos blockPos, boolean bl) {
+    public Optional<PortalUtil.Rectangle> method_30483(BlockPos blockPos, boolean bl) {
         PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
         int i = bl ? 16 : 128;
         pointOfInterestStorage.preloadChunks(this.world, blockPos, i);
@@ -38,11 +38,11 @@ public class PortalForcer {
             BlockPos blockPos2 = pointOfInterest.getPos();
             this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPos2), 3, blockPos2);
             BlockState blockState = this.world.getBlockState(blockPos2);
-            return class_5459.method_30574(blockPos2, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
+            return PortalUtil.getLargestRectangle(blockPos2, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
         });
     }
 
-    public Optional<class_5459.class_5460> method_30482(BlockPos blockPos, Direction.Axis axis) {
+    public Optional<PortalUtil.Rectangle> method_30482(BlockPos blockPos, Direction.Axis axis) {
         int k;
         int j;
         Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
@@ -113,7 +113,7 @@ public class PortalForcer {
                 this.world.setBlockState(mutable, blockState2, 18);
             }
         }
-        return Optional.of(new class_5459.class_5460(blockPos2.toImmutable(), 2, 3));
+        return Optional.of(new PortalUtil.Rectangle(blockPos2.toImmutable(), 2, 3));
     }
 
     private boolean method_30481(BlockPos blockPos, BlockPos.Mutable mutable, Direction direction, int i) {

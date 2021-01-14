@@ -166,15 +166,15 @@ public class AdvancementPositioner {
         return last;
     }
 
-    private void pushDown(AdvancementPositioner advancementPositioner, float extraRowDistance) {
-        float f = advancementPositioner.childrenSize - this.childrenSize;
+    private void pushDown(AdvancementPositioner positioner, float extraRowDistance) {
+        float f = positioner.childrenSize - this.childrenSize;
         if (f != 0.0f) {
-            advancementPositioner.field_1266 -= extraRowDistance / f;
+            positioner.field_1266 -= extraRowDistance / f;
             this.field_1266 += extraRowDistance / f;
         }
-        advancementPositioner.field_1265 += extraRowDistance;
-        advancementPositioner.row += extraRowDistance;
-        advancementPositioner.relativeRowInSiblings += extraRowDistance;
+        positioner.field_1265 += extraRowDistance;
+        positioner.row += extraRowDistance;
+        positioner.relativeRowInSiblings += extraRowDistance;
     }
 
     private AdvancementPositioner getLast(AdvancementPositioner advancementPositioner, AdvancementPositioner advancementPositioner2) {
@@ -186,7 +186,7 @@ public class AdvancementPositioner {
 
     private void apply() {
         if (this.advancement.getDisplay() != null) {
-            this.advancement.getDisplay().setPosition(this.depth, this.row);
+            this.advancement.getDisplay().setPos(this.depth, this.row);
         }
         if (!this.children.isEmpty()) {
             for (AdvancementPositioner advancementPositioner : this.children) {

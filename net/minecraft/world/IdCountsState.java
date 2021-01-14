@@ -5,7 +5,7 @@ package net.minecraft.world;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 
 public class IdCountsState
@@ -18,7 +18,7 @@ extends PersistentState {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void fromTag(NbtCompound tag) {
         this.idCounts.clear();
         for (String string : tag.getKeys()) {
             if (!tag.contains(string, 99)) continue;
@@ -27,11 +27,11 @@ extends PersistentState {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound nbt) {
         for (Object2IntMap.Entry entry : this.idCounts.object2IntEntrySet()) {
-            tag.putInt((String)entry.getKey(), entry.getIntValue());
+            nbt.putInt((String)entry.getKey(), entry.getIntValue());
         }
-        return tag;
+        return nbt;
     }
 
     public int getNextMapId() {

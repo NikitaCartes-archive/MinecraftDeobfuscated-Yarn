@@ -508,8 +508,8 @@ implements DedicatedServer {
         return this.rconCommandOutput.asString();
     }
 
-    public void setUseWhitelist(boolean bl) {
-        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.whiteList.set(this.getRegistryManager(), bl));
+    public void setUseWhitelist(boolean useWhitelist) {
+        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.whiteList.set(this.getRegistryManager(), useWhitelist));
     }
 
     @Override

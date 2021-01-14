@@ -48,7 +48,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
@@ -165,11 +165,11 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return f * f + g * g;
     }
 
-    private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useCameraPosition) {
+    private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useWatchedPosition) {
         int j;
         int i;
-        if (useCameraPosition) {
-            ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+        if (useWatchedPosition) {
+            ChunkSectionPos chunkSectionPos = player.getWatchedSection();
             i = chunkSectionPos.getSectionX();
             j = chunkSectionPos.getSectionZ();
         } else {
@@ -441,12 +441,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 this.world.getProfiler().visit("chunkLoad");
-                CompoundTag compoundTag = this.getUpdatedChunkTag(pos);
-                if (compoundTag != null) {
+                NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
+                if (nbtCompound != null) {
                     boolean bl;
-                    boolean bl2 = bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
+                    boolean bl2 = bl = nbtCompound.contains("Level", 10) && nbtCompound.getCompound("Level").contains("Status", 8);
                     if (bl) {
-                        ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, compoundTag);
+                        ProtoChunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, nbtCompound);
                         chunk.setLastSaveTime(this.world.getTime());
                         this.method_27053(pos, chunk.getStatus().getChunkType());
                         return Either.left(chunk);
@@ -597,8 +597,8 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 }
             }
             this.world.getProfiler().visit("chunkSave");
-            CompoundTag compoundTag = ChunkSerializer.serialize(this.world, chunk);
-            this.setTagAt(chunkPos, compoundTag);
+            NbtCompound nbtCompound = ChunkSerializer.serialize(this.world, chunk);
+            this.setNbt(chunkPos, nbtCompound);
             this.method_27053(chunkPos, chunkStatus.getChunkType());
             return true;
         } catch (Exception exception) {
@@ -608,14 +608,14 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     private boolean method_27055(ChunkPos chunkPos) {
-        CompoundTag compoundTag;
+        NbtCompound nbtCompound;
         byte b = this.chunkToType.get(chunkPos.toLong());
         if (b != 0) {
             return b == 1;
         }
         try {
-            compoundTag = this.getUpdatedChunkTag(chunkPos);
-            if (compoundTag == null) {
+            nbtCompound = this.getUpdatedChunkNbt(chunkPos);
+            if (nbtCompound == null) {
                 this.method_27054(chunkPos);
                 return false;
             }
@@ -624,7 +624,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             this.method_27054(chunkPos);
             return false;
         }
-        ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(compoundTag);
+        ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(nbtCompound);
         return this.method_27053(chunkPos, chunkType) == 1;
     }
 
@@ -702,12 +702,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     @Nullable
-    private CompoundTag getUpdatedChunkTag(ChunkPos pos) throws IOException {
-        CompoundTag compoundTag = this.getNbt(pos);
-        if (compoundTag == null) {
+    private NbtCompound getUpdatedChunkNbt(ChunkPos pos) throws IOException {
+        NbtCompound nbtCompound = this.getNbt(pos);
+        if (nbtCompound == null) {
             return null;
         }
-        return this.updateChunkTag(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
+        return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound);
     }
 
     boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {
@@ -734,7 +734,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.ticketManager.handleChunkEnter(ChunkSectionPos.from(player), player);
             }
         } else {
-            ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+            ChunkSectionPos chunkSectionPos = player.getWatchedSection();
             this.playerChunkWatchingManager.remove(chunkSectionPos.toChunkPos().toLong(), player);
             if (!bl2) {
                 this.ticketManager.handleChunkLeave(chunkSectionPos, player);
@@ -750,12 +750,18 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     private ChunkSectionPos method_20726(ServerPlayerEntity serverPlayerEntity) {
         ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(serverPlayerEntity);
-        serverPlayerEntity.setCameraPosition(chunkSectionPos);
+        serverPlayerEntity.setWatchedSection(chunkSectionPos);
         serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ()));
         return chunkSectionPos;
     }
 
-    public void updateCameraPosition(ServerPlayerEntity player) {
+    /**
+     * Updates the chunk section position of the {@code player}. This updates the player
+     * position for both entity tracking and chunk loading (watching) logic.
+     * 
+     * @see ServerChunkManager#updatePosition(ServerPlayerEntity)
+     */
+    public void updatePosition(ServerPlayerEntity player) {
         boolean bl3;
         for (EntityTracker entityTracker : this.entityTrackers.values()) {
             if (entityTracker.entity == player) {
@@ -766,7 +772,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
         int i = MathHelper.floor(player.getX()) >> 4;
         int j = MathHelper.floor(player.getZ()) >> 4;
-        ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+        ChunkSectionPos chunkSectionPos = player.getWatchedSection();
         ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(player);
         long l = chunkSectionPos.toChunkPos().toLong();
         long m = chunkSectionPos2.toChunkPos().toLong();
@@ -879,7 +885,15 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         }
     }
 
-    protected void tickPlayerMovement() {
+    /**
+     * Ticks and updates the tracked status of each tracker.
+     * 
+     * <p>This first checks if entities have changed chunk sections, and updates
+     * tracking status of those entities to all players. It then checks if any player
+     * has changed chunk sections, and updates all entities tracking status to those
+     * players. This ensures all possible updates are accounted for.
+     */
+    protected void tickEntityMovement() {
         ArrayList<ServerPlayerEntity> list = Lists.newArrayList();
         List<ServerPlayerEntity> list2 = this.world.getPlayers();
         for (EntityTracker entityTracker : this.entityTrackers.values()) {

@@ -13,7 +13,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBook;
 
 @Environment(value=EnvType.CLIENT)
@@ -26,10 +26,10 @@ public class RecipeResultCollection {
 
     public RecipeResultCollection(List<Recipe<?>> list) {
         this.recipes = ImmutableList.copyOf(list);
-        this.singleOutput = list.size() <= 1 ? true : RecipeResultCollection.method_30295(list);
+        this.singleOutput = list.size() <= 1 ? true : RecipeResultCollection.shouldHaveSingleOutput(list);
     }
 
-    private static boolean method_30295(List<Recipe<?>> list) {
+    private static boolean shouldHaveSingleOutput(List<Recipe<?>> list) {
         int i = list.size();
         ItemStack itemStack = list.get(0).getOutput();
         for (int j = 1; j < i; ++j) {
@@ -51,7 +51,7 @@ public class RecipeResultCollection {
         }
     }
 
-    public void computeCraftables(RecipeFinder recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
+    public void computeCraftables(RecipeMatcher recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
         for (Recipe<?> recipe : this.recipes) {
             boolean bl;
             boolean bl2 = bl = recipe.fits(gridWidth, gridHeight) && recipeBook.contains(recipe);
@@ -60,7 +60,7 @@ public class RecipeResultCollection {
             } else {
                 this.fittingRecipes.remove(recipe);
             }
-            if (bl && recipeFinder.findRecipe(recipe, null)) {
+            if (bl && recipeFinder.match(recipe, null)) {
                 this.craftableRecipes.add(recipe);
                 continue;
             }

@@ -41,7 +41,7 @@ extends Sensor<LivingEntity> {
     @Override
     protected void sense(ServerWorld world, LivingEntity entity) {
         Brain<?> brain = entity.getBrain();
-        brain.remember(MemoryModuleType.NEAREST_REPELLENT, PiglinSpecificSensor.findSoulFire(world, entity));
+        brain.remember(MemoryModuleType.NEAREST_REPELLENT, PiglinSpecificSensor.findPiglinRepellent(world, entity));
         Optional<Object> optional = Optional.empty();
         Optional<Object> optional2 = Optional.empty();
         Optional<Object> optional3 = Optional.empty();
@@ -113,7 +113,7 @@ extends Sensor<LivingEntity> {
         brain.remember(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, i);
     }
 
-    private static Optional<BlockPos> findSoulFire(ServerWorld world, LivingEntity entity) {
+    private static Optional<BlockPos> findPiglinRepellent(ServerWorld world, LivingEntity entity) {
         return BlockPos.findClosest(entity.getBlockPos(), 8, 4, blockPos -> PiglinSpecificSensor.method_24648(world, blockPos));
     }
 

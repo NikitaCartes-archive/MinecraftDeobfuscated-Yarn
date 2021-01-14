@@ -11,7 +11,7 @@ import java.io.PushbackInputStream;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,8 +58,8 @@ public class PersistentStateManager {
             File file = this.getFile(id);
             if (file.exists()) {
                 PersistentState persistentState = (PersistentState)factory.get();
-                CompoundTag compoundTag = this.readTag(id, SharedConstants.getGameVersion().getWorldVersion());
-                persistentState.fromTag(compoundTag.getCompound("data"));
+                NbtCompound nbtCompound = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
+                persistentState.fromTag(nbtCompound.getCompound("data"));
                 return (T)persistentState;
             }
         } catch (Exception exception) {
@@ -75,7 +75,7 @@ public class PersistentStateManager {
     /*
      * Exception decompiling
      */
-    public CompoundTag readTag(String id, int dataVersion) throws IOException {
+    public NbtCompound readNbt(String id, int dataVersion) throws IOException {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
          * 

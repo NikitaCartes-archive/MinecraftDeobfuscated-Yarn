@@ -20,12 +20,12 @@ extends AbstractPhase {
     }
 
     @Override
-    public float modifyDamageTaken(DamageSource damageSource, float f) {
+    public float modifyDamageTaken(DamageSource damageSource, float damage) {
         if (damageSource.getSource() instanceof PersistentProjectileEntity) {
             damageSource.getSource().setOnFireFor(1);
             return 0.0f;
         }
-        return super.modifyDamageTaken(damageSource, f);
+        return super.modifyDamageTaken(damageSource, damage);
     }
 }
 

@@ -21,14 +21,14 @@ import net.minecraft.client.resource.language.TranslationStorage;
 import net.minecraft.client.resource.metadata.LanguageResourceMetadata;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Language;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(value=EnvType.CLIENT)
 public class LanguageManager
-implements SynchronousResourceReloadListener {
+implements SynchronousResourceReloader {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final LanguageDefinition field_25291 = new LanguageDefinition("en_us", "US", "English", false);
     private Map<String, LanguageDefinition> languageDefs = ImmutableMap.of("en_us", field_25291);
@@ -57,7 +57,7 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager manager) {
+    public void reload(ResourceManager manager) {
         this.languageDefs = LanguageManager.method_29393(manager.streamResourcePacks());
         LanguageDefinition languageDefinition = this.languageDefs.getOrDefault("en_us", field_25291);
         this.language = this.languageDefs.getOrDefault(this.currentLanguageCode, languageDefinition);
@@ -70,9 +70,9 @@ implements SynchronousResourceReloadListener {
         Language.setInstance(translationStorage);
     }
 
-    public void setLanguage(LanguageDefinition languageDefinition) {
-        this.currentLanguageCode = languageDefinition.getCode();
-        this.language = languageDefinition;
+    public void setLanguage(LanguageDefinition language) {
+        this.currentLanguageCode = language.getCode();
+        this.language = language;
     }
 
     public LanguageDefinition getLanguage() {

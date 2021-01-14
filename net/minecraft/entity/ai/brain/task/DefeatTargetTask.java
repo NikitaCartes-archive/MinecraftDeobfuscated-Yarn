@@ -18,10 +18,10 @@ extends Task<LivingEntity> {
     private final int duration;
     private final BiPredicate<LivingEntity, LivingEntity> field_25157;
 
-    public DefeatTargetTask(int duration, BiPredicate<LivingEntity, LivingEntity> biPredicate) {
+    public DefeatTargetTask(int duration, BiPredicate<LivingEntity, LivingEntity> predicate) {
         super(ImmutableMap.of(MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ANGRY_AT, MemoryModuleState.REGISTERED, MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.DANCING, MemoryModuleState.REGISTERED));
         this.duration = duration;
-        this.field_25157 = biPredicate;
+        this.field_25157 = predicate;
     }
 
     @Override

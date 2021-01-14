@@ -13,25 +13,25 @@ import net.minecraft.entity.Entity;
 @Environment(value=EnvType.CLIENT)
 public class LeashKnotEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
-    private final ModelPart leashKnot;
+    private final ModelPart knot;
 
     public LeashKnotEntityModel() {
         this.textureWidth = 32;
         this.textureHeight = 32;
-        this.leashKnot = new ModelPart(this, 0, 0);
-        this.leashKnot.addCuboid(-3.0f, -6.0f, -3.0f, 6.0f, 8.0f, 6.0f, 0.0f);
-        this.leashKnot.setPivot(0.0f, 0.0f, 0.0f);
+        this.knot = new ModelPart(this, 0, 0);
+        this.knot.addCuboid(-3.0f, -6.0f, -3.0f, 6.0f, 8.0f, 6.0f, 0.0f);
+        this.knot.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.leashKnot);
+        return ImmutableList.of(this.knot);
     }
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.leashKnot.yaw = headYaw * ((float)Math.PI / 180);
-        this.leashKnot.pitch = headPitch * ((float)Math.PI / 180);
+        this.knot.yaw = headYaw * ((float)Math.PI / 180);
+        this.knot.pitch = headPitch * ((float)Math.PI / 180);
     }
 }
 

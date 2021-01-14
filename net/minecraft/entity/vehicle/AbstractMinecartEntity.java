@@ -18,7 +18,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.enums.RailShape;
-import net.minecraft.class_5459;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -42,7 +41,7 @@ import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -56,6 +55,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -109,7 +109,7 @@ extends Entity {
 
     protected AbstractMinecartEntity(EntityType<?> type, World world, double x, double y, double z) {
         this(type, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = x;
         this.prevY = y;
@@ -164,8 +164,8 @@ extends Entity {
     }
 
     @Override
-    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-        return LivingEntity.method_31079(super.method_30633(axis, arg));
+    protected Vec3d method_30633(Direction.Axis axis, PortalUtil.Rectangle rectangle) {
+        return LivingEntity.method_31079(super.method_30633(axis, rectangle));
     }
 
     @Override
@@ -295,7 +295,7 @@ extends Entity {
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0f);
         }
         if (this.getY() < -64.0) {
-            this.destroy();
+            this.tickInVoid();
         }
         this.tickNetherPortal();
         if (this.world.isClient) {
@@ -307,7 +307,7 @@ extends Entity {
                 this.yaw = (float)((double)this.yaw + g / (double)this.clientInterpolationSteps);
                 this.pitch = (float)((double)this.pitch + (this.clientPitch - (double)this.pitch) / (double)this.clientInterpolationSteps);
                 --this.clientInterpolationSteps;
-                this.updatePosition(d, e, f);
+                this.setPosition(d, e, f);
                 this.setRotation(this.yaw, this.pitch);
             } else {
                 this.refreshPosition();
@@ -484,15 +484,15 @@ extends Entity {
         }
         d = o + h * s;
         f = p + i * s;
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
         t = this.hasPassengers() ? 0.75 : 1.0;
         u = this.getMaxOffRailSpeed();
         vec3d2 = this.getVelocity();
         this.move(MovementType.SELF, new Vec3d(MathHelper.clamp(t * vec3d2.x, -u, u), 0.0, MathHelper.clamp(t * vec3d2.z, -u, u)));
         if (vec3i.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i.getZ()) {
-            this.updatePosition(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
+            this.setPosition(this.getX(), this.getY() + (double)vec3i.getY(), this.getZ());
         } else if (vec3i2.getY() != 0 && MathHelper.floor(this.getX()) - pos.getX() == vec3i2.getX() && MathHelper.floor(this.getZ()) - pos.getZ() == vec3i2.getZ()) {
-            this.updatePosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
+            this.setPosition(this.getX(), this.getY() + (double)vec3i2.getY(), this.getZ());
         }
         this.applySlowdown();
         Vec3d vec3d4 = this.snapPositionToRail(this.getX(), this.getY(), this.getZ());
@@ -503,7 +503,7 @@ extends Entity {
             if (w > 0.0) {
                 this.setVelocity(vec3d5.multiply((w + v) / w, 1.0, (w + v) / w));
             }
-            this.updatePosition(this.getX(), vec3d4.y, this.getZ());
+            this.setPosition(this.getX(), vec3d4.y, this.getZ());
         }
         int x = MathHelper.floor(this.getX());
         int y = MathHelper.floor(this.getZ());
@@ -643,19 +643,19 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag tag) {
-        if (tag.getBoolean("CustomDisplayTile")) {
-            this.setCustomBlock(NbtHelper.toBlockState(tag.getCompound("DisplayState")));
-            this.setCustomBlockOffset(tag.getInt("DisplayOffset"));
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        if (nbt.getBoolean("CustomDisplayTile")) {
+            this.setCustomBlock(NbtHelper.toBlockState(nbt.getCompound("DisplayState")));
+            this.setCustomBlockOffset(nbt.getInt("DisplayOffset"));
         }
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
         if (this.hasCustomBlock()) {
-            tag.putBoolean("CustomDisplayTile", true);
-            tag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
-            tag.putInt("DisplayOffset", this.getBlockOffset());
+            nbt.putBoolean("CustomDisplayTile", true);
+            nbt.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));
+            nbt.putInt("DisplayOffset", this.getBlockOffset());
         }
     }
 
@@ -744,8 +744,8 @@ extends Entity {
         this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
     }
 
-    public void setDamageWobbleStrength(float f) {
-        this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, Float.valueOf(f));
+    public void setDamageWobbleStrength(float damageWobbleStrength) {
+        this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, Float.valueOf(damageWobbleStrength));
     }
 
     public float getDamageWobbleStrength() {

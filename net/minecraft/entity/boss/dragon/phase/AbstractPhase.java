@@ -54,13 +54,13 @@ implements Phase {
 
     @Override
     @Nullable
-    public Vec3d getTarget() {
+    public Vec3d getPathTarget() {
         return null;
     }
 
     @Override
-    public float modifyDamageTaken(DamageSource damageSource, float f) {
-        return f;
+    public float modifyDamageTaken(DamageSource damageSource, float damage) {
+        return damage;
     }
 
     @Override

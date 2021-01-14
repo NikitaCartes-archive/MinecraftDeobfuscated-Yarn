@@ -15,18 +15,18 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ShulkerEntityModel<T extends ShulkerEntity>
 extends CompositeEntityModel<T> {
-    private final ModelPart bottomShell;
-    private final ModelPart topShell = new ModelPart(64, 64, 0, 0);
+    private final ModelPart base;
+    private final ModelPart lid = new ModelPart(64, 64, 0, 0);
     private final ModelPart head;
 
     public ShulkerEntityModel() {
         super(RenderLayer::getEntityCutoutNoCullZOffset);
-        this.bottomShell = new ModelPart(64, 64, 0, 28);
+        this.base = new ModelPart(64, 64, 0, 28);
         this.head = new ModelPart(64, 64, 0, 52);
-        this.topShell.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f);
-        this.topShell.setPivot(0.0f, 24.0f, 0.0f);
-        this.bottomShell.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 8.0f, 16.0f);
-        this.bottomShell.setPivot(0.0f, 24.0f, 0.0f);
+        this.lid.addCuboid(-8.0f, -16.0f, -8.0f, 16.0f, 12.0f, 16.0f);
+        this.lid.setPivot(0.0f, 24.0f, 0.0f);
+        this.base.addCuboid(-8.0f, -8.0f, -8.0f, 16.0f, 8.0f, 16.0f);
+        this.base.setPivot(0.0f, 24.0f, 0.0f);
         this.head.addCuboid(-3.0f, 0.0f, -3.0f, 6.0f, 6.0f, 6.0f);
         this.head.setPivot(0.0f, 12.0f, 0.0f);
     }
@@ -40,23 +40,23 @@ extends CompositeEntityModel<T> {
         if (l > (float)Math.PI) {
             n = MathHelper.sin(h * 0.1f) * 0.7f;
         }
-        this.topShell.setPivot(0.0f, 16.0f + MathHelper.sin(l) * 8.0f + n, 0.0f);
-        this.topShell.yaw = ((ShulkerEntity)shulkerEntity).getOpenProgress(k) > 0.3f ? m * m * m * m * (float)Math.PI * 0.125f : 0.0f;
+        this.lid.setPivot(0.0f, 16.0f + MathHelper.sin(l) * 8.0f + n, 0.0f);
+        this.lid.yaw = ((ShulkerEntity)shulkerEntity).getOpenProgress(k) > 0.3f ? m * m * m * m * (float)Math.PI * 0.125f : 0.0f;
         this.head.pitch = j * ((float)Math.PI / 180);
         this.head.yaw = (((ShulkerEntity)shulkerEntity).headYaw - 180.0f - ((ShulkerEntity)shulkerEntity).bodyYaw) * ((float)Math.PI / 180);
     }
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.bottomShell, this.topShell);
+        return ImmutableList.of(this.base, this.lid);
     }
 
     public ModelPart getBottomShell() {
-        return this.bottomShell;
+        return this.base;
     }
 
     public ModelPart getTopShell() {
-        return this.topShell;
+        return this.lid;
     }
 
     public ModelPart getHead() {

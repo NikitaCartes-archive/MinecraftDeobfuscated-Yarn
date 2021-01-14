@@ -17,7 +17,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.scoreboard.AbstractTeam;
@@ -30,6 +30,11 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class TameableEntity
 extends AnimalEntity {
+    /**
+     * The tracked flags of tameable entities. Has the {@code 1} flag for {@linkplain
+     * #isInSittingPose() sitting pose} and the {@code 4} flag for {@linkplain
+     * #isTamed() tamed}.
+     */
     protected static final TrackedData<Byte> TAMEABLE_FLAGS = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<Optional<UUID>> OWNER_UUID = DataTracker.registerData(TameableEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
     private boolean sitting;
@@ -47,22 +52,22 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.getOwnerUuid() != null) {
-            tag.putUuid("Owner", this.getOwnerUuid());
+            nbt.putUuid("Owner", this.getOwnerUuid());
         }
-        tag.putBoolean("Sitting", this.sitting);
+        nbt.putBoolean("Sitting", this.sitting);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
         UUID uUID;
-        super.readCustomDataFromTag(tag);
-        if (tag.containsUuid("Owner")) {
-            uUID = tag.getUuid("Owner");
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.containsUuid("Owner")) {
+            uUID = nbt.getUuid("Owner");
         } else {
-            String string = tag.getString("Owner");
+            String string = nbt.getString("Owner");
             uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
         }
         if (uUID != null) {
@@ -73,7 +78,7 @@ extends AnimalEntity {
                 this.setTamed(false);
             }
         }
-        this.sitting = tag.getBoolean("Sitting");
+        this.sitting = nbt.getBoolean("Sitting");
         this.setInSittingPose(this.sitting);
     }
 

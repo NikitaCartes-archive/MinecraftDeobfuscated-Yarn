@@ -13,7 +13,7 @@ public class GameTestBatch {
     private final String id;
     private final Collection<TestFunction> testFunctions;
     @Nullable
-    private final Consumer<ServerWorld> worldSetter;
+    private final Consumer<ServerWorld> beforeBatchConsumer;
 
     public GameTestBatch(String id, Collection<TestFunction> testFunctions, @Nullable Consumer<ServerWorld> worldSetter) {
         if (testFunctions.isEmpty()) {
@@ -21,7 +21,7 @@ public class GameTestBatch {
         }
         this.id = id;
         this.testFunctions = testFunctions;
-        this.worldSetter = worldSetter;
+        this.beforeBatchConsumer = worldSetter;
     }
 
     public String getId() {
@@ -32,9 +32,9 @@ public class GameTestBatch {
         return this.testFunctions;
     }
 
-    public void setWorld(ServerWorld world) {
-        if (this.worldSetter != null) {
-            this.worldSetter.accept(world);
+    public void startBatch(ServerWorld world) {
+        if (this.beforeBatchConsumer != null) {
+            this.beforeBatchConsumer.accept(world);
         }
     }
 }

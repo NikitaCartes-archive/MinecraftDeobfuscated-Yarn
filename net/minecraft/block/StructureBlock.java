@@ -95,18 +95,18 @@ extends BlockWithEntity {
         }
     }
 
-    private void doAction(ServerWorld serverWorld, StructureBlockBlockEntity structureBlockBlockEntity) {
-        switch (structureBlockBlockEntity.getMode()) {
+    private void doAction(ServerWorld world, StructureBlockBlockEntity blockEntity) {
+        switch (blockEntity.getMode()) {
             case SAVE: {
-                structureBlockBlockEntity.saveStructure(false);
+                blockEntity.saveStructure(false);
                 break;
             }
             case LOAD: {
-                structureBlockBlockEntity.loadStructure(serverWorld, false);
+                blockEntity.loadStructure(world, false);
                 break;
             }
             case CORNER: {
-                structureBlockBlockEntity.unloadStructure();
+                blockEntity.unloadStructure();
                 break;
             }
             case DATA: {

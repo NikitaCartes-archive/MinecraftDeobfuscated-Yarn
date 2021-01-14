@@ -48,8 +48,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
@@ -117,15 +117,15 @@ implements CrossbowUser {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        ListTag listTag = new ListTag();
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        NbtList nbtList = new NbtList();
         for (int i = 0; i < this.inventory.size(); ++i) {
             ItemStack itemStack = this.inventory.getStack(i);
             if (itemStack.isEmpty()) continue;
-            listTag.add(itemStack.toTag(new CompoundTag()));
+            nbtList.add(itemStack.writeNbt(new NbtCompound()));
         }
-        tag.put("Inventory", listTag);
+        nbt.put("Inventory", nbtList);
     }
 
     @Override
@@ -144,11 +144,11 @@ implements CrossbowUser {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        ListTag listTag = tag.getList("Inventory", 10);
-        for (int i = 0; i < listTag.size(); ++i) {
-            ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        NbtList nbtList = nbt.getList("Inventory", 10);
+        for (int i = 0; i < nbtList.size(); ++i) {
+            ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
             if (itemStack.isEmpty()) continue;
             this.inventory.addStack(itemStack);
         }
@@ -171,10 +171,10 @@ implements CrossbowUser {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.initEquipment(difficulty);
         this.updateEnchantments(difficulty);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override

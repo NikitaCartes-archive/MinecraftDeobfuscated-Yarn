@@ -14,7 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 @Environment(value=EnvType.CLIENT)
 public class SkullEntityModel
 extends Model {
-    protected final ModelPart skull;
+    protected final ModelPart head;
 
     public SkullEntityModel() {
         this(0, 35, 64, 64);
@@ -24,19 +24,19 @@ extends Model {
         super(RenderLayer::getEntityTranslucent);
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
-        this.skull = new ModelPart(this, textureU, textureV);
-        this.skull.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, 0.0f);
-        this.skull.setPivot(0.0f, 0.0f, 0.0f);
+        this.head = new ModelPart(this, textureU, textureV);
+        this.head.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, 0.0f);
+        this.head.setPivot(0.0f, 0.0f, 0.0f);
     }
 
     public void method_2821(float f, float g, float h) {
-        this.skull.yaw = g * ((float)Math.PI / 180);
-        this.skull.pitch = h * ((float)Math.PI / 180);
+        this.head.yaw = g * ((float)Math.PI / 180);
+        this.head.pitch = h * ((float)Math.PI / 180);
     }
 
     @Override
     public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float red, float green, float blue, float alpha) {
-        this.skull.render(matrices, vertices, light, overlay, red, green, blue, alpha);
+        this.head.render(matrices, vertices, light, overlay, red, green, blue, alpha);
     }
 }
 

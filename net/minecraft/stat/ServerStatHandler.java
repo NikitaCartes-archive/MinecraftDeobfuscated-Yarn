@@ -25,7 +25,7 @@ import java.util.Set;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -90,22 +90,22 @@ extends StatHandler {
                 LOGGER.error("Unable to parse Stat data from {}", (Object)this.file);
                 return;
             }
-            CompoundTag compoundTag = ServerStatHandler.jsonToCompound(jsonElement.getAsJsonObject());
-            if (!compoundTag.contains("DataVersion", 99)) {
-                compoundTag.putInt("DataVersion", 1343);
+            NbtCompound nbtCompound = ServerStatHandler.jsonToCompound(jsonElement.getAsJsonObject());
+            if (!nbtCompound.contains("DataVersion", 99)) {
+                nbtCompound.putInt("DataVersion", 1343);
             }
-            if ((compoundTag = NbtHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"))).contains("stats", 10)) {
-                CompoundTag compoundTag2 = compoundTag.getCompound("stats");
-                for (String string : compoundTag2.getKeys()) {
-                    if (!compoundTag2.contains(string, 10)) continue;
+            if ((nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"))).contains("stats", 10)) {
+                NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
+                for (String string : nbtCompound2.getKeys()) {
+                    if (!nbtCompound2.contains(string, 10)) continue;
                     Util.ifPresentOrElse(Registry.STAT_TYPE.getOrEmpty(new Identifier(string)), statType -> {
-                        CompoundTag compoundTag2 = compoundTag2.getCompound(string);
-                        for (String string2 : compoundTag2.getKeys()) {
-                            if (compoundTag2.contains(string2, 99)) {
-                                Util.ifPresentOrElse(this.createStat((StatType)statType, string2), stat -> this.statMap.put(stat, compoundTag2.getInt(string2)), () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", (Object)this.file, (Object)string2));
+                        NbtCompound nbtCompound2 = nbtCompound2.getCompound(string);
+                        for (String string2 : nbtCompound2.getKeys()) {
+                            if (nbtCompound2.contains(string2, 99)) {
+                                Util.ifPresentOrElse(this.createStat((StatType)statType, string2), stat -> this.statMap.put(stat, nbtCompound2.getInt(string2)), () -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", (Object)this.file, (Object)string2));
                                 continue;
                             }
-                            LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", (Object)this.file, (Object)compoundTag2.get(string2), (Object)string2);
+                            LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", (Object)this.file, (Object)nbtCompound2.get(string2), (Object)string2);
                         }
                     }, () -> LOGGER.warn("Invalid statistic type in {}: Don't know what {} is", (Object)this.file, (Object)string));
                 }
@@ -119,19 +119,19 @@ extends StatHandler {
         return Optional.ofNullable(Identifier.tryParse(id)).flatMap(type.getRegistry()::getOrEmpty).map(type::getOrCreateStat);
     }
 
-    private static CompoundTag jsonToCompound(JsonObject jsonObject) {
-        CompoundTag compoundTag = new CompoundTag();
-        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+    private static NbtCompound jsonToCompound(JsonObject json) {
+        NbtCompound nbtCompound = new NbtCompound();
+        for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             JsonPrimitive jsonPrimitive;
             JsonElement jsonElement = entry.getValue();
             if (jsonElement.isJsonObject()) {
-                compoundTag.put(entry.getKey(), ServerStatHandler.jsonToCompound(jsonElement.getAsJsonObject()));
+                nbtCompound.put(entry.getKey(), ServerStatHandler.jsonToCompound(jsonElement.getAsJsonObject()));
                 continue;
             }
             if (!jsonElement.isJsonPrimitive() || !(jsonPrimitive = jsonElement.getAsJsonPrimitive()).isNumber()) continue;
-            compoundTag.putInt(entry.getKey(), jsonPrimitive.getAsInt());
+            nbtCompound.putInt(entry.getKey(), jsonPrimitive.getAsInt());
         }
-        return compoundTag;
+        return nbtCompound;
     }
 
     protected String asString() {

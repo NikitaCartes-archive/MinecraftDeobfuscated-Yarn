@@ -60,7 +60,7 @@ extends Feature<HugeFungusFeatureConfig> {
         });
     }
 
-    private void generateStem(WorldAccess world, Random random, HugeFungusFeatureConfig config, BlockPos blockPos, int stemHeight, boolean thickStem) {
+    private void generateStem(WorldAccess world, Random random, HugeFungusFeatureConfig config, BlockPos pos, int stemHeight, boolean thickStem) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockState blockState = config.stemState;
         int i = thickStem ? 1 : 0;
@@ -68,7 +68,7 @@ extends Feature<HugeFungusFeatureConfig> {
             for (int k = -i; k <= i; ++k) {
                 boolean bl = thickStem && MathHelper.abs(j) == i && MathHelper.abs(k) == i;
                 for (int l = 0; l < stemHeight; ++l) {
-                    mutable.set(blockPos, j, l, k);
+                    mutable.set(pos, j, l, k);
                     if (!HugeFungusFeature.method_24866(world, mutable, true)) continue;
                     if (config.planted) {
                         if (!world.getBlockState((BlockPos)mutable.down()).isAir()) {
@@ -88,7 +88,7 @@ extends Feature<HugeFungusFeatureConfig> {
         }
     }
 
-    private void generateHat(WorldAccess world, Random random, HugeFungusFeatureConfig config, BlockPos blockPos, int hatHeight, boolean thickStem) {
+    private void generateHat(WorldAccess world, Random random, HugeFungusFeatureConfig config, BlockPos pos, int hatHeight, boolean thickStem) {
         int j;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         boolean bl = config.hatState.isOf(Blocks.NETHER_WART_BLOCK);
@@ -109,7 +109,7 @@ extends Feature<HugeFungusFeatureConfig> {
                     boolean bl4 = !bl2 && !bl3 && k != hatHeight;
                     boolean bl5 = bl2 && bl3;
                     boolean bl6 = k < j + 3;
-                    mutable.set(blockPos, m, k, n2);
+                    mutable.set(pos, m, k, n2);
                     if (!HugeFungusFeature.method_24866(world, mutable, false)) continue;
                     if (config.planted && !world.getBlockState((BlockPos)mutable.down()).isAir()) {
                         world.breakBlock(mutable, true);

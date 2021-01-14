@@ -13,8 +13,8 @@ public enum ScaleLayer implements ParentedLayer
     FUZZY{
 
         @Override
-        protected int sample(LayerSampleContext<?> context, int i, int j, int k, int l) {
-            return context.choose(i, j, k, l);
+        protected int sample(LayerSampleContext<?> context, int tl, int tr, int bl, int br) {
+            return context.choose(tl, tr, bl, br);
         }
     };
 
@@ -52,38 +52,38 @@ public enum ScaleLayer implements ParentedLayer
         return this.sample(context, i, n, l, p);
     }
 
-    protected int sample(LayerSampleContext<?> context, int i, int j, int k, int l) {
-        if (j == k && k == l) {
-            return j;
+    protected int sample(LayerSampleContext<?> context, int tl, int tr, int bl, int br) {
+        if (tr == bl && bl == br) {
+            return tr;
         }
-        if (i == j && i == k) {
-            return i;
+        if (tl == tr && tl == bl) {
+            return tl;
         }
-        if (i == j && i == l) {
-            return i;
+        if (tl == tr && tl == br) {
+            return tl;
         }
-        if (i == k && i == l) {
-            return i;
+        if (tl == bl && tl == br) {
+            return tl;
         }
-        if (i == j && k != l) {
-            return i;
+        if (tl == tr && bl != br) {
+            return tl;
         }
-        if (i == k && j != l) {
-            return i;
+        if (tl == bl && tr != br) {
+            return tl;
         }
-        if (i == l && j != k) {
-            return i;
+        if (tl == br && tr != bl) {
+            return tl;
         }
-        if (j == k && i != l) {
-            return j;
+        if (tr == bl && tl != br) {
+            return tr;
         }
-        if (j == l && i != k) {
-            return j;
+        if (tr == br && tl != bl) {
+            return tr;
         }
-        if (k == l && i != j) {
-            return k;
+        if (bl == br && tl != tr) {
+            return bl;
         }
-        return context.choose(i, j, k, l);
+        return context.choose(tl, tr, bl, br);
     }
 }
 

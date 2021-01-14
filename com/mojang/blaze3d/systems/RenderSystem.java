@@ -18,11 +18,11 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.GraphicsMode;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.GraphicsMode;
 import net.minecraft.client.render.Tessellator;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
@@ -743,19 +743,19 @@ public class RenderSystem {
         GlStateManager.teardownOverlayColor();
     }
 
-    public static void setupLevelDiffuseLighting(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f) {
+    public static void setupLevelDiffuseLighting(Vec3f vec3f, Vec3f vec3f2, Matrix4f matrix4f) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
+        GlStateManager.setupLevelDiffuseLighting(vec3f, vec3f2, matrix4f);
     }
 
-    public static void setupGuiFlatDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
+    public static void setupGuiFlatDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.setupGuiFlatDiffuseLighting(vector3f, vector3f2);
+        GlStateManager.setupGuiFlatDiffuseLighting(vec3f, vec3f2);
     }
 
-    public static void setupGui3DDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
+    public static void setupGui3DDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
         RenderSystem.assertThread(RenderSystem::isOnGameThread);
-        GlStateManager.setupGui3dDiffuseLighting(vector3f, vector3f2);
+        GlStateManager.setupGui3dDiffuseLighting(vec3f, vec3f2);
     }
 
     public static void mulTextureByProjModelView() {
@@ -822,16 +822,16 @@ public class RenderSystem {
         gameOptions.graphicsMode = graphicsMode;
     }
 
-    private static /* synthetic */ void lambda$setupGui3DDiffuseLighting$71(Vector3f vector3f, Vector3f vector3f2) {
-        GlStateManager.setupGui3dDiffuseLighting(vector3f, vector3f2);
+    private static /* synthetic */ void lambda$setupGui3DDiffuseLighting$71(Vec3f vec3f, Vec3f vec3f2) {
+        GlStateManager.setupGui3dDiffuseLighting(vec3f, vec3f2);
     }
 
-    private static /* synthetic */ void lambda$setupGuiFlatDiffuseLighting$70(Vector3f vector3f, Vector3f vector3f2) {
-        GlStateManager.setupGuiFlatDiffuseLighting(vector3f, vector3f2);
+    private static /* synthetic */ void lambda$setupGuiFlatDiffuseLighting$70(Vec3f vec3f, Vec3f vec3f2) {
+        GlStateManager.setupGuiFlatDiffuseLighting(vec3f, vec3f2);
     }
 
-    private static /* synthetic */ void lambda$setupLevelDiffuseLighting$69(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f) {
-        GlStateManager.setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
+    private static /* synthetic */ void lambda$setupLevelDiffuseLighting$69(Vec3f vec3f, Vec3f vec3f2, Matrix4f matrix4f) {
+        GlStateManager.setupLevelDiffuseLighting(vec3f, vec3f2, matrix4f);
     }
 
     private static /* synthetic */ void lambda$setupOverlayColor$68(IntSupplier intSupplier, int i) {

@@ -22,13 +22,13 @@ extends CuttingRecipe {
     }
 
     @Override
-    public boolean matches(Inventory inv, World world) {
-        return this.input.test(inv.getStack(0));
+    public boolean matches(Inventory inventory, World world) {
+        return this.input.test(inventory.getStack(0));
     }
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public ItemStack getRecipeKindIcon() {
+    public ItemStack createIcon() {
         return new ItemStack(Blocks.STONECUTTER);
     }
 }

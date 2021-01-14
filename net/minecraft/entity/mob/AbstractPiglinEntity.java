@@ -5,9 +5,9 @@ package net.minecraft.entity.mob;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5493;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -21,7 +21,7 @@ import net.minecraft.entity.mob.PiglinActivity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.item.ToolItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
@@ -41,7 +41,7 @@ extends HostileEntity {
     }
 
     private void setCanPathThroughDoors() {
-        if (class_5493.method_30955(this)) {
+        if (NavigationConditions.hasMobNavigation(this)) {
             ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         }
     }
@@ -63,12 +63,12 @@ extends HostileEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.isImmuneToZombification()) {
-            tag.putBoolean("IsImmuneToZombification", true);
+            nbt.putBoolean("IsImmuneToZombification", true);
         }
-        tag.putInt("TimeInOverworld", this.timeInOverworld);
+        nbt.putInt("TimeInOverworld", this.timeInOverworld);
     }
 
     @Override
@@ -77,10 +77,10 @@ extends HostileEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
-        this.timeInOverworld = tag.getInt("TimeInOverworld");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setImmuneToZombification(nbt.getBoolean("IsImmuneToZombification"));
+        this.timeInOverworld = nbt.getInt("TimeInOverworld");
     }
 
     @Override

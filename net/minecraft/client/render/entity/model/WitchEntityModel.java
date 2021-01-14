@@ -67,8 +67,8 @@ extends VillagerResemblingModel<T> {
         return this.nose;
     }
 
-    public void setLiftingNose(boolean bl) {
-        this.liftingNose = bl;
+    public void setLiftingNose(boolean liftingNose) {
+        this.liftingNose = liftingNose;
     }
 }
 

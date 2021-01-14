@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 import net.minecraft.command.argument.ItemStringReader;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.tag.ItemTags;
@@ -39,7 +39,7 @@ implements ArgumentType<ItemPredicateArgument> {
     public ItemPredicateArgument parse(StringReader stringReader) throws CommandSyntaxException {
         ItemStringReader itemStringReader = new ItemStringReader(stringReader, true).consume();
         if (itemStringReader.getItem() != null) {
-            ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getTag());
+            ItemPredicate itemPredicate = new ItemPredicate(itemStringReader.getItem(), itemStringReader.getNbt());
             return commandContext -> itemPredicate;
         }
         Identifier identifier = itemStringReader.getId();
@@ -48,7 +48,7 @@ implements ArgumentType<ItemPredicateArgument> {
             if (tag == null) {
                 throw UNKNOWN_TAG_EXCEPTION.create(identifier.toString());
             }
-            return new TagPredicate(tag, itemStringReader.getTag());
+            return new TagPredicate(tag, itemStringReader.getNbt());
         };
     }
 
@@ -83,11 +83,11 @@ implements ArgumentType<ItemPredicateArgument> {
     implements Predicate<ItemStack> {
         private final Tag<Item> tag;
         @Nullable
-        private final CompoundTag compound;
+        private final NbtCompound compound;
 
-        public TagPredicate(Tag<Item> tag, @Nullable CompoundTag compoundTag) {
+        public TagPredicate(Tag<Item> tag, @Nullable NbtCompound nbtCompound) {
             this.tag = tag;
-            this.compound = compoundTag;
+            this.compound = nbtCompound;
         }
 
         @Override
@@ -105,11 +105,11 @@ implements ArgumentType<ItemPredicateArgument> {
     implements Predicate<ItemStack> {
         private final Item item;
         @Nullable
-        private final CompoundTag compound;
+        private final NbtCompound compound;
 
-        public ItemPredicate(Item item, @Nullable CompoundTag compoundTag) {
+        public ItemPredicate(Item item, @Nullable NbtCompound nbtCompound) {
             this.item = item;
-            this.compound = compoundTag;
+            this.compound = nbtCompound;
         }
 
         @Override

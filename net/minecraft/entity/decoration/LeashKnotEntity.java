@@ -13,7 +13,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
@@ -36,7 +36,7 @@ extends AbstractDecorationEntity {
 
     public LeashKnotEntity(World world, BlockPos pos) {
         super(EntityType.LEASH_KNOT, world, pos);
-        this.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
+        this.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
         float f = 0.125f;
         float g = 0.1875f;
         float h = 0.25f;
@@ -45,8 +45,8 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void updatePosition(double x, double y, double z) {
-        super.updatePosition((double)MathHelper.floor(x) + 0.5, (double)MathHelper.floor(y) + 0.5, (double)MathHelper.floor(z) + 0.5);
+    public void setPosition(double x, double y, double z) {
+        super.setPosition((double)MathHelper.floor(x) + 0.5, (double)MathHelper.floor(y) + 0.5, (double)MathHelper.floor(z) + 0.5);
     }
 
     @Override
@@ -85,11 +85,11 @@ extends AbstractDecorationEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound nbt) {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
     }
 
     @Override

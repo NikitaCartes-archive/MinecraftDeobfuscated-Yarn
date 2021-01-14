@@ -19,7 +19,7 @@ extends AnimalModel<T> {
     private final ModelPart head;
     private final ModelPart rightEar;
     private final ModelPart leftEar;
-    private final ModelPart torso;
+    private final ModelPart body;
     private final ModelPart field_22231;
     private final ModelPart field_22232;
     private final ModelPart field_22233;
@@ -30,13 +30,13 @@ extends AnimalModel<T> {
         super(true, 8.0f, 6.0f, 1.9f, 2.0f, 24.0f);
         this.textureWidth = 128;
         this.textureHeight = 64;
-        this.torso = new ModelPart(this);
-        this.torso.setPivot(0.0f, 7.0f, 0.0f);
-        this.torso.setTextureOffset(1, 1).addCuboid(-8.0f, -7.0f, -13.0f, 16.0f, 14.0f, 26.0f);
+        this.body = new ModelPart(this);
+        this.body.setPivot(0.0f, 7.0f, 0.0f);
+        this.body.setTextureOffset(1, 1).addCuboid(-8.0f, -7.0f, -13.0f, 16.0f, 14.0f, 26.0f);
         this.field_25484 = new ModelPart(this);
         this.field_25484.setPivot(0.0f, -14.0f, -5.0f);
         this.field_25484.setTextureOffset(90, 33).addCuboid(0.0f, 0.0f, -9.0f, 0.0f, 10.0f, 19.0f, 0.001f);
-        this.torso.addChild(this.field_25484);
+        this.body.addChild(this.field_25484);
         this.head = new ModelPart(this);
         this.head.setPivot(0.0f, 2.0f, -12.0f);
         this.head.setTextureOffset(61, 1).addCuboid(-7.0f, -3.0f, -19.0f, 14.0f, 6.0f, 19.0f);
@@ -82,7 +82,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
+        return ImmutableList.of(this.body, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
     }
 
     @Override

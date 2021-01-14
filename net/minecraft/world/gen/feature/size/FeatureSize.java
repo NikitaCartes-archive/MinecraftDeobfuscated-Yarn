@@ -10,11 +10,14 @@ import java.util.OptionalInt;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.gen.feature.size.FeatureSizeType;
 
+/**
+ * In charge of determining the amount of space needed by a tree to generate.
+ */
 public abstract class FeatureSize {
     public static final Codec<FeatureSize> TYPE_CODEC = Registry.FEATURE_SIZE_TYPE.dispatch(FeatureSize::getType, FeatureSizeType::getCodec);
     protected final OptionalInt minClippedHeight;
 
-    protected static <S extends FeatureSize> RecordCodecBuilder<S, OptionalInt> createCodecBuilder() {
+    protected static <S extends FeatureSize> RecordCodecBuilder<S, OptionalInt> createCodec() {
         return Codec.intRange(0, 80).optionalFieldOf("min_clipped_height").xmap(optional -> optional.map(OptionalInt::of).orElse(OptionalInt.empty()), optionalInt -> optionalInt.isPresent() ? Optional.of(optionalInt.getAsInt()) : Optional.empty()).forGetter(featureSize -> featureSize.minClippedHeight);
     }
 

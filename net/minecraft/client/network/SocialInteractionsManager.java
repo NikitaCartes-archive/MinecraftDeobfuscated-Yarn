@@ -66,7 +66,7 @@ public class SocialInteractionsManager {
         }
         if ((screen = this.client.currentScreen) instanceof SocialInteractionsScreen) {
             SocialInteractionsScreen socialInteractionsScreen = (SocialInteractionsScreen)screen;
-            socialInteractionsScreen.method_31353(playerListEntry);
+            socialInteractionsScreen.setPlayerOnline(playerListEntry);
         }
     }
 
@@ -74,7 +74,7 @@ public class SocialInteractionsManager {
         Screen screen = this.client.currentScreen;
         if (screen instanceof SocialInteractionsScreen) {
             SocialInteractionsScreen socialInteractionsScreen = (SocialInteractionsScreen)screen;
-            socialInteractionsScreen.method_31355(uUID);
+            socialInteractionsScreen.setPlayerOffline(uUID);
         }
     }
 }

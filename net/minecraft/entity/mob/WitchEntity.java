@@ -185,7 +185,7 @@ implements RangedAttackMob {
         if (source.getAttacker() == this) {
             amount = 0.0f;
         }
-        if (source.getMagic()) {
+        if (source.isMagic()) {
             amount = (float)((double)amount * 0.15);
         }
         return amount;

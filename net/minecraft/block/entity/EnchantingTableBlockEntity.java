@@ -8,7 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
@@ -38,16 +38,16 @@ Tickable {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
         if (this.hasCustomName()) {
-            tag.putString("CustomName", Text.Serializer.toJson(this.customName));
+            nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        return tag;
+        return nbt;
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         super.fromTag(state, tag);
         if (tag.contains("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));

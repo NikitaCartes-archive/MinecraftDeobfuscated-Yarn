@@ -72,21 +72,21 @@ implements Fertilizable {
         return world.getBaseLightLevel(pos, 0) < 13 && this.canPlantOnTop(blockState, world, blockPos);
     }
 
-    public boolean trySpawningBigMushroom(ServerWorld serverWorld, BlockPos pos, BlockState state, Random random) {
+    public boolean trySpawningBigMushroom(ServerWorld world, BlockPos pos, BlockState state, Random random) {
         ConfiguredFeature<?, ?> configuredFeature;
-        serverWorld.removeBlock(pos, false);
+        world.removeBlock(pos, false);
         if (this == Blocks.BROWN_MUSHROOM) {
             configuredFeature = ConfiguredFeatures.HUGE_BROWN_MUSHROOM;
         } else if (this == Blocks.RED_MUSHROOM) {
             configuredFeature = ConfiguredFeatures.HUGE_RED_MUSHROOM;
         } else {
-            serverWorld.setBlockState(pos, state, 3);
+            world.setBlockState(pos, state, 3);
             return false;
         }
-        if (configuredFeature.generate(serverWorld, serverWorld.getChunkManager().getChunkGenerator(), random, pos)) {
+        if (configuredFeature.generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
             return true;
         }
-        serverWorld.setBlockState(pos, state, 3);
+        world.setBlockState(pos, state, 3);
         return false;
     }
 

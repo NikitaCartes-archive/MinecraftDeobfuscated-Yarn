@@ -24,8 +24,8 @@ extends HorseEntityModel<T> {
         this.rightChest.yaw = 1.5707964f;
         this.leftChest.setPivot(6.0f, -8.0f, 0.0f);
         this.rightChest.setPivot(-6.0f, -8.0f, 0.0f);
-        this.torso.addChild(this.leftChest);
-        this.torso.addChild(this.rightChest);
+        this.body.addChild(this.leftChest);
+        this.body.addChild(this.rightChest);
     }
 
     @Override

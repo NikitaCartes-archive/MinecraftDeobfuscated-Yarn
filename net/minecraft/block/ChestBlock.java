@@ -166,19 +166,19 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        if (newState.isOf(this) && direction.getAxis().isHorizontal()) {
-            ChestType chestType = newState.get(CHEST_TYPE);
-            if (state.get(CHEST_TYPE) == ChestType.SINGLE && chestType != ChestType.SINGLE && state.get(FACING) == newState.get(FACING) && ChestBlock.getFacing(newState) == direction.getOpposite()) {
+        if (neighborState.isOf(this) && direction.getAxis().isHorizontal()) {
+            ChestType chestType = neighborState.get(CHEST_TYPE);
+            if (state.get(CHEST_TYPE) == ChestType.SINGLE && chestType != ChestType.SINGLE && state.get(FACING) == neighborState.get(FACING) && ChestBlock.getFacing(neighborState) == direction.getOpposite()) {
                 return (BlockState)state.with(CHEST_TYPE, chestType.getOpposite());
             }
         } else if (ChestBlock.getFacing(state) == direction) {
             return (BlockState)state.with(CHEST_TYPE, ChestType.SINGLE);
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

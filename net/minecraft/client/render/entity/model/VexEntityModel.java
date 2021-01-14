@@ -22,7 +22,7 @@ extends BipedEntityModel<VexEntity> {
     public VexEntityModel() {
         super(0.0f, 0.0f, 64, 64);
         this.leftLeg.visible = false;
-        this.helmet.visible = false;
+        this.hat.visible = false;
         this.rightLeg = new ModelPart(this, 32, 0);
         this.rightLeg.addCuboid(-1.0f, -1.0f, -2.0f, 6.0f, 10.0f, 4.0f, 0.0f);
         this.rightLeg.setPivot(-1.9f, 12.0f, 0.0f);

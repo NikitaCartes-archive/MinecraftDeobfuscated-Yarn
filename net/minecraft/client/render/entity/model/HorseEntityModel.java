@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class HorseEntityModel<T extends HorseBaseEntity>
 extends AnimalModel<T> {
-    protected final ModelPart torso;
+    protected final ModelPart body;
     protected final ModelPart head;
     private final ModelPart leftBackLeg;
     private final ModelPart rightBackLeg;
@@ -34,9 +34,9 @@ extends AnimalModel<T> {
         super(true, 16.2f, 1.36f, 2.7272f, 2.0f, 20.0f);
         this.textureWidth = 64;
         this.textureHeight = 64;
-        this.torso = new ModelPart(this, 0, 32);
-        this.torso.addCuboid(-5.0f, -8.0f, -17.0f, 10.0f, 10.0f, 22.0f, 0.05f);
-        this.torso.setPivot(0.0f, 11.0f, 5.0f);
+        this.body = new ModelPart(this, 0, 32);
+        this.body.addCuboid(-5.0f, -8.0f, -17.0f, 10.0f, 10.0f, 22.0f, 0.05f);
+        this.body.setPivot(0.0f, 11.0f, 5.0f);
         this.head = new ModelPart(this, 0, 35);
         this.head.addCuboid(-2.05f, -6.0f, -2.0f, 4.0f, 12.0f, 7.0f);
         this.head.pitch = 0.5235988f;
@@ -83,10 +83,10 @@ extends AnimalModel<T> {
         this.tail.addCuboid(-1.5f, 0.0f, 0.0f, 3.0f, 14.0f, 4.0f, scale);
         this.tail.setPivot(0.0f, -5.0f, 2.0f);
         this.tail.pitch = 0.5235988f;
-        this.torso.addChild(this.tail);
+        this.body.addChild(this.tail);
         ModelPart modelPart4 = new ModelPart(this, 26, 0);
         modelPart4.addCuboid(-5.0f, -8.0f, -9.0f, 10.0f, 9.0f, 9.0f, 0.5f);
-        this.torso.addChild(modelPart4);
+        this.body.addChild(modelPart4);
         ModelPart modelPart5 = new ModelPart(this, 29, 5);
         modelPart5.addCuboid(2.0f, -9.0f, -6.0f, 1.0f, 2.0f, 2.0f, scale);
         this.head.addChild(modelPart5);
@@ -130,7 +130,7 @@ extends AnimalModel<T> {
         for (ModelPart modelPart : this.field_3301) {
             modelPart.visible = bl2 && bl;
         }
-        this.torso.pivotY = 11.0f;
+        this.body.pivotY = 11.0f;
     }
 
     @Override
@@ -140,7 +140,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.leftBackLeg, this.rightBackLeg, this.leftFrontLeg, this.rightFrontLeg, this.field_20930, this.field_20931, this.field_20932, this.field_20933);
+        return ImmutableList.of(this.body, this.leftBackLeg, this.rightBackLeg, this.leftFrontLeg, this.rightFrontLeg, this.field_20930, this.field_20931, this.field_20932, this.field_20933);
     }
 
     @Override
@@ -168,7 +168,7 @@ extends AnimalModel<T> {
         float r = (float)((HorseBaseEntity)horseBaseEntity).age + h;
         this.head.pivotY = 4.0f;
         this.head.pivotZ = -12.0f;
-        this.torso.pitch = 0.0f;
+        this.body.pitch = 0.0f;
         this.head.pitch = 0.5235988f + m;
         this.head.yaw = l * ((float)Math.PI / 180);
         float s = ((Entity)horseBaseEntity).isTouchingWater() ? 0.2f : 1.0f;
@@ -179,7 +179,7 @@ extends AnimalModel<T> {
         this.head.yaw = o * l * ((float)Math.PI / 180) + (1.0f - Math.max(o, n)) * this.head.yaw;
         this.head.pivotY = o * -4.0f + n * 11.0f + (1.0f - Math.max(o, n)) * this.head.pivotY;
         this.head.pivotZ = o * -4.0f + n * -12.0f + (1.0f - Math.max(o, n)) * this.head.pivotZ;
-        this.torso.pitch = o * -0.7853982f + p * this.torso.pitch;
+        this.body.pitch = o * -0.7853982f + p * this.body.pitch;
         float w = 0.2617994f * o;
         float x = MathHelper.cos(r * 0.6f + (float)Math.PI);
         this.leftFrontLeg.pivotY = 2.0f * o + 14.0f * p;
@@ -217,7 +217,7 @@ extends AnimalModel<T> {
         this.field_20931.visible = bl2;
         this.field_20932.visible = bl2;
         this.field_20933.visible = bl2;
-        this.torso.pivotY = bl2 ? 10.8f : 0.0f;
+        this.body.pivotY = bl2 ? 10.8f : 0.0f;
     }
 }
 

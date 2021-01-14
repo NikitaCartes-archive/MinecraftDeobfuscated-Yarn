@@ -24,10 +24,10 @@ extends QuadrupedEntityModel<T> {
         ModelPart modelPart = this.head.setTextureOffset(26, 0);
         modelPart.mirror = true;
         modelPart.addCuboid(2.5f, -4.0f, -1.0f, 2.0f, 2.0f, 1.0f, 0.0f);
-        this.torso = new ModelPart(this);
-        this.torso.setTextureOffset(0, 19).addCuboid(-5.0f, -13.0f, -7.0f, 14.0f, 14.0f, 11.0f, 0.0f);
-        this.torso.setTextureOffset(39, 0).addCuboid(-4.0f, -25.0f, -7.0f, 12.0f, 12.0f, 10.0f, 0.0f);
-        this.torso.setPivot(-2.0f, 9.0f, 12.0f);
+        this.body = new ModelPart(this);
+        this.body.setTextureOffset(0, 19).addCuboid(-5.0f, -13.0f, -7.0f, 14.0f, 14.0f, 11.0f, 0.0f);
+        this.body.setTextureOffset(39, 0).addCuboid(-4.0f, -25.0f, -7.0f, 12.0f, 12.0f, 10.0f, 0.0f);
+        this.body.setPivot(-2.0f, 9.0f, 12.0f);
         int i = 10;
         this.backRightLeg = new ModelPart(this, 50, 22);
         this.backRightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 10.0f, 8.0f, 0.0f);
@@ -58,8 +58,8 @@ extends QuadrupedEntityModel<T> {
         float l = ((PolarBearEntity)polarBearEntity).getWarningAnimationProgress(k);
         l *= l;
         float m = 1.0f - l;
-        this.torso.pitch = 1.5707964f - l * (float)Math.PI * 0.35f;
-        this.torso.pivotY = 9.0f * m + 11.0f * l;
+        this.body.pitch = 1.5707964f - l * (float)Math.PI * 0.35f;
+        this.body.pivotY = 9.0f * m + 11.0f * l;
         this.frontRightLeg.pivotY = 14.0f * m - 6.0f * l;
         this.frontRightLeg.pivotZ = -8.0f * m - 4.0f * l;
         this.frontRightLeg.pitch -= l * (float)Math.PI * 0.45f;

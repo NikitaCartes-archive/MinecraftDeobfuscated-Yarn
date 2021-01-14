@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -40,10 +40,10 @@ extends BlockWithEntity {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        CompoundTag compoundTag2;
+        NbtCompound nbtCompound2;
         super.onPlaced(world, pos, state, placer, itemStack);
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
-        if (compoundTag.contains("BlockEntityTag") && (compoundTag2 = compoundTag.getCompound("BlockEntityTag")).contains("RecordItem")) {
+        NbtCompound nbtCompound = itemStack.getOrCreateTag();
+        if (nbtCompound.contains("BlockEntityTag") && (nbtCompound2 = nbtCompound.getCompound("BlockEntityTag")).contains("RecordItem")) {
             world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), 2);
         }
     }

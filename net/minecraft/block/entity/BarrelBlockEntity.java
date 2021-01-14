@@ -13,7 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.GenericContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -38,20 +38,20 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
-        if (!this.serializeLootTable(tag)) {
-            Inventories.toTag(tag, this.inventory);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        if (!this.serializeLootTable(nbt)) {
+            Inventories.writeNbt(nbt, this.inventory);
         }
-        return tag;
+        return nbt;
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         super.fromTag(state, tag);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         if (!this.deserializeLootTable(tag)) {
-            Inventories.fromTag(tag, this.inventory);
+            Inventories.readNbt(tag, this.inventory);
         }
     }
 
@@ -133,8 +133,8 @@ extends LootableContainerBlockEntity {
         this.world.setBlockState(this.getPos(), (BlockState)state.with(BarrelBlock.OPEN, open), 3);
     }
 
-    private void playSound(BlockState blockState, SoundEvent soundEvent) {
-        Vec3i vec3i = blockState.get(BarrelBlock.FACING).getVector();
+    private void playSound(BlockState state, SoundEvent soundEvent) {
+        Vec3i vec3i = state.get(BarrelBlock.FACING).getVector();
         double d = (double)this.pos.getX() + 0.5 + (double)vec3i.getX() / 2.0;
         double e = (double)this.pos.getY() + 0.5 + (double)vec3i.getY() / 2.0;
         double f = (double)this.pos.getZ() + 0.5 + (double)vec3i.getZ() / 2.0;

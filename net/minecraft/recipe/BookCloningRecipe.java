@@ -9,7 +9,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.RecipeSerializer;
 import net.minecraft.recipe.SpecialCraftingRecipe;
 import net.minecraft.util.Identifier;
@@ -69,14 +69,14 @@ extends SpecialCraftingRecipe {
             return ItemStack.EMPTY;
         }
         ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK, i);
-        CompoundTag compoundTag = itemStack.getTag().copy();
-        compoundTag.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
-        itemStack3.setTag(compoundTag);
+        NbtCompound nbtCompound = itemStack.getTag().copy();
+        nbtCompound.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
+        itemStack3.setTag(nbtCompound);
         return itemStack3;
     }
 
     @Override
-    public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
+    public DefaultedList<ItemStack> getRemainder(CraftingInventory craftingInventory) {
         DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
         for (int i = 0; i < defaultedList.size(); ++i) {
             ItemStack itemStack = craftingInventory.getStack(i);

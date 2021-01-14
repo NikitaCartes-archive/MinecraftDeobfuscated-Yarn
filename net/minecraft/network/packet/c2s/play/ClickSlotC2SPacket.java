@@ -16,7 +16,7 @@ public class ClickSlotC2SPacket
 implements Packet<ServerPlayPacketListener> {
     private int syncId;
     private int slot;
-    private int clickData;
+    private int button;
     private short actionId;
     private ItemStack stack = ItemStack.EMPTY;
     private SlotActionType actionType;
@@ -28,7 +28,7 @@ implements Packet<ServerPlayPacketListener> {
     public ClickSlotC2SPacket(int syncId, int slot, int clickData, SlotActionType actionType, ItemStack stack, short actionId) {
         this.syncId = syncId;
         this.slot = slot;
-        this.clickData = clickData;
+        this.button = clickData;
         this.stack = stack.copy();
         this.actionId = actionId;
         this.actionType = actionType;
@@ -43,7 +43,7 @@ implements Packet<ServerPlayPacketListener> {
     public void read(PacketByteBuf buf) throws IOException {
         this.syncId = buf.readByte();
         this.slot = buf.readShort();
-        this.clickData = buf.readByte();
+        this.button = buf.readByte();
         this.actionId = buf.readShort();
         this.actionType = buf.readEnumConstant(SlotActionType.class);
         this.stack = buf.readItemStack();
@@ -53,7 +53,7 @@ implements Packet<ServerPlayPacketListener> {
     public void write(PacketByteBuf buf) throws IOException {
         buf.writeByte(this.syncId);
         buf.writeShort(this.slot);
-        buf.writeByte(this.clickData);
+        buf.writeByte(this.button);
         buf.writeShort(this.actionId);
         buf.writeEnumConstant(this.actionType);
         buf.writeItemStack(this.stack);
@@ -67,8 +67,8 @@ implements Packet<ServerPlayPacketListener> {
         return this.slot;
     }
 
-    public int getClickData() {
-        return this.clickData;
+    public int getButton() {
+        return this.button;
     }
 
     public short getActionId() {

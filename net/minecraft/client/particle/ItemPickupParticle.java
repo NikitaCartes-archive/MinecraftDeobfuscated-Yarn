@@ -32,10 +32,10 @@ extends Particle {
         this(dispatcher, bufferStorage, world, itemEntity, interactingEntity, itemEntity.getVelocity());
     }
 
-    private ItemPickupParticle(EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, ClientWorld world, Entity entity, Entity interactingEntity, Vec3d velocity) {
-        super(world, entity.getX(), entity.getY(), entity.getZ(), velocity.x, velocity.y, velocity.z);
+    private ItemPickupParticle(EntityRenderDispatcher dispatcher, BufferBuilderStorage bufferStorage, ClientWorld world, Entity itemEntity, Entity interactingEntity, Vec3d velocity) {
+        super(world, itemEntity.getX(), itemEntity.getY(), itemEntity.getZ(), velocity.x, velocity.y, velocity.z);
         this.bufferStorage = bufferStorage;
-        this.itemEntity = this.method_29358(entity);
+        this.itemEntity = this.method_29358(itemEntity);
         this.interactingEntity = interactingEntity;
         this.dispatcher = dispatcher;
     }

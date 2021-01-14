@@ -13,8 +13,8 @@ import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -117,7 +117,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     }
 
     @Nullable
-    public static StructureStart<?> readStructureStart(StructureManager manager, CompoundTag tag, long worldSeed) {
+    public static StructureStart<?> readStructureStart(StructureManager manager, NbtCompound tag, long worldSeed) {
         String string = tag.getString("id");
         if ("INVALID".equals(string)) {
             return StructureStart.DEFAULT;
@@ -131,12 +131,12 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         int j = tag.getInt("ChunkZ");
         int k = tag.getInt("references");
         BlockBox blockBox = tag.contains("BB") ? new BlockBox(tag.getIntArray("BB")) : BlockBox.empty();
-        ListTag listTag = tag.getList("Children", 10);
+        NbtList nbtList = tag.getList("Children", 10);
         try {
             StructureStart<?> structureStart = super.createStart(i, j, blockBox, k, worldSeed);
-            for (int l = 0; l < listTag.size(); ++l) {
-                CompoundTag compoundTag = listTag.getCompound(l);
-                String string2 = compoundTag.getString("id").toLowerCase(Locale.ROOT);
+            for (int l = 0; l < nbtList.size(); ++l) {
+                NbtCompound nbtCompound = nbtList.getCompound(l);
+                String string2 = nbtCompound.getString("id").toLowerCase(Locale.ROOT);
                 Identifier identifier = new Identifier(string2);
                 Identifier identifier2 = field_25839.getOrDefault(identifier, identifier);
                 StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(identifier2);
@@ -145,7 +145,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     continue;
                 }
                 try {
-                    StructurePiece structurePiece = structurePieceType.load(manager, compoundTag);
+                    StructurePiece structurePiece = structurePieceType.load(manager, nbtCompound);
                     structureStart.getChildren().add(structurePiece);
                     continue;
                 } catch (Exception exception) {
@@ -177,7 +177,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * 
      * @return {@code null} if no structure could be found within the given search radius
      * 
-     * @param searchRadius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
+     * @param searchRadius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
      */
     @Nullable
     public BlockPos locateStructure(WorldView world, StructureAccessor structureAccessor, BlockPos searchStartPos, int searchRadius, boolean skipExistingChunks, long worldSeed, StructureConfig config) {
@@ -200,10 +200,10 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     if (structureStart != null && structureStart.hasChildren()) {
                         if (skipExistingChunks && structureStart.isInExistingChunk()) {
                             structureStart.incrementReferences();
-                            return structureStart.getPos();
+                            return structureStart.getBlockPos();
                         }
                         if (!skipExistingChunks) {
-                            return structureStart.getPos();
+                            return structureStart.getBlockPos();
                         }
                     }
                     if (l == 0) break;
@@ -229,8 +229,10 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * <p>
      * If the {@link StructureConfig} uses a separation setting greater than 0, the
      * placement will be constrained to [0, spacing - separation] within the grid cell.
-     * If a non-uniform distribution is used for placement {@see #isUniformDistribution()},
-     * then this also moves the center towards the origin.
+     * If a non-uniform distribution is used for placement, then this also moves
+     * the center towards the origin.
+     * 
+     * @see #isUniformDistribution()
      */
     public final ChunkPos getStartChunk(StructureConfig config, long worldSeed, ChunkRandom placementRandom, int chunkX, int chunkY) {
         int n;
@@ -266,7 +268,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
     /**
      * Tries to place a starting point for this type of structure in the given chunk.
      * <p>
-     * If this structure doesn't have a starting point in the chunk, {@link StructureStart.DEFAULT}
+     * If this structure doesn't have a starting point in the chunk, {@link StructureStart#DEFAULT}
      * will be returned.
      */
     public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, Biome biome, int referenceCount, ChunkRandom chunkRandom, StructureConfig structureConfig, C featureConfig) {

@@ -27,8 +27,8 @@ public class ChatUtil {
         return PATTERN.matcher(text).replaceAll("");
     }
 
-    public static boolean isEmpty(@Nullable String string) {
-        return StringUtils.isEmpty(string);
+    public static boolean isEmpty(@Nullable String text) {
+        return StringUtils.isEmpty(text);
     }
 }
 

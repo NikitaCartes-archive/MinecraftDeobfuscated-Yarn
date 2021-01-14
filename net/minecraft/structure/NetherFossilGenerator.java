@@ -5,7 +5,7 @@ package net.minecraft.structure;
 
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -46,7 +46,7 @@ public class NetherFossilGenerator {
             this.initializeStructureData(manager);
         }
 
-        public Piece(StructureManager manager, CompoundTag tag) {
+        public Piece(StructureManager manager, NbtCompound tag) {
             super(StructurePieceType.NETHER_FOSSIL, tag);
             this.template = new Identifier(tag.getString("Template"));
             this.structureRotation = BlockRotation.valueOf(tag.getString("Rot"));
@@ -60,20 +60,20 @@ public class NetherFossilGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
+        protected void toNbt(NbtCompound tag) {
             super.toNbt(tag);
             tag.putString("Template", this.template.toString());
             tag.putString("Rot", this.structureRotation.name());
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
         }
 
         @Override
-        public boolean generate(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos blockPos) {
+        public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             boundingBox.encompass(this.structure.calculateBoundingBox(this.placementData, this.pos));
-            return super.generate(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, blockPos);
+            return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
         }
     }
 }

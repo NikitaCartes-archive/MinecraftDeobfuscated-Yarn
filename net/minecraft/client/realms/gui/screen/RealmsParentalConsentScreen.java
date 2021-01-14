@@ -5,13 +5,14 @@ package net.minecraft.client.realms.gui.screen;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.realms.Realms;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -21,7 +22,7 @@ public class RealmsParentalConsentScreen
 extends RealmsScreen {
     private static final Text field_26491 = new TranslatableText("mco.account.privacyinfo");
     private final Screen parent;
-    private class_5489 field_26492 = class_5489.field_26528;
+    private MultilineText field_26492 = MultilineText.EMPTY;
 
     public RealmsParentalConsentScreen(Screen screen) {
         this.parent = screen;
@@ -38,13 +39,13 @@ extends RealmsScreen {
         this.addButton(new ButtonWidget(this.width / 2 - j / 2, RealmsParentalConsentScreen.row(11), j, 20, text3, buttonWidget -> Util.getOperatingSystem().open("https://aka.ms/MinecraftGDPR")));
         this.addButton(new ButtonWidget(this.width / 2 - (i + 5), RealmsParentalConsentScreen.row(13), i, 20, text, buttonWidget -> Util.getOperatingSystem().open("https://aka.ms/UpdateMojangAccount")));
         this.addButton(new ButtonWidget(this.width / 2 + 5, RealmsParentalConsentScreen.row(13), i, 20, text2, buttonWidget -> this.client.openScreen(this.parent)));
-        this.field_26492 = class_5489.method_30890(this.textRenderer, field_26491, (int)Math.round((double)this.width * 0.9));
+        this.field_26492 = MultilineText.create(this.textRenderer, (StringVisitable)field_26491, (int)Math.round((double)this.width * 0.9));
     }
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.field_26492.method_30889(matrices, this.width / 2, 15, 15, 0xFFFFFF);
+        this.field_26492.drawCenterWithShadow(matrices, this.width / 2, 15, 15, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

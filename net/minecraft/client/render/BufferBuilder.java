@@ -237,7 +237,7 @@ implements BufferVertexConsumer {
         VertexFormatElement vertexFormatElement;
         ImmutableList<VertexFormatElement> immutableList = this.format.getElements();
         this.currentElementId = (this.currentElementId + 1) % immutableList.size();
-        this.elementOffset += this.currentElement.getSize();
+        this.elementOffset += this.currentElement.getByteLength();
         this.currentElement = vertexFormatElement = (VertexFormatElement)immutableList.get(this.currentElementId);
         if (vertexFormatElement.getType() == VertexFormatElement.Type.PADDING) {
             this.nextElement();

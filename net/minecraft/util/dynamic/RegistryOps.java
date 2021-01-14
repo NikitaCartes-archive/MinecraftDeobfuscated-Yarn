@@ -66,14 +66,14 @@ extends ForwardingDynamicOps<T> {
      * Encode an id for a registry element than a full object if possible.
      * 
      * <p>This method is called by casting an arbitrary dynamic ops to a registry
-     * reading ops.</p>
+     * reading ops.
      * 
-     * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, MapCodec)
+     * @see RegistryReadingOps#encodeOrId(Object, Object, RegistryKey, Codec)
      */
-    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec, boolean allowInlineDefinitions) {
-        Optional optional = this.registryManager.getOptional(registryKey);
+    protected <E> DataResult<Pair<java.util.function.Supplier<E>, T>> decodeOrId(T object, RegistryKey<? extends Registry<E>> key, Codec<E> codec, boolean allowInlineDefinitions) {
+        Optional optional = this.registryManager.getOptionalMutable(key);
         if (!optional.isPresent()) {
-            return DataResult.error("Unknown registry: " + registryKey);
+            return DataResult.error("Unknown registry: " + key);
         }
         MutableRegistry mutableRegistry = optional.get();
         DataResult dataResult = Identifier.CODEC.decode(this.delegate, object);
@@ -85,16 +85,16 @@ extends ForwardingDynamicOps<T> {
         }
         Pair pair2 = dataResult.result().get();
         Identifier identifier = (Identifier)pair2.getFirst();
-        return this.readSupplier(registryKey, mutableRegistry, codec, identifier).map(supplier -> Pair.of(supplier, pair2.getSecond()));
+        return this.readSupplier(key, mutableRegistry, codec, identifier).map(supplier -> Pair.of(supplier, pair2.getSecond()));
     }
 
     /**
      * Loads elements into a registry just loaded from a decoder.
      */
-    public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec) {
-        Collection<Identifier> collection = this.entryLoader.getKnownEntryPaths(registryKey);
+    public <E> DataResult<SimpleRegistry<E>> loadToRegistry(SimpleRegistry<E> registry, RegistryKey<? extends Registry<E>> key, Codec<E> codec) {
+        Collection<Identifier> collection = this.entryLoader.getKnownEntryPaths(key);
         DataResult<SimpleRegistry<Object>> dataResult = DataResult.success(registry, Lifecycle.stable());
-        String string = registryKey.getValue().getPath() + "/";
+        String string = key.getValue().getPath() + "/";
         for (Identifier identifier : collection) {
             String string2 = identifier.getPath();
             if (!string2.endsWith(".json")) {
@@ -107,7 +107,7 @@ extends ForwardingDynamicOps<T> {
             }
             String string3 = string2.substring(string.length(), string2.length() - ".json".length());
             Identifier identifier2 = new Identifier(identifier.getNamespace(), string3);
-            dataResult = dataResult.flatMap(simpleRegistry -> this.readSupplier(registryKey, (MutableRegistry)simpleRegistry, codec, identifier2).map(supplier -> simpleRegistry));
+            dataResult = dataResult.flatMap(simpleRegistry -> this.readSupplier(key, (MutableRegistry)simpleRegistry, codec, identifier2).map(supplier -> simpleRegistry));
         }
         return dataResult.setPartial(registry);
     }
@@ -115,31 +115,31 @@ extends ForwardingDynamicOps<T> {
     /**
      * Reads a supplier for a registry element.
      * 
-     * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.</p>
+     * <p>This logic is used by both {@code decodeOrId} and {@code loadToRegistry}.
      */
-    private <E> DataResult<java.util.function.Supplier<E>> readSupplier(RegistryKey<? extends Registry<E>> registryKey, MutableRegistry<E> mutableRegistry, Codec<E> codec, Identifier elementId) {
-        RegistryKey registryKey2 = RegistryKey.of(registryKey, elementId);
-        ValueHolder<E> valueHolder = this.getValueHolder(registryKey);
-        DataResult dataResult = (DataResult)((ValueHolder)valueHolder).values.get(registryKey2);
+    private <E> DataResult<java.util.function.Supplier<E>> readSupplier(RegistryKey<? extends Registry<E>> key, MutableRegistry<E> registry, Codec<E> codec, Identifier elementId) {
+        RegistryKey registryKey = RegistryKey.of(key, elementId);
+        ValueHolder<E> valueHolder = this.getValueHolder(key);
+        DataResult dataResult = (DataResult)((ValueHolder)valueHolder).values.get(registryKey);
         if (dataResult != null) {
             return dataResult;
         }
         Supplier<Object> supplier = Suppliers.memoize(() -> {
-            Object object = mutableRegistry.get(registryKey2);
+            Object object = registry.get(registryKey);
             if (object == null) {
-                throw new RuntimeException("Error during recursive registry parsing, element resolved too early: " + registryKey2);
+                throw new RuntimeException("Error during recursive registry parsing, element resolved too early: " + registryKey);
             }
             return object;
         });
-        ((ValueHolder)valueHolder).values.put(registryKey2, DataResult.success(supplier));
-        DataResult<Pair<java.util.function.Supplier, OptionalInt>> dataResult2 = this.entryLoader.load(this.entryOps, registryKey, registryKey2, codec);
+        ((ValueHolder)valueHolder).values.put(registryKey, DataResult.success(supplier));
+        DataResult<Pair<java.util.function.Supplier, OptionalInt>> dataResult2 = this.entryLoader.load(this.entryOps, key, registryKey, codec);
         Optional optional = dataResult2.result();
         if (optional.isPresent()) {
             Pair pair2 = optional.get();
-            mutableRegistry.replace(pair2.getSecond(), registryKey2, pair2.getFirst(), dataResult2.lifecycle());
+            registry.replace(pair2.getSecond(), registryKey, pair2.getFirst(), dataResult2.lifecycle());
         }
-        DataResult<java.util.function.Supplier<Object>> dataResult3 = !optional.isPresent() && mutableRegistry.get(registryKey2) != null ? DataResult.success(() -> mutableRegistry.get(registryKey2), Lifecycle.stable()) : dataResult2.map(pair -> () -> mutableRegistry.get(registryKey2));
-        ((ValueHolder)valueHolder).values.put(registryKey2, dataResult3);
+        DataResult<java.util.function.Supplier<Object>> dataResult3 = !optional.isPresent() && registry.get(registryKey) != null ? DataResult.success(() -> registry.get(registryKey), Lifecycle.stable()) : dataResult2.map(pair -> () -> registry.get(registryKey));
+        ((ValueHolder)valueHolder).values.put(registryKey, dataResult3);
         return dataResult3;
     }
 
@@ -148,7 +148,7 @@ extends ForwardingDynamicOps<T> {
     }
 
     protected <E> DataResult<Registry<E>> method_31152(RegistryKey<? extends Registry<E>> registryKey) {
-        return this.registryManager.getOptional(registryKey).map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle())).orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
+        return this.registryManager.getOptionalMutable(registryKey).map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle())).orElseGet(() -> DataResult.error("Unknown registry: " + registryKey));
     }
 
     public static interface EntryLoader {

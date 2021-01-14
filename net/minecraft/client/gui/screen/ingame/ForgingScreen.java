@@ -53,7 +53,7 @@ implements ScreenHandlerListener {
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
     }
 
-    protected void renderForeground(MatrixStack matrixStack, int mouseY, int i, float f) {
+    protected void renderForeground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
     }
 
     @Override

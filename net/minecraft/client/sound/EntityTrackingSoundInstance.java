@@ -19,8 +19,8 @@ extends MovingSoundInstance {
         this(sound, soundCategory, 1.0f, 1.0f, entity);
     }
 
-    public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory soundCategory, float volume, float pitch, Entity entity) {
-        super(sound, soundCategory);
+    public EntityTrackingSoundInstance(SoundEvent sound, SoundCategory category, float volume, float pitch, Entity entity) {
+        super(sound, category);
         this.volume = volume;
         this.pitch = pitch;
         this.entity = entity;

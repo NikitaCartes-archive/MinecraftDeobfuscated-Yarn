@@ -51,7 +51,7 @@ extends StructureFeature<ProbabilityConfig> {
         }
 
         @Override
-        public BlockPos getPos() {
+        public BlockPos getBlockPos() {
             return new BlockPos((this.getChunkX() << 4) + 9, 0, (this.getChunkZ() << 4) + 9);
         }
     }

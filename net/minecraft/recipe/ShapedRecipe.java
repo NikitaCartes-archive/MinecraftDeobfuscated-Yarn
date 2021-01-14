@@ -34,17 +34,17 @@ public class ShapedRecipe
 implements CraftingRecipe {
     private final int width;
     private final int height;
-    private final DefaultedList<Ingredient> inputs;
+    private final DefaultedList<Ingredient> input;
     private final ItemStack output;
     private final Identifier id;
     private final String group;
 
-    public ShapedRecipe(Identifier id, String group, int width, int height, DefaultedList<Ingredient> ingredients, ItemStack output) {
+    public ShapedRecipe(Identifier id, String group, int width, int height, DefaultedList<Ingredient> input, ItemStack output) {
         this.id = id;
         this.group = group;
         this.width = width;
         this.height = height;
-        this.inputs = ingredients;
+        this.input = input;
         this.output = output;
     }
 
@@ -70,8 +70,8 @@ implements CraftingRecipe {
     }
 
     @Override
-    public DefaultedList<Ingredient> getPreviewInputs() {
-        return this.inputs;
+    public DefaultedList<Ingredient> getIngredients() {
+        return this.input;
     }
 
     @Override
@@ -84,24 +84,24 @@ implements CraftingRecipe {
     public boolean matches(CraftingInventory craftingInventory, World world) {
         for (int i = 0; i <= craftingInventory.getWidth() - this.width; ++i) {
             for (int j = 0; j <= craftingInventory.getHeight() - this.height; ++j) {
-                if (this.matchesSmall(craftingInventory, i, j, true)) {
+                if (this.matchesPattern(craftingInventory, i, j, true)) {
                     return true;
                 }
-                if (!this.matchesSmall(craftingInventory, i, j, false)) continue;
+                if (!this.matchesPattern(craftingInventory, i, j, false)) continue;
                 return true;
             }
         }
         return false;
     }
 
-    private boolean matchesSmall(CraftingInventory inv, int offsetX, int offsetY, boolean bl) {
+    private boolean matchesPattern(CraftingInventory inv, int offsetX, int offsetY, boolean flipped) {
         for (int i = 0; i < inv.getWidth(); ++i) {
             for (int j = 0; j < inv.getHeight(); ++j) {
                 int k = i - offsetX;
                 int l = j - offsetY;
                 Ingredient ingredient = Ingredient.EMPTY;
                 if (k >= 0 && l >= 0 && k < this.width && l < this.height) {
-                    ingredient = bl ? this.inputs.get(this.width - k - 1 + l * this.width) : this.inputs.get(k + l * this.width);
+                    ingredient = flipped ? this.input.get(this.width - k - 1 + l * this.width) : this.input.get(k + l * this.width);
                 }
                 if (ingredient.test(inv.getStack(i + j * inv.getWidth()))) continue;
                 return false;
@@ -123,14 +123,18 @@ implements CraftingRecipe {
         return this.height;
     }
 
-    private static DefaultedList<Ingredient> getIngredients(String[] pattern, Map<String, Ingredient> key, int width, int height) {
+    /**
+     * Compiles a pattern and series of symbols into a list of ingredients (the matrix) suitable for matching
+     * against a crafting grid.
+     */
+    private static DefaultedList<Ingredient> createPatternMatrix(String[] pattern, Map<String, Ingredient> symbols, int width, int height) {
         DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(width * height, Ingredient.EMPTY);
-        HashSet<String> set = Sets.newHashSet(key.keySet());
+        HashSet<String> set = Sets.newHashSet(symbols.keySet());
         set.remove(" ");
         for (int i = 0; i < pattern.length; ++i) {
             for (int j = 0; j < pattern[i].length(); ++j) {
                 String string = pattern[i].substring(j, j + 1);
-                Ingredient ingredient = key.get(string);
+                Ingredient ingredient = symbols.get(string);
                 if (ingredient == null) {
                     throw new JsonSyntaxException("Pattern references symbol '" + string + "' but it's not defined in the key");
                 }
@@ -144,16 +148,37 @@ implements CraftingRecipe {
         return defaultedList;
     }
 
+    /**
+     * Removes empty space from around the recipe pattern.
+     * 
+     * <p>Turns patterns such as:</p>
+     * <pre>
+     * {@code
+     * "   o"
+     * "   a"
+     * "    "
+     * }
+     * </pre>
+     * Into:
+     * <pre>
+     * {@code
+     * "o"
+     * "a"
+     * }
+     * </pre>
+     * 
+     * @return a new recipe pattern with all leading and trailing empty rows/columns removed
+     */
     @VisibleForTesting
-    static String[] combinePattern(String ... lines) {
+    static String[] removePadding(String ... pattern) {
         int i = Integer.MAX_VALUE;
         int j = 0;
         int k = 0;
         int l = 0;
-        for (int m = 0; m < lines.length; ++m) {
-            String string = lines[m];
-            i = Math.min(i, ShapedRecipe.findNextIngredient(string));
-            int n = ShapedRecipe.findNextIngredientReverse(string);
+        for (int m = 0; m < pattern.length; ++m) {
+            String string = pattern[m];
+            i = Math.min(i, ShapedRecipe.findFirstSymbol(string));
+            int n = ShapedRecipe.findLastSymbol(string);
             j = Math.max(j, n);
             if (n < 0) {
                 if (k == m) {
@@ -164,24 +189,24 @@ implements CraftingRecipe {
             }
             l = 0;
         }
-        if (lines.length == l) {
+        if (pattern.length == l) {
             return new String[0];
         }
-        String[] strings = new String[lines.length - l - k];
+        String[] strings = new String[pattern.length - l - k];
         for (int o = 0; o < strings.length; ++o) {
-            strings[o] = lines[o + k].substring(i, j + 1);
+            strings[o] = pattern[o + k].substring(i, j + 1);
         }
         return strings;
     }
 
-    private static int findNextIngredient(String pattern) {
+    private static int findFirstSymbol(String line) {
         int i;
-        for (i = 0; i < pattern.length() && pattern.charAt(i) == ' '; ++i) {
+        for (i = 0; i < line.length() && line.charAt(i) == ' '; ++i) {
         }
         return i;
     }
 
-    private static int findNextIngredientReverse(String pattern) {
+    private static int findLastSymbol(String pattern) {
         int i;
         for (i = pattern.length() - 1; i >= 0 && pattern.charAt(i) == ' '; --i) {
         }
@@ -209,7 +234,12 @@ implements CraftingRecipe {
         return strings;
     }
 
-    private static Map<String, Ingredient> getComponents(JsonObject json) {
+    /**
+     * Reads the pattern symbols.
+     * 
+     * @return a mapping from a symbol to the ingredient it represents
+     */
+    private static Map<String, Ingredient> readSymbols(JsonObject json) {
         HashMap<String, Ingredient> map = Maps.newHashMap();
         for (Map.Entry<String, JsonElement> entry : json.entrySet()) {
             if (entry.getKey().length() != 1) {
@@ -239,11 +269,11 @@ implements CraftingRecipe {
         @Override
         public ShapedRecipe read(Identifier identifier, JsonObject jsonObject) {
             String string = JsonHelper.getString(jsonObject, "group", "");
-            Map map = ShapedRecipe.getComponents(JsonHelper.getObject(jsonObject, "key"));
-            String[] strings = ShapedRecipe.combinePattern(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
+            Map map = ShapedRecipe.readSymbols(JsonHelper.getObject(jsonObject, "key"));
+            String[] strings = ShapedRecipe.removePadding(ShapedRecipe.getPattern(JsonHelper.getArray(jsonObject, "pattern")));
             int i = strings[0].length();
             int j = strings.length;
-            DefaultedList defaultedList = ShapedRecipe.getIngredients(strings, map, i, j);
+            DefaultedList defaultedList = ShapedRecipe.createPatternMatrix(strings, map, i, j);
             ItemStack itemStack = ShapedRecipe.getItemStack(JsonHelper.getObject(jsonObject, "result"));
             return new ShapedRecipe(identifier, string, i, j, defaultedList, itemStack);
         }
@@ -266,7 +296,7 @@ implements CraftingRecipe {
             packetByteBuf.writeVarInt(shapedRecipe.width);
             packetByteBuf.writeVarInt(shapedRecipe.height);
             packetByteBuf.writeString(shapedRecipe.group);
-            for (Ingredient ingredient : shapedRecipe.inputs) {
+            for (Ingredient ingredient : shapedRecipe.input) {
                 ingredient.write(packetByteBuf);
             }
             packetByteBuf.writeItemStack(shapedRecipe.output);

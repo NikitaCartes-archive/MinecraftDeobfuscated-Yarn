@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.attribute.FileAttribute;
 import java.util.Map;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.resource.Resource;
@@ -109,16 +109,16 @@ public class StructureManager {
     }
 
     private Structure readStructure(InputStream structureInputStream) throws IOException {
-        CompoundTag compoundTag = NbtIo.readCompressed(structureInputStream);
-        return this.createStructure(compoundTag);
+        NbtCompound nbtCompound = NbtIo.readCompressed(structureInputStream);
+        return this.createStructure(nbtCompound);
     }
 
-    public Structure createStructure(CompoundTag tag) {
-        if (!tag.contains("DataVersion", 99)) {
-            tag.putInt("DataVersion", 500);
+    public Structure createStructure(NbtCompound nbt) {
+        if (!nbt.contains("DataVersion", 99)) {
+            nbt.putInt("DataVersion", 500);
         }
         Structure structure = new Structure();
-        structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
+        structure.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, nbt, nbt.getInt("DataVersion")));
         return structure;
     }
 
@@ -138,9 +138,9 @@ public class StructureManager {
             LOGGER.error("Failed to create parent directory: {}", (Object)path2);
             return false;
         }
-        CompoundTag compoundTag = structure.toTag(new CompoundTag());
+        NbtCompound nbtCompound = structure.writeNbt(new NbtCompound());
         try (FileOutputStream outputStream = new FileOutputStream(path.toFile());){
-            NbtIo.writeCompressed(compoundTag, outputStream);
+            NbtIo.writeCompressed(nbtCompound, outputStream);
         } catch (Throwable throwable) {
             return false;
         }

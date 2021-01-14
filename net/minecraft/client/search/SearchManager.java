@@ -11,18 +11,18 @@ import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.search.SearchableContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 
 @Environment(value=EnvType.CLIENT)
 public class SearchManager
-implements SynchronousResourceReloadListener {
+implements SynchronousResourceReloader {
     public static final Key<ItemStack> ITEM_TOOLTIP = new Key();
     public static final Key<ItemStack> ITEM_TAG = new Key();
     public static final Key<RecipeResultCollection> RECIPE_OUTPUT = new Key();
     private final Map<Key<?>, SearchableContainer<?>> instances = Maps.newHashMap();
 
     @Override
-    public void apply(ResourceManager manager) {
+    public void reload(ResourceManager manager) {
         for (SearchableContainer<?> searchableContainer : this.instances.values()) {
             searchableContainer.reload();
         }

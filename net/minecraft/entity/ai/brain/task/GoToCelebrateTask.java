@@ -19,10 +19,10 @@ extends Task<E> {
     private final int completionRange;
     private final float field_23130;
 
-    public GoToCelebrateTask(int completionRange, float f) {
+    public GoToCelebrateTask(int completionRange, float speed) {
         super(ImmutableMap.of(MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
         this.completionRange = completionRange;
-        this.field_23130 = f;
+        this.field_23130 = speed;
     }
 
     @Override

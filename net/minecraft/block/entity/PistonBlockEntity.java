@@ -18,7 +18,7 @@ import net.minecraft.block.enums.PistonType;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.property.Properties;
@@ -62,8 +62,8 @@ implements Tickable {
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.writeNbt(new NbtCompound());
     }
 
     public boolean isExtending() {
@@ -290,7 +290,7 @@ implements Tickable {
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         super.fromTag(state, tag);
         this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
         this.facing = Direction.byId(tag.getInt("facing"));
@@ -300,14 +300,14 @@ implements Tickable {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
-        tag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
-        tag.putInt("facing", this.facing.getId());
-        tag.putFloat("progress", this.lastProgress);
-        tag.putBoolean("extending", this.extending);
-        tag.putBoolean("source", this.source);
-        return tag;
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
+        nbt.putInt("facing", this.facing.getId());
+        nbt.putFloat("progress", this.lastProgress);
+        nbt.putBoolean("extending", this.extending);
+        nbt.putBoolean("source", this.source);
+        return nbt;
     }
 
     public VoxelShape getCollisionShape(BlockView world, BlockPos pos) {
@@ -330,7 +330,7 @@ implements Tickable {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public double getSquaredRenderDistance() {
+    public double getRenderDistance() {
         return 68.0;
     }
 }

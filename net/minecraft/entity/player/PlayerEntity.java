@@ -73,8 +73,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SwordItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityVelocityUpdateS2CPacket;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -124,8 +124,8 @@ extends LivingEntity {
     private static final TrackedData<Integer> SCORE = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.INTEGER);
     protected static final TrackedData<Byte> PLAYER_MODEL_PARTS = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
     protected static final TrackedData<Byte> MAIN_ARM = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.BYTE);
-    protected static final TrackedData<CompoundTag> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
-    protected static final TrackedData<CompoundTag> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    protected static final TrackedData<NbtCompound> LEFT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
+    protected static final TrackedData<NbtCompound> RIGHT_SHOULDER_ENTITY = DataTracker.registerData(PlayerEntity.class, TrackedDataHandlerRegistry.TAG_COMPOUND);
     private long shoulderEntityAddedTime;
     public final PlayerInventory inventory = new PlayerInventory(this);
     protected EnderChestInventory enderChestInventory = new EnderChestInventory();
@@ -194,8 +194,8 @@ extends LivingEntity {
         this.dataTracker.startTracking(SCORE, 0);
         this.dataTracker.startTracking(PLAYER_MODEL_PARTS, (byte)0);
         this.dataTracker.startTracking(MAIN_ARM, (byte)1);
-        this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new CompoundTag());
-        this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new CompoundTag());
+        this.dataTracker.startTracking(LEFT_SHOULDER_ENTITY, new NbtCompound());
+        this.dataTracker.startTracking(RIGHT_SHOULDER_ENTITY, new NbtCompound());
     }
 
     @Override
@@ -245,7 +245,7 @@ extends LivingEntity {
         double d = MathHelper.clamp(this.getX(), -2.9999999E7, 2.9999999E7);
         double e = MathHelper.clamp(this.getZ(), -2.9999999E7, 2.9999999E7);
         if (d != this.getX() || e != this.getZ()) {
-            this.updatePosition(d, this.getY(), e);
+            this.setPosition(d, this.getY(), e);
         }
         ++this.lastAttackedTicks;
         ItemStack itemStack = this.getMainHandStack();
@@ -257,7 +257,7 @@ extends LivingEntity {
         }
         this.updateTurtleHelmet();
         this.itemCooldownManager.update();
-        this.updateSize();
+        this.updatePose();
     }
 
     public boolean shouldCancelInteraction() {
@@ -319,7 +319,7 @@ extends LivingEntity {
         this.capeY += e * 0.25;
     }
 
-    protected void updateSize() {
+    protected void updatePose() {
         if (!this.wouldPoseNotCollide(EntityPose.SWIMMING)) {
             return;
         }
@@ -472,9 +472,9 @@ extends LivingEntity {
         }
     }
 
-    private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
-        if (!(compoundTag == null || compoundTag.contains("Silent") && compoundTag.getBoolean("Silent") || this.world.random.nextInt(200) != 0)) {
-            String string = compoundTag.getString("id");
+    private void updateShoulderEntity(@Nullable NbtCompound entityNbt) {
+        if (!(entityNbt == null || entityNbt.contains("Silent") && entityNbt.getBoolean("Silent") || this.world.random.nextInt(200) != 0)) {
+            String string = entityNbt.getString("id");
             EntityType.get(string).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
                 if (!ParrotEntity.imitateNearbyMob(this.world, this)) {
                     this.world.playSound(null, this.getX(), this.getY(), this.getZ(), ParrotEntity.getRandomSound(this.world, this.world.random), this.getSoundCategory(), 1.0f, ParrotEntity.getSoundPitch(this.world.random));
@@ -565,7 +565,7 @@ extends LivingEntity {
     }
 
     /**
-     * @param throwRandomly If true, the item will be thrown in a random direction from the entity regardless of which direction the entity is facing
+     * @param throwRandomly if true, the item will be thrown in a random direction from the entity regardless of which direction the entity is facing
      */
     @Nullable
     public ItemEntity dropItem(ItemStack stack, boolean throwRandomly, boolean retainOwnership) {
@@ -640,60 +640,68 @@ extends LivingEntity {
         return f;
     }
 
-    public boolean isUsingEffectiveTool(BlockState block) {
-        return !block.isToolRequired() || this.inventory.getMainHandStack().isEffectiveOn(block);
+    /**
+     * Determines whether the player is able to harvest drops from the specified block state.
+     * If a block requires a special tool, it will check
+     * whether the held item is effective for that block, otherwise
+     * it returns {@code true}.
+     * 
+     * @see net.minecraft.item.Item#isSuitableFor(BlockState)
+     */
+    public boolean canHarvest(BlockState state) {
+        return !state.isToolRequired() || this.inventory.getMainHandStack().isSuitableFor(state);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
         this.setUuid(PlayerEntity.getUuidFromProfile(this.gameProfile));
-        ListTag listTag = tag.getList("Inventory", 10);
-        this.inventory.deserialize(listTag);
-        this.inventory.selectedSlot = tag.getInt("SelectedItemSlot");
-        this.sleepTimer = tag.getShort("SleepTimer");
-        this.experienceProgress = tag.getFloat("XpP");
-        this.experienceLevel = tag.getInt("XpLevel");
-        this.totalExperience = tag.getInt("XpTotal");
-        this.enchantmentTableSeed = tag.getInt("XpSeed");
+        NbtList nbtList = nbt.getList("Inventory", 10);
+        this.inventory.readNbt(nbtList);
+        this.inventory.selectedSlot = nbt.getInt("SelectedItemSlot");
+        this.sleepTimer = nbt.getShort("SleepTimer");
+        this.experienceProgress = nbt.getFloat("XpP");
+        this.experienceLevel = nbt.getInt("XpLevel");
+        this.totalExperience = nbt.getInt("XpTotal");
+        this.enchantmentTableSeed = nbt.getInt("XpSeed");
         if (this.enchantmentTableSeed == 0) {
             this.enchantmentTableSeed = this.random.nextInt();
         }
-        this.setScore(tag.getInt("Score"));
-        this.hungerManager.fromTag(tag);
-        this.abilities.deserialize(tag);
+        this.setScore(nbt.getInt("Score"));
+        this.hungerManager.readNbt(nbt);
+        this.abilities.readNbt(nbt);
         this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(this.abilities.getWalkSpeed());
-        if (tag.contains("EnderItems", 9)) {
-            this.enderChestInventory.readTags(tag.getList("EnderItems", 10));
+        if (nbt.contains("EnderItems", 9)) {
+            this.enderChestInventory.readNbtList(nbt.getList("EnderItems", 10));
         }
-        if (tag.contains("ShoulderEntityLeft", 10)) {
-            this.setShoulderEntityLeft(tag.getCompound("ShoulderEntityLeft"));
+        if (nbt.contains("ShoulderEntityLeft", 10)) {
+            this.setShoulderEntityLeft(nbt.getCompound("ShoulderEntityLeft"));
         }
-        if (tag.contains("ShoulderEntityRight", 10)) {
-            this.setShoulderEntityRight(tag.getCompound("ShoulderEntityRight"));
+        if (nbt.contains("ShoulderEntityRight", 10)) {
+            this.setShoulderEntityRight(nbt.getCompound("ShoulderEntityRight"));
         }
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-        tag.put("Inventory", this.inventory.serialize(new ListTag()));
-        tag.putInt("SelectedItemSlot", this.inventory.selectedSlot);
-        tag.putShort("SleepTimer", (short)this.sleepTimer);
-        tag.putFloat("XpP", this.experienceProgress);
-        tag.putInt("XpLevel", this.experienceLevel);
-        tag.putInt("XpTotal", this.totalExperience);
-        tag.putInt("XpSeed", this.enchantmentTableSeed);
-        tag.putInt("Score", this.getScore());
-        this.hungerManager.toTag(tag);
-        this.abilities.serialize(tag);
-        tag.put("EnderItems", this.enderChestInventory.getTags());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+        nbt.put("Inventory", this.inventory.writeNbt(new NbtList()));
+        nbt.putInt("SelectedItemSlot", this.inventory.selectedSlot);
+        nbt.putShort("SleepTimer", (short)this.sleepTimer);
+        nbt.putFloat("XpP", this.experienceProgress);
+        nbt.putInt("XpLevel", this.experienceLevel);
+        nbt.putInt("XpTotal", this.totalExperience);
+        nbt.putInt("XpSeed", this.enchantmentTableSeed);
+        nbt.putInt("Score", this.getScore());
+        this.hungerManager.writeNbt(nbt);
+        this.abilities.writeNbt(nbt);
+        nbt.put("EnderItems", this.enderChestInventory.toNbtList());
         if (!this.getShoulderEntityLeft().isEmpty()) {
-            tag.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
+            nbt.put("ShoulderEntityLeft", this.getShoulderEntityLeft());
         }
         if (!this.getShoulderEntityRight().isEmpty()) {
-            tag.put("ShoulderEntityRight", this.getShoulderEntityRight());
+            nbt.put("ShoulderEntityRight", this.getShoulderEntityRight());
         }
     }
 
@@ -848,7 +856,25 @@ extends LivingEntity {
     public void sendTradeOffers(int syncId, TradeOfferList offers, int levelProgress, int experience, boolean leveled, boolean refreshable) {
     }
 
-    public void openEditBookScreen(ItemStack book, Hand hand) {
+    /**
+     * Called when the player uses (defaults to right click) a writable or written
+     * book item.
+     * 
+     * <p>This can be called either on the client or the server player. Check {@code
+     * book} for whether this is a written or a writable book.
+     * 
+     * @implNote The writing of a writable book in vanilla is totally controlled by
+     * the client; the server cannot make the client open a book edit screen by
+     * making a server player use a writable book. Only when the client finishes
+     * writing a book it will send a {@linkplain net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket book update C2S packet}.
+     * 
+     * <p>Meanwhile, the reading of a written book is totally controlled and initiated
+     * by the server.
+     * 
+     * @param book the book
+     * @param hand the hand holding the book
+     */
+    public void useBook(ItemStack book, Hand hand) {
     }
 
     public ActionResult interact(Entity entity, Hand hand) {
@@ -1170,6 +1196,10 @@ extends LivingEntity {
         return Optional.empty();
     }
 
+    /**
+     * Returns whether this player has been sleeping long enough to count towards
+     * resetting the time of day and weather of the server.
+     */
     public boolean isSleepingLongEnough() {
         return this.isSleeping() && this.sleepTimer >= 100;
     }
@@ -1384,8 +1414,8 @@ extends LivingEntity {
     }
 
     @Override
-    public void onKilledOther(ServerWorld serverWorld, LivingEntity livingEntity) {
-        this.incrementStat(Stats.KILLED.getOrCreateStat(livingEntity.getType()));
+    public void onKilledOther(ServerWorld world, LivingEntity other) {
+        this.incrementStat(Stats.KILLED.getOrCreateStat(other.getType()));
     }
 
     @Override
@@ -1489,7 +1519,7 @@ extends LivingEntity {
     }
 
     @Override
-    protected int getCurrentExperience(PlayerEntity player) {
+    protected int getXpToDrop(PlayerEntity player) {
         if (this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY) || this.isSpectator()) {
             return 0;
         }
@@ -1574,17 +1604,17 @@ extends LivingEntity {
         return this.inventory.armor;
     }
 
-    public boolean addShoulderEntity(CompoundTag tag) {
+    public boolean addShoulderEntity(NbtCompound entityNbt) {
         if (this.hasVehicle() || !this.onGround || this.isTouchingWater()) {
             return false;
         }
         if (this.getShoulderEntityLeft().isEmpty()) {
-            this.setShoulderEntityLeft(tag);
+            this.setShoulderEntityLeft(entityNbt);
             this.shoulderEntityAddedTime = this.world.getTime();
             return true;
         }
         if (this.getShoulderEntityRight().isEmpty()) {
-            this.setShoulderEntityRight(tag);
+            this.setShoulderEntityRight(entityNbt);
             this.shoulderEntityAddedTime = this.world.getTime();
             return true;
         }
@@ -1594,19 +1624,19 @@ extends LivingEntity {
     protected void dropShoulderEntities() {
         if (this.shoulderEntityAddedTime + 20L < this.world.getTime()) {
             this.dropShoulderEntity(this.getShoulderEntityLeft());
-            this.setShoulderEntityLeft(new CompoundTag());
+            this.setShoulderEntityLeft(new NbtCompound());
             this.dropShoulderEntity(this.getShoulderEntityRight());
-            this.setShoulderEntityRight(new CompoundTag());
+            this.setShoulderEntityRight(new NbtCompound());
         }
     }
 
-    private void dropShoulderEntity(CompoundTag entityNbt) {
+    private void dropShoulderEntity(NbtCompound entityNbt) {
         if (!this.world.isClient && !entityNbt.isEmpty()) {
-            EntityType.getEntityFromTag(entityNbt, this.world).ifPresent(entity -> {
+            EntityType.getEntityFromNbt(entityNbt, this.world).ifPresent(entity -> {
                 if (entity instanceof TameableEntity) {
                     ((TameableEntity)entity).setOwnerUuid(this.uuid);
                 }
-                entity.updatePosition(this.getX(), this.getY() + (double)0.7f, this.getZ());
+                entity.setPosition(this.getX(), this.getY() + (double)0.7f, this.getZ());
                 ((ServerWorld)this.world).tryLoadEntity((Entity)entity);
             });
         }
@@ -1620,10 +1650,13 @@ extends LivingEntity {
         return !this.abilities.flying && !this.isSpectator() && super.isSwimming();
     }
 
+    /**
+     * Returns whether this player is in creative mode.
+     */
     public abstract boolean isCreative();
 
     @Override
-    public boolean canFly() {
+    public boolean isPushedByFluids() {
         return !this.abilities.flying;
     }
 
@@ -1633,7 +1666,7 @@ extends LivingEntity {
 
     @Override
     public Text getDisplayName() {
-        MutableText mutableText = Team.modifyText(this.getScoreboardTeam(), this.getName());
+        MutableText mutableText = Team.decorateName(this.getScoreboardTeam(), this.getName());
         return this.addTellClickEvent(mutableText);
     }
 
@@ -1723,7 +1756,7 @@ extends LivingEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean getReducedDebugInfo() {
+    public boolean hasReducedDebugInfo() {
         return this.reducedDebugInfo;
     }
 
@@ -1746,20 +1779,20 @@ extends LivingEntity {
         this.dataTracker.set(MAIN_ARM, (byte)(arm != Arm.LEFT ? 1 : 0));
     }
 
-    public CompoundTag getShoulderEntityLeft() {
+    public NbtCompound getShoulderEntityLeft() {
         return this.dataTracker.get(LEFT_SHOULDER_ENTITY);
     }
 
-    protected void setShoulderEntityLeft(CompoundTag entityTag) {
-        this.dataTracker.set(LEFT_SHOULDER_ENTITY, entityTag);
+    protected void setShoulderEntityLeft(NbtCompound entityNbt) {
+        this.dataTracker.set(LEFT_SHOULDER_ENTITY, entityNbt);
     }
 
-    public CompoundTag getShoulderEntityRight() {
+    public NbtCompound getShoulderEntityRight() {
         return this.dataTracker.get(RIGHT_SHOULDER_ENTITY);
     }
 
-    protected void setShoulderEntityRight(CompoundTag entityTag) {
-        this.dataTracker.set(RIGHT_SHOULDER_ENTITY, entityTag);
+    protected void setShoulderEntityRight(NbtCompound entityNbt) {
+        this.dataTracker.set(RIGHT_SHOULDER_ENTITY, entityNbt);
     }
 
     public float getAttackCooldownProgressPerTick() {

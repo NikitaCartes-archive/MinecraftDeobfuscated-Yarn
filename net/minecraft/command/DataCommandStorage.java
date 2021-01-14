@@ -6,7 +6,7 @@ package net.minecraft.command;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.stream.Stream;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentStateManager;
 
@@ -24,17 +24,17 @@ public class DataCommandStorage {
         return persistentState;
     }
 
-    public CompoundTag get(Identifier id) {
+    public NbtCompound get(Identifier id) {
         String string2;
         String string = id.getNamespace();
         PersistentState persistentState = this.stateManager.get(() -> this.method_22549(string, string2 = DataCommandStorage.getSaveKey(string)), string2);
-        return persistentState != null ? persistentState.get(id.getPath()) : new CompoundTag();
+        return persistentState != null ? persistentState.get(id.getPath()) : new NbtCompound();
     }
 
-    public void set(Identifier id, CompoundTag tag) {
+    public void set(Identifier id, NbtCompound nbt) {
         String string = id.getNamespace();
         String string2 = DataCommandStorage.getSaveKey(string);
-        this.stateManager.getOrCreate(() -> this.createStorage(string, string2), string2).set(id.getPath(), tag);
+        this.stateManager.getOrCreate(() -> this.createStorage(string, string2), string2).set(id.getPath(), nbt);
     }
 
     public Stream<Identifier> getIds() {
@@ -51,34 +51,34 @@ public class DataCommandStorage {
 
     static class PersistentState
     extends net.minecraft.world.PersistentState {
-        private final Map<String, CompoundTag> map = Maps.newHashMap();
+        private final Map<String, NbtCompound> map = Maps.newHashMap();
 
         public PersistentState(String string) {
             super(string);
         }
 
         @Override
-        public void fromTag(CompoundTag tag) {
-            CompoundTag compoundTag = tag.getCompound("contents");
-            for (String string : compoundTag.getKeys()) {
-                this.map.put(string, compoundTag.getCompound(string));
+        public void fromTag(NbtCompound tag) {
+            NbtCompound nbtCompound = tag.getCompound("contents");
+            for (String string : nbtCompound.getKeys()) {
+                this.map.put(string, nbtCompound.getCompound(string));
             }
         }
 
         @Override
-        public CompoundTag toTag(CompoundTag tag) {
-            CompoundTag compoundTag = new CompoundTag();
-            this.map.forEach((string, compoundTag2) -> compoundTag.put((String)string, compoundTag2.copy()));
-            tag.put("contents", compoundTag);
-            return tag;
+        public NbtCompound writeNbt(NbtCompound nbt) {
+            NbtCompound nbtCompound = new NbtCompound();
+            this.map.forEach((string, nbtCompound2) -> nbtCompound.put((String)string, nbtCompound2.copy()));
+            nbt.put("contents", nbtCompound);
+            return nbt;
         }
 
-        public CompoundTag get(String name) {
-            CompoundTag compoundTag = this.map.get(name);
-            return compoundTag != null ? compoundTag : new CompoundTag();
+        public NbtCompound get(String name) {
+            NbtCompound nbtCompound = this.map.get(name);
+            return nbtCompound != null ? nbtCompound : new NbtCompound();
         }
 
-        public void set(String name, CompoundTag tag) {
+        public void set(String name, NbtCompound tag) {
             if (tag.isEmpty()) {
                 this.map.remove(name);
             } else {

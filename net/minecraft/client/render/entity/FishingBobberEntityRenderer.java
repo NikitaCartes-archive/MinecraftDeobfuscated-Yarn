@@ -13,7 +13,6 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.item.ItemStack;
@@ -24,6 +23,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class FishingBobberEntityRenderer
@@ -50,7 +50,7 @@ extends EntityRenderer<FishingBobberEntity> {
         matrixStack.push();
         matrixStack.scale(0.5f, 0.5f, 0.5f);
         matrixStack.multiply(this.dispatcher.getRotation());
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f));
         MatrixStack.Entry entry = matrixStack.peek();
         Matrix4f matrix4f = entry.getModel();
         Matrix3f matrix3f = entry.getNormal();

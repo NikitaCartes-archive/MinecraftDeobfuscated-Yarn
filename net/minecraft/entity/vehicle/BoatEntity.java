@@ -10,7 +10,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
-import net.minecraft.class_5459;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -28,7 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.Item;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.BoatPaddleStateC2SPacket;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -48,6 +47,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,7 +92,7 @@ extends Entity {
 
     public BoatEntity(World world, double x, double y, double z) {
         this((EntityType<? extends BoatEntity>)EntityType.BOAT, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         this.setVelocity(Vec3d.ZERO);
         this.prevX = x;
         this.prevY = y;
@@ -140,8 +140,8 @@ extends Entity {
     }
 
     @Override
-    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-        return LivingEntity.method_31079(super.method_30633(axis, arg));
+    protected Vec3d method_30633(Direction.Axis axis, PortalUtil.Rectangle rectangle) {
+        return LivingEntity.method_31079(super.method_30633(axis, rectangle));
     }
 
     @Override
@@ -370,7 +370,7 @@ extends Entity {
         this.yaw = (float)((double)this.yaw + g / (double)this.field_7708);
         this.pitch = (float)((double)this.pitch + (this.boatPitch - (double)this.pitch) / (double)this.field_7708);
         --this.field_7708;
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
         this.setRotation(this.yaw, this.pitch);
     }
 
@@ -523,7 +523,7 @@ extends Entity {
         this.velocityDecay = 0.05f;
         if (this.lastLocation == Location.IN_AIR && this.location != Location.IN_AIR && this.location != Location.ON_LAND) {
             this.waterLevel = this.getBodyY(1.0);
-            this.updatePosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
+            this.setPosition(this.getX(), (double)(this.method_7544() - this.getHeight()) + 0.101, this.getZ());
             this.setVelocity(this.getVelocity().multiply(1.0, 0.0, 1.0));
             this.fallVelocity = 0.0;
             this.location = Location.IN_WATER;
@@ -595,13 +595,13 @@ extends Entity {
             }
         }
         Vec3d vec3d = new Vec3d(f, 0.0, 0.0).rotateY(-this.yaw * ((float)Math.PI / 180) - 1.5707964f);
-        passenger.updatePosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
+        passenger.setPosition(this.getX() + vec3d.x, this.getY() + (double)g, this.getZ() + vec3d.z);
         passenger.yaw += this.yawVelocity;
         passenger.setHeadYaw(passenger.getHeadYaw() + this.yawVelocity);
         this.copyEntityData(passenger);
         if (passenger instanceof AnimalEntity && this.getPassengerList().size() > 1) {
             int j = passenger.getEntityId() % 2 == 0 ? 90 : 270;
-            passenger.setYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
+            passenger.setBodyYaw(((AnimalEntity)passenger).bodyYaw + (float)j);
             passenger.setHeadYaw(passenger.getHeadYaw() + (float)j);
         }
     }
@@ -632,7 +632,7 @@ extends Entity {
     }
 
     protected void copyEntityData(Entity entity) {
-        entity.setYaw(this.yaw);
+        entity.setBodyYaw(this.yaw);
         float f = MathHelper.wrapDegrees(entity.yaw - this.yaw);
         float g = MathHelper.clamp(f, -105.0f, 105.0f);
         entity.prevYaw += g - f;
@@ -647,14 +647,14 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag tag) {
-        tag.putString("Type", this.getBoatType().getName());
+    protected void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putString("Type", this.getBoatType().getName());
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag tag) {
-        if (tag.contains("Type", 8)) {
-            this.setBoatType(Type.getType(tag.getString("Type")));
+    protected void readCustomDataFromNbt(NbtCompound nbt) {
+        if (nbt.contains("Type", 8)) {
+            this.setBoatType(Type.getType(nbt.getString("Type")));
         }
     }
 

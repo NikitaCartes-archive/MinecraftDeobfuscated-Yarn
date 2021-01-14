@@ -59,12 +59,12 @@ extends FoliagePlacer {
     }
 
     @Override
-    protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
-        if (dx == -1 && !giantTrunk) {
-            return baseHeight == dz && y == dz;
+    protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+        if (y == -1 && !giantTrunk) {
+            return dx == radius && dz == radius;
         }
-        if (dx == 1) {
-            return baseHeight + y > dz * 2 - 2;
+        if (y == 1) {
+            return dx + dz > radius * 2 - 2;
         }
         return false;
     }

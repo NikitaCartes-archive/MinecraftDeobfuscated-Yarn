@@ -30,7 +30,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.item.SuspiciousStewItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -170,24 +170,24 @@ implements Shearable {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putString("Type", this.getMooshroomType().name);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putString("Type", this.getMooshroomType().name);
         if (this.stewEffect != null) {
-            tag.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
-            tag.putInt("EffectDuration", this.stewEffectDuration);
+            nbt.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
+            nbt.putInt("EffectDuration", this.stewEffectDuration);
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        this.setType(Type.fromName(tag.getString("Type")));
-        if (tag.contains("EffectId", 1)) {
-            this.stewEffect = StatusEffect.byRawId(tag.getByte("EffectId"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setType(Type.fromName(nbt.getString("Type")));
+        if (nbt.contains("EffectId", 1)) {
+            this.stewEffect = StatusEffect.byRawId(nbt.getByte("EffectId"));
         }
-        if (tag.contains("EffectDuration", 3)) {
-            this.stewEffectDuration = tag.getInt("EffectDuration");
+        if (nbt.contains("EffectDuration", 3)) {
+            this.stewEffectDuration = nbt.getInt("EffectDuration");
         }
     }
 

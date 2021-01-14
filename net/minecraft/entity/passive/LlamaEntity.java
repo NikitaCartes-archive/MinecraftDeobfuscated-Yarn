@@ -43,7 +43,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -95,22 +95,22 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putInt("Variant", this.getVariant());
-        tag.putInt("Strength", this.getStrength());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Variant", this.getVariant());
+        nbt.putInt("Strength", this.getStrength());
         if (!this.items.getStack(1).isEmpty()) {
-            tag.put("DecorItem", this.items.getStack(1).toTag(new CompoundTag()));
+            nbt.put("DecorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        this.setStrength(tag.getInt("Strength"));
-        super.readCustomDataFromTag(tag);
-        this.setVariant(tag.getInt("Variant"));
-        if (tag.contains("DecorItem", 10)) {
-            this.items.setStack(1, ItemStack.fromTag(tag.getCompound("DecorItem")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        this.setStrength(nbt.getInt("Strength"));
+        super.readCustomDataFromNbt(nbt);
+        this.setVariant(nbt.getInt("Variant"));
+        if (nbt.contains("DecorItem", 10)) {
+            this.items.setStack(1, ItemStack.fromNbt(nbt.getCompound("DecorItem")));
         }
         this.updateSaddle();
     }
@@ -167,7 +167,7 @@ implements RangedAttackMob {
         float f = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
         float g = MathHelper.sin(this.bodyYaw * ((float)Math.PI / 180));
         float h = 0.3f;
-        passenger.updatePosition(this.getX() + (double)(0.3f * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3f * f));
+        passenger.setPosition(this.getX() + (double)(0.3f * g), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset(), this.getZ() - (double)(0.3f * f));
     }
 
     @Override
@@ -236,7 +236,7 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         int i;
         this.initializeStrength();
         if (entityData instanceof LlamaData) {
@@ -246,7 +246,7 @@ implements RangedAttackMob {
             entityData = new LlamaData(i);
         }
         this.setVariant(i);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override

@@ -46,10 +46,10 @@ import org.jetbrains.annotations.Nullable;
  * 
  * <p>Each text has a tree structure, embodying all its {@link
  * #getSiblings() siblings}. To iterate contents in the text and all
- * its siblings, call {@code visit} methods.</p>
+ * its siblings, call {@code visit} methods.
  * 
  * <p>This interface does not expose mutation operations. For mutation,
- * refer to {@link MutableText}.</p>
+ * refer to {@link MutableText}.
  * 
  * @see MutableText
  */
@@ -103,7 +103,7 @@ StringVisitable {
     /**
      * Copies the text itself, the style, and the siblings.
      * 
-     * <p>A shallow copy is made for the siblings.</p>
+     * <p>A shallow copy is made for the siblings.
      */
     public MutableText shallowCopy();
 

@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 public class TextCollector {
     private final List<StringVisitable> field_25260 = Lists.newArrayList();
 
-    public void add(StringVisitable stringVisitable) {
-        this.field_25260.add(stringVisitable);
+    public void add(StringVisitable text) {
+        this.field_25260.add(text);
     }
 
     @Nullable

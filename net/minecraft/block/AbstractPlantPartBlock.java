@@ -42,7 +42,7 @@ extends Block {
         return this.getRandomGrowthState(ctx.getWorld());
     }
 
-    public BlockState getRandomGrowthState(WorldAccess worldAccess) {
+    public BlockState getRandomGrowthState(WorldAccess world) {
         return this.getDefaultState();
     }
 

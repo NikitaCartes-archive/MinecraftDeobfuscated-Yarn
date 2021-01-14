@@ -68,7 +68,7 @@ public class HandledScreens {
         }
     }
 
-    public static boolean validateScreens() {
+    public static boolean isMissingScreens() {
         boolean bl = false;
         for (ScreenHandlerType screenHandlerType : Registry.SCREEN_HANDLER) {
             if (PROVIDERS.containsKey(screenHandlerType)) continue;

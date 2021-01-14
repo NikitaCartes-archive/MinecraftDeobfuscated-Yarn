@@ -17,7 +17,7 @@ extends LayerRandomnessSource {
         return this.createSampler(operator);
     }
 
-    default public R createSampler(LayerOperator operator, R layerSampler, R layerSampler2) {
+    default public R createSampler(LayerOperator operator, R firstParent, R secondParent) {
         return this.createSampler(operator);
     }
 

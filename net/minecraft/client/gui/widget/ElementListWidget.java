@@ -28,7 +28,7 @@ extends EntryListWidget<E> {
     }
 
     @Override
-    protected boolean isSelectedItem(int index) {
+    protected boolean isSelectedEntry(int index) {
         return false;
     }
 

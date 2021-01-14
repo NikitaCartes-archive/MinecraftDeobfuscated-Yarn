@@ -82,8 +82,8 @@ public class Util {
         return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
     }
 
-    public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object object) {
-        return property.name((Comparable)object);
+    public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object value) {
+        return property.name((Comparable)value);
     }
 
     public static String createTranslationKey(String type, @Nullable Identifier id) {
@@ -173,8 +173,8 @@ public class Util {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void throwUnchecked(Throwable throwable) {
-        throw throwable instanceof RuntimeException ? (RuntimeException)throwable : new RuntimeException(throwable);
+    public static void throwUnchecked(Throwable t) {
+        throw t instanceof RuntimeException ? (RuntimeException)t : new RuntimeException(t);
     }
 
     private static void method_18347(Thread thread, Throwable throwable) {
@@ -290,6 +290,18 @@ public class Util {
         return IdentityHashStrategy.INSTANCE;
     }
 
+    /**
+     * Combines a list of {@code futures} into one future that holds a list
+     * of their results.
+     * 
+     * <p>The returned future is fail-fast; if any of the input futures fails,
+     * this returned future will be immediately completed exceptionally than
+     * waiting for other input futures.
+     * 
+     * @return the combined future
+     * 
+     * @param futures the completable futures to combine
+     */
     public static <V> CompletableFuture<List<V>> combine(List<? extends CompletableFuture<? extends V>> futures) {
         ArrayList list = Lists.newArrayListWithCapacity(futures.size());
         CompletableFuture[] completableFutures = new CompletableFuture[futures.size()];
@@ -312,11 +324,11 @@ public class Util {
         return DataFixUtils.orElseGet(optional.map(Stream::of), Stream::empty);
     }
 
-    public static <T> Optional<T> ifPresentOrElse(Optional<T> optional, Consumer<T> consumer, Runnable runnable) {
+    public static <T> Optional<T> ifPresentOrElse(Optional<T> optional, Consumer<T> presentAction, Runnable elseAction) {
         if (optional.isPresent()) {
-            consumer.accept(optional.get());
+            presentAction.accept(optional.get());
         } else {
-            runnable.run();
+            elseAction.run();
         }
         return optional;
     }
@@ -426,8 +438,8 @@ public class Util {
         };
     }
 
-    private static boolean attemptTasks(BooleanSupplier ... booleanSuppliers) {
-        for (BooleanSupplier booleanSupplier : booleanSuppliers) {
+    private static boolean attemptTasks(BooleanSupplier ... tasks) {
+        for (BooleanSupplier booleanSupplier : tasks) {
             if (booleanSupplier.getAsBoolean()) continue;
             LOGGER.warn("Failed to execute {}", (Object)booleanSupplier);
             return false;
@@ -491,8 +503,8 @@ public class Util {
         return string2 -> consumer.accept(string + string2);
     }
 
-    public static DataResult<int[]> toIntArray(IntStream intStream, int length) {
-        int[] is = intStream.limit(length + 1).toArray();
+    public static DataResult<int[]> toArray(IntStream stream, int length) {
+        int[] is = stream.limit(length + 1).toArray();
         if (is.length != length) {
             String string = "Input is not a list of " + length + " ints";
             if (is.length >= length) {

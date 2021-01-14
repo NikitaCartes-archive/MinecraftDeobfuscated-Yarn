@@ -23,7 +23,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -32,7 +32,7 @@ import net.minecraft.world.BlockRenderView;
 
 @Environment(value=EnvType.CLIENT)
 public class BlockRenderManager
-implements SynchronousResourceReloadListener {
+implements SynchronousResourceReloader {
     private final BlockModels models;
     private final BlockModelRenderer blockModelRenderer;
     private final FluidRenderer fluidRenderer;
@@ -74,9 +74,9 @@ implements SynchronousResourceReloadListener {
         }
     }
 
-    public boolean renderFluid(BlockPos pos, BlockRenderView blockRenderView, VertexConsumer vertexConsumer, FluidState fluidState) {
+    public boolean renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, FluidState state) {
         try {
-            return this.fluidRenderer.render(blockRenderView, pos, vertexConsumer, fluidState);
+            return this.fluidRenderer.render(world, pos, vertexConsumer, state);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating liquid in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
@@ -115,7 +115,7 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager manager) {
+    public void reload(ResourceManager manager) {
         this.fluidRenderer.onResourceReload();
     }
 }

@@ -16,15 +16,15 @@ import net.minecraft.entity.mob.ZombieEntity;
 public class ZombieVillagerEntityModel<T extends ZombieEntity>
 extends BipedEntityModel<T>
 implements ModelWithHat {
-    private ModelPart hat;
+    private ModelPart hatRim;
 
     public ZombieVillagerEntityModel(float scale, boolean bl) {
         super(scale, 0.0f, 64, bl ? 32 : 64);
         if (bl) {
             this.head = new ModelPart(this, 0, 0);
             this.head.addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 8.0f, 8.0f, scale);
-            this.torso = new ModelPart(this, 16, 16);
-            this.torso.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, scale + 0.1f);
+            this.body = new ModelPart(this, 16, 16);
+            this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, scale + 0.1f);
             this.rightLeg = new ModelPart(this, 0, 16);
             this.rightLeg.setPivot(-2.0f, 12.0f, 0.0f);
             this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale + 0.1f);
@@ -36,15 +36,15 @@ implements ModelWithHat {
             this.head = new ModelPart(this, 0, 0);
             this.head.setTextureOffset(0, 0).addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, scale);
             this.head.setTextureOffset(24, 0).addCuboid(-1.0f, -3.0f, -6.0f, 2.0f, 4.0f, 2.0f, scale);
-            this.helmet = new ModelPart(this, 32, 0);
-            this.helmet.addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, scale + 0.5f);
-            this.hat = new ModelPart(this);
-            this.hat.setTextureOffset(30, 47).addCuboid(-8.0f, -8.0f, -6.0f, 16.0f, 16.0f, 1.0f, scale);
-            this.hat.pitch = -1.5707964f;
-            this.helmet.addChild(this.hat);
-            this.torso = new ModelPart(this, 16, 20);
-            this.torso.addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f, scale);
-            this.torso.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, scale + 0.05f);
+            this.hat = new ModelPart(this, 32, 0);
+            this.hat.addCuboid(-4.0f, -10.0f, -4.0f, 8.0f, 10.0f, 8.0f, scale + 0.5f);
+            this.hatRim = new ModelPart(this);
+            this.hatRim.setTextureOffset(30, 47).addCuboid(-8.0f, -8.0f, -6.0f, 16.0f, 16.0f, 1.0f, scale);
+            this.hatRim.pitch = -1.5707964f;
+            this.hat.addChild(this.hatRim);
+            this.body = new ModelPart(this, 16, 20);
+            this.body.addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 12.0f, 6.0f, scale);
+            this.body.setTextureOffset(0, 38).addCuboid(-4.0f, 0.0f, -3.0f, 8.0f, 18.0f, 6.0f, scale + 0.05f);
             this.rightArm = new ModelPart(this, 44, 22);
             this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
             this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
@@ -71,8 +71,8 @@ implements ModelWithHat {
     @Override
     public void setHatVisible(boolean visible) {
         this.head.visible = visible;
-        this.helmet.visible = visible;
         this.hat.visible = visible;
+        this.hatRim.visible = visible;
     }
 }
 

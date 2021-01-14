@@ -15,12 +15,12 @@ import net.minecraft.client.render.entity.EnderDragonEntityRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class EndCrystalEntityRenderer
@@ -53,21 +53,21 @@ extends EntityRenderer<EndCrystalEntity> {
         matrixStack.scale(2.0f, 2.0f, 2.0f);
         matrixStack.translate(0.0, -0.5, 0.0);
         int k = OverlayTexture.DEFAULT_UV;
-        if (endCrystalEntity.getShowBottom()) {
+        if (endCrystalEntity.shouldShowBottom()) {
             this.bottom.render(matrixStack, vertexConsumer, i, k);
         }
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
         matrixStack.translate(0.0, 1.5f + h / 2.0f, 0.0);
-        matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
+        matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
         this.frame.render(matrixStack, vertexConsumer, i, k);
         float l = 0.875f;
         matrixStack.scale(0.875f, 0.875f, 0.875f);
-        matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
+        matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
         this.frame.render(matrixStack, vertexConsumer, i, k);
         matrixStack.scale(0.875f, 0.875f, 0.875f);
-        matrixStack.multiply(new Quaternion(new Vector3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(j));
+        matrixStack.multiply(new Quaternion(new Vec3f(SINE_45_DEGREES, 0.0f, SINE_45_DEGREES), 60.0f, true));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(j));
         this.core.render(matrixStack, vertexConsumer, i, k);
         matrixStack.pop();
         matrixStack.pop();

@@ -208,7 +208,7 @@ public interface DispenserBehavior {
                 BlockPos blockPos = pointer.getBlockPos().offset(direction);
                 ServerWorld world = pointer.getWorld();
                 ArmorStandEntity armorStandEntity = new ArmorStandEntity(world, (double)blockPos.getX() + 0.5, blockPos.getY(), (double)blockPos.getZ() + 0.5);
-                EntityType.loadFromEntityTag(world, null, armorStandEntity, stack.getTag());
+                EntityType.loadFromEntityNbt(world, null, armorStandEntity, stack.getTag());
                 armorStandEntity.yaw = direction.asRotation();
                 world.spawnEntity(armorStandEntity);
                 stack.decrement(1);
@@ -553,7 +553,7 @@ public interface DispenserBehavior {
     }
 
     public static void method_27042(BlockPointer blockPointer, Entity entity, Direction direction) {
-        entity.updatePosition(blockPointer.getX() + (double)direction.getOffsetX() * (0.5000099999997474 - (double)entity.getWidth() / 2.0), blockPointer.getY() + (double)direction.getOffsetY() * (0.5000099999997474 - (double)entity.getHeight() / 2.0) - (double)entity.getHeight() / 2.0, blockPointer.getZ() + (double)direction.getOffsetZ() * (0.5000099999997474 - (double)entity.getWidth() / 2.0));
+        entity.setPosition(blockPointer.getX() + (double)direction.getOffsetX() * (0.5000099999997474 - (double)entity.getWidth() / 2.0), blockPointer.getY() + (double)direction.getOffsetY() * (0.5000099999997474 - (double)entity.getHeight() / 2.0) - (double)entity.getHeight() / 2.0, blockPointer.getZ() + (double)direction.getOffsetZ() * (0.5000099999997474 - (double)entity.getWidth() / 2.0));
     }
 }
 

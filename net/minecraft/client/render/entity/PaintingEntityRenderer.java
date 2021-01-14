@@ -16,7 +16,6 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.texture.PaintingManager;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.decoration.painting.PaintingMotive;
 import net.minecraft.util.Identifier;
@@ -25,6 +24,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class PaintingEntityRenderer
@@ -36,7 +36,7 @@ extends EntityRenderer<PaintingEntity> {
     @Override
     public void render(PaintingEntity paintingEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
         matrixStack.push();
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - f));
         PaintingMotive paintingMotive = paintingEntity.motive;
         float h = 0.0625f;
         matrixStack.scale(0.0625f, 0.0625f, 0.0625f);

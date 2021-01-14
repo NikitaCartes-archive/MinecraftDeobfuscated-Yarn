@@ -52,7 +52,7 @@ public class RecipeBookGhostSlots {
         this.recipe = recipe;
     }
 
-    public void draw(MatrixStack matrixStack, MinecraftClient minecraftClient, int i, int j, boolean bl, float f) {
+    public void draw(MatrixStack matrices, MinecraftClient client, int i, int j, boolean bl, float f) {
         if (!Screen.hasControlDown()) {
             this.time += f;
         }
@@ -61,18 +61,18 @@ public class RecipeBookGhostSlots {
             int l = ghostInputSlot.getX() + i;
             int m = ghostInputSlot.getY() + j;
             if (k == 0 && bl) {
-                DrawableHelper.fill(matrixStack, l - 4, m - 4, l + 20, m + 20, 0x30FF0000);
+                DrawableHelper.fill(matrices, l - 4, m - 4, l + 20, m + 20, 0x30FF0000);
             } else {
-                DrawableHelper.fill(matrixStack, l, m, l + 16, m + 16, 0x30FF0000);
+                DrawableHelper.fill(matrices, l, m, l + 16, m + 16, 0x30FF0000);
             }
             ItemStack itemStack = ghostInputSlot.getCurrentItemStack();
-            ItemRenderer itemRenderer = minecraftClient.getItemRenderer();
+            ItemRenderer itemRenderer = client.getItemRenderer();
             itemRenderer.renderInGui(itemStack, l, m);
             RenderSystem.depthFunc(516);
-            DrawableHelper.fill(matrixStack, l, m, l + 16, m + 16, 0x30FFFFFF);
+            DrawableHelper.fill(matrices, l, m, l + 16, m + 16, 0x30FFFFFF);
             RenderSystem.depthFunc(515);
             if (k != 0) continue;
-            itemRenderer.renderGuiItemOverlay(minecraftClient.textRenderer, itemStack, l, m);
+            itemRenderer.renderGuiItemOverlay(client.textRenderer, itemStack, l, m);
         }
     }
 

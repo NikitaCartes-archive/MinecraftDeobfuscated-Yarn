@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import java.util.function.LongFunction;
 import net.minecraft.util.Util;
 import net.minecraft.world.biome.layer.AddBambooJungleLayer;
+import net.minecraft.world.biome.layer.AddBaseBiomesLayer;
 import net.minecraft.world.biome.layer.AddClimateLayers;
 import net.minecraft.world.biome.layer.AddColdClimatesLayer;
 import net.minecraft.world.biome.layer.AddDeepOceanLayer;
@@ -15,16 +16,15 @@ import net.minecraft.world.biome.layer.AddEdgeBiomesLayer;
 import net.minecraft.world.biome.layer.AddHillsLayer;
 import net.minecraft.world.biome.layer.AddIslandLayer;
 import net.minecraft.world.biome.layer.AddMushroomIslandLayer;
-import net.minecraft.world.biome.layer.AddRiversLayer;
 import net.minecraft.world.biome.layer.AddSunflowerPlainsLayer;
 import net.minecraft.world.biome.layer.ApplyOceanTemperatureLayer;
+import net.minecraft.world.biome.layer.ApplyRiverLayer;
 import net.minecraft.world.biome.layer.ContinentLayer;
 import net.minecraft.world.biome.layer.EaseBiomeEdgeLayer;
 import net.minecraft.world.biome.layer.IncreaseEdgeCurvatureLayer;
 import net.minecraft.world.biome.layer.NoiseToRiverLayer;
 import net.minecraft.world.biome.layer.OceanTemperatureLayer;
 import net.minecraft.world.biome.layer.ScaleLayer;
-import net.minecraft.world.biome.layer.SetBaseBiomesLayer;
 import net.minecraft.world.biome.layer.SimpleLandNoiseLayer;
 import net.minecraft.world.biome.layer.SmoothLayer;
 import net.minecraft.world.biome.layer.type.ParentedLayer;
@@ -140,7 +140,7 @@ public class BiomeLayers {
         layerFactory3 = BiomeLayers.stack(1000L, ScaleLayer.NORMAL, layerFactory3, 0, contextProvider);
         layerFactory3 = SimpleLandNoiseLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(100L), layerFactory3);
         LayerFactory layerFactory4 = layerFactory;
-        layerFactory4 = new SetBaseBiomesLayer(old).create((LayerSampleContext)contextProvider.apply(200L), layerFactory4);
+        layerFactory4 = new AddBaseBiomesLayer(old).create((LayerSampleContext)contextProvider.apply(200L), layerFactory4);
         layerFactory4 = AddBambooJungleLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1001L), layerFactory4);
         layerFactory4 = BiomeLayers.stack(1000L, ScaleLayer.NORMAL, layerFactory4, 2, contextProvider);
         layerFactory4 = EaseBiomeEdgeLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
@@ -161,7 +161,7 @@ public class BiomeLayers {
             layerFactory4 = AddEdgeBiomesLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
         }
         layerFactory4 = SmoothLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(1000L), layerFactory4);
-        layerFactory4 = AddRiversLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(100L), layerFactory4, layerFactory3);
+        layerFactory4 = ApplyRiverLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(100L), layerFactory4, layerFactory3);
         layerFactory4 = ApplyOceanTemperatureLayer.INSTANCE.create((LayerSampleContext)contextProvider.apply(100L), layerFactory4, layerFactory2);
         return layerFactory4;
     }

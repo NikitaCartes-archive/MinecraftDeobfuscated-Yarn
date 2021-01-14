@@ -88,15 +88,15 @@ extends BlockWithEntity {
         return this.ring(world, state, hit, player, true) ? ActionResult.success(world.isClient) : ActionResult.PASS;
     }
 
-    public boolean ring(World world, BlockState state, BlockHitResult blockHitResult, @Nullable PlayerEntity playerEntity, boolean bl) {
+    public boolean ring(World world, BlockState state, BlockHitResult hitResult, @Nullable PlayerEntity player, boolean bl) {
         boolean bl2;
-        Direction direction = blockHitResult.getSide();
-        BlockPos blockPos = blockHitResult.getBlockPos();
-        boolean bl3 = bl2 = !bl || this.isPointOnBell(state, direction, blockHitResult.getPos().y - (double)blockPos.getY());
+        Direction direction = hitResult.getSide();
+        BlockPos blockPos = hitResult.getBlockPos();
+        boolean bl3 = bl2 = !bl || this.isPointOnBell(state, direction, hitResult.getPos().y - (double)blockPos.getY());
         if (bl2) {
             boolean bl32 = this.ring(world, blockPos, direction);
-            if (bl32 && playerEntity != null) {
-                playerEntity.incrementStat(Stats.BELL_RING);
+            if (bl32 && player != null) {
+                player.incrementStat(Stats.BELL_RING);
             }
             return true;
         }
@@ -209,21 +209,21 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         Attachment attachment = state.get(ATTACHMENT);
         Direction direction2 = BellBlock.getPlacementSide(state).getOpposite();
         if (direction2 == direction && !state.canPlaceAt(world, pos) && attachment != Attachment.DOUBLE_WALL) {
             return Blocks.AIR.getDefaultState();
         }
         if (direction.getAxis() == state.get(FACING).getAxis()) {
-            if (attachment == Attachment.DOUBLE_WALL && !newState.isSideSolidFullSquare(world, posFrom, direction)) {
+            if (attachment == Attachment.DOUBLE_WALL && !neighborState.isSideSolidFullSquare(world, neighborPos, direction)) {
                 return (BlockState)((BlockState)state.with(ATTACHMENT, Attachment.SINGLE_WALL)).with(FACING, direction.getOpposite());
             }
-            if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && newState.isSideSolidFullSquare(world, posFrom, state.get(FACING))) {
+            if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && neighborState.isSideSolidFullSquare(world, neighborPos, state.get(FACING))) {
                 return (BlockState)state.with(ATTACHMENT, Attachment.DOUBLE_WALL);
             }
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

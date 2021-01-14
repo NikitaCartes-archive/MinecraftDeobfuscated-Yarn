@@ -111,9 +111,9 @@ extends HostileEntity {
     }
 
     @Override
-    public void setYaw(float yaw) {
-        this.yaw = yaw;
-        super.setYaw(yaw);
+    public void setBodyYaw(float bodyYaw) {
+        this.yaw = bodyYaw;
+        super.setBodyYaw(bodyYaw);
     }
 
     @Override

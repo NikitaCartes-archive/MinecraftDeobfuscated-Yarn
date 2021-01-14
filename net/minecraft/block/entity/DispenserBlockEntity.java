@@ -10,7 +10,7 @@ import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.Generic3x3ContainerScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.text.Text;
@@ -61,21 +61,21 @@ extends LootableContainerBlockEntity {
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         super.fromTag(state, tag);
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
         if (!this.deserializeLootTable(tag)) {
-            Inventories.fromTag(tag, this.inventory);
+            Inventories.readNbt(tag, this.inventory);
         }
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
-        if (!this.serializeLootTable(tag)) {
-            Inventories.toTag(tag, this.inventory);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        if (!this.serializeLootTable(nbt)) {
+            Inventories.writeNbt(nbt, this.inventory);
         }
-        return tag;
+        return nbt;
     }
 
     @Override

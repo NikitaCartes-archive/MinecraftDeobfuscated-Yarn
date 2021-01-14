@@ -47,10 +47,10 @@ extends Block
 implements InventoryProvider {
     public static final IntProperty LEVEL = Properties.LEVEL_8;
     public static final Object2FloatMap<ItemConvertible> ITEM_TO_LEVEL_INCREASE_CHANCE = new Object2FloatOpenHashMap<ItemConvertible>();
-    private static final VoxelShape RAY_TRACE_SHAPE = VoxelShapes.fullCube();
+    private static final VoxelShape RAYCAST_SHAPE = VoxelShapes.fullCube();
     private static final VoxelShape[] LEVEL_TO_COLLISION_SHAPE = Util.make(new VoxelShape[9], voxelShapes -> {
         for (int i = 0; i < 8; ++i) {
-            voxelShapes[i] = VoxelShapes.combineAndSimplify(RAY_TRACE_SHAPE, Block.createCuboidShape(2.0, Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
+            voxelShapes[i] = VoxelShapes.combineAndSimplify(RAYCAST_SHAPE, Block.createCuboidShape(2.0, Math.max(2, 1 + i * 2), 2.0, 14.0, 16.0, 14.0), BooleanBiFunction.ONLY_FIRST);
         }
         voxelShapes[8] = voxelShapes[7];
     });
@@ -175,7 +175,7 @@ implements InventoryProvider {
 
     @Override
     public VoxelShape getRaycastShape(BlockState state, BlockView world, BlockPos pos) {
-        return RAY_TRACE_SHAPE;
+        return RAYCAST_SHAPE;
     }
 
     @Override

@@ -119,8 +119,8 @@ public class PlayerSkinProvider {
         Util.getMainWorkerExecutor().execute(runnable);
     }
 
-    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(GameProfile gameProfile) {
-        Property property = Iterables.getFirst(gameProfile.getProperties().get("textures"), null);
+    public Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> getTextures(GameProfile profile) {
+        Property property = Iterables.getFirst(profile.getProperties().get("textures"), null);
         if (property == null) {
             return ImmutableMap.of();
         }

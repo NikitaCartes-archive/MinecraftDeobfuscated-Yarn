@@ -23,7 +23,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
 
 public class Heightmap {
-    private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> !blockState.isAir();
+    private static final Predicate<BlockState> NOT_AIR = blockState -> !blockState.isAir();
     private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().blocksMovement();
     private final PackedIntegerArray storage = new PackedIntegerArray(9, 256);
     private final Predicate<BlockState> blockPredicate;
@@ -111,7 +111,7 @@ public class Heightmap {
     }
 
     static /* synthetic */ Predicate method_16683() {
-        return ALWAYS_TRUE;
+        return NOT_AIR;
     }
 
     static /* synthetic */ Predicate method_16681() {

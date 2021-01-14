@@ -18,7 +18,7 @@ extends AnimalModel<T> {
     private final ModelPart rightEar;
     private final ModelPart leftEar;
     private final ModelPart nose;
-    private final ModelPart torso;
+    private final ModelPart body;
     private final ModelPart rightBackLeg;
     private final ModelPart leftBackLeg;
     private final ModelPart rightFrontLeg;
@@ -42,9 +42,9 @@ extends AnimalModel<T> {
         this.head.addChild(this.rightEar);
         this.head.addChild(this.leftEar);
         this.head.addChild(this.nose);
-        this.torso = new ModelPart(this, 24, 15);
-        this.torso.addCuboid(-3.0f, 3.999f, -3.5f, 6.0f, 11.0f, 6.0f);
-        this.torso.setPivot(0.0f, 16.0f, -6.0f);
+        this.body = new ModelPart(this, 24, 15);
+        this.body.addCuboid(-3.0f, 3.999f, -3.5f, 6.0f, 11.0f, 6.0f);
+        this.body.setPivot(0.0f, 16.0f, -6.0f);
         float f = 0.001f;
         this.rightBackLeg = new ModelPart(this, 13, 24);
         this.rightBackLeg.addCuboid(2.0f, 0.5f, -1.0f, 2.0f, 6.0f, 2.0f, 0.001f);
@@ -61,12 +61,12 @@ extends AnimalModel<T> {
         this.tail = new ModelPart(this, 30, 0);
         this.tail.addCuboid(2.0f, 0.0f, -1.0f, 4.0f, 9.0f, 5.0f);
         this.tail.setPivot(-4.0f, 15.0f, -1.0f);
-        this.torso.addChild(this.tail);
+        this.body.addChild(this.tail);
     }
 
     @Override
     public void animateModel(T foxEntity, float f, float g, float h) {
-        this.torso.pitch = 1.5707964f;
+        this.body.pitch = 1.5707964f;
         this.tail.pitch = -0.05235988f;
         this.rightBackLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g;
         this.leftBackLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g;
@@ -79,23 +79,23 @@ extends AnimalModel<T> {
         this.leftBackLeg.visible = true;
         this.rightFrontLeg.visible = true;
         this.leftFrontLeg.visible = true;
-        this.torso.setPivot(0.0f, 16.0f, -6.0f);
-        this.torso.roll = 0.0f;
+        this.body.setPivot(0.0f, 16.0f, -6.0f);
+        this.body.roll = 0.0f;
         this.rightBackLeg.setPivot(-5.0f, 17.5f, 7.0f);
         this.leftBackLeg.setPivot(-1.0f, 17.5f, 7.0f);
         if (((FoxEntity)foxEntity).isInSneakingPose()) {
-            this.torso.pitch = 1.6755161f;
+            this.body.pitch = 1.6755161f;
             float i = ((FoxEntity)foxEntity).getBodyRotationHeightOffset(h);
-            this.torso.setPivot(0.0f, 16.0f + ((FoxEntity)foxEntity).getBodyRotationHeightOffset(h), -6.0f);
+            this.body.setPivot(0.0f, 16.0f + ((FoxEntity)foxEntity).getBodyRotationHeightOffset(h), -6.0f);
             this.head.setPivot(-1.0f, 16.5f + i, -3.0f);
             this.head.yaw = 0.0f;
         } else if (((FoxEntity)foxEntity).isSleeping()) {
-            this.torso.roll = -1.5707964f;
-            this.torso.setPivot(0.0f, 21.0f, -6.0f);
+            this.body.roll = -1.5707964f;
+            this.body.setPivot(0.0f, 21.0f, -6.0f);
             this.tail.pitch = -2.6179938f;
             if (this.child) {
                 this.tail.pitch = -2.1816616f;
-                this.torso.setPivot(0.0f, 21.0f, -2.0f);
+                this.body.setPivot(0.0f, 21.0f, -2.0f);
             }
             this.head.setPivot(1.0f, 19.49f, -3.0f);
             this.head.pitch = 0.0f;
@@ -106,8 +106,8 @@ extends AnimalModel<T> {
             this.rightFrontLeg.visible = false;
             this.leftFrontLeg.visible = false;
         } else if (((FoxEntity)foxEntity).isSitting()) {
-            this.torso.pitch = 0.5235988f;
-            this.torso.setPivot(0.0f, 9.0f, -3.0f);
+            this.body.pitch = 0.5235988f;
+            this.body.setPivot(0.0f, 9.0f, -3.0f);
             this.tail.pitch = 0.7853982f;
             this.tail.setPivot(-4.0f, 15.0f, -2.0f);
             this.head.setPivot(-1.0f, 10.0f, -0.25f);
@@ -132,7 +132,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg);
+        return ImmutableList.of(this.body, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg);
     }
 
     @Override
@@ -148,7 +148,7 @@ extends AnimalModel<T> {
             this.head.roll = MathHelper.cos(h * 0.027f) / 22.0f;
         }
         if (((FoxEntity)foxEntity).isInSneakingPose()) {
-            this.torso.yaw = k = MathHelper.cos(h) * 0.01f;
+            this.body.yaw = k = MathHelper.cos(h) * 0.01f;
             this.rightBackLeg.roll = k;
             this.leftBackLeg.roll = k;
             this.rightFrontLeg.roll = k / 2.0f;

@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class BeeEntityModel<T extends BeeEntity>
 extends AnimalModel<T> {
-    private final ModelPart body;
+    private final ModelPart bone;
     private final ModelPart torso;
     private final ModelPart rightWing;
     private final ModelPart leftWing;
@@ -32,11 +32,11 @@ extends AnimalModel<T> {
         super(false, 24.0f, 0.0f);
         this.textureWidth = 64;
         this.textureHeight = 64;
-        this.body = new ModelPart(this);
-        this.body.setPivot(0.0f, 19.0f, 0.0f);
+        this.bone = new ModelPart(this);
+        this.bone.setPivot(0.0f, 19.0f, 0.0f);
         this.torso = new ModelPart(this, 0, 0);
         this.torso.setPivot(0.0f, 0.0f, 0.0f);
-        this.body.addChild(this.torso);
+        this.bone.addChild(this.torso);
         this.torso.addCuboid(-3.5f, -4.0f, -5.0f, 7.0f, 7.0f, 10.0f, 0.0f);
         this.stinger = new ModelPart(this, 26, 7);
         this.stinger.addCuboid(0.0f, -1.0f, 5.0f, 0.0f, 1.0f, 2.0f, 0.0f);
@@ -54,7 +54,7 @@ extends AnimalModel<T> {
         this.rightWing.pitch = 0.0f;
         this.rightWing.yaw = -0.2618f;
         this.rightWing.roll = 0.0f;
-        this.body.addChild(this.rightWing);
+        this.bone.addChild(this.rightWing);
         this.rightWing.addCuboid(-9.0f, 0.0f, 0.0f, 9.0f, 0.0f, 6.0f, 0.001f);
         this.leftWing = new ModelPart(this, 0, 18);
         this.leftWing.setPivot(1.5f, -4.0f, -3.0f);
@@ -62,19 +62,19 @@ extends AnimalModel<T> {
         this.leftWing.yaw = 0.2618f;
         this.leftWing.roll = 0.0f;
         this.leftWing.mirror = true;
-        this.body.addChild(this.leftWing);
+        this.bone.addChild(this.leftWing);
         this.leftWing.addCuboid(0.0f, 0.0f, 0.0f, 9.0f, 0.0f, 6.0f, 0.001f);
         this.frontLegs = new ModelPart(this);
         this.frontLegs.setPivot(1.5f, 3.0f, -2.0f);
-        this.body.addChild(this.frontLegs);
+        this.bone.addChild(this.frontLegs);
         this.frontLegs.addCuboid("frontLegBox", -5.0f, 0.0f, 0.0f, 7, 2, 0, 0.0f, 26, 1);
         this.middleLegs = new ModelPart(this);
         this.middleLegs.setPivot(1.5f, 3.0f, 0.0f);
-        this.body.addChild(this.middleLegs);
+        this.bone.addChild(this.middleLegs);
         this.middleLegs.addCuboid("midLegBox", -5.0f, 0.0f, 0.0f, 7, 2, 0, 0.0f, 26, 3);
         this.backLegs = new ModelPart(this);
         this.backLegs.setPivot(1.5f, 3.0f, 2.0f);
-        this.body.addChild(this.backLegs);
+        this.bone.addChild(this.backLegs);
         this.backLegs.addCuboid("backLegBox", -5.0f, 0.0f, 0.0f, 7, 2, 0, 0.0f, 26, 5);
     }
 
@@ -92,8 +92,8 @@ extends AnimalModel<T> {
         this.rightWing.pitch = 0.0f;
         this.leftAntenna.pitch = 0.0f;
         this.rightAntenna.pitch = 0.0f;
-        this.body.pitch = 0.0f;
-        this.body.pivotY = 19.0f;
+        this.bone.pitch = 0.0f;
+        this.bone.pivotY = 19.0f;
         boolean bl2 = bl = ((Entity)beeEntity).isOnGround() && ((Entity)beeEntity).getVelocity().lengthSquared() < 1.0E-7;
         if (bl) {
             this.rightWing.yaw = -0.2618f;
@@ -114,26 +114,26 @@ extends AnimalModel<T> {
             this.frontLegs.pitch = 0.7853982f;
             this.middleLegs.pitch = 0.7853982f;
             this.backLegs.pitch = 0.7853982f;
-            this.body.pitch = 0.0f;
-            this.body.yaw = 0.0f;
-            this.body.roll = 0.0f;
+            this.bone.pitch = 0.0f;
+            this.bone.yaw = 0.0f;
+            this.bone.roll = 0.0f;
         }
         if (!beeEntity.hasAngerTime()) {
-            this.body.pitch = 0.0f;
-            this.body.yaw = 0.0f;
-            this.body.roll = 0.0f;
+            this.bone.pitch = 0.0f;
+            this.bone.yaw = 0.0f;
+            this.bone.roll = 0.0f;
             if (!bl) {
                 k = MathHelper.cos(h * 0.18f);
-                this.body.pitch = 0.1f + k * (float)Math.PI * 0.025f;
+                this.bone.pitch = 0.1f + k * (float)Math.PI * 0.025f;
                 this.leftAntenna.pitch = k * (float)Math.PI * 0.03f;
                 this.rightAntenna.pitch = k * (float)Math.PI * 0.03f;
                 this.frontLegs.pitch = -k * (float)Math.PI * 0.1f + 0.3926991f;
                 this.backLegs.pitch = -k * (float)Math.PI * 0.05f + 0.7853982f;
-                this.body.pivotY = 19.0f - MathHelper.cos(h * 0.18f) * 0.9f;
+                this.bone.pivotY = 19.0f - MathHelper.cos(h * 0.18f) * 0.9f;
             }
         }
         if (this.bodyPitch > 0.0f) {
-            this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 3.0915928f, this.bodyPitch);
+            this.bone.pitch = ModelUtil.interpolateAngle(this.bone.pitch, 3.0915928f, this.bodyPitch);
         }
     }
 
@@ -144,7 +144,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.body);
+        return ImmutableList.of(this.bone);
     }
 }
 

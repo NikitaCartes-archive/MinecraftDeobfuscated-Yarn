@@ -59,7 +59,7 @@ extends Feature<TreeFeatureConfig> {
         return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
     }
 
-    private static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
+    private static boolean canPlaceTreeOn(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> {
             Block block = state.getBlock();
             return TreeFeature.isSoil(block) || block == Blocks.FARMLAND;
@@ -102,7 +102,7 @@ extends Feature<TreeFeatureConfig> {
         if (blockPos.getY() < 1 || blockPos.getY() + i + 1 > 256) {
             return false;
         }
-        if (!TreeFeature.isDirtOrGrass(world, blockPos.down())) {
+        if (!TreeFeature.canPlaceTreeOn(world, blockPos.down())) {
             return false;
         }
         OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();

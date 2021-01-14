@@ -57,10 +57,10 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.DebugInfoSender;
@@ -268,7 +268,7 @@ VillagerDataContainer {
     }
 
     private void beginTradeWith(PlayerEntity customer) {
-        this.prepareRecipesFor(customer);
+        this.prepareOffersFor(customer);
         this.setCurrentCustomer(customer);
         this.sendOffers(customer, this.getDisplayName(), this.getVillagerData().getLevel());
     }
@@ -285,10 +285,13 @@ VillagerDataContainer {
     @Override
     protected void resetCustomer() {
         super.resetCustomer();
-        this.clearCurrentBonus();
+        this.clearSpecialPrices();
     }
 
-    private void clearCurrentBonus() {
+    /**
+     * Resets the special price of all the trade offers of this villager.
+     */
+    private void clearSpecialPrices() {
         for (TradeOffer tradeOffer : this.getOffers()) {
             tradeOffer.clearSpecialPrice();
         }
@@ -300,7 +303,7 @@ VillagerDataContainer {
     }
 
     public void restock() {
-        this.updatePricesOnDemand();
+        this.updateDemandBonus();
         for (TradeOffer tradeOffer : this.getOffers()) {
             tradeOffer.resetUses();
         }
@@ -308,7 +311,12 @@ VillagerDataContainer {
         ++this.restocksToday;
     }
 
-    private boolean needRestock() {
+    /**
+     * Returns whether this villager needs restock.
+     * 
+     * <p>Checks if at least one of its trade offers has been used.
+     */
+    private boolean needsRestock() {
         for (TradeOffer tradeOffer : this.getOffers()) {
             if (!tradeOffer.method_21834()) continue;
             return true;
@@ -335,7 +343,7 @@ VillagerDataContainer {
             this.lastRestockTime = m;
             this.clearDailyRestockCount();
         }
-        return this.canRestock() && this.needRestock();
+        return this.canRestock() && this.needsRestock();
     }
 
     private void method_21723() {
@@ -346,17 +354,20 @@ VillagerDataContainer {
             }
         }
         for (int j = 0; j < i; ++j) {
-            this.updatePricesOnDemand();
+            this.updateDemandBonus();
         }
     }
 
-    private void updatePricesOnDemand() {
+    /**
+     * Updates the demand bonus of all the trade offers of this villager.
+     */
+    private void updateDemandBonus() {
         for (TradeOffer tradeOffer : this.getOffers()) {
-            tradeOffer.updatePriceOnDemand();
+            tradeOffer.updateDemandBonus();
         }
     }
 
-    private void prepareRecipesFor(PlayerEntity player) {
+    private void prepareOffersFor(PlayerEntity player) {
         int i = this.getReputation(player);
         if (i != 0) {
             for (TradeOffer tradeOffer : this.getOffers()) {
@@ -381,47 +392,47 @@ VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag2) {
-        super.writeCustomDataToTag(tag2);
-        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("VillagerData", (Tag)tag));
-        tag2.putByte("FoodLevel", this.foodLevel);
-        tag2.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
-        tag2.putInt("Xp", this.experience);
-        tag2.putLong("LastRestock", this.lastRestockTime);
-        tag2.putLong("LastGossipDecay", this.lastGossipDecayTime);
-        tag2.putInt("RestocksToday", this.restocksToday);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("VillagerData", (NbtElement)nbtElement));
+        nbt.putByte("FoodLevel", this.foodLevel);
+        nbt.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
+        nbt.putInt("Xp", this.experience);
+        nbt.putLong("LastRestock", this.lastRestockTime);
+        nbt.putLong("LastGossipDecay", this.lastGossipDecayTime);
+        nbt.putInt("RestocksToday", this.restocksToday);
         if (this.natural) {
-            tag2.putBoolean("AssignProfessionWhenSpawned", true);
+            nbt.putBoolean("AssignProfessionWhenSpawned", true);
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        if (tag.contains("VillagerData", 10)) {
-            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("VillagerData", 10)) {
+            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("VillagerData")));
             dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
-        if (tag.contains("Offers", 10)) {
-            this.offers = new TradeOfferList(tag.getCompound("Offers"));
+        if (nbt.contains("Offers", 10)) {
+            this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
-        if (tag.contains("FoodLevel", 1)) {
-            this.foodLevel = tag.getByte("FoodLevel");
+        if (nbt.contains("FoodLevel", 1)) {
+            this.foodLevel = nbt.getByte("FoodLevel");
         }
-        ListTag listTag = tag.getList("Gossips", 10);
-        this.gossip.deserialize(new Dynamic<ListTag>(NbtOps.INSTANCE, listTag));
-        if (tag.contains("Xp", 3)) {
-            this.experience = tag.getInt("Xp");
+        NbtList nbtList = nbt.getList("Gossips", 10);
+        this.gossip.deserialize(new Dynamic<NbtList>(NbtOps.INSTANCE, nbtList));
+        if (nbt.contains("Xp", 3)) {
+            this.experience = nbt.getInt("Xp");
         }
-        this.lastRestockTime = tag.getLong("LastRestock");
-        this.lastGossipDecayTime = tag.getLong("LastGossipDecay");
+        this.lastRestockTime = nbt.getLong("LastRestock");
+        this.lastGossipDecayTime = nbt.getLong("LastGossipDecay");
         this.setCanPickUpLoot(true);
         if (this.world instanceof ServerWorld) {
             this.reinitializeBrain((ServerWorld)this.world);
         }
-        this.restocksToday = tag.getInt("RestocksToday");
-        if (tag.contains("AssignProfessionWhenSpawned")) {
-            this.natural = tag.getBoolean("AssignProfessionWhenSpawned");
+        this.restocksToday = nbt.getInt("RestocksToday");
+        if (nbt.contains("AssignProfessionWhenSpawned")) {
+            this.natural = nbt.getBoolean("AssignProfessionWhenSpawned");
         }
     }
 
@@ -625,23 +636,23 @@ VillagerDataContainer {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (spawnReason == SpawnReason.BREEDING) {
             this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
         }
         if (spawnReason == SpawnReason.COMMAND || spawnReason == SpawnReason.SPAWN_EGG || spawnReason == SpawnReason.SPAWNER || spawnReason == SpawnReason.DISPENSER) {
-            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_31081(this.getBlockPos()))));
+            this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
         }
         if (spawnReason == SpawnReason.STRUCTURE) {
             this.natural = true;
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
     public VillagerEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
         double d = this.random.nextDouble();
-        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(serverWorld.method_31081(this.getBlockPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
+        VillagerType villagerType = d < 0.5 ? VillagerType.forBiome(serverWorld.getBiomeKey(this.getBlockPos())) : (d < 0.75 ? this.getVillagerData().getType() : ((VillagerEntity)passiveEntity).getVillagerData().getType());
         VillagerEntity villagerEntity = new VillagerEntity(EntityType.VILLAGER, serverWorld, villagerType);
         villagerEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(villagerEntity.getBlockPos()), SpawnReason.BREEDING, null, null);
         return villagerEntity;
@@ -749,14 +760,14 @@ VillagerDataContainer {
         this.lastGossipDecayTime = l;
     }
 
-    public void summonGolem(ServerWorld world, long time, int i) {
+    public void summonGolem(ServerWorld world, long time, int requiredCount) {
         if (!this.canSummonGolem(time)) {
             return;
         }
         Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
         List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
         List list2 = list.stream().filter(villagerEntity -> villagerEntity.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
-        if (list2.size() < i) {
+        if (list2.size() < requiredCount) {
             return;
         }
         IronGolemEntity ironGolemEntity = this.spawnIronGolem(world);
@@ -767,7 +778,7 @@ VillagerDataContainer {
     }
 
     public boolean canSummonGolem(long time) {
-        if (!this.hasRecentlyWorkedAndSlept(this.world.getTime())) {
+        if (!this.hasRecentlySlept(this.world.getTime())) {
             return false;
         }
         return !this.brain.hasMemoryModule(MemoryModuleType.GOLEM_DETECTED_RECENTLY);
@@ -839,8 +850,8 @@ VillagerDataContainer {
         return this.gossip;
     }
 
-    public void setGossipDataFromTag(Tag tag) {
-        this.gossip.deserialize(new Dynamic<Tag>(NbtOps.INSTANCE, tag));
+    public void readGossipDataNbt(NbtElement nbt) {
+        this.gossip.deserialize(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt));
     }
 
     @Override
@@ -863,7 +874,7 @@ VillagerDataContainer {
         this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
     }
 
-    private boolean hasRecentlyWorkedAndSlept(long worldTime) {
+    private boolean hasRecentlySlept(long worldTime) {
         Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
         if (optional.isPresent()) {
             return worldTime - optional.get() < 24000L;

@@ -19,8 +19,8 @@ public class ArmorStandEntityModel
 extends ArmorStandArmorEntityModel {
     private final ModelPart rightTorso;
     private final ModelPart leftTorso;
-    private final ModelPart hip;
-    private final ModelPart plate;
+    private final ModelPart shoulderStick;
+    private final ModelPart basePlate;
 
     public ArmorStandEntityModel() {
         this(0.0f);
@@ -31,9 +31,9 @@ extends ArmorStandArmorEntityModel {
         this.head = new ModelPart(this, 0, 0);
         this.head.addCuboid(-1.0f, -7.0f, -1.0f, 2.0f, 7.0f, 2.0f, f);
         this.head.setPivot(0.0f, 0.0f, 0.0f);
-        this.torso = new ModelPart(this, 0, 26);
-        this.torso.addCuboid(-6.0f, 0.0f, -1.5f, 12.0f, 3.0f, 3.0f, f);
-        this.torso.setPivot(0.0f, 0.0f, 0.0f);
+        this.body = new ModelPart(this, 0, 26);
+        this.body.addCuboid(-6.0f, 0.0f, -1.5f, 12.0f, 3.0f, 3.0f, f);
+        this.body.setPivot(0.0f, 0.0f, 0.0f);
         this.rightArm = new ModelPart(this, 24, 0);
         this.rightArm.addCuboid(-2.0f, -2.0f, -1.0f, 2.0f, 12.0f, 2.0f, f);
         this.rightArm.setPivot(-5.0f, 2.0f, 0.0f);
@@ -55,20 +55,20 @@ extends ArmorStandArmorEntityModel {
         this.leftTorso = new ModelPart(this, 48, 16);
         this.leftTorso.addCuboid(1.0f, 3.0f, -1.0f, 2.0f, 7.0f, 2.0f, f);
         this.leftTorso.setPivot(0.0f, 0.0f, 0.0f);
-        this.hip = new ModelPart(this, 0, 48);
-        this.hip.addCuboid(-4.0f, 10.0f, -1.0f, 8.0f, 2.0f, 2.0f, f);
-        this.hip.setPivot(0.0f, 0.0f, 0.0f);
-        this.plate = new ModelPart(this, 0, 32);
-        this.plate.addCuboid(-6.0f, 11.0f, -6.0f, 12.0f, 1.0f, 12.0f, f);
-        this.plate.setPivot(0.0f, 12.0f, 0.0f);
-        this.helmet.visible = false;
+        this.shoulderStick = new ModelPart(this, 0, 48);
+        this.shoulderStick.addCuboid(-4.0f, 10.0f, -1.0f, 8.0f, 2.0f, 2.0f, f);
+        this.shoulderStick.setPivot(0.0f, 0.0f, 0.0f);
+        this.basePlate = new ModelPart(this, 0, 32);
+        this.basePlate.addCuboid(-6.0f, 11.0f, -6.0f, 12.0f, 1.0f, 12.0f, f);
+        this.basePlate.setPivot(0.0f, 12.0f, 0.0f);
+        this.hat.visible = false;
     }
 
     @Override
     public void animateModel(ArmorStandEntity armorStandEntity, float f, float g, float h) {
-        this.plate.pitch = 0.0f;
-        this.plate.yaw = (float)Math.PI / 180 * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.yaw);
-        this.plate.roll = 0.0f;
+        this.basePlate.pitch = 0.0f;
+        this.basePlate.yaw = (float)Math.PI / 180 * -MathHelper.lerpAngleDegrees(h, armorStandEntity.prevYaw, armorStandEntity.yaw);
+        this.basePlate.roll = 0.0f;
     }
 
     @Override
@@ -76,7 +76,7 @@ extends ArmorStandArmorEntityModel {
         super.setAngles(armorStandEntity, f, g, h, i, j);
         this.leftArm.visible = armorStandEntity.shouldShowArms();
         this.rightArm.visible = armorStandEntity.shouldShowArms();
-        this.plate.visible = !armorStandEntity.shouldHideBasePlate();
+        this.basePlate.visible = !armorStandEntity.shouldHideBasePlate();
         this.leftLeg.setPivot(1.9f, 12.0f, 0.0f);
         this.rightLeg.setPivot(-1.9f, 12.0f, 0.0f);
         this.rightTorso.pitch = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getPitch();
@@ -85,14 +85,14 @@ extends ArmorStandArmorEntityModel {
         this.leftTorso.pitch = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getPitch();
         this.leftTorso.yaw = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getYaw();
         this.leftTorso.roll = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getRoll();
-        this.hip.pitch = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getPitch();
-        this.hip.yaw = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getYaw();
-        this.hip.roll = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getRoll();
+        this.shoulderStick.pitch = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getPitch();
+        this.shoulderStick.yaw = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getYaw();
+        this.shoulderStick.roll = (float)Math.PI / 180 * armorStandEntity.getBodyRotation().getRoll();
     }
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.rightTorso, this.leftTorso, this.hip, this.plate));
+        return Iterables.concat(super.getBodyParts(), ImmutableList.of(this.rightTorso, this.leftTorso, this.shoulderStick, this.basePlate));
     }
 
     @Override

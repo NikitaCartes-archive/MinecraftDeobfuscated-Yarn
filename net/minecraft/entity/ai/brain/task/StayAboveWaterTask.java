@@ -14,9 +14,9 @@ public class StayAboveWaterTask
 extends Task<MobEntity> {
     private final float chance;
 
-    public StayAboveWaterTask(float minWaterHeight) {
+    public StayAboveWaterTask(float chance) {
         super(ImmutableMap.of());
-        this.chance = minWaterHeight;
+        this.chance = chance;
     }
 
     @Override

@@ -15,7 +15,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.IllagerEntity;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -925,11 +925,11 @@ public class WoodlandMansionGenerator {
             this.setupPlacement(structureManager);
         }
 
-        public Piece(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.WOODLAND_MANSION, compoundTag);
-            this.template = compoundTag.getString("Template");
-            this.rotation = BlockRotation.valueOf(compoundTag.getString("Rot"));
-            this.mirror = BlockMirror.valueOf(compoundTag.getString("Mi"));
+        public Piece(StructureManager structureManager, NbtCompound nbtCompound) {
+            super(StructurePieceType.WOODLAND_MANSION, nbtCompound);
+            this.template = nbtCompound.getString("Template");
+            this.rotation = BlockRotation.valueOf(nbtCompound.getString("Rot"));
+            this.mirror = BlockMirror.valueOf(nbtCompound.getString("Mi"));
             this.setupPlacement(structureManager);
         }
 
@@ -940,7 +940,7 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
+        protected void toNbt(NbtCompound tag) {
             super.toNbt(tag);
             tag.putString("Template", this.template);
             tag.putString("Rot", this.placementData.getRotation().name());
@@ -948,7 +948,7 @@ public class WoodlandMansionGenerator {
         }
 
         @Override
-        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
+        protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
             if (metadata.startsWith("Chest")) {
                 BlockRotation blockRotation = this.placementData.getRotation();
                 BlockState blockState = Blocks.CHEST.getDefaultState();
@@ -961,16 +961,16 @@ public class WoodlandMansionGenerator {
                 } else if ("ChestNorth".equals(metadata)) {
                     blockState = (BlockState)blockState.with(ChestBlock.FACING, blockRotation.rotate(Direction.NORTH));
                 }
-                this.addChest(serverWorldAccess, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
+                this.addChest(world, boundingBox, random, pos, LootTables.WOODLAND_MANSION_CHEST, blockState);
             } else {
                 IllagerEntity illagerEntity;
                 switch (metadata) {
                     case "Mage": {
-                        illagerEntity = EntityType.EVOKER.create(serverWorldAccess.toServerWorld());
+                        illagerEntity = EntityType.EVOKER.create(world.toServerWorld());
                         break;
                     }
                     case "Warrior": {
-                        illagerEntity = EntityType.VINDICATOR.create(serverWorldAccess.toServerWorld());
+                        illagerEntity = EntityType.VINDICATOR.create(world.toServerWorld());
                         break;
                     }
                     default: {
@@ -979,9 +979,9 @@ public class WoodlandMansionGenerator {
                 }
                 illagerEntity.setPersistent();
                 illagerEntity.refreshPositionAndAngles(pos, 0.0f, 0.0f);
-                illagerEntity.initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
-                serverWorldAccess.spawnEntityAndPassengers(illagerEntity);
-                serverWorldAccess.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+                illagerEntity.initialize(world, world.getLocalDifficulty(illagerEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+                world.spawnEntityAndPassengers(illagerEntity);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
             }
         }
     }

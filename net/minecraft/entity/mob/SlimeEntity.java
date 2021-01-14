@@ -28,7 +28,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
@@ -97,21 +97,21 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putInt("Size", this.getSize() - 1);
-        tag.putBoolean("wasOnGround", this.onGroundLastTick);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Size", this.getSize() - 1);
+        nbt.putBoolean("wasOnGround", this.onGroundLastTick);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        int i = tag.getInt("Size");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        int i = nbt.getInt("Size");
         if (i < 0) {
             i = 0;
         }
         this.setSize(i + 1, false);
-        super.readCustomDataFromTag(tag);
-        this.onGroundLastTick = tag.getBoolean("wasOnGround");
+        super.readCustomDataFromNbt(nbt);
+        this.onGroundLastTick = nbt.getBoolean("wasOnGround");
     }
 
     public boolean isSmall() {
@@ -164,7 +164,7 @@ implements Monster {
         double e = this.getY();
         double f = this.getZ();
         super.calculateDimensions();
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     @Override
@@ -280,7 +280,7 @@ implements Monster {
     public static boolean canSpawn(EntityType<SlimeEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         if (world.getDifficulty() != Difficulty.PEACEFUL) {
             boolean bl;
-            if (Objects.equals(world.method_31081(pos), Optional.of(BiomeKeys.SWAMP)) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < world.getMoonSize() && world.getLightLevel(pos) <= random.nextInt(8)) {
+            if (Objects.equals(world.getBiomeKey(pos), Optional.of(BiomeKeys.SWAMP)) && pos.getY() > 50 && pos.getY() < 70 && random.nextFloat() < 0.5f && random.nextFloat() < world.getMoonSize() && world.getLightLevel(pos) <= random.nextInt(8)) {
                 return SlimeEntity.canMobSpawn(type, world, spawnReason, pos, random);
             }
             if (!(world instanceof StructureWorldAccess)) {
@@ -318,14 +318,14 @@ implements Monster {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         int i = this.random.nextInt(3);
         if (i < 2 && this.random.nextFloat() < 0.5f * difficulty.getClampedLocalDifficulty()) {
             ++i;
         }
         int j = 1 << i;
         this.setSize(j, true);
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     private float getJumpSoundPitch() {
@@ -490,7 +490,7 @@ implements Monster {
 
         @Override
         public void tick() {
-            this.entity.headYaw = this.entity.yaw = this.changeAngle(this.entity.yaw, this.targetYaw, 90.0f);
+            this.entity.headYaw = this.entity.yaw = this.wrapDegrees(this.entity.yaw, this.targetYaw, 90.0f);
             this.entity.bodyYaw = this.entity.yaw;
             if (this.state != MoveControl.State.MOVE_TO) {
                 this.entity.setForwardSpeed(0.0f);

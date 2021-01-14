@@ -22,8 +22,8 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -56,7 +56,7 @@ implements FlyingItemEntity {
     public FireworkRocketEntity(World world, double x, double y, double z, ItemStack stack) {
         super((EntityType<? extends ProjectileEntity>)EntityType.FIREWORK_ROCKET, world);
         this.life = 0;
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         int i = 1;
         if (!stack.isEmpty() && stack.hasTag()) {
             this.dataTracker.set(ITEM, stack.copy());
@@ -127,7 +127,7 @@ implements FlyingItemEntity {
                     Vec3d vec3d2 = this.shooter.getVelocity();
                     this.shooter.setVelocity(vec3d2.add(vec3d.x * 0.1 + (vec3d.x * 1.5 - vec3d2.x) * 0.5, vec3d.y * 0.1 + (vec3d.y * 1.5 - vec3d2.y) * 0.5, vec3d.z * 0.1 + (vec3d.z * 1.5 - vec3d2.z) * 0.5));
                 }
-                this.updatePosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
+                this.setPosition(this.shooter.getX(), this.shooter.getY(), this.shooter.getZ());
                 this.setVelocity(this.shooter.getVelocity());
             }
         } else {
@@ -184,23 +184,23 @@ implements FlyingItemEntity {
 
     private boolean hasExplosionEffects() {
         ItemStack itemStack = this.dataTracker.get(ITEM);
-        CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
-        ListTag listTag = compoundTag != null ? compoundTag.getList("Explosions", 10) : null;
-        return listTag != null && !listTag.isEmpty();
+        NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+        NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", 10) : null;
+        return nbtList != null && !nbtList.isEmpty();
     }
 
     private void explode() {
-        ListTag listTag;
+        NbtList nbtList;
         float f = 0.0f;
         ItemStack itemStack = this.dataTracker.get(ITEM);
-        CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
-        ListTag listTag2 = listTag = compoundTag != null ? compoundTag.getList("Explosions", 10) : null;
-        if (listTag != null && !listTag.isEmpty()) {
-            f = 5.0f + (float)(listTag.size() * 2);
+        NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+        NbtList nbtList2 = nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", 10) : null;
+        if (nbtList != null && !nbtList.isEmpty()) {
+            f = 5.0f + (float)(nbtList.size() * 2);
         }
         if (f > 0.0f) {
             if (this.shooter != null) {
-                this.shooter.damage(DamageSource.firework(this, this.getOwner()), 5.0f + (float)(listTag.size() * 2));
+                this.shooter.damage(DamageSource.firework(this, this.getOwner()), 5.0f + (float)(nbtList.size() * 2));
             }
             double d = 5.0;
             Vec3d vec3d = this.getPos();
@@ -240,37 +240,37 @@ implements FlyingItemEntity {
                 }
             } else {
                 ItemStack itemStack = this.dataTracker.get(ITEM);
-                CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+                NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
                 Vec3d vec3d = this.getVelocity();
-                this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, compoundTag);
+                this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, nbtCompound);
             }
         }
         super.handleStatus(status);
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putInt("Life", this.life);
-        tag.putInt("LifeTime", this.lifeTime);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("Life", this.life);
+        nbt.putInt("LifeTime", this.lifeTime);
         ItemStack itemStack = this.dataTracker.get(ITEM);
         if (!itemStack.isEmpty()) {
-            tag.put("FireworksItem", itemStack.toTag(new CompoundTag()));
+            nbt.put("FireworksItem", itemStack.writeNbt(new NbtCompound()));
         }
-        tag.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
+        nbt.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        this.life = tag.getInt("Life");
-        this.lifeTime = tag.getInt("LifeTime");
-        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("FireworksItem"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.life = nbt.getInt("Life");
+        this.lifeTime = nbt.getInt("LifeTime");
+        ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("FireworksItem"));
         if (!itemStack.isEmpty()) {
             this.dataTracker.set(ITEM, itemStack);
         }
-        if (tag.contains("ShotAtAngle")) {
-            this.dataTracker.set(SHOT_AT_ANGLE, tag.getBoolean("ShotAtAngle"));
+        if (nbt.contains("ShotAtAngle")) {
+            this.dataTracker.set(SHOT_AT_ANGLE, nbt.getBoolean("ShotAtAngle"));
         }
     }
 

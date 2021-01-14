@@ -48,7 +48,7 @@ extends RecipeBookWidget {
         ItemStack itemStack = recipe.getOutput();
         this.ghostSlots.setRecipe(recipe);
         this.ghostSlots.addSlot(Ingredient.ofStacks(itemStack), slots.get((int)2).x, slots.get((int)2).y);
-        DefaultedList<Ingredient> defaultedList = recipe.getPreviewInputs();
+        DefaultedList<Ingredient> defaultedList = recipe.getIngredients();
         this.outputSlot = slots.get(1);
         if (this.fuels == null) {
             this.fuels = this.getAllowedFuels();
@@ -70,8 +70,8 @@ extends RecipeBookWidget {
     protected abstract Set<Item> getAllowedFuels();
 
     @Override
-    public void drawGhostSlots(MatrixStack matrixStack, int i, int j, boolean bl, float f) {
-        super.drawGhostSlots(matrixStack, i, j, bl, f);
+    public void drawGhostSlots(MatrixStack matrices, int i, int j, boolean bl, float f) {
+        super.drawGhostSlots(matrices, i, j, bl, f);
         if (this.outputSlot == null) {
             return;
         }
@@ -80,10 +80,10 @@ extends RecipeBookWidget {
         }
         int k = this.outputSlot.x + i;
         int l = this.outputSlot.y + j;
-        DrawableHelper.fill(matrixStack, k, l, k + 16, l + 16, 0x30FF0000);
+        DrawableHelper.fill(matrices, k, l, k + 16, l + 16, 0x30FF0000);
         this.client.getItemRenderer().renderInGuiWithOverrides(this.client.player, this.getItem().getDefaultStack(), k, l);
         RenderSystem.depthFunc(516);
-        DrawableHelper.fill(matrixStack, k, l, k + 16, l + 16, 0x30FFFFFF);
+        DrawableHelper.fill(matrices, k, l, k + 16, l + 16, 0x30FFFFFF);
         RenderSystem.depthFunc(515);
     }
 

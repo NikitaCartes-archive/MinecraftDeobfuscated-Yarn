@@ -18,8 +18,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
-import net.minecraft.block.MaterialColor;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.SideShapeType;
 import net.minecraft.block.piston.PistonBehavior;
@@ -69,7 +69,7 @@ import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractBlock {
-    protected static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
+    protected static final Direction[] DIRECTIONS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
     protected final Material material;
     protected final boolean collidable;
     protected final float resistance;
@@ -117,8 +117,20 @@ public abstract class AbstractBlock {
         return false;
     }
 
+    /**
+     * Gets the possibly updated block state of this block when a neighboring block is updated.
+     * 
+     * @return the new state of this block
+     * 
+     * @param state the state of this block
+     * @param direction the direction from this block to the neighbor
+     * @param neighborState the state of the updated neighbor block
+     * @param world the world
+     * @param pos the position of this block
+     * @param neighborPos the position of the neighbor block
+     */
     @Deprecated
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         return state;
     }
 
@@ -303,7 +315,7 @@ public abstract class AbstractBlock {
     }
 
     @Deprecated
-    public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return this.getCollisionShape(state, world, pos, context);
     }
 
@@ -322,7 +334,7 @@ public abstract class AbstractBlock {
         if (f == -1.0f) {
             return 0.0f;
         }
-        int i = player.isUsingEffectiveTool(state) ? 30 : 100;
+        int i = player.canHarvest(state) ? 30 : 100;
         return player.getBlockBreakingSpeed(state) / f / (float)i;
     }
 
@@ -368,8 +380,8 @@ public abstract class AbstractBlock {
 
     protected abstract Block asBlock();
 
-    public MaterialColor getDefaultMaterialColor() {
-        return (MaterialColor)this.settings.materialColorFactory.apply(this.asBlock().getDefaultState());
+    public MapColor getDefaultMapColor() {
+        return (MapColor)this.settings.materialColorFactory.apply(this.asBlock().getDefaultState());
     }
 
     public static interface TypedContextPredicate<A> {
@@ -386,7 +398,7 @@ public abstract class AbstractBlock {
         private final boolean hasSidedTransparency;
         private final boolean isAir;
         private final Material material;
-        private final MaterialColor materialColor;
+        private final MapColor materialColor;
         private final float hardness;
         private final boolean toolRequired;
         private final boolean opaque;
@@ -405,7 +417,7 @@ public abstract class AbstractBlock {
             this.hasSidedTransparency = block.hasSidedTransparency(this.asBlockState());
             this.isAir = settings.isAir;
             this.material = settings.material;
-            this.materialColor = (MaterialColor)settings.materialColorFactory.apply(this.asBlockState());
+            this.materialColor = (MapColor)settings.materialColorFactory.apply(this.asBlockState());
             this.hardness = settings.hardness;
             this.toolRequired = settings.toolRequired;
             this.opaque = settings.opaque;
@@ -475,7 +487,7 @@ public abstract class AbstractBlock {
             return this.isAir;
         }
 
-        public MaterialColor getTopMaterialColor(BlockView world, BlockPos pos) {
+        public MapColor getTopMaterialColor(BlockView world, BlockPos pos) {
             return this.materialColor;
         }
 
@@ -581,7 +593,7 @@ public abstract class AbstractBlock {
         }
 
         public VoxelShape getVisualShape(BlockView world, BlockPos pos, ShapeContext context) {
-            return this.getBlock().getVisualShape(this.asBlockState(), world, pos, context);
+            return this.getBlock().getCameraCollisionShape(this.asBlockState(), world, pos, context);
         }
 
         public VoxelShape getRaycastShape(BlockView world, BlockPos pos) {
@@ -620,7 +632,7 @@ public abstract class AbstractBlock {
         public final void updateNeighbors(WorldAccess world, BlockPos pos, int flags, int maxUpdateDepth) {
             this.getBlock();
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            for (Direction direction : FACINGS) {
+            for (Direction direction : DIRECTIONS) {
                 mutable.set(pos, direction);
                 BlockState blockState = world.getBlockState(mutable);
                 BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), world, mutable, pos);
@@ -820,7 +832,7 @@ public abstract class AbstractBlock {
 
     public static class Settings {
         private Material material;
-        private Function<BlockState, MaterialColor> materialColorFactory;
+        private Function<BlockState, MapColor> materialColorFactory;
         private boolean collidable = true;
         private BlockSoundGroup soundGroup = BlockSoundGroup.STONE;
         private ToIntFunction<BlockState> luminance = state -> 0;
@@ -842,11 +854,11 @@ public abstract class AbstractBlock {
         private ContextPredicate emissiveLightingPredicate = (state, world, pos) -> false;
         private boolean dynamicBounds;
 
-        private Settings(Material material, MaterialColor materialColorFactory) {
+        private Settings(Material material, MapColor materialColorFactory) {
             this(material, (BlockState state) -> materialColorFactory);
         }
 
-        private Settings(Material material, Function<BlockState, MaterialColor> materialColorFactory) {
+        private Settings(Material material, Function<BlockState, MapColor> materialColorFactory) {
             this.material = material;
             this.materialColorFactory = materialColorFactory;
         }
@@ -856,14 +868,14 @@ public abstract class AbstractBlock {
         }
 
         public static Settings of(Material material, DyeColor color) {
-            return Settings.of(material, color.getMaterialColor());
+            return Settings.of(material, color.getMapColor());
         }
 
-        public static Settings of(Material material, MaterialColor color) {
+        public static Settings of(Material material, MapColor color) {
             return new Settings(material, color);
         }
 
-        public static Settings of(Material material, Function<BlockState, MaterialColor> materialColor) {
+        public static Settings of(Material material, Function<BlockState, MapColor> materialColor) {
             return new Settings(material, materialColor);
         }
 

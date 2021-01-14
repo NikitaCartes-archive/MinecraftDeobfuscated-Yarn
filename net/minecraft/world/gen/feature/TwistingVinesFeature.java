@@ -37,21 +37,21 @@ extends Feature<DefaultFeatureConfig> {
         return true;
     }
 
-    private static void generateVinesInArea(WorldAccess worldAccess, Random random, BlockPos blockPos, int i, int j, int k) {
+    private static void generateVinesInArea(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (int l = 0; l < i * i; ++l) {
-            mutable.set(blockPos).move(MathHelper.nextInt(random, -i, i), MathHelper.nextInt(random, -j, j), MathHelper.nextInt(random, -i, i));
-            if (!TwistingVinesFeature.method_27220(worldAccess, mutable) || TwistingVinesFeature.isNotSuitable(worldAccess, mutable)) continue;
-            int m = MathHelper.nextInt(random, 1, k);
+        for (int i = 0; i < horizontalSpread * horizontalSpread; ++i) {
+            mutable.set(pos).move(MathHelper.nextInt(random, -horizontalSpread, horizontalSpread), MathHelper.nextInt(random, -verticalSpread, verticalSpread), MathHelper.nextInt(random, -horizontalSpread, horizontalSpread));
+            if (!TwistingVinesFeature.method_27220(world, mutable) || TwistingVinesFeature.isNotSuitable(world, mutable)) continue;
+            int j = MathHelper.nextInt(random, 1, length);
             if (random.nextInt(6) == 0) {
-                m *= 2;
+                j *= 2;
             }
             if (random.nextInt(5) == 0) {
-                m = 1;
+                j = 1;
             }
-            int n = 17;
-            int o = 25;
-            TwistingVinesFeature.generateVineColumn(worldAccess, random, mutable, m, 17, 25);
+            int k = 17;
+            int l = 25;
+            TwistingVinesFeature.generateVineColumn(world, random, mutable, j, 17, 25);
         }
     }
 
@@ -78,11 +78,11 @@ extends Feature<DefaultFeatureConfig> {
         }
     }
 
-    private static boolean isNotSuitable(WorldAccess worldAccess, BlockPos blockPos) {
-        if (!worldAccess.isAir(blockPos)) {
+    private static boolean isNotSuitable(WorldAccess world, BlockPos pos) {
+        if (!world.isAir(pos)) {
             return true;
         }
-        BlockState blockState = worldAccess.getBlockState(blockPos.down());
+        BlockState blockState = world.getBlockState(pos.down());
         return !blockState.isOf(Blocks.NETHERRACK) && !blockState.isOf(Blocks.WARPED_NYLIUM) && !blockState.isOf(Blocks.WARPED_WART_BLOCK);
     }
 }

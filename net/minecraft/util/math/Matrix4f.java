@@ -6,8 +6,8 @@ package net.minecraft.util.math;
 import java.nio.FloatBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 public final class Matrix4f {
     protected float a00;
@@ -30,23 +30,23 @@ public final class Matrix4f {
     public Matrix4f() {
     }
 
-    public Matrix4f(Matrix4f source) {
-        this.a00 = source.a00;
-        this.a01 = source.a01;
-        this.a02 = source.a02;
-        this.a03 = source.a03;
-        this.a10 = source.a10;
-        this.a11 = source.a11;
-        this.a12 = source.a12;
-        this.a13 = source.a13;
-        this.a20 = source.a20;
-        this.a21 = source.a21;
-        this.a22 = source.a22;
-        this.a23 = source.a23;
-        this.a30 = source.a30;
-        this.a31 = source.a31;
-        this.a32 = source.a32;
-        this.a33 = source.a33;
+    public Matrix4f(Matrix4f matrix) {
+        this.a00 = matrix.a00;
+        this.a01 = matrix.a01;
+        this.a02 = matrix.a02;
+        this.a03 = matrix.a03;
+        this.a10 = matrix.a10;
+        this.a11 = matrix.a11;
+        this.a12 = matrix.a12;
+        this.a13 = matrix.a13;
+        this.a20 = matrix.a20;
+        this.a21 = matrix.a21;
+        this.a22 = matrix.a22;
+        this.a23 = matrix.a23;
+        this.a30 = matrix.a30;
+        this.a31 = matrix.a31;
+        this.a32 = matrix.a32;
+        this.a33 = matrix.a33;
     }
 
     public Matrix4f(Quaternion quaternion) {
@@ -149,24 +149,27 @@ public final class Matrix4f {
         return stringBuilder.toString();
     }
 
+    /**
+     * Writes this matrix to the buffer in row-major order.
+     */
     @Environment(value=EnvType.CLIENT)
-    public void writeToBuffer(FloatBuffer floatBuffer) {
-        floatBuffer.put(Matrix4f.pack(0, 0), this.a00);
-        floatBuffer.put(Matrix4f.pack(0, 1), this.a01);
-        floatBuffer.put(Matrix4f.pack(0, 2), this.a02);
-        floatBuffer.put(Matrix4f.pack(0, 3), this.a03);
-        floatBuffer.put(Matrix4f.pack(1, 0), this.a10);
-        floatBuffer.put(Matrix4f.pack(1, 1), this.a11);
-        floatBuffer.put(Matrix4f.pack(1, 2), this.a12);
-        floatBuffer.put(Matrix4f.pack(1, 3), this.a13);
-        floatBuffer.put(Matrix4f.pack(2, 0), this.a20);
-        floatBuffer.put(Matrix4f.pack(2, 1), this.a21);
-        floatBuffer.put(Matrix4f.pack(2, 2), this.a22);
-        floatBuffer.put(Matrix4f.pack(2, 3), this.a23);
-        floatBuffer.put(Matrix4f.pack(3, 0), this.a30);
-        floatBuffer.put(Matrix4f.pack(3, 1), this.a31);
-        floatBuffer.put(Matrix4f.pack(3, 2), this.a32);
-        floatBuffer.put(Matrix4f.pack(3, 3), this.a33);
+    public void writeRowFirst(FloatBuffer buf) {
+        buf.put(Matrix4f.pack(0, 0), this.a00);
+        buf.put(Matrix4f.pack(0, 1), this.a01);
+        buf.put(Matrix4f.pack(0, 2), this.a02);
+        buf.put(Matrix4f.pack(0, 3), this.a03);
+        buf.put(Matrix4f.pack(1, 0), this.a10);
+        buf.put(Matrix4f.pack(1, 1), this.a11);
+        buf.put(Matrix4f.pack(1, 2), this.a12);
+        buf.put(Matrix4f.pack(1, 3), this.a13);
+        buf.put(Matrix4f.pack(2, 0), this.a20);
+        buf.put(Matrix4f.pack(2, 1), this.a21);
+        buf.put(Matrix4f.pack(2, 2), this.a22);
+        buf.put(Matrix4f.pack(2, 3), this.a23);
+        buf.put(Matrix4f.pack(3, 0), this.a30);
+        buf.put(Matrix4f.pack(3, 1), this.a31);
+        buf.put(Matrix4f.pack(3, 2), this.a32);
+        buf.put(Matrix4f.pack(3, 3), this.a33);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -358,7 +361,7 @@ public final class Matrix4f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void addToLastColumn(Vector3f vector) {
+    public void addToLastColumn(Vec3f vector) {
         this.a03 += vector.getX();
         this.a13 += vector.getY();
         this.a23 += vector.getZ();

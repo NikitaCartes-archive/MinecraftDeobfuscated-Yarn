@@ -22,9 +22,9 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -43,13 +43,13 @@ implements AutoCloseable {
     private final Function<Runnable, Codec<R>> codecFactory;
     private final Function<Runnable, R> factory;
     private final DataFixer dataFixer;
-    private final DataFixTypes dataFixType;
+    private final DataFixTypes dataFixTypes;
 
     public SerializingRegionBasedStorage(File directory, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean bl) {
         this.codecFactory = codecFactory;
         this.factory = factory;
         this.dataFixer = dataFixer;
-        this.dataFixType = dataFixTypes;
+        this.dataFixTypes = dataFixTypes;
         this.worker = new StorageIoWorker(directory, bl, directory.getName());
     }
 
@@ -101,7 +101,7 @@ implements AutoCloseable {
     }
 
     @Nullable
-    private CompoundTag loadNbt(ChunkPos pos) {
+    private NbtCompound loadNbt(ChunkPos pos) {
         try {
             return this.worker.getNbt(pos);
         } catch (IOException iOException) {
@@ -120,7 +120,7 @@ implements AutoCloseable {
             Dynamic<T> dynamic2 = new Dynamic<T>(dynamicOps, data);
             int j = SerializingRegionBasedStorage.getDataVersion(dynamic2);
             boolean bl = j != (k = SharedConstants.getGameVersion().getWorldVersion());
-            Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixType.getTypeReference(), dynamic2, j, k);
+            Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic2, j, k);
             OptionalDynamic<T> optionalDynamic = dynamic22.get("Sections");
             for (int l = 0; l < 16; ++l) {
                 long m = ChunkSectionPos.from(pos, l).asLong();
@@ -137,12 +137,12 @@ implements AutoCloseable {
     }
 
     private void save(ChunkPos chunkPos) {
-        Dynamic<Tag> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
-        Tag tag = dynamic.getValue();
-        if (tag instanceof CompoundTag) {
-            this.worker.setResult(chunkPos, (CompoundTag)tag);
+        Dynamic<NbtElement> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
+        NbtElement nbtElement = dynamic.getValue();
+        if (nbtElement instanceof NbtCompound) {
+            this.worker.setResult(chunkPos, (NbtCompound)nbtElement);
         } else {
-            LOGGER.error("Expected compound tag, got {}", (Object)tag);
+            LOGGER.error("Expected compound tag, got {}", (Object)nbtElement);
         }
     }
 

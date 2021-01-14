@@ -57,16 +57,16 @@ extends AbstractRedstoneGateBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (!world.isClient() && direction.getAxis() != state.get(FACING).getAxis()) {
             return (BlockState)state.with(LOCKED, this.isLocked(world, pos, state));
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
-    public boolean isLocked(WorldView worldView, BlockPos pos, BlockState state) {
-        return this.getMaxInputLevelSides(worldView, pos, state) > 0;
+    public boolean isLocked(WorldView world, BlockPos pos, BlockState state) {
+        return this.getMaxInputLevelSides(world, pos, state) > 0;
     }
 
     @Override
@@ -90,7 +90,7 @@ extends AbstractRedstoneGateBlock {
         }
         double h = (g /= 16.0f) * (float)direction.getOffsetX();
         double i = g * (float)direction.getOffsetZ();
-        world.addParticle(DustParticleEffect.RED, d + h, e, f + i, 0.0, 0.0, 0.0);
+        world.addParticle(DustParticleEffect.DEFAULT, d + h, e, f + i, 0.0, 0.0, 0.0);
     }
 
     @Override

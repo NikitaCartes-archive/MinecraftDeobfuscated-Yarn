@@ -28,15 +28,15 @@ import net.minecraft.util.math.BlockPos;
 @Environment(value=EnvType.CLIENT)
 public class StructureBlockScreen
 extends Screen {
-    private static final Text field_26572 = new TranslatableText("structure_block.structure_name");
-    private static final Text field_26573 = new TranslatableText("structure_block.position");
-    private static final Text field_26574 = new TranslatableText("structure_block.size");
-    private static final Text field_26575 = new TranslatableText("structure_block.integrity");
-    private static final Text field_26576 = new TranslatableText("structure_block.custom_data");
-    private static final Text field_26577 = new TranslatableText("structure_block.include_entities");
-    private static final Text field_26578 = new TranslatableText("structure_block.detect_size");
-    private static final Text field_26579 = new TranslatableText("structure_block.show_air");
-    private static final Text field_26580 = new TranslatableText("structure_block.show_boundingbox");
+    private static final Text STRUCTURE_NAME_TEXT = new TranslatableText("structure_block.structure_name");
+    private static final Text POSITION_TEXT = new TranslatableText("structure_block.position");
+    private static final Text SIZE_TEXT = new TranslatableText("structure_block.size");
+    private static final Text INTEGRITY_TEXT = new TranslatableText("structure_block.integrity");
+    private static final Text CUSTOM_DATA_TEXT = new TranslatableText("structure_block.custom_data");
+    private static final Text INCLUDE_ENTITIES_TEXT = new TranslatableText("structure_block.include_entities");
+    private static final Text DETECT_SIZE_TEXT = new TranslatableText("structure_block.detect_size");
+    private static final Text SHOW_AIR_TEXT = new TranslatableText("structure_block.show_air");
+    private static final Text SHOW_BOUNDING_BOX_TEXT = new TranslatableText("structure_block.show_boundingbox");
     private final StructureBlockBlockEntity structureBlock;
     private BlockMirror mirror = BlockMirror.NONE;
     private BlockRotation rotation = BlockRotation.NONE;
@@ -91,7 +91,7 @@ extends Screen {
     }
 
     private void done() {
-        if (this.method_2516(StructureBlockBlockEntity.Action.UPDATE_DATA)) {
+        if (this.updateStructureBlock(StructureBlockBlockEntity.Action.UPDATE_DATA)) {
             this.client.openScreen(null);
         }
     }
@@ -113,13 +113,13 @@ extends Screen {
         this.buttonCancel = this.addButton(new ButtonWidget(this.width / 2 + 4, 210, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.cancel()));
         this.buttonSave = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.save"), buttonWidget -> {
             if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
-                this.method_2516(StructureBlockBlockEntity.Action.SAVE_AREA);
+                this.updateStructureBlock(StructureBlockBlockEntity.Action.SAVE_AREA);
                 this.client.openScreen(null);
             }
         }));
         this.buttonLoad = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.load"), buttonWidget -> {
             if (this.structureBlock.getMode() == StructureBlockMode.LOAD) {
-                this.method_2516(StructureBlockBlockEntity.Action.LOAD_AREA);
+                this.updateStructureBlock(StructureBlockBlockEntity.Action.LOAD_AREA);
                 this.client.openScreen(null);
             }
         }));
@@ -129,7 +129,7 @@ extends Screen {
         }));
         this.buttonDetect = this.addButton(new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, new TranslatableText("structure_block.button.detect_size"), buttonWidget -> {
             if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
-                this.method_2516(StructureBlockBlockEntity.Action.SCAN_AREA);
+                this.updateStructureBlock(StructureBlockBlockEntity.Action.SCAN_AREA);
                 this.client.openScreen(null);
             }
         }));
@@ -180,11 +180,11 @@ extends Screen {
         this.inputName = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 40, 300, 20, (Text)new TranslatableText("structure_block.structure_name")){
 
             @Override
-            public boolean charTyped(char chr, int keyCode) {
+            public boolean charTyped(char chr, int modifiers) {
                 if (!StructureBlockScreen.this.isValidCharacterForName(this.getText(), chr, this.getCursor())) {
                     return false;
                 }
-                return super.charTyped(chr, keyCode);
+                return super.charTyped(chr, modifiers);
             }
         };
         this.inputName.setMaxLength(64);
@@ -392,7 +392,7 @@ extends Screen {
         this.buttonMode.setMessage(new TranslatableText("structure_block.mode." + this.structureBlock.getMode().asString()));
     }
 
-    private boolean method_2516(StructureBlockBlockEntity.Action action) {
+    private boolean updateStructureBlock(StructureBlockBlockEntity.Action action) {
         BlockPos blockPos = new BlockPos(this.parseInt(this.inputPosX.getText()), this.parseInt(this.inputPosY.getText()), this.parseInt(this.inputPosZ.getText()));
         BlockPos blockPos2 = new BlockPos(this.parseInt(this.inputSizeX.getText()), this.parseInt(this.inputSizeY.getText()), this.parseInt(this.inputSizeZ.getText()));
         float f = this.parseFloat(this.inputIntegrity.getText());
@@ -448,32 +448,32 @@ extends Screen {
         StructureBlockMode structureBlockMode = this.structureBlock.getMode();
         StructureBlockScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
         if (structureBlockMode != StructureBlockMode.DATA) {
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26572, this.width / 2 - 153, 30, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, STRUCTURE_NAME_TEXT, this.width / 2 - 153, 30, 0xA0A0A0);
             this.inputName.render(matrices, mouseX, mouseY, delta);
         }
         if (structureBlockMode == StructureBlockMode.LOAD || structureBlockMode == StructureBlockMode.SAVE) {
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26573, this.width / 2 - 153, 70, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, POSITION_TEXT, this.width / 2 - 153, 70, 0xA0A0A0);
             this.inputPosX.render(matrices, mouseX, mouseY, delta);
             this.inputPosY.render(matrices, mouseX, mouseY, delta);
             this.inputPosZ.render(matrices, mouseX, mouseY, delta);
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26577, this.width / 2 + 154 - this.textRenderer.getWidth(field_26577), 150, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, INCLUDE_ENTITIES_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(INCLUDE_ENTITIES_TEXT), 150, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.SAVE) {
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26574, this.width / 2 - 153, 110, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, SIZE_TEXT, this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputSizeX.render(matrices, mouseX, mouseY, delta);
             this.inputSizeY.render(matrices, mouseX, mouseY, delta);
             this.inputSizeZ.render(matrices, mouseX, mouseY, delta);
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26578, this.width / 2 + 154 - this.textRenderer.getWidth(field_26578), 110, 0xA0A0A0);
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26579, this.width / 2 + 154 - this.textRenderer.getWidth(field_26579), 70, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, DETECT_SIZE_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(DETECT_SIZE_TEXT), 110, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, SHOW_AIR_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(SHOW_AIR_TEXT), 70, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.LOAD) {
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26575, this.width / 2 - 153, 110, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, INTEGRITY_TEXT, this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputIntegrity.render(matrices, mouseX, mouseY, delta);
             this.inputSeed.render(matrices, mouseX, mouseY, delta);
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26580, this.width / 2 + 154 - this.textRenderer.getWidth(field_26580), 70, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, SHOW_BOUNDING_BOX_TEXT, this.width / 2 + 154 - this.textRenderer.getWidth(SHOW_BOUNDING_BOX_TEXT), 70, 0xA0A0A0);
         }
         if (structureBlockMode == StructureBlockMode.DATA) {
-            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, field_26576, this.width / 2 - 153, 110, 0xA0A0A0);
+            StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, CUSTOM_DATA_TEXT, this.width / 2 - 153, 110, 0xA0A0A0);
             this.inputMetadata.render(matrices, mouseX, mouseY, delta);
         }
         StructureBlockScreen.drawTextWithShadow(matrices, this.textRenderer, structureBlockMode.method_30844(), this.width / 2 - 153, 174, 0xA0A0A0);

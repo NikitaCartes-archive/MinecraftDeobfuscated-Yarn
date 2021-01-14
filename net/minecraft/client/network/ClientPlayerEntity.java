@@ -433,9 +433,9 @@ extends AbstractClientPlayerEntity {
         }
     }
 
-    private boolean wouldCollideAt(BlockPos blockPos2) {
+    private boolean wouldCollideAt(BlockPos pos) {
         Box box = this.getBoundingBox();
-        Box box2 = new Box(blockPos2.getX(), box.minY, blockPos2.getZ(), (double)blockPos2.getX() + 1.0, box.maxY, (double)blockPos2.getZ() + 1.0).contract(1.0E-7);
+        Box box2 = new Box(pos.getX(), box.minY, pos.getZ(), (double)pos.getX() + 1.0, box.maxY, (double)pos.getZ() + 1.0).contract(1.0E-7);
         return !this.world.isBlockSpaceEmpty(this, box2, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos));
     }
 
@@ -452,7 +452,7 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void sendSystemMessage(Text message, UUID senderUuid) {
+    public void sendSystemMessage(Text message, UUID sender) {
         this.client.inGameHud.getChatHud().addMessage(message);
     }
 
@@ -568,7 +568,7 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void openEditBookScreen(ItemStack book, Hand hand) {
+    public void useBook(ItemStack book, Hand hand) {
         Item item = book.getItem();
         if (item == Items.WRITABLE_BOOK) {
             this.client.openScreen(new BookEditScreen(this, book, hand));
@@ -810,10 +810,10 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void move(MovementType type, Vec3d movement) {
+    public void move(MovementType movementType, Vec3d movement) {
         double d = this.getX();
         double e = this.getZ();
-        super.move(type, movement);
+        super.move(movementType, movement);
         this.autoJump((float)(this.getX() - d), (float)(this.getZ() - e));
     }
 

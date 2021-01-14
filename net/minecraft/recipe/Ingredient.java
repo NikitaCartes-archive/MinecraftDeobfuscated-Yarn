@@ -25,7 +25,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.tag.ServerTagManagerHolder;
 import net.minecraft.tag.Tag;
 import net.minecraft.util.Identifier;
@@ -72,12 +72,12 @@ implements Predicate<ItemStack> {
         return false;
     }
 
-    public IntList getIds() {
+    public IntList getMatchingItemIds() {
         if (this.ids == null) {
             this.cacheMatchingStacks();
             this.ids = new IntArrayList(this.matchingStacks.length);
             for (ItemStack itemStack : this.matchingStacks) {
-                this.ids.add(RecipeFinder.getItemId(itemStack));
+                this.ids.add(RecipeMatcher.getItemId(itemStack));
             }
             this.ids.sort(IntComparators.NATURAL_COMPARATOR);
         }

@@ -30,6 +30,9 @@ import net.minecraft.world.gen.surfacebuilder.SwampSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 import net.minecraft.world.gen.surfacebuilder.WoodedBadlandsSurfaceBuilder;
 
+/**
+ * Places the top blocks of a biome during chunk generation.
+ */
 public abstract class SurfaceBuilder<C extends SurfaceConfig> {
     private static final BlockState DIRT = Blocks.DIRT.getDefaultState();
     private static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
@@ -102,6 +105,9 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 
     public abstract void generate(Random var1, Chunk var2, Biome var3, int var4, int var5, int var6, double var7, BlockState var9, BlockState var10, int var11, long var12, C var14);
 
+    /**
+     * Runs before {@link #generate} and allows for custom noise to be initialized.
+     */
     public void initSeed(long seed) {
     }
 }

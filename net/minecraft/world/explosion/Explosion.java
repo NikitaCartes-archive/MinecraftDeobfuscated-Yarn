@@ -81,17 +81,17 @@ public class Explosion {
         this(world, entity, null, null, d, e, f, g, bl, destructionType);
     }
 
-    public Explosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior explosionBehavior, double d, double e, double f, float g, boolean bl, DestructionType destructionType) {
+    public Explosion(World world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, DestructionType destructionType) {
         this.world = world;
         this.entity = entity;
-        this.power = g;
-        this.x = d;
-        this.y = e;
-        this.z = f;
-        this.createFire = bl;
+        this.power = power;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.createFire = createFire;
         this.destructionType = destructionType;
         this.damageSource = damageSource == null ? DamageSource.explosion(this) : damageSource;
-        this.behavior = explosionBehavior == null ? this.chooseBehavior(entity) : explosionBehavior;
+        this.behavior = behavior == null ? this.chooseBehavior(entity) : behavior;
     }
 
     private ExplosionBehavior chooseBehavior(@Nullable Entity entity) {
@@ -206,20 +206,23 @@ public class Explosion {
         }
     }
 
-    public void affectWorld(boolean bl) {
-        boolean bl2;
+    /**
+     * @param particles whether this explosion should emit explosion or explosion emitter particles around the source of the explosion
+     */
+    public void affectWorld(boolean particles) {
+        boolean bl;
         if (this.world.isClient) {
             this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0f, (1.0f + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2f) * 0.7f, false);
         }
-        boolean bl3 = bl2 = this.destructionType != DestructionType.NONE;
-        if (bl) {
-            if (this.power < 2.0f || !bl2) {
+        boolean bl2 = bl = this.destructionType != DestructionType.NONE;
+        if (particles) {
+            if (this.power < 2.0f || !bl) {
                 this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
             } else {
                 this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
             }
         }
-        if (bl2) {
+        if (bl) {
             ObjectArrayList objectArrayList = new ObjectArrayList();
             Collections.shuffle(this.affectedBlocks, this.world.random);
             for (BlockPos blockPos : this.affectedBlocks) {

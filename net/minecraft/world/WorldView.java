@@ -139,7 +139,7 @@ BiomeAccess.Storage {
 
     @Override
     @Nullable
-    default public BlockView getExistingChunk(int chunkX, int chunkZ) {
+    default public BlockView getChunkAsView(int chunkX, int chunkZ) {
         return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
     }
 

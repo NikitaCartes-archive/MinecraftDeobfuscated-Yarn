@@ -16,7 +16,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.CraftingRecipe;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -81,7 +81,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
     }
 
     @Override
-    public void populateRecipeFinder(RecipeFinder finder) {
+    public void populateRecipeFinder(RecipeMatcher finder) {
         this.input.provideRecipeInputs(finder);
     }
 
@@ -119,7 +119,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
                 if (!this.insertItem(itemStack2, 10, 46, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onStackChanged(itemStack2, itemStack);
+                slot.onQuickTransfer(itemStack2, itemStack);
             } else if (index >= 10 && index < 46 ? !this.insertItem(itemStack2, 1, 10, false) && (index < 37 ? !this.insertItem(itemStack2, 37, 46, false) : !this.insertItem(itemStack2, 10, 37, false)) : !this.insertItem(itemStack2, 10, 46, false)) {
                 return ItemStack.EMPTY;
             }

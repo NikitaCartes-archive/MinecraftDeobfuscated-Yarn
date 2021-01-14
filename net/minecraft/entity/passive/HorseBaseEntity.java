@@ -49,7 +49,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
@@ -699,39 +699,39 @@ Saddleable {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putBoolean("EatingHaystack", this.isEatingGrass());
-        tag.putBoolean("Bred", this.isBred());
-        tag.putInt("Temper", this.getTemper());
-        tag.putBoolean("Tame", this.isTame());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putBoolean("EatingHaystack", this.isEatingGrass());
+        nbt.putBoolean("Bred", this.isBred());
+        nbt.putInt("Temper", this.getTemper());
+        nbt.putBoolean("Tame", this.isTame());
         if (this.getOwnerUuid() != null) {
-            tag.putUuid("Owner", this.getOwnerUuid());
+            nbt.putUuid("Owner", this.getOwnerUuid());
         }
         if (!this.items.getStack(0).isEmpty()) {
-            tag.put("SaddleItem", this.items.getStack(0).toTag(new CompoundTag()));
+            nbt.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
         ItemStack itemStack;
         UUID uUID;
-        super.readCustomDataFromTag(tag);
-        this.setEatingGrass(tag.getBoolean("EatingHaystack"));
-        this.setBred(tag.getBoolean("Bred"));
-        this.setTemper(tag.getInt("Temper"));
-        this.setTame(tag.getBoolean("Tame"));
-        if (tag.containsUuid("Owner")) {
-            uUID = tag.getUuid("Owner");
+        super.readCustomDataFromNbt(nbt);
+        this.setEatingGrass(nbt.getBoolean("EatingHaystack"));
+        this.setBred(nbt.getBoolean("Bred"));
+        this.setTemper(nbt.getInt("Temper"));
+        this.setTame(nbt.getBoolean("Tame"));
+        if (nbt.containsUuid("Owner")) {
+            uUID = nbt.getUuid("Owner");
         } else {
-            String string = tag.getString("Owner");
+            String string = nbt.getString("Owner");
             uUID = ServerConfigHandler.getPlayerUuidByName(this.getServer(), string);
         }
         if (uUID != null) {
             this.setOwnerUuid(uUID);
         }
-        if (tag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
+        if (nbt.contains("SaddleItem", 10) && (itemStack = ItemStack.fromNbt(nbt.getCompound("SaddleItem"))).getItem() == Items.SADDLE) {
             this.items.setStack(0, itemStack);
         }
         this.updateSaddle();
@@ -847,7 +847,7 @@ Saddleable {
             float g = MathHelper.cos(this.bodyYaw * ((float)Math.PI / 180));
             float h = 0.7f * this.lastAngryAnimationProgress;
             float i = 0.15f * this.lastAngryAnimationProgress;
-            passenger.updatePosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
+            passenger.setPosition(this.getX() + (double)(h * f), this.getY() + this.getMountedHeightOffset() + passenger.getHeightOffset() + (double)i, this.getZ() - (double)(h * g));
             if (passenger instanceof LivingEntity) {
                 ((LivingEntity)passenger).bodyYaw = this.bodyYaw;
             }
@@ -882,10 +882,10 @@ Saddleable {
      * <p>In the item slot argument type, the slot is referred to as <code>
      * horse.armor</code>. In this horse's screen, it appears in the middle of
      * the left side, and right below the saddle slot if this horse has a saddle
-     * slot.</p>
+     * slot.
      * 
      * <p>This is used by horse armors and llama carpets, but can be
-     * refitted to any purpose.</p>
+     * refitted to any purpose.
      */
     public boolean hasArmorSlot() {
         return false;
@@ -984,12 +984,12 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);
         }
         this.initAttributes();
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 }
 

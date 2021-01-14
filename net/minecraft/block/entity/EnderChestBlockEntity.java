@@ -90,11 +90,11 @@ Tickable {
         this.world.addSyncedBlockEvent(this.pos, Blocks.ENDER_CHEST, 1, this.viewerCount);
     }
 
-    public boolean canPlayerUse(PlayerEntity playerEntity) {
+    public boolean canPlayerUse(PlayerEntity player) {
         if (this.world.getBlockEntity(this.pos) != this) {
             return false;
         }
-        return !(playerEntity.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
+        return !(player.squaredDistanceTo((double)this.pos.getX() + 0.5, (double)this.pos.getY() + 0.5, (double)this.pos.getZ() + 0.5) > 64.0);
     }
 
     @Override

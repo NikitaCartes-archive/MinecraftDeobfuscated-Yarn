@@ -22,7 +22,7 @@ extends AbstractPhase {
     private static final Logger LOGGER = LogManager.getLogger();
     private int field_7060;
     private Path field_7059;
-    private Vec3d target;
+    private Vec3d pathTarget;
     private LivingEntity field_7062;
     private boolean field_7058;
 
@@ -47,9 +47,9 @@ extends AbstractPhase {
             double g = e - this.dragon.getZ();
             h = MathHelper.sqrt(f * f + g * g);
             double i = Math.min((double)0.4f + h / 80.0 - 1.0, 10.0);
-            this.target = new Vec3d(d, this.field_7062.getY() + i, e);
+            this.pathTarget = new Vec3d(d, this.field_7062.getY() + i, e);
         }
-        double d2 = d = this.target == null ? 0.0 : this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+        double d2 = d = this.pathTarget == null ? 0.0 : this.pathTarget.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
         if (d < 100.0 || d > 22500.0) {
             this.method_6860();
         }
@@ -65,9 +65,9 @@ extends AbstractPhase {
                 if (this.field_7060 >= 5 && k >= 0.0f && k < 10.0f) {
                     h = 1.0;
                     Vec3d vec3d3 = this.dragon.getRotationVec(1.0f);
-                    double l = this.dragon.partHead.getX() - vec3d3.x * 1.0;
-                    double m = this.dragon.partHead.getBodyY(0.5) + 0.5;
-                    double n = this.dragon.partHead.getZ() - vec3d3.z * 1.0;
+                    double l = this.dragon.head.getX() - vec3d3.x * 1.0;
+                    double m = this.dragon.head.getBodyY(0.5) + 0.5;
+                    double n = this.dragon.head.getZ() - vec3d3.z * 1.0;
                     double o = this.field_7062.getX() - l;
                     double p = this.field_7062.getBodyY(0.5) - m;
                     double q = this.field_7062.getZ() - n;
@@ -126,14 +126,14 @@ extends AbstractPhase {
             double e = vec3i.getZ();
             while ((f = (double)((float)vec3i.getY() + this.dragon.getRandom().nextFloat() * 20.0f)) < (double)vec3i.getY()) {
             }
-            this.target = new Vec3d(d, f, e);
+            this.pathTarget = new Vec3d(d, f, e);
         }
     }
 
     @Override
     public void beginPhase() {
         this.field_7060 = 0;
-        this.target = null;
+        this.pathTarget = null;
         this.field_7059 = null;
         this.field_7062 = null;
     }
@@ -159,8 +159,8 @@ extends AbstractPhase {
 
     @Override
     @Nullable
-    public Vec3d getTarget() {
-        return this.target;
+    public Vec3d getPathTarget() {
+        return this.pathTarget;
     }
 
     public PhaseType<StrafePlayerPhase> getType() {

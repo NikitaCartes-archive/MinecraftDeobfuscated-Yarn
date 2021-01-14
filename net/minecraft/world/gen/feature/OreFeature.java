@@ -47,72 +47,72 @@ extends Feature<OreFeatureConfig> {
         return false;
     }
 
-    protected boolean generateVeinPart(WorldAccess world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int size, int i) {
+    protected boolean generateVeinPart(WorldAccess world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
         double h;
         double g;
         double e;
         double d;
-        int l;
-        int j = 0;
-        BitSet bitSet = new BitSet(size * i * size);
+        int k;
+        int i = 0;
+        BitSet bitSet = new BitSet(horizontalSize * verticalSize * horizontalSize);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int k = config.size;
-        double[] ds = new double[k * 4];
-        for (l = 0; l < k; ++l) {
-            float f = (float)l / (float)k;
+        int j = config.size;
+        double[] ds = new double[j * 4];
+        for (k = 0; k < j; ++k) {
+            float f = (float)k / (float)j;
             d = MathHelper.lerp((double)f, startX, endX);
             e = MathHelper.lerp((double)f, startY, endY);
             g = MathHelper.lerp((double)f, startZ, endZ);
-            h = random.nextDouble() * (double)k / 16.0;
-            double m = ((double)(MathHelper.sin((float)Math.PI * f) + 1.0f) * h + 1.0) / 2.0;
-            ds[l * 4 + 0] = d;
-            ds[l * 4 + 1] = e;
-            ds[l * 4 + 2] = g;
-            ds[l * 4 + 3] = m;
+            h = random.nextDouble() * (double)j / 16.0;
+            double l = ((double)(MathHelper.sin((float)Math.PI * f) + 1.0f) * h + 1.0) / 2.0;
+            ds[k * 4 + 0] = d;
+            ds[k * 4 + 1] = e;
+            ds[k * 4 + 2] = g;
+            ds[k * 4 + 3] = l;
         }
-        for (l = 0; l < k - 1; ++l) {
-            if (ds[l * 4 + 3] <= 0.0) continue;
-            for (int n = l + 1; n < k; ++n) {
-                if (ds[n * 4 + 3] <= 0.0 || !((h = ds[l * 4 + 3] - ds[n * 4 + 3]) * h > (d = ds[l * 4 + 0] - ds[n * 4 + 0]) * d + (e = ds[l * 4 + 1] - ds[n * 4 + 1]) * e + (g = ds[l * 4 + 2] - ds[n * 4 + 2]) * g)) continue;
+        for (k = 0; k < j - 1; ++k) {
+            if (ds[k * 4 + 3] <= 0.0) continue;
+            for (int m = k + 1; m < j; ++m) {
+                if (ds[m * 4 + 3] <= 0.0 || !((h = ds[k * 4 + 3] - ds[m * 4 + 3]) * h > (d = ds[k * 4 + 0] - ds[m * 4 + 0]) * d + (e = ds[k * 4 + 1] - ds[m * 4 + 1]) * e + (g = ds[k * 4 + 2] - ds[m * 4 + 2]) * g)) continue;
                 if (h > 0.0) {
-                    ds[n * 4 + 3] = -1.0;
+                    ds[m * 4 + 3] = -1.0;
                     continue;
                 }
-                ds[l * 4 + 3] = -1.0;
+                ds[k * 4 + 3] = -1.0;
             }
         }
-        for (l = 0; l < k; ++l) {
-            double o = ds[l * 4 + 3];
-            if (o < 0.0) continue;
-            double p = ds[l * 4 + 0];
-            double q = ds[l * 4 + 1];
-            double r = ds[l * 4 + 2];
-            int s = Math.max(MathHelper.floor(p - o), x);
-            int t = Math.max(MathHelper.floor(q - o), y);
-            int u = Math.max(MathHelper.floor(r - o), z);
-            int v = Math.max(MathHelper.floor(p + o), s);
-            int w = Math.max(MathHelper.floor(q + o), t);
-            int aa = Math.max(MathHelper.floor(r + o), u);
-            for (int ab = s; ab <= v; ++ab) {
-                double ac = ((double)ab + 0.5 - p) / o;
-                if (!(ac * ac < 1.0)) continue;
-                for (int ad = t; ad <= w; ++ad) {
-                    double ae = ((double)ad + 0.5 - q) / o;
-                    if (!(ac * ac + ae * ae < 1.0)) continue;
-                    for (int af = u; af <= aa; ++af) {
-                        int ah;
-                        double ag = ((double)af + 0.5 - r) / o;
-                        if (!(ac * ac + ae * ae + ag * ag < 1.0) || bitSet.get(ah = ab - x + (ad - y) * size + (af - z) * size * i)) continue;
-                        bitSet.set(ah);
-                        mutable.set(ab, ad, af);
+        for (k = 0; k < j; ++k) {
+            double n = ds[k * 4 + 3];
+            if (n < 0.0) continue;
+            double o = ds[k * 4 + 0];
+            double p = ds[k * 4 + 1];
+            double q = ds[k * 4 + 2];
+            int r = Math.max(MathHelper.floor(o - n), x);
+            int s = Math.max(MathHelper.floor(p - n), y);
+            int t = Math.max(MathHelper.floor(q - n), z);
+            int u = Math.max(MathHelper.floor(o + n), r);
+            int v = Math.max(MathHelper.floor(p + n), s);
+            int w = Math.max(MathHelper.floor(q + n), t);
+            for (int aa = r; aa <= u; ++aa) {
+                double ab = ((double)aa + 0.5 - o) / n;
+                if (!(ab * ab < 1.0)) continue;
+                for (int ac = s; ac <= v; ++ac) {
+                    double ad = ((double)ac + 0.5 - p) / n;
+                    if (!(ab * ab + ad * ad < 1.0)) continue;
+                    for (int ae = t; ae <= w; ++ae) {
+                        int ag;
+                        double af = ((double)ae + 0.5 - q) / n;
+                        if (!(ab * ab + ad * ad + af * af < 1.0) || bitSet.get(ag = aa - x + (ac - y) * horizontalSize + (ae - z) * horizontalSize * verticalSize)) continue;
+                        bitSet.set(ag);
+                        mutable.set(aa, ac, ae);
                         if (!config.target.test(world.getBlockState(mutable), random)) continue;
                         world.setBlockState(mutable, config.state, 2);
-                        ++j;
+                        ++i;
                     }
                 }
             }
         }
-        return j > 0;
+        return i > 0;
     }
 }
 

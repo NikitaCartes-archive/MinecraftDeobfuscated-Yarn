@@ -52,8 +52,8 @@ implements ProgressListener {
     }
 
     @Override
-    public void progressStagePercentage(int i) {
-        this.progress = i;
+    public void progressStagePercentage(int percentage) {
+        this.progress = percentage;
     }
 
     @Override

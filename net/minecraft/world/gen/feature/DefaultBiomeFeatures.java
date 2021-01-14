@@ -88,7 +88,7 @@ public class DefaultBiomeFeatures {
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.DISK_GRAVEL);
     }
 
-    public static void addClay(GenerationSettings.Builder builder) {
+    public static void addClayDisk(GenerationSettings.Builder builder) {
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.DISK_CLAY);
     }
 
@@ -343,12 +343,12 @@ public class DefaultBiomeFeatures {
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.COW, 8, 4, 4));
     }
 
-    public static void addBats(SpawnSettings.Builder builder) {
+    public static void addCaveMobs(SpawnSettings.Builder builder) {
         builder.spawn(SpawnGroup.AMBIENT, new SpawnSettings.SpawnEntry(EntityType.BAT, 10, 8, 8));
     }
 
     public static void addBatsAndMonsters(SpawnSettings.Builder builder) {
-        DefaultBiomeFeatures.addBats(builder);
+        DefaultBiomeFeatures.addCaveMobs(builder);
         DefaultBiomeFeatures.addMonsters(builder, 95, 5, 100);
     }
 
@@ -376,14 +376,14 @@ public class DefaultBiomeFeatures {
     public static void addSnowyMobs(SpawnSettings.Builder builder) {
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 10, 2, 3));
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.POLAR_BEAR, 1, 1, 2));
-        DefaultBiomeFeatures.addBats(builder);
+        DefaultBiomeFeatures.addCaveMobs(builder);
         DefaultBiomeFeatures.addMonsters(builder, 95, 5, 20);
         builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.STRAY, 80, 4, 4));
     }
 
     public static void addDesertMobs(SpawnSettings.Builder builder) {
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.RABBIT, 4, 2, 3));
-        DefaultBiomeFeatures.addBats(builder);
+        DefaultBiomeFeatures.addCaveMobs(builder);
         DefaultBiomeFeatures.addMonsters(builder, 19, 1, 100);
         builder.spawn(SpawnGroup.MONSTER, new SpawnSettings.SpawnEntry(EntityType.HUSK, 80, 4, 4));
     }
@@ -401,7 +401,7 @@ public class DefaultBiomeFeatures {
 
     public static void addMushroomMobs(SpawnSettings.Builder builder) {
         builder.spawn(SpawnGroup.CREATURE, new SpawnSettings.SpawnEntry(EntityType.MOOSHROOM, 8, 4, 8));
-        DefaultBiomeFeatures.addBats(builder);
+        DefaultBiomeFeatures.addCaveMobs(builder);
     }
 
     public static void addJungleMobs(SpawnSettings.Builder builder) {

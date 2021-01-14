@@ -22,7 +22,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
@@ -36,7 +36,7 @@ import net.minecraft.village.VillagerType;
 @Environment(value=EnvType.CLIENT)
 public class VillagerClothingFeatureRenderer<T extends LivingEntity, M extends EntityModel<T>>
 extends FeatureRenderer<T, M>
-implements SynchronousResourceReloadListener {
+implements SynchronousResourceReloader {
     private static final Int2ObjectMap<Identifier> LEVEL_TO_ID = Util.make(new Int2ObjectOpenHashMap(), int2ObjectOpenHashMap -> {
         int2ObjectOpenHashMap.put(1, new Identifier("stone"));
         int2ObjectOpenHashMap.put(2, new Identifier("iron"));
@@ -53,7 +53,7 @@ implements SynchronousResourceReloadListener {
         super(context);
         this.resourceManager = resourceManager;
         this.entityType = entityType;
-        resourceManager.registerListener(this);
+        resourceManager.registerReloader(this);
     }
 
     @Override
@@ -100,7 +100,7 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager manager) {
+    public void reload(ResourceManager manager) {
         this.professionToHat.clear();
         this.villagerTypeToHat.clear();
     }

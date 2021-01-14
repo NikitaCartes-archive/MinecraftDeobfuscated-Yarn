@@ -37,7 +37,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -164,11 +164,11 @@ Hoglin {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (world.getRandom().nextFloat() < 0.2f) {
             this.setBaby(true);
         }
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override
@@ -219,12 +219,12 @@ Hoglin {
     }
 
     @Override
-    protected boolean canDropLootAndXp() {
+    protected boolean shouldDropXp() {
         return true;
     }
 
     @Override
-    protected int getCurrentExperience(PlayerEntity player) {
+    protected int getXpToDrop(PlayerEntity player) {
         return this.experiencePoints;
     }
 
@@ -251,23 +251,23 @@ Hoglin {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
         if (this.isImmuneToZombification()) {
-            tag.putBoolean("IsImmuneToZombification", true);
+            nbt.putBoolean("IsImmuneToZombification", true);
         }
-        tag.putInt("TimeInOverworld", this.timeInOverworld);
+        nbt.putInt("TimeInOverworld", this.timeInOverworld);
         if (this.cannotBeHunted) {
-            tag.putBoolean("CannotBeHunted", true);
+            nbt.putBoolean("CannotBeHunted", true);
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
-        this.timeInOverworld = tag.getInt("TimeInOverworld");
-        this.setCannotBeHunted(tag.getBoolean("CannotBeHunted"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setImmuneToZombification(nbt.getBoolean("IsImmuneToZombification"));
+        this.timeInOverworld = nbt.getInt("TimeInOverworld");
+        this.setCannotBeHunted(nbt.getBoolean("CannotBeHunted"));
     }
 
     public void setImmuneToZombification(boolean immuneToZombification) {

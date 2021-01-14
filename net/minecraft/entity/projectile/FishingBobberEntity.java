@@ -30,7 +30,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -79,7 +79,7 @@ extends ProjectileEntity {
     @Environment(value=EnvType.CLIENT)
     public FishingBobberEntity(World world, PlayerEntity thrower, double x, double y, double z) {
         this(world, thrower, 0, 0);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         this.prevX = this.getX();
         this.prevY = this.getY();
         this.prevZ = this.getZ();
@@ -188,7 +188,7 @@ extends ProjectileEntity {
                         this.hookedEntity = null;
                         this.state = State.FLYING;
                     } else {
-                        this.updatePosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
+                        this.setPosition(this.hookedEntity.getX(), this.hookedEntity.getBodyY(0.8), this.hookedEntity.getZ());
                     }
                 }
                 return;
@@ -227,13 +227,13 @@ extends ProjectileEntity {
         this.refreshPosition();
     }
 
-    private boolean removeIfInvalid(PlayerEntity playerEntity) {
+    private boolean removeIfInvalid(PlayerEntity player) {
         boolean bl2;
-        ItemStack itemStack = playerEntity.getMainHandStack();
-        ItemStack itemStack2 = playerEntity.getOffHandStack();
+        ItemStack itemStack = player.getMainHandStack();
+        ItemStack itemStack2 = player.getOffHandStack();
         boolean bl = itemStack.getItem() == Items.FISHING_ROD;
         boolean bl3 = bl2 = itemStack2.getItem() == Items.FISHING_ROD;
-        if (playerEntity.removed || !playerEntity.isAlive() || !bl && !bl2 || this.squaredDistanceTo(playerEntity) > 1024.0) {
+        if (player.removed || !player.isAlive() || !bl && !bl2 || this.squaredDistanceTo(player) > 1024.0) {
             this.remove();
             return true;
         }
@@ -388,11 +388,11 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound nbt) {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound nbt) {
     }
 
     public int use(ItemStack usedItem) {

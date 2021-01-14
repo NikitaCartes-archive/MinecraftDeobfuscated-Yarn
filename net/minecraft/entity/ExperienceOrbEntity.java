@@ -15,7 +15,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ExperienceOrbSpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
@@ -36,7 +36,7 @@ extends Entity {
 
     public ExperienceOrbEntity(World world, double x, double y, double z, int amount) {
         this((EntityType<? extends ExperienceOrbEntity>)EntityType.EXPERIENCE_ORB, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         this.yaw = (float)(this.random.nextDouble() * 360.0);
         this.setVelocity((this.random.nextDouble() * (double)0.2f - (double)0.1f) * 2.0, this.random.nextDouble() * 0.2 * 2.0, (this.random.nextDouble() * (double)0.2f - (double)0.1f) * 2.0);
         this.amount = amount;
@@ -131,17 +131,17 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        tag.putShort("Health", (short)this.health);
-        tag.putShort("Age", (short)this.orbAge);
-        tag.putShort("Value", (short)this.amount);
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        nbt.putShort("Health", (short)this.health);
+        nbt.putShort("Age", (short)this.orbAge);
+        nbt.putShort("Value", (short)this.amount);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        this.health = tag.getShort("Health");
-        this.orbAge = tag.getShort("Age");
-        this.amount = tag.getShort("Value");
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        this.health = nbt.getShort("Health");
+        this.orbAge = nbt.getShort("Age");
+        this.amount = nbt.getShort("Value");
     }
 
     @Override

@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 public class QuadrupedEntityModel<T extends Entity>
 extends AnimalModel<T> {
     protected ModelPart head = new ModelPart(this, 0, 0);
-    protected ModelPart torso;
+    protected ModelPart body;
     protected ModelPart backRightLeg;
     protected ModelPart backLeftLeg;
     protected ModelPart frontRightLeg;
@@ -25,9 +25,9 @@ extends AnimalModel<T> {
         super(headScaled, childHeadYOffset, childHeadZOffset, invertedChildHeadScale, invertedChildBodyScale, childBodyYOffset);
         this.head.addCuboid(-4.0f, -4.0f, -8.0f, 8.0f, 8.0f, 8.0f, scale);
         this.head.setPivot(0.0f, 18 - legHeight, -6.0f);
-        this.torso = new ModelPart(this, 28, 8);
-        this.torso.addCuboid(-5.0f, -10.0f, -7.0f, 10.0f, 16.0f, 8.0f, scale);
-        this.torso.setPivot(0.0f, 17 - legHeight, 2.0f);
+        this.body = new ModelPart(this, 28, 8);
+        this.body.addCuboid(-5.0f, -10.0f, -7.0f, 10.0f, 16.0f, 8.0f, scale);
+        this.body.setPivot(0.0f, 17 - legHeight, 2.0f);
         this.backRightLeg = new ModelPart(this, 0, 16);
         this.backRightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, (float)legHeight, 4.0f, scale);
         this.backRightLeg.setPivot(-3.0f, 24 - legHeight, 7.0f);
@@ -49,14 +49,14 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.backRightLeg, this.backLeftLeg, this.frontRightLeg, this.frontLeftLeg);
+        return ImmutableList.of(this.body, this.backRightLeg, this.backLeftLeg, this.frontRightLeg, this.frontLeftLeg);
     }
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
         this.head.pitch = headPitch * ((float)Math.PI / 180);
         this.head.yaw = headYaw * ((float)Math.PI / 180);
-        this.torso.pitch = 1.5707964f;
+        this.body.pitch = 1.5707964f;
         this.backRightLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * 1.4f * limbDistance;
         this.backLeftLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;
         this.frontRightLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + (float)Math.PI) * 1.4f * limbDistance;

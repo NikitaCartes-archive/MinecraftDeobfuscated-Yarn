@@ -22,7 +22,9 @@ public class ChunkDeltaUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private ChunkSectionPos sectionPos;
     /**
-     * The packed local positions {@see ChunkSectionPos#getPackedLocalPos} for each entry in {@see #blockStates}.
+     * The packed local positions for each entry in {@link #blockStates}.
+     * 
+     * @see ChunkSectionPos#packLocal(BlockPos)
      */
     private short[] positions;
     private BlockState[] blockStates;
@@ -34,12 +36,12 @@ implements Packet<ClientPlayPacketListener> {
     /**
      * @param sectionPos the position of the given chunk section that will be sent to the client
      */
-    public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet shortSet, ChunkSection section, boolean bl) {
+    public ChunkDeltaUpdateS2CPacket(ChunkSectionPos sectionPos, ShortSet positions, ChunkSection section, boolean noLightingUpdates) {
         this.sectionPos = sectionPos;
-        this.field_26749 = bl;
-        this.allocateBuffers(shortSet.size());
+        this.field_26749 = noLightingUpdates;
+        this.allocateBuffers(positions.size());
         int i = 0;
-        ShortIterator shortIterator = shortSet.iterator();
+        ShortIterator shortIterator = positions.iterator();
         while (shortIterator.hasNext()) {
             short s;
             this.positions[i] = s = ((Short)shortIterator.next()).shortValue();

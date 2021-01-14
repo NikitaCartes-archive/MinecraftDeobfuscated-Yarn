@@ -7,7 +7,7 @@ import com.mojang.datafixers.DataFixUtils;
 import com.mojang.serialization.Dynamic;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.StringNbtReader;
 import org.apache.logging.log4j.LogManager;
@@ -70,7 +70,7 @@ public class BlockStateFlattening {
 
     public static Dynamic<?> parseState(String stateStr) {
         try {
-            return new Dynamic<CompoundTag>(NbtOps.INSTANCE, StringNbtReader.parse(stateStr.replace('\'', '\"')));
+            return new Dynamic<NbtCompound>(NbtOps.INSTANCE, StringNbtReader.parse(stateStr.replace('\'', '\"')));
         } catch (Exception exception) {
             LOGGER.error("Parsing {}", (Object)stateStr, (Object)exception);
             throw new RuntimeException(exception);

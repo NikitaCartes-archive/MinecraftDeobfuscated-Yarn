@@ -185,17 +185,17 @@ implements StructureWorldAccess {
     private final StructureAccessor structureAccessor;
     private final boolean shouldTickTime;
 
-    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long l, List<Spawner> list, boolean bl) {
-        super(properties, registryKey, dimensionType, server::getProfiler, false, debugWorld, l);
-        this.shouldTickTime = bl;
+    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long seed, List<Spawner> spawners, boolean shouldTickTime) {
+        super(properties, worldKey, dimensionType, server::getProfiler, false, debugWorld, seed);
+        this.shouldTickTime = shouldTickTime;
         this.server = server;
-        this.spawners = list;
+        this.spawners = spawners;
         this.worldProperties = properties;
         this.serverChunkManager = new ServerChunkManager(this, session, server.getDataFixer(), server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), server.syncChunkWrites(), worldGenerationProgressListener, () -> server.getOverworld().getPersistentStateManager());
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
-        this.getWorldBorder().setMaxWorldBorderRadius(server.getMaxWorldBorderRadius());
+        this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
         this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
         if (!server.isSinglePlayer()) {
             properties.setGameMode(server.getDefaultGameMode());
@@ -406,7 +406,7 @@ implements StructureWorldAccess {
                 SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
                 skeletonHorseEntity.setTrapped(true);
                 skeletonHorseEntity.setBreedingAge(0);
-                skeletonHorseEntity.updatePosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+                skeletonHorseEntity.setPosition(blockPos.getX(), blockPos.getY(), blockPos.getZ());
                 this.spawnEntity(skeletonHorseEntity);
             }
             LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(this);
@@ -616,7 +616,7 @@ implements StructureWorldAccess {
 
     private void saveLevel() {
         if (this.enderDragonFight != null) {
-            this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toTag());
+            this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toNbt());
         }
         this.getChunkManager().getPersistentStateManager().save();
     }
@@ -907,16 +907,16 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior explosionBehavior, double d, double e, double f, float g, boolean bl, Explosion.DestructionType destructionType) {
-        Explosion explosion = new Explosion(this, entity, damageSource, explosionBehavior, d, e, f, g, bl, destructionType);
+    public Explosion createExplosion(@Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionBehavior behavior, double x, double y, double z, float power, boolean createFire, Explosion.DestructionType destructionType) {
+        Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
         explosion.collectBlocksAndDamageEntities();
         explosion.affectWorld(false);
         if (destructionType == Explosion.DestructionType.NONE) {
             explosion.clearAffectedBlocks();
         }
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            if (!(serverPlayerEntity.squaredDistanceTo(d, e, f) < 4096.0)) continue;
-            serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(d, e, f, g, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
+            if (!(serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0)) continue;
+            serverPlayerEntity.networkHandler.sendPacket(new ExplosionS2CPacket(x, y, z, power, explosion.getAffectedBlocks(), explosion.getAffectedPlayers().get(serverPlayerEntity)));
         }
         return explosion;
     }
@@ -999,8 +999,8 @@ implements StructureWorldAccess {
     }
 
     @Nullable
-    public Entity getEntity(UUID uUID) {
-        return this.entitiesByUuid.get(uUID);
+    public Entity getEntity(UUID uuid) {
+        return this.entitiesByUuid.get(uuid);
     }
 
     @Nullable

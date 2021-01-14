@@ -15,7 +15,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -40,7 +40,7 @@ implements AutoCloseable {
         this.field_24468 = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + string);
     }
 
-    public CompletableFuture<Void> setResult(ChunkPos pos, CompoundTag nbt) {
+    public CompletableFuture<Void> setResult(ChunkPos pos, NbtCompound nbt) {
         return this.run(() -> {
             Result result = this.results.computeIfAbsent(pos, chunkPos -> new Result(nbt));
             result.nbt = nbt;
@@ -49,22 +49,22 @@ implements AutoCloseable {
     }
 
     @Nullable
-    public CompoundTag getNbt(ChunkPos pos) throws IOException {
+    public NbtCompound getNbt(ChunkPos pos) throws IOException {
         CompletableFuture completableFuture = this.run(() -> {
             Result result = this.results.get(pos);
             if (result != null) {
                 return Either.left(result.nbt);
             }
             try {
-                CompoundTag compoundTag = this.storage.getTagAt(pos);
-                return Either.left(compoundTag);
+                NbtCompound nbtCompound = this.storage.getTagAt(pos);
+                return Either.left(nbtCompound);
             } catch (Exception exception) {
                 LOGGER.warn("Failed to read chunk {}", (Object)pos, (Object)exception);
                 return Either.right(exception);
             }
         });
         try {
-            return (CompoundTag)completableFuture.join();
+            return (NbtCompound)completableFuture.join();
         } catch (CompletionException completionException) {
             if (completionException.getCause() instanceof IOException) {
                 throw (IOException)completionException.getCause();
@@ -86,8 +86,8 @@ implements AutoCloseable {
         }));
     }
 
-    private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> supplier) {
-        return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(Priority.HIGH.ordinal(), () -> this.method_27939(messageListener, (Supplier)supplier)));
+    private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {
+        return this.field_24468.method_27918(messageListener -> new TaskQueue.PrioritizedTask(Priority.HIGH.ordinal(), () -> this.method_27939(messageListener, (Supplier)task)));
     }
 
     private void writeResult() {
@@ -147,11 +147,11 @@ implements AutoCloseable {
     }
 
     static class Result {
-        private CompoundTag nbt;
+        private NbtCompound nbt;
         private final CompletableFuture<Void> future = new CompletableFuture();
 
-        public Result(CompoundTag compoundTag) {
-            this.nbt = compoundTag;
+        public Result(NbtCompound nbtCompound) {
+            this.nbt = nbtCompound;
         }
     }
 

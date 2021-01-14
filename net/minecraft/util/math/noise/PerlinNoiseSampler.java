@@ -30,32 +30,32 @@ public final class PerlinNoiseSampler {
         }
     }
 
-    public double sample(double x, double y, double z, double d, double e) {
-        double s;
-        double f = x + this.originX;
-        double g = y + this.originY;
-        double h = z + this.originZ;
-        int i = MathHelper.floor(f);
-        int j = MathHelper.floor(g);
-        int k = MathHelper.floor(h);
-        double l = f - (double)i;
-        double m = g - (double)j;
-        double n = h - (double)k;
+    public double sample(double x, double y, double z, double yScale, double yMax) {
+        double q;
+        double d = x + this.originX;
+        double e = y + this.originY;
+        double f = z + this.originZ;
+        int i = MathHelper.floor(d);
+        int j = MathHelper.floor(e);
+        int k = MathHelper.floor(f);
+        double g = d - (double)i;
+        double h = e - (double)j;
+        double l = f - (double)k;
+        double m = MathHelper.perlinFade(g);
+        double n = MathHelper.perlinFade(h);
         double o = MathHelper.perlinFade(l);
-        double p = MathHelper.perlinFade(m);
-        double q = MathHelper.perlinFade(n);
-        if (d != 0.0) {
-            double r = Math.min(e, m);
-            s = (double)MathHelper.floor(r / d) * d;
+        if (yScale != 0.0) {
+            double p = Math.min(yMax, h);
+            q = (double)MathHelper.floor(p / yScale) * yScale;
         } else {
-            s = 0.0;
+            q = 0.0;
         }
-        return this.sample(i, j, k, l, m - s, n, o, p, q);
+        return this.sample(i, j, k, g, h - q, l, m, n, o);
     }
 
     private static double grad(int hash, double x, double y, double z) {
         int i = hash & 0xF;
-        return SimplexNoiseSampler.dot(SimplexNoiseSampler.gradients[i], x, y, z);
+        return SimplexNoiseSampler.dot(SimplexNoiseSampler.GRADIENTS[i], x, y, z);
     }
 
     private int getGradient(int hash) {

@@ -66,10 +66,10 @@ extends Screen {
         int j = this.height / 2;
         int k = 30;
         LevelLoadingScreen.drawChunkMap(matrices, this.progressProvider, i, j + 30, 2, 0);
-        LevelLoadingScreen.drawCenteredString(matrices, this.textRenderer, string, i, j - this.textRenderer.fontHeight / 2 - 30, 0xFFFFFF);
+        LevelLoadingScreen.drawCenteredText(matrices, this.textRenderer, string, i, j - this.textRenderer.fontHeight / 2 - 30, 0xFFFFFF);
     }
 
-    public static void drawChunkMap(MatrixStack matrixStack, WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
+    public static void drawChunkMap(MatrixStack matrices, WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
         int m = k + l;
         int n = worldGenerationProgressTracker.getCenterSize();
         int o = n * m - l;
@@ -80,17 +80,17 @@ extends Screen {
         int t = o / 2 + 1;
         int u = -16772609;
         if (l != 0) {
-            LevelLoadingScreen.fill(matrixStack, i - t, j - t, i - t + 1, j + t, -16772609);
-            LevelLoadingScreen.fill(matrixStack, i + t - 1, j - t, i + t, j + t, -16772609);
-            LevelLoadingScreen.fill(matrixStack, i - t, j - t, i + t, j - t + 1, -16772609);
-            LevelLoadingScreen.fill(matrixStack, i - t, j + t - 1, i + t, j + t, -16772609);
+            LevelLoadingScreen.fill(matrices, i - t, j - t, i - t + 1, j + t, -16772609);
+            LevelLoadingScreen.fill(matrices, i + t - 1, j - t, i + t, j + t, -16772609);
+            LevelLoadingScreen.fill(matrices, i - t, j - t, i + t, j - t + 1, -16772609);
+            LevelLoadingScreen.fill(matrices, i - t, j + t - 1, i + t, j + t, -16772609);
         }
         for (int v = 0; v < p; ++v) {
             for (int w = 0; w < p; ++w) {
                 ChunkStatus chunkStatus = worldGenerationProgressTracker.getChunkStatus(v, w);
                 int x = r + v * m;
                 int y = s + w * m;
-                LevelLoadingScreen.fill(matrixStack, x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
+                LevelLoadingScreen.fill(matrices, x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
             }
         }
     }

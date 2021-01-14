@@ -17,7 +17,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -46,7 +46,7 @@ implements FlyingItemEntity {
     public EyeOfEnderEntity(World world, double x, double y, double z) {
         this((EntityType<? extends EyeOfEnderEntity>)EntityType.EYE_OF_ENDER, world);
         this.lifespan = 0;
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
     }
 
     public void setItem(ItemStack stack2) {
@@ -153,7 +153,7 @@ implements FlyingItemEntity {
             this.world.addParticle(ParticleTypes.PORTAL, d - vec3d.x * 0.25 + this.random.nextDouble() * 0.6 - 0.3, e - vec3d.y * 0.25 - 0.5, f - vec3d.z * 0.25 + this.random.nextDouble() * 0.6 - 0.3, vec3d.x, vec3d.y, vec3d.z);
         }
         if (!this.world.isClient) {
-            this.updatePosition(d, e, f);
+            this.setPosition(d, e, f);
             ++this.lifespan;
             if (this.lifespan > 80 && !this.world.isClient) {
                 this.playSound(SoundEvents.ENTITY_ENDER_EYE_DEATH, 1.0f, 1.0f);
@@ -170,16 +170,16 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound nbt) {
         ItemStack itemStack = this.getTrackedItem();
         if (!itemStack.isEmpty()) {
-            tag.put("Item", itemStack.toTag(new CompoundTag()));
+            nbt.put("Item", itemStack.writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Item"));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Item"));
         this.setItem(itemStack);
     }
 

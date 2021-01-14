@@ -41,7 +41,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
@@ -92,8 +92,8 @@ implements RangedAttackMob {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         if (this.getEquippedStack(EquipmentSlot.OFFHAND).isEmpty() && this.random.nextFloat() < 0.03f) {
             this.equipStack(EquipmentSlot.OFFHAND, new ItemStack(Items.NAUTILUS_SHELL));
             this.handDropChances[EquipmentSlot.OFFHAND.getEntitySlotId()] = 2.0f;
@@ -103,7 +103,7 @@ implements RangedAttackMob {
 
     public static boolean canSpawn(EntityType<DrownedEntity> type, ServerWorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
         boolean bl;
-        Optional<RegistryKey<Biome>> optional = world.method_31081(pos);
+        Optional<RegistryKey<Biome>> optional = world.getBiomeKey(pos);
         boolean bl2 = bl = world.getDifficulty() != Difficulty.PEACEFUL && DrownedEntity.isSpawnDark(world, pos, random) && (spawnReason == SpawnReason.SPAWNER || world.getFluidState(pos).isIn(FluidTags.WATER));
         if (Objects.equals(optional, Optional.of(BiomeKeys.RIVER)) || Objects.equals(optional, Optional.of(BiomeKeys.FROZEN_RIVER))) {
             return random.nextInt(15) == 0 && bl;
@@ -206,7 +206,7 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean canFly() {
+    public boolean isPushedByFluids() {
         return !this.isSwimming();
     }
 
@@ -291,7 +291,7 @@ implements RangedAttackMob {
                 double g = MathHelper.sqrt(d * d + e * e + f * f);
                 e /= g;
                 float h = (float)(MathHelper.atan2(f, d) * 57.2957763671875) - 90.0f;
-                this.drowned.bodyYaw = this.drowned.yaw = this.changeAngle(this.drowned.yaw, h, 90.0f);
+                this.drowned.bodyYaw = this.drowned.yaw = this.wrapDegrees(this.drowned.yaw, h, 90.0f);
                 float i = (float)(this.speed * this.drowned.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
                 float j = MathHelper.lerp(0.125f, this.drowned.getMovementSpeed(), i);
                 this.drowned.setMovementSpeed(j);

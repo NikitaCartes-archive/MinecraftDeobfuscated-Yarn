@@ -10,11 +10,11 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.model.BakedQuad;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vector4f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.system.MemoryStack;
@@ -66,9 +66,9 @@ public interface VertexConsumer {
     default public void quad(MatrixStack.Entry matrixEntry, BakedQuad quad, float[] brightnesses, float red, float green, float blue, int[] lights, int overlay, boolean useQuadColorData) {
         int[] is = quad.getVertexData();
         Vec3i vec3i = quad.getFace().getVector();
-        Vector3f vector3f = new Vector3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
+        Vec3f vec3f = new Vec3f(vec3i.getX(), vec3i.getY(), vec3i.getZ());
         Matrix4f matrix4f = matrixEntry.getModel();
-        vector3f.transform(matrixEntry.getNormal());
+        vec3f.transform(matrixEntry.getNormal());
         int i = 8;
         int j = is.length / 8;
         try (MemoryStack memoryStack = MemoryStack.stackPush();){
@@ -102,7 +102,7 @@ public interface VertexConsumer {
                 n = byteBuffer.getFloat(20);
                 Vector4f vector4f = new Vector4f(f, g, h, 1.0f);
                 vector4f.transform(matrix4f);
-                this.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), o, p, q, 1.0f, m, n, overlay, r, vector3f.getX(), vector3f.getY(), vector3f.getZ());
+                this.vertex(vector4f.getX(), vector4f.getY(), vector4f.getZ(), o, p, q, 1.0f, m, n, overlay, r, vec3f.getX(), vec3f.getY(), vec3f.getZ());
             }
         }
     }
@@ -114,9 +114,9 @@ public interface VertexConsumer {
     }
 
     default public VertexConsumer normal(Matrix3f matrix, float x, float y, float z) {
-        Vector3f vector3f = new Vector3f(x, y, z);
-        vector3f.transform(matrix);
-        return this.normal(vector3f.getX(), vector3f.getY(), vector3f.getZ());
+        Vec3f vec3f = new Vec3f(x, y, z);
+        vec3f.transform(matrix);
+        return this.normal(vec3f.getX(), vec3f.getY(), vec3f.getZ());
     }
 }
 

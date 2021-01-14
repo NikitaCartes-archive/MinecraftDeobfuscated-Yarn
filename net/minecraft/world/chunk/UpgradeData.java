@@ -22,7 +22,7 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
@@ -48,14 +48,14 @@ public class UpgradeData {
     private UpgradeData() {
     }
 
-    public UpgradeData(CompoundTag tag) {
+    public UpgradeData(NbtCompound tag) {
         this();
         if (tag.contains("Indices", 10)) {
-            CompoundTag compoundTag = tag.getCompound("Indices");
+            NbtCompound nbtCompound = tag.getCompound("Indices");
             for (int i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
                 String string = String.valueOf(i);
-                if (!compoundTag.contains(string, 11)) continue;
-                this.centerIndicesToUpgrade[i] = compoundTag.getIntArray(string);
+                if (!nbtCompound.contains(string, 11)) continue;
+                this.centerIndicesToUpgrade[i] = nbtCompound.getIntArray(string);
             }
         }
         int j = tag.getInt("Sides");
@@ -153,24 +153,24 @@ public class UpgradeData {
         return this.sidesToUpgrade.isEmpty();
     }
 
-    public CompoundTag toTag() {
+    public NbtCompound toNbt() {
         int i;
-        CompoundTag compoundTag = new CompoundTag();
-        CompoundTag compoundTag2 = new CompoundTag();
+        NbtCompound nbtCompound = new NbtCompound();
+        NbtCompound nbtCompound2 = new NbtCompound();
         for (i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
             String string = String.valueOf(i);
             if (this.centerIndicesToUpgrade[i] == null || this.centerIndicesToUpgrade[i].length == 0) continue;
-            compoundTag2.putIntArray(string, this.centerIndicesToUpgrade[i]);
+            nbtCompound2.putIntArray(string, this.centerIndicesToUpgrade[i]);
         }
-        if (!compoundTag2.isEmpty()) {
-            compoundTag.put("Indices", compoundTag2);
+        if (!nbtCompound2.isEmpty()) {
+            nbtCompound.put("Indices", nbtCompound2);
         }
         i = 0;
         for (EightWayDirection eightWayDirection : this.sidesToUpgrade) {
             i |= 1 << eightWayDirection.ordinal();
         }
-        compoundTag.putByte("Sides", (byte)i);
-        return compoundTag;
+        nbtCompound.putByte("Sides", (byte)i);
+        return nbtCompound;
     }
 
     static enum BuiltinLogic implements Logic

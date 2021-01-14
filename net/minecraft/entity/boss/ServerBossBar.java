@@ -42,9 +42,9 @@ extends BossBar {
     }
 
     @Override
-    public void setOverlay(BossBar.Style style) {
+    public void setStyle(BossBar.Style style) {
         if (style != this.style) {
-            super.setOverlay(style);
+            super.setStyle(style);
             this.sendPacket(BossBarS2CPacket.Type.UPDATE_STYLE);
         }
     }

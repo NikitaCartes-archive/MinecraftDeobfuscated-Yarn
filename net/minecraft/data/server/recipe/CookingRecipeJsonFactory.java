@@ -22,17 +22,17 @@ import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
 
 public class CookingRecipeJsonFactory {
-    private final Item result;
-    private final Ingredient ingredient;
+    private final Item output;
+    private final Ingredient input;
     private final float experience;
     private final int cookingTime;
     private final Advancement.Task builder = Advancement.Task.create();
     private String group;
     private final CookingRecipeSerializer<?> serializer;
 
-    private CookingRecipeJsonFactory(ItemConvertible result, Ingredient ingredient, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
-        this.result = result.asItem();
-        this.ingredient = ingredient;
+    private CookingRecipeJsonFactory(ItemConvertible output, Ingredient input, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
+        this.output = output.asItem();
+        this.input = input;
         this.experience = experience;
         this.cookingTime = cookingTime;
         this.serializer = serializer;
@@ -56,12 +56,12 @@ public class CookingRecipeJsonFactory {
     }
 
     public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-        this.offerTo(exporter, Registry.ITEM.getId(this.result));
+        this.offerTo(exporter, Registry.ITEM.getId(this.output));
     }
 
     public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
         Identifier identifier2 = new Identifier(recipeIdStr);
-        Identifier identifier = Registry.ITEM.getId(this.result);
+        Identifier identifier = Registry.ITEM.getId(this.output);
         if (identifier2.equals(identifier)) {
             throw new IllegalStateException("Recipe " + identifier2 + " should remove its 'save' argument");
         }
@@ -71,7 +71,7 @@ public class CookingRecipeJsonFactory {
     public void offerTo(Consumer<RecipeJsonProvider> exporter, Identifier recipeId) {
         this.validate(recipeId);
         this.builder.parent(new Identifier("recipes/root")).criterion("has_the_recipe", RecipeUnlockedCriterion.create(recipeId)).rewards(AdvancementRewards.Builder.recipe(recipeId)).criteriaMerger(CriterionMerger.OR);
-        exporter.accept(new CookingRecipeJsonProvider(recipeId, this.group == null ? "" : this.group, this.ingredient, this.result, this.experience, this.cookingTime, this.builder, new Identifier(recipeId.getNamespace(), "recipes/" + this.result.getGroup().getName() + "/" + recipeId.getPath()), this.serializer));
+        exporter.accept(new CookingRecipeJsonProvider(recipeId, this.group == null ? "" : this.group, this.input, this.output, this.experience, this.cookingTime, this.builder, new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath()), this.serializer));
     }
 
     private void validate(Identifier recipeId) {

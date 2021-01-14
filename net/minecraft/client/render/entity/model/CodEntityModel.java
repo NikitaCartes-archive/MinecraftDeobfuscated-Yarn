@@ -20,7 +20,7 @@ extends CompositeEntityModel<T> {
     private final ModelPart face;
     private final ModelPart rightFin;
     private final ModelPart leftFin;
-    private final ModelPart tail;
+    private final ModelPart tailFin;
 
     public CodEntityModel() {
         this.textureWidth = 32;
@@ -43,9 +43,9 @@ extends CompositeEntityModel<T> {
         this.leftFin.addCuboid(0.0f, 0.0f, -1.0f, 2.0f, 0.0f, 2.0f);
         this.leftFin.setPivot(1.0f, 23.0f, 0.0f);
         this.leftFin.roll = 0.7853982f;
-        this.tail = new ModelPart(this, 22, 3);
-        this.tail.addCuboid(0.0f, -2.0f, 0.0f, 0.0f, 4.0f, 4.0f);
-        this.tail.setPivot(0.0f, 22.0f, 7.0f);
+        this.tailFin = new ModelPart(this, 22, 3);
+        this.tailFin.addCuboid(0.0f, -2.0f, 0.0f, 0.0f, 4.0f, 4.0f);
+        this.tailFin.setPivot(0.0f, 22.0f, 7.0f);
         this.topFin = new ModelPart(this, 20, -6);
         this.topFin.addCuboid(0.0f, -1.0f, -1.0f, 0.0f, 1.0f, 6.0f);
         this.topFin.setPivot(0.0f, 20.0f, 0.0f);
@@ -53,7 +53,7 @@ extends CompositeEntityModel<T> {
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.body, this.head, this.face, this.rightFin, this.leftFin, this.tail, this.topFin);
+        return ImmutableList.of(this.body, this.head, this.face, this.rightFin, this.leftFin, this.tailFin, this.topFin);
     }
 
     @Override
@@ -62,7 +62,7 @@ extends CompositeEntityModel<T> {
         if (!((Entity)entity).isTouchingWater()) {
             f = 1.5f;
         }
-        this.tail.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
+        this.tailFin.yaw = -f * 0.45f * MathHelper.sin(0.6f * animationProgress);
     }
 }
 

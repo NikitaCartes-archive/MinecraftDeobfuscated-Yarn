@@ -5,12 +5,12 @@ package net.minecraft.test;
 
 import java.util.Iterator;
 import java.util.List;
-import net.minecraft.test.GameTest;
-import net.minecraft.test.TimeMismatchException;
+import net.minecraft.test.GameTestException;
+import net.minecraft.test.GameTestState;
 import net.minecraft.test.TimedTask;
 
 public class TimedTaskRunner {
-    private final GameTest test;
+    private final GameTestState test;
     private final List<TimedTask> tasks;
     private long tick;
 
@@ -40,7 +40,7 @@ public class TimedTaskRunner {
             long m = this.tick;
             this.tick = tick;
             if (timedTask.duration == null || timedTask.duration == l) continue;
-            this.test.fail(new TimeMismatchException("Succeeded in invalid tick: expected " + (m + timedTask.duration) + ", but current tick is " + tick));
+            this.test.fail(new GameTestException("Succeeded in invalid tick: expected " + (m + timedTask.duration) + ", but current tick is " + tick));
             break;
         }
     }

@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.PoolStructurePiece;
@@ -27,6 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
@@ -93,18 +94,18 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
-        tag.putString("name", this.name.toString());
-        tag.putString("target", this.target.toString());
-        tag.putString("pool", this.pool.toString());
-        tag.putString("final_state", this.finalState);
-        tag.putString("joint", this.joint.asString());
-        return tag;
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        super.writeNbt(nbt);
+        nbt.putString("name", this.name.toString());
+        nbt.putString("target", this.target.toString());
+        nbt.putString("pool", this.pool.toString());
+        nbt.putString("final_state", this.finalState);
+        nbt.putString("joint", this.joint.asString());
+        return nbt;
     }
 
     @Override
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         super.fromTag(state, tag);
         this.name = new Identifier(tag.getString("name"));
         this.target = new Identifier(tag.getString("target"));
@@ -116,12 +117,12 @@ extends BlockEntity {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 12, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 12, this.toInitialChunkDataNbt());
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.writeNbt(new NbtCompound());
     }
 
     public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {
@@ -137,7 +138,7 @@ extends BlockEntity {
         PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos));
         StructurePoolBasedGenerator.method_27230(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random);
         for (PoolStructurePiece poolStructurePiece2 : list) {
-            poolStructurePiece2.method_27236(world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
+            poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);
         }
     }
 

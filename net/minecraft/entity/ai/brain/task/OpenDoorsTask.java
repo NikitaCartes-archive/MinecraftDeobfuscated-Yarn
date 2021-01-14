@@ -59,7 +59,7 @@ extends Task<LivingEntity> {
         this.field_26387 = path.method_29301();
         PathNode pathNode = path.method_30850();
         PathNode pathNode2 = path.method_29301();
-        BlockPos blockPos = pathNode.getPos();
+        BlockPos blockPos = pathNode.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
         if (blockState.isIn(BlockTags.WOODEN_DOORS)) {
             DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
@@ -68,7 +68,7 @@ extends Task<LivingEntity> {
             }
             this.method_30767(world, entity, blockPos);
         }
-        if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getPos())).isIn(BlockTags.WOODEN_DOORS) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).method_30841(blockState2)) {
+        if ((blockState2 = world.getBlockState(blockPos2 = pathNode2.getBlockPos())).isIn(BlockTags.WOODEN_DOORS) && !(doorBlock2 = (DoorBlock)blockState2.getBlock()).method_30841(blockState2)) {
             doorBlock2.setOpen(world, blockState2, blockPos2, true);
             this.method_30767(world, entity, blockPos2);
         }
@@ -82,7 +82,7 @@ extends Task<LivingEntity> {
             while (iterator.hasNext()) {
                 GlobalPos globalPos = iterator.next();
                 BlockPos blockPos = globalPos.getPos();
-                if (pathNode != null && pathNode.getPos().equals(blockPos) || pathNode2 != null && pathNode2.getPos().equals(blockPos)) continue;
+                if (pathNode != null && pathNode.getBlockPos().equals(blockPos) || pathNode2 != null && pathNode2.getBlockPos().equals(blockPos)) continue;
                 if (OpenDoorsTask.method_30762(serverWorld, livingEntity, globalPos)) {
                     iterator.remove();
                     continue;
@@ -128,7 +128,7 @@ extends Task<LivingEntity> {
             return false;
         }
         PathNode pathNode2 = path.method_29301();
-        return blockPos.equals(pathNode.getPos()) || blockPos.equals(pathNode2.getPos());
+        return blockPos.equals(pathNode.getBlockPos()) || blockPos.equals(pathNode2.getBlockPos());
     }
 
     private static boolean method_30762(ServerWorld serverWorld, LivingEntity livingEntity, GlobalPos globalPos) {

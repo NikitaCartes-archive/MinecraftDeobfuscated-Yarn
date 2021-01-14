@@ -12,7 +12,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CrossbowUser;
@@ -27,8 +26,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.Vanishable;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -43,6 +42,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.UseAction;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -136,43 +136,43 @@ implements Vanishable {
     }
 
     public static boolean isCharged(ItemStack stack) {
-        CompoundTag compoundTag = stack.getTag();
-        return compoundTag != null && compoundTag.getBoolean("Charged");
+        NbtCompound nbtCompound = stack.getTag();
+        return nbtCompound != null && nbtCompound.getBoolean("Charged");
     }
 
     public static void setCharged(ItemStack stack, boolean charged) {
-        CompoundTag compoundTag = stack.getOrCreateTag();
-        compoundTag.putBoolean("Charged", charged);
+        NbtCompound nbtCompound = stack.getOrCreateTag();
+        nbtCompound.putBoolean("Charged", charged);
     }
 
     private static void putProjectile(ItemStack crossbow, ItemStack projectile) {
-        CompoundTag compoundTag = crossbow.getOrCreateTag();
-        ListTag listTag = compoundTag.contains("ChargedProjectiles", 9) ? compoundTag.getList("ChargedProjectiles", 10) : new ListTag();
-        CompoundTag compoundTag2 = new CompoundTag();
-        projectile.toTag(compoundTag2);
-        listTag.add(compoundTag2);
-        compoundTag.put("ChargedProjectiles", listTag);
+        NbtCompound nbtCompound = crossbow.getOrCreateTag();
+        NbtList nbtList = nbtCompound.contains("ChargedProjectiles", 9) ? nbtCompound.getList("ChargedProjectiles", 10) : new NbtList();
+        NbtCompound nbtCompound2 = new NbtCompound();
+        projectile.writeNbt(nbtCompound2);
+        nbtList.add(nbtCompound2);
+        nbtCompound.put("ChargedProjectiles", nbtList);
     }
 
     private static List<ItemStack> getProjectiles(ItemStack crossbow) {
-        ListTag listTag;
+        NbtList nbtList;
         ArrayList<ItemStack> list = Lists.newArrayList();
-        CompoundTag compoundTag = crossbow.getTag();
-        if (compoundTag != null && compoundTag.contains("ChargedProjectiles", 9) && (listTag = compoundTag.getList("ChargedProjectiles", 10)) != null) {
-            for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompound(i);
-                list.add(ItemStack.fromTag(compoundTag2));
+        NbtCompound nbtCompound = crossbow.getTag();
+        if (nbtCompound != null && nbtCompound.contains("ChargedProjectiles", 9) && (nbtList = nbtCompound.getList("ChargedProjectiles", 10)) != null) {
+            for (int i = 0; i < nbtList.size(); ++i) {
+                NbtCompound nbtCompound2 = nbtList.getCompound(i);
+                list.add(ItemStack.fromNbt(nbtCompound2));
             }
         }
         return list;
     }
 
     private static void clearProjectiles(ItemStack crossbow) {
-        CompoundTag compoundTag = crossbow.getTag();
-        if (compoundTag != null) {
-            ListTag listTag = compoundTag.getList("ChargedProjectiles", 9);
-            listTag.clear();
-            compoundTag.put("ChargedProjectiles", listTag);
+        NbtCompound nbtCompound = crossbow.getTag();
+        if (nbtCompound != null) {
+            NbtList nbtList = nbtCompound.getList("ChargedProjectiles", 9);
+            nbtList.clear();
+            nbtCompound.put("ChargedProjectiles", nbtList);
         }
     }
 
@@ -200,11 +200,11 @@ implements Vanishable {
             crossbowUser.shoot(crossbowUser.getTarget(), crossbow, projectileEntity, simulated);
         } else {
             Vec3d vec3d = shooter.getOppositeRotationVector(1.0f);
-            Quaternion quaternion = new Quaternion(new Vector3f(vec3d), simulated, true);
+            Quaternion quaternion = new Quaternion(new Vec3f(vec3d), simulated, true);
             Vec3d vec3d2 = shooter.getRotationVec(1.0f);
-            Vector3f vector3f = new Vector3f(vec3d2);
-            vector3f.rotate(quaternion);
-            projectileEntity.setVelocity(vector3f.getX(), vector3f.getY(), vector3f.getZ(), speed, divergence);
+            Vec3f vec3f = new Vec3f(vec3d2);
+            vec3f.rotate(quaternion);
+            projectileEntity.setVelocity(vec3f.getX(), vec3f.getY(), vec3f.getZ(), speed, divergence);
         }
         crossbow.damage(bl ? 3 : 1, shooter, e -> e.sendToolBreakStatus(hand));
         world.spawnEntity(projectileEntity);

@@ -66,12 +66,12 @@ public class AnimationResourceMetadata {
         return Pair.of(k, k);
     }
 
-    public int getHeight(int i) {
-        return this.height == -1 ? i : this.height;
+    public int getHeight(int defaultHeight) {
+        return this.height == -1 ? defaultHeight : this.height;
     }
 
-    public int getWidth(int i) {
-        return this.width == -1 ? i : this.width;
+    public int getWidth(int defaultWidth) {
+        return this.width == -1 ? defaultWidth : this.width;
     }
 
     public int getFrameCount() {

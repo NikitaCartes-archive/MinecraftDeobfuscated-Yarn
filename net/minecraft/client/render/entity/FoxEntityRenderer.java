@@ -10,10 +10,10 @@ import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.feature.FoxHeldItemFeatureRenderer;
 import net.minecraft.client.render.entity.model.FoxEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.FoxEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class FoxEntityRenderer
@@ -33,7 +33,7 @@ extends MobEntityRenderer<FoxEntity, FoxEntityModel<FoxEntity>> {
         super.setupTransforms(foxEntity, matrixStack, f, g, h);
         if (foxEntity.isChasing() || foxEntity.isWalking()) {
             float i = -MathHelper.lerp(h, foxEntity.prevPitch, foxEntity.pitch);
-            matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(i));
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(i));
         }
     }
 

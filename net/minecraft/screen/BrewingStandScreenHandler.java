@@ -72,7 +72,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack2, 5, 41, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onStackChanged(itemStack2, itemStack);
+                slot.onQuickTransfer(itemStack2, itemStack);
             } else if (FuelSlot.matches(itemStack) ? this.insertItem(itemStack2, 4, 5, false) || this.ingredientSlot.canInsert(itemStack2) && !this.insertItem(itemStack2, 3, 4, false) : (this.ingredientSlot.canInsert(itemStack2) ? !this.insertItem(itemStack2, 3, 4, false) : (PotionSlot.matches(itemStack) && itemStack.getCount() == 1 ? !this.insertItem(itemStack2, 0, 3, false) : (index >= 5 && index < 32 ? !this.insertItem(itemStack2, 32, 41, false) : (index >= 32 && index < 41 ? !this.insertItem(itemStack2, 5, 32, false) : !this.insertItem(itemStack2, 5, 41, false)))))) {
                 return ItemStack.EMPTY;
             }

@@ -45,20 +45,20 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
         RenderSystem.disableScissor();
     }
 
-    public void method_31393(Collection<UUID> collection, double d) {
+    public void update(Collection<UUID> uuids, double scrollAmount) {
         this.players.clear();
-        for (UUID uUID : collection) {
+        for (UUID uUID : uuids) {
             PlayerListEntry playerListEntry = this.minecraftClient.player.networkHandler.getPlayerListEntry(uUID);
             if (playerListEntry == null) continue;
             this.players.add(new SocialInteractionsPlayerListEntry(this.minecraftClient, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture));
         }
-        this.method_31349();
+        this.filterPlayers();
         this.players.sort((socialInteractionsPlayerListEntry, socialInteractionsPlayerListEntry2) -> socialInteractionsPlayerListEntry.getName().compareToIgnoreCase(socialInteractionsPlayerListEntry2.getName()));
         this.replaceEntries(this.players);
-        this.setScrollAmount(d);
+        this.setScrollAmount(scrollAmount);
     }
 
-    private void method_31349() {
+    private void filterPlayers() {
         if (this.currentSearch != null) {
             this.players.removeIf(socialInteractionsPlayerListEntry -> !socialInteractionsPlayerListEntry.getName().toLowerCase(Locale.ROOT).contains(this.currentSearch));
             this.replaceEntries(this.players);
@@ -73,24 +73,24 @@ extends ElementListWidget<SocialInteractionsPlayerListEntry> {
         return this.players.isEmpty();
     }
 
-    public void method_31345(PlayerListEntry playerListEntry, SocialInteractionsScreen.Tab tab) {
-        UUID uUID = playerListEntry.getProfile().getId();
+    public void setPlayerOnline(PlayerListEntry player, SocialInteractionsScreen.Tab tab) {
+        UUID uUID = player.getProfile().getId();
         for (SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry : this.players) {
             if (!socialInteractionsPlayerListEntry.getUuid().equals(uUID)) continue;
-            socialInteractionsPlayerListEntry.method_31335(false);
+            socialInteractionsPlayerListEntry.setOffline(false);
             return;
         }
-        if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().method_31391(uUID)) && (Strings.isNullOrEmpty(this.currentSearch) || playerListEntry.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
-            SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(this.minecraftClient, this.parent, playerListEntry.getProfile().getId(), playerListEntry.getProfile().getName(), playerListEntry::getSkinTexture);
+        if ((tab == SocialInteractionsScreen.Tab.ALL || this.minecraftClient.getSocialInteractionsManager().method_31391(uUID)) && (Strings.isNullOrEmpty(this.currentSearch) || player.getProfile().getName().toLowerCase(Locale.ROOT).contains(this.currentSearch))) {
+            SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry2 = new SocialInteractionsPlayerListEntry(this.minecraftClient, this.parent, player.getProfile().getId(), player.getProfile().getName(), player::getSkinTexture);
             this.addEntry(socialInteractionsPlayerListEntry2);
             this.players.add(socialInteractionsPlayerListEntry2);
         }
     }
 
-    public void method_31347(UUID uUID) {
+    public void setPlayerOffline(UUID uuid) {
         for (SocialInteractionsPlayerListEntry socialInteractionsPlayerListEntry : this.players) {
-            if (!socialInteractionsPlayerListEntry.getUuid().equals(uUID)) continue;
-            socialInteractionsPlayerListEntry.method_31335(true);
+            if (!socialInteractionsPlayerListEntry.getUuid().equals(uuid)) continue;
+            socialInteractionsPlayerListEntry.setOffline(true);
             return;
         }
     }

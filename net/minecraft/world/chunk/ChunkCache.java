@@ -79,7 +79,7 @@ CollisionView {
     }
 
     @Override
-    public BlockView getExistingChunk(int chunkX, int chunkZ) {
+    public BlockView getChunkAsView(int chunkX, int chunkZ) {
         return this.method_22353(chunkX, chunkZ);
     }
 

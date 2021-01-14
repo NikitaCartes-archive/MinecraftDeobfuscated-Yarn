@@ -7,7 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -49,28 +49,28 @@ public abstract class BlockEntity {
         return this.world != null;
     }
 
-    public void fromTag(BlockState state, CompoundTag tag) {
+    public void fromTag(BlockState state, NbtCompound tag) {
         this.pos = new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z"));
     }
 
-    public CompoundTag toTag(CompoundTag tag) {
-        return this.writeIdentifyingData(tag);
+    public NbtCompound writeNbt(NbtCompound nbt) {
+        return this.writeIdentifyingData(nbt);
     }
 
-    private CompoundTag writeIdentifyingData(CompoundTag tag) {
+    private NbtCompound writeIdentifyingData(NbtCompound nbt) {
         Identifier identifier = BlockEntityType.getId(this.getType());
         if (identifier == null) {
             throw new RuntimeException(this.getClass() + " is missing a mapping! This is a bug!");
         }
-        tag.putString("id", identifier.toString());
-        tag.putInt("x", this.pos.getX());
-        tag.putInt("y", this.pos.getY());
-        tag.putInt("z", this.pos.getZ());
-        return tag;
+        nbt.putString("id", identifier.toString());
+        nbt.putInt("x", this.pos.getX());
+        nbt.putInt("y", this.pos.getY());
+        nbt.putInt("z", this.pos.getZ());
+        return nbt;
     }
 
     @Nullable
-    public static BlockEntity createFromTag(BlockState state, CompoundTag tag) {
+    public static BlockEntity createFromTag(BlockState state, NbtCompound tag) {
         String string = tag.getString("id");
         return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
             try {
@@ -104,7 +104,7 @@ public abstract class BlockEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public double getSquaredRenderDistance() {
+    public double getRenderDistance() {
         return 64.0;
     }
 
@@ -124,8 +124,8 @@ public abstract class BlockEntity {
         return null;
     }
 
-    public CompoundTag toInitialChunkDataTag() {
-        return this.writeIdentifyingData(new CompoundTag());
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.writeIdentifyingData(new NbtCompound());
     }
 
     public boolean isRemoved() {

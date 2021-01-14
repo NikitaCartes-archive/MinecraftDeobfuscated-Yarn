@@ -30,10 +30,10 @@ extends QuadrupedEntityModel<T> {
         this.head = new ModelPart(this, 3, 0);
         this.head.addCuboid(-3.0f, -1.0f, -3.0f, 6.0f, 5.0f, 6.0f, 0.0f);
         this.head.setPivot(0.0f, 19.0f, -10.0f);
-        this.torso = new ModelPart(this);
-        this.torso.setTextureOffset(7, 37).addCuboid(-9.5f, 3.0f, -10.0f, 19.0f, 20.0f, 6.0f, 0.0f);
-        this.torso.setTextureOffset(31, 1).addCuboid(-5.5f, 3.0f, -13.0f, 11.0f, 18.0f, 3.0f, 0.0f);
-        this.torso.setPivot(0.0f, 11.0f, -10.0f);
+        this.body = new ModelPart(this);
+        this.body.setTextureOffset(7, 37).addCuboid(-9.5f, 3.0f, -10.0f, 19.0f, 20.0f, 6.0f, 0.0f);
+        this.body.setTextureOffset(31, 1).addCuboid(-5.5f, 3.0f, -13.0f, 11.0f, 18.0f, 3.0f, 0.0f);
+        this.body.setPivot(0.0f, 11.0f, -10.0f);
         this.plastron = new ModelPart(this);
         this.plastron.setTextureOffset(70, 33).addCuboid(-4.5f, 3.0f, -14.0f, 9.0f, 18.0f, 1.0f, 0.0f);
         this.plastron.setPivot(0.0f, 11.0f, -10.0f);

@@ -13,14 +13,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.Session;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class SplashTextResourceSupplier
-extends SinglePreparationResourceReloadListener<List<String>> {
+extends SinglePreparationResourceReloader<List<String>> {
     private static final Identifier RESOURCE_ID = new Identifier("texts/splashes.txt");
     private static final Random RANDOM = new Random();
     private final List<String> splashTexts = Lists.newArrayList();

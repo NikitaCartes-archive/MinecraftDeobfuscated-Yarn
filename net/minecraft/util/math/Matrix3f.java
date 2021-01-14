@@ -6,10 +6,10 @@ package net.minecraft.util.math;
 import com.mojang.datafixers.util.Pair;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.tuple.Triple;
 
 public final class Matrix3f {
@@ -30,11 +30,11 @@ public final class Matrix3f {
     public Matrix3f() {
     }
 
-    public Matrix3f(Quaternion source) {
-        float f = source.getX();
-        float g = source.getY();
-        float h = source.getZ();
-        float i = source.getW();
+    public Matrix3f(Quaternion quaternion) {
+        float f = quaternion.getX();
+        float g = quaternion.getY();
+        float h = quaternion.getZ();
+        float i = quaternion.getW();
         float j = 2.0f * f * f;
         float k = 2.0f * g * g;
         float l = 2.0f * h * h;
@@ -64,16 +64,16 @@ public final class Matrix3f {
         return matrix3f;
     }
 
-    public Matrix3f(Matrix4f source) {
-        this.a00 = source.a00;
-        this.a01 = source.a01;
-        this.a02 = source.a02;
-        this.a10 = source.a10;
-        this.a11 = source.a11;
-        this.a12 = source.a12;
-        this.a20 = source.a20;
-        this.a21 = source.a21;
-        this.a22 = source.a22;
+    public Matrix3f(Matrix4f matrix) {
+        this.a00 = matrix.a00;
+        this.a01 = matrix.a01;
+        this.a02 = matrix.a02;
+        this.a10 = matrix.a10;
+        this.a11 = matrix.a11;
+        this.a12 = matrix.a12;
+        this.a20 = matrix.a20;
+        this.a21 = matrix.a21;
+        this.a22 = matrix.a22;
     }
 
     public Matrix3f(Matrix3f source) {
@@ -202,7 +202,7 @@ public final class Matrix3f {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Triple<Quaternion, Vector3f, Quaternion> decomposeLinearTransformation() {
+    public Triple<Quaternion, Vec3f, Quaternion> decomposeLinearTransformation() {
         Quaternion quaternion = Quaternion.IDENTITY.copy();
         Quaternion quaternion2 = Quaternion.IDENTITY.copy();
         Matrix3f matrix3f = this.copy();
@@ -268,8 +268,8 @@ public final class Matrix3f {
         matrix3f5.multiply(matrix3f4);
         f = 1.0f / f;
         quaternion.scale((float)Math.sqrt(f));
-        Vector3f vector3f = new Vector3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
-        return Triple.of(quaternion, vector3f, quaternion2);
+        Vec3f vec3f = new Vec3f(matrix3f5.a00 * f, matrix3f5.a11 * f, matrix3f5.a22 * f);
+        return Triple.of(quaternion, vec3f, quaternion2);
     }
 
     public boolean equals(Object object) {

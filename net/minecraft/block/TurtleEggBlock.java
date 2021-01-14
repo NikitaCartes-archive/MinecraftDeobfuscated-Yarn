@@ -82,7 +82,7 @@ extends Block {
 
     @Override
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        if (this.shouldHatchProgress(world) && TurtleEggBlock.isSand(world, pos)) {
+        if (this.shouldHatchProgress(world) && TurtleEggBlock.isSandBelow(world, pos)) {
             int i = state.get(HATCH);
             if (i < 2) {
                 world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
@@ -102,8 +102,8 @@ extends Block {
         }
     }
 
-    public static boolean isSand(BlockView blockView, BlockPos blockPos) {
-        return TurtleEggBlock.method_29952(blockView, blockPos.down());
+    public static boolean isSandBelow(BlockView world, BlockPos pos) {
+        return TurtleEggBlock.method_29952(world, pos.down());
     }
 
     public static boolean method_29952(BlockView blockView, BlockPos blockPos) {
@@ -112,7 +112,7 @@ extends Block {
 
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        if (TurtleEggBlock.isSand(world, pos) && !world.isClient) {
+        if (TurtleEggBlock.isSandBelow(world, pos) && !world.isClient) {
             world.syncWorldEvent(2005, pos, 0);
         }
     }

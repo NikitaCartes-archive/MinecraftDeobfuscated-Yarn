@@ -18,7 +18,6 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
@@ -28,6 +27,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class ItemFrameEntityRenderer
@@ -52,8 +52,8 @@ extends EntityRenderer<ItemFrameEntity> {
         matrixStack.translate(-vec3d.getX(), -vec3d.getY(), -vec3d.getZ());
         double d = 0.46875;
         matrixStack.translate((double)direction.getOffsetX() * 0.46875, (double)direction.getOffsetY() * 0.46875, (double)direction.getOffsetZ() * 0.46875);
-        matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.pitch));
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0f - itemFrameEntity.yaw));
+        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(itemFrameEntity.pitch));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f - itemFrameEntity.yaw));
         boolean bl = itemFrameEntity.isInvisible();
         if (!bl) {
             BlockRenderManager blockRenderManager = this.client.getBlockRenderManager();
@@ -73,9 +73,9 @@ extends EntityRenderer<ItemFrameEntity> {
                 matrixStack.translate(0.0, 0.0, 0.4375);
             }
             int j = bl2 ? itemFrameEntity.getRotation() % 4 * 2 : itemFrameEntity.getRotation();
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0f / 8.0f));
+            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion((float)j * 360.0f / 8.0f));
             if (bl2) {
-                matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+                matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
                 float h = 0.0078125f;
                 matrixStack.scale(0.0078125f, 0.0078125f, 0.0078125f);
                 matrixStack.translate(-64.0, -64.0, 0.0);

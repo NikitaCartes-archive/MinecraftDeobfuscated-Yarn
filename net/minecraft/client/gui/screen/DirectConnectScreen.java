@@ -19,7 +19,7 @@ import net.minecraft.text.TranslatableText;
 @Environment(value=EnvType.CLIENT)
 public class DirectConnectScreen
 extends Screen {
-    private static final Text field_26540 = new TranslatableText("addServer.enterIp");
+    private static final Text ENTER_IP_TEXT = new TranslatableText("addServer.enterIp");
     private ButtonWidget selectServerButton;
     private final ServerInfo serverEntry;
     private TextFieldWidget addressField;
@@ -54,7 +54,7 @@ extends Screen {
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
         this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 116, 200, 20, new TranslatableText("addServer.enterIp"));
         this.addressField.setMaxLength(128);
-        this.addressField.setSelected(true);
+        this.addressField.setTextFieldFocused(true);
         this.addressField.setText(this.client.options.lastServer);
         this.addressField.setChangedListener(text -> this.onAddressFieldChanged());
         this.children.add(this.addressField);
@@ -95,7 +95,7 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         DirectConnectScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 20, 0xFFFFFF);
-        DirectConnectScreen.drawTextWithShadow(matrices, this.textRenderer, field_26540, this.width / 2 - 100, 100, 0xA0A0A0);
+        DirectConnectScreen.drawTextWithShadow(matrices, this.textRenderer, ENTER_IP_TEXT, this.width / 2 - 100, 100, 0xA0A0A0);
         this.addressField.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }

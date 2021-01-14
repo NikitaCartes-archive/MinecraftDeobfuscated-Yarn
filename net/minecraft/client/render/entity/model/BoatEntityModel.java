@@ -16,7 +16,7 @@ import net.minecraft.util.math.MathHelper;
 public class BoatEntityModel
 extends CompositeEntityModel<BoatEntity> {
     private final ModelPart[] paddles = new ModelPart[2];
-    private final ModelPart bottom;
+    private final ModelPart waterPatch;
     private final ImmutableList<ModelPart> parts;
 
     public BoatEntityModel() {
@@ -47,10 +47,10 @@ extends CompositeEntityModel<BoatEntity> {
         this.paddles[1].yaw = (float)Math.PI;
         this.paddles[0].roll = 0.19634955f;
         this.paddles[1].roll = 0.19634955f;
-        this.bottom = new ModelPart(this, 0, 0).setTextureSize(128, 64);
-        this.bottom.addCuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f, 0.0f);
-        this.bottom.setPivot(0.0f, -3.0f, 1.0f);
-        this.bottom.pitch = 1.5707964f;
+        this.waterPatch = new ModelPart(this, 0, 0).setTextureSize(128, 64);
+        this.waterPatch.addCuboid(-14.0f, -9.0f, -3.0f, 28.0f, 16.0f, 3.0f, 0.0f);
+        this.waterPatch.setPivot(0.0f, -3.0f, 1.0f);
+        this.waterPatch.pitch = 1.5707964f;
         ImmutableList.Builder builder = ImmutableList.builder();
         builder.addAll(Arrays.asList(modelParts));
         builder.addAll(Arrays.asList(this.paddles));
@@ -68,7 +68,7 @@ extends CompositeEntityModel<BoatEntity> {
     }
 
     public ModelPart getBottom() {
-        return this.bottom;
+        return this.waterPatch;
     }
 
     protected ModelPart makePaddle(boolean isLeft) {

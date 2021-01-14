@@ -17,10 +17,10 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
@@ -94,11 +94,11 @@ Nameable {
         }
     }
 
-    public void swapSlotWithHotbar(int hotbarSlot) {
+    public void swapSlotWithHotbar(int slot) {
         this.selectedSlot = this.getSwappableHotbarSlot();
         ItemStack itemStack = this.main.get(this.selectedSlot);
-        this.main.set(this.selectedSlot, this.main.get(hotbarSlot));
-        this.main.set(hotbarSlot, itemStack);
+        this.main.set(this.selectedSlot, this.main.get(slot));
+        this.main.set(slot, itemStack);
     }
 
     public static boolean isValidHotbarIndex(int slot) {
@@ -359,41 +359,41 @@ Nameable {
         return this.main.get(this.selectedSlot).getMiningSpeedMultiplier(block);
     }
 
-    public ListTag serialize(ListTag tag) {
-        CompoundTag compoundTag;
+    public NbtList writeNbt(NbtList nbtList) {
+        NbtCompound nbtCompound;
         int i;
         for (i = 0; i < this.main.size(); ++i) {
             if (this.main.get(i).isEmpty()) continue;
-            compoundTag = new CompoundTag();
-            compoundTag.putByte("Slot", (byte)i);
-            this.main.get(i).toTag(compoundTag);
-            tag.add(compoundTag);
+            nbtCompound = new NbtCompound();
+            nbtCompound.putByte("Slot", (byte)i);
+            this.main.get(i).writeNbt(nbtCompound);
+            nbtList.add(nbtCompound);
         }
         for (i = 0; i < this.armor.size(); ++i) {
             if (this.armor.get(i).isEmpty()) continue;
-            compoundTag = new CompoundTag();
-            compoundTag.putByte("Slot", (byte)(i + 100));
-            this.armor.get(i).toTag(compoundTag);
-            tag.add(compoundTag);
+            nbtCompound = new NbtCompound();
+            nbtCompound.putByte("Slot", (byte)(i + 100));
+            this.armor.get(i).writeNbt(nbtCompound);
+            nbtList.add(nbtCompound);
         }
         for (i = 0; i < this.offHand.size(); ++i) {
             if (this.offHand.get(i).isEmpty()) continue;
-            compoundTag = new CompoundTag();
-            compoundTag.putByte("Slot", (byte)(i + 150));
-            this.offHand.get(i).toTag(compoundTag);
-            tag.add(compoundTag);
+            nbtCompound = new NbtCompound();
+            nbtCompound.putByte("Slot", (byte)(i + 150));
+            this.offHand.get(i).writeNbt(nbtCompound);
+            nbtList.add(nbtCompound);
         }
-        return tag;
+        return nbtList;
     }
 
-    public void deserialize(ListTag tag) {
+    public void readNbt(NbtList nbtList) {
         this.main.clear();
         this.armor.clear();
         this.offHand.clear();
-        for (int i = 0; i < tag.size(); ++i) {
-            CompoundTag compoundTag = tag.getCompound(i);
-            int j = compoundTag.getByte("Slot") & 0xFF;
-            ItemStack itemStack = ItemStack.fromTag(compoundTag);
+        for (int i = 0; i < nbtList.size(); ++i) {
+            NbtCompound nbtCompound = nbtList.getCompound(i);
+            int j = nbtCompound.getByte("Slot") & 0xFF;
+            ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
             if (itemStack.isEmpty()) continue;
             if (j >= 0 && j < this.main.size()) {
                 this.main.set(j, itemStack);
@@ -540,9 +540,9 @@ Nameable {
         }
     }
 
-    public void populateRecipeFinder(RecipeFinder finder) {
+    public void populateRecipeFinder(RecipeMatcher finder) {
         for (ItemStack itemStack : this.main) {
-            finder.addNormalItem(itemStack);
+            finder.addUnenchantedInput(itemStack);
         }
     }
 }

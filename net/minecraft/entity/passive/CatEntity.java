@@ -55,7 +55,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -180,18 +180,18 @@ extends TameableEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.putInt("CatType", this.getCatType());
-        tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        nbt.putInt("CatType", this.getCatType());
+        nbt.putByte("CollarColor", (byte)this.getCollarColor().getId());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        this.setCatType(tag.getInt("CatType"));
-        if (tag.contains("CollarColor", 99)) {
-            this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.setCatType(nbt.getInt("CatType"));
+        if (nbt.contains("CollarColor", 99)) {
+            this.setCollarColor(DyeColor.byId(nbt.getInt("CollarColor")));
         }
     }
 
@@ -360,8 +360,8 @@ extends TameableEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        entityData = super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
         if (world.getMoonSize() > 0.9f) {
             this.setCatType(this.random.nextInt(11));
         } else {
@@ -497,7 +497,7 @@ extends TameableEntity {
                 BlockPos blockPos = this.owner.getBlockPos();
                 BlockState blockState = this.cat.world.getBlockState(blockPos);
                 if (blockState.getBlock().isIn(BlockTags.BEDS)) {
-                    this.bedPos = blockState.method_28500(BedBlock.FACING).map(direction -> blockPos.offset(direction.getOpposite())).orElseGet(() -> new BlockPos(blockPos));
+                    this.bedPos = blockState.getOrEmpty(BedBlock.FACING).map(direction -> blockPos.offset(direction.getOpposite())).orElseGet(() -> new BlockPos(blockPos));
                     return !this.method_16098();
                 }
             }

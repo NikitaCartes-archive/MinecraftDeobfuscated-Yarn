@@ -36,7 +36,7 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.client.options.ChatVisibility;
+import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.ItemEntity;
@@ -53,9 +53,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WritableBookItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.MessageType;
 import net.minecraft.network.NetworkThreadUtils;
@@ -111,11 +111,11 @@ import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
-import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
+import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerPositionLookS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.recipe.Recipe;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -191,7 +191,7 @@ implements ServerPlayPacketListener {
     private int teleportRequestTick;
     private boolean floating;
     private int floatingTicks;
-    private boolean ridingEntity;
+    private boolean vehicleFloating;
     private int vehicleFloatingTicks;
     private int movePacketsCount;
     private int lastTickMovePacketsCount;
@@ -230,7 +230,7 @@ implements ServerPlayPacketListener {
         this.topmostRiddenEntity = this.player.getRootVehicle();
         if (this.topmostRiddenEntity == this.player || this.topmostRiddenEntity.getPrimaryPassenger() != this.player) {
             this.topmostRiddenEntity = null;
-            this.ridingEntity = false;
+            this.vehicleFloating = false;
             this.vehicleFloatingTicks = 0;
         } else {
             this.lastTickRiddenX = this.topmostRiddenEntity.getX();
@@ -239,14 +239,14 @@ implements ServerPlayPacketListener {
             this.updatedRiddenX = this.topmostRiddenEntity.getX();
             this.updatedRiddenY = this.topmostRiddenEntity.getY();
             this.updatedRiddenZ = this.topmostRiddenEntity.getZ();
-            if (this.ridingEntity && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
+            if (this.vehicleFloating && this.player.getRootVehicle().getPrimaryPassenger() == this.player) {
                 if (++this.vehicleFloatingTicks > 80) {
                     LOGGER.warn("{} was kicked for floating a vehicle too long!", (Object)this.player.getName().getString());
                     this.disconnect(new TranslatableText("multiplayer.disconnect.flying"));
                     return;
                 }
             } else {
-                this.ridingEntity = false;
+                this.vehicleFloating = false;
                 this.vehicleFloatingTicks = 0;
             }
         }
@@ -393,9 +393,9 @@ implements ServerPlayPacketListener {
                 this.connection.send(new VehicleMoveS2CPacket(entity));
                 return;
             }
-            this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
+            this.player.getServerWorld().getChunkManager().updatePosition(this.player);
             this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-            this.ridingEntity = q >= -0.03125 && !this.server.isFlightEnabled() && this.method_29780(entity);
+            this.vehicleFloating = q >= -0.03125 && !this.server.isFlightEnabled() && this.method_29780(entity);
             this.updatedRiddenX = entity.getX();
             this.updatedRiddenY = entity.getY();
             this.updatedRiddenZ = entity.getZ();
@@ -499,7 +499,7 @@ implements ServerPlayPacketListener {
             blockEntity.cancelRemoval();
             this.player.world.setBlockEntity(blockPos, blockEntity);
             commandBlockExecutor.setCommand(string);
-            commandBlockExecutor.shouldTrackOutput(bl);
+            commandBlockExecutor.setTrackingOutput(bl);
             if (!bl) {
                 commandBlockExecutor.setLastOutput(null);
             }
@@ -528,7 +528,7 @@ implements ServerPlayPacketListener {
         CommandBlockExecutor commandBlockExecutor = packet.getMinecartCommandExecutor(this.player.world);
         if (commandBlockExecutor != null) {
             commandBlockExecutor.setCommand(packet.getCommand());
-            commandBlockExecutor.shouldTrackOutput(packet.shouldTrackOutput());
+            commandBlockExecutor.setTrackingOutput(packet.shouldTrackOutput());
             if (!packet.shouldTrackOutput()) {
                 commandBlockExecutor.setLastOutput(null);
             }
@@ -543,7 +543,7 @@ implements ServerPlayPacketListener {
         this.player.inventory.swapSlotWithHotbar(packet.getSlot());
         this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, this.player.inventory.selectedSlot, this.player.inventory.getStack(this.player.inventory.selectedSlot)));
         this.player.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-2, packet.getSlot(), this.player.inventory.getStack(packet.getSlot())));
-        this.player.networkHandler.sendPacket(new HeldItemChangeS2CPacket(this.player.inventory.selectedSlot));
+        this.player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(this.player.inventory.selectedSlot));
     }
 
     @Override
@@ -584,7 +584,7 @@ implements ServerPlayPacketListener {
             structureBlockBlockEntity.setMirror(packet.getMirror());
             structureBlockBlockEntity.setRotation(packet.getRotation());
             structureBlockBlockEntity.setMetadata(packet.getMetadata());
-            structureBlockBlockEntity.setIgnoreEntities(packet.getIgnoreEntities());
+            structureBlockBlockEntity.setIgnoreEntities(packet.shouldIgnoreEntities());
             structureBlockBlockEntity.setShowAir(packet.shouldShowAir());
             structureBlockBlockEntity.setShowBoundingBox(packet.shouldShowBoundingBox());
             structureBlockBlockEntity.setIntegrity(packet.getIntegrity());
@@ -674,18 +674,18 @@ implements ServerPlayPacketListener {
         if (itemStack.getItem() != Items.WRITABLE_BOOK) {
             return;
         }
-        CompoundTag compoundTag = itemStack.getTag();
-        if (!WritableBookItem.isValid(compoundTag)) {
+        NbtCompound nbtCompound = itemStack.getTag();
+        if (!WritableBookItem.isValid(nbtCompound)) {
             return;
         }
         ArrayList<String> list2 = Lists.newArrayList();
         boolean bl = packet.wasSigned();
         if (bl) {
-            list2.add(compoundTag.getString("title"));
+            list2.add(nbtCompound.getString("title"));
         }
-        ListTag listTag = compoundTag.getList("pages", 8);
-        for (i = 0; i < listTag.size(); ++i) {
-            list2.add(listTag.getString(i));
+        NbtList nbtList = nbtCompound.getList("pages", 8);
+        for (i = 0; i < nbtList.size(); ++i) {
+            list2.add(nbtList.getString(i));
         }
         i = packet.getSlot();
         if (!PlayerInventory.isValidHotbarIndex(i) && i != 40) {
@@ -699,9 +699,9 @@ implements ServerPlayPacketListener {
         if (itemStack.getItem() != Items.WRITABLE_BOOK) {
             return;
         }
-        ListTag listTag = new ListTag();
-        list.stream().map(StringTag::of).forEach(listTag::add);
-        itemStack.putSubTag("pages", listTag);
+        NbtList nbtList = new NbtList();
+        list.stream().map(NbtString::of).forEach(nbtList::add);
+        itemStack.putSubTag("pages", nbtList);
     }
 
     private void method_31276(String string, List<String> list, int i) {
@@ -710,19 +710,19 @@ implements ServerPlayPacketListener {
             return;
         }
         ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
-        CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null) {
-            itemStack2.setTag(compoundTag.copy());
+        NbtCompound nbtCompound = itemStack.getTag();
+        if (nbtCompound != null) {
+            itemStack2.setTag(nbtCompound.copy());
         }
-        itemStack2.putSubTag("author", StringTag.of(this.player.getName().getString()));
-        itemStack2.putSubTag("title", StringTag.of(string));
-        ListTag listTag = new ListTag();
+        itemStack2.putSubTag("author", NbtString.of(this.player.getName().getString()));
+        itemStack2.putSubTag("title", NbtString.of(string));
+        NbtList nbtList = new NbtList();
         for (String string2 : list) {
             LiteralText text = new LiteralText(string2);
             String string3 = Text.Serializer.toJson(text);
-            listTag.add(StringTag.of(string3));
+            nbtList.add(NbtString.of(string3));
         }
-        itemStack2.putSubTag("pages", listTag);
+        itemStack2.putSubTag("pages", nbtList);
         this.player.inventory.setStack(i, itemStack2);
     }
 
@@ -734,8 +734,8 @@ implements ServerPlayPacketListener {
         }
         Entity entity = this.player.getServerWorld().getEntityById(packet.getEntityId());
         if (entity != null) {
-            CompoundTag compoundTag = entity.toTag(new CompoundTag());
-            this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
+            NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
+            this.player.networkHandler.sendPacket(new NbtQueryResponseS2CPacket(packet.getTransactionId(), nbtCompound));
         }
     }
 
@@ -746,8 +746,8 @@ implements ServerPlayPacketListener {
             return;
         }
         BlockEntity blockEntity = this.player.getServerWorld().getBlockEntity(packet.getPos());
-        CompoundTag compoundTag = blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
-        this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
+        NbtCompound nbtCompound = blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
+        this.player.networkHandler.sendPacket(new NbtQueryResponseS2CPacket(packet.getTransactionId(), nbtCompound));
     }
 
     @Override
@@ -775,7 +775,7 @@ implements ServerPlayPacketListener {
         this.teleportRequestTick = this.ticks;
         if (this.player.hasVehicle()) {
             this.player.updatePositionAndAngles(this.player.getX(), this.player.getY(), this.player.getZ(), packet.getYaw(this.player.yaw), packet.getPitch(this.player.pitch));
-            this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
+            this.player.getServerWorld().getChunkManager().updatePosition(this.player);
             return;
         }
         double d = this.player.getX();
@@ -841,7 +841,7 @@ implements ServerPlayPacketListener {
             return;
         }
         this.floating = t >= -0.03125 && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR && !this.server.isFlightEnabled() && !this.player.abilities.allowFlying && !this.player.hasStatusEffect(StatusEffects.LEVITATION) && !this.player.isFallFlying() && this.method_29780(this.player);
-        this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
+        this.player.getServerWorld().getChunkManager().updatePosition(this.player);
         this.player.handleFall(this.player.getY() - g, packet.isOnGround());
         this.player.setOnGround(packet.isOnGround());
         if (bl) {
@@ -853,29 +853,29 @@ implements ServerPlayPacketListener {
         this.updatedZ = this.player.getZ();
     }
 
-    private boolean isPlayerNotCollidingWithBlocks(WorldView worldView, Box box) {
-        Stream<VoxelShape> stream = worldView.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5f), entity -> true);
+    private boolean isPlayerNotCollidingWithBlocks(WorldView world, Box box) {
+        Stream<VoxelShape> stream = world.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5f), entity -> true);
         VoxelShape voxelShape = VoxelShapes.cuboid(box.contract(1.0E-5f));
         return stream.anyMatch(voxelShape2 -> !VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND));
     }
 
     public void requestTeleport(double x, double y, double z, float yaw, float pitch) {
-        this.teleportRequest(x, y, z, yaw, pitch, Collections.emptySet());
+        this.requestTeleport(x, y, z, yaw, pitch, Collections.emptySet());
     }
 
-    public void teleportRequest(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> set) {
-        double d = set.contains((Object)PlayerPositionLookS2CPacket.Flag.X) ? this.player.getX() : 0.0;
-        double e = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Y) ? this.player.getY() : 0.0;
-        double f = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Z) ? this.player.getZ() : 0.0;
-        float g = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Y_ROT) ? this.player.yaw : 0.0f;
-        float h = set.contains((Object)PlayerPositionLookS2CPacket.Flag.X_ROT) ? this.player.pitch : 0.0f;
+    public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> flags) {
+        double d = flags.contains((Object)PlayerPositionLookS2CPacket.Flag.X) ? this.player.getX() : 0.0;
+        double e = flags.contains((Object)PlayerPositionLookS2CPacket.Flag.Y) ? this.player.getY() : 0.0;
+        double f = flags.contains((Object)PlayerPositionLookS2CPacket.Flag.Z) ? this.player.getZ() : 0.0;
+        float g = flags.contains((Object)PlayerPositionLookS2CPacket.Flag.Y_ROT) ? this.player.yaw : 0.0f;
+        float h = flags.contains((Object)PlayerPositionLookS2CPacket.Flag.X_ROT) ? this.player.pitch : 0.0f;
         this.requestedTeleportPos = new Vec3d(x, y, z);
         if (++this.requestedTeleportId == Integer.MAX_VALUE) {
             this.requestedTeleportId = 0;
         }
         this.teleportRequestTick = this.ticks;
         this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
-        this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, set, this.requestedTeleportId));
+        this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId));
     }
 
     @Override
@@ -1242,7 +1242,7 @@ implements ServerPlayPacketListener {
                 }
                 this.player.onHandlerRegistered(this.player.currentScreenHandler, defaultedList);
             } else {
-                ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getClickData(), packet.getActionType(), this.player);
+                ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getButton(), packet.getActionType(), this.player);
                 if (ItemStack.areEqual(packet.getStack(), itemStack)) {
                     this.player.networkHandler.sendPacket(new ConfirmScreenActionS2CPacket(packet.getSyncId(), packet.getActionId(), true));
                     this.player.skipPacketSlotUpdates = true;
@@ -1293,13 +1293,13 @@ implements ServerPlayPacketListener {
             BlockEntity blockEntity;
             boolean bl = packet.getSlot() < 0;
             ItemStack itemStack = packet.getItemStack();
-            CompoundTag compoundTag = itemStack.getSubTag("BlockEntityTag");
-            if (!itemStack.isEmpty() && compoundTag != null && compoundTag.contains("x") && compoundTag.contains("y") && compoundTag.contains("z") && (blockEntity = this.player.world.getBlockEntity(blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z")))) != null) {
-                CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
-                compoundTag2.remove("x");
-                compoundTag2.remove("y");
-                compoundTag2.remove("z");
-                itemStack.putSubTag("BlockEntityTag", compoundTag2);
+            NbtCompound nbtCompound = itemStack.getSubTag("BlockEntityTag");
+            if (!itemStack.isEmpty() && nbtCompound != null && nbtCompound.contains("x") && nbtCompound.contains("y") && nbtCompound.contains("z") && (blockEntity = this.player.world.getBlockEntity(blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z")))) != null) {
+                NbtCompound nbtCompound2 = blockEntity.writeNbt(new NbtCompound());
+                nbtCompound2.remove("x");
+                nbtCompound2.remove("y");
+                nbtCompound2.remove("z");
+                itemStack.putSubTag("BlockEntityTag", nbtCompound2);
             }
             boolean bl2 = packet.getSlot() >= 1 && packet.getSlot() <= 45;
             boolean bl4 = bl3 = itemStack.isEmpty() || itemStack.getDamage() >= 0 && itemStack.getCount() <= 64 && !itemStack.isEmpty();

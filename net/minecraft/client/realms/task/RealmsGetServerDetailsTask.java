@@ -97,13 +97,13 @@ extends LongRunningTask {
                         try {
                             if (bl) {
                                 Function<Throwable, Void> function = throwable -> {
-                                    MinecraftClient.getInstance().getResourcePackDownloader().clear();
+                                    MinecraftClient.getInstance().getResourcePackProvider().clear();
                                     LOGGER.error(throwable);
                                     RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
                                     return null;
                                 };
                                 try {
-                                    ((CompletableFuture)MinecraftClient.getInstance().getResourcePackDownloader().download(realmsServerAddress.resourcePackUrl, realmsServerAddress.resourcePackHash).thenRun(() -> this.setScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, realmsServerAddress2))))).exceptionally(function);
+                                    ((CompletableFuture)MinecraftClient.getInstance().getResourcePackProvider().download(realmsServerAddress.resourcePackUrl, realmsServerAddress.resourcePackHash).thenRun(() -> this.setScreen(new RealmsLongRunningMcoTaskScreen(this.lastScreen, new RealmsConnectTask(this.lastScreen, this.server, realmsServerAddress2))))).exceptionally(function);
                                 } catch (Exception exception) {
                                     function.apply(exception);
                                 }

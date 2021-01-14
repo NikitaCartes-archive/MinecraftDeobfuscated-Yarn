@@ -14,8 +14,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.AbstractCookingRecipe;
 import net.minecraft.recipe.FurnaceInputSlotFiller;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeInputProvider;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
@@ -65,7 +65,7 @@ extends AbstractRecipeScreenHandler<Inventory> {
     }
 
     @Override
-    public void populateRecipeFinder(RecipeFinder finder) {
+    public void populateRecipeFinder(RecipeMatcher finder) {
         if (this.inventory instanceof RecipeInputProvider) {
             ((RecipeInputProvider)((Object)this.inventory)).provideRecipeInputs(finder);
         }
@@ -123,7 +123,7 @@ extends AbstractRecipeScreenHandler<Inventory> {
                 if (!this.insertItem(itemStack2, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onStackChanged(itemStack2, itemStack);
+                slot.onQuickTransfer(itemStack2, itemStack);
             } else if (index == 1 || index == 0 ? !this.insertItem(itemStack2, 3, 39, false) : (this.isSmeltable(itemStack2) ? !this.insertItem(itemStack2, 0, 1, false) : (this.isFuel(itemStack2) ? !this.insertItem(itemStack2, 1, 2, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack2, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack2, 3, 30, false))))) {
                 return ItemStack.EMPTY;
             }

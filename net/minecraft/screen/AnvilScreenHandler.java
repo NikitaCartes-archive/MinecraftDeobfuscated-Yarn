@@ -107,7 +107,7 @@ extends ForgingScreenHandler {
         this.repairItemUsage = 0;
         if (!itemStack3.isEmpty()) {
             boolean bl;
-            boolean bl2 = bl = itemStack3.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
+            boolean bl2 = bl = itemStack3.getItem() == Items.ENCHANTED_BOOK && !EnchantedBookItem.getEnchantmentNbt(itemStack3).isEmpty();
             if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
                 int m;
                 int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
@@ -241,11 +241,11 @@ extends ForgingScreenHandler {
         return cost * 2 + 1;
     }
 
-    public void setNewItemName(String string) {
-        this.newItemName = string;
+    public void setNewItemName(String newItemName) {
+        this.newItemName = newItemName;
         if (this.getSlot(2).hasStack()) {
             ItemStack itemStack = this.getSlot(2).getStack();
-            if (StringUtils.isBlank(string)) {
+            if (StringUtils.isBlank(newItemName)) {
                 itemStack.removeCustomName();
             } else {
                 itemStack.setCustomName(new LiteralText(this.newItemName));

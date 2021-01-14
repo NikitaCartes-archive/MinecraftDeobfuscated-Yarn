@@ -26,10 +26,10 @@ ModelWithHead {
     private final ModelPart hat;
     private final ModelPart torso;
     private final ModelPart arms;
-    private final ModelPart rightLeg;
     private final ModelPart leftLeg;
-    private final ModelPart rightAttackingArm;
-    private final ModelPart leftAttackingArm;
+    private final ModelPart rightLeg;
+    private final ModelPart rightArm;
+    private final ModelPart leftArm;
 
     public IllagerEntityModel(float scale, float pivotY, int textureWidth, int textureHeight) {
         this.head = new ModelPart(this).setTextureSize(textureWidth, textureHeight);
@@ -55,25 +55,25 @@ ModelWithHead {
         modelPart2.addCuboid(4.0f, -2.0f, -2.0f, 4.0f, 8.0f, 4.0f, scale);
         this.arms.addChild(modelPart2);
         this.arms.setTextureOffset(40, 38).addCuboid(-4.0f, 2.0f, -2.0f, 8.0f, 4.0f, 4.0f, scale);
-        this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(textureWidth, textureHeight);
-        this.rightLeg.setPivot(-2.0f, 12.0f + pivotY, 0.0f);
-        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
         this.leftLeg = new ModelPart(this, 0, 22).setTextureSize(textureWidth, textureHeight);
-        this.leftLeg.mirror = true;
-        this.leftLeg.setPivot(2.0f, 12.0f + pivotY, 0.0f);
+        this.leftLeg.setPivot(-2.0f, 12.0f + pivotY, 0.0f);
         this.leftLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
-        this.rightAttackingArm = new ModelPart(this, 40, 46).setTextureSize(textureWidth, textureHeight);
-        this.rightAttackingArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
-        this.rightAttackingArm.setPivot(-5.0f, 2.0f + pivotY, 0.0f);
-        this.leftAttackingArm = new ModelPart(this, 40, 46).setTextureSize(textureWidth, textureHeight);
-        this.leftAttackingArm.mirror = true;
-        this.leftAttackingArm.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
-        this.leftAttackingArm.setPivot(5.0f, 2.0f + pivotY, 0.0f);
+        this.rightLeg = new ModelPart(this, 0, 22).setTextureSize(textureWidth, textureHeight);
+        this.rightLeg.mirror = true;
+        this.rightLeg.setPivot(2.0f, 12.0f + pivotY, 0.0f);
+        this.rightLeg.addCuboid(-2.0f, 0.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
+        this.rightArm = new ModelPart(this, 40, 46).setTextureSize(textureWidth, textureHeight);
+        this.rightArm.addCuboid(-3.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
+        this.rightArm.setPivot(-5.0f, 2.0f + pivotY, 0.0f);
+        this.leftArm = new ModelPart(this, 40, 46).setTextureSize(textureWidth, textureHeight);
+        this.leftArm.mirror = true;
+        this.leftArm.addCuboid(-1.0f, -2.0f, -2.0f, 4.0f, 12.0f, 4.0f, scale);
+        this.leftArm.setPivot(5.0f, 2.0f + pivotY, 0.0f);
     }
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.head, this.torso, this.rightLeg, this.leftLeg, this.arms, this.rightAttackingArm, this.leftAttackingArm);
+        return ImmutableList.of(this.head, this.torso, this.leftLeg, this.rightLeg, this.arms, this.rightArm, this.leftArm);
     }
 
     @Override
@@ -85,82 +85,82 @@ ModelWithHead {
         this.arms.pivotZ = -1.0f;
         this.arms.pitch = -0.75f;
         if (this.riding) {
-            this.rightAttackingArm.pitch = -0.62831855f;
-            this.rightAttackingArm.yaw = 0.0f;
-            this.rightAttackingArm.roll = 0.0f;
-            this.leftAttackingArm.pitch = -0.62831855f;
-            this.leftAttackingArm.yaw = 0.0f;
-            this.leftAttackingArm.roll = 0.0f;
-            this.rightLeg.pitch = -1.4137167f;
-            this.rightLeg.yaw = 0.31415927f;
-            this.rightLeg.roll = 0.07853982f;
+            this.rightArm.pitch = -0.62831855f;
+            this.rightArm.yaw = 0.0f;
+            this.rightArm.roll = 0.0f;
+            this.leftArm.pitch = -0.62831855f;
+            this.leftArm.yaw = 0.0f;
+            this.leftArm.roll = 0.0f;
             this.leftLeg.pitch = -1.4137167f;
-            this.leftLeg.yaw = -0.31415927f;
-            this.leftLeg.roll = -0.07853982f;
+            this.leftLeg.yaw = 0.31415927f;
+            this.leftLeg.roll = 0.07853982f;
+            this.rightLeg.pitch = -1.4137167f;
+            this.rightLeg.yaw = -0.31415927f;
+            this.rightLeg.roll = -0.07853982f;
         } else {
-            this.rightAttackingArm.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 2.0f * g * 0.5f;
-            this.rightAttackingArm.yaw = 0.0f;
-            this.rightAttackingArm.roll = 0.0f;
-            this.leftAttackingArm.pitch = MathHelper.cos(f * 0.6662f) * 2.0f * g * 0.5f;
-            this.leftAttackingArm.yaw = 0.0f;
-            this.leftAttackingArm.roll = 0.0f;
-            this.rightLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g * 0.5f;
-            this.rightLeg.yaw = 0.0f;
-            this.rightLeg.roll = 0.0f;
-            this.leftLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g * 0.5f;
+            this.rightArm.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 2.0f * g * 0.5f;
+            this.rightArm.yaw = 0.0f;
+            this.rightArm.roll = 0.0f;
+            this.leftArm.pitch = MathHelper.cos(f * 0.6662f) * 2.0f * g * 0.5f;
+            this.leftArm.yaw = 0.0f;
+            this.leftArm.roll = 0.0f;
+            this.leftLeg.pitch = MathHelper.cos(f * 0.6662f) * 1.4f * g * 0.5f;
             this.leftLeg.yaw = 0.0f;
             this.leftLeg.roll = 0.0f;
+            this.rightLeg.pitch = MathHelper.cos(f * 0.6662f + (float)Math.PI) * 1.4f * g * 0.5f;
+            this.rightLeg.yaw = 0.0f;
+            this.rightLeg.roll = 0.0f;
         }
         IllagerEntity.State state = ((IllagerEntity)illagerEntity).getState();
         if (state == IllagerEntity.State.ATTACKING) {
             if (((LivingEntity)illagerEntity).getMainHandStack().isEmpty()) {
-                CrossbowPosing.method_29352(this.leftAttackingArm, this.rightAttackingArm, true, this.handSwingProgress, h);
+                CrossbowPosing.method_29352(this.leftArm, this.rightArm, true, this.handSwingProgress, h);
             } else {
-                CrossbowPosing.method_29351(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, this.handSwingProgress, h);
+                CrossbowPosing.method_29351(this.rightArm, this.leftArm, illagerEntity, this.handSwingProgress, h);
             }
         } else if (state == IllagerEntity.State.SPELLCASTING) {
-            this.rightAttackingArm.pivotZ = 0.0f;
-            this.rightAttackingArm.pivotX = -5.0f;
-            this.leftAttackingArm.pivotZ = 0.0f;
-            this.leftAttackingArm.pivotX = 5.0f;
-            this.rightAttackingArm.pitch = MathHelper.cos(h * 0.6662f) * 0.25f;
-            this.leftAttackingArm.pitch = MathHelper.cos(h * 0.6662f) * 0.25f;
-            this.rightAttackingArm.roll = 2.3561945f;
-            this.leftAttackingArm.roll = -2.3561945f;
-            this.rightAttackingArm.yaw = 0.0f;
-            this.leftAttackingArm.yaw = 0.0f;
+            this.rightArm.pivotZ = 0.0f;
+            this.rightArm.pivotX = -5.0f;
+            this.leftArm.pivotZ = 0.0f;
+            this.leftArm.pivotX = 5.0f;
+            this.rightArm.pitch = MathHelper.cos(h * 0.6662f) * 0.25f;
+            this.leftArm.pitch = MathHelper.cos(h * 0.6662f) * 0.25f;
+            this.rightArm.roll = 2.3561945f;
+            this.leftArm.roll = -2.3561945f;
+            this.rightArm.yaw = 0.0f;
+            this.leftArm.yaw = 0.0f;
         } else if (state == IllagerEntity.State.BOW_AND_ARROW) {
-            this.rightAttackingArm.yaw = -0.1f + this.head.yaw;
-            this.rightAttackingArm.pitch = -1.5707964f + this.head.pitch;
-            this.leftAttackingArm.pitch = -0.9424779f + this.head.pitch;
-            this.leftAttackingArm.yaw = this.head.yaw - 0.4f;
-            this.leftAttackingArm.roll = 1.5707964f;
+            this.rightArm.yaw = -0.1f + this.head.yaw;
+            this.rightArm.pitch = -1.5707964f + this.head.pitch;
+            this.leftArm.pitch = -0.9424779f + this.head.pitch;
+            this.leftArm.yaw = this.head.yaw - 0.4f;
+            this.leftArm.roll = 1.5707964f;
         } else if (state == IllagerEntity.State.CROSSBOW_HOLD) {
-            CrossbowPosing.hold(this.rightAttackingArm, this.leftAttackingArm, this.head, true);
+            CrossbowPosing.hold(this.rightArm, this.leftArm, this.head, true);
         } else if (state == IllagerEntity.State.CROSSBOW_CHARGE) {
-            CrossbowPosing.charge(this.rightAttackingArm, this.leftAttackingArm, illagerEntity, true);
+            CrossbowPosing.charge(this.rightArm, this.leftArm, illagerEntity, true);
         } else if (state == IllagerEntity.State.CELEBRATING) {
-            this.rightAttackingArm.pivotZ = 0.0f;
-            this.rightAttackingArm.pivotX = -5.0f;
-            this.rightAttackingArm.pitch = MathHelper.cos(h * 0.6662f) * 0.05f;
-            this.rightAttackingArm.roll = 2.670354f;
-            this.rightAttackingArm.yaw = 0.0f;
-            this.leftAttackingArm.pivotZ = 0.0f;
-            this.leftAttackingArm.pivotX = 5.0f;
-            this.leftAttackingArm.pitch = MathHelper.cos(h * 0.6662f) * 0.05f;
-            this.leftAttackingArm.roll = -2.3561945f;
-            this.leftAttackingArm.yaw = 0.0f;
+            this.rightArm.pivotZ = 0.0f;
+            this.rightArm.pivotX = -5.0f;
+            this.rightArm.pitch = MathHelper.cos(h * 0.6662f) * 0.05f;
+            this.rightArm.roll = 2.670354f;
+            this.rightArm.yaw = 0.0f;
+            this.leftArm.pivotZ = 0.0f;
+            this.leftArm.pivotX = 5.0f;
+            this.leftArm.pitch = MathHelper.cos(h * 0.6662f) * 0.05f;
+            this.leftArm.roll = -2.3561945f;
+            this.leftArm.yaw = 0.0f;
         }
         this.arms.visible = bl = state == IllagerEntity.State.CROSSED;
-        this.leftAttackingArm.visible = !bl;
-        this.rightAttackingArm.visible = !bl;
+        this.leftArm.visible = !bl;
+        this.rightArm.visible = !bl;
     }
 
     private ModelPart getAttackingArm(Arm arm) {
         if (arm == Arm.LEFT) {
-            return this.leftAttackingArm;
+            return this.leftArm;
         }
-        return this.rightAttackingArm;
+        return this.rightArm;
     }
 
     public ModelPart getHat() {

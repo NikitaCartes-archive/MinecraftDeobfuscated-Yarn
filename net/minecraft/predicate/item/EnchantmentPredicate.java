@@ -32,17 +32,17 @@ public class EnchantmentPredicate {
         this.levels = levels;
     }
 
-    public boolean test(Map<Enchantment, Integer> map) {
+    public boolean test(Map<Enchantment, Integer> enchantments) {
         if (this.enchantment != null) {
-            if (!map.containsKey(this.enchantment)) {
+            if (!enchantments.containsKey(this.enchantment)) {
                 return false;
             }
-            int i = map.get(this.enchantment);
+            int i = enchantments.get(this.enchantment);
             if (this.levels != null && !this.levels.test(i)) {
                 return false;
             }
         } else if (this.levels != null) {
-            for (Integer integer : map.values()) {
+            for (Integer integer : enchantments.values()) {
                 if (!this.levels.test(integer)) continue;
                 return true;
             }

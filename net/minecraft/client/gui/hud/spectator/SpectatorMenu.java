@@ -28,9 +28,9 @@ public class SpectatorMenu {
     private static final SpectatorMenuCommand PREVIOUS_PAGE_COMMAND = new ChangePageSpectatorMenuCommand(-1, true);
     private static final SpectatorMenuCommand NEXT_PAGE_COMMAND = new ChangePageSpectatorMenuCommand(1, true);
     private static final SpectatorMenuCommand DISABLED_NEXT_PAGE_COMMAND = new ChangePageSpectatorMenuCommand(1, false);
-    private static final Text field_26613 = new TranslatableText("spectatorMenu.close");
-    private static final Text field_26614 = new TranslatableText("spectatorMenu.previous_page");
-    private static final Text field_26615 = new TranslatableText("spectatorMenu.next_page");
+    private static final Text CLOSE_TEXT = new TranslatableText("spectatorMenu.close");
+    private static final Text PREVIOUS_PAGE_TEXT = new TranslatableText("spectatorMenu.previous_page");
+    private static final Text NEXT_PAGE_TEXT = new TranslatableText("spectatorMenu.next_page");
     public static final SpectatorMenuCommand BLANK_COMMAND = new SpectatorMenuCommand(){
 
         @Override
@@ -43,7 +43,7 @@ public class SpectatorMenu {
         }
 
         @Override
-        public void renderIcon(MatrixStack matrixStack, float f, int i) {
+        public void renderIcon(MatrixStack matrices, float f, int i) {
         }
 
         @Override
@@ -143,16 +143,16 @@ public class SpectatorMenu {
 
         @Override
         public Text getName() {
-            return this.direction < 0 ? field_26614 : field_26615;
+            return this.direction < 0 ? PREVIOUS_PAGE_TEXT : NEXT_PAGE_TEXT;
         }
 
         @Override
-        public void renderIcon(MatrixStack matrixStack, float f, int i) {
+        public void renderIcon(MatrixStack matrices, float f, int i) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
             if (this.direction < 0) {
-                DrawableHelper.drawTexture(matrixStack, 0, 0, 144.0f, 0.0f, 16, 16, 256, 256);
+                DrawableHelper.drawTexture(matrices, 0, 0, 144.0f, 0.0f, 16, 16, 256, 256);
             } else {
-                DrawableHelper.drawTexture(matrixStack, 0, 0, 160.0f, 0.0f, 16, 16, 256, 256);
+                DrawableHelper.drawTexture(matrices, 0, 0, 160.0f, 0.0f, 16, 16, 256, 256);
             }
         }
 
@@ -175,13 +175,13 @@ public class SpectatorMenu {
 
         @Override
         public Text getName() {
-            return field_26613;
+            return CLOSE_TEXT;
         }
 
         @Override
-        public void renderIcon(MatrixStack matrixStack, float f, int i) {
+        public void renderIcon(MatrixStack matrices, float f, int i) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
-            DrawableHelper.drawTexture(matrixStack, 0, 0, 128.0f, 0.0f, 16, 16, 256, 256);
+            DrawableHelper.drawTexture(matrices, 0, 0, 128.0f, 0.0f, 16, 16, 256, 256);
         }
 
         @Override

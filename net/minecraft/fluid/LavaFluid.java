@@ -133,7 +133,7 @@ extends FlowableFluid {
 
     @Override
     public BlockState toBlockState(FluidState state) {
-        return (BlockState)Blocks.LAVA.getDefaultState().with(FluidBlock.LEVEL, LavaFluid.method_15741(state));
+        return (BlockState)Blocks.LAVA.getDefaultState().with(FluidBlock.LEVEL, LavaFluid.getBlockStateLevel(state));
     }
 
     @Override

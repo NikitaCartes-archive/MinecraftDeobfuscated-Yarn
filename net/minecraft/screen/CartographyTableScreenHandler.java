@@ -34,7 +34,7 @@ extends ScreenHandler {
             super.markDirty();
         }
     };
-    private final CraftingResultInventory resultSlot = new CraftingResultInventory(){
+    private final CraftingResultInventory resultInventory = new CraftingResultInventory(){
 
         @Override
         public void markDirty() {
@@ -66,7 +66,7 @@ extends ScreenHandler {
                 return item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE;
             }
         });
-        this.addSlot(new Slot(this.resultSlot, 2, 145, 39){
+        this.addSlot(new Slot(this.resultInventory, 2, 145, 39){
 
             @Override
             public boolean canInsert(ItemStack stack) {
@@ -107,9 +107,9 @@ extends ScreenHandler {
     public void onContentChanged(Inventory inventory) {
         ItemStack itemStack = this.inventory.getStack(0);
         ItemStack itemStack2 = this.inventory.getStack(1);
-        ItemStack itemStack3 = this.resultSlot.getStack(2);
+        ItemStack itemStack3 = this.resultInventory.getStack(2);
         if (!itemStack3.isEmpty() && (itemStack.isEmpty() || itemStack2.isEmpty())) {
-            this.resultSlot.removeStack(2);
+            this.resultInventory.removeStack(2);
         } else if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
             this.updateResult(itemStack, itemStack2, itemStack3);
         }
@@ -138,12 +138,12 @@ extends ScreenHandler {
                 itemStack4.setCount(2);
                 this.sendContentUpdates();
             } else {
-                this.resultSlot.removeStack(2);
+                this.resultInventory.removeStack(2);
                 this.sendContentUpdates();
                 return;
             }
             if (!ItemStack.areEqual(itemStack4, oldResult)) {
-                this.resultSlot.setStack(2, itemStack4);
+                this.resultInventory.setStack(2, itemStack4);
                 this.sendContentUpdates();
             }
         });
@@ -151,7 +151,7 @@ extends ScreenHandler {
 
     @Override
     public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-        return slot.inventory != this.resultSlot && super.canInsertIntoSlot(stack, slot);
+        return slot.inventory != this.resultInventory && super.canInsertIntoSlot(stack, slot);
     }
 
     @Override
@@ -168,7 +168,7 @@ extends ScreenHandler {
                 if (!this.insertItem(itemStack3, 3, 39, true)) {
                     return ItemStack.EMPTY;
                 }
-                slot.onStackChanged(itemStack3, itemStack);
+                slot.onQuickTransfer(itemStack3, itemStack);
             } else if (index == 1 || index == 0 ? !this.insertItem(itemStack3, 3, 39, false) : (item == Items.FILLED_MAP ? !this.insertItem(itemStack3, 0, 1, false) : (item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE ? !this.insertItem(itemStack3, 1, 2, false) : (index >= 3 && index < 30 ? !this.insertItem(itemStack3, 30, 39, false) : index >= 30 && index < 39 && !this.insertItem(itemStack3, 3, 30, false))))) {
                 return ItemStack.EMPTY;
             }
@@ -188,7 +188,7 @@ extends ScreenHandler {
     @Override
     public void close(PlayerEntity player) {
         super.close(player);
-        this.resultSlot.removeStack(2);
+        this.resultInventory.removeStack(2);
         this.context.run((world, blockPos) -> this.dropInventory(player, playerEntity.world, this.inventory));
     }
 }

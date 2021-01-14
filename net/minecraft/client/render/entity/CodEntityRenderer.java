@@ -9,10 +9,10 @@ import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.MobEntityRenderer;
 import net.minecraft.client.render.entity.model.CodEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.passive.CodEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class CodEntityRenderer
@@ -32,10 +32,10 @@ extends MobEntityRenderer<CodEntity, CodEntityModel<CodEntity>> {
     protected void setupTransforms(CodEntity codEntity, MatrixStack matrixStack, float f, float g, float h) {
         super.setupTransforms(codEntity, matrixStack, f, g, h);
         float i = 4.3f * MathHelper.sin(0.6f * f);
-        matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(i));
+        matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(i));
         if (!codEntity.isTouchingWater()) {
             matrixStack.translate(0.1f, 0.1f, -0.1f);
-            matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
+            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
         }
     }
 }

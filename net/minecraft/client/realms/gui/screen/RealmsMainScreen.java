@@ -16,8 +16,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -53,6 +53,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -109,7 +110,7 @@ extends RealmsScreen {
     private static int lastScrollYPosition;
     private static volatile boolean hasParentalConsent;
     private static volatile boolean checkedParentalConsent;
-    private static volatile boolean checkedClientCompatability;
+    private static volatile boolean checkedClientCompatibility;
     private static Screen realmsGenericErrorScreen;
     private static boolean regionsPinged;
     private final RateLimiter rateLimiter;
@@ -140,7 +141,7 @@ extends RealmsScreen {
     private List<KeyCombo> keyCombos;
     private int clicks;
     private ReentrantLock connectLock = new ReentrantLock();
-    private class_5489 field_26466 = class_5489.field_26528;
+    private MultilineText field_26466 = MultilineText.EMPTY;
     private HoverState hoverState;
     private ButtonWidget showPopupButton;
     private ButtonWidget pendingInvitesButton;
@@ -203,10 +204,10 @@ extends RealmsScreen {
             return;
         }
         this.connectLock = new ReentrantLock();
-        if (checkedClientCompatability && !RealmsMainScreen.hasParentalConsent()) {
+        if (checkedClientCompatibility && !RealmsMainScreen.hasParentalConsent()) {
             this.checkParentalConsent();
         }
-        this.checkClientCompatability();
+        this.checkClientCompatibility();
         this.checkUnreadNews();
         if (!this.dontSetConnectedToRealms) {
             this.client.setConnectedToRealms(false);
@@ -225,7 +226,7 @@ extends RealmsScreen {
         }
         this.addChild(this.realmSelectionList);
         this.focusOn(this.realmSelectionList);
-        this.field_26466 = class_5489.method_30890(this.textRenderer, field_26456, 100);
+        this.field_26466 = MultilineText.create(this.textRenderer, (StringVisitable)field_26456, 100);
     }
 
     private static boolean hasParentalConsent() {
@@ -424,9 +425,9 @@ extends RealmsScreen {
         Util.getOperatingSystem().open(string);
     }
 
-    private void checkClientCompatability() {
-        if (!checkedClientCompatability) {
-            checkedClientCompatability = true;
+    private void checkClientCompatibility() {
+        if (!checkedClientCompatibility) {
+            checkedClientCompatibility = true;
             new Thread("MCO Compatability Checker #1"){
 
                 @Override
@@ -446,7 +447,7 @@ extends RealmsScreen {
                         }
                         RealmsMainScreen.this.checkParentalConsent();
                     } catch (RealmsServiceException realmsServiceException) {
-                        checkedClientCompatability = false;
+                        checkedClientCompatibility = false;
                         LOGGER.error("Couldn't connect to realms", (Throwable)realmsServiceException);
                         if (realmsServiceException.httpResultCode == 401) {
                             realmsGenericErrorScreen = new RealmsGenericErrorScreen(new TranslatableText("mco.error.invalid.session.title"), new TranslatableText("mco.error.invalid.session.message"), RealmsMainScreen.this.lastScreen);
@@ -625,7 +626,7 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean charTyped(char chr, int keyCode) {
+    public boolean charTyped(char chr, int modifiers) {
         this.keyCombos.forEach(keyCombo -> keyCombo.keyPressed(chr));
         return true;
     }
@@ -738,7 +739,7 @@ extends RealmsScreen {
                 this.hasSwitchedCarouselImage = false;
             }
         }
-        this.field_26466.method_30896(matrices, this.width / 2 + 52, j + 7, 10, 0x4C4C4C);
+        this.field_26466.draw(matrices, this.width / 2 + 52, j + 7, 10, 0x4C4C4C);
     }
 
     private int popupX0() {
@@ -1296,7 +1297,7 @@ extends RealmsScreen {
                 int j = this.getScrollbarPositionX();
                 int k = (int)Math.floor(mouseY - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
                 int l = k / this.itemHeight;
-                if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getItemCount()) {
+                if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getEntryCount()) {
                     this.itemClicked(k, l, mouseX, mouseY, this.width);
                     RealmsMainScreen.this.clicks = RealmsMainScreen.this.clicks + 7;
                     this.setSelected(l);
@@ -1398,7 +1399,7 @@ extends RealmsScreen {
 
         @Override
         public int getMaxPosition() {
-            return this.getItemCount() * 36;
+            return this.getEntryCount() * 36;
         }
 
         @Override

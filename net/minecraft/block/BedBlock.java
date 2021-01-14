@@ -150,14 +150,14 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == BedBlock.getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
-            if (newState.isOf(this) && newState.get(PART) != state.get(PART)) {
-                return (BlockState)state.with(OCCUPIED, newState.get(OCCUPIED));
+            if (neighborState.isOf(this) && neighborState.get(PART) != state.get(PART)) {
+                return (BlockState)state.with(OCCUPIED, neighborState.get(OCCUPIED));
             }
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     private static Direction getDirectionTowardsOtherPart(BedPart part, Direction direction) {
@@ -223,20 +223,20 @@ implements BlockEntityProvider {
         return blockView.getBlockState(blockPos.down()).getBlock() instanceof BedBlock;
     }
 
-    public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView collisionView, BlockPos pos, float f) {
+    public static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, float f) {
         Direction direction3;
-        Direction direction = collisionView.getBlockState(pos).get(FACING);
+        Direction direction = world.getBlockState(pos).get(FACING);
         Direction direction2 = direction.rotateYClockwise();
         Direction direction4 = direction3 = direction2.method_30928(f) ? direction2.getOpposite() : direction2;
-        if (BedBlock.method_30839(collisionView, pos)) {
-            return BedBlock.method_30835(type, collisionView, pos, direction, direction3);
+        if (BedBlock.method_30839(world, pos)) {
+            return BedBlock.method_30835(type, world, pos, direction, direction3);
         }
         int[][] is = BedBlock.method_30838(direction, direction3);
-        Optional<Vec3d> optional = BedBlock.method_30836(type, collisionView, pos, is, true);
+        Optional<Vec3d> optional = BedBlock.method_30836(type, world, pos, is, true);
         if (optional.isPresent()) {
             return optional;
         }
-        return BedBlock.method_30836(type, collisionView, pos, is, false);
+        return BedBlock.method_30836(type, world, pos, is, false);
     }
 
     private static Optional<Vec3d> method_30835(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, Direction direction, Direction direction2) {

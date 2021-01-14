@@ -33,8 +33,8 @@ extends PlayerEntityModel<T> {
         super(scale, false);
         this.textureWidth = textureWidth;
         this.textureHeight = textureHeight;
-        this.torso = new ModelPart(this, 16, 16);
-        this.torso.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, scale);
+        this.body = new ModelPart(this, 16, 16);
+        this.body.addCuboid(-4.0f, 0.0f, -2.0f, 8.0f, 12.0f, 4.0f, scale);
         this.head = new ModelPart(this);
         this.head.setTextureOffset(0, 0).addCuboid(-5.0f, -8.0f, -4.0f, 10.0f, 8.0f, 8.0f, scale);
         this.head.setTextureOffset(31, 1).addCuboid(-2.0f, -4.0f, -5.0f, 4.0f, 4.0f, 1.0f, scale);
@@ -48,8 +48,8 @@ extends PlayerEntityModel<T> {
         this.leftEar.setPivot(-4.5f, -6.0f, 0.0f);
         this.leftEar.setTextureOffset(39, 6).addCuboid(-1.0f, 0.0f, -2.0f, 1.0f, 5.0f, 4.0f, scale);
         this.head.addChild(this.leftEar);
-        this.helmet = new ModelPart(this);
-        this.field_25634 = this.torso.method_29991();
+        this.hat = new ModelPart(this);
+        this.field_25634 = this.body.method_29991();
         this.field_25635 = this.head.method_29991();
         this.field_25632 = this.leftArm.method_29991();
         this.field_25633 = this.leftArm.method_29991();
@@ -57,10 +57,10 @@ extends PlayerEntityModel<T> {
 
     @Override
     public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {
-        this.torso.copyPositionAndRotation(this.field_25634);
-        this.head.copyPositionAndRotation(this.field_25635);
-        this.leftArm.copyPositionAndRotation(this.field_25632);
-        this.rightArm.copyPositionAndRotation(this.field_25633);
+        this.body.copyTransform(this.field_25634);
+        this.head.copyTransform(this.field_25635);
+        this.leftArm.copyTransform(this.field_25632);
+        this.rightArm.copyTransform(this.field_25633);
         super.setAngles(mobEntity, f, g, h, i, j);
         float k = 0.5235988f;
         float l = h * 0.1f + f * 0.5f;
@@ -80,7 +80,7 @@ extends PlayerEntityModel<T> {
                 this.leftArm.roll = this.rightArm.roll * -1.0f;
                 this.rightArm.pivotY = MathHelper.sin(n * 40.0f) * 0.5f + 1.5f;
                 this.leftArm.pivotY = MathHelper.sin(n * 40.0f) * 0.5f + 1.5f;
-                this.torso.pivotY = MathHelper.sin(n * 40.0f) * 0.35f;
+                this.body.pivotY = MathHelper.sin(n * 40.0f) * 0.35f;
             } else if (piglinActivity == PiglinActivity.ATTACKING_WITH_MELEE_WEAPON && this.handSwingProgress == 0.0f) {
                 this.method_29354(mobEntity);
             } else if (piglinActivity == PiglinActivity.CROSSBOW_HOLD) {
@@ -101,12 +101,12 @@ extends PlayerEntityModel<T> {
         } else if (((Entity)mobEntity).getType() == EntityType.ZOMBIFIED_PIGLIN) {
             CrossbowPosing.method_29352(this.leftArm, this.rightArm, ((MobEntity)mobEntity).isAttacking(), this.handSwingProgress, h);
         }
-        this.leftPantLeg.copyPositionAndRotation(this.leftLeg);
-        this.rightPantLeg.copyPositionAndRotation(this.rightLeg);
-        this.leftSleeve.copyPositionAndRotation(this.leftArm);
-        this.rightSleeve.copyPositionAndRotation(this.rightArm);
-        this.jacket.copyPositionAndRotation(this.torso);
-        this.helmet.copyPositionAndRotation(this.head);
+        this.leftPants.copyTransform(this.leftLeg);
+        this.rightPants.copyTransform(this.rightLeg);
+        this.leftSleeve.copyTransform(this.leftArm);
+        this.rightSleeve.copyTransform(this.rightArm);
+        this.jacket.copyTransform(this.body);
+        this.hat.copyTransform(this.head);
     }
 
     @Override

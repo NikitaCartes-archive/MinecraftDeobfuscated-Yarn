@@ -153,7 +153,7 @@ extends BlockWithEntity {
         }
         if (!world.isClient) {
             if (itemStack.getSubTag("BlockEntityTag") == null) {
-                commandBlockExecutor.shouldTrackOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
+                commandBlockExecutor.setTrackingOutput(world.getGameRules().getBoolean(GameRules.SEND_COMMAND_FEEDBACK));
                 commandBlockBlockEntity.setAuto(this == Blocks.CHAIN_COMMAND_BLOCK);
             }
             if (commandBlockBlockEntity.getCommandBlockType() == CommandBlockBlockEntity.Type.SEQUENCE) {

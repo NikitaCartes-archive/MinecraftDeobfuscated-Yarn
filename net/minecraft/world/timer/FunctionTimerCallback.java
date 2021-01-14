@@ -3,7 +3,7 @@
  */
 package net.minecraft.world.timer;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
@@ -32,18 +32,18 @@ implements TimerCallback<MinecraftServer> {
         }
 
         @Override
-        public void serialize(CompoundTag compoundTag, FunctionTimerCallback functionTimerCallback) {
-            compoundTag.putString("Name", functionTimerCallback.name.toString());
+        public void serialize(NbtCompound nbtCompound, FunctionTimerCallback functionTimerCallback) {
+            nbtCompound.putString("Name", functionTimerCallback.name.toString());
         }
 
         @Override
-        public FunctionTimerCallback deserialize(CompoundTag compoundTag) {
-            Identifier identifier = new Identifier(compoundTag.getString("Name"));
+        public FunctionTimerCallback deserialize(NbtCompound nbtCompound) {
+            Identifier identifier = new Identifier(nbtCompound.getString("Name"));
             return new FunctionTimerCallback(identifier);
         }
 
         @Override
-        public /* synthetic */ TimerCallback deserialize(CompoundTag tag) {
+        public /* synthetic */ TimerCallback deserialize(NbtCompound tag) {
             return this.deserialize(tag);
         }
     }

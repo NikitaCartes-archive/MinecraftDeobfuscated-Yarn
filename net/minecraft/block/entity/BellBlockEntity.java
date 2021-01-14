@@ -79,6 +79,9 @@ implements Tickable {
         this.world.playSound(null, this.getPos(), SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
 
+    /**
+     * Rings the bell in a given direction.
+     */
     public void activate(Direction direction) {
         BlockPos blockPos = this.getPos();
         this.lastSideHit = direction;
@@ -90,6 +93,9 @@ implements Tickable {
         this.world.addSyncedBlockEvent(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
     }
 
+    /**
+     * Makes living entities within 48 blocks remember that they heard a bell at the current world time.
+     */
     private void notifyMemoriesOfBell() {
         BlockPos blockPos = this.getPos();
         if (this.world.getTime() > this.lastRingTime + 60L || this.hearingEntities == null) {
@@ -148,6 +154,9 @@ implements Tickable {
         return entity.isAlive() && !entity.removed && this.getPos().isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
     }
 
+    /**
+     * Gives the {@link net.minecraft.entity.effect.StatusEffects#GLOWING} status effect to the given entity for 3 seconds (60 ticks).
+     */
     private void applyGlowToEntity(LivingEntity entity) {
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
     }

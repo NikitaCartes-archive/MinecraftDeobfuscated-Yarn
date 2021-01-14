@@ -31,9 +31,9 @@ implements Packet<ClientPlayPacketListener> {
         this.centerX = border.getCenterX();
         this.centerZ = border.getCenterZ();
         this.oldSize = border.getSize();
-        this.size = border.getTargetSize();
-        this.interpolationDuration = border.getTargetRemainingTime();
-        this.portalTeleportPosLimit = border.getMaxWorldBorderRadius();
+        this.size = border.getSizeLerpTarget();
+        this.interpolationDuration = border.getSizeLerpTime();
+        this.portalTeleportPosLimit = border.getMaxRadius();
         this.warningBlocks = border.getWarningBlocks();
         this.warningTime = border.getWarningTime();
     }
@@ -146,7 +146,7 @@ implements Packet<ClientPlayPacketListener> {
                 } else {
                     border.setSize(this.size);
                 }
-                border.setMaxWorldBorderRadius(this.portalTeleportPosLimit);
+                border.setMaxRadius(this.portalTeleportPosLimit);
                 border.setWarningBlocks(this.warningBlocks);
                 border.setWarningTime(this.warningTime);
                 break;

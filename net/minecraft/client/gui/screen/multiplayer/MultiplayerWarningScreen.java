@@ -5,7 +5,7 @@ package net.minecraft.client.gui.screen.multiplayer;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -13,6 +13,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.CheckboxWidget;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -26,7 +27,7 @@ extends Screen {
     private static final Text CHECK_MESSAGE = new TranslatableText("multiplayerWarning.check");
     private static final Text PROCEED_TEXT = HEADER.shallowCopy().append("\n").append(MESSAGE);
     private CheckboxWidget checkbox;
-    private class_5489 lines = class_5489.field_26528;
+    private MultilineText lines = MultilineText.EMPTY;
 
     public MultiplayerWarningScreen(Screen parent) {
         super(NarratorManager.EMPTY);
@@ -36,8 +37,8 @@ extends Screen {
     @Override
     protected void init() {
         super.init();
-        this.lines = class_5489.method_30890(this.textRenderer, MESSAGE, this.width - 50);
-        int i = (this.lines.method_30887() + 1) * this.textRenderer.fontHeight * 2;
+        this.lines = MultilineText.create(this.textRenderer, (StringVisitable)MESSAGE, this.width - 50);
+        int i = (this.lines.count() + 1) * this.textRenderer.fontHeight * 2;
         this.addButton(new ButtonWidget(this.width / 2 - 155, 100 + i, 150, 20, ScreenTexts.PROCEED, buttonWidget -> {
             if (this.checkbox.isChecked()) {
                 this.client.options.skipMultiplayerWarning = true;
@@ -59,7 +60,7 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackgroundTexture(0);
         MultiplayerWarningScreen.drawTextWithShadow(matrices, this.textRenderer, HEADER, 25, 30, 0xFFFFFF);
-        this.lines.method_30893(matrices, 25, 70, this.textRenderer.fontHeight * 2, 0xFFFFFF);
+        this.lines.drawWithShadow(matrices, 25, 70, this.textRenderer.fontHeight * 2, 0xFFFFFF);
         super.render(matrices, mouseX, mouseY, delta);
     }
 }

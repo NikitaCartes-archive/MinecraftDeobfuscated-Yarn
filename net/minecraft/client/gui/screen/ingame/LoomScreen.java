@@ -23,8 +23,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.LoomScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
@@ -41,7 +41,7 @@ extends HandledScreen<LoomScreenHandler> {
     private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - BannerPattern.field_24417 - 1 + 4 - 1) / 4;
     private final ModelPart bannerField;
     @Nullable
-    private List<Pair<BannerPattern, DyeColor>> field_21841;
+    private List<Pair<BannerPattern, DyeColor>> bannerPatterns;
     private ItemStack banner = ItemStack.EMPTY;
     private ItemStack dye = ItemStack.EMPTY;
     private ItemStack pattern = ItemStack.EMPTY;
@@ -88,7 +88,7 @@ extends HandledScreen<LoomScreenHandler> {
         int k = (int)(41.0f * this.scrollPosition);
         this.drawTexture(matrices, i + 119, j + 13 + k, 232 + (this.canApplyDyePattern ? 0 : 12), 0, 12, 15);
         DiffuseLighting.disableGuiDepthLighting();
-        if (this.field_21841 != null && !this.hasTooManyPatterns) {
+        if (this.bannerPatterns != null && !this.hasTooManyPatterns) {
             VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
             matrices.push();
             matrices.translate(i + 139, j + 52, 0.0);
@@ -98,7 +98,7 @@ extends HandledScreen<LoomScreenHandler> {
             matrices.scale(0.6666667f, -0.6666667f, -0.6666667f);
             this.bannerField.pitch = 0.0f;
             this.bannerField.pivotY = -32.0f;
-            BannerBlockEntityRenderer.method_29999(matrices, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.field_21841);
+            BannerBlockEntityRenderer.method_29999(matrices, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, this.bannerPatterns);
             matrices.pop();
             immediate.draw();
         } else if (this.hasTooManyPatterns) {
@@ -135,9 +135,9 @@ extends HandledScreen<LoomScreenHandler> {
 
     private void method_22692(int i, int j, int k) {
         ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
-        CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-        ListTag listTag = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[i], DyeColor.WHITE).toTag();
-        compoundTag.put("Patterns", listTag);
+        NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+        NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[i], DyeColor.WHITE).toTag();
+        nbtCompound.put("Patterns", nbtList);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.push();
         matrixStack.translate((float)j + 0.5f, k + 16, 0.0);
@@ -216,14 +216,14 @@ extends HandledScreen<LoomScreenHandler> {
 
     private void onInventoryChanged() {
         ItemStack itemStack = ((LoomScreenHandler)this.handler).getOutputSlot().getStack();
-        this.field_21841 = itemStack.isEmpty() ? null : BannerBlockEntity.method_24280(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListTag(itemStack));
+        this.bannerPatterns = itemStack.isEmpty() ? null : BannerBlockEntity.method_24280(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListTag(itemStack));
         ItemStack itemStack2 = ((LoomScreenHandler)this.handler).getBannerSlot().getStack();
         ItemStack itemStack3 = ((LoomScreenHandler)this.handler).getDyeSlot().getStack();
         ItemStack itemStack4 = ((LoomScreenHandler)this.handler).getPatternSlot().getStack();
-        CompoundTag compoundTag = itemStack2.getOrCreateSubTag("BlockEntityTag");
-        boolean bl = this.hasTooManyPatterns = compoundTag.contains("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+        NbtCompound nbtCompound = itemStack2.getOrCreateSubTag("BlockEntityTag");
+        boolean bl = this.hasTooManyPatterns = nbtCompound.contains("Patterns", 9) && !itemStack2.isEmpty() && nbtCompound.getList("Patterns", 10).size() >= 6;
         if (this.hasTooManyPatterns) {
-            this.field_21841 = null;
+            this.bannerPatterns = null;
         }
         if (!(ItemStack.areEqual(itemStack2, this.banner) && ItemStack.areEqual(itemStack3, this.dye) && ItemStack.areEqual(itemStack4, this.pattern))) {
             this.canApplyDyePattern = !itemStack2.isEmpty() && !itemStack3.isEmpty() && itemStack4.isEmpty() && !this.hasTooManyPatterns;

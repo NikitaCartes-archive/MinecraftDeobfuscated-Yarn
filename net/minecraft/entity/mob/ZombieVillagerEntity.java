@@ -29,9 +29,9 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -57,8 +57,8 @@ implements VillagerDataContainer {
     private static final TrackedData<VillagerData> VILLAGER_DATA = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.VILLAGER_DATA);
     private int conversionTimer;
     private UUID converter;
-    private Tag gossipData;
-    private CompoundTag offerData;
+    private NbtElement gossipData;
+    private NbtCompound offerData;
     private int xp;
 
     public ZombieVillagerEntity(EntityType<? extends ZombieVillagerEntity> entityType, World world) {
@@ -74,40 +74,40 @@ implements VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag2) {
-        super.writeCustomDataToTag(tag2);
-        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("VillagerData", (Tag)tag));
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("VillagerData", (NbtElement)nbtElement));
         if (this.offerData != null) {
-            tag2.put("Offers", this.offerData);
+            nbt.put("Offers", this.offerData);
         }
         if (this.gossipData != null) {
-            tag2.put("Gossips", this.gossipData);
+            nbt.put("Gossips", this.gossipData);
         }
-        tag2.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
+        nbt.putInt("ConversionTime", this.isConverting() ? this.conversionTimer : -1);
         if (this.converter != null) {
-            tag2.putUuid("ConversionPlayer", this.converter);
+            nbt.putUuid("ConversionPlayer", this.converter);
         }
-        tag2.putInt("Xp", this.xp);
+        nbt.putInt("Xp", this.xp);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
-        if (tag.contains("VillagerData", 10)) {
-            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData")));
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("VillagerData", 10)) {
+            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, nbt.get("VillagerData")));
             dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
-        if (tag.contains("Offers", 10)) {
-            this.offerData = tag.getCompound("Offers");
+        if (nbt.contains("Offers", 10)) {
+            this.offerData = nbt.getCompound("Offers");
         }
-        if (tag.contains("Gossips", 10)) {
-            this.gossipData = tag.getList("Gossips", 10);
+        if (nbt.contains("Gossips", 10)) {
+            this.gossipData = nbt.getList("Gossips", 10);
         }
-        if (tag.contains("ConversionTime", 99) && tag.getInt("ConversionTime") > -1) {
-            this.setConverting(tag.containsUuid("ConversionPlayer") ? tag.getUuid("ConversionPlayer") : null, tag.getInt("ConversionTime"));
+        if (nbt.contains("ConversionTime", 99) && nbt.getInt("ConversionTime") > -1) {
+            this.setConverting(nbt.containsUuid("ConversionPlayer") ? nbt.getUuid("ConversionPlayer") : null, nbt.getInt("ConversionTime"));
         }
-        if (tag.contains("Xp", 3)) {
-            this.xp = tag.getInt("Xp");
+        if (nbt.contains("Xp", 3)) {
+            this.xp = nbt.getInt("Xp");
         }
     }
 
@@ -192,7 +192,7 @@ implements VillagerDataContainer {
         }
         villagerEntity.setVillagerData(this.getVillagerData());
         if (this.gossipData != null) {
-            villagerEntity.setGossipDataFromTag(this.gossipData);
+            villagerEntity.readGossipDataNbt(this.gossipData);
         }
         if (this.offerData != null) {
             villagerEntity.setOffers(new TradeOfferList(this.offerData));
@@ -263,19 +263,19 @@ implements VillagerDataContainer {
         return ItemStack.EMPTY;
     }
 
-    public void setOfferData(CompoundTag offerTag) {
+    public void setOfferData(NbtCompound offerTag) {
         this.offerData = offerTag;
     }
 
-    public void setGossipData(Tag gossipTag) {
+    public void setGossipData(NbtElement gossipTag) {
         this.gossipData = gossipTag;
     }
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.method_31081(this.getBlockPos()))));
-        return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        this.setVillagerData(this.getVillagerData().withType(VillagerType.forBiome(world.getBiomeKey(this.getBlockPos()))));
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     public void setVillagerData(VillagerData data) {

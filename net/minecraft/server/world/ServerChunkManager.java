@@ -368,7 +368,7 @@ extends ChunkManager {
             this.world.getProfiler().pop();
             this.world.getProfiler().pop();
         }
-        this.threadedAnvilChunkStorage.tickPlayerMovement();
+        this.threadedAnvilChunkStorage.tickEntityMovement();
     }
 
     private void ifChunkLoaded(long pos, Consumer<WorldChunk> chunkConsumer) {
@@ -438,8 +438,15 @@ extends ChunkManager {
         this.ticketManager.setChunkForced(pos, forced);
     }
 
-    public void updateCameraPosition(ServerPlayerEntity player) {
-        this.threadedAnvilChunkStorage.updateCameraPosition(player);
+    /**
+     * Updates the chunk section position of the {@code player}. This can either be a
+     * result of the player's movement or its camera entity's movement.
+     * 
+     * <p>This updates the section position player's client is currently watching and
+     * the player's position in its entity tracker.
+     */
+    public void updatePosition(ServerPlayerEntity player) {
+        this.threadedAnvilChunkStorage.updatePosition(player);
     }
 
     public void unloadEntity(Entity entity) {
@@ -469,8 +476,8 @@ extends ChunkManager {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public String getChunkLoadingDebugInfo(ChunkPos chunkPos) {
-        return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(chunkPos);
+    public String getChunkLoadingDebugInfo(ChunkPos pos) {
+        return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(pos);
     }
 
     public PersistentStateManager getPersistentStateManager() {

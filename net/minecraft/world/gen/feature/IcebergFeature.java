@@ -202,12 +202,12 @@ extends Feature<SingleStateFeatureConfig> {
         return world.getBlockState(pos.down()).getMaterial() == Material.AIR;
     }
 
-    private void method_13418(WorldAccess world, BlockPos pos, int i, int j, boolean bl, int k) {
-        int l = bl ? k : i / 2;
-        for (int m = -l; m <= l; ++m) {
-            for (int n = -l; n <= l; ++n) {
-                for (int o = 0; o <= j; ++o) {
-                    BlockPos blockPos = pos.add(m, o, n);
+    private void method_13418(WorldAccess world, BlockPos pos, int i, int height, boolean bl, int j) {
+        int k = bl ? j : i / 2;
+        for (int l = -k; l <= k; ++l) {
+            for (int m = -k; m <= k; ++m) {
+                for (int n = 0; n <= height; ++n) {
+                    BlockPos blockPos = pos.add(l, n, m);
                     Block block = world.getBlockState(blockPos).getBlock();
                     if (!this.isSnowyOrIcy(block) && block != Blocks.SNOW) continue;
                     if (this.isAirBelow(world, blockPos)) {
@@ -217,12 +217,12 @@ extends Feature<SingleStateFeatureConfig> {
                     }
                     if (!this.isSnowyOrIcy(block)) continue;
                     Block[] blocks = new Block[]{world.getBlockState(blockPos.west()).getBlock(), world.getBlockState(blockPos.east()).getBlock(), world.getBlockState(blockPos.north()).getBlock(), world.getBlockState(blockPos.south()).getBlock()};
-                    int p = 0;
+                    int o = 0;
                     for (Block block2 : blocks) {
                         if (this.isSnowyOrIcy(block2)) continue;
-                        ++p;
+                        ++o;
                     }
-                    if (p < 3) continue;
+                    if (o < 3) continue;
                     this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
                 }
             }

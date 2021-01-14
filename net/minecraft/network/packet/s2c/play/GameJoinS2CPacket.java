@@ -66,11 +66,11 @@ implements Packet<ClientPlayPacketListener> {
         int i = buf.readVarInt();
         this.dimensionIds = Sets.newHashSet();
         for (int j = 0; j < i; ++j) {
-            this.dimensionIds.add(RegistryKey.of(Registry.DIMENSION, buf.readIdentifier()));
+            this.dimensionIds.add(RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier()));
         }
         this.registryManager = buf.decode(DynamicRegistryManager.Impl.CODEC);
         this.dimensionType = buf.decode(DimensionType.REGISTRY_CODEC).get();
-        this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+        this.dimensionId = RegistryKey.of(Registry.WORLD_KEY, buf.readIdentifier());
         this.sha256Seed = buf.readLong();
         this.maxPlayers = buf.readVarInt();
         this.viewDistance = buf.readVarInt();

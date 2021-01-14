@@ -40,6 +40,12 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a command source used on server side.
+ * 
+ * @see MinecraftServer#getCommandSource()
+ * @see Entity#getCommandSource()
+ */
 public class ServerCommandSource
 implements CommandSource {
     public static final SimpleCommandExceptionType REQUIRES_PLAYER_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("permissions.requires.player"));
@@ -183,6 +189,9 @@ implements CommandSource {
         return this.world;
     }
 
+    /**
+     * Gets the entity from this command source or returns null if this command source is not an entity.
+     */
     @Nullable
     public Entity getEntity() {
         return this.entity;

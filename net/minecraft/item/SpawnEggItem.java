@@ -23,7 +23,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -111,8 +111,8 @@ extends Item {
         return TypedActionResult.consume(itemStack);
     }
 
-    public boolean isOfSameEntityType(@Nullable CompoundTag tag, EntityType<?> type) {
-        return Objects.equals(this.getEntityType(tag), type);
+    public boolean isOfSameEntityType(@Nullable NbtCompound nbt, EntityType<?> type) {
+        return Objects.equals(this.getEntityType(nbt), type);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -130,35 +130,35 @@ extends Item {
         return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
     }
 
-    public EntityType<?> getEntityType(@Nullable CompoundTag tag) {
-        CompoundTag compoundTag;
-        if (tag != null && tag.contains("EntityTag", 10) && (compoundTag = tag.getCompound("EntityTag")).contains("id", 8)) {
-            return EntityType.get(compoundTag.getString("id")).orElse(this.type);
+    public EntityType<?> getEntityType(@Nullable NbtCompound nbt) {
+        NbtCompound nbtCompound;
+        if (nbt != null && nbt.contains("EntityTag", 10) && (nbtCompound = nbt.getCompound("EntityTag")).contains("id", 8)) {
+            return EntityType.get(nbtCompound.getString("id")).orElse(this.type);
         }
         return this.type;
     }
 
-    public Optional<MobEntity> spawnBaby(PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, ServerWorld serverWorld, Vec3d vec3d, ItemStack itemStack) {
-        if (!this.isOfSameEntityType(itemStack.getTag(), entityType)) {
+    public Optional<MobEntity> spawnBaby(PlayerEntity user, MobEntity entity, EntityType<? extends MobEntity> entityType, ServerWorld world, Vec3d pos, ItemStack stack) {
+        if (!this.isOfSameEntityType(stack.getTag(), entityType)) {
             return Optional.empty();
         }
-        MobEntity mobEntity2 = mobEntity instanceof PassiveEntity ? ((PassiveEntity)mobEntity).createChild(serverWorld, (PassiveEntity)mobEntity) : entityType.create(serverWorld);
-        if (mobEntity2 == null) {
+        MobEntity mobEntity = entity instanceof PassiveEntity ? ((PassiveEntity)entity).createChild(world, (PassiveEntity)entity) : entityType.create(world);
+        if (mobEntity == null) {
             return Optional.empty();
         }
-        mobEntity2.setBaby(true);
-        if (!mobEntity2.isBaby()) {
+        mobEntity.setBaby(true);
+        if (!mobEntity.isBaby()) {
             return Optional.empty();
         }
-        mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0f, 0.0f);
-        serverWorld.spawnEntityAndPassengers(mobEntity2);
-        if (itemStack.hasCustomName()) {
-            mobEntity2.setCustomName(itemStack.getName());
+        mobEntity.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0f, 0.0f);
+        world.spawnEntityAndPassengers(mobEntity);
+        if (stack.hasCustomName()) {
+            mobEntity.setCustomName(stack.getName());
         }
         if (!user.abilities.creativeMode) {
-            itemStack.decrement(1);
+            stack.decrement(1);
         }
-        return Optional.of(mobEntity2);
+        return Optional.of(mobEntity);
     }
 }
 

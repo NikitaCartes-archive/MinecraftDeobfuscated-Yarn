@@ -94,7 +94,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.crash.CrashException;
@@ -111,7 +111,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ParticleManager
-implements ResourceReloadListener {
+implements ResourceReloader {
     private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(ParticleTextureSheet.TERRAIN_SHEET, ParticleTextureSheet.PARTICLE_SHEET_OPAQUE, ParticleTextureSheet.PARTICLE_SHEET_LIT, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT, ParticleTextureSheet.CUSTOM);
     protected ClientWorld world;
     private final Map<ParticleTextureSheet, Queue<Particle>> particles = Maps.newIdentityHashMap();
@@ -209,14 +209,14 @@ implements ResourceReloadListener {
         this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), (ParticleFactory<?>)factory);
     }
 
-    private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, SpriteAwareFactory<T> spriteAwareFactory) {
+    private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, SpriteAwareFactory<T> factory) {
         SimpleSpriteProvider simpleSpriteProvider = new SimpleSpriteProvider();
-        this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(particleType), simpleSpriteProvider);
-        this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), (ParticleFactory<?>)spriteAwareFactory.create(simpleSpriteProvider));
+        this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(type), simpleSpriteProvider);
+        this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), (ParticleFactory<?>)factory.create(simpleSpriteProvider));
     }
 
     @Override
-    public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
+    public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         ConcurrentMap map = Maps.newConcurrentMap();
         CompletableFuture[] completableFutures = (CompletableFuture[])Registry.PARTICLE_TYPE.getIds().stream().map(identifier -> CompletableFuture.runAsync(() -> this.loadTextureList(manager, (Identifier)identifier, map), prepareExecutor)).toArray(CompletableFuture[]::new);
         return ((CompletableFuture)((CompletableFuture)CompletableFuture.allOf(completableFutures).thenApplyAsync(void_ -> {
@@ -322,9 +322,14 @@ implements ResourceReloadListener {
         }
     }
 
-    private void tickParticles(Collection<Particle> collection) {
-        if (!collection.isEmpty()) {
-            Iterator<Particle> iterator = collection.iterator();
+    /**
+     * Ticks all particles belonging to the same texture sheet.
+     * 
+     * @param particles a collection of particles from the same sheet
+     */
+    private void tickParticles(Collection<Particle> particles) {
+        if (!particles.isEmpty()) {
+            Iterator<Particle> iterator = particles.iterator();
             while (iterator.hasNext()) {
                 Particle particle = iterator.next();
                 this.tickParticle(particle);
@@ -346,14 +351,14 @@ implements ResourceReloadListener {
         }
     }
 
-    public void renderParticles(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f) {
+    public void renderParticles(MatrixStack matrices, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f) {
         lightmapTextureManager.enable();
         RenderSystem.enableAlphaTest();
         RenderSystem.defaultAlphaFunc();
         RenderSystem.enableDepthTest();
         RenderSystem.enableFog();
         RenderSystem.pushMatrix();
-        RenderSystem.multMatrix(matrixStack.peek().getModel());
+        RenderSystem.multMatrix(matrices.peek().getModel());
         for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
             Iterable iterable = this.particles.get(particleTextureSheet);
             if (iterable == null) continue;

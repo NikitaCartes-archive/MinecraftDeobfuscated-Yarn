@@ -102,14 +102,14 @@ public class PointOfInterestType {
         return PointOfInterestType.setup(Registry.register(Registry.POINT_OF_INTEREST_TYPE, new Identifier(id), new PointOfInterestType(id, workStationStates, ticketCount, completionCondition, searchDistance)));
     }
 
-    private static PointOfInterestType setup(PointOfInterestType pointOfInterestType) {
-        pointOfInterestType.blockStates.forEach(blockState -> {
-            PointOfInterestType pointOfInterestType2 = BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put((BlockState)blockState, pointOfInterestType);
+    private static PointOfInterestType setup(PointOfInterestType poiType) {
+        poiType.blockStates.forEach(blockState -> {
+            PointOfInterestType pointOfInterestType2 = BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE.put((BlockState)blockState, poiType);
             if (pointOfInterestType2 != null) {
                 throw Util.throwOrPause(new IllegalStateException(String.format("%s is defined in too many tags", blockState)));
             }
         });
-        return pointOfInterestType;
+        return poiType;
     }
 
     public static Optional<PointOfInterestType> from(BlockState state) {

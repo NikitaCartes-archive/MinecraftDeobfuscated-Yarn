@@ -33,7 +33,7 @@ extends RealmsScreen {
     private final RealmsConfigureWorldScreen configureScreen;
     private final Screen parent;
     @Nullable
-    private Text errorMsg;
+    private Text errorMessage;
 
     public RealmsInviteScreen(RealmsConfigureWorldScreen configureScreen, Screen parent, RealmsServer serverData) {
         this.configureScreen = configureScreen;
@@ -81,9 +81,9 @@ extends RealmsScreen {
         }
     }
 
-    private void showError(Text text) {
-        this.errorMsg = text;
-        Realms.narrateNow(text.getString());
+    private void showError(Text errorMessage) {
+        this.errorMessage = errorMessage;
+        Realms.narrateNow(errorMessage.getString());
     }
 
     @Override
@@ -99,8 +99,8 @@ extends RealmsScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.textRenderer.draw(matrices, field_26489, (float)(this.width / 2 - 100), (float)RealmsInviteScreen.row(1), 0xA0A0A0);
-        if (this.errorMsg != null) {
-            RealmsInviteScreen.drawCenteredText(matrices, this.textRenderer, this.errorMsg, this.width / 2, RealmsInviteScreen.row(5), 0xFF0000);
+        if (this.errorMessage != null) {
+            RealmsInviteScreen.drawCenteredText(matrices, this.textRenderer, this.errorMessage, this.width / 2, RealmsInviteScreen.row(5), 0xFF0000);
         }
         this.field_22696.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);

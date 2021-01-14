@@ -21,7 +21,7 @@ extends AnimalModel<T> {
     protected final ModelPart upperTail;
     protected final ModelPart lowerTail;
     protected final ModelPart head = new ModelPart(this);
-    protected final ModelPart torso;
+    protected final ModelPart body;
     protected int animationState = 1;
 
     public OcelotEntityModel(float scale) {
@@ -31,9 +31,9 @@ extends AnimalModel<T> {
         this.head.addCuboid("ear1", -2.0f, -3.0f, 0.0f, 1, 1, 2, scale, 0, 10);
         this.head.addCuboid("ear2", 1.0f, -3.0f, 0.0f, 1, 1, 2, scale, 6, 10);
         this.head.setPivot(0.0f, 15.0f, -9.0f);
-        this.torso = new ModelPart(this, 20, 0);
-        this.torso.addCuboid(-2.0f, 3.0f, -8.0f, 4.0f, 16.0f, 6.0f, scale);
-        this.torso.setPivot(0.0f, 12.0f, -10.0f);
+        this.body = new ModelPart(this, 20, 0);
+        this.body.addCuboid(-2.0f, 3.0f, -8.0f, 4.0f, 16.0f, 6.0f, scale);
+        this.body.setPivot(0.0f, 12.0f, -10.0f);
         this.upperTail = new ModelPart(this, 0, 15);
         this.upperTail.addCuboid(-0.5f, 0.0f, 0.0f, 1.0f, 8.0f, 1.0f, scale);
         this.upperTail.pitch = 0.9f;
@@ -62,7 +62,7 @@ extends AnimalModel<T> {
 
     @Override
     protected Iterable<ModelPart> getBodyParts() {
-        return ImmutableList.of(this.torso, this.leftBackLeg, this.rightBackLeg, this.leftFrontLeg, this.rightFrontLeg, this.upperTail, this.lowerTail);
+        return ImmutableList.of(this.body, this.leftBackLeg, this.rightBackLeg, this.leftFrontLeg, this.rightFrontLeg, this.upperTail, this.lowerTail);
     }
 
     @Override
@@ -70,7 +70,7 @@ extends AnimalModel<T> {
         this.head.pitch = headPitch * ((float)Math.PI / 180);
         this.head.yaw = headYaw * ((float)Math.PI / 180);
         if (this.animationState != 3) {
-            this.torso.pitch = 1.5707964f;
+            this.body.pitch = 1.5707964f;
             if (this.animationState == 2) {
                 this.leftBackLeg.pitch = MathHelper.cos(limbAngle * 0.6662f) * limbDistance;
                 this.rightBackLeg.pitch = MathHelper.cos(limbAngle * 0.6662f + 0.3f) * limbDistance;
@@ -89,8 +89,8 @@ extends AnimalModel<T> {
 
     @Override
     public void animateModel(T entity, float limbAngle, float limbDistance, float tickDelta) {
-        this.torso.pivotY = 12.0f;
-        this.torso.pivotZ = -10.0f;
+        this.body.pivotY = 12.0f;
+        this.body.pivotZ = -10.0f;
         this.head.pivotY = 15.0f;
         this.head.pivotZ = -9.0f;
         this.upperTail.pivotY = 15.0f;
@@ -107,7 +107,7 @@ extends AnimalModel<T> {
         this.rightBackLeg.pivotZ = 5.0f;
         this.upperTail.pitch = 0.9f;
         if (((Entity)entity).isInSneakingPose()) {
-            this.torso.pivotY += 1.0f;
+            this.body.pivotY += 1.0f;
             this.head.pivotY += 2.0f;
             this.upperTail.pivotY += 1.0f;
             this.lowerTail.pivotY += -4.0f;

@@ -29,9 +29,9 @@ extends QuadrupedEntityModel<T> {
         this.head.setTextureOffset(45, 16).addCuboid(-3.5f, 0.0f, -6.0f, 7.0f, 5.0f, 2.0f);
         this.head.setTextureOffset(52, 25).addCuboid(-8.5f, -8.0f, -1.0f, 5.0f, 4.0f, 1.0f);
         this.head.setTextureOffset(52, 25).addCuboid(3.5f, -8.0f, -1.0f, 5.0f, 4.0f, 1.0f);
-        this.torso = new ModelPart(this, 0, 25);
-        this.torso.addCuboid(-9.5f, -13.0f, -6.5f, 19.0f, 26.0f, 13.0f);
-        this.torso.setPivot(0.0f, 10.0f, 0.0f);
+        this.body = new ModelPart(this, 0, 25);
+        this.body.addCuboid(-9.5f, -13.0f, -6.5f, 19.0f, 26.0f, 13.0f);
+        this.body.setPivot(0.0f, 10.0f, 0.0f);
         int i = 9;
         int j = 6;
         this.backRightLeg = new ModelPart(this, 40, 0);
@@ -81,7 +81,7 @@ extends QuadrupedEntityModel<T> {
             }
         }
         if (this.scaredAnimationProgress > 0.0f) {
-            this.torso.pitch = ModelUtil.interpolateAngle(this.torso.pitch, 1.7407963f, this.scaredAnimationProgress);
+            this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 1.7407963f, this.scaredAnimationProgress);
             this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, 1.5707964f, this.scaredAnimationProgress);
             this.frontRightLeg.roll = -0.27079642f;
             this.frontLeftLeg.roll = 0.27079642f;

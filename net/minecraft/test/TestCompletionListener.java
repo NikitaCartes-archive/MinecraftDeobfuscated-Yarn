@@ -3,9 +3,9 @@
  */
 package net.minecraft.test;
 
-import net.minecraft.test.GameTest;
+import net.minecraft.test.GameTestState;
 
 public interface TestCompletionListener {
-    public void onTestFailed(GameTest var1);
+    public void onTestFailed(GameTestState var1);
 }
 

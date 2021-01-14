@@ -57,9 +57,9 @@ public class Bootstrap {
         Bootstrap.setOutputStreams();
     }
 
-    private static <T> void collectMissingTranslations(Iterable<T> iterable, Function<T, String> keyExtractor, Set<String> translationKeys) {
+    private static <T> void collectMissingTranslations(Iterable<T> registry, Function<T, String> keyExtractor, Set<String> translationKeys) {
         Language language = Language.getInstance();
-        iterable.forEach(object -> {
+        registry.forEach(object -> {
             String string = (String)keyExtractor.apply(object);
             if (!language.hasTranslation(string)) {
                 translationKeys.add(string);

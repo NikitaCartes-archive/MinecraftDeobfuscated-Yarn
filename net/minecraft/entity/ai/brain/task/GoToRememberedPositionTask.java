@@ -51,17 +51,17 @@ extends Task<PathAwareEntity> {
         return this.posRetriever.apply(entity.getBrain().getOptionalMemory(this.entityMemory).get());
     }
 
-    private boolean isWalkTargetPresentAndFar(PathAwareEntity pathAwareEntity) {
+    private boolean isWalkTargetPresentAndFar(PathAwareEntity entity) {
         Vec3d vec3d2;
-        if (!pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
+        if (!entity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
             return false;
         }
-        WalkTarget walkTarget = pathAwareEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+        WalkTarget walkTarget = entity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
         if (walkTarget.getSpeed() != this.speed) {
             return false;
         }
-        Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(pathAwareEntity.getPos());
-        return vec3d.dotProduct(vec3d2 = this.getPos(pathAwareEntity).subtract(pathAwareEntity.getPos())) < 0.0;
+        Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(entity.getPos());
+        return vec3d.dotProduct(vec3d2 = this.getPos(entity).subtract(entity.getPos())) < 0.0;
     }
 
     @Override

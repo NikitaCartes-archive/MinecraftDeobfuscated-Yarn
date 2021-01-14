@@ -26,8 +26,8 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.LightmapCoordinatesRetriever;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
@@ -94,7 +94,7 @@ extends BlockEntityRenderer<T> {
         matrices.push();
         float f = blockState.get(ChestBlock.FACING).asRotation();
         matrices.translate(0.5, 0.5, 0.5);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-f));
         matrices.translate(-0.5, -0.5, -0.5);
         DoubleBlockProperties.PropertySource<Object> propertySource = bl ? abstractChestBlock.getBlockEntitySource(blockState, world, ((BlockEntity)entity).getPos(), true) : DoubleBlockProperties.PropertyRetriever::getFallback;
         float g = propertySource.apply(ChestBlock.getAnimationProgressRetriever((ChestAnimationProgress)entity)).get(tickDelta);

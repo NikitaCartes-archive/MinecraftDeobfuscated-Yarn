@@ -18,8 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
@@ -27,7 +25,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vector4f;
 import org.jetbrains.annotations.Nullable;
 
 public enum Direction implements StringIdentifiable
@@ -116,27 +116,27 @@ public enum Direction implements StringIdentifiable
 
     @Environment(value=EnvType.CLIENT)
     public Quaternion getRotationQuaternion() {
-        Quaternion quaternion = Vector3f.POSITIVE_X.getDegreesQuaternion(90.0f);
+        Quaternion quaternion = Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f);
         switch (this) {
             case DOWN: {
-                return Vector3f.POSITIVE_X.getDegreesQuaternion(180.0f);
+                return Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f);
             }
             case UP: {
                 return Quaternion.IDENTITY.copy();
             }
             case NORTH: {
-                quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
+                quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0f));
                 return quaternion;
             }
             case SOUTH: {
                 return quaternion;
             }
             case WEST: {
-                quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
+                quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0f));
                 return quaternion;
             }
         }
-        quaternion.hamiltonProduct(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0f));
+        quaternion.hamiltonProduct(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0f));
         return quaternion;
     }
 
@@ -205,8 +205,8 @@ public enum Direction implements StringIdentifiable
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Vector3f getUnitVector() {
-        return new Vector3f(this.getOffsetX(), this.getOffsetY(), this.getOffsetZ());
+    public Vec3f getUnitVector() {
+        return new Vec3f(this.getOffsetX(), this.getOffsetY(), this.getOffsetZ());
     }
 
     public String getName() {

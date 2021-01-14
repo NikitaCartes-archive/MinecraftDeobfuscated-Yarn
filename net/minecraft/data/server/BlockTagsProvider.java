@@ -109,8 +109,8 @@ extends AbstractTagProvider<Block> {
     }
 
     @Override
-    protected Path getOutput(Identifier identifier) {
-        return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/blocks/" + identifier.getPath() + ".json");
+    protected Path getOutput(Identifier id) {
+        return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/blocks/" + id.getPath() + ".json");
     }
 
     @Override

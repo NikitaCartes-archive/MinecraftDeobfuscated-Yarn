@@ -9,7 +9,7 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.ThrowableDeliverer;
 import net.minecraft.util.math.ChunkPos;
@@ -46,22 +46,22 @@ implements AutoCloseable {
     }
 
     @Nullable
-    public CompoundTag getTagAt(ChunkPos pos) throws IOException {
+    public NbtCompound getTagAt(ChunkPos pos) throws IOException {
         RegionFile regionFile = this.getRegionFile(pos);
         try (DataInputStream dataInputStream = regionFile.getChunkInputStream(pos);){
             if (dataInputStream == null) {
-                CompoundTag compoundTag = null;
-                return compoundTag;
+                NbtCompound nbtCompound = null;
+                return nbtCompound;
             }
-            CompoundTag compoundTag = NbtIo.read(dataInputStream);
-            return compoundTag;
+            NbtCompound nbtCompound = NbtIo.read(dataInputStream);
+            return nbtCompound;
         }
     }
 
-    protected void write(ChunkPos pos, CompoundTag tag) throws IOException {
+    protected void write(ChunkPos pos, NbtCompound nbt) throws IOException {
         RegionFile regionFile = this.getRegionFile(pos);
         try (DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(pos);){
-            NbtIo.write(tag, (DataOutput)dataOutputStream);
+            NbtIo.write(nbt, (DataOutput)dataOutputStream);
         }
     }
 

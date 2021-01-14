@@ -12,7 +12,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.MaterialColor;
+import net.minecraft.block.MapColor;
 import net.minecraft.block.RedstoneWireBlock;
 import net.minecraft.block.StemBlock;
 import net.minecraft.block.TallPlantBlock;
@@ -94,8 +94,8 @@ public class BlockColors {
         if (blockColorProvider != null) {
             return blockColorProvider.getColor(state, null, null, 0);
         }
-        MaterialColor materialColor = state.getTopMaterialColor(world, pos);
-        return materialColor != null ? materialColor.color : -1;
+        MapColor mapColor = state.getTopMaterialColor(world, pos);
+        return mapColor != null ? mapColor.color : -1;
     }
 
     public int getColor(BlockState state, @Nullable BlockRenderView world, @Nullable BlockPos pos, int tint) {

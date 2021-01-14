@@ -33,10 +33,10 @@ public class ModelOverrideList {
         this.models = Collections.emptyList();
     }
 
-    public ModelOverrideList(ModelLoader modelLoader, JsonUnbakedModel unbakedModel, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides) {
+    public ModelOverrideList(ModelLoader modelLoader, JsonUnbakedModel parent, Function<Identifier, UnbakedModel> unbakedModelGetter, List<ModelOverride> overrides) {
         this.models = overrides.stream().map(modelOverride -> {
             UnbakedModel unbakedModel = (UnbakedModel)unbakedModelGetter.apply(modelOverride.getModelId());
-            if (Objects.equals(unbakedModel, unbakedModel)) {
+            if (Objects.equals(unbakedModel, parent)) {
                 return null;
             }
             return modelLoader.bake(modelOverride.getModelId(), ModelRotation.X0_Y0);

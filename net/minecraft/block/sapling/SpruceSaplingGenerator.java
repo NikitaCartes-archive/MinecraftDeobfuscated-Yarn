@@ -14,7 +14,7 @@ public class SpruceSaplingGenerator
 extends LargeTreeSaplingGenerator {
     @Override
     @Nullable
-    protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl) {
+    protected ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bees) {
         return ConfiguredFeatures.SPRUCE;
     }
 

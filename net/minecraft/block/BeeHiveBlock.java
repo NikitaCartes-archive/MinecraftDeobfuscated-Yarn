@@ -34,7 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -236,7 +236,7 @@ extends BlockWithEntity {
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockEntity blockEntity;
         if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
-            CompoundTag compoundTag;
+            NbtCompound nbtCompound;
             boolean bl;
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
             ItemStack itemStack = new ItemStack(this);
@@ -246,13 +246,13 @@ extends BlockWithEntity {
                 return;
             }
             if (bl) {
-                compoundTag = new CompoundTag();
-                compoundTag.put("Bees", beehiveBlockEntity.getBees());
-                itemStack.putSubTag("BlockEntityTag", compoundTag);
+                nbtCompound = new NbtCompound();
+                nbtCompound.put("Bees", beehiveBlockEntity.getBees());
+                itemStack.putSubTag("BlockEntityTag", nbtCompound);
             }
-            compoundTag = new CompoundTag();
-            compoundTag.putInt("honey_level", i);
-            itemStack.putSubTag("BlockStateTag", compoundTag);
+            nbtCompound = new NbtCompound();
+            nbtCompound.putInt("honey_level", i);
+            itemStack.putSubTag("BlockStateTag", nbtCompound);
             ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), itemStack);
             itemEntity.setToDefaultPickupDelay();
             world.spawnEntity(itemEntity);
@@ -272,13 +272,13 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         BlockEntity blockEntity;
-        if (world.getBlockState(posFrom).getBlock() instanceof FireBlock && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
+        if (world.getBlockState(neighborPos).getBlock() instanceof FireBlock && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
             beehiveBlockEntity.angerBees(null, state, BeehiveBlockEntity.BeeState.EMERGENCY);
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     public static Direction getRandomGenerationDirection(Random random) {

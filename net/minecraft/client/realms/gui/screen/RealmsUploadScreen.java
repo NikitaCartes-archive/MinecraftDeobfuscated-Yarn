@@ -71,7 +71,7 @@ extends RealmsScreen {
     private int animTick;
     private Long previousWrittenBytes;
     private Long previousTimeSnapshot;
-    private long bytesPersSecond;
+    private long bytesPerSecond;
     private final Runnable field_22728;
 
     public RealmsUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, LevelSummary levelSummary, Runnable runnable) {
@@ -155,12 +155,12 @@ extends RealmsScreen {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private void drawDots(MatrixStack matrixStack) {
+    private void drawDots(MatrixStack matrices) {
         int i = this.textRenderer.getWidth(this.status);
-        this.textRenderer.draw(matrixStack, DOTS[this.animTick / 10 % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0f, 0xFFFFFF);
+        this.textRenderer.draw(matrices, DOTS[this.animTick / 10 % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0f, 0xFFFFFF);
     }
 
-    private void drawProgressBar(MatrixStack matrixStack) {
+    private void drawProgressBar(MatrixStack matrices) {
         double d = Math.min((double)this.uploadStatus.bytesWritten / (double)this.uploadStatus.totalBytes, 1.0);
         this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
@@ -180,31 +180,31 @@ extends RealmsScreen {
         bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
         tessellator.draw();
         RenderSystem.enableTexture();
-        RealmsUploadScreen.drawCenteredString(matrixStack, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
+        RealmsUploadScreen.drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 0xFFFFFF);
     }
 
-    private void drawUploadSpeed(MatrixStack matrixStack) {
+    private void drawUploadSpeed(MatrixStack matrices) {
         if (this.animTick % 20 == 0) {
             if (this.previousWrittenBytes != null) {
                 long l = Util.getMeasuringTimeMs() - this.previousTimeSnapshot;
                 if (l == 0L) {
                     l = 1L;
                 }
-                this.bytesPersSecond = 1000L * (this.uploadStatus.bytesWritten - this.previousWrittenBytes) / l;
-                this.drawUploadSpeed0(matrixStack, this.bytesPersSecond);
+                this.bytesPerSecond = 1000L * (this.uploadStatus.bytesWritten - this.previousWrittenBytes) / l;
+                this.drawUploadSpeed0(matrices, this.bytesPerSecond);
             }
             this.previousWrittenBytes = this.uploadStatus.bytesWritten;
             this.previousTimeSnapshot = Util.getMeasuringTimeMs();
         } else {
-            this.drawUploadSpeed0(matrixStack, this.bytesPersSecond);
+            this.drawUploadSpeed0(matrices, this.bytesPerSecond);
         }
     }
 
-    private void drawUploadSpeed0(MatrixStack matrixStack, long l) {
+    private void drawUploadSpeed0(MatrixStack matrices, long l) {
         if (l > 0L) {
             int i = this.textRenderer.getWidth(this.progress);
             String string = "(" + SizeUnit.getUserFriendlyString(l) + "/s)";
-            this.textRenderer.draw(matrixStack, string, (float)(this.width / 2 + i / 2 + 15), 84.0f, 0xFFFFFF);
+            this.textRenderer.draw(matrices, string, (float)(this.width / 2 + i / 2 + 15), 84.0f, 0xFFFFFF);
         }
     }
 

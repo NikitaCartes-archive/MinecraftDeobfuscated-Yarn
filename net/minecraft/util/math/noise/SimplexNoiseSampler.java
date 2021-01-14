@@ -7,7 +7,7 @@ import java.util.Random;
 import net.minecraft.util.math.MathHelper;
 
 public class SimplexNoiseSampler {
-    protected static final int[][] gradients = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}};
+    protected static final int[][] GRADIENTS = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}};
     private static final double SQRT_3 = Math.sqrt(3.0);
     private static final double SKEW_FACTOR_2D = 0.5 * (SQRT_3 - 1.0);
     private static final double UNSKEW_FACTOR_2D = (3.0 - SQRT_3) / 6.0;
@@ -40,16 +40,16 @@ public class SimplexNoiseSampler {
         return (double)gArr[0] * x + (double)gArr[1] * y + (double)gArr[2] * z;
     }
 
-    private double grad(int hash, double x, double y, double z, double d) {
-        double f;
-        double e = d - x * x - y * y - z * z;
-        if (e < 0.0) {
-            f = 0.0;
+    private double grad(int hash, double x, double y, double z, double distance) {
+        double e;
+        double d = distance - x * x - y * y - z * z;
+        if (d < 0.0) {
+            e = 0.0;
         } else {
-            e *= e;
-            f = e * e * SimplexNoiseSampler.dot(gradients[hash], x, y, z);
+            d *= d;
+            e = d * d * SimplexNoiseSampler.dot(GRADIENTS[hash], x, y, z);
         }
-        return f;
+        return e;
     }
 
     public double sample(double x, double y) {

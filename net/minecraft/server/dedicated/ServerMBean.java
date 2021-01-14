@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
  * A dynamic management object for a Minecraft Server.
  * 
  * <p>It exposes the average tick time and the historical tick times of the
- * Minecraft Server.</p>
+ * Minecraft Server.
  * 
  * @see javax.management.DynamicMBean
  */

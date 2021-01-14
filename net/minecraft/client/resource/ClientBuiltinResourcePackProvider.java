@@ -67,17 +67,17 @@ implements ResourcePackProvider {
     }
 
     @Override
-    public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
+    public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
         ResourcePackProfile resourcePackProfile2;
         ResourcePackProfile resourcePackProfile = ResourcePackProfile.of("vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN);
         if (resourcePackProfile != null) {
-            consumer.accept(resourcePackProfile);
+            profileAdder.accept(resourcePackProfile);
         }
         if (this.serverContainer != null) {
-            consumer.accept(this.serverContainer);
+            profileAdder.accept(this.serverContainer);
         }
         if ((resourcePackProfile2 = this.method_25454(factory)) != null) {
-            consumer.accept(resourcePackProfile2);
+            profileAdder.accept(resourcePackProfile2);
         }
     }
 
@@ -115,7 +115,7 @@ implements ResourcePackProvider {
                 Map<String, String> map = ClientBuiltinResourcePackProvider.getDownloadHeaders();
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
-                completableFuture = NetworkUtils.download(file, string, map, 0x6400000, progressScreen, minecraftClient.getNetworkProxy());
+                completableFuture = NetworkUtils.downloadResourcePack(file, string, map, 0x6400000, progressScreen, minecraftClient.getNetworkProxy());
             }
             CompletableFuture<?> completableFuture2 = this.downloadTask = ((CompletableFuture)completableFuture.thenCompose(object -> {
                 if (!this.verifyFile(string4, file)) {
@@ -194,7 +194,7 @@ implements ResourcePackProvider {
         }
     }
 
-    public CompletableFuture<Void> loadServerPack(File packZip, ResourcePackSource resourcePackSource) {
+    public CompletableFuture<Void> loadServerPack(File packZip, ResourcePackSource packSource) {
         PackResourceMetadata packResourceMetadata;
         try (ZipResourcePack zipResourcePack = new ZipResourcePack(packZip);){
             packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
@@ -202,7 +202,7 @@ implements ResourcePackProvider {
             return Util.completeExceptionally(new IOException(String.format("Invalid resourcepack at %s", packZip), iOException));
         }
         LOGGER.info("Applying server pack {}", (Object)packZip);
-        this.serverContainer = new ResourcePackProfile("server", true, () -> new ZipResourcePack(packZip), new TranslatableText("resourcePack.server.name"), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), ResourcePackProfile.InsertionPosition.TOP, true, resourcePackSource);
+        this.serverContainer = new ResourcePackProfile("server", true, () -> new ZipResourcePack(packZip), new TranslatableText("resourcePack.server.name"), packResourceMetadata.getDescription(), ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()), ResourcePackProfile.InsertionPosition.TOP, true, packSource);
         return MinecraftClient.getInstance().reloadResourcesConcurrently();
     }
 

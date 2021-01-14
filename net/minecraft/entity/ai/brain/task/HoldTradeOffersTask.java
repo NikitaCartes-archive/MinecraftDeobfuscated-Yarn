@@ -102,7 +102,7 @@ extends Task<VillagerEntity> {
     private void loadPossibleOffers(VillagerEntity villager) {
         for (TradeOffer tradeOffer : villager.getOffers()) {
             if (tradeOffer.isDisabled() || !this.isPossible(tradeOffer)) continue;
-            this.offers.add(tradeOffer.getMutableSellItem());
+            this.offers.add(tradeOffer.getSellItem());
         }
     }
 

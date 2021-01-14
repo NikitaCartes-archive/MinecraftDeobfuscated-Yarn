@@ -125,10 +125,10 @@ implements ResourcePack {
         return set;
     }
 
-    private static void getIdentifiers(Collection<Identifier> collection, int maxDepth, String namespace, Path path3, String searchLocation, Predicate<String> predicate) throws IOException {
-        Path path22 = path3.resolve(namespace);
-        try (Stream<Path> stream = Files.walk(path22.resolve(searchLocation), maxDepth, new FileVisitOption[0]);){
-            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0]) && predicate.test(path.getFileName().toString())).map(path2 -> new Identifier(namespace, path22.relativize((Path)path2).toString().replaceAll("\\\\", "/"))).forEach(collection::add);
+    private static void getIdentifiers(Collection<Identifier> results, int maxDepth, String namespace, Path root, String prefix, Predicate<String> pathFilter) throws IOException {
+        Path path3 = root.resolve(namespace);
+        try (Stream<Path> stream = Files.walk(path3.resolve(prefix), maxDepth, new FileVisitOption[0]);){
+            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0]) && pathFilter.test(path.getFileName().toString())).map(path2 -> new Identifier(namespace, path3.relativize((Path)path2).toString().replaceAll("\\\\", "/"))).forEach(results::add);
         }
     }
 

@@ -16,16 +16,16 @@ public class SnowGolemEntityModel<T extends Entity>
 extends CompositeEntityModel<T> {
     private final ModelPart middleSnowball;
     private final ModelPart bottomSnowball;
-    private final ModelPart topSnowball;
+    private final ModelPart head;
     private final ModelPart leftArm;
     private final ModelPart rightArm;
 
     public SnowGolemEntityModel() {
         float f = 4.0f;
         float g = 0.0f;
-        this.topSnowball = new ModelPart(this, 0, 0).setTextureSize(64, 64);
-        this.topSnowball.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, -0.5f);
-        this.topSnowball.setPivot(0.0f, 4.0f, 0.0f);
+        this.head = new ModelPart(this, 0, 0).setTextureSize(64, 64);
+        this.head.addCuboid(-4.0f, -8.0f, -4.0f, 8.0f, 8.0f, 8.0f, -0.5f);
+        this.head.setPivot(0.0f, 4.0f, 0.0f);
         this.leftArm = new ModelPart(this, 32, 0).setTextureSize(64, 64);
         this.leftArm.addCuboid(-1.0f, 0.0f, -1.0f, 12.0f, 2.0f, 2.0f, -0.5f);
         this.leftArm.setPivot(0.0f, 6.0f, 0.0f);
@@ -42,8 +42,8 @@ extends CompositeEntityModel<T> {
 
     @Override
     public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        this.topSnowball.yaw = headYaw * ((float)Math.PI / 180);
-        this.topSnowball.pitch = headPitch * ((float)Math.PI / 180);
+        this.head.yaw = headYaw * ((float)Math.PI / 180);
+        this.head.pitch = headPitch * ((float)Math.PI / 180);
         this.middleSnowball.yaw = headYaw * ((float)Math.PI / 180) * 0.25f;
         float f = MathHelper.sin(this.middleSnowball.yaw);
         float g = MathHelper.cos(this.middleSnowball.yaw);
@@ -59,11 +59,11 @@ extends CompositeEntityModel<T> {
 
     @Override
     public Iterable<ModelPart> getParts() {
-        return ImmutableList.of(this.middleSnowball, this.bottomSnowball, this.topSnowball, this.leftArm, this.rightArm);
+        return ImmutableList.of(this.middleSnowball, this.bottomSnowball, this.head, this.leftArm, this.rightArm);
     }
 
     public ModelPart getTopSnowball() {
-        return this.topSnowball;
+        return this.head;
     }
 }
 

@@ -32,13 +32,13 @@ extends ProjectileEntity {
     public LlamaSpitEntity(World world, LlamaEntity owner) {
         this((EntityType<? extends LlamaSpitEntity>)EntityType.LLAMA_SPIT, world);
         super.setOwner(owner);
-        this.updatePosition(owner.getX() - (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(owner.bodyYaw * ((float)Math.PI / 180)), owner.getEyeY() - (double)0.1f, owner.getZ() + (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(owner.bodyYaw * ((float)Math.PI / 180)));
+        this.setPosition(owner.getX() - (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.sin(owner.bodyYaw * ((float)Math.PI / 180)), owner.getEyeY() - (double)0.1f, owner.getZ() + (double)(owner.getWidth() + 1.0f) * 0.5 * (double)MathHelper.cos(owner.bodyYaw * ((float)Math.PI / 180)));
     }
 
     @Environment(value=EnvType.CLIENT)
     public LlamaSpitEntity(World world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
         this((EntityType<? extends LlamaSpitEntity>)EntityType.LLAMA_SPIT, world);
-        this.updatePosition(x, y, z);
+        this.setPosition(x, y, z);
         for (int i = 0; i < 7; ++i) {
             double d = 0.4 + 0.1 * (double)i;
             world.addParticle(ParticleTypes.SPIT, x, y, z, velocityX * d, velocityY, velocityZ * d);
@@ -72,7 +72,7 @@ extends ProjectileEntity {
         if (!this.hasNoGravity()) {
             this.setVelocity(this.getVelocity().add(0.0, -0.06f, 0.0));
         }
-        this.updatePosition(d, e, f);
+        this.setPosition(d, e, f);
     }
 
     @Override

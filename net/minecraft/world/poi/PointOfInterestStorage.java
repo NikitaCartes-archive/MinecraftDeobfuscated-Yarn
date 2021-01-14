@@ -92,8 +92,8 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
         return this.getPositions(typePredicate, posPredicate, pos, radius, occupationStatus).findFirst();
     }
 
-    public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> typePredicate, BlockPos blockPos, int i, OccupationStatus occupationStatus) {
-        return this.getInCircle(typePredicate, blockPos, i, occupationStatus).map(PointOfInterest::getPos).min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)));
+    public Optional<BlockPos> getNearestPosition(Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
+        return this.getInCircle(typePredicate, pos, radius, occupationStatus).map(PointOfInterest::getPos).min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)));
     }
 
     public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, BlockPos pos, int radius) {
@@ -180,7 +180,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     /**
      * Preloads chunks in a square area with the given radius. Loads the chunks with {@code ChunkStatus.EMPTY}.
      * 
-     * @param radius The radius in blocks
+     * @param radius the radius in blocks
      */
     public void preloadChunks(WorldView world, BlockPos pos, int radius) {
         ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16)).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong())).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));

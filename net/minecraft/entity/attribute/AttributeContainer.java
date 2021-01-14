@@ -17,8 +17,8 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
@@ -108,22 +108,22 @@ public class AttributeContainer {
         });
     }
 
-    public ListTag toTag() {
-        ListTag listTag = new ListTag();
+    public NbtList toNbt() {
+        NbtList nbtList = new NbtList();
         for (EntityAttributeInstance entityAttributeInstance : this.custom.values()) {
-            listTag.add(entityAttributeInstance.toTag());
+            nbtList.add(entityAttributeInstance.toNbt());
         }
-        return listTag;
+        return nbtList;
     }
 
-    public void fromTag(ListTag tag) {
-        for (int i = 0; i < tag.size(); ++i) {
-            CompoundTag compoundTag = tag.getCompound(i);
-            String string = compoundTag.getString("Name");
+    public void readNbt(NbtList nbt) {
+        for (int i = 0; i < nbt.size(); ++i) {
+            NbtCompound nbtCompound = nbt.getCompound(i);
+            String string = nbtCompound.getString("Name");
             Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), entityAttribute -> {
                 EntityAttributeInstance entityAttributeInstance = this.getCustomInstance((EntityAttribute)entityAttribute);
                 if (entityAttributeInstance != null) {
-                    entityAttributeInstance.fromTag(compoundTag);
+                    entityAttributeInstance.readNbt(nbtCompound);
                 }
             }, () -> LOGGER.warn("Ignoring unknown attribute '{}'", (Object)string));
         }

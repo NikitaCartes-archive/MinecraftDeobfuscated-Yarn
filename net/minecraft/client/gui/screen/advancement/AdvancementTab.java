@@ -67,15 +67,15 @@ extends DrawableHelper {
         return this.title;
     }
 
-    public void drawBackground(MatrixStack matrixStack, int i, int j, boolean bl) {
-        this.type.drawBackground(matrixStack, this, i, j, bl, this.index);
+    public void drawBackground(MatrixStack matrices, int i, int j, boolean bl) {
+        this.type.drawBackground(matrices, this, i, j, bl, this.index);
     }
 
     public void drawIcon(int x, int y, ItemRenderer itemRenderer) {
         this.type.drawIcon(x, y, this.index, itemRenderer, this.icon);
     }
 
-    public void render(MatrixStack matrixStack) {
+    public void render(MatrixStack matrices) {
         if (!this.initialized) {
             this.originX = 117 - (this.maxPanX + this.minPanX) / 2;
             this.originY = 56 - (this.maxPanY + this.minPanY) / 2;
@@ -85,11 +85,11 @@ extends DrawableHelper {
         RenderSystem.enableDepthTest();
         RenderSystem.translatef(0.0f, 0.0f, 950.0f);
         RenderSystem.colorMask(false, false, false, false);
-        AdvancementTab.fill(matrixStack, 4680, 2260, -4680, -2260, -16777216);
+        AdvancementTab.fill(matrices, 4680, 2260, -4680, -2260, -16777216);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.translatef(0.0f, 0.0f, -950.0f);
         RenderSystem.depthFunc(518);
-        AdvancementTab.fill(matrixStack, 234, 113, 0, 0, -16777216);
+        AdvancementTab.fill(matrices, 234, 113, 0, 0, -16777216);
         RenderSystem.depthFunc(515);
         Identifier identifier = this.display.getBackground();
         if (identifier != null) {
@@ -103,26 +103,26 @@ extends DrawableHelper {
         int l = j % 16;
         for (int m = -1; m <= 15; ++m) {
             for (int n = -1; n <= 8; ++n) {
-                AdvancementTab.drawTexture(matrixStack, k + 16 * m, l + 16 * n, 0.0f, 0.0f, 16, 16, 16, 16);
+                AdvancementTab.drawTexture(matrices, k + 16 * m, l + 16 * n, 0.0f, 0.0f, 16, 16, 16, 16);
             }
         }
-        this.rootWidget.renderLines(matrixStack, i, j, true);
-        this.rootWidget.renderLines(matrixStack, i, j, false);
-        this.rootWidget.renderWidgets(matrixStack, i, j);
+        this.rootWidget.renderLines(matrices, i, j, true);
+        this.rootWidget.renderLines(matrices, i, j, false);
+        this.rootWidget.renderWidgets(matrices, i, j);
         RenderSystem.depthFunc(518);
         RenderSystem.translatef(0.0f, 0.0f, -950.0f);
         RenderSystem.colorMask(false, false, false, false);
-        AdvancementTab.fill(matrixStack, 4680, 2260, -4680, -2260, -16777216);
+        AdvancementTab.fill(matrices, 4680, 2260, -4680, -2260, -16777216);
         RenderSystem.colorMask(true, true, true, true);
         RenderSystem.translatef(0.0f, 0.0f, 950.0f);
         RenderSystem.depthFunc(515);
         RenderSystem.popMatrix();
     }
 
-    public void drawWidgetTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {
+    public void drawWidgetTooltip(MatrixStack matrices, int i, int j, int k, int l) {
         RenderSystem.pushMatrix();
         RenderSystem.translatef(0.0f, 0.0f, 200.0f);
-        AdvancementTab.fill(matrixStack, 0, 0, 234, 113, MathHelper.floor(this.alpha * 255.0f) << 24);
+        AdvancementTab.fill(matrices, 0, 0, 234, 113, MathHelper.floor(this.alpha * 255.0f) << 24);
         boolean bl = false;
         int m = MathHelper.floor(this.originX);
         int n = MathHelper.floor(this.originY);
@@ -130,7 +130,7 @@ extends DrawableHelper {
             for (AdvancementWidget advancementWidget : this.widgets.values()) {
                 if (!advancementWidget.shouldRender(m, n, i, j)) continue;
                 bl = true;
-                advancementWidget.drawTooltip(matrixStack, m, n, this.alpha, k, l);
+                advancementWidget.drawTooltip(matrices, m, n, this.alpha, k, l);
                 break;
             }
         }
