@@ -9,7 +9,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
 public class SizePrepender extends MessageToByteEncoder<ByteBuf> {
 	protected void encode(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf, ByteBuf byteBuf2) throws Exception {
 		int i = byteBuf.readableBytes();
-		int j = PacketByteBuf.getVarIntSizeBytes(i);
+		int j = PacketByteBuf.getVarIntLength(i);
 		if (j > 3) {
 			throw new IllegalArgumentException("unable to fit " + i + " into " + 3);
 		} else {

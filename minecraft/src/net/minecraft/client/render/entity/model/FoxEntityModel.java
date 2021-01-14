@@ -13,7 +13,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 	private final ModelPart rightEar;
 	private final ModelPart leftEar;
 	private final ModelPart nose;
-	private final ModelPart torso;
+	private final ModelPart body;
 	private final ModelPart rightBackLeg;
 	private final ModelPart leftBackLeg;
 	private final ModelPart rightFrontLeg;
@@ -37,9 +37,9 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 		this.head.addChild(this.rightEar);
 		this.head.addChild(this.leftEar);
 		this.head.addChild(this.nose);
-		this.torso = new ModelPart(this, 24, 15);
-		this.torso.addCuboid(-3.0F, 3.999F, -3.5F, 6.0F, 11.0F, 6.0F);
-		this.torso.setPivot(0.0F, 16.0F, -6.0F);
+		this.body = new ModelPart(this, 24, 15);
+		this.body.addCuboid(-3.0F, 3.999F, -3.5F, 6.0F, 11.0F, 6.0F);
+		this.body.setPivot(0.0F, 16.0F, -6.0F);
 		float f = 0.001F;
 		this.rightBackLeg = new ModelPart(this, 13, 24);
 		this.rightBackLeg.addCuboid(2.0F, 0.5F, -1.0F, 2.0F, 6.0F, 2.0F, 0.001F);
@@ -56,11 +56,11 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 		this.tail = new ModelPart(this, 30, 0);
 		this.tail.addCuboid(2.0F, 0.0F, -1.0F, 4.0F, 9.0F, 5.0F);
 		this.tail.setPivot(-4.0F, 15.0F, -1.0F);
-		this.torso.addChild(this.tail);
+		this.body.addChild(this.tail);
 	}
 
 	public void animateModel(T foxEntity, float f, float g, float h) {
-		this.torso.pitch = (float) (Math.PI / 2);
+		this.body.pitch = (float) (Math.PI / 2);
 		this.tail.pitch = -0.05235988F;
 		this.rightBackLeg.pitch = MathHelper.cos(f * 0.6662F) * 1.4F * g;
 		this.leftBackLeg.pitch = MathHelper.cos(f * 0.6662F + (float) Math.PI) * 1.4F * g;
@@ -73,23 +73,23 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 		this.leftBackLeg.visible = true;
 		this.rightFrontLeg.visible = true;
 		this.leftFrontLeg.visible = true;
-		this.torso.setPivot(0.0F, 16.0F, -6.0F);
-		this.torso.roll = 0.0F;
+		this.body.setPivot(0.0F, 16.0F, -6.0F);
+		this.body.roll = 0.0F;
 		this.rightBackLeg.setPivot(-5.0F, 17.5F, 7.0F);
 		this.leftBackLeg.setPivot(-1.0F, 17.5F, 7.0F);
 		if (foxEntity.isInSneakingPose()) {
-			this.torso.pitch = 1.6755161F;
+			this.body.pitch = 1.6755161F;
 			float i = foxEntity.getBodyRotationHeightOffset(h);
-			this.torso.setPivot(0.0F, 16.0F + foxEntity.getBodyRotationHeightOffset(h), -6.0F);
+			this.body.setPivot(0.0F, 16.0F + foxEntity.getBodyRotationHeightOffset(h), -6.0F);
 			this.head.setPivot(-1.0F, 16.5F + i, -3.0F);
 			this.head.yaw = 0.0F;
 		} else if (foxEntity.isSleeping()) {
-			this.torso.roll = (float) (-Math.PI / 2);
-			this.torso.setPivot(0.0F, 21.0F, -6.0F);
+			this.body.roll = (float) (-Math.PI / 2);
+			this.body.setPivot(0.0F, 21.0F, -6.0F);
 			this.tail.pitch = (float) (-Math.PI * 5.0 / 6.0);
 			if (this.child) {
 				this.tail.pitch = -2.1816616F;
-				this.torso.setPivot(0.0F, 21.0F, -2.0F);
+				this.body.setPivot(0.0F, 21.0F, -2.0F);
 			}
 
 			this.head.setPivot(1.0F, 19.49F, -3.0F);
@@ -101,8 +101,8 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 			this.rightFrontLeg.visible = false;
 			this.leftFrontLeg.visible = false;
 		} else if (foxEntity.isSitting()) {
-			this.torso.pitch = (float) (Math.PI / 6);
-			this.torso.setPivot(0.0F, 9.0F, -3.0F);
+			this.body.pitch = (float) (Math.PI / 6);
+			this.body.setPivot(0.0F, 9.0F, -3.0F);
 			this.tail.pitch = (float) (Math.PI / 4);
 			this.tail.setPivot(-4.0F, 15.0F, -2.0F);
 			this.head.setPivot(-1.0F, 10.0F, -0.25F);
@@ -128,7 +128,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.torso, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg);
+		return ImmutableList.<ModelPart>of(this.body, this.rightBackLeg, this.leftBackLeg, this.rightFrontLeg, this.leftFrontLeg);
 	}
 
 	public void setAngles(T foxEntity, float f, float g, float h, float i, float j) {
@@ -145,7 +145,7 @@ public class FoxEntityModel<T extends FoxEntity> extends AnimalModel<T> {
 
 		if (foxEntity.isInSneakingPose()) {
 			float k = MathHelper.cos(h) * 0.01F;
-			this.torso.yaw = k;
+			this.body.yaw = k;
 			this.rightBackLeg.roll = k;
 			this.leftBackLeg.roll = k;
 			this.rightFrontLeg.roll = k / 2.0F;

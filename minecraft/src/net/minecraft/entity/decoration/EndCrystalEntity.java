@@ -13,7 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
@@ -37,7 +37,7 @@ public class EndCrystalEntity extends Entity {
 
 	public EndCrystalEntity(World world, double x, double y, double z) {
 		this(EntityType.END_CRYSTAL, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 	}
 
 	@Override
@@ -63,22 +63,22 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		if (this.getBeamTarget() != null) {
-			tag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
+			nbt.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
 		}
 
-		tag.putBoolean("ShowBottom", this.getShowBottom());
+		nbt.putBoolean("ShowBottom", this.shouldShowBottom());
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		if (tag.contains("BeamTarget", 10)) {
-			this.setBeamTarget(NbtHelper.toBlockPos(tag.getCompound("BeamTarget")));
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		if (nbt.contains("BeamTarget", 10)) {
+			this.setBeamTarget(NbtHelper.toBlockPos(nbt.getCompound("BeamTarget")));
 		}
 
-		if (tag.contains("ShowBottom", 1)) {
-			this.setShowBottom(tag.getBoolean("ShowBottom"));
+		if (nbt.contains("ShowBottom", 1)) {
+			this.setShowBottom(nbt.getBoolean("ShowBottom"));
 		}
 	}
 
@@ -135,7 +135,7 @@ public class EndCrystalEntity extends Entity {
 		this.getDataTracker().set(SHOW_BOTTOM, showBottom);
 	}
 
-	public boolean getShowBottom() {
+	public boolean shouldShowBottom() {
 		return this.getDataTracker().get(SHOW_BOTTOM);
 	}
 

@@ -209,7 +209,7 @@ public class WitchEntity extends RaiderEntity implements RangedAttackMob {
 			amount = 0.0F;
 		}
 
-		if (source.getMagic()) {
+		if (source.isMagic()) {
 			amount = (float)((double)amount * 0.15);
 		}
 

@@ -20,7 +20,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.Tag;
@@ -65,6 +65,9 @@ public class Item implements ItemConvertible {
 		return Registry.ITEM.get(id);
 	}
 
+	/**
+	 * @deprecated Please use {@link Block#asItem}
+	 */
 	@Deprecated
 	public static Item fromBlock(Block block) {
 		return (Item)BLOCK_ITEMS.getOrDefault(block, Items.AIR);
@@ -83,7 +86,7 @@ public class Item implements ItemConvertible {
 	public void usageTick(World world, LivingEntity user, ItemStack stack, int remainingUseTicks) {
 	}
 
-	public boolean postProcessTag(CompoundTag tag) {
+	public boolean postProcessNbt(NbtCompound nbt) {
 		return false;
 	}
 
@@ -169,7 +172,16 @@ public class Item implements ItemConvertible {
 		return false;
 	}
 
-	public boolean isEffectiveOn(BlockState state) {
+	/**
+	 * Determines whether this item can be used as a suitable tool for mining the specified block.
+	 * Depending on block implementation, when combined together, the correct item and block may achieve a better mining speed and yield
+	 * drops that would not be obtained when mining otherwise.
+	 * <p>
+	 * Note that this is not the <b>only</b> way to achieve "effectiveness" when mining.
+	 * Other items, such as shears on string, may use their own logic
+	 * and calls to this method might not return a value consistent to this rule for those items.
+	 */
+	public boolean isSuitableFor(BlockState state) {
 		return false;
 	}
 
@@ -209,7 +221,7 @@ public class Item implements ItemConvertible {
 	}
 
 	/**
-	 * Checks if an item should have its NBT data stored in {@link #tag} sent to the client.
+	 * Checks if an item should have its NBT data stored in {@link ItemStack#tag} sent to the client.
 	 * 
 	 * <p>If an item is damageable, this method is ignored and data is always synced to client.
 	 */

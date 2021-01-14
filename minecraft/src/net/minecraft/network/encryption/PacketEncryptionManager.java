@@ -14,32 +14,32 @@ public class PacketEncryptionManager {
 		this.cipher = cipher;
 	}
 
-	private byte[] toByteArray(ByteBuf byteBuf) {
-		int i = byteBuf.readableBytes();
+	private byte[] toByteArray(ByteBuf buf) {
+		int i = buf.readableBytes();
 		if (this.conversionBuffer.length < i) {
 			this.conversionBuffer = new byte[i];
 		}
 
-		byteBuf.readBytes(this.conversionBuffer, 0, i);
+		buf.readBytes(this.conversionBuffer, 0, i);
 		return this.conversionBuffer;
 	}
 
-	protected ByteBuf decrypt(ChannelHandlerContext context, ByteBuf byteBuf) throws ShortBufferException {
-		int i = byteBuf.readableBytes();
-		byte[] bs = this.toByteArray(byteBuf);
-		ByteBuf byteBuf2 = context.alloc().heapBuffer(this.cipher.getOutputSize(i));
-		byteBuf2.writerIndex(this.cipher.update(bs, 0, i, byteBuf2.array(), byteBuf2.arrayOffset()));
-		return byteBuf2;
+	protected ByteBuf decrypt(ChannelHandlerContext context, ByteBuf buf) throws ShortBufferException {
+		int i = buf.readableBytes();
+		byte[] bs = this.toByteArray(buf);
+		ByteBuf byteBuf = context.alloc().heapBuffer(this.cipher.getOutputSize(i));
+		byteBuf.writerIndex(this.cipher.update(bs, 0, i, byteBuf.array(), byteBuf.arrayOffset()));
+		return byteBuf;
 	}
 
-	protected void encrypt(ByteBuf buffer, ByteBuf byteBuf) throws ShortBufferException {
-		int i = buffer.readableBytes();
-		byte[] bs = this.toByteArray(buffer);
+	protected void encrypt(ByteBuf buf, ByteBuf result) throws ShortBufferException {
+		int i = buf.readableBytes();
+		byte[] bs = this.toByteArray(buf);
 		int j = this.cipher.getOutputSize(i);
 		if (this.encryptionBuffer.length < j) {
 			this.encryptionBuffer = new byte[j];
 		}
 
-		byteBuf.writeBytes(this.encryptionBuffer, 0, this.cipher.update(bs, 0, i, this.encryptionBuffer));
+		result.writeBytes(this.encryptionBuffer, 0, this.cipher.update(bs, 0, i, this.encryptionBuffer));
 	}
 }

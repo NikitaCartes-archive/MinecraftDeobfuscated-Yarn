@@ -8,6 +8,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
+/**
+ * Places the top blocks of a biome during chunk generation.
+ */
 public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	private static final BlockState DIRT = Blocks.DIRT.getDefaultState();
 	private static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
@@ -105,6 +108,9 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 		C surfaceBlocks
 	);
 
+	/**
+	 * Runs before {@link #generate} and allows for custom noise to be initialized.
+	 */
 	public void initSeed(long seed) {
 	}
 }

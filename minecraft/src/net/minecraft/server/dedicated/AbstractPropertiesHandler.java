@@ -204,7 +204,7 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 	 * Creates another property handler with the same type as this one from the
 	 * passed new map of properties.
 	 */
-	protected abstract T create(DynamicRegistryManager dynamicRegistryManager, Properties properties);
+	protected abstract T create(DynamicRegistryManager registryManager, Properties properties);
 
 	public class PropertyAccessor<V> implements Supplier<V> {
 		private final String key;

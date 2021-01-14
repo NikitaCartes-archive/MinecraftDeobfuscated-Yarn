@@ -37,10 +37,10 @@ public class InfestedBlock extends Block {
 		return REGULAR_TO_INFESTED.containsKey(block.getBlock());
 	}
 
-	private void spawnSilverfish(ServerWorld serverWorld, BlockPos pos) {
-		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(serverWorld);
+	private void spawnSilverfish(ServerWorld world, BlockPos pos) {
+		SilverfishEntity silverfishEntity = EntityType.SILVERFISH.create(world);
 		silverfishEntity.refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY(), (double)pos.getZ() + 0.5, 0.0F, 0.0F);
-		serverWorld.spawnEntity(silverfishEntity);
+		world.spawnEntity(silverfishEntity);
 		silverfishEntity.playSpawnEffects();
 	}
 

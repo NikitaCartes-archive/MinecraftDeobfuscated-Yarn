@@ -96,14 +96,14 @@ public class GlDebug {
 		}
 	}
 
-	private static void info(int source, int type, int id, int severity, int i, long l, long m) {
+	private static void info(int source, int type, int id, int severity, int messageLength, long message, long l) {
 		LOGGER.info(
 			"OpenGL debug message, id={}, source={}, type={}, severity={}, message={}",
 			id,
 			getSource(source),
 			getType(type),
 			getSeverity(severity),
-			GLDebugMessageCallback.getMessage(i, l)
+			GLDebugMessageCallback.getMessage(messageLength, message)
 		);
 	}
 

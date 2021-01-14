@@ -13,7 +13,7 @@ public class CampfireCookingRecipe extends AbstractCookingRecipe {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public ItemStack getRecipeKindIcon() {
+	public ItemStack createIcon() {
 		return new ItemStack(Blocks.CAMPFIRE);
 	}
 

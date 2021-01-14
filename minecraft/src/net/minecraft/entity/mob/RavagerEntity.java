@@ -30,7 +30,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.raid.RaiderEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -91,19 +91,19 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("AttackTick", this.attackTick);
-		tag.putInt("StunTick", this.stunTick);
-		tag.putInt("RoarTick", this.roarTick);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("AttackTick", this.attackTick);
+		nbt.putInt("StunTick", this.stunTick);
+		nbt.putInt("RoarTick", this.roarTick);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.attackTick = tag.getInt("AttackTick");
-		this.stunTick = tag.getInt("StunTick");
-		this.roarTick = tag.getInt("RoarTick");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.attackTick = nbt.getInt("AttackTick");
+		this.stunTick = nbt.getInt("StunTick");
+		this.roarTick = nbt.getInt("RoarTick");
 	}
 
 	@Override

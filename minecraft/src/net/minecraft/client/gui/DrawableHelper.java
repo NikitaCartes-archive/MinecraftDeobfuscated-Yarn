@@ -92,7 +92,7 @@ public abstract class DrawableHelper {
 		RenderSystem.disableBlend();
 	}
 
-	protected void fillGradient(MatrixStack matrices, int xStart, int yStart, int xEnd, int yEnd, int colorStart, int colorEnd) {
+	protected void fillGradient(MatrixStack matrices, int startX, int startY, int endX, int endY, int colorStart, int colorEnd) {
 		RenderSystem.disableTexture();
 		RenderSystem.enableBlend();
 		RenderSystem.disableAlphaTest();
@@ -101,7 +101,7 @@ public abstract class DrawableHelper {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(7, VertexFormats.POSITION_COLOR);
-		fillGradient(matrices.peek().getModel(), bufferBuilder, xStart, yStart, xEnd, yEnd, this.zOffset, colorStart, colorEnd);
+		fillGradient(matrices.peek().getModel(), bufferBuilder, startX, startY, endX, endY, this.zOffset, colorStart, colorEnd);
 		tessellator.draw();
 		RenderSystem.shadeModel(7424);
 		RenderSystem.disableBlend();
@@ -110,7 +110,7 @@ public abstract class DrawableHelper {
 	}
 
 	protected static void fillGradient(
-		Matrix4f matrix, BufferBuilder bufferBuilder, int xStart, int yStart, int xEnd, int yEnd, int z, int colorStart, int colorEnd
+		Matrix4f matrix, BufferBuilder bufferBuilder, int startX, int startY, int endX, int endY, int z, int colorStart, int colorEnd
 	) {
 		float f = (float)(colorStart >> 24 & 0xFF) / 255.0F;
 		float g = (float)(colorStart >> 16 & 0xFF) / 255.0F;
@@ -120,13 +120,13 @@ public abstract class DrawableHelper {
 		float k = (float)(colorEnd >> 16 & 0xFF) / 255.0F;
 		float l = (float)(colorEnd >> 8 & 0xFF) / 255.0F;
 		float m = (float)(colorEnd & 0xFF) / 255.0F;
-		bufferBuilder.vertex(matrix, (float)xEnd, (float)yStart, (float)z).color(g, h, i, f).next();
-		bufferBuilder.vertex(matrix, (float)xStart, (float)yStart, (float)z).color(g, h, i, f).next();
-		bufferBuilder.vertex(matrix, (float)xStart, (float)yEnd, (float)z).color(k, l, m, j).next();
-		bufferBuilder.vertex(matrix, (float)xEnd, (float)yEnd, (float)z).color(k, l, m, j).next();
+		bufferBuilder.vertex(matrix, (float)endX, (float)startY, (float)z).color(g, h, i, f).next();
+		bufferBuilder.vertex(matrix, (float)startX, (float)startY, (float)z).color(g, h, i, f).next();
+		bufferBuilder.vertex(matrix, (float)startX, (float)endY, (float)z).color(k, l, m, j).next();
+		bufferBuilder.vertex(matrix, (float)endX, (float)endY, (float)z).color(k, l, m, j).next();
 	}
 
-	public static void drawCenteredString(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
+	public static void drawCenteredText(MatrixStack matrices, TextRenderer textRenderer, String text, int centerX, int y, int color) {
 		textRenderer.drawWithShadow(matrices, text, (float)(centerX - textRenderer.getWidth(text) / 2), (float)y, color);
 	}
 

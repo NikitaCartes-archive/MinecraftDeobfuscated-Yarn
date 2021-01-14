@@ -8,7 +8,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.LootTableReporter;
 import net.minecraft.loot.condition.LootCondition;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 
@@ -32,13 +32,13 @@ public class SetLootTableLootFunction extends ConditionalLootFunction {
 		if (stack.isEmpty()) {
 			return stack;
 		} else {
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putString("LootTable", this.id.toString());
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.putString("LootTable", this.id.toString());
 			if (this.seed != 0L) {
-				compoundTag.putLong("LootTableSeed", this.seed);
+				nbtCompound.putLong("LootTableSeed", this.seed);
 			}
 
-			stack.getOrCreateTag().put("BlockEntityTag", compoundTag);
+			stack.getOrCreateTag().put("BlockEntityTag", nbtCompound);
 			return stack;
 		}
 	}

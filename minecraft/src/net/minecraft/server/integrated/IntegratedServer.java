@@ -46,11 +46,11 @@ public class IntegratedServer extends MinecraftServer {
 		MinecraftClient client,
 		DynamicRegistryManager.Impl registryManager,
 		LevelStorage.Session session,
-		ResourcePackManager resourcePackManager,
+		ResourcePackManager dataPackManager,
 		ServerResourceManager serverResourceManager,
 		SaveProperties saveProperties,
-		MinecraftSessionService minecraftSessionService,
-		GameProfileRepository gameProfileRepository,
+		MinecraftSessionService sessionService,
+		GameProfileRepository gameProfileRepo,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
@@ -59,12 +59,12 @@ public class IntegratedServer extends MinecraftServer {
 			registryManager,
 			session,
 			saveProperties,
-			resourcePackManager,
+			dataPackManager,
 			client.getNetworkProxy(),
 			client.getDataFixer(),
 			serverResourceManager,
-			minecraftSessionService,
-			gameProfileRepository,
+			sessionService,
+			gameProfileRepo,
 			userCache,
 			worldGenerationProgressListenerFactory
 		);

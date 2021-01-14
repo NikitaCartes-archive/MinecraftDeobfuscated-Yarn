@@ -22,7 +22,7 @@ import net.minecraft.util.JsonHelper;
  * The style of a {@link Text}, representing cosmetic attributes. It includes
  * font, formatting, click/hover events (actions), color, etc.
  * 
- * <p>A style is immutable.</p>
+ * <p>A style is immutable.
  * 
  * @see Text
  */
@@ -162,7 +162,7 @@ public class Style {
 	 * Returns the insertion text of the style.
 	 * 
 	 * <p>An insertion is inserted when a piece of text clicked while shift key
-	 * is down in the chat HUD.</p>
+	 * is down in the chat HUD.
 	 */
 	@Nullable
 	public String getInsertion() {
@@ -326,7 +326,7 @@ public class Style {
 	 * 
 	 * <p>When a color formatting is passed for {@code formatting}, the other
 	 * formattings, including bold, italic, strikethrough, underlined, and
-	 * obfuscated, are all removed.</p>
+	 * obfuscated, are all removed.
 	 * 
 	 * @param formatting the new formatting
 	 */
@@ -460,13 +460,13 @@ public class Style {
 			+ '}';
 	}
 
-	public boolean equals(Object obj) {
-		if (this == obj) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
-		} else if (!(obj instanceof Style)) {
+		} else if (!(o instanceof Style)) {
 			return false;
 		} else {
-			Style style = (Style)obj;
+			Style style = (Style)o;
 			return this.isBold() == style.isBold()
 				&& Objects.equals(this.getColor(), style.getColor())
 				&& this.isItalic() == style.isItalic()

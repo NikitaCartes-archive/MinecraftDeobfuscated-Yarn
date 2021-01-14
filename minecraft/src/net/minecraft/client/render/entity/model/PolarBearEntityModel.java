@@ -19,10 +19,10 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 		ModelPart modelPart = this.head.setTextureOffset(26, 0);
 		modelPart.mirror = true;
 		modelPart.addCuboid(2.5F, -4.0F, -1.0F, 2.0F, 2.0F, 1.0F, 0.0F);
-		this.torso = new ModelPart(this);
-		this.torso.setTextureOffset(0, 19).addCuboid(-5.0F, -13.0F, -7.0F, 14.0F, 14.0F, 11.0F, 0.0F);
-		this.torso.setTextureOffset(39, 0).addCuboid(-4.0F, -25.0F, -7.0F, 12.0F, 12.0F, 10.0F, 0.0F);
-		this.torso.setPivot(-2.0F, 9.0F, 12.0F);
+		this.body = new ModelPart(this);
+		this.body.setTextureOffset(0, 19).addCuboid(-5.0F, -13.0F, -7.0F, 14.0F, 14.0F, 11.0F, 0.0F);
+		this.body.setTextureOffset(39, 0).addCuboid(-4.0F, -25.0F, -7.0F, 12.0F, 12.0F, 10.0F, 0.0F);
+		this.body.setPivot(-2.0F, 9.0F, 12.0F);
 		int i = 10;
 		this.backRightLeg = new ModelPart(this, 50, 22);
 		this.backRightLeg.addCuboid(-2.0F, 0.0F, -2.0F, 4.0F, 10.0F, 8.0F, 0.0F);
@@ -52,8 +52,8 @@ public class PolarBearEntityModel<T extends PolarBearEntity> extends QuadrupedEn
 		float l = polarBearEntity.getWarningAnimationProgress(k);
 		l *= l;
 		float m = 1.0F - l;
-		this.torso.pitch = (float) (Math.PI / 2) - l * (float) Math.PI * 0.35F;
-		this.torso.pivotY = 9.0F * m + 11.0F * l;
+		this.body.pitch = (float) (Math.PI / 2) - l * (float) Math.PI * 0.35F;
+		this.body.pivotY = 9.0F * m + 11.0F * l;
 		this.frontRightLeg.pivotY = 14.0F * m - 6.0F * l;
 		this.frontRightLeg.pivotZ = -8.0F * m - 4.0F * l;
 		this.frontRightLeg.pitch -= l * (float) Math.PI * 0.45F;

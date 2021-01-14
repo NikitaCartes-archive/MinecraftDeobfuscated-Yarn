@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 	private final ModelPart head;
-	private final ModelPart torso;
+	private final ModelPart body;
 	private final ModelPart rightLeg;
 	private final ModelPart leftLeg;
 	private final ModelPart rightWing;
@@ -29,9 +29,9 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 		this.wattle = new ModelPart(this, 14, 4);
 		this.wattle.addCuboid(-1.0F, -2.0F, -3.0F, 2.0F, 2.0F, 2.0F, 0.0F);
 		this.wattle.setPivot(0.0F, 15.0F, -4.0F);
-		this.torso = new ModelPart(this, 0, 9);
-		this.torso.addCuboid(-3.0F, -4.0F, -3.0F, 6.0F, 8.0F, 6.0F, 0.0F);
-		this.torso.setPivot(0.0F, 16.0F, 0.0F);
+		this.body = new ModelPart(this, 0, 9);
+		this.body.addCuboid(-3.0F, -4.0F, -3.0F, 6.0F, 8.0F, 6.0F, 0.0F);
+		this.body.setPivot(0.0F, 16.0F, 0.0F);
 		this.rightLeg = new ModelPart(this, 26, 0);
 		this.rightLeg.addCuboid(-1.0F, 0.0F, -3.0F, 3.0F, 5.0F, 3.0F);
 		this.rightLeg.setPivot(-2.0F, 19.0F, 1.0F);
@@ -53,7 +53,7 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.torso, this.rightLeg, this.leftLeg, this.rightWing, this.leftWing);
+		return ImmutableList.<ModelPart>of(this.body, this.rightLeg, this.leftLeg, this.rightWing, this.leftWing);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class ChickenEntityModel<T extends Entity> extends AnimalModel<T> {
 		this.beak.yaw = this.head.yaw;
 		this.wattle.pitch = this.head.pitch;
 		this.wattle.yaw = this.head.yaw;
-		this.torso.pitch = (float) (Math.PI / 2);
+		this.body.pitch = (float) (Math.PI / 2);
 		this.rightLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * 1.4F * limbDistance;
 		this.leftLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + (float) Math.PI) * 1.4F * limbDistance;
 		this.rightWing.roll = animationProgress;

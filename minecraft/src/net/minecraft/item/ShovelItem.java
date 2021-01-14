@@ -60,7 +60,7 @@ public class ShovelItem extends MiningToolItem {
 	}
 
 	@Override
-	public boolean isEffectiveOn(BlockState state) {
+	public boolean isSuitableFor(BlockState state) {
 		return state.isOf(Blocks.SNOW) || state.isOf(Blocks.SNOW_BLOCK);
 	}
 

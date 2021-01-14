@@ -20,7 +20,7 @@ public interface CollisionView extends BlockView {
 	WorldBorder getWorldBorder();
 
 	@Nullable
-	BlockView getExistingChunk(int chunkX, int chunkZ);
+	BlockView getChunkAsView(int chunkX, int chunkZ);
 
 	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
 		return true;

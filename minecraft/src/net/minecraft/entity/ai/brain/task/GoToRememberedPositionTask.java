@@ -51,16 +51,16 @@ public class GoToRememberedPositionTask<T> extends Task<PathAwareEntity> {
 		return (Vec3d)this.posRetriever.apply(entity.getBrain().getOptionalMemory(this.entityMemory).get());
 	}
 
-	private boolean isWalkTargetPresentAndFar(PathAwareEntity pathAwareEntity) {
-		if (!pathAwareEntity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
+	private boolean isWalkTargetPresentAndFar(PathAwareEntity entity) {
+		if (!entity.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
 			return false;
 		} else {
-			WalkTarget walkTarget = (WalkTarget)pathAwareEntity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
+			WalkTarget walkTarget = (WalkTarget)entity.getBrain().getOptionalMemory(MemoryModuleType.WALK_TARGET).get();
 			if (walkTarget.getSpeed() != this.speed) {
 				return false;
 			} else {
-				Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(pathAwareEntity.getPos());
-				Vec3d vec3d2 = this.getPos(pathAwareEntity).subtract(pathAwareEntity.getPos());
+				Vec3d vec3d = walkTarget.getLookTarget().getPos().subtract(entity.getPos());
+				Vec3d vec3d2 = this.getPos(entity).subtract(entity.getPos());
 				return vec3d.dotProduct(vec3d2) < 0.0;
 			}
 		}

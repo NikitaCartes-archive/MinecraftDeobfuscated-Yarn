@@ -15,7 +15,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 	private final ModelPart rightFoot;
 	private final ModelPart leftBackLeg;
 	private final ModelPart rightBackLeg;
-	private final ModelPart torso;
+	private final ModelPart body;
 	private final ModelPart leftFrontLeg;
 	private final ModelPart rightFrontLeg;
 	private final ModelPart head;
@@ -45,11 +45,11 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 		this.rightBackLeg.setPivot(-3.0F, 17.5F, 3.7F);
 		this.rightBackLeg.mirror = true;
 		this.setAngle(this.rightBackLeg, (float) (-Math.PI / 9), 0.0F, 0.0F);
-		this.torso = new ModelPart(this, 0, 0);
-		this.torso.addCuboid(-3.0F, -2.0F, -10.0F, 6.0F, 5.0F, 10.0F);
-		this.torso.setPivot(0.0F, 19.0F, 8.0F);
-		this.torso.mirror = true;
-		this.setAngle(this.torso, (float) (-Math.PI / 9), 0.0F, 0.0F);
+		this.body = new ModelPart(this, 0, 0);
+		this.body.addCuboid(-3.0F, -2.0F, -10.0F, 6.0F, 5.0F, 10.0F);
+		this.body.setPivot(0.0F, 19.0F, 8.0F);
+		this.body.mirror = true;
+		this.setAngle(this.body, (float) (-Math.PI / 9), 0.0F, 0.0F);
 		this.leftFrontLeg = new ModelPart(this, 8, 15);
 		this.leftFrontLeg.addCuboid(-1.0F, 0.0F, -1.0F, 2.0F, 7.0F, 2.0F);
 		this.leftFrontLeg.setPivot(3.0F, 17.0F, -1.0F);
@@ -106,7 +106,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 			matrices.push();
 			matrices.scale(0.4F, 0.4F, 0.4F);
 			matrices.translate(0.0, 2.25, 0.0);
-			ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.torso, this.leftFrontLeg, this.rightFrontLeg, this.tail)
+			ImmutableList.of(this.leftFoot, this.rightFoot, this.leftBackLeg, this.rightBackLeg, this.body, this.leftFrontLeg, this.rightFrontLeg, this.tail)
 				.forEach(modelPart -> modelPart.render(matrices, vertices, light, overlay, red, green, blue, alpha));
 			matrices.pop();
 		} else {
@@ -118,7 +118,7 @@ public class RabbitEntityModel<T extends RabbitEntity> extends EntityModel<T> {
 					this.rightFoot,
 					this.leftBackLeg,
 					this.rightBackLeg,
-					this.torso,
+					this.body,
 					this.leftFrontLeg,
 					this.rightFrontLeg,
 					this.head,

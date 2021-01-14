@@ -28,7 +28,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	}
 
 	public final int getLight(T entity, float tickDelta) {
-		BlockPos blockPos = new BlockPos(entity.method_31166(tickDelta));
+		BlockPos blockPos = new BlockPos(entity.getClientCameraPosVec(tickDelta));
 		return LightmapTextureManager.pack(this.getBlockLight(entity, blockPos), this.method_27950(entity, blockPos));
 	}
 
@@ -36,8 +36,8 @@ public abstract class EntityRenderer<T extends Entity> {
 		return entity.world.getLightLevel(LightType.SKY, blockPos);
 	}
 
-	protected int getBlockLight(T entity, BlockPos blockPos) {
-		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, blockPos);
+	protected int getBlockLight(T entity, BlockPos pos) {
+		return entity.isOnFire() ? 15 : entity.world.getLightLevel(LightType.BLOCK, pos);
 	}
 
 	public boolean shouldRender(T entity, Frustum frustum, double x, double y, double z) {
@@ -68,7 +68,7 @@ public abstract class EntityRenderer<T extends Entity> {
 	/**
 	 * Determines whether the passed entity should render with a nameplate above its head.
 	 * 
-	 * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.</p>
+	 * <p>Checks for a custom nametag on living entities, and for teams/team visibilities for players.
 	 */
 	protected boolean hasLabel(T entity) {
 		return entity.shouldRenderName() && entity.hasCustomName();

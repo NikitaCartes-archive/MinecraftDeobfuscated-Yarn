@@ -254,8 +254,8 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		}
 	}
 
-	private Identifier getTexturePath(Identifier identifier) {
-		return new Identifier(identifier.getNamespace(), String.format("textures/%s%s", identifier.getPath(), ".png"));
+	private Identifier getTexturePath(Identifier id) {
+		return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), ".png"));
 	}
 
 	public void tickAnimatedSprites() {

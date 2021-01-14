@@ -17,9 +17,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
@@ -96,9 +96,9 @@ public class BedBlockEntityRenderer extends BlockEntityRenderer<BedBlockEntity> 
 		this.legs[3].visible = bl;
 		matrix.push();
 		matrix.translate(0.0, 0.5625, bl2 ? -1.0 : 0.0);
-		matrix.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+		matrix.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 		matrix.translate(0.5, 0.5, 0.5);
-		matrix.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F + direction.asRotation()));
+		matrix.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F + direction.asRotation()));
 		matrix.translate(-0.5, -0.5, -0.5);
 		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
 		this.field_20813.render(matrix, vertexConsumer, light, overlay);

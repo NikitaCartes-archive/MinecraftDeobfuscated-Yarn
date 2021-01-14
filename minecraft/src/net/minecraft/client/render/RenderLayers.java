@@ -281,8 +281,8 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getMovingBlockLayer(BlockState blockState) {
-		Block block = blockState.getBlock();
+	public static RenderLayer getMovingBlockLayer(BlockState state) {
+		Block block = state.getBlock();
 		if (block instanceof LeavesBlock) {
 			return fancyGraphicsOrBetter ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
 		} else {

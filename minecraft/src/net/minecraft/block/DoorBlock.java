@@ -74,15 +74,20 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)) {
 			return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 				? Blocks.AIR.getDefaultState()
-				: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		} else {
-			return newState.isOf(this) && newState.get(HALF) != doubleBlockHalf
-				? state.with(FACING, newState.get(FACING)).with(OPEN, newState.get(OPEN)).with(HINGE, newState.get(HINGE)).with(POWERED, newState.get(POWERED))
+			return neighborState.isOf(this) && neighborState.get(HALF) != doubleBlockHalf
+				? state.with(FACING, neighborState.get(FACING))
+					.with(OPEN, neighborState.get(OPEN))
+					.with(HINGE, neighborState.get(HINGE))
+					.with(POWERED, neighborState.get(POWERED))
 				: Blocks.AIR.getDefaultState();
 		}
 	}

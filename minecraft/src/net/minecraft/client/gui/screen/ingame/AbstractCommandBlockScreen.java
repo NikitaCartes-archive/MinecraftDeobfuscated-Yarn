@@ -18,9 +18,9 @@ import net.minecraft.world.CommandBlockExecutor;
 
 @Environment(EnvType.CLIENT)
 public abstract class AbstractCommandBlockScreen extends Screen {
-	private static final Text field_26556 = new TranslatableText("advMode.setCommand");
-	private static final Text field_26557 = new TranslatableText("advMode.command");
-	private static final Text field_26558 = new TranslatableText("advMode.previousOutput");
+	private static final Text SET_COMMAND_TEXT = new TranslatableText("advMode.setCommand");
+	private static final Text COMMAND_TEXT = new TranslatableText("advMode.command");
+	private static final Text PREVIOUS_OUTPUT_TEXT = new TranslatableText("advMode.previousOutput");
 	protected TextFieldWidget consoleCommandTextField;
 	protected TextFieldWidget previousOutputTextField;
 	protected ButtonWidget doneButton;
@@ -54,14 +54,14 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.toggleTrackingOutputButton = this.addButton(
 			new ButtonWidget(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new LiteralText("O"), buttonWidget -> {
 				CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
-				commandBlockExecutor.shouldTrackOutput(!commandBlockExecutor.isTrackingOutput());
+				commandBlockExecutor.setTrackingOutput(!commandBlockExecutor.isTrackingOutput());
 				this.updateTrackedOutput();
 			})
 		);
 		this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, new TranslatableText("advMode.command")) {
 			@Override
 			protected MutableText getNarrationMessage() {
-				return super.getNarrationMessage().append(AbstractCommandBlockScreen.this.commandSuggestor.method_23958());
+				return super.getNarrationMessage().append(AbstractCommandBlockScreen.this.commandSuggestor.getNarration());
 			}
 		};
 		this.consoleCommandTextField.setMaxLength(32500);
@@ -75,7 +75,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.previousOutputTextField.setText("-");
 		this.children.add(this.previousOutputTextField);
 		this.setInitialFocus(this.consoleCommandTextField);
-		this.consoleCommandTextField.setSelected(true);
+		this.consoleCommandTextField.setTextFieldFocused(true);
 		this.commandSuggestor = new CommandSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
 		this.commandSuggestor.setWindowActive(true);
 		this.commandSuggestor.refresh();
@@ -118,7 +118,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.getCommandExecutor().shouldTrackOutput(this.trackingOutput);
+		this.getCommandExecutor().setTrackingOutput(this.trackingOutput);
 		this.client.openScreen(null);
 	}
 
@@ -153,13 +153,13 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.renderBackground(matrices);
-		drawCenteredText(matrices, this.textRenderer, field_26556, this.width / 2, 20, 16777215);
-		drawTextWithShadow(matrices, this.textRenderer, field_26557, this.width / 2 - 150, 40, 10526880);
+		drawCenteredText(matrices, this.textRenderer, SET_COMMAND_TEXT, this.width / 2, 20, 16777215);
+		drawTextWithShadow(matrices, this.textRenderer, COMMAND_TEXT, this.width / 2 - 150, 40, 10526880);
 		this.consoleCommandTextField.render(matrices, mouseX, mouseY, delta);
 		int i = 75;
 		if (!this.previousOutputTextField.getText().isEmpty()) {
 			i += 5 * 9 + 1 + this.getTrackOutputButtonHeight() - 135;
-			drawTextWithShadow(matrices, this.textRenderer, field_26558, this.width / 2 - 150, i + 4, 10526880);
+			drawTextWithShadow(matrices, this.textRenderer, PREVIOUS_OUTPUT_TEXT, this.width / 2 - 150, i + 4, 10526880);
 			this.previousOutputTextField.render(matrices, mouseX, mouseY, delta);
 		}
 

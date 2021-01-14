@@ -6,7 +6,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.ThrowableDeliverer;
 import net.minecraft.util.math.ChunkPos;
@@ -43,7 +43,7 @@ public final class RegionBasedStorage implements AutoCloseable {
 	}
 
 	@Nullable
-	public CompoundTag getTagAt(ChunkPos pos) throws IOException {
+	public NbtCompound getTagAt(ChunkPos pos) throws IOException {
 		RegionFile regionFile = this.getRegionFile(pos);
 		DataInputStream dataInputStream = regionFile.getChunkInputStream(pos);
 		Throwable var4 = null;
@@ -72,16 +72,16 @@ public final class RegionBasedStorage implements AutoCloseable {
 			}
 		}
 
-		return (CompoundTag)var5;
+		return (NbtCompound)var5;
 	}
 
-	protected void write(ChunkPos pos, CompoundTag tag) throws IOException {
+	protected void write(ChunkPos pos, NbtCompound nbt) throws IOException {
 		RegionFile regionFile = this.getRegionFile(pos);
 		DataOutputStream dataOutputStream = regionFile.getChunkOutputStream(pos);
 		Throwable var5 = null;
 
 		try {
-			NbtIo.write(tag, dataOutputStream);
+			NbtIo.write(nbt, dataOutputStream);
 		} catch (Throwable var14) {
 			var5 = var14;
 			throw var14;

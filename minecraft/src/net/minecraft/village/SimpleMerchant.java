@@ -12,7 +12,7 @@ import net.minecraft.world.World;
 public class SimpleMerchant implements Merchant {
 	private final MerchantInventory merchantInventory;
 	private final PlayerEntity player;
-	private TradeOfferList recipeList = new TradeOfferList();
+	private TradeOfferList offers = new TradeOfferList();
 	private int experience;
 
 	public SimpleMerchant(PlayerEntity playerEntity) {
@@ -32,13 +32,13 @@ public class SimpleMerchant implements Merchant {
 
 	@Override
 	public TradeOfferList getOffers() {
-		return this.recipeList;
+		return this.offers;
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void setOffersFromServer(@Nullable TradeOfferList offers) {
-		this.recipeList = offers;
+		this.offers = offers;
 	}
 
 	@Override

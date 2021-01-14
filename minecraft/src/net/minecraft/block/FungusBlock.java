@@ -15,9 +15,9 @@ public class FungusBlock extends PlantBlock implements Fertilizable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 9.0, 12.0);
 	private final Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> field_22135;
 
-	protected FungusBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> supplier) {
+	protected FungusBlock(AbstractBlock.Settings settings, Supplier<ConfiguredFeature<HugeFungusFeatureConfig, ?>> feature) {
 		super(settings);
-		this.field_22135 = supplier;
+		this.field_22135 = feature;
 	}
 
 	@Override

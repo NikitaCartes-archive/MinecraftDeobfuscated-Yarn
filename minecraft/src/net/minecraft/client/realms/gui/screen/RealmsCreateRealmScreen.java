@@ -67,8 +67,8 @@ public class RealmsCreateRealmScreen extends RealmsScreen {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
-		boolean bl = super.charTyped(chr, keyCode);
+	public boolean charTyped(char chr, int modifiers) {
+		boolean bl = super.charTyped(chr, modifiers);
 		this.createButton.active = this.valid();
 		return bl;
 	}

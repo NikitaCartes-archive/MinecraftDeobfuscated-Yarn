@@ -7,9 +7,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EvokerFangsEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.mob.EvokerFangsEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity> {
@@ -29,7 +29,7 @@ public class EvokerFangsEntityRenderer extends EntityRenderer<EvokerFangsEntity>
 			}
 
 			matrixStack.push();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F - evokerFangsEntity.yaw));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F - evokerFangsEntity.yaw));
 			matrixStack.scale(-j, -j, j);
 			float k = 0.03125F;
 			matrixStack.translate(0.0, -0.626F, 0.0);

@@ -38,9 +38,9 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	/**
-	 * <p>Takes a string of the form {@code <namespace>:<path>}, for example {@code minecraft:iron_ingot}.</p>
-	 * <p>The string will be split (on the {@code :}) into an identifier with the specified path and namespace.</p>
-	 * Prefer using the {@link #Identifier(java.lang.String, java.lang.String)} constructor that takes the namespace and path as individual parameters to avoid mistakes.
+	 * <p>Takes a string of the form {@code <namespace>:<path>}, for example {@code minecraft:iron_ingot}.
+	 * <p>The string will be split (on the {@code :}) into an identifier with the specified path and namespace.
+	 * Prefer using the {@link net.minecraft.util.Identifier#Identifier(java.lang.String, java.lang.String) Identifier(java.lang.String, java.lang.String)} constructor that takes the namespace and path as individual parameters to avoid mistakes.
 	 * @throws InvalidIdentifierException if the string cannot be parsed as an identifier.
 	 */
 	public Identifier(String id) {
@@ -56,7 +56,7 @@ public class Identifier implements Comparable<Identifier> {
 	}
 
 	/**
-	 * <p>Parses a string into an {@code Identifier}.</p>
+	 * <p>Parses a string into an {@code Identifier}.
 	 * Takes a string of the form {@code <namespace>:<path>}, for example {@code minecraft:iron_ingot}.
 	 * @return resulting identifier, or {@code null} if the string couldn't be parsed as an identifier
 	 */
@@ -167,12 +167,17 @@ public class Identifier implements Comparable<Identifier> {
 		return true;
 	}
 
-	public static boolean isPathCharacterValid(char c) {
-		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '.';
+	public static boolean isPathCharacterValid(char character) {
+		return character == '_'
+			|| character == '-'
+			|| character >= 'a' && character <= 'z'
+			|| character >= '0' && character <= '9'
+			|| character == '/'
+			|| character == '.';
 	}
 
-	private static boolean isNamespaceCharacterValid(char c) {
-		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
+	private static boolean isNamespaceCharacterValid(char character) {
+		return character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
 	}
 
 	@Environment(EnvType.CLIENT)

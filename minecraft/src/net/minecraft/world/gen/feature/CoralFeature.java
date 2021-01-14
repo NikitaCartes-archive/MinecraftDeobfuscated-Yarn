@@ -22,12 +22,12 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
 		BlockState blockState = BlockTags.CORAL_BLOCKS.getRandom(random).getDefaultState();
-		return this.spawnCoral(structureWorldAccess, random, blockPos, blockState);
+		return this.generateCoral(structureWorldAccess, random, blockPos, blockState);
 	}
 
-	protected abstract boolean spawnCoral(WorldAccess world, Random random, BlockPos pos, BlockState state);
+	protected abstract boolean generateCoral(WorldAccess world, Random random, BlockPos pos, BlockState state);
 
-	protected boolean spawnCoralPiece(WorldAccess world, Random random, BlockPos pos, BlockState state) {
+	protected boolean generateCoralPiece(WorldAccess world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.up();
 		BlockState blockState = world.getBlockState(pos);
 		if ((blockState.isOf(Blocks.WATER) || blockState.isIn(BlockTags.CORALS)) && world.getBlockState(blockPos).isOf(Blocks.WATER)) {

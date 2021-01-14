@@ -2,7 +2,7 @@ package net.minecraft.entity.player;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public class PlayerAbilities {
 	public boolean invulnerable;
@@ -13,32 +13,32 @@ public class PlayerAbilities {
 	private float flySpeed = 0.05F;
 	private float walkSpeed = 0.1F;
 
-	public void serialize(CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = new CompoundTag();
-		compoundTag2.putBoolean("invulnerable", this.invulnerable);
-		compoundTag2.putBoolean("flying", this.flying);
-		compoundTag2.putBoolean("mayfly", this.allowFlying);
-		compoundTag2.putBoolean("instabuild", this.creativeMode);
-		compoundTag2.putBoolean("mayBuild", this.allowModifyWorld);
-		compoundTag2.putFloat("flySpeed", this.flySpeed);
-		compoundTag2.putFloat("walkSpeed", this.walkSpeed);
-		compoundTag.put("abilities", compoundTag2);
+	public void writeNbt(NbtCompound nbt) {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putBoolean("invulnerable", this.invulnerable);
+		nbtCompound.putBoolean("flying", this.flying);
+		nbtCompound.putBoolean("mayfly", this.allowFlying);
+		nbtCompound.putBoolean("instabuild", this.creativeMode);
+		nbtCompound.putBoolean("mayBuild", this.allowModifyWorld);
+		nbtCompound.putFloat("flySpeed", this.flySpeed);
+		nbtCompound.putFloat("walkSpeed", this.walkSpeed);
+		nbt.put("abilities", nbtCompound);
 	}
 
-	public void deserialize(CompoundTag compoundTag) {
-		if (compoundTag.contains("abilities", 10)) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("abilities");
-			this.invulnerable = compoundTag2.getBoolean("invulnerable");
-			this.flying = compoundTag2.getBoolean("flying");
-			this.allowFlying = compoundTag2.getBoolean("mayfly");
-			this.creativeMode = compoundTag2.getBoolean("instabuild");
-			if (compoundTag2.contains("flySpeed", 99)) {
-				this.flySpeed = compoundTag2.getFloat("flySpeed");
-				this.walkSpeed = compoundTag2.getFloat("walkSpeed");
+	public void readNbt(NbtCompound nbt) {
+		if (nbt.contains("abilities", 10)) {
+			NbtCompound nbtCompound = nbt.getCompound("abilities");
+			this.invulnerable = nbtCompound.getBoolean("invulnerable");
+			this.flying = nbtCompound.getBoolean("flying");
+			this.allowFlying = nbtCompound.getBoolean("mayfly");
+			this.creativeMode = nbtCompound.getBoolean("instabuild");
+			if (nbtCompound.contains("flySpeed", 99)) {
+				this.flySpeed = nbtCompound.getFloat("flySpeed");
+				this.walkSpeed = nbtCompound.getFloat("walkSpeed");
 			}
 
-			if (compoundTag2.contains("mayBuild", 1)) {
-				this.allowModifyWorld = compoundTag2.getBoolean("mayBuild");
+			if (nbtCompound.contains("mayBuild", 1)) {
+				this.allowModifyWorld = nbtCompound.getBoolean("mayBuild");
 			}
 		}
 	}

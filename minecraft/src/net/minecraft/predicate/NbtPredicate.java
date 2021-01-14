@@ -9,19 +9,19 @@ import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.JsonHelper;
 
 public class NbtPredicate {
 	public static final NbtPredicate ANY = new NbtPredicate(null);
 	@Nullable
-	private final CompoundTag tag;
+	private final NbtCompound nbt;
 
-	public NbtPredicate(@Nullable CompoundTag tag) {
-		this.tag = tag;
+	public NbtPredicate(@Nullable NbtCompound nbt) {
+		this.nbt = nbt;
 	}
 
 	public boolean test(ItemStack stack) {
@@ -29,45 +29,45 @@ public class NbtPredicate {
 	}
 
 	public boolean test(Entity entity) {
-		return this == ANY ? true : this.test(entityToTag(entity));
+		return this == ANY ? true : this.test(entityToNbt(entity));
 	}
 
-	public boolean test(@Nullable Tag tag) {
-		if (tag == null) {
+	public boolean test(@Nullable NbtElement element) {
+		if (element == null) {
 			return this == ANY;
 		} else {
-			return this.tag == null || NbtHelper.matches(this.tag, tag, true);
+			return this.nbt == null || NbtHelper.matches(this.nbt, element, true);
 		}
 	}
 
 	public JsonElement toJson() {
-		return (JsonElement)(this != ANY && this.tag != null ? new JsonPrimitive(this.tag.toString()) : JsonNull.INSTANCE);
+		return (JsonElement)(this != ANY && this.nbt != null ? new JsonPrimitive(this.nbt.toString()) : JsonNull.INSTANCE);
 	}
 
 	public static NbtPredicate fromJson(@Nullable JsonElement json) {
 		if (json != null && !json.isJsonNull()) {
-			CompoundTag compoundTag;
+			NbtCompound nbtCompound;
 			try {
-				compoundTag = StringNbtReader.parse(JsonHelper.asString(json, "nbt"));
+				nbtCompound = StringNbtReader.parse(JsonHelper.asString(json, "nbt"));
 			} catch (CommandSyntaxException var3) {
 				throw new JsonSyntaxException("Invalid nbt tag: " + var3.getMessage());
 			}
 
-			return new NbtPredicate(compoundTag);
+			return new NbtPredicate(nbtCompound);
 		} else {
 			return ANY;
 		}
 	}
 
-	public static CompoundTag entityToTag(Entity entity) {
-		CompoundTag compoundTag = entity.toTag(new CompoundTag());
+	public static NbtCompound entityToNbt(Entity entity) {
+		NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
 		if (entity instanceof PlayerEntity) {
 			ItemStack itemStack = ((PlayerEntity)entity).inventory.getMainHandStack();
 			if (!itemStack.isEmpty()) {
-				compoundTag.put("SelectedItem", itemStack.toTag(new CompoundTag()));
+				nbtCompound.put("SelectedItem", itemStack.writeNbt(new NbtCompound()));
 			}
 		}
 
-		return compoundTag;
+		return nbtCompound;
 	}
 }

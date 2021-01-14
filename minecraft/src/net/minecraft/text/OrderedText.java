@@ -27,12 +27,12 @@ public interface OrderedText {
 	}
 
 	@Environment(EnvType.CLIENT)
-	static OrderedText styledString(String string, Style style) {
+	static OrderedText styledForwardsVisitedString(String string, Style style) {
 		return string.isEmpty() ? EMPTY : visitor -> TextVisitFactory.visitForwards(string, style, visitor);
 	}
 
 	@Environment(EnvType.CLIENT)
-	static OrderedText styledStringMapped(String string, Style style, Int2IntFunction codePointMapper) {
+	static OrderedText styledBackwardsVisitedString(String string, Style style, Int2IntFunction codePointMapper) {
 		return string.isEmpty() ? EMPTY : visitor -> TextVisitFactory.visitBackwards(string, style, map(visitor, codePointMapper));
 	}
 

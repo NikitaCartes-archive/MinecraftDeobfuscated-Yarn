@@ -34,7 +34,7 @@ import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -130,15 +130,15 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.dataTracker.set(ATTACHED_FACE, Direction.byId(tag.getByte("AttachFace")));
-		this.dataTracker.set(PEEK_AMOUNT, tag.getByte("Peek"));
-		this.dataTracker.set(COLOR, tag.getByte("Color"));
-		if (tag.contains("APX")) {
-			int i = tag.getInt("APX");
-			int j = tag.getInt("APY");
-			int k = tag.getInt("APZ");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.dataTracker.set(ATTACHED_FACE, Direction.byId(nbt.getByte("AttachFace")));
+		this.dataTracker.set(PEEK_AMOUNT, nbt.getByte("Peek"));
+		this.dataTracker.set(COLOR, nbt.getByte("Color"));
+		if (nbt.contains("APX")) {
+			int i = nbt.getInt("APX");
+			int j = nbt.getInt("APY");
+			int k = nbt.getInt("APZ");
 			this.dataTracker.set(ATTACHED_BLOCK, Optional.of(new BlockPos(i, j, k)));
 		} else {
 			this.dataTracker.set(ATTACHED_BLOCK, Optional.empty());
@@ -146,16 +146,16 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putByte("AttachFace", (byte)this.dataTracker.get(ATTACHED_FACE).getId());
-		tag.putByte("Peek", this.dataTracker.get(PEEK_AMOUNT));
-		tag.putByte("Color", this.dataTracker.get(COLOR));
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putByte("AttachFace", (byte)this.dataTracker.get(ATTACHED_FACE).getId());
+		nbt.putByte("Peek", this.dataTracker.get(PEEK_AMOUNT));
+		nbt.putByte("Color", this.dataTracker.get(COLOR));
 		BlockPos blockPos = this.getAttachedBlock();
 		if (blockPos != null) {
-			tag.putInt("APX", blockPos.getX());
-			tag.putInt("APY", blockPos.getY());
-			tag.putInt("APZ", blockPos.getZ());
+			nbt.putInt("APX", blockPos.getX());
+			nbt.putInt("APY", blockPos.getY());
+			nbt.putInt("APZ", blockPos.getZ());
 		}
 	}
 
@@ -252,17 +252,17 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void move(MovementType type, Vec3d movement) {
-		if (type == MovementType.SHULKER_BOX) {
+	public void move(MovementType movementType, Vec3d movement) {
+		if (movementType == MovementType.SHULKER_BOX) {
 			this.tryTeleport();
 		} else {
-			super.move(type, movement);
+			super.move(movementType, movement);
 		}
 	}
 
 	@Override
-	public void updatePosition(double x, double y, double z) {
-		super.updatePosition(x, y, z);
+	public void setPosition(double x, double y, double z) {
+		super.setPosition(x, y, z);
 		if (this.dataTracker != null && this.age != 0) {
 			Optional<BlockPos> optional = this.dataTracker.get(ATTACHED_BLOCK);
 			Optional<BlockPos> optional2 = Optional.of(new BlockPos(x, y, z));
@@ -285,9 +285,9 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 		return null;
 	}
 
-	private boolean canStay(BlockPos pos, Direction attachSide) {
-		return this.world.isDirectionSolid(pos.offset(attachSide), this, attachSide.getOpposite())
-			&& this.world.isSpaceEmpty(this, ShulkerLidCollisions.getLidCollisionBox(pos, attachSide.getOpposite()));
+	private boolean canStay(BlockPos pos, Direction direction) {
+		return this.world.isDirectionSolid(pos.offset(direction), this, direction.getOpposite())
+			&& this.world.isSpaceEmpty(this, ShulkerLidCollisions.getLidCollisionBox(pos, direction.getOpposite()));
 	}
 
 	protected boolean tryTeleport() {

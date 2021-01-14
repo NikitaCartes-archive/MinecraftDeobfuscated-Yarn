@@ -10,65 +10,65 @@ import net.minecraft.util.math.Matrix4f;
 public class GlyphRenderer {
 	private final RenderLayer textLayer;
 	private final RenderLayer seeThroughTextLayer;
-	private final float uMin;
-	private final float uMax;
-	private final float vMin;
-	private final float vMax;
-	private final float xMin;
-	private final float xMax;
-	private final float yMin;
-	private final float yMax;
+	private final float minU;
+	private final float maxU;
+	private final float minV;
+	private final float maxV;
+	private final float minX;
+	private final float maxX;
+	private final float minY;
+	private final float maxY;
 
 	public GlyphRenderer(
-		RenderLayer textLayer, RenderLayer seeThroughTextLayer, float uMin, float uMax, float vMin, float vMax, float xMin, float xMax, float yMin, float yMax
+		RenderLayer textLayer, RenderLayer seeThroughTextLayer, float minU, float maxU, float minV, float maxV, float minX, float maxX, float minY, float maxY
 	) {
 		this.textLayer = textLayer;
 		this.seeThroughTextLayer = seeThroughTextLayer;
-		this.uMin = uMin;
-		this.uMax = uMax;
-		this.vMin = vMin;
-		this.vMax = vMax;
-		this.xMin = xMin;
-		this.xMax = xMax;
-		this.yMin = yMin;
-		this.yMax = yMax;
+		this.minU = minU;
+		this.maxU = maxU;
+		this.minV = minV;
+		this.maxV = maxV;
+		this.minX = minX;
+		this.maxX = maxX;
+		this.minY = minY;
+		this.maxY = maxY;
 	}
 
 	public void draw(boolean italic, float x, float y, Matrix4f matrix, VertexConsumer vertexConsumer, float red, float green, float blue, float alpha, int light) {
 		int i = 3;
-		float f = x + this.xMin;
-		float g = x + this.xMax;
-		float h = this.yMin - 3.0F;
-		float j = this.yMax - 3.0F;
+		float f = x + this.minX;
+		float g = x + this.maxX;
+		float h = this.minY - 3.0F;
+		float j = this.maxY - 3.0F;
 		float k = y + h;
 		float l = y + j;
 		float m = italic ? 1.0F - 0.25F * h : 0.0F;
 		float n = italic ? 1.0F - 0.25F * j : 0.0F;
-		vertexConsumer.vertex(matrix, f + m, k, 0.0F).color(red, green, blue, alpha).texture(this.uMin, this.vMin).light(light).next();
-		vertexConsumer.vertex(matrix, f + n, l, 0.0F).color(red, green, blue, alpha).texture(this.uMin, this.vMax).light(light).next();
-		vertexConsumer.vertex(matrix, g + n, l, 0.0F).color(red, green, blue, alpha).texture(this.uMax, this.vMax).light(light).next();
-		vertexConsumer.vertex(matrix, g + m, k, 0.0F).color(red, green, blue, alpha).texture(this.uMax, this.vMin).light(light).next();
+		vertexConsumer.vertex(matrix, f + m, k, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.minV).light(light).next();
+		vertexConsumer.vertex(matrix, f + n, l, 0.0F).color(red, green, blue, alpha).texture(this.minU, this.maxV).light(light).next();
+		vertexConsumer.vertex(matrix, g + n, l, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.maxV).light(light).next();
+		vertexConsumer.vertex(matrix, g + m, k, 0.0F).color(red, green, blue, alpha).texture(this.maxU, this.minV).light(light).next();
 	}
 
 	public void drawRectangle(GlyphRenderer.Rectangle rectangle, Matrix4f matrix, VertexConsumer vertexConsumer, int light) {
 		vertexConsumer.vertex(matrix, rectangle.xMin, rectangle.yMin, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
-			.texture(this.uMin, this.vMin)
+			.texture(this.minU, this.minV)
 			.light(light)
 			.next();
 		vertexConsumer.vertex(matrix, rectangle.xMax, rectangle.yMin, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
-			.texture(this.uMin, this.vMax)
+			.texture(this.minU, this.maxV)
 			.light(light)
 			.next();
 		vertexConsumer.vertex(matrix, rectangle.xMax, rectangle.yMax, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
-			.texture(this.uMax, this.vMax)
+			.texture(this.maxU, this.maxV)
 			.light(light)
 			.next();
 		vertexConsumer.vertex(matrix, rectangle.xMin, rectangle.yMax, rectangle.zIndex)
 			.color(rectangle.red, rectangle.green, rectangle.blue, rectangle.alpha)
-			.texture(this.uMax, this.vMin)
+			.texture(this.maxU, this.minV)
 			.light(light)
 			.next();
 	}

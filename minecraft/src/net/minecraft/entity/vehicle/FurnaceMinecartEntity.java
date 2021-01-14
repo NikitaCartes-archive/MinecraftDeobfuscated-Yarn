@@ -11,7 +11,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.util.ActionResult;
@@ -134,19 +134,19 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putDouble("PushX", this.pushX);
-		tag.putDouble("PushZ", this.pushZ);
-		tag.putShort("Fuel", (short)this.fuel);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putDouble("PushX", this.pushX);
+		nbt.putDouble("PushZ", this.pushZ);
+		nbt.putShort("Fuel", (short)this.fuel);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.pushX = tag.getDouble("PushX");
-		this.pushZ = tag.getDouble("PushZ");
-		this.fuel = tag.getShort("Fuel");
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.pushX = nbt.getDouble("PushX");
+		this.pushZ = nbt.getDouble("PushZ");
+		this.fuel = nbt.getShort("Fuel");
 	}
 
 	protected boolean isLit() {

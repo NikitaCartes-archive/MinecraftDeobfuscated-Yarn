@@ -13,7 +13,6 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.BookModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -27,6 +26,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
@@ -93,13 +93,13 @@ public class EnchantmentScreen extends HandledScreen<EnchantmentScreenHandler> {
 		matrices.translate(0.0, 3.3F, 1984.0);
 		float f = 5.0F;
 		matrices.scale(5.0F, 5.0F, 5.0F);
-		matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
-		matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(20.0F));
+		matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(20.0F));
 		float g = MathHelper.lerp(delta, this.pageTurningSpeed, this.nextPageTurningSpeed);
 		matrices.translate((double)((1.0F - g) * 0.2F), (double)((1.0F - g) * 0.1F), (double)((1.0F - g) * 0.25F));
 		float h = -(1.0F - g) * 90.0F - 90.0F;
-		matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
-		matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+		matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+		matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
 		float l = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.25F;
 		float m = MathHelper.lerp(delta, this.pageAngle, this.nextPageAngle) + 0.75F;
 		l = (l - (float)MathHelper.fastFloor((double)l)) * 1.6F - 0.3F;

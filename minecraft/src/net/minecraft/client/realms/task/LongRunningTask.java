@@ -39,12 +39,12 @@ public abstract class LongRunningTask implements Errable, Runnable {
 	}
 
 	@Override
-	public void error(Text text) {
-		this.longRunningMcoTaskScreen.error(text);
+	public void error(Text errorMessage) {
+		this.longRunningMcoTaskScreen.error(errorMessage);
 	}
 
-	public void setTitle(Text text) {
-		this.longRunningMcoTaskScreen.setTitle(text);
+	public void setTitle(Text title) {
+		this.longRunningMcoTaskScreen.setTitle(title);
 	}
 
 	public boolean aborted() {

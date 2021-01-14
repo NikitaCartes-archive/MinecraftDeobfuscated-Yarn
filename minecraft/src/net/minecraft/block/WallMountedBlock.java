@@ -22,9 +22,9 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 		return canPlaceAt(world, pos, getDirection(state).getOpposite());
 	}
 
-	public static boolean canPlaceAt(WorldView worldView, BlockPos pos, Direction direction) {
+	public static boolean canPlaceAt(WorldView world, BlockPos pos, Direction direction) {
 		BlockPos blockPos = pos.offset(direction);
-		return worldView.getBlockState(blockPos).isSideSolidFullSquare(worldView, blockPos, direction.getOpposite());
+		return world.getBlockState(blockPos).isSideSolidFullSquare(world, blockPos, direction.getOpposite());
 	}
 
 	@Nullable
@@ -49,10 +49,12 @@ public class WallMountedBlock extends HorizontalFacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		return getDirection(state).getOpposite() == direction && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	protected static Direction getDirection(BlockState state) {

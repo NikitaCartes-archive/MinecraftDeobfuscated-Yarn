@@ -29,7 +29,7 @@ import net.minecraft.world.TestableWorld;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
-import net.minecraft.world.gen.tree.TreeDecorator;
+import net.minecraft.world.gen.treedecorator.TreeDecorator;
 
 public class TreeFeature extends Feature<TreeFeatureConfig> {
 	public TreeFeature(Codec<TreeFeatureConfig> codec) {
@@ -52,7 +52,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		return world.testBlockState(pos, state -> state.isAir() || state.isIn(BlockTags.LEAVES));
 	}
 
-	private static boolean isDirtOrGrass(TestableWorld world, BlockPos pos) {
+	private static boolean canPlaceTreeOn(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(pos, state -> {
 			Block block = state.getBlock();
 			return isSoil(block) || block == Blocks.FARMLAND;
@@ -111,7 +111,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 
 		if (blockPos.getY() < 1 || blockPos.getY() + i + 1 > 256) {
 			return false;
-		} else if (!isDirtOrGrass(world, blockPos.down())) {
+		} else if (!canPlaceTreeOn(world, blockPos.down())) {
 			return false;
 		} else {
 			OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();

@@ -20,7 +20,7 @@ import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.sound.SoundEvents;
@@ -47,9 +47,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		super(entityType, world);
 	}
 
-	public ItemFrameEntity(World world, BlockPos pos, Direction direction) {
+	public ItemFrameEntity(World world, BlockPos pos, Direction facing) {
 		super(EntityType.ITEM_FRAME, world, pos);
-		this.setFacing(direction);
+		this.setFacing(facing);
 	}
 
 	@Override
@@ -125,9 +125,9 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void move(MovementType type, Vec3d movement) {
+	public void move(MovementType movementType, Vec3d movement) {
 		if (!this.fixed) {
-			super.move(type, movement);
+			super.move(movementType, movement);
 		}
 	}
 
@@ -291,35 +291,35 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 		this.setRotation(value, true);
 	}
 
-	private void setRotation(int value, boolean bl) {
+	private void setRotation(int value, boolean updateComparators) {
 		this.getDataTracker().set(ROTATION, value % 8);
-		if (bl && this.attachmentPos != null) {
+		if (updateComparators && this.attachmentPos != null) {
 			this.world.updateComparators(this.attachmentPos, Blocks.AIR);
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (!this.getHeldItemStack().isEmpty()) {
-			tag.put("Item", this.getHeldItemStack().toTag(new CompoundTag()));
-			tag.putByte("ItemRotation", (byte)this.getRotation());
-			tag.putFloat("ItemDropChance", this.itemDropChance);
+			nbt.put("Item", this.getHeldItemStack().writeNbt(new NbtCompound()));
+			nbt.putByte("ItemRotation", (byte)this.getRotation());
+			nbt.putFloat("ItemDropChance", this.itemDropChance);
 		}
 
-		tag.putByte("Facing", (byte)this.facing.getId());
-		tag.putBoolean("Invisible", this.isInvisible());
-		tag.putBoolean("Fixed", this.fixed);
+		nbt.putByte("Facing", (byte)this.facing.getId());
+		nbt.putBoolean("Invisible", this.isInvisible());
+		nbt.putBoolean("Fixed", this.fixed);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		CompoundTag compoundTag = tag.getCompound("Item");
-		if (compoundTag != null && !compoundTag.isEmpty()) {
-			ItemStack itemStack = ItemStack.fromTag(compoundTag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		NbtCompound nbtCompound = nbt.getCompound("Item");
+		if (nbtCompound != null && !nbtCompound.isEmpty()) {
+			ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
 			if (itemStack.isEmpty()) {
-				ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", compoundTag);
+				ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", nbtCompound);
 			}
 
 			ItemStack itemStack2 = this.getHeldItemStack();
@@ -328,15 +328,15 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 			}
 
 			this.setHeldItemStack(itemStack, false);
-			this.setRotation(tag.getByte("ItemRotation"), false);
-			if (tag.contains("ItemDropChance", 99)) {
-				this.itemDropChance = tag.getFloat("ItemDropChance");
+			this.setRotation(nbt.getByte("ItemRotation"), false);
+			if (nbt.contains("ItemDropChance", 99)) {
+				this.itemDropChance = nbt.getFloat("ItemDropChance");
 			}
 		}
 
-		this.setFacing(Direction.byId(tag.getByte("Facing")));
-		this.setInvisible(tag.getBoolean("Invisible"));
-		this.fixed = tag.getBoolean("Fixed");
+		this.setFacing(Direction.byId(nbt.getByte("Facing")));
+		this.setInvisible(nbt.getBoolean("Invisible"));
+		this.fixed = nbt.getBoolean("Fixed");
 	}
 
 	@Override

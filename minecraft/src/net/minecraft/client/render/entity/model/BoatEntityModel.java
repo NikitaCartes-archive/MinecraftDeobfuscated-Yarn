@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 	private final ModelPart[] paddles = new ModelPart[2];
-	private final ModelPart bottom;
+	private final ModelPart waterPatch;
 	private final ImmutableList<ModelPart> parts;
 
 	public BoatEntityModel() {
@@ -49,10 +49,10 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 		this.paddles[1].yaw = (float) Math.PI;
 		this.paddles[0].roll = (float) (Math.PI / 16);
 		this.paddles[1].roll = (float) (Math.PI / 16);
-		this.bottom = new ModelPart(this, 0, 0).setTextureSize(128, 64);
-		this.bottom.addCuboid(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
-		this.bottom.setPivot(0.0F, -3.0F, 1.0F);
-		this.bottom.pitch = (float) (Math.PI / 2);
+		this.waterPatch = new ModelPart(this, 0, 0).setTextureSize(128, 64);
+		this.waterPatch.addCuboid(-14.0F, -9.0F, -3.0F, 28.0F, 16.0F, 3.0F, 0.0F);
+		this.waterPatch.setPivot(0.0F, -3.0F, 1.0F);
+		this.waterPatch.pitch = (float) (Math.PI / 2);
 		Builder<ModelPart> builder = ImmutableList.builder();
 		builder.addAll(Arrays.asList(modelParts));
 		builder.addAll(Arrays.asList(this.paddles));
@@ -69,7 +69,7 @@ public class BoatEntityModel extends CompositeEntityModel<BoatEntity> {
 	}
 
 	public ModelPart getBottom() {
-		return this.bottom;
+		return this.waterPatch;
 	}
 
 	protected ModelPart makePaddle(boolean isLeft) {

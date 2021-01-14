@@ -10,7 +10,7 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
-	private final ModelPart body;
+	private final ModelPart bone;
 	private final ModelPart torso;
 	private final ModelPart rightWing;
 	private final ModelPart leftWing;
@@ -26,11 +26,11 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		super(false, 24.0F, 0.0F);
 		this.textureWidth = 64;
 		this.textureHeight = 64;
-		this.body = new ModelPart(this);
-		this.body.setPivot(0.0F, 19.0F, 0.0F);
+		this.bone = new ModelPart(this);
+		this.bone.setPivot(0.0F, 19.0F, 0.0F);
 		this.torso = new ModelPart(this, 0, 0);
 		this.torso.setPivot(0.0F, 0.0F, 0.0F);
-		this.body.addChild(this.torso);
+		this.bone.addChild(this.torso);
 		this.torso.addCuboid(-3.5F, -4.0F, -5.0F, 7.0F, 7.0F, 10.0F, 0.0F);
 		this.stinger = new ModelPart(this, 26, 7);
 		this.stinger.addCuboid(0.0F, -1.0F, 5.0F, 0.0F, 1.0F, 2.0F, 0.0F);
@@ -48,7 +48,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		this.rightWing.pitch = 0.0F;
 		this.rightWing.yaw = -0.2618F;
 		this.rightWing.roll = 0.0F;
-		this.body.addChild(this.rightWing);
+		this.bone.addChild(this.rightWing);
 		this.rightWing.addCuboid(-9.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, 0.001F);
 		this.leftWing = new ModelPart(this, 0, 18);
 		this.leftWing.setPivot(1.5F, -4.0F, -3.0F);
@@ -56,19 +56,19 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		this.leftWing.yaw = 0.2618F;
 		this.leftWing.roll = 0.0F;
 		this.leftWing.mirror = true;
-		this.body.addChild(this.leftWing);
+		this.bone.addChild(this.leftWing);
 		this.leftWing.addCuboid(0.0F, 0.0F, 0.0F, 9.0F, 0.0F, 6.0F, 0.001F);
 		this.frontLegs = new ModelPart(this);
 		this.frontLegs.setPivot(1.5F, 3.0F, -2.0F);
-		this.body.addChild(this.frontLegs);
+		this.bone.addChild(this.frontLegs);
 		this.frontLegs.addCuboid("frontLegBox", -5.0F, 0.0F, 0.0F, 7, 2, 0, 0.0F, 26, 1);
 		this.middleLegs = new ModelPart(this);
 		this.middleLegs.setPivot(1.5F, 3.0F, 0.0F);
-		this.body.addChild(this.middleLegs);
+		this.bone.addChild(this.middleLegs);
 		this.middleLegs.addCuboid("midLegBox", -5.0F, 0.0F, 0.0F, 7, 2, 0, 0.0F, 26, 3);
 		this.backLegs = new ModelPart(this);
 		this.backLegs.setPivot(1.5F, 3.0F, 2.0F);
-		this.body.addChild(this.backLegs);
+		this.bone.addChild(this.backLegs);
 		this.backLegs.addCuboid("backLegBox", -5.0F, 0.0F, 0.0F, 7, 2, 0, 0.0F, 26, 5);
 	}
 
@@ -82,8 +82,8 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 		this.rightWing.pitch = 0.0F;
 		this.leftAntenna.pitch = 0.0F;
 		this.rightAntenna.pitch = 0.0F;
-		this.body.pitch = 0.0F;
-		this.body.pivotY = 19.0F;
+		this.bone.pitch = 0.0F;
+		this.bone.pivotY = 19.0F;
 		boolean bl = beeEntity.isOnGround() && beeEntity.getVelocity().lengthSquared() < 1.0E-7;
 		if (bl) {
 			this.rightWing.yaw = -0.2618F;
@@ -104,28 +104,28 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 			this.frontLegs.pitch = (float) (Math.PI / 4);
 			this.middleLegs.pitch = (float) (Math.PI / 4);
 			this.backLegs.pitch = (float) (Math.PI / 4);
-			this.body.pitch = 0.0F;
-			this.body.yaw = 0.0F;
-			this.body.roll = 0.0F;
+			this.bone.pitch = 0.0F;
+			this.bone.yaw = 0.0F;
+			this.bone.roll = 0.0F;
 		}
 
 		if (!beeEntity.hasAngerTime()) {
-			this.body.pitch = 0.0F;
-			this.body.yaw = 0.0F;
-			this.body.roll = 0.0F;
+			this.bone.pitch = 0.0F;
+			this.bone.yaw = 0.0F;
+			this.bone.roll = 0.0F;
 			if (!bl) {
 				float k = MathHelper.cos(h * 0.18F);
-				this.body.pitch = 0.1F + k * (float) Math.PI * 0.025F;
+				this.bone.pitch = 0.1F + k * (float) Math.PI * 0.025F;
 				this.leftAntenna.pitch = k * (float) Math.PI * 0.03F;
 				this.rightAntenna.pitch = k * (float) Math.PI * 0.03F;
 				this.frontLegs.pitch = -k * (float) Math.PI * 0.1F + (float) (Math.PI / 8);
 				this.backLegs.pitch = -k * (float) Math.PI * 0.05F + (float) (Math.PI / 4);
-				this.body.pivotY = 19.0F - MathHelper.cos(h * 0.18F) * 0.9F;
+				this.bone.pivotY = 19.0F - MathHelper.cos(h * 0.18F) * 0.9F;
 			}
 		}
 
 		if (this.bodyPitch > 0.0F) {
-			this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 3.0915928F, this.bodyPitch);
+			this.bone.pitch = ModelUtil.interpolateAngle(this.bone.pitch, 3.0915928F, this.bodyPitch);
 		}
 	}
 
@@ -136,6 +136,6 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.body);
+		return ImmutableList.<ModelPart>of(this.bone);
 	}
 }

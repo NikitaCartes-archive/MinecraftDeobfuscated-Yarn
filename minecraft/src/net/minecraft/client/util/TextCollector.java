@@ -11,8 +11,8 @@ import net.minecraft.text.StringVisitable;
 public class TextCollector {
 	private final List<StringVisitable> field_25260 = Lists.<StringVisitable>newArrayList();
 
-	public void add(StringVisitable stringVisitable) {
-		this.field_25260.add(stringVisitable);
+	public void add(StringVisitable text) {
+		this.field_25260.add(text);
 	}
 
 	@Nullable

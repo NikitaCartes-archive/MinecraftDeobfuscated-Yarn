@@ -173,11 +173,11 @@ public class EntitySelectorReader {
 		}
 	}
 
-	private Predicate<Entity> rotationPredicate(FloatRangeArgument floatRangeArgument, ToDoubleFunction<Entity> toDoubleFunction) {
-		double d = (double)MathHelper.wrapDegrees(floatRangeArgument.getMin() == null ? 0.0F : floatRangeArgument.getMin());
-		double e = (double)MathHelper.wrapDegrees(floatRangeArgument.getMax() == null ? 359.0F : floatRangeArgument.getMax());
+	private Predicate<Entity> rotationPredicate(FloatRangeArgument angleRange, ToDoubleFunction<Entity> entityToAngle) {
+		double d = (double)MathHelper.wrapDegrees(angleRange.getMin() == null ? 0.0F : angleRange.getMin());
+		double e = (double)MathHelper.wrapDegrees(angleRange.getMax() == null ? 359.0F : angleRange.getMax());
 		return entity -> {
-			double f = MathHelper.wrapDegrees(toDoubleFunction.applyAsDouble(entity));
+			double f = MathHelper.wrapDegrees(entityToAngle.applyAsDouble(entity));
 			if (d > e) {
 				return f >= d || f <= e;
 			} else {
@@ -354,16 +354,16 @@ public class EntitySelectorReader {
 		return this.pitchRange;
 	}
 
-	public void setPitchRange(FloatRangeArgument floatRangeArgument) {
-		this.pitchRange = floatRangeArgument;
+	public void setPitchRange(FloatRangeArgument pitchRange) {
+		this.pitchRange = pitchRange;
 	}
 
 	public FloatRangeArgument getYawRange() {
 		return this.yawRange;
 	}
 
-	public void setYawRange(FloatRangeArgument floatRangeArgument) {
-		this.yawRange = floatRangeArgument;
+	public void setYawRange(FloatRangeArgument yawRange) {
+		this.yawRange = yawRange;
 	}
 
 	@Nullable
@@ -506,8 +506,8 @@ public class EntitySelectorReader {
 		return this.senderOnly;
 	}
 
-	public void setSuggestionProvider(BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> biFunction) {
-		this.suggestionProvider = biFunction;
+	public void setSuggestionProvider(BiFunction<SuggestionsBuilder, Consumer<SuggestionsBuilder>, CompletableFuture<Suggestions>> suggestionProvider) {
+		this.suggestionProvider = suggestionProvider;
 	}
 
 	public CompletableFuture<Suggestions> listSuggestions(SuggestionsBuilder builder, Consumer<SuggestionsBuilder> consumer) {
@@ -526,8 +526,8 @@ public class EntitySelectorReader {
 		return this.excludesName;
 	}
 
-	public void setExcludesName(boolean bl) {
-		this.excludesName = bl;
+	public void setExcludesName(boolean excludesName) {
+		this.excludesName = excludesName;
 	}
 
 	public boolean hasLimit() {

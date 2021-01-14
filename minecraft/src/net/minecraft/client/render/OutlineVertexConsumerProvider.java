@@ -30,7 +30,7 @@ public class OutlineVertexConsumerProvider implements VertexConsumerProvider {
 				OutlineVertexConsumerProvider.OutlineVertexConsumer outlineVertexConsumer = new OutlineVertexConsumerProvider.OutlineVertexConsumer(
 					vertexConsumer2, this.red, this.green, this.blue, this.alpha
 				);
-				return VertexConsumers.dual(outlineVertexConsumer, vertexConsumer);
+				return VertexConsumers.union(outlineVertexConsumer, vertexConsumer);
 			} else {
 				return vertexConsumer;
 			}

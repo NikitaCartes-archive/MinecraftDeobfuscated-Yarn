@@ -14,19 +14,19 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class SaplingGenerator {
 	@Nullable
-	protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bl);
+	protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createTreeFeature(Random random, boolean bees);
 
-	public boolean generate(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
-		ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.method_24282(serverWorld, blockPos));
+	public boolean generate(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random) {
+		ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createTreeFeature(random, this.method_24282(world, pos));
 		if (configuredFeature == null) {
 			return false;
 		} else {
-			serverWorld.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
+			world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
 			configuredFeature.config.ignoreFluidCheck();
-			if (configuredFeature.generate(serverWorld, chunkGenerator, random, blockPos)) {
+			if (configuredFeature.generate(world, chunkGenerator, random, pos)) {
 				return true;
 			} else {
-				serverWorld.setBlockState(blockPos, blockState, 4);
+				world.setBlockState(pos, state, 4);
 				return false;
 			}
 		}

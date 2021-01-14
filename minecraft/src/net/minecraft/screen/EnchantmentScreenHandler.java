@@ -2,7 +2,6 @@ package net.minecraft.screen;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
@@ -16,7 +15,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -93,7 +92,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		if (inventory == this.inventory) {
 			ItemStack itemStack = inventory.getStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
-				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				this.context.run((world, blockPos) -> {
 					int ixx = 0;
 
 					for(int j = -1; j <= 1; ++j) {
@@ -151,7 +150,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					}
 
 					this.sendContentUpdates();
-				}));
+				});
 			} else {
 				for(int i = 0; i < 3; ++i) {
 					this.enchantmentPower[i] = 0;
@@ -174,7 +173,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			|| (player.experienceLevel < i || player.experienceLevel < this.enchantmentPower[id]) && !player.abilities.creativeMode) {
 			return false;
 		} else {
-			this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+			this.context.run((world, blockPos) -> {
 				ItemStack itemStack3 = itemStack;
 				List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, id, this.enchantmentPower[id]);
 				if (!list.isEmpty()) {
@@ -182,9 +181,9 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					boolean bl = itemStack.getItem() == Items.BOOK;
 					if (bl) {
 						itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
-						CompoundTag compoundTag = itemStack.getTag();
-						if (compoundTag != null) {
-							itemStack3.setTag(compoundTag.copy());
+						NbtCompound nbtCompound = itemStack.getTag();
+						if (nbtCompound != null) {
+							itemStack3.setTag(nbtCompound.copy());
 						}
 
 						this.inventory.setStack(0, itemStack3);
@@ -216,7 +215,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					this.onContentChanged(this.inventory);
 					world.playSound(null, blockPos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
-			}));
+			});
 			return true;
 		}
 	}
@@ -245,7 +244,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.inventory)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, player.world, this.inventory));
 	}
 
 	@Override

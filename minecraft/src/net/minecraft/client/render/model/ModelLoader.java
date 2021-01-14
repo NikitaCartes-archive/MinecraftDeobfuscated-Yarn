@@ -53,7 +53,6 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.client.util.SpriteIdentifier;
-import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.screen.PlayerScreenHandler;
@@ -62,6 +61,7 @@ import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.IOUtils;
@@ -120,8 +120,8 @@ public class ModelLoader {
 		TexturedRenderLayers.addDefaultTextures(hashSet::add);
 	});
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final ModelIdentifier MISSING = new ModelIdentifier("builtin/missing", "missing");
-	private static final String field_21773 = MISSING.toString();
+	public static final ModelIdentifier MISSING_ID = new ModelIdentifier("builtin/missing", "missing");
+	private static final String field_21773 = MISSING_ID.toString();
 	@VisibleForTesting
 	public static final String MISSING_DEFINITION = ("{    'textures': {       'particle': '"
 			+ MissingSprite.getMissingSpriteId().getPath()
@@ -169,8 +169,8 @@ public class ModelLoader {
 		profiler.push("missing_model");
 
 		try {
-			this.unbakedModels.put(MISSING, this.loadModelFromJson(MISSING));
-			this.addModel(MISSING);
+			this.unbakedModels.put(MISSING_ID, this.loadModelFromJson(MISSING_ID));
+			this.addModel(MISSING_ID);
 		} catch (IOException var12) {
 			LOGGER.error("Error loading missing model, should never happen :(", var12);
 			throw new RuntimeException(var12);
@@ -303,7 +303,7 @@ public class ModelLoader {
 			throw new IllegalStateException("Circular reference while loading " + id);
 		} else {
 			this.modelsToLoad.add(id);
-			UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING);
+			UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING_ID);
 
 			while(!this.modelsToLoad.isEmpty()) {
 				Identifier identifier = (Identifier)this.modelsToLoad.iterator().next();
@@ -350,7 +350,7 @@ public class ModelLoader {
 					
 				);
 				Identifier identifier2 = new Identifier(id.getNamespace(), "blockstates/" + id.getPath() + ".json");
-				UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING);
+				UnbakedModel unbakedModel = (UnbakedModel)this.unbakedModels.get(MISSING_ID);
 				ModelLoader.ModelDefinition modelDefinition = new ModelLoader.ModelDefinition(ImmutableList.of(unbakedModel), ImmutableList.of());
 				Pair<UnbakedModel, Supplier<ModelLoader.ModelDefinition>> pair = Pair.of(unbakedModel, (Supplier)() -> modelDefinition);
 
@@ -370,7 +370,7 @@ public class ModelLoader {
 										try {
 											var4x = Pair.of(
 												resource.getResourcePackName(),
-												ModelVariantMap.deserialize(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+												ModelVariantMap.fromJson(this.variantMapDeserializationContext, new InputStreamReader(inputStream, StandardCharsets.UTF_8))
 											);
 										} catch (Throwable var14) {
 											var3xx = var14;
@@ -517,23 +517,23 @@ public class ModelLoader {
 	}
 
 	@Nullable
-	public BakedModel bake(Identifier identifier, ModelBakeSettings settings) {
-		Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isShaded());
+	public BakedModel bake(Identifier id, ModelBakeSettings settings) {
+		Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(id, settings.getRotation(), settings.isUvLocked());
 		if (this.bakedModelCache.containsKey(triple)) {
 			return (BakedModel)this.bakedModelCache.get(triple);
 		} else if (this.spriteAtlasManager == null) {
 			throw new IllegalStateException("bake called too early");
 		} else {
-			UnbakedModel unbakedModel = this.getOrLoadModel(identifier);
+			UnbakedModel unbakedModel = this.getOrLoadModel(id);
 			if (unbakedModel instanceof JsonUnbakedModel) {
 				JsonUnbakedModel jsonUnbakedModel = (JsonUnbakedModel)unbakedModel;
 				if (jsonUnbakedModel.getRootModel() == GENERATION_MARKER) {
 					return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel)
-						.bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, identifier, false);
+						.bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, id, false);
 				}
 			}
 
-			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, identifier);
+			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, id);
 			this.bakedModelCache.put(triple, bakedModel);
 			return bakedModel;
 		}

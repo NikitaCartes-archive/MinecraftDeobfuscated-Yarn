@@ -57,12 +57,12 @@ public class MerchantScreenHandler extends ScreenHandler {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.merchantInventory.updateRecipes();
+		this.merchantInventory.updateOffers();
 		super.onContentChanged(inventory);
 	}
 
 	public void setRecipeIndex(int index) {
-		this.merchantInventory.setRecipeIndex(index);
+		this.merchantInventory.setOfferIndex(index);
 	}
 
 	@Override
@@ -122,7 +122,7 @@ public class MerchantScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 				this.playYesSound();
 			} else if (index != 0 && index != 1) {
 				if (index >= 3 && index < 30) {

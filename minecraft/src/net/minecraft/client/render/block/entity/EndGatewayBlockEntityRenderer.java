@@ -27,8 +27,8 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 			int k = MathHelper.floor((double)g * d);
 			float[] fs = endGatewayBlockEntity.isRecentlyGenerated() ? DyeColor.MAGENTA.getColorComponents() : DyeColor.PURPLE.getColorComponents();
 			long l = endGatewayBlockEntity.getWorld().getTime();
-			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, 0, k, fs, 0.15F, 0.175F);
-			BeaconBlockEntityRenderer.renderLightBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, 0, -k, fs, 0.15F, 0.175F);
+			BeaconBlockEntityRenderer.renderBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, 0, k, fs, 0.15F, 0.175F);
+			BeaconBlockEntityRenderer.renderBeam(matrixStack, vertexConsumerProvider, BEAM_TEXTURE, f, g, l, 0, -k, fs, 0.15F, 0.175F);
 		}
 
 		super.render(endGatewayBlockEntity, f, matrixStack, vertexConsumerProvider, i, j);

@@ -3,7 +3,7 @@ package net.minecraft.test;
 import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 
-public class PositionedException extends TimeMismatchException {
+public class PositionedException extends GameTestException {
 	private final BlockPos pos;
 	private final BlockPos relativePos;
 	private final long field_21449;

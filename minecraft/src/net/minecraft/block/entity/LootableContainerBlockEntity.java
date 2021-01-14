@@ -11,7 +11,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -37,23 +37,23 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		}
 	}
 
-	protected boolean deserializeLootTable(CompoundTag compoundTag) {
-		if (compoundTag.contains("LootTable", 8)) {
-			this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
-			this.lootTableSeed = compoundTag.getLong("LootTableSeed");
+	protected boolean deserializeLootTable(NbtCompound nbt) {
+		if (nbt.contains("LootTable", 8)) {
+			this.lootTableId = new Identifier(nbt.getString("LootTable"));
+			this.lootTableSeed = nbt.getLong("LootTableSeed");
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected boolean serializeLootTable(CompoundTag compoundTag) {
+	protected boolean serializeLootTable(NbtCompound nbt) {
 		if (this.lootTableId == null) {
 			return false;
 		} else {
-			compoundTag.putString("LootTable", this.lootTableId.toString());
+			nbt.putString("LootTable", this.lootTableId.toString());
 			if (this.lootTableSeed != 0L) {
-				compoundTag.putLong("LootTableSeed", this.lootTableSeed);
+				nbt.putLong("LootTableSeed", this.lootTableSeed);
 			}
 
 			return true;

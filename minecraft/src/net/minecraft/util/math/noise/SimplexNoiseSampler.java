@@ -4,7 +4,7 @@ import java.util.Random;
 import net.minecraft.util.math.MathHelper;
 
 public class SimplexNoiseSampler {
-	protected static final int[][] gradients = new int[][]{
+	protected static final int[][] GRADIENTS = new int[][]{
 		{1, 1, 0},
 		{-1, 1, 0},
 		{1, -1, 0},
@@ -56,17 +56,17 @@ public class SimplexNoiseSampler {
 		return (double)gArr[0] * x + (double)gArr[1] * y + (double)gArr[2] * z;
 	}
 
-	private double grad(int hash, double x, double y, double z, double d) {
-		double e = d - x * x - y * y - z * z;
-		double f;
-		if (e < 0.0) {
-			f = 0.0;
+	private double grad(int hash, double x, double y, double z, double distance) {
+		double d = distance - x * x - y * y - z * z;
+		double e;
+		if (d < 0.0) {
+			e = 0.0;
 		} else {
-			e *= e;
-			f = e * e * dot(gradients[hash], x, y, z);
+			d *= d;
+			e = d * d * dot(GRADIENTS[hash], x, y, z);
 		}
 
-		return f;
+		return e;
 	}
 
 	public double sample(double x, double y) {

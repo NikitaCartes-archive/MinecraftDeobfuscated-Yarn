@@ -447,11 +447,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		}
 	}
 
-	private boolean wouldCollideAt(BlockPos blockPos) {
+	private boolean wouldCollideAt(BlockPos pos) {
 		Box box = this.getBoundingBox();
-		Box box2 = new Box((double)blockPos.getX(), box.minY, (double)blockPos.getZ(), (double)blockPos.getX() + 1.0, box.maxY, (double)blockPos.getZ() + 1.0)
-			.contract(1.0E-7);
-		return !this.world.isBlockSpaceEmpty(this, box2, (blockState, blockPosx) -> blockState.shouldSuffocate(this.world, blockPosx));
+		Box box2 = new Box((double)pos.getX(), box.minY, (double)pos.getZ(), (double)pos.getX() + 1.0, box.maxY, (double)pos.getZ() + 1.0).contract(1.0E-7);
+		return !this.world.isBlockSpaceEmpty(this, box2, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, blockPos));
 	}
 
 	@Override
@@ -467,7 +466,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID senderUuid) {
+	public void sendSystemMessage(Text message, UUID sender) {
 		this.client.inGameHud.getChatHud().addMessage(message);
 	}
 
@@ -582,7 +581,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void openEditBookScreen(ItemStack book, Hand hand) {
+	public void useBook(ItemStack book, Hand hand) {
 		Item item = book.getItem();
 		if (item == Items.WRITABLE_BOOK) {
 			this.client.openScreen(new BookEditScreen(this, book, hand));
@@ -866,10 +865,10 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void move(MovementType type, Vec3d movement) {
+	public void move(MovementType movementType, Vec3d movement) {
 		double d = this.getX();
 		double e = this.getZ();
-		super.move(type, movement);
+		super.move(movementType, movement);
 		this.autoJump((float)(this.getX() - d), (float)(this.getZ() - e));
 	}
 

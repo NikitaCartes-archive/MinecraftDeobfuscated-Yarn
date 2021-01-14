@@ -10,7 +10,7 @@ import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.processor.BlockIgnoreStructureProcessor;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -273,7 +273,7 @@ public class EndCityGenerator {
 			this.initializeStructureData(manager);
 		}
 
-		public Piece(StructureManager manager, CompoundTag tag) {
+		public Piece(StructureManager manager, NbtCompound tag) {
 			super(StructurePieceType.END_CITY, tag);
 			this.template = tag.getString("Template");
 			this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
@@ -290,7 +290,7 @@ public class EndCityGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
+		protected void toNbt(NbtCompound tag) {
 			super.toNbt(tag);
 			tag.putString("Template", this.template);
 			tag.putString("Rot", this.rotation.name());
@@ -298,21 +298,21 @@ public class EndCityGenerator {
 		}
 
 		@Override
-		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess serverWorldAccess, Random random, BlockBox boundingBox) {
+		protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
 			if (metadata.startsWith("Chest")) {
 				BlockPos blockPos = pos.down();
 				if (boundingBox.contains(blockPos)) {
-					LootableContainerBlockEntity.setLootTable(serverWorldAccess, random, blockPos, LootTables.END_CITY_TREASURE_CHEST);
+					LootableContainerBlockEntity.setLootTable(world, random, blockPos, LootTables.END_CITY_TREASURE_CHEST);
 				}
 			} else if (metadata.startsWith("Sentry")) {
-				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(serverWorldAccess.toServerWorld());
-				shulkerEntity.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
+				ShulkerEntity shulkerEntity = EntityType.SHULKER.create(world.toServerWorld());
+				shulkerEntity.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 				shulkerEntity.setAttachedBlock(pos);
-				serverWorldAccess.spawnEntity(shulkerEntity);
+				world.spawnEntity(shulkerEntity);
 			} else if (metadata.startsWith("Elytra")) {
-				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(serverWorldAccess.toServerWorld(), pos, this.rotation.rotate(Direction.SOUTH));
+				ItemFrameEntity itemFrameEntity = new ItemFrameEntity(world.toServerWorld(), pos, this.rotation.rotate(Direction.SOUTH));
 				itemFrameEntity.setHeldItemStack(new ItemStack(Items.ELYTRA), false);
-				serverWorldAccess.spawnEntity(itemFrameEntity);
+				world.spawnEntity(itemFrameEntity);
 			}
 		}
 	}

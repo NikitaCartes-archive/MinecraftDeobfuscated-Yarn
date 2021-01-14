@@ -89,8 +89,8 @@ public class ServerPropertiesHandler extends AbstractPropertiesHandler<ServerPro
 		this.generatorOptions = GeneratorOptions.fromProperties(dynamicRegistryManager, properties);
 	}
 
-	public static ServerPropertiesHandler load(DynamicRegistryManager dynamicRegistryManager, Path path) {
-		return new ServerPropertiesHandler(loadProperties(path), dynamicRegistryManager);
+	public static ServerPropertiesHandler load(DynamicRegistryManager registryManager, Path path) {
+		return new ServerPropertiesHandler(loadProperties(path), registryManager);
 	}
 
 	protected ServerPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {

@@ -23,9 +23,9 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		this.head.setTextureOffset(45, 16).addCuboid(-3.5F, 0.0F, -6.0F, 7.0F, 5.0F, 2.0F);
 		this.head.setTextureOffset(52, 25).addCuboid(-8.5F, -8.0F, -1.0F, 5.0F, 4.0F, 1.0F);
 		this.head.setTextureOffset(52, 25).addCuboid(3.5F, -8.0F, -1.0F, 5.0F, 4.0F, 1.0F);
-		this.torso = new ModelPart(this, 0, 25);
-		this.torso.addCuboid(-9.5F, -13.0F, -6.5F, 19.0F, 26.0F, 13.0F);
-		this.torso.setPivot(0.0F, 10.0F, 0.0F);
+		this.body = new ModelPart(this, 0, 25);
+		this.body.addCuboid(-9.5F, -13.0F, -6.5F, 19.0F, 26.0F, 13.0F);
+		this.body.setPivot(0.0F, 10.0F, 0.0F);
 		int i = 9;
 		int j = 6;
 		this.backRightLeg = new ModelPart(this, 40, 0);
@@ -75,7 +75,7 @@ public class PandaEntityModel<T extends PandaEntity> extends QuadrupedEntityMode
 		}
 
 		if (this.scaredAnimationProgress > 0.0F) {
-			this.torso.pitch = ModelUtil.interpolateAngle(this.torso.pitch, 1.7407963F, this.scaredAnimationProgress);
+			this.body.pitch = ModelUtil.interpolateAngle(this.body.pitch, 1.7407963F, this.scaredAnimationProgress);
 			this.head.pitch = ModelUtil.interpolateAngle(this.head.pitch, (float) (Math.PI / 2), this.scaredAnimationProgress);
 			this.frontRightLeg.roll = -0.27079642F;
 			this.frontLeftLeg.roll = 0.27079642F;

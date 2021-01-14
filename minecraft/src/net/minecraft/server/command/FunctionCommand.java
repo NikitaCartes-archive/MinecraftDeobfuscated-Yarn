@@ -6,7 +6,7 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import java.util.Collection;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.argument.FunctionArgumentType;
+import net.minecraft.command.argument.CommandFunctionArgumentType;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.TranslatableText;
@@ -23,9 +23,9 @@ public class FunctionCommand {
 			CommandManager.literal("function")
 				.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))
 				.then(
-					CommandManager.argument("name", FunctionArgumentType.function())
+					CommandManager.argument("name", CommandFunctionArgumentType.commandFunction())
 						.suggests(SUGGESTION_PROVIDER)
-						.executes(commandContext -> execute(commandContext.getSource(), FunctionArgumentType.getFunctions(commandContext, "name")))
+						.executes(commandContext -> execute(commandContext.getSource(), CommandFunctionArgumentType.getFunctions(commandContext, "name")))
 				)
 		);
 	}

@@ -14,7 +14,7 @@ public class MerchantInventory implements Inventory {
 	private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(3, ItemStack.EMPTY);
 	@Nullable
 	private TradeOffer tradeOffer;
-	private int recipeIndex;
+	private int offerIndex;
 	private int merchantRewardedExperience;
 
 	public MerchantInventory(Merchant merchant) {
@@ -49,15 +49,15 @@ public class MerchantInventory implements Inventory {
 			return Inventories.splitStack(this.inventory, slot, itemStack.getCount());
 		} else {
 			ItemStack itemStack2 = Inventories.splitStack(this.inventory, slot, amount);
-			if (!itemStack2.isEmpty() && this.needRecipeUpdate(slot)) {
-				this.updateRecipes();
+			if (!itemStack2.isEmpty() && this.needsOfferUpdate(slot)) {
+				this.updateOffers();
 			}
 
 			return itemStack2;
 		}
 	}
 
-	private boolean needRecipeUpdate(int slot) {
+	private boolean needsOfferUpdate(int slot) {
 		return slot == 0 || slot == 1;
 	}
 
@@ -73,8 +73,8 @@ public class MerchantInventory implements Inventory {
 			stack.setCount(this.getMaxCountPerStack());
 		}
 
-		if (this.needRecipeUpdate(slot)) {
-			this.updateRecipes();
+		if (this.needsOfferUpdate(slot)) {
+			this.updateOffers();
 		}
 	}
 
@@ -85,10 +85,10 @@ public class MerchantInventory implements Inventory {
 
 	@Override
 	public void markDirty() {
-		this.updateRecipes();
+		this.updateOffers();
 	}
 
-	public void updateRecipes() {
+	public void updateOffers() {
 		this.tradeOffer = null;
 		ItemStack itemStack;
 		ItemStack itemStack2;
@@ -106,15 +106,15 @@ public class MerchantInventory implements Inventory {
 		} else {
 			TradeOfferList tradeOfferList = this.merchant.getOffers();
 			if (!tradeOfferList.isEmpty()) {
-				TradeOffer tradeOffer = tradeOfferList.getValidOffer(itemStack, itemStack2, this.recipeIndex);
+				TradeOffer tradeOffer = tradeOfferList.getValidOffer(itemStack, itemStack2, this.offerIndex);
 				if (tradeOffer == null || tradeOffer.isDisabled()) {
 					this.tradeOffer = tradeOffer;
-					tradeOffer = tradeOfferList.getValidOffer(itemStack2, itemStack, this.recipeIndex);
+					tradeOffer = tradeOfferList.getValidOffer(itemStack2, itemStack, this.offerIndex);
 				}
 
 				if (tradeOffer != null && !tradeOffer.isDisabled()) {
 					this.tradeOffer = tradeOffer;
-					this.setStack(2, tradeOffer.getSellItem());
+					this.setStack(2, tradeOffer.copySellItem());
 					this.merchantRewardedExperience = tradeOffer.getMerchantExperience();
 				} else {
 					this.setStack(2, ItemStack.EMPTY);
@@ -131,9 +131,9 @@ public class MerchantInventory implements Inventory {
 		return this.tradeOffer;
 	}
 
-	public void setRecipeIndex(int index) {
-		this.recipeIndex = index;
-		this.updateRecipes();
+	public void setOfferIndex(int index) {
+		this.offerIndex = index;
+		this.updateOffers();
 	}
 
 	@Override

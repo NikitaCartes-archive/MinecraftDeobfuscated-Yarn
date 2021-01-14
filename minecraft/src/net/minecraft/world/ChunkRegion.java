@@ -18,7 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -198,10 +198,10 @@ public class ChunkRegion implements StructureWorldAccess {
 		if (blockEntity != null) {
 			return blockEntity;
 		} else {
-			CompoundTag compoundTag = chunk.getBlockEntityTag(pos);
+			NbtCompound nbtCompound = chunk.getBlockEntityNbt(pos);
 			BlockState blockState = chunk.getBlockState(pos);
-			if (compoundTag != null) {
-				if ("DUMMY".equals(compoundTag.getString("id"))) {
+			if (nbtCompound != null) {
+				if ("DUMMY".equals(nbtCompound.getString("id"))) {
 					Block block = blockState.getBlock();
 					if (!(block instanceof BlockEntityProvider)) {
 						return null;
@@ -209,7 +209,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 					blockEntity = ((BlockEntityProvider)block).createBlockEntity(this.world);
 				} else {
-					blockEntity = BlockEntity.createFromTag(blockState, compoundTag);
+					blockEntity = BlockEntity.createFromTag(blockState, nbtCompound);
 				}
 
 				if (blockEntity != null) {
@@ -239,12 +239,12 @@ public class ChunkRegion implements StructureWorldAccess {
 			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
 				chunk.setBlockEntity(pos, ((BlockEntityProvider)block).createBlockEntity(this));
 			} else {
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putInt("x", pos.getX());
-				compoundTag.putInt("y", pos.getY());
-				compoundTag.putInt("z", pos.getZ());
-				compoundTag.putString("id", "DUMMY");
-				chunk.addPendingBlockEntityTag(compoundTag);
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putInt("x", pos.getX());
+				nbtCompound.putInt("y", pos.getY());
+				nbtCompound.putInt("z", pos.getZ());
+				nbtCompound.putString("id", "DUMMY");
+				chunk.addPendingBlockEntityNbt(nbtCompound);
 			}
 		} else if (blockState != null && blockState.getBlock().hasBlockEntity()) {
 			chunk.removeBlockEntity(pos);

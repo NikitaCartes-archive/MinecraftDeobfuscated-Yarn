@@ -51,11 +51,11 @@ public class AcaciaFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
-		if (dx == 0) {
-			return (baseHeight > 1 || y > 1) && baseHeight != 0 && y != 0;
+	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+		if (y == 0) {
+			return (dx > 1 || dz > 1) && dx != 0 && dz != 0;
 		} else {
-			return baseHeight == dz && y == dz && dz > 0;
+			return dx == radius && dz == radius && radius > 0;
 		}
 	}
 }

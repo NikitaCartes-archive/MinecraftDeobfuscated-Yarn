@@ -67,7 +67,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 				if (blockPos != null) {
 					ItemStack itemStack = FilledMapItem.createMap(serverWorld, blockPos.getX(), blockPos.getZ(), this.zoom, true, true);
 					FilledMapItem.fillExplorationMap(serverWorld, itemStack);
-					MapState.addDecorationsTag(itemStack, blockPos, "+", this.decoration);
+					MapState.addDecorationsNbt(itemStack, blockPos, "+", this.decoration);
 					itemStack.setCustomName(new TranslatableText("filled_map." + this.destination.getName().toLowerCase(Locale.ROOT)));
 					return itemStack;
 				}

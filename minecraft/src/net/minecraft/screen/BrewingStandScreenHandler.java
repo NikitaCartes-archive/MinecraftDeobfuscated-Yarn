@@ -90,7 +90,7 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			}
 
 			if (itemStack2.isEmpty()) {

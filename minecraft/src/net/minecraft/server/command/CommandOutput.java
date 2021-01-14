@@ -9,7 +9,7 @@ import net.minecraft.text.Text;
 public interface CommandOutput {
 	CommandOutput DUMMY = new CommandOutput() {
 		@Override
-		public void sendSystemMessage(Text message, UUID senderUuid) {
+		public void sendSystemMessage(Text message, UUID sender) {
 		}
 
 		@Override
@@ -28,7 +28,7 @@ public interface CommandOutput {
 		}
 	};
 
-	void sendSystemMessage(Text message, UUID senderUuid);
+	void sendSystemMessage(Text message, UUID sender);
 
 	boolean shouldReceiveFeedback();
 

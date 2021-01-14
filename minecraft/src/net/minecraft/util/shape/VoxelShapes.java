@@ -44,8 +44,8 @@ public final class VoxelShapes {
 		return FULL_CUBE;
 	}
 
-	public static VoxelShape cuboid(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-		return cuboid(new Box(xMin, yMin, zMin, xMax, yMax, zMax));
+	public static VoxelShape cuboid(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+		return cuboid(new Box(minX, minY, minZ, maxX, maxY, maxZ));
 	}
 
 	public static VoxelShape cuboid(Box box) {

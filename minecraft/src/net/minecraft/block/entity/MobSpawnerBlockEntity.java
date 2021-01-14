@@ -3,7 +3,7 @@ package net.minecraft.block.entity;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.Tickable;
 import net.minecraft.util.math.BlockPos;
@@ -43,16 +43,16 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public void fromTag(BlockState state, CompoundTag tag) {
+	public void fromTag(BlockState state, NbtCompound tag) {
 		super.fromTag(state, tag);
 		this.logic.fromTag(tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		this.logic.toTag(tag);
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		this.logic.toTag(nbt);
+		return nbt;
 	}
 
 	@Override
@@ -63,14 +63,14 @@ public class MobSpawnerBlockEntity extends BlockEntity implements Tickable {
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 1, this.toInitialChunkDataTag());
+		return new BlockEntityUpdateS2CPacket(this.pos, 1, this.toInitialChunkDataNbt());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		CompoundTag compoundTag = this.toTag(new CompoundTag());
-		compoundTag.remove("SpawnPotentials");
-		return compoundTag;
+	public NbtCompound toInitialChunkDataNbt() {
+		NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
+		nbtCompound.remove("SpawnPotentials");
+		return nbtCompound;
 	}
 
 	@Override

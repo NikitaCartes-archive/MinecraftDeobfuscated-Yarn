@@ -3,7 +3,7 @@ package net.minecraft.world;
 import java.io.File;
 import java.io.IOException;
 import net.minecraft.SharedConstants;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,9 +17,9 @@ public abstract class PersistentState {
 		this.key = key;
 	}
 
-	public abstract void fromTag(CompoundTag tag);
+	public abstract void fromTag(NbtCompound tag);
 
-	public abstract CompoundTag toTag(CompoundTag tag);
+	public abstract NbtCompound writeNbt(NbtCompound nbt);
 
 	public void markDirty() {
 		this.setDirty(true);
@@ -39,12 +39,12 @@ public abstract class PersistentState {
 
 	public void save(File file) {
 		if (this.isDirty()) {
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.put("data", this.toTag(new CompoundTag()));
-			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.put("data", this.writeNbt(new NbtCompound()));
+			nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 
 			try {
-				NbtIo.writeCompressed(compoundTag, file);
+				NbtIo.writeCompressed(nbtCompound, file);
 			} catch (IOException var4) {
 				LOGGER.error("Could not save data {}", this, var4);
 			}

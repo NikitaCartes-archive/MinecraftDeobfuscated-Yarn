@@ -12,7 +12,7 @@ public interface CharacterVisitor {
 	 * Visits a single character.
 	 * 
 	 * <p>Multiple surrogate characters are converted into one single {@code
-	 * codePoint} when passed into this method.</p>
+	 * codePoint} when passed into this method.
 	 * 
 	 * @return {@code true} to continue visiting other characters, or {@code false} to terminate the visit
 	 * 

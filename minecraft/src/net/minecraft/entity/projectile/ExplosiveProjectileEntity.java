@@ -6,8 +6,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
@@ -18,9 +18,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
-	public double posX;
-	public double posY;
-	public double posZ;
+	public double powerX;
+	public double powerY;
+	public double powerZ;
 
 	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -34,9 +34,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		this.refreshPosition();
 		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
 		if (d != 0.0) {
-			this.posX = directionX / d * 0.1;
-			this.posY = directionY / d * 0.1;
-			this.posZ = directionZ / d * 0.1;
+			this.powerX = directionX / d * 0.1;
+			this.powerY = directionY / d * 0.1;
+			this.powerZ = directionZ / d * 0.1;
 		}
 	}
 
@@ -94,9 +94,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				g = 0.8F;
 			}
 
-			this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)g));
+			this.setVelocity(vec3d.add(this.powerX, this.powerY, this.powerZ).multiply((double)g));
 			this.world.addParticle(this.getParticleType(), d, e + 0.5, f, 0.0, 0.0, 0.0);
-			this.updatePosition(d, e, f);
+			this.setPosition(d, e, f);
 		} else {
 			this.remove();
 		}
@@ -120,20 +120,20 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.put("power", this.toListTag(new double[]{this.posX, this.posY, this.posZ}));
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.put("power", this.toNbtList(new double[]{this.powerX, this.powerY, this.powerZ}));
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("power", 9)) {
-			ListTag listTag = tag.getList("power", 6);
-			if (listTag.size() == 3) {
-				this.posX = listTag.getDouble(0);
-				this.posY = listTag.getDouble(1);
-				this.posZ = listTag.getDouble(2);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("power", 9)) {
+			NbtList nbtList = nbt.getList("power", 6);
+			if (nbtList.size() == 3) {
+				this.powerX = nbtList.getDouble(0);
+				this.powerY = nbtList.getDouble(1);
+				this.powerZ = nbtList.getDouble(2);
 			}
 		}
 	}
@@ -158,9 +158,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			if (entity != null) {
 				Vec3d vec3d = entity.getRotationVector();
 				this.setVelocity(vec3d);
-				this.posX = vec3d.x * 0.1;
-				this.posY = vec3d.y * 0.1;
-				this.posZ = vec3d.z * 0.1;
+				this.powerX = vec3d.x * 0.1;
+				this.powerY = vec3d.y * 0.1;
+				this.powerZ = vec3d.z * 0.1;
 				this.setOwner(entity);
 				return true;
 			} else {
@@ -188,7 +188,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			this.yaw,
 			this.getType(),
 			i,
-			new Vec3d(this.posX, this.posY, this.posZ)
+			new Vec3d(this.powerX, this.powerY, this.powerZ)
 		);
 	}
 }

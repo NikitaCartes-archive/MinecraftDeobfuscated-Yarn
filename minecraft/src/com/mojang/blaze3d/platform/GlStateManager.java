@@ -10,9 +10,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.util.GlAllocationUtils;
 import net.minecraft.client.util.Untracker;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 import org.lwjgl.opengl.ARBFramebufferObject;
 import org.lwjgl.opengl.EXTFramebufferBlit;
 import org.lwjgl.opengl.EXTFramebufferObject;
@@ -646,20 +646,20 @@ public class GlStateManager {
 		texEnv(8960, 34200, 770);
 	}
 
-	public static void setupLevelDiffuseLighting(Vector3f vector3f, Vector3f vector3f2, Matrix4f matrix4f) {
+	public static void setupLevelDiffuseLighting(Vec3f vec3f, Vec3f vec3f2, Matrix4f matrix4f) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		pushMatrix();
 		loadIdentity();
 		enableLight(0);
 		enableLight(1);
-		Vector4f vector4f = new Vector4f(vector3f);
+		Vector4f vector4f = new Vector4f(vec3f);
 		vector4f.transform(matrix4f);
 		light(16384, 4611, getBuffer(vector4f.getX(), vector4f.getY(), vector4f.getZ(), 0.0F));
 		float f = 0.6F;
 		light(16384, 4609, getBuffer(0.6F, 0.6F, 0.6F, 1.0F));
 		light(16384, 4608, getBuffer(0.0F, 0.0F, 0.0F, 1.0F));
 		light(16384, 4610, getBuffer(0.0F, 0.0F, 0.0F, 1.0F));
-		Vector4f vector4f2 = new Vector4f(vector3f2);
+		Vector4f vector4f2 = new Vector4f(vec3f2);
 		vector4f2.transform(matrix4f);
 		light(16385, 4611, getBuffer(vector4f2.getX(), vector4f2.getY(), vector4f2.getZ(), 0.0F));
 		light(16385, 4609, getBuffer(0.6F, 0.6F, 0.6F, 1.0F));
@@ -671,26 +671,26 @@ public class GlStateManager {
 		popMatrix();
 	}
 
-	public static void setupGuiFlatDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
+	public static void setupGuiFlatDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
 		matrix4f.multiply(Matrix4f.scale(1.0F, -1.0F, 1.0F));
-		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
-		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0F));
-		setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
+		matrix4f.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
+		matrix4f.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(135.0F));
+		setupLevelDiffuseLighting(vec3f, vec3f2, matrix4f);
 	}
 
-	public static void setupGui3dDiffuseLighting(Vector3f vector3f, Vector3f vector3f2) {
+	public static void setupGui3dDiffuseLighting(Vec3f vec3f, Vec3f vec3f2) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		Matrix4f matrix4f = new Matrix4f();
 		matrix4f.loadIdentity();
-		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(62.0F));
-		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(185.5F));
+		matrix4f.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(62.0F));
+		matrix4f.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(185.5F));
 		matrix4f.multiply(Matrix4f.scale(1.0F, -1.0F, 1.0F));
-		matrix4f.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
-		matrix4f.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(135.0F));
-		setupLevelDiffuseLighting(vector3f, vector3f2, matrix4f);
+		matrix4f.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-22.5F));
+		matrix4f.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(135.0F));
+		setupLevelDiffuseLighting(vec3f, vec3f2, matrix4f);
 	}
 
 	private static FloatBuffer getBuffer(float a, float b, float c, float d) {
@@ -1156,7 +1156,7 @@ public class GlStateManager {
 	@Deprecated
 	public static void multMatrix(Matrix4f matrix) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		matrix.writeToBuffer(MATRIX_BUFFER);
+		matrix.writeRowFirst(MATRIX_BUFFER);
 		MATRIX_BUFFER.rewind();
 		multMatrix(MATRIX_BUFFER);
 	}

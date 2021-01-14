@@ -25,7 +25,7 @@ import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
@@ -90,15 +90,15 @@ public abstract class FishEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("FromBucket", this.isFromBucket());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("FromBucket", this.isFromBucket());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setFromBucket(tag.getBoolean("FromBucket"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setFromBucket(nbt.getBoolean("FromBucket"));
 	}
 
 	@Override
@@ -217,7 +217,7 @@ public abstract class FishEntity extends WaterCreatureEntity {
 
 				if (d != 0.0 || g != 0.0) {
 					float i = (float)(MathHelper.atan2(g, d) * 180.0F / (float)Math.PI) - 90.0F;
-					this.fish.yaw = this.changeAngle(this.fish.yaw, i, 90.0F);
+					this.fish.yaw = this.wrapDegrees(this.fish.yaw, i, 90.0F);
 					this.fish.bodyYaw = this.fish.yaw;
 				}
 			} else {

@@ -30,7 +30,7 @@ public class FlightMoveControl extends MoveControl {
 			}
 
 			float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-			this.entity.yaw = this.changeAngle(this.entity.yaw, h, 90.0F);
+			this.entity.yaw = this.wrapDegrees(this.entity.yaw, h, 90.0F);
 			float i;
 			if (this.entity.isOnGround()) {
 				i = (float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
@@ -41,7 +41,7 @@ public class FlightMoveControl extends MoveControl {
 			this.entity.setMovementSpeed(i);
 			double j = (double)MathHelper.sqrt(d * d + f * f);
 			float k = (float)(-(MathHelper.atan2(e, j) * 180.0F / (float)Math.PI));
-			this.entity.pitch = this.changeAngle(this.entity.pitch, k, (float)this.maxPitchChange);
+			this.entity.pitch = this.wrapDegrees(this.entity.pitch, k, (float)this.maxPitchChange);
 			this.entity.setUpwardSpeed(e > 0.0 ? i : -i);
 		} else {
 			if (!this.noGravity) {

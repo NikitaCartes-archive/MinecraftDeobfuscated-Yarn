@@ -1,7 +1,7 @@
 package net.minecraft.structure;
 
 import java.util.Random;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -27,16 +27,16 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 		}
 	}
 
-	protected StructurePieceWithDimensions(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-		super(structurePieceType, compoundTag);
-		this.width = compoundTag.getInt("Width");
-		this.height = compoundTag.getInt("Height");
-		this.depth = compoundTag.getInt("Depth");
-		this.hPos = compoundTag.getInt("HPos");
+	protected StructurePieceWithDimensions(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+		super(structurePieceType, nbtCompound);
+		this.width = nbtCompound.getInt("Width");
+		this.height = nbtCompound.getInt("Height");
+		this.depth = nbtCompound.getInt("Depth");
+		this.hPos = nbtCompound.getInt("HPos");
 	}
 
 	@Override
-	protected void toNbt(CompoundTag tag) {
+	protected void toNbt(NbtCompound tag) {
 		tag.putInt("Width", this.width);
 		tag.putInt("Height", this.height);
 		tag.putInt("Depth", this.depth);

@@ -17,11 +17,11 @@ public class GoToIfNearbyTask extends Task<PathAwareEntity> {
 	private final int maxDistance;
 	private float field_25752;
 
-	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float f, int i) {
+	public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float walkSpeed, int maxDistance) {
 		super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, target, MemoryModuleState.VALUE_PRESENT));
 		this.target = target;
-		this.field_25752 = f;
-		this.maxDistance = i;
+		this.field_25752 = walkSpeed;
+		this.maxDistance = maxDistance;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
