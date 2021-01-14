@@ -5,7 +5,7 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -22,31 +22,31 @@ public class FireworkChargeItem extends Item {
 	@Environment(EnvType.CLIENT)
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-		CompoundTag compoundTag = stack.getSubTag("Explosion");
-		if (compoundTag != null) {
-			appendFireworkTooltip(compoundTag, tooltip);
+		NbtCompound nbtCompound = stack.getSubTag("Explosion");
+		if (nbtCompound != null) {
+			appendFireworkTooltip(nbtCompound, tooltip);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void appendFireworkTooltip(CompoundTag tag, List<Text> tooltip) {
-		FireworkItem.Type type = FireworkItem.Type.byId(tag.getByte("Type"));
+	public static void appendFireworkTooltip(NbtCompound nbt, List<Text> tooltip) {
+		FireworkItem.Type type = FireworkItem.Type.byId(nbt.getByte("Type"));
 		tooltip.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));
-		int[] is = tag.getIntArray("Colors");
+		int[] is = nbt.getIntArray("Colors");
 		if (is.length > 0) {
 			tooltip.add(appendColors(new LiteralText("").formatted(Formatting.GRAY), is));
 		}
 
-		int[] js = tag.getIntArray("FadeColors");
+		int[] js = nbt.getIntArray("FadeColors");
 		if (js.length > 0) {
 			tooltip.add(appendColors(new TranslatableText("item.minecraft.firework_star.fade_to").append(" ").formatted(Formatting.GRAY), js));
 		}
 
-		if (tag.getBoolean("Trail")) {
+		if (nbt.getBoolean("Trail")) {
 			tooltip.add(new TranslatableText("item.minecraft.firework_star.trail").formatted(Formatting.GRAY));
 		}
 
-		if (tag.getBoolean("Flicker")) {
+		if (nbt.getBoolean("Flicker")) {
 			tooltip.add(new TranslatableText("item.minecraft.firework_star.flicker").formatted(Formatting.GRAY));
 		}
 	}

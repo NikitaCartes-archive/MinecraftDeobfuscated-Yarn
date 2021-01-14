@@ -4,8 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
@@ -19,7 +19,7 @@ public class DeathScreen extends Screen {
 	private int ticksSinceDeath;
 	private final Text message;
 	private final boolean isHardcore;
-	private Text field_26537;
+	private Text scoreText;
 
 	public DeathScreen(@Nullable Text message, boolean isHardcore) {
 		super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
@@ -71,11 +71,11 @@ public class DeathScreen extends Screen {
 			buttonWidget.active = false;
 		}
 
-		for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-			abstractButtonWidget.active = false;
+		for (ClickableWidget clickableWidget : this.buttons) {
+			clickableWidget.active = false;
 		}
 
-		this.field_26537 = new TranslatableText("deathScreen.score")
+		this.scoreText = new TranslatableText("deathScreen.score")
 			.append(": ")
 			.append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
 	}
@@ -114,7 +114,7 @@ public class DeathScreen extends Screen {
 			drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 16777215);
 		}
 
-		drawCenteredText(matrices, this.textRenderer, this.field_26537, this.width / 2, 100, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.scoreText, this.width / 2, 100, 16777215);
 		if (this.message != null && mouseY > 85 && mouseY < 85 + 9) {
 			Style style = this.getTextComponentUnderMouse(mouseX);
 			this.renderTextHoverEffect(matrices, style, mouseX, mouseY);
@@ -158,8 +158,8 @@ public class DeathScreen extends Screen {
 		super.tick();
 		this.ticksSinceDeath++;
 		if (this.ticksSinceDeath == 20) {
-			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-				abstractButtonWidget.active = true;
+			for (ClickableWidget clickableWidget : this.buttons) {
+				clickableWidget.active = true;
 			}
 		}
 	}

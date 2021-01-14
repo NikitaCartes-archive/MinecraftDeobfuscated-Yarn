@@ -19,11 +19,11 @@ public class LandingPhase extends AbstractPhase {
 
 	@Override
 	public void clientTick() {
-		Vec3d vec3d = this.dragon.method_6834(1.0F).normalize();
+		Vec3d vec3d = this.dragon.getRotationVectorFromPhase(1.0F).normalize();
 		vec3d.rotateY((float) (-Math.PI / 4));
-		double d = this.dragon.partHead.getX();
-		double e = this.dragon.partHead.getBodyY(0.5);
-		double f = this.dragon.partHead.getZ();
+		double d = this.dragon.head.getX();
+		double e = this.dragon.head.getBodyY(0.5);
+		double f = this.dragon.head.getZ();
 
 		for (int i = 0; i < 8; i++) {
 			Random random = this.dragon.getRandom();
@@ -67,7 +67,7 @@ public class LandingPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d getTarget() {
+	public Vec3d getPathTarget() {
 		return this.target;
 	}
 

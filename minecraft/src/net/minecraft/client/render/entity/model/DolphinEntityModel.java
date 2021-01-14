@@ -11,7 +11,7 @@ import net.minecraft.util.math.MathHelper;
 public class DolphinEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart body;
 	private final ModelPart tail;
-	private final ModelPart flukes;
+	private final ModelPart tailFin;
 
 	public DolphinEntityModel() {
 		this.textureWidth = 64;
@@ -43,11 +43,11 @@ public class DolphinEntityModel<T extends Entity> extends CompositeEntityModel<T
 		this.tail.setPivot(0.0F, -2.5F, 11.0F);
 		this.tail.pitch = -0.10471976F;
 		this.body.addChild(this.tail);
-		this.flukes = new ModelPart(this, 19, 20);
-		this.flukes.addCuboid(-5.0F, -0.5F, 0.0F, 10.0F, 1.0F, 6.0F);
-		this.flukes.setPivot(0.0F, 0.0F, 9.0F);
-		this.flukes.pitch = 0.0F;
-		this.tail.addChild(this.flukes);
+		this.tailFin = new ModelPart(this, 19, 20);
+		this.tailFin.addCuboid(-5.0F, -0.5F, 0.0F, 10.0F, 1.0F, 6.0F);
+		this.tailFin.setPivot(0.0F, 0.0F, 9.0F);
+		this.tailFin.pitch = 0.0F;
+		this.tail.addChild(this.tailFin);
 		ModelPart modelPart4 = new ModelPart(this, 0, 0);
 		modelPart4.addCuboid(-4.0F, -3.0F, -3.0F, 8.0F, 7.0F, 6.0F);
 		modelPart4.setPivot(0.0F, -4.0F, -3.0F);
@@ -69,7 +69,7 @@ public class DolphinEntityModel<T extends Entity> extends CompositeEntityModel<T
 		if (Entity.squaredHorizontalLength(entity.getVelocity()) > 1.0E-7) {
 			this.body.pitch = this.body.pitch + -0.05F + -0.05F * MathHelper.cos(animationProgress * 0.3F);
 			this.tail.pitch = -0.1F * MathHelper.cos(animationProgress * 0.3F);
-			this.flukes.pitch = -0.2F * MathHelper.cos(animationProgress * 0.3F);
+			this.tailFin.pitch = -0.2F * MathHelper.cos(animationProgress * 0.3F);
 		}
 	}
 }

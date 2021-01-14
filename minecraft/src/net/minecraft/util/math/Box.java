@@ -6,6 +6,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.hit.BlockHitResult;
 
+/**
+ * An immutable box with double-valued coordinates. The box is axis-aligned
+ * and the coordinates are minimum inclusive and maximum exclusive.
+ * 
+ * <p>This box has proper {@link #hashCode()} and {@link #equals(Object)}
+ * implementations and can be used as a map key.
+ * 
+ * @see BlockBox
+ */
 public class Box {
 	public final double minX;
 	public final double minY;
@@ -14,6 +23,9 @@ public class Box {
 	public final double maxY;
 	public final double maxZ;
 
+	/**
+	 * Creates a box of the given positions as corners.
+	 */
 	public Box(double x1, double y1, double z1, double x2, double y2, double z2) {
 		this.minX = Math.min(x1, x2);
 		this.minY = Math.min(y1, y2);
@@ -23,14 +35,23 @@ public class Box {
 		this.maxZ = Math.max(z1, z2);
 	}
 
+	/**
+	 * Creates a box that only contains the given block position.
+	 */
 	public Box(BlockPos pos) {
 		this((double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), (double)(pos.getX() + 1), (double)(pos.getY() + 1), (double)(pos.getZ() + 1));
 	}
 
+	/**
+	 * Creates a box of the given positions as corners.
+	 */
 	public Box(BlockPos pos1, BlockPos pos2) {
 		this((double)pos1.getX(), (double)pos1.getY(), (double)pos1.getZ(), (double)pos2.getX(), (double)pos2.getY(), (double)pos2.getZ());
 	}
 
+	/**
+	 * Creates a box of the given positions as corners.
+	 */
 	public Box(Vec3d pos1, Vec3d pos2) {
 		this(pos1.x, pos1.y, pos1.z, pos2.x, pos2.y, pos2.z);
 	}
@@ -159,10 +180,16 @@ public class Box {
 		return new Box(d, e, f, g, h, i);
 	}
 
+	/**
+	 * @see #contract(double)
+	 */
 	public Box expand(double value) {
 		return this.expand(value, value, value);
 	}
 
+	/**
+	 * Creates the maximum box that this box and the given box contain.
+	 */
 	public Box intersection(Box box) {
 		double d = Math.max(this.minX, box.minX);
 		double e = Math.max(this.minY, box.minY);
@@ -173,6 +200,9 @@ public class Box {
 		return new Box(d, e, f, g, h, i);
 	}
 
+	/**
+	 * Creates the minimum box that contains this box and the given box.
+	 */
 	public Box union(Box box) {
 		double d = Math.min(this.minX, box.minX);
 		double e = Math.min(this.minY, box.minY);
@@ -183,10 +213,20 @@ public class Box {
 		return new Box(d, e, f, g, h, i);
 	}
 
+	/**
+	 * Creates a box that is translated by {@code x}, {@code y}, {@code z} on
+	 * each axis from this box.
+	 */
 	public Box offset(double x, double y, double z) {
 		return new Box(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
 
+	/**
+	 * Creates a box that is translated by {@code blockPos.getX()}, {@code
+	 * blockPos.getY()}, {@code blockPos.getZ()} on each axis from this box.
+	 * 
+	 * @see #offset(double, double, double)
+	 */
 	public Box offset(BlockPos blockPos) {
 		return new Box(
 			this.minX + (double)blockPos.getX(),
@@ -198,29 +238,51 @@ public class Box {
 		);
 	}
 
-	public Box offset(Vec3d vec3d) {
-		return this.offset(vec3d.x, vec3d.y, vec3d.z);
+	/**
+	 * Creates a box that is translated by {@code vec.x}, {@code vec.y}, {@code
+	 * vec.z} on each axis from this box.
+	 * 
+	 * @see #offset(double, double, double)
+	 */
+	public Box offset(Vec3d vec) {
+		return this.offset(vec.x, vec.y, vec.z);
 	}
 
+	/**
+	 * Checks if this box intersects the given box.
+	 */
 	public boolean intersects(Box box) {
 		return this.intersects(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
 	}
 
+	/**
+	 * Checks if this box intersects the box of the given coordinates.
+	 */
 	public boolean intersects(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
 		return this.minX < maxX && this.maxX > minX && this.minY < maxY && this.maxY > minY && this.minZ < maxZ && this.maxZ > minZ;
 	}
 
+	/**
+	 * Checks if this box intersects the box of the given positions as
+	 * corners.
+	 */
 	@Environment(EnvType.CLIENT)
-	public boolean intersects(Vec3d from, Vec3d to) {
+	public boolean intersects(Vec3d pos1, Vec3d pos2) {
 		return this.intersects(
-			Math.min(from.x, to.x), Math.min(from.y, to.y), Math.min(from.z, to.z), Math.max(from.x, to.x), Math.max(from.y, to.y), Math.max(from.z, to.z)
+			Math.min(pos1.x, pos2.x), Math.min(pos1.y, pos2.y), Math.min(pos1.z, pos2.z), Math.max(pos1.x, pos2.x), Math.max(pos1.y, pos2.y), Math.max(pos1.z, pos2.z)
 		);
 	}
 
-	public boolean contains(Vec3d vec) {
-		return this.contains(vec.x, vec.y, vec.z);
+	/**
+	 * Checks if the given position is in this box.
+	 */
+	public boolean contains(Vec3d pos) {
+		return this.contains(pos.x, pos.y, pos.z);
 	}
 
+	/**
+	 * Checks if the given position is in this box.
+	 */
 	public boolean contains(double x, double y, double z) {
 		return x >= this.minX && x < this.maxX && y >= this.minY && y < this.maxY && z >= this.minZ && z < this.maxZ;
 	}
@@ -244,6 +306,9 @@ public class Box {
 		return this.maxZ - this.minZ;
 	}
 
+	/**
+	 * @see #expand(double)
+	 */
 	public Box contract(double value) {
 		return this.expand(-value);
 	}
@@ -284,15 +349,15 @@ public class Box {
 
 	@Nullable
 	private static Direction traceCollisionSide(
-		Box box, Vec3d intersectingVector, double[] traceDistanceResult, @Nullable Direction approachDirection, double xDelta, double yDelta, double zDelta
+		Box box, Vec3d intersectingVector, double[] traceDistanceResult, @Nullable Direction approachDirection, double deltaX, double deltaY, double deltaZ
 	) {
-		if (xDelta > 1.0E-7) {
+		if (deltaX > 1.0E-7) {
 			approachDirection = traceCollisionSide(
 				traceDistanceResult,
 				approachDirection,
-				xDelta,
-				yDelta,
-				zDelta,
+				deltaX,
+				deltaY,
+				deltaZ,
 				box.minX,
 				box.minY,
 				box.maxY,
@@ -303,13 +368,13 @@ public class Box {
 				intersectingVector.y,
 				intersectingVector.z
 			);
-		} else if (xDelta < -1.0E-7) {
+		} else if (deltaX < -1.0E-7) {
 			approachDirection = traceCollisionSide(
 				traceDistanceResult,
 				approachDirection,
-				xDelta,
-				yDelta,
-				zDelta,
+				deltaX,
+				deltaY,
+				deltaZ,
 				box.maxX,
 				box.minY,
 				box.maxY,
@@ -322,13 +387,13 @@ public class Box {
 			);
 		}
 
-		if (yDelta > 1.0E-7) {
+		if (deltaY > 1.0E-7) {
 			approachDirection = traceCollisionSide(
 				traceDistanceResult,
 				approachDirection,
-				yDelta,
-				zDelta,
-				xDelta,
+				deltaY,
+				deltaZ,
+				deltaX,
 				box.minY,
 				box.minZ,
 				box.maxZ,
@@ -339,13 +404,13 @@ public class Box {
 				intersectingVector.z,
 				intersectingVector.x
 			);
-		} else if (yDelta < -1.0E-7) {
+		} else if (deltaY < -1.0E-7) {
 			approachDirection = traceCollisionSide(
 				traceDistanceResult,
 				approachDirection,
-				yDelta,
-				zDelta,
-				xDelta,
+				deltaY,
+				deltaZ,
+				deltaX,
 				box.maxY,
 				box.minZ,
 				box.maxZ,
@@ -358,13 +423,13 @@ public class Box {
 			);
 		}
 
-		if (zDelta > 1.0E-7) {
+		if (deltaZ > 1.0E-7) {
 			approachDirection = traceCollisionSide(
 				traceDistanceResult,
 				approachDirection,
-				zDelta,
-				xDelta,
-				yDelta,
+				deltaZ,
+				deltaX,
+				deltaY,
 				box.minZ,
 				box.minX,
 				box.maxX,
@@ -375,13 +440,13 @@ public class Box {
 				intersectingVector.x,
 				intersectingVector.y
 			);
-		} else if (zDelta < -1.0E-7) {
+		} else if (deltaZ < -1.0E-7) {
 			approachDirection = traceCollisionSide(
 				traceDistanceResult,
 				approachDirection,
-				zDelta,
-				xDelta,
-				yDelta,
+				deltaZ,
+				deltaX,
+				deltaY,
 				box.maxZ,
 				box.minX,
 				box.maxX,
@@ -401,9 +466,9 @@ public class Box {
 	private static Direction traceCollisionSide(
 		double[] traceDistanceResult,
 		@Nullable Direction approachDirection,
-		double xDelta,
-		double yDelta,
-		double zDelta,
+		double deltaX,
+		double deltaY,
+		double deltaZ,
 		double begin,
 		double minX,
 		double maxX,
@@ -414,9 +479,9 @@ public class Box {
 		double startY,
 		double startZ
 	) {
-		double d = (begin - startX) / xDelta;
-		double e = startY + d * yDelta;
-		double f = startZ + d * zDelta;
+		double d = (begin - startX) / deltaX;
+		double e = startY + d * deltaY;
+		double f = startZ + d * deltaZ;
 		if (0.0 < d && d < traceDistanceResult[0] && minX - 1.0E-7 < e && e < maxX + 1.0E-7 && minZ - 1.0E-7 < f && f < maxZ + 1.0E-7) {
 			traceDistanceResult[0] = d;
 			return resultDirection;
@@ -429,6 +494,10 @@ public class Box {
 		return "AABB[" + this.minX + ", " + this.minY + ", " + this.minZ + "] -> [" + this.maxX + ", " + this.maxY + ", " + this.maxZ + "]";
 	}
 
+	/**
+	 * Checks if any of the coordinates of this box is {@linkplain
+	 * Double#isNaN(double) not a number}.
+	 */
 	@Environment(EnvType.CLIENT)
 	public boolean isValid() {
 		return Double.isNaN(this.minX)
@@ -439,6 +508,9 @@ public class Box {
 			|| Double.isNaN(this.maxZ);
 	}
 
+	/**
+	 * Returns the center position of this box.
+	 */
 	public Vec3d getCenter() {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}

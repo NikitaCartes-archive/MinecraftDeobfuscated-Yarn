@@ -2,7 +2,7 @@ package net.minecraft.client.input;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.GameOptions;
 
 @Environment(EnvType.CLIENT)
 public class KeyboardInput extends Input {

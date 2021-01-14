@@ -12,8 +12,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ChatUtil;
@@ -44,7 +44,7 @@ public abstract class MobSpawnerLogic {
 
 	@Nullable
 	private Identifier getEntityId() {
-		String string = this.spawnEntry.getEntityTag().getString("id");
+		String string = this.spawnEntry.getEntityNbt().getString("id");
 
 		try {
 			return ChatUtil.isEmpty(string) ? null : new Identifier(string);
@@ -58,7 +58,7 @@ public abstract class MobSpawnerLogic {
 	}
 
 	public void setEntityId(EntityType<?> type) {
-		this.spawnEntry.getEntityTag().putString("id", Registry.ENTITY_TYPE.getId(type).toString());
+		this.spawnEntry.getEntityNbt().putString("id", Registry.ENTITY_TYPE.getId(type).toString());
 	}
 
 	private boolean isPlayerInRange() {
@@ -98,26 +98,26 @@ public abstract class MobSpawnerLogic {
 				boolean bl = false;
 
 				for (int i = 0; i < this.spawnCount; i++) {
-					CompoundTag compoundTag = this.spawnEntry.getEntityTag();
-					Optional<EntityType<?>> optional = EntityType.fromTag(compoundTag);
+					NbtCompound nbtCompound = this.spawnEntry.getEntityNbt();
+					Optional<EntityType<?>> optional = EntityType.fromNbt(nbtCompound);
 					if (!optional.isPresent()) {
 						this.updateSpawns();
 						return;
 					}
 
-					ListTag listTag = compoundTag.getList("Pos", 6);
-					int j = listTag.size();
+					NbtList nbtList = nbtCompound.getList("Pos", 6);
+					int j = nbtList.size();
 					double g = j >= 1
-						? listTag.getDouble(0)
+						? nbtList.getDouble(0)
 						: (double)blockPos.getX() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
-					double h = j >= 2 ? listTag.getDouble(1) : (double)(blockPos.getY() + world.random.nextInt(3) - 1);
+					double h = j >= 2 ? nbtList.getDouble(1) : (double)(blockPos.getY() + world.random.nextInt(3) - 1);
 					double k = j >= 3
-						? listTag.getDouble(2)
+						? nbtList.getDouble(2)
 						: (double)blockPos.getZ() + (world.random.nextDouble() - world.random.nextDouble()) * (double)this.spawnRange + 0.5;
 					if (world.isSpaceEmpty(((EntityType)optional.get()).createSimpleBoundingBox(g, h, k))) {
 						ServerWorld serverWorld = (ServerWorld)world;
 						if (SpawnRestriction.canSpawn((EntityType)optional.get(), serverWorld, SpawnReason.SPAWNER, new BlockPos(g, h, k), world.getRandom())) {
-							Entity entity = EntityType.loadEntityWithPassengers(compoundTag, world, entityx -> {
+							Entity entity = EntityType.loadEntityWithPassengers(nbtCompound, world, entityx -> {
 								entityx.refreshPositionAndAngles(g, h, k, entityx.yaw, entityx.pitch);
 								return entityx;
 							});
@@ -151,7 +151,7 @@ public abstract class MobSpawnerLogic {
 									continue;
 								}
 
-								if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().contains("id", 8)) {
+								if (this.spawnEntry.getEntityNbt().getSize() == 1 && this.spawnEntry.getEntityNbt().contains("id", 8)) {
 									((MobEntity)entity).initialize(serverWorld, world.getLocalDifficulty(entity.getBlockPos()), SpawnReason.SPAWNER, null, null);
 								}
 							}
@@ -192,14 +192,14 @@ public abstract class MobSpawnerLogic {
 		this.sendStatus(1);
 	}
 
-	public void fromTag(CompoundTag tag) {
+	public void fromTag(NbtCompound tag) {
 		this.spawnDelay = tag.getShort("Delay");
 		this.spawnPotentials.clear();
 		if (tag.contains("SpawnPotentials", 9)) {
-			ListTag listTag = tag.getList("SpawnPotentials", 10);
+			NbtList nbtList = tag.getList("SpawnPotentials", 10);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				this.spawnPotentials.add(new MobSpawnerEntry(listTag.getCompound(i)));
+			for (int i = 0; i < nbtList.size(); i++) {
+				this.spawnPotentials.add(new MobSpawnerEntry(nbtList.getCompound(i)));
 			}
 		}
 
@@ -229,7 +229,7 @@ public abstract class MobSpawnerLogic {
 		}
 	}
 
-	public CompoundTag toTag(CompoundTag tag) {
+	public NbtCompound toTag(NbtCompound tag) {
 		Identifier identifier = this.getEntityId();
 		if (identifier == null) {
 			return tag;
@@ -241,17 +241,17 @@ public abstract class MobSpawnerLogic {
 			tag.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
 			tag.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
 			tag.putShort("SpawnRange", (short)this.spawnRange);
-			tag.put("SpawnData", this.spawnEntry.getEntityTag().copy());
-			ListTag listTag = new ListTag();
+			tag.put("SpawnData", this.spawnEntry.getEntityNbt().copy());
+			NbtList nbtList = new NbtList();
 			if (this.spawnPotentials.isEmpty()) {
-				listTag.add(this.spawnEntry.serialize());
+				nbtList.add(this.spawnEntry.toNbt());
 			} else {
 				for (MobSpawnerEntry mobSpawnerEntry : this.spawnPotentials) {
-					listTag.add(mobSpawnerEntry.serialize());
+					nbtList.add(mobSpawnerEntry.toNbt());
 				}
 			}
 
-			tag.put("SpawnPotentials", listTag);
+			tag.put("SpawnPotentials", nbtList);
 			return tag;
 		}
 	}
@@ -260,8 +260,8 @@ public abstract class MobSpawnerLogic {
 	@Environment(EnvType.CLIENT)
 	public Entity getRenderedEntity() {
 		if (this.renderedEntity == null) {
-			this.renderedEntity = EntityType.loadEntityWithPassengers(this.spawnEntry.getEntityTag(), this.getWorld(), Function.identity());
-			if (this.spawnEntry.getEntityTag().getSize() == 1 && this.spawnEntry.getEntityTag().contains("id", 8) && this.renderedEntity instanceof MobEntity) {
+			this.renderedEntity = EntityType.loadEntityWithPassengers(this.spawnEntry.getEntityNbt(), this.getWorld(), Function.identity());
+			if (this.spawnEntry.getEntityNbt().getSize() == 1 && this.spawnEntry.getEntityNbt().contains("id", 8) && this.renderedEntity instanceof MobEntity) {
 			}
 		}
 

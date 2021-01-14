@@ -19,7 +19,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -171,9 +171,9 @@ public class PotionEntity extends ThrownItemEntity implements FlyingItemEntity {
 			areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
 		}
 
-		CompoundTag compoundTag = stack.getTag();
-		if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
-			areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
+		NbtCompound nbtCompound = stack.getTag();
+		if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", 99)) {
+			areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
 		}
 
 		this.world.spawnEntity(areaEffectCloudEntity);

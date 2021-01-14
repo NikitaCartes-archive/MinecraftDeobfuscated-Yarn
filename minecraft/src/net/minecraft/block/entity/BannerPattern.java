@@ -6,8 +6,8 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.tuple.Pair;
@@ -67,15 +67,15 @@ public enum BannerPattern {
 		this(name, id, false);
 	}
 
-	private BannerPattern(String name, String id, boolean bl) {
+	private BannerPattern(String name, String id, boolean hasPatternItem) {
 		this.name = name;
 		this.id = id;
-		this.field_24419 = bl;
+		this.field_24419 = hasPatternItem;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier getSpriteId(boolean bl) {
-		String string = bl ? "banner" : "shield";
+	public Identifier getSpriteId(boolean banner) {
+		String string = banner ? "banner" : "shield";
 		return new Identifier("entity/" + string + "/" + this.getName());
 	}
 
@@ -108,17 +108,17 @@ public enum BannerPattern {
 			return this;
 		}
 
-		public ListTag toTag() {
-			ListTag listTag = new ListTag();
+		public NbtList toTag() {
+			NbtList nbtList = new NbtList();
 
 			for (Pair<BannerPattern, DyeColor> pair : this.entries) {
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putString("Pattern", pair.getLeft().id);
-				compoundTag.putInt("Color", pair.getRight().getId());
-				listTag.add(compoundTag);
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putString("Pattern", pair.getLeft().id);
+				nbtCompound.putInt("Color", pair.getRight().getId());
+				nbtList.add(nbtCompound);
 			}
 
-			return listTag;
+			return nbtList;
 		}
 	}
 }

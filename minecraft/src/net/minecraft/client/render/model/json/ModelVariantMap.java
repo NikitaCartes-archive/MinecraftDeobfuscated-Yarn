@@ -28,7 +28,7 @@ public class ModelVariantMap {
 	private final Map<String, WeightedUnbakedModel> variantMap = Maps.<String, WeightedUnbakedModel>newLinkedHashMap();
 	private MultipartUnbakedModel multipartModel;
 
-	public static ModelVariantMap deserialize(ModelVariantMap.DeserializationContext context, Reader reader) {
+	public static ModelVariantMap fromJson(ModelVariantMap.DeserializationContext context, Reader reader) {
 		return JsonHelper.deserialize(context.gson, reader, ModelVariantMap.class);
 	}
 

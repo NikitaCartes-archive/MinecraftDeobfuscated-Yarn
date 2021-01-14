@@ -23,14 +23,14 @@ import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.NarratorManager;
-import net.minecraft.client.util.Rect2i;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
@@ -46,10 +46,10 @@ import org.apache.commons.lang3.mutable.MutableInt;
 
 @Environment(EnvType.CLIENT)
 public class BookEditScreen extends Screen {
-	private static final Text field_25893 = new TranslatableText("book.editTitle");
-	private static final Text field_25894 = new TranslatableText("book.finalizeWarning");
-	private static final OrderedText field_25895 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.BLACK));
-	private static final OrderedText field_25896 = OrderedText.styledString("_", Style.EMPTY.withColor(Formatting.GRAY));
+	private static final Text EDIT_TITLE_TEXT = new TranslatableText("book.editTitle");
+	private static final Text FINALIZE_WARNING_TEXT = new TranslatableText("book.finalizeWarning");
+	private static final OrderedText BLACK_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.BLACK));
+	private static final OrderedText GRAY_CURSOR_TEXT = OrderedText.styledForwardsVisitedString("_", Style.EMPTY.withColor(Formatting.GRAY));
 	private final PlayerEntity player;
 	private final ItemStack itemStack;
 	private boolean dirty;
@@ -58,15 +58,15 @@ public class BookEditScreen extends Screen {
 	private int currentPage;
 	private final List<String> pages = Lists.<String>newArrayList();
 	private String title = "";
-	private final SelectionManager field_24269 = new SelectionManager(
+	private final SelectionManager currentPageSelectionManager = new SelectionManager(
 		this::getCurrentPageContent,
 		this::setPageContent,
-		this::method_27595,
-		this::method_27584,
-		string -> string.length() < 1024 && this.textRenderer.getStringBoundedHeight(string, 114) <= 128
+		this::getClipboard,
+		this::setClipboard,
+		string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight(string, 114) <= 128
 	);
-	private final SelectionManager field_24270 = new SelectionManager(
-		() -> this.title, string -> this.title = string, this::method_27595, this::method_27584, string -> string.length() < 16
+	private final SelectionManager bookTitleSelectionManager = new SelectionManager(
+		() -> this.title, string -> this.title = string, this::getClipboard, this::setClipboard, string -> string.length() < 16
 	);
 	private long lastClickTime;
 	private int lastClickIndex = -1;
@@ -79,20 +79,20 @@ public class BookEditScreen extends Screen {
 	private final Hand hand;
 	@Nullable
 	private BookEditScreen.PageContent pageContent = BookEditScreen.PageContent.EMPTY;
-	private Text field_25891 = LiteralText.EMPTY;
-	private final Text field_25892;
+	private Text pageIndicatorText = LiteralText.EMPTY;
+	private final Text signedByText;
 
-	public BookEditScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
+	public BookEditScreen(PlayerEntity player, ItemStack itemStack, Hand hand) {
 		super(NarratorManager.EMPTY);
-		this.player = playerEntity;
+		this.player = player;
 		this.itemStack = itemStack;
 		this.hand = hand;
-		CompoundTag compoundTag = itemStack.getTag();
-		if (compoundTag != null) {
-			ListTag listTag = compoundTag.getList("pages", 8).copy();
+		NbtCompound nbtCompound = itemStack.getTag();
+		if (nbtCompound != null) {
+			NbtList nbtList = nbtCompound.getList("pages", 8).copy();
 
-			for (int i = 0; i < listTag.size(); i++) {
-				this.pages.add(listTag.getString(i));
+			for (int i = 0; i < nbtList.size(); i++) {
+				this.pages.add(nbtList.getString(i));
 			}
 		}
 
@@ -100,16 +100,16 @@ public class BookEditScreen extends Screen {
 			this.pages.add("");
 		}
 
-		this.field_25892 = new TranslatableText("book.byAuthor", playerEntity.getName()).formatted(Formatting.DARK_GRAY);
+		this.signedByText = new TranslatableText("book.byAuthor", player.getName()).formatted(Formatting.DARK_GRAY);
 	}
 
-	private void method_27584(String string) {
+	private void setClipboard(String clipboard) {
 		if (this.client != null) {
-			SelectionManager.setClipboard(this.client, string);
+			SelectionManager.setClipboard(this.client, clipboard);
 		}
 	}
 
-	private String method_27595() {
+	private String getClipboard() {
 		return this.client != null ? SelectionManager.getClipboard(this.client) : "";
 	}
 
@@ -161,7 +161,7 @@ public class BookEditScreen extends Screen {
 		}
 
 		this.updateButtons();
-		this.method_27872();
+		this.changePage();
 	}
 
 	private void openNextPage() {
@@ -175,7 +175,7 @@ public class BookEditScreen extends Screen {
 		}
 
 		this.updateButtons();
-		this.method_27872();
+		this.changePage();
 	}
 
 	@Override
@@ -204,15 +204,15 @@ public class BookEditScreen extends Screen {
 	private void finalizeBook(boolean signBook) {
 		if (this.dirty) {
 			this.removeEmptyPages();
-			ListTag listTag = new ListTag();
-			this.pages.stream().map(StringTag::of).forEach(listTag::add);
+			NbtList nbtList = new NbtList();
+			this.pages.stream().map(NbtString::of).forEach(nbtList::add);
 			if (!this.pages.isEmpty()) {
-				this.itemStack.putSubTag("pages", listTag);
+				this.itemStack.putSubTag("pages", nbtList);
 			}
 
 			if (signBook) {
-				this.itemStack.putSubTag("author", StringTag.of(this.player.getGameProfile().getName()));
-				this.itemStack.putSubTag("title", StringTag.of(this.title.trim()));
+				this.itemStack.putSubTag("author", NbtString.of(this.player.getGameProfile().getName()));
+				this.itemStack.putSubTag("title", NbtString.of(this.title.trim()));
 			}
 
 			int i = this.hand == Hand.MAIN_HAND ? this.player.inventory.selectedSlot : 40;
@@ -234,7 +234,7 @@ public class BookEditScreen extends Screen {
 		} else if (this.signing) {
 			return this.keyPressedSignMode(keyCode, scanCode, modifiers);
 		} else {
-			boolean bl = this.method_27592(keyCode, scanCode, modifiers);
+			boolean bl = this.keyPressedEditMode(keyCode, scanCode, modifiers);
 			if (bl) {
 				this.invalidatePageContent();
 				return true;
@@ -245,11 +245,11 @@ public class BookEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
-		if (super.charTyped(chr, keyCode)) {
+	public boolean charTyped(char chr, int modifiers) {
+		if (super.charTyped(chr, modifiers)) {
 			return true;
 		} else if (this.signing) {
-			boolean bl = this.field_24270.insert(chr);
+			boolean bl = this.bookTitleSelectionManager.insert(chr);
 			if (bl) {
 				this.updateButtons();
 				this.dirty = true;
@@ -258,7 +258,7 @@ public class BookEditScreen extends Screen {
 				return false;
 			}
 		} else if (SharedConstants.isValidChar(chr)) {
-			this.field_24269.insert(Character.toString(chr));
+			this.currentPageSelectionManager.insert(Character.toString(chr));
 			this.invalidatePageContent();
 			return true;
 		} else {
@@ -266,42 +266,42 @@ public class BookEditScreen extends Screen {
 		}
 	}
 
-	private boolean method_27592(int i, int j, int k) {
-		if (Screen.isSelectAll(i)) {
-			this.field_24269.selectAll();
+	private boolean keyPressedEditMode(int keyCode, int scanCode, int modifiers) {
+		if (Screen.isSelectAll(keyCode)) {
+			this.currentPageSelectionManager.selectAll();
 			return true;
-		} else if (Screen.isCopy(i)) {
-			this.field_24269.copy();
+		} else if (Screen.isCopy(keyCode)) {
+			this.currentPageSelectionManager.copy();
 			return true;
-		} else if (Screen.isPaste(i)) {
-			this.field_24269.paste();
+		} else if (Screen.isPaste(keyCode)) {
+			this.currentPageSelectionManager.paste();
 			return true;
-		} else if (Screen.isCut(i)) {
-			this.field_24269.cut();
+		} else if (Screen.isCut(keyCode)) {
+			this.currentPageSelectionManager.cut();
 			return true;
 		} else {
-			switch (i) {
+			switch (keyCode) {
 				case 257:
 				case 335:
-					this.field_24269.insert("\n");
+					this.currentPageSelectionManager.insert("\n");
 					return true;
 				case 259:
-					this.field_24269.delete(-1);
+					this.currentPageSelectionManager.delete(-1);
 					return true;
 				case 261:
-					this.field_24269.delete(1);
+					this.currentPageSelectionManager.delete(1);
 					return true;
 				case 262:
-					this.field_24269.moveCursor(1, Screen.hasShiftDown());
+					this.currentPageSelectionManager.moveCursor(1, Screen.hasShiftDown());
 					return true;
 				case 263:
-					this.field_24269.moveCursor(-1, Screen.hasShiftDown());
+					this.currentPageSelectionManager.moveCursor(-1, Screen.hasShiftDown());
 					return true;
 				case 264:
-					this.method_27598();
+					this.moveDownLine();
 					return true;
 				case 265:
-					this.method_27597();
+					this.moveUpLine();
 					return true;
 				case 266:
 					this.previousPageButton.onPress();
@@ -310,10 +310,10 @@ public class BookEditScreen extends Screen {
 					this.nextPageButton.onPress();
 					return true;
 				case 268:
-					this.moveCursorToTop();
+					this.moveToLineStart();
 					return true;
 				case 269:
-					this.moveCursorToBottom();
+					this.moveToLineEnd();
 					return true;
 				default:
 					return false;
@@ -321,31 +321,31 @@ public class BookEditScreen extends Screen {
 		}
 	}
 
-	private void method_27597() {
-		this.method_27580(-1);
+	private void moveUpLine() {
+		this.moveVertically(-1);
 	}
 
-	private void method_27598() {
-		this.method_27580(1);
+	private void moveDownLine() {
+		this.moveVertically(1);
 	}
 
-	private void method_27580(int i) {
-		int j = this.field_24269.getSelectionStart();
-		int k = this.getPageContent().method_27601(j, i);
-		this.field_24269.method_27560(k, Screen.hasShiftDown());
+	private void moveVertically(int lines) {
+		int i = this.currentPageSelectionManager.getSelectionStart();
+		int j = this.getPageContent().getVerticalOffset(i, lines);
+		this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
 	}
 
-	private void moveCursorToTop() {
-		int i = this.field_24269.getSelectionStart();
-		int j = this.getPageContent().method_27600(i);
-		this.field_24269.method_27560(j, Screen.hasShiftDown());
+	private void moveToLineStart() {
+		int i = this.currentPageSelectionManager.getSelectionStart();
+		int j = this.getPageContent().getLineStart(i);
+		this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
 	}
 
-	private void moveCursorToBottom() {
+	private void moveToLineEnd() {
 		BookEditScreen.PageContent pageContent = this.getPageContent();
-		int i = this.field_24269.getSelectionStart();
-		int j = pageContent.method_27604(i);
-		this.field_24269.method_27560(j, Screen.hasShiftDown());
+		int i = this.currentPageSelectionManager.getSelectionStart();
+		int j = pageContent.getLineEnd(i);
+		this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
 	}
 
 	private boolean keyPressedSignMode(int keyCode, int scanCode, int modifiers) {
@@ -359,7 +359,7 @@ public class BookEditScreen extends Screen {
 
 				return true;
 			case 259:
-				this.field_24270.delete(-1);
+				this.bookTitleSelectionManager.delete(-1);
 				this.updateButtons();
 				this.dirty = true;
 				return true;
@@ -391,42 +391,42 @@ public class BookEditScreen extends Screen {
 		this.drawTexture(matrices, i, 2, 0, 0, 192, 192);
 		if (this.signing) {
 			boolean bl = this.tickCounter / 6 % 2 == 0;
-			OrderedText orderedText = OrderedText.concat(OrderedText.styledString(this.title, Style.EMPTY), bl ? field_25895 : field_25896);
-			int k = this.textRenderer.getWidth(field_25893);
-			this.textRenderer.draw(matrices, field_25893, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
+			OrderedText orderedText = OrderedText.concat(OrderedText.styledForwardsVisitedString(this.title, Style.EMPTY), bl ? BLACK_CURSOR_TEXT : GRAY_CURSOR_TEXT);
+			int k = this.textRenderer.getWidth(EDIT_TITLE_TEXT);
+			this.textRenderer.draw(matrices, EDIT_TITLE_TEXT, (float)(i + 36 + (114 - k) / 2), 34.0F, 0);
 			int l = this.textRenderer.getWidth(orderedText);
 			this.textRenderer.draw(matrices, orderedText, (float)(i + 36 + (114 - l) / 2), 50.0F, 0);
-			int m = this.textRenderer.getWidth(this.field_25892);
-			this.textRenderer.draw(matrices, this.field_25892, (float)(i + 36 + (114 - m) / 2), 60.0F, 0);
-			this.textRenderer.drawTrimmed(field_25894, i + 36, 82, 114, 0);
+			int m = this.textRenderer.getWidth(this.signedByText);
+			this.textRenderer.draw(matrices, this.signedByText, (float)(i + 36 + (114 - m) / 2), 60.0F, 0);
+			this.textRenderer.drawTrimmed(FINALIZE_WARNING_TEXT, i + 36, 82, 114, 0);
 		} else {
-			int n = this.textRenderer.getWidth(this.field_25891);
-			this.textRenderer.draw(matrices, this.field_25891, (float)(i - n + 192 - 44), 18.0F, 0);
+			int n = this.textRenderer.getWidth(this.pageIndicatorText);
+			this.textRenderer.draw(matrices, this.pageIndicatorText, (float)(i - n + 192 - 44), 18.0F, 0);
 			BookEditScreen.PageContent pageContent = this.getPageContent();
 
 			for (BookEditScreen.Line line : pageContent.lines) {
 				this.textRenderer.draw(matrices, line.text, (float)line.x, (float)line.y, -16777216);
 			}
 
-			this.method_27588(pageContent.field_24277);
-			this.method_27581(matrices, pageContent.position, pageContent.field_24274);
+			this.drawSelection(pageContent.selectionRectangles);
+			this.drawCursor(matrices, pageContent.position, pageContent.atEnd);
 		}
 
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private void method_27581(MatrixStack matrixStack, BookEditScreen.Position position, boolean bl) {
+	private void drawCursor(MatrixStack matrices, BookEditScreen.Position position, boolean atEnd) {
 		if (this.tickCounter / 6 % 2 == 0) {
-			position = this.method_27590(position);
-			if (!bl) {
-				DrawableHelper.fill(matrixStack, position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
+			position = this.absolutePositionToScreenPosition(position);
+			if (!atEnd) {
+				DrawableHelper.fill(matrices, position.x, position.y - 1, position.x + 1, position.y + 9, -16777216);
 			} else {
-				this.textRenderer.draw(matrixStack, "_", (float)position.x, (float)position.y, 0);
+				this.textRenderer.draw(matrices, "_", (float)position.x, (float)position.y, 0);
 			}
 		}
 	}
 
-	private void method_27588(Rect2i[] rect2is) {
+	private void drawSelection(Rect2i[] selectionRectangles) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		RenderSystem.color4f(0.0F, 0.0F, 255.0F, 255.0F);
@@ -435,7 +435,7 @@ public class BookEditScreen extends Screen {
 		RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
 		bufferBuilder.begin(7, VertexFormats.POSITION);
 
-		for (Rect2i rect2i : rect2is) {
+		for (Rect2i rect2i : selectionRectangles) {
 			int i = rect2i.getX();
 			int j = rect2i.getY();
 			int k = i + rect2i.getWidth();
@@ -451,11 +451,11 @@ public class BookEditScreen extends Screen {
 		RenderSystem.enableTexture();
 	}
 
-	private BookEditScreen.Position method_27582(BookEditScreen.Position position) {
+	private BookEditScreen.Position screenPositionToAbsolutePosition(BookEditScreen.Position position) {
 		return new BookEditScreen.Position(position.x - (this.width - 192) / 2 - 36, position.y - 32);
 	}
 
-	private BookEditScreen.Position method_27590(BookEditScreen.Position position) {
+	private BookEditScreen.Position absolutePositionToScreenPosition(BookEditScreen.Position position) {
 		return new BookEditScreen.Position(position.x + (this.width - 192) / 2 + 36, position.y + 32);
 	}
 
@@ -467,14 +467,14 @@ public class BookEditScreen extends Screen {
 			if (button == 0) {
 				long l = Util.getMeasuringTimeMs();
 				BookEditScreen.PageContent pageContent = this.getPageContent();
-				int i = pageContent.method_27602(this.textRenderer, this.method_27582(new BookEditScreen.Position((int)mouseX, (int)mouseY)));
+				int i = pageContent.getCursorPosition(this.textRenderer, this.screenPositionToAbsolutePosition(new BookEditScreen.Position((int)mouseX, (int)mouseY)));
 				if (i >= 0) {
 					if (i != this.lastClickIndex || l - this.lastClickTime >= 250L) {
-						this.field_24269.method_27560(i, Screen.hasShiftDown());
-					} else if (!this.field_24269.method_27568()) {
-						this.method_27589(i);
+						this.currentPageSelectionManager.moveCursorTo(i, Screen.hasShiftDown());
+					} else if (!this.currentPageSelectionManager.isSelecting()) {
+						this.selectCurrentWord(i);
 					} else {
-						this.field_24269.selectAll();
+						this.currentPageSelectionManager.selectAll();
 					}
 
 					this.invalidatePageContent();
@@ -488,9 +488,10 @@ public class BookEditScreen extends Screen {
 		}
 	}
 
-	private void method_27589(int i) {
+	private void selectCurrentWord(int cursor) {
 		String string = this.getCurrentPageContent();
-		this.field_24269.method_27548(TextHandler.moveCursorByWords(string, -1, i, false), TextHandler.moveCursorByWords(string, 1, i, false));
+		this.currentPageSelectionManager
+			.setSelection(TextHandler.moveCursorByWords(string, -1, cursor, false), TextHandler.moveCursorByWords(string, 1, cursor, false));
 	}
 
 	@Override
@@ -500,8 +501,8 @@ public class BookEditScreen extends Screen {
 		} else {
 			if (button == 0) {
 				BookEditScreen.PageContent pageContent = this.getPageContent();
-				int i = pageContent.method_27602(this.textRenderer, this.method_27582(new BookEditScreen.Position((int)mouseX, (int)mouseY)));
-				this.field_24269.method_27560(i, true);
+				int i = pageContent.getCursorPosition(this.textRenderer, this.screenPositionToAbsolutePosition(new BookEditScreen.Position((int)mouseX, (int)mouseY)));
+				this.currentPageSelectionManager.moveCursorTo(i, true);
 				this.invalidatePageContent();
 			}
 
@@ -512,7 +513,7 @@ public class BookEditScreen extends Screen {
 	private BookEditScreen.PageContent getPageContent() {
 		if (this.pageContent == null) {
 			this.pageContent = this.createPageContent();
-			this.field_25891 = new TranslatableText("book.pageIndicator", this.currentPage + 1, this.countPages());
+			this.pageIndicatorText = new TranslatableText("book.pageIndicator", this.currentPage + 1, this.countPages());
 		}
 
 		return this.pageContent;
@@ -522,8 +523,8 @@ public class BookEditScreen extends Screen {
 		this.pageContent = null;
 	}
 
-	private void method_27872() {
-		this.field_24269.moveCaretToEnd();
+	private void changePage() {
+		this.currentPageSelectionManager.putCursorAtEnd();
 		this.invalidatePageContent();
 	}
 
@@ -532,8 +533,8 @@ public class BookEditScreen extends Screen {
 		if (string.isEmpty()) {
 			return BookEditScreen.PageContent.EMPTY;
 		} else {
-			int i = this.field_24269.getSelectionStart();
-			int j = this.field_24269.getSelectionEnd();
+			int i = this.currentPageSelectionManager.getSelectionStart();
+			int j = this.currentPageSelectionManager.getSelectionEnd();
 			IntList intList = new IntArrayList();
 			List<BookEditScreen.Line> list = Lists.<BookEditScreen.Line>newArrayList();
 			MutableInt mutableInt = new MutableInt();
@@ -545,7 +546,7 @@ public class BookEditScreen extends Screen {
 				mutableBoolean.setValue(string2x.endsWith("\n"));
 				String string3 = StringUtils.stripEnd(string2x, " \n");
 				int lx = k * 9;
-				BookEditScreen.Position positionx = this.method_27590(new BookEditScreen.Position(0, lx));
+				BookEditScreen.Position positionx = this.absolutePositionToScreenPosition(new BookEditScreen.Position(0, lx));
 				intList.add(ix);
 				list.add(new BookEditScreen.Line(style, string3, positionx.x, positionx.y));
 			});
@@ -555,7 +556,7 @@ public class BookEditScreen extends Screen {
 			if (bl && mutableBoolean.isTrue()) {
 				position = new BookEditScreen.Position(0, list.size() * 9);
 			} else {
-				int k = method_27591(is, i);
+				int k = getLineFromOffset(is, i);
 				int l = this.textRenderer.getWidth(string.substring(is[k], i));
 				position = new BookEditScreen.Position(l, k * 9);
 			}
@@ -564,24 +565,24 @@ public class BookEditScreen extends Screen {
 			if (i != j) {
 				int l = Math.min(i, j);
 				int m = Math.max(i, j);
-				int n = method_27591(is, l);
-				int o = method_27591(is, m);
+				int n = getLineFromOffset(is, l);
+				int o = getLineFromOffset(is, m);
 				if (n == o) {
 					int p = n * 9;
 					int q = is[n];
-					list2.add(this.method_27585(string, textHandler, l, m, p, q));
+					list2.add(this.getLineSelectionRectangle(string, textHandler, l, m, p, q));
 				} else {
 					int p = n + 1 > is.length ? string.length() : is[n + 1];
-					list2.add(this.method_27585(string, textHandler, l, p, n * 9, is[n]));
+					list2.add(this.getLineSelectionRectangle(string, textHandler, l, p, n * 9, is[n]));
 
 					for (int q = n + 1; q < o; q++) {
 						int r = q * 9;
 						String string2 = string.substring(is[q], is[q + 1]);
 						int s = (int)textHandler.getWidth(string2);
-						list2.add(this.method_27583(new BookEditScreen.Position(0, r), new BookEditScreen.Position(s, r + 9)));
+						list2.add(this.getRectFromCorners(new BookEditScreen.Position(0, r), new BookEditScreen.Position(s, r + 9)));
 					}
 
-					list2.add(this.method_27585(string, textHandler, is[o], m, o * 9, is[o]));
+					list2.add(this.getLineSelectionRectangle(string, textHandler, is[o], m, o * 9, is[o]));
 				}
 			}
 
@@ -591,26 +592,26 @@ public class BookEditScreen extends Screen {
 		}
 	}
 
-	private static int method_27591(int[] is, int i) {
-		int j = Arrays.binarySearch(is, i);
-		return j < 0 ? -(j + 2) : j;
+	private static int getLineFromOffset(int[] lineStarts, int position) {
+		int i = Arrays.binarySearch(lineStarts, position);
+		return i < 0 ? -(i + 2) : i;
 	}
 
-	private Rect2i method_27585(String string, TextHandler textHandler, int i, int j, int k, int l) {
-		String string2 = string.substring(l, i);
-		String string3 = string.substring(l, j);
-		BookEditScreen.Position position = new BookEditScreen.Position((int)textHandler.getWidth(string2), k);
-		BookEditScreen.Position position2 = new BookEditScreen.Position((int)textHandler.getWidth(string3), k + 9);
-		return this.method_27583(position, position2);
+	private Rect2i getLineSelectionRectangle(String string, TextHandler handler, int selectionStart, int selectionEnd, int lineY, int lineStart) {
+		String string2 = string.substring(lineStart, selectionStart);
+		String string3 = string.substring(lineStart, selectionEnd);
+		BookEditScreen.Position position = new BookEditScreen.Position((int)handler.getWidth(string2), lineY);
+		BookEditScreen.Position position2 = new BookEditScreen.Position((int)handler.getWidth(string3), lineY + 9);
+		return this.getRectFromCorners(position, position2);
 	}
 
-	private Rect2i method_27583(BookEditScreen.Position position, BookEditScreen.Position position2) {
-		BookEditScreen.Position position3 = this.method_27590(position);
-		BookEditScreen.Position position4 = this.method_27590(position2);
-		int i = Math.min(position3.x, position4.x);
-		int j = Math.max(position3.x, position4.x);
-		int k = Math.min(position3.y, position4.y);
-		int l = Math.max(position3.y, position4.y);
+	private Rect2i getRectFromCorners(BookEditScreen.Position start, BookEditScreen.Position end) {
+		BookEditScreen.Position position = this.absolutePositionToScreenPosition(start);
+		BookEditScreen.Position position2 = this.absolutePositionToScreenPosition(end);
+		int i = Math.min(position.x, position2.x);
+		int j = Math.max(position.x, position2.x);
+		int k = Math.min(position.y, position2.y);
+		int l = Math.max(position.y, position2.y);
 		return new Rect2i(i, k, j - i, l - k);
 	}
 
@@ -638,21 +639,23 @@ public class BookEditScreen extends Screen {
 		);
 		private final String pageContent;
 		private final BookEditScreen.Position position;
-		private final boolean field_24274;
-		private final int[] field_24275;
+		private final boolean atEnd;
+		private final int[] lineStarts;
 		private final BookEditScreen.Line[] lines;
-		private final Rect2i[] field_24277;
+		private final Rect2i[] selectionRectangles;
 
-		public PageContent(String pageContent, BookEditScreen.Position position, boolean bl, int[] is, BookEditScreen.Line[] lines, Rect2i[] rect2is) {
+		public PageContent(
+			String pageContent, BookEditScreen.Position position, boolean atEnd, int[] lineStarts, BookEditScreen.Line[] lines, Rect2i[] selectionRectangles
+		) {
 			this.pageContent = pageContent;
 			this.position = position;
-			this.field_24274 = bl;
-			this.field_24275 = is;
+			this.atEnd = atEnd;
+			this.lineStarts = lineStarts;
 			this.lines = lines;
-			this.field_24277 = rect2is;
+			this.selectionRectangles = selectionRectangles;
 		}
 
-		public int method_27602(TextRenderer textRenderer, BookEditScreen.Position position) {
+		public int getCursorPosition(TextRenderer renderer, BookEditScreen.Position position) {
 			int i = position.y / 9;
 			if (i < 0) {
 				return 0;
@@ -660,33 +663,33 @@ public class BookEditScreen extends Screen {
 				return this.pageContent.length();
 			} else {
 				BookEditScreen.Line line = this.lines[i];
-				return this.field_24275[i] + textRenderer.getTextHandler().getTrimmedLength(line.content, position.x, line.style);
+				return this.lineStarts[i] + renderer.getTextHandler().getTrimmedLength(line.content, position.x, line.style);
 			}
 		}
 
-		public int method_27601(int i, int j) {
-			int k = BookEditScreen.method_27591(this.field_24275, i);
-			int l = k + j;
-			int o;
-			if (0 <= l && l < this.field_24275.length) {
-				int m = i - this.field_24275[k];
-				int n = this.lines[l].content.length();
-				o = this.field_24275[l] + Math.min(m, n);
+		public int getVerticalOffset(int position, int lines) {
+			int i = BookEditScreen.getLineFromOffset(this.lineStarts, position);
+			int j = i + lines;
+			int m;
+			if (0 <= j && j < this.lineStarts.length) {
+				int k = position - this.lineStarts[i];
+				int l = this.lines[j].content.length();
+				m = this.lineStarts[j] + Math.min(k, l);
 			} else {
-				o = i;
+				m = position;
 			}
 
-			return o;
+			return m;
 		}
 
-		public int method_27600(int i) {
-			int j = BookEditScreen.method_27591(this.field_24275, i);
-			return this.field_24275[j];
+		public int getLineStart(int position) {
+			int i = BookEditScreen.getLineFromOffset(this.lineStarts, position);
+			return this.lineStarts[i];
 		}
 
-		public int method_27604(int i) {
-			int j = BookEditScreen.method_27591(this.field_24275, i);
-			return this.field_24275[j] + this.lines[j].content.length();
+		public int getLineEnd(int position) {
+			int i = BookEditScreen.getLineFromOffset(this.lineStarts, position);
+			return this.lineStarts[i] + this.lines[i].content.length();
 		}
 	}
 

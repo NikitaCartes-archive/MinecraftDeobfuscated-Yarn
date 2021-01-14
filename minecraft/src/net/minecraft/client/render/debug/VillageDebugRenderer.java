@@ -46,12 +46,12 @@ public class VillageDebugRenderer implements DebugRenderer.Renderer {
 		this.targetedEntity = null;
 	}
 
-	public void addPointOfInterest(VillageDebugRenderer.PointOfInterest pointOfInterest) {
-		this.pointsOfInterest.put(pointOfInterest.pos, pointOfInterest);
+	public void addPointOfInterest(VillageDebugRenderer.PointOfInterest poi) {
+		this.pointsOfInterest.put(poi.pos, poi);
 	}
 
-	public void removePointOfInterest(BlockPos blockPos) {
-		this.pointsOfInterest.remove(blockPos);
+	public void removePointOfInterest(BlockPos pos) {
+		this.pointsOfInterest.remove(pos);
 	}
 
 	public void setFreeTicketCount(BlockPos pos, int freeTicketCount) {

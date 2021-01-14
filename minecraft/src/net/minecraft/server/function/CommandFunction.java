@@ -30,14 +30,19 @@ public class CommandFunction {
 		return this.elements;
 	}
 
-	public static CommandFunction create(
-		Identifier id, CommandDispatcher<ServerCommandSource> commandDispatcher, ServerCommandSource serverCommandSource, List<String> list
-	) {
-		List<CommandFunction.Element> list2 = Lists.<CommandFunction.Element>newArrayListWithCapacity(list.size());
+	/**
+	 * Parses a function in the context of {@code source}.
+	 * 
+	 * <p>Any syntax errors, such as improper comment lines or unknown commands, will be thrown at this point.
+	 * 
+	 * @param lines the raw lines (including comments) read from a function file
+	 */
+	public static CommandFunction create(Identifier id, CommandDispatcher<ServerCommandSource> dispatcher, ServerCommandSource source, List<String> lines) {
+		List<CommandFunction.Element> list = Lists.<CommandFunction.Element>newArrayListWithCapacity(lines.size());
 
-		for (int i = 0; i < list.size(); i++) {
+		for (int i = 0; i < lines.size(); i++) {
 			int j = i + 1;
-			String string = ((String)list.get(i)).trim();
+			String string = ((String)lines.get(i)).trim();
 			StringReader stringReader = new StringReader(string);
 			if (stringReader.canRead() && stringReader.peek() != '#') {
 				if (stringReader.peek() == '/') {
@@ -53,19 +58,19 @@ public class CommandFunction {
 				}
 
 				try {
-					ParseResults<ServerCommandSource> parseResults = commandDispatcher.parse(stringReader, serverCommandSource);
+					ParseResults<ServerCommandSource> parseResults = dispatcher.parse(stringReader, source);
 					if (parseResults.getReader().canRead()) {
 						throw CommandManager.getException(parseResults);
 					}
 
-					list2.add(new CommandFunction.CommandElement(parseResults));
+					list.add(new CommandFunction.CommandElement(parseResults));
 				} catch (CommandSyntaxException var10) {
 					throw new IllegalArgumentException("Whilst parsing command on line " + j + ": " + var10.getMessage());
 				}
 			}
 		}
 
-		return new CommandFunction(id, (CommandFunction.Element[])list2.toArray(new CommandFunction.Element[0]));
+		return new CommandFunction(id, (CommandFunction.Element[])list.toArray(new CommandFunction.Element[0]));
 	}
 
 	public static class CommandElement implements CommandFunction.Element {

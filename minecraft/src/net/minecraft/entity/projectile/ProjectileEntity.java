@@ -7,7 +7,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -42,23 +42,23 @@ public abstract class ProjectileEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
 		if (this.ownerUuid != null) {
-			tag.putUuid("Owner", this.ownerUuid);
+			nbt.putUuid("Owner", this.ownerUuid);
 		}
 
 		if (this.leftOwner) {
-			tag.putBoolean("LeftOwner", true);
+			nbt.putBoolean("LeftOwner", true);
 		}
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		if (tag.containsUuid("Owner")) {
-			this.ownerUuid = tag.getUuid("Owner");
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		if (nbt.containsUuid("Owner")) {
+			this.ownerUuid = nbt.getUuid("Owner");
 		}
 
-		this.leftOwner = tag.getBoolean("LeftOwner");
+		this.leftOwner = nbt.getBoolean("LeftOwner");
 	}
 
 	@Override
@@ -157,15 +157,15 @@ public abstract class ProjectileEntity extends Entity {
 		this.yaw = updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
 	}
 
-	public static float updateRotation(float f, float g) {
-		while (g - f < -180.0F) {
-			f -= 360.0F;
+	public static float updateRotation(float prevRot, float newRot) {
+		while (newRot - prevRot < -180.0F) {
+			prevRot -= 360.0F;
 		}
 
-		while (g - f >= 180.0F) {
-			f += 360.0F;
+		while (newRot - prevRot >= 180.0F) {
+			prevRot += 360.0F;
 		}
 
-		return MathHelper.lerp(0.2F, f, g);
+		return MathHelper.lerp(0.2F, prevRot, newRot);
 	}
 }

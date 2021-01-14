@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.class_5493;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
@@ -14,12 +14,12 @@ public abstract class DoorInteractGoal extends Goal {
 	protected BlockPos doorPos = BlockPos.ORIGIN;
 	protected boolean doorValid;
 	private boolean shouldStop;
-	private float xOffset;
-	private float zOffset;
+	private float offsetX;
+	private float offsetZ;
 
 	public DoorInteractGoal(MobEntity mob) {
 		this.mob = mob;
-		if (!class_5493.method_30955(mob)) {
+		if (!NavigationConditions.hasMobNavigation(mob)) {
 			throw new IllegalArgumentException("Unsupported mob type for DoorInteractGoal");
 		}
 	}
@@ -49,7 +49,7 @@ public abstract class DoorInteractGoal extends Goal {
 
 	@Override
 	public boolean canStart() {
-		if (!class_5493.method_30955(this.mob)) {
+		if (!NavigationConditions.hasMobNavigation(this.mob)) {
 			return false;
 		} else if (!this.mob.horizontalCollision) {
 			return false;
@@ -85,15 +85,15 @@ public abstract class DoorInteractGoal extends Goal {
 	@Override
 	public void start() {
 		this.shouldStop = false;
-		this.xOffset = (float)((double)this.doorPos.getX() + 0.5 - this.mob.getX());
-		this.zOffset = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ());
+		this.offsetX = (float)((double)this.doorPos.getX() + 0.5 - this.mob.getX());
+		this.offsetZ = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ());
 	}
 
 	@Override
 	public void tick() {
 		float f = (float)((double)this.doorPos.getX() + 0.5 - this.mob.getX());
 		float g = (float)((double)this.doorPos.getZ() + 0.5 - this.mob.getZ());
-		float h = this.xOffset * f + this.zOffset * g;
+		float h = this.offsetX * f + this.offsetZ * g;
 		if (h < 0.0F) {
 			this.shouldStop = true;
 		}

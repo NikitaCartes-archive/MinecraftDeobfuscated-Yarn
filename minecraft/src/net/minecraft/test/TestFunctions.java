@@ -15,7 +15,7 @@ import net.minecraft.server.world.ServerWorld;
 public class TestFunctions {
 	private static final Collection<TestFunction> TEST_FUNCTIONS = Lists.<TestFunction>newArrayList();
 	private static final Set<String> testClasses = Sets.<String>newHashSet();
-	private static final Map<String, Consumer<ServerWorld>> WORLD_SETTERS = Maps.<String, Consumer<ServerWorld>>newHashMap();
+	private static final Map<String, Consumer<ServerWorld>> BEFORE_BATCH_CONSUMERS = Maps.<String, Consumer<ServerWorld>>newHashMap();
 	private static final Collection<TestFunction> field_25302 = Sets.<TestFunction>newHashSet();
 
 	public static Collection<TestFunction> getTestFunctions(String testClass) {
@@ -35,8 +35,8 @@ public class TestFunctions {
 	}
 
 	@Nullable
-	public static Consumer<ServerWorld> getWorldSetter(String batchId) {
-		return (Consumer<ServerWorld>)WORLD_SETTERS.get(batchId);
+	public static Consumer<ServerWorld> getAfterBatchConsumer(String batchId) {
+		return (Consumer<ServerWorld>)BEFORE_BATCH_CONSUMERS.get(batchId);
 	}
 
 	public static Optional<TestFunction> getTestFunction(String structurePath) {

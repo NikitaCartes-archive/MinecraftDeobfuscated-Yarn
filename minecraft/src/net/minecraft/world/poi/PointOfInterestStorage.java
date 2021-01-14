@@ -112,11 +112,11 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public Optional<BlockPos> getNearestPosition(
-		Predicate<PointOfInterestType> typePredicate, BlockPos blockPos, int i, PointOfInterestStorage.OccupationStatus occupationStatus
+		Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus occupationStatus
 	) {
-		return this.getInCircle(typePredicate, blockPos, i, occupationStatus)
+		return this.getInCircle(typePredicate, pos, radius, occupationStatus)
 			.map(PointOfInterest::getPos)
-			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(blockPos)));
+			.min(Comparator.comparingDouble(blockPos2 -> blockPos2.getSquaredDistance(pos)));
 	}
 
 	public Optional<BlockPos> getPosition(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> positionPredicate, BlockPos pos, int radius) {
@@ -220,7 +220,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	/**
 	 * Preloads chunks in a square area with the given radius. Loads the chunks with {@code ChunkStatus.EMPTY}.
 	 * 
-	 * @param radius The radius in blocks
+	 * @param radius the radius in blocks
 	 */
 	public void preloadChunks(WorldView world, BlockPos pos, int radius) {
 		ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16))

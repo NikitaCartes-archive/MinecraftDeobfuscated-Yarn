@@ -32,61 +32,61 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 	private final List<Element> buttons;
 	private final UUID uuid;
 	private final String name;
-	private final Supplier<Identifier> field_26904;
-	private boolean field_26859;
+	private final Supplier<Identifier> skinTexture;
+	private boolean offline;
 	@Nullable
 	private ButtonWidget hideButton;
 	@Nullable
 	private ButtonWidget showButton;
 	private final List<OrderedText> hideTooltip;
 	private final List<OrderedText> showTooltip;
-	private float field_26864;
-	private static final Text field_26905 = new TranslatableText("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
-	private static final Text field_26906 = new TranslatableText("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
-	private static final Text field_26907 = new TranslatableText("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
-	private static final Text field_26908 = new TranslatableText("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
-	private static final Text field_26909 = new TranslatableText("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
-	public static final int field_26850 = BackgroundHelper.ColorMixer.getArgb(190, 0, 0, 0);
-	public static final int field_26851 = BackgroundHelper.ColorMixer.getArgb(255, 74, 74, 74);
-	public static final int field_26852 = BackgroundHelper.ColorMixer.getArgb(255, 48, 48, 48);
-	public static final int field_26853 = BackgroundHelper.ColorMixer.getArgb(255, 255, 255, 255);
-	public static final int field_26903 = BackgroundHelper.ColorMixer.getArgb(140, 255, 255, 255);
+	private float timeCounter;
+	private static final Text HIDDEN_TEXT = new TranslatableText("gui.socialInteractions.status_hidden").formatted(Formatting.ITALIC);
+	private static final Text BLOCKED_TEXT = new TranslatableText("gui.socialInteractions.status_blocked").formatted(Formatting.ITALIC);
+	private static final Text OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_offline").formatted(Formatting.ITALIC);
+	private static final Text HIDDEN_OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_hidden_offline").formatted(Formatting.ITALIC);
+	private static final Text BLOCKED_OFFLINE_TEXT = new TranslatableText("gui.socialInteractions.status_blocked_offline").formatted(Formatting.ITALIC);
+	public static final int BLACK_COLOR = BackgroundHelper.ColorMixer.getArgb(190, 0, 0, 0);
+	public static final int GRAY_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 74, 74, 74);
+	public static final int DARK_GRAY_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 48, 48, 48);
+	public static final int WHITE_COLOR = BackgroundHelper.ColorMixer.getArgb(255, 255, 255, 255);
+	public static final int LIGHT_GRAY_COLOR = BackgroundHelper.ColorMixer.getArgb(140, 255, 255, 255);
 
-	public SocialInteractionsPlayerListEntry(MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> supplier) {
+	public SocialInteractionsPlayerListEntry(MinecraftClient client, SocialInteractionsScreen parent, UUID uuid, String name, Supplier<Identifier> skinTexture) {
 		this.client = client;
 		this.uuid = uuid;
 		this.name = name;
-		this.field_26904 = supplier;
+		this.skinTexture = skinTexture;
 		this.hideTooltip = client.textRenderer.wrapLines(new TranslatableText("gui.socialInteractions.tooltip.hide", name), 150);
 		this.showTooltip = client.textRenderer.wrapLines(new TranslatableText("gui.socialInteractions.tooltip.show", name), 150);
 		SocialInteractionsManager socialInteractionsManager = client.getSocialInteractionsManager();
 		if (!client.player.getGameProfile().getId().equals(uuid) && !socialInteractionsManager.isPlayerBlocked(uuid)) {
 			this.hideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, buttonWidget -> {
 				socialInteractionsManager.hidePlayer(uuid);
-				this.method_31329(true, new TranslatableText("gui.socialInteractions.hidden_in_chat", name));
+				this.onButtonClick(true, new TranslatableText("gui.socialInteractions.hidden_in_chat", name));
 			}, (buttonWidget, matrixStack, i, j) -> {
-				this.field_26864 = this.field_26864 + client.getLastFrameDuration();
-				if (this.field_26864 >= 10.0F) {
-					parent.method_31354(() -> method_31328(parent, matrixStack, this.hideTooltip, i, j));
+				this.timeCounter = this.timeCounter + client.getLastFrameDuration();
+				if (this.timeCounter >= 10.0F) {
+					parent.setOnRendered(() -> renderTooltip(parent, matrixStack, this.hideTooltip, i, j));
 				}
 			}, new TranslatableText("gui.socialInteractions.hide")) {
 				@Override
 				protected MutableText getNarrationMessage() {
-					return SocialInteractionsPlayerListEntry.this.method_31389(super.getNarrationMessage());
+					return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
 				}
 			};
 			this.showButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 38, 20, SocialInteractionsScreen.SOCIAL_INTERACTIONS_TEXTURE, 256, 256, buttonWidget -> {
 				socialInteractionsManager.showPlayer(uuid);
-				this.method_31329(false, new TranslatableText("gui.socialInteractions.shown_in_chat", name));
+				this.onButtonClick(false, new TranslatableText("gui.socialInteractions.shown_in_chat", name));
 			}, (buttonWidget, matrixStack, i, j) -> {
-				this.field_26864 = this.field_26864 + client.getLastFrameDuration();
-				if (this.field_26864 >= 10.0F) {
-					parent.method_31354(() -> method_31328(parent, matrixStack, this.showTooltip, i, j));
+				this.timeCounter = this.timeCounter + client.getLastFrameDuration();
+				if (this.timeCounter >= 10.0F) {
+					parent.setOnRendered(() -> renderTooltip(parent, matrixStack, this.showTooltip, i, j));
 				}
 			}, new TranslatableText("gui.socialInteractions.show")) {
 				@Override
 				protected MutableText getNarrationMessage() {
-					return SocialInteractionsPlayerListEntry.this.method_31389(super.getNarrationMessage());
+					return SocialInteractionsPlayerListEntry.this.getNarrationMessage(super.getNarrationMessage());
 				}
 			};
 			this.showButton.visible = socialInteractionsManager.isPlayerHidden(uuid);
@@ -102,37 +102,37 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		int i = x + 4;
 		int j = y + (entryHeight - 24) / 2;
 		int k = i + 24 + 4;
-		Text text = this.method_31390();
+		Text text = this.getStatusText();
 		int l;
 		if (text == LiteralText.EMPTY) {
-			DrawableHelper.fill(matrices, x, y, x + entryWidth, y + entryHeight, field_26851);
+			DrawableHelper.fill(matrices, x, y, x + entryWidth, y + entryHeight, GRAY_COLOR);
 			l = y + (entryHeight - 9) / 2;
 		} else {
-			DrawableHelper.fill(matrices, x, y, x + entryWidth, y + entryHeight, field_26852);
+			DrawableHelper.fill(matrices, x, y, x + entryWidth, y + entryHeight, DARK_GRAY_COLOR);
 			l = y + (entryHeight - (9 + 9)) / 2;
-			this.client.textRenderer.draw(matrices, text, (float)k, (float)(l + 12), field_26903);
+			this.client.textRenderer.draw(matrices, text, (float)k, (float)(l + 12), LIGHT_GRAY_COLOR);
 		}
 
-		this.client.getTextureManager().bindTexture((Identifier)this.field_26904.get());
+		this.client.getTextureManager().bindTexture((Identifier)this.skinTexture.get());
 		DrawableHelper.drawTexture(matrices, i, j, 24, 24, 8.0F, 8.0F, 8, 8, 64, 64);
 		RenderSystem.enableBlend();
 		DrawableHelper.drawTexture(matrices, i, j, 24, 24, 40.0F, 8.0F, 8, 8, 64, 64);
 		RenderSystem.disableBlend();
-		this.client.textRenderer.draw(matrices, this.name, (float)k, (float)l, field_26853);
-		if (this.field_26859) {
-			DrawableHelper.fill(matrices, i, j, i + 24, j + 24, field_26850);
+		this.client.textRenderer.draw(matrices, this.name, (float)k, (float)l, WHITE_COLOR);
+		if (this.offline) {
+			DrawableHelper.fill(matrices, i, j, i + 24, j + 24, BLACK_COLOR);
 		}
 
 		if (this.hideButton != null && this.showButton != null) {
-			float f = this.field_26864;
+			float f = this.timeCounter;
 			this.hideButton.x = x + (entryWidth - this.hideButton.getWidth() - 4);
 			this.hideButton.y = y + (entryHeight - this.hideButton.getHeight()) / 2;
 			this.hideButton.render(matrices, mouseX, mouseY, tickDelta);
 			this.showButton.x = x + (entryWidth - this.showButton.getWidth() - 4);
 			this.showButton.y = y + (entryHeight - this.showButton.getHeight()) / 2;
 			this.showButton.render(matrices, mouseX, mouseY, tickDelta);
-			if (f == this.field_26864) {
-				this.field_26864 = 0.0F;
+			if (f == this.timeCounter) {
+				this.timeCounter = 0.0F;
 			}
 		}
 	}
@@ -150,42 +150,42 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 		return this.uuid;
 	}
 
-	public void method_31335(boolean bl) {
-		this.field_26859 = bl;
+	public void setOffline(boolean offline) {
+		this.offline = offline;
 	}
 
-	private void method_31329(boolean bl, Text text) {
-		this.showButton.visible = bl;
-		this.hideButton.visible = !bl;
-		this.client.inGameHud.getChatHud().addMessage(text);
-		NarratorManager.INSTANCE.narrate(text.getString());
+	private void onButtonClick(boolean showButtonVisible, Text chatMessage) {
+		this.showButton.visible = showButtonVisible;
+		this.hideButton.visible = !showButtonVisible;
+		this.client.inGameHud.getChatHud().addMessage(chatMessage);
+		NarratorManager.INSTANCE.narrate(chatMessage.getString());
 	}
 
-	private MutableText method_31389(MutableText mutableText) {
-		Text text = this.method_31390();
-		return text == LiteralText.EMPTY
-			? new LiteralText(this.name).append(", ").append(mutableText)
-			: new LiteralText(this.name).append(", ").append(text).append(", ").append(mutableText);
+	private MutableText getNarrationMessage(MutableText text) {
+		Text text2 = this.getStatusText();
+		return text2 == LiteralText.EMPTY
+			? new LiteralText(this.name).append(", ").append(text)
+			: new LiteralText(this.name).append(", ").append(text2).append(", ").append(text);
 	}
 
-	private Text method_31390() {
+	private Text getStatusText() {
 		boolean bl = this.client.getSocialInteractionsManager().isPlayerHidden(this.uuid);
 		boolean bl2 = this.client.getSocialInteractionsManager().isPlayerBlocked(this.uuid);
-		if (bl2 && this.field_26859) {
-			return field_26909;
-		} else if (bl && this.field_26859) {
-			return field_26908;
+		if (bl2 && this.offline) {
+			return BLOCKED_OFFLINE_TEXT;
+		} else if (bl && this.offline) {
+			return HIDDEN_OFFLINE_TEXT;
 		} else if (bl2) {
-			return field_26906;
+			return BLOCKED_TEXT;
 		} else if (bl) {
-			return field_26905;
+			return HIDDEN_TEXT;
 		} else {
-			return this.field_26859 ? field_26907 : LiteralText.EMPTY;
+			return this.offline ? OFFLINE_TEXT : LiteralText.EMPTY;
 		}
 	}
 
-	private static void method_31328(SocialInteractionsScreen socialInteractionsScreen, MatrixStack matrixStack, List<OrderedText> list, int i, int j) {
-		socialInteractionsScreen.renderOrderedTooltip(matrixStack, list, i, j);
-		socialInteractionsScreen.method_31354(null);
+	private static void renderTooltip(SocialInteractionsScreen screen, MatrixStack matrices, List<OrderedText> tooltip, int mouseX, int mouseY) {
+		screen.renderOrderedTooltip(matrices, tooltip, mouseX, mouseY);
+		screen.setOnRendered(null);
 	}
 }

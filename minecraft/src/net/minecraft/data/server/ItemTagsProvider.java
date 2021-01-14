@@ -164,15 +164,15 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
 	}
 
-	protected void copy(Tag.Identified<Block> identified, Tag.Identified<Item> identified2) {
-		Tag.Builder builder = this.method_27169(identified2);
-		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(identified);
+	protected void copy(Tag.Identified<Block> blockTag, Tag.Identified<Item> itemTag) {
+		Tag.Builder builder = this.method_27169(itemTag);
+		Tag.Builder builder2 = (Tag.Builder)this.field_23783.apply(blockTag);
 		builder2.streamEntries().forEach(builder::add);
 	}
 
 	@Override
-	protected Path getOutput(Identifier identifier) {
-		return this.root.getOutput().resolve("data/" + identifier.getNamespace() + "/tags/items/" + identifier.getPath() + ".json");
+	protected Path getOutput(Identifier id) {
+		return this.root.getOutput().resolve("data/" + id.getNamespace() + "/tags/items/" + id.getPath() + ".json");
 	}
 
 	@Override

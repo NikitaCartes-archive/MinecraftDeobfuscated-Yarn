@@ -7,14 +7,14 @@ import net.minecraft.util.math.Direction;
 
 public abstract class VoxelSet {
 	private static final Direction.Axis[] AXES = Direction.Axis.values();
-	protected final int xSize;
-	protected final int ySize;
-	protected final int zSize;
+	protected final int sizeX;
+	protected final int sizeY;
+	protected final int sizeZ;
 
-	protected VoxelSet(int xSize, int ySize, int zSize) {
-		this.xSize = xSize;
-		this.ySize = ySize;
-		this.zSize = zSize;
+	protected VoxelSet(int sizeX, int sizeY, int sizeZ) {
+		this.sizeX = sizeX;
+		this.sizeY = sizeY;
+		this.sizeZ = sizeZ;
 	}
 
 	public boolean inBoundsAndContains(AxisCycleDirection cycle, int x, int y, int z) {
@@ -25,7 +25,7 @@ public abstract class VoxelSet {
 		if (x < 0 || y < 0 || z < 0) {
 			return false;
 		} else {
-			return x < this.xSize && y < this.ySize && z < this.zSize ? this.contains(x, y, z) : false;
+			return x < this.sizeX && y < this.sizeY && z < this.sizeZ ? this.contains(x, y, z) : false;
 		}
 	}
 
@@ -76,7 +76,7 @@ public abstract class VoxelSet {
 	}
 
 	public int getSize(Direction.Axis axis) {
-		return axis.choose(this.xSize, this.ySize, this.zSize);
+		return axis.choose(this.sizeX, this.sizeY, this.sizeZ);
 	}
 
 	public int getXSize() {
@@ -182,11 +182,11 @@ public abstract class VoxelSet {
 	public void forEachBox(VoxelSet.PositionBiConsumer consumer, boolean largest) {
 		VoxelSet voxelSet = new BitSetVoxelSet(this);
 
-		for (int i = 0; i <= this.xSize; i++) {
-			for (int j = 0; j <= this.ySize; j++) {
+		for (int i = 0; i <= this.sizeX; i++) {
+			for (int j = 0; j <= this.sizeY; j++) {
 				int k = -1;
 
-				for (int l = 0; l <= this.zSize; l++) {
+				for (int l = 0; l <= this.sizeZ; l++) {
 					if (voxelSet.inBoundsAndContains(i, j, l)) {
 						if (largest) {
 							if (k == -1) {

@@ -17,7 +17,7 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 	public VexEntityModel() {
 		super(0.0F, 0.0F, 64, 64);
 		this.leftLeg.visible = false;
-		this.helmet.visible = false;
+		this.hat.visible = false;
 		this.rightLeg = new ModelPart(this, 32, 0);
 		this.rightLeg.addCuboid(-1.0F, -1.0F, -2.0F, 6.0F, 10.0F, 4.0F, 0.0F);
 		this.rightLeg.setPivot(-1.9F, 12.0F, 0.0F);

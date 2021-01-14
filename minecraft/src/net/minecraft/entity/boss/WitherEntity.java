@@ -39,7 +39,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
@@ -104,15 +104,15 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("Invul", this.getInvulnerableTimer());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("Invul", this.getInvulnerableTimer());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setInvulTimer(tag.getInt("Invul"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setInvulTimer(nbt.getInt("Invul"));
 		if (this.hasCustomName()) {
 			this.bossBar.setName(this.getDisplayName());
 		}
@@ -266,7 +266,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 						double d = MathHelper.nextDouble(this.random, this.getX() - 10.0, this.getX() + 10.0);
 						double e = MathHelper.nextDouble(this.random, this.getY() - 5.0, this.getY() + 5.0);
 						double h = MathHelper.nextDouble(this.random, this.getZ() - 10.0, this.getZ() + 10.0);
-						this.method_6877(ix + 1, d, e, h, true);
+						this.shootSkullAt(ix + 1, d, e, h, true);
 						this.field_7092[ix - 1] = 0;
 					}
 
@@ -410,7 +410,7 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 	}
 
 	private void method_6878(int i, LivingEntity livingEntity) {
-		this.method_6877(
+		this.shootSkullAt(
 			i,
 			livingEntity.getX(),
 			livingEntity.getY() + (double)livingEntity.getStandingEyeHeight() * 0.5,
@@ -419,24 +419,24 @@ public class WitherEntity extends HostileEntity implements SkinOverlayOwner, Ran
 		);
 	}
 
-	private void method_6877(int headIndex, double d, double e, double f, boolean bl) {
+	private void shootSkullAt(int headIndex, double targetX, double targetY, double targetZ, boolean charged) {
 		if (!this.isSilent()) {
 			this.world.syncWorldEvent(null, 1024, this.getBlockPos(), 0);
 		}
 
-		double g = this.getHeadX(headIndex);
-		double h = this.getHeadY(headIndex);
-		double i = this.getHeadZ(headIndex);
-		double j = d - g;
-		double k = e - h;
-		double l = f - i;
-		WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, j, k, l);
+		double d = this.getHeadX(headIndex);
+		double e = this.getHeadY(headIndex);
+		double f = this.getHeadZ(headIndex);
+		double g = targetX - d;
+		double h = targetY - e;
+		double i = targetZ - f;
+		WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, g, h, i);
 		witherSkullEntity.setOwner(this);
-		if (bl) {
+		if (charged) {
 			witherSkullEntity.setCharged(true);
 		}
 
-		witherSkullEntity.setPos(g, h, i);
+		witherSkullEntity.setPos(d, e, f);
 		this.world.spawnEntity(witherSkullEntity);
 	}
 

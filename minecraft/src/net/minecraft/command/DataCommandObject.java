@@ -2,18 +2,18 @@ package net.minecraft.command;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.text.Text;
 
 public interface DataCommandObject {
-	void setTag(CompoundTag tag) throws CommandSyntaxException;
+	void setNbt(NbtCompound nbt) throws CommandSyntaxException;
 
-	CompoundTag getTag() throws CommandSyntaxException;
+	NbtCompound getNbt() throws CommandSyntaxException;
 
 	Text feedbackModify();
 
-	Text feedbackQuery(Tag tag);
+	Text feedbackQuery(NbtElement element);
 
-	Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result);
+	Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result);
 }

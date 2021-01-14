@@ -37,7 +37,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.RangedWeaponItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -110,25 +110,25 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.isBaby()) {
-			tag.putBoolean("IsBaby", true);
+			nbt.putBoolean("IsBaby", true);
 		}
 
 		if (this.cannotHunt) {
-			tag.putBoolean("CannotHunt", true);
+			nbt.putBoolean("CannotHunt", true);
 		}
 
-		tag.put("Inventory", this.inventory.getTags());
+		nbt.put("Inventory", this.inventory.toNbtList());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setBaby(tag.getBoolean("IsBaby"));
-		this.setCannotHunt(tag.getBoolean("CannotHunt"));
-		this.inventory.readTags(tag.getList("Inventory", 10));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setBaby(nbt.getBoolean("IsBaby"));
+		this.setCannotHunt(nbt.getBoolean("CannotHunt"));
+		this.inventory.readNbtList(nbt.getList("Inventory", 10));
 	}
 
 	@Override
@@ -175,7 +175,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		if (spawnReason != SpawnReason.STRUCTURE) {
 			if (world.getRandom().nextFloat() < 0.2F) {
@@ -188,7 +188,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		PiglinBrain.setHuntedRecently(this);
 		this.initEquipment(difficulty);
 		this.updateEnchantments(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	@Override
@@ -291,7 +291,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity player) {
+	protected int getXpToDrop(PlayerEntity player) {
 		return this.experiencePoints;
 	}
 
@@ -390,7 +390,10 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 		return this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING) && this.canPickUpLoot() && PiglinBrain.canGather(this, stack);
 	}
 
-	protected boolean method_24846(ItemStack stack) {
+	/**
+	 * Returns whether this piglin can equip into or replace current equipment slot.
+	 */
+	protected boolean canEquipStack(ItemStack stack) {
 		EquipmentSlot equipmentSlot = MobEntity.getPreferredEquipmentSlot(stack);
 		ItemStack itemStack = this.getEquippedStack(equipmentSlot);
 		return this.prefersNewEquipment(stack, itemStack);
@@ -437,7 +440,7 @@ public class PiglinEntity extends AbstractPiglinEntity implements CrossbowUser {
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return this.world.isClient ? null : (SoundEvent)PiglinBrain.method_30091(this).orElse(null);
+		return this.world.isClient ? null : (SoundEvent)PiglinBrain.getCurrentActivitySound(this).orElse(null);
 	}
 
 	@Override

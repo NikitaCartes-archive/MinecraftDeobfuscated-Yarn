@@ -49,7 +49,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private volatile boolean extracting;
 	private Long previousWrittenBytes;
 	private Long previousTimeSnapshot;
-	private long bytesPersSecond;
+	private long bytesPerSecond;
 	private int animTick;
 	private static final String[] DOTS = new String[]{"", ".", ". .", ". . ."};
 	private int dotIndex;
@@ -107,7 +107,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 			list.add(this.status);
 			if (this.progress != null) {
 				list.add(new LiteralText(this.progress + "%"));
-				list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPersSecond) + "/s"));
+				list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPerSecond) + "/s"));
 			}
 
 			if (this.field_20494 != null) {
@@ -159,16 +159,16 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private void drawDots(MatrixStack matrixStack) {
+	private void drawDots(MatrixStack matrices) {
 		int i = this.textRenderer.getWidth(this.status);
 		if (this.animTick % 10 == 0) {
 			this.dotIndex++;
 		}
 
-		this.textRenderer.draw(matrixStack, DOTS[this.dotIndex % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0F, 16777215);
+		this.textRenderer.draw(matrices, DOTS[this.dotIndex % DOTS.length], (float)(this.width / 2 + i / 2 + 5), 50.0F, 16777215);
 	}
 
-	private void drawProgressBar(MatrixStack matrixStack) {
+	private void drawProgressBar(MatrixStack matrices) {
 		double d = Math.min((double)this.downloadStatus.bytesWritten / (double)this.downloadStatus.totalBytes, 1.0);
 		this.progress = String.format(Locale.ROOT, "%.1f", d * 100.0);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -188,10 +188,10 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 		bufferBuilder.vertex(e, 80.0, 0.0).color(128, 128, 128, 255).next();
 		tessellator.draw();
 		RenderSystem.enableTexture();
-		drawCenteredString(matrixStack, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
+		drawCenteredText(matrices, this.textRenderer, this.progress + " %", this.width / 2, 84, 16777215);
 	}
 
-	private void drawDownloadSpeed(MatrixStack matrixStack) {
+	private void drawDownloadSpeed(MatrixStack matrices) {
 		if (this.animTick % 20 == 0) {
 			if (this.previousWrittenBytes != null) {
 				long l = Util.getMeasuringTimeMs() - this.previousTimeSnapshot;
@@ -199,22 +199,22 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 					l = 1L;
 				}
 
-				this.bytesPersSecond = 1000L * (this.downloadStatus.bytesWritten - this.previousWrittenBytes) / l;
-				this.drawDownloadSpeed0(matrixStack, this.bytesPersSecond);
+				this.bytesPerSecond = 1000L * (this.downloadStatus.bytesWritten - this.previousWrittenBytes) / l;
+				this.drawDownloadSpeed0(matrices, this.bytesPerSecond);
 			}
 
 			this.previousWrittenBytes = this.downloadStatus.bytesWritten;
 			this.previousTimeSnapshot = Util.getMeasuringTimeMs();
 		} else {
-			this.drawDownloadSpeed0(matrixStack, this.bytesPersSecond);
+			this.drawDownloadSpeed0(matrices, this.bytesPerSecond);
 		}
 	}
 
-	private void drawDownloadSpeed0(MatrixStack matrixStack, long l) {
+	private void drawDownloadSpeed0(MatrixStack matrices, long l) {
 		if (l > 0L) {
 			int i = this.textRenderer.getWidth(this.progress);
 			String string = "(" + SizeUnit.getUserFriendlyString(l) + "/s)";
-			this.textRenderer.draw(matrixStack, string, (float)(this.width / 2 + i / 2 + 15), 84.0F, 16777215);
+			this.textRenderer.draw(matrices, string, (float)(this.width / 2 + i / 2 + 15), 84.0F, 16777215);
 		}
 	}
 

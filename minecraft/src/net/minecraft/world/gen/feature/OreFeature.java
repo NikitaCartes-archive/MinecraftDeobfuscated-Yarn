@@ -58,41 +58,41 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 		int x,
 		int y,
 		int z,
-		int size,
-		int i
+		int horizontalSize,
+		int verticalSize
 	) {
-		int j = 0;
-		BitSet bitSet = new BitSet(size * i * size);
+		int i = 0;
+		BitSet bitSet = new BitSet(horizontalSize * verticalSize * horizontalSize);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int k = config.size;
-		double[] ds = new double[k * 4];
+		int j = config.size;
+		double[] ds = new double[j * 4];
 
-		for (int l = 0; l < k; l++) {
-			float f = (float)l / (float)k;
+		for (int k = 0; k < j; k++) {
+			float f = (float)k / (float)j;
 			double d = MathHelper.lerp((double)f, startX, endX);
 			double e = MathHelper.lerp((double)f, startY, endY);
 			double g = MathHelper.lerp((double)f, startZ, endZ);
-			double h = random.nextDouble() * (double)k / 16.0;
-			double m = ((double)(MathHelper.sin((float) Math.PI * f) + 1.0F) * h + 1.0) / 2.0;
-			ds[l * 4 + 0] = d;
-			ds[l * 4 + 1] = e;
-			ds[l * 4 + 2] = g;
-			ds[l * 4 + 3] = m;
+			double h = random.nextDouble() * (double)j / 16.0;
+			double l = ((double)(MathHelper.sin((float) Math.PI * f) + 1.0F) * h + 1.0) / 2.0;
+			ds[k * 4 + 0] = d;
+			ds[k * 4 + 1] = e;
+			ds[k * 4 + 2] = g;
+			ds[k * 4 + 3] = l;
 		}
 
-		for (int l = 0; l < k - 1; l++) {
-			if (!(ds[l * 4 + 3] <= 0.0)) {
-				for (int n = l + 1; n < k; n++) {
-					if (!(ds[n * 4 + 3] <= 0.0)) {
-						double d = ds[l * 4 + 0] - ds[n * 4 + 0];
-						double e = ds[l * 4 + 1] - ds[n * 4 + 1];
-						double g = ds[l * 4 + 2] - ds[n * 4 + 2];
-						double h = ds[l * 4 + 3] - ds[n * 4 + 3];
+		for (int k = 0; k < j - 1; k++) {
+			if (!(ds[k * 4 + 3] <= 0.0)) {
+				for (int m = k + 1; m < j; m++) {
+					if (!(ds[m * 4 + 3] <= 0.0)) {
+						double d = ds[k * 4 + 0] - ds[m * 4 + 0];
+						double e = ds[k * 4 + 1] - ds[m * 4 + 1];
+						double g = ds[k * 4 + 2] - ds[m * 4 + 2];
+						double h = ds[k * 4 + 3] - ds[m * 4 + 3];
 						if (h * h > d * d + e * e + g * g) {
 							if (h > 0.0) {
-								ds[n * 4 + 3] = -1.0;
+								ds[m * 4 + 3] = -1.0;
 							} else {
-								ds[l * 4 + 3] = -1.0;
+								ds[k * 4 + 3] = -1.0;
 							}
 						}
 					}
@@ -100,35 +100,35 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		for (int lx = 0; lx < k; lx++) {
-			double o = ds[lx * 4 + 3];
-			if (!(o < 0.0)) {
-				double p = ds[lx * 4 + 0];
-				double q = ds[lx * 4 + 1];
-				double r = ds[lx * 4 + 2];
-				int s = Math.max(MathHelper.floor(p - o), x);
-				int t = Math.max(MathHelper.floor(q - o), y);
-				int u = Math.max(MathHelper.floor(r - o), z);
-				int v = Math.max(MathHelper.floor(p + o), s);
-				int w = Math.max(MathHelper.floor(q + o), t);
-				int aa = Math.max(MathHelper.floor(r + o), u);
+		for (int kx = 0; kx < j; kx++) {
+			double n = ds[kx * 4 + 3];
+			if (!(n < 0.0)) {
+				double o = ds[kx * 4 + 0];
+				double p = ds[kx * 4 + 1];
+				double q = ds[kx * 4 + 2];
+				int r = Math.max(MathHelper.floor(o - n), x);
+				int s = Math.max(MathHelper.floor(p - n), y);
+				int t = Math.max(MathHelper.floor(q - n), z);
+				int u = Math.max(MathHelper.floor(o + n), r);
+				int v = Math.max(MathHelper.floor(p + n), s);
+				int w = Math.max(MathHelper.floor(q + n), t);
 
-				for (int ab = s; ab <= v; ab++) {
-					double ac = ((double)ab + 0.5 - p) / o;
-					if (ac * ac < 1.0) {
-						for (int ad = t; ad <= w; ad++) {
-							double ae = ((double)ad + 0.5 - q) / o;
-							if (ac * ac + ae * ae < 1.0) {
-								for (int af = u; af <= aa; af++) {
-									double ag = ((double)af + 0.5 - r) / o;
-									if (ac * ac + ae * ae + ag * ag < 1.0) {
-										int ah = ab - x + (ad - y) * size + (af - z) * size * i;
-										if (!bitSet.get(ah)) {
-											bitSet.set(ah);
-											mutable.set(ab, ad, af);
+				for (int aa = r; aa <= u; aa++) {
+					double ab = ((double)aa + 0.5 - o) / n;
+					if (ab * ab < 1.0) {
+						for (int ac = s; ac <= v; ac++) {
+							double ad = ((double)ac + 0.5 - p) / n;
+							if (ab * ab + ad * ad < 1.0) {
+								for (int ae = t; ae <= w; ae++) {
+									double af = ((double)ae + 0.5 - q) / n;
+									if (ab * ab + ad * ad + af * af < 1.0) {
+										int ag = aa - x + (ac - y) * horizontalSize + (ae - z) * horizontalSize * verticalSize;
+										if (!bitSet.get(ag)) {
+											bitSet.set(ag);
+											mutable.set(aa, ac, ae);
 											if (config.target.test(world.getBlockState(mutable), random)) {
 												world.setBlockState(mutable, config.state, 2);
-												j++;
+												i++;
 											}
 										}
 									}
@@ -140,6 +140,6 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		return j > 0;
+		return i > 0;
 	}
 }

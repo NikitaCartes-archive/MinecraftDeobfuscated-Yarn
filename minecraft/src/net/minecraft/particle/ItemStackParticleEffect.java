@@ -16,7 +16,7 @@ public class ItemStackParticleEffect implements ParticleEffect {
 		public ItemStackParticleEffect read(ParticleType<ItemStackParticleEffect> particleType, StringReader stringReader) throws CommandSyntaxException {
 			stringReader.expect(' ');
 			ItemStringReader itemStringReader = new ItemStringReader(stringReader, false).consume();
-			ItemStack itemStack = new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getTag()).createStack(1, false);
+			ItemStack itemStack = new ItemStackArgument(itemStringReader.getItem(), itemStringReader.getNbt()).createStack(1, false);
 			return new ItemStackParticleEffect(particleType, itemStack);
 		}
 

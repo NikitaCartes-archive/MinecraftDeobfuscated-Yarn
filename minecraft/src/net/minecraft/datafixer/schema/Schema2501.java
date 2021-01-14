@@ -12,7 +12,7 @@ public class Schema2501 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	private static void targetRecipeUsedField(Schema schema, Map<String, Supplier<TypeTemplate>> map, String name) {
+	private static void registerFurnace(Schema schema, Map<String, Supplier<TypeTemplate>> map, String name) {
 		schema.register(
 			map,
 			name,
@@ -25,9 +25,9 @@ public class Schema2501 extends IdentifierNormalizingSchema {
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerBlockEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerBlockEntities(schema);
-		targetRecipeUsedField(schema, map, "minecraft:furnace");
-		targetRecipeUsedField(schema, map, "minecraft:smoker");
-		targetRecipeUsedField(schema, map, "minecraft:blast_furnace");
+		registerFurnace(schema, map, "minecraft:furnace");
+		registerFurnace(schema, map, "minecraft:smoker");
+		registerFurnace(schema, map, "minecraft:blast_furnace");
 		return map;
 	}
 }

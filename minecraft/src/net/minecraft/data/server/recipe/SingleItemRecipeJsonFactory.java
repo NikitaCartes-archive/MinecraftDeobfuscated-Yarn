@@ -30,11 +30,11 @@ public class SingleItemRecipeJsonFactory {
 		this.count = outputCount;
 	}
 
-	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output) {
+	public static SingleItemRecipeJsonFactory createStonecutting(Ingredient input, ItemConvertible output) {
 		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, 1);
 	}
 
-	public static SingleItemRecipeJsonFactory create(Ingredient input, ItemConvertible output, int outputCount) {
+	public static SingleItemRecipeJsonFactory createStonecutting(Ingredient input, ItemConvertible output, int outputCount) {
 		return new SingleItemRecipeJsonFactory(RecipeSerializer.STONECUTTING, input, output, outputCount);
 	}
 

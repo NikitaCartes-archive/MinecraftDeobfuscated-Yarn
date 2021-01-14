@@ -85,7 +85,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 			for (int i = 0; i < path.getLength(); i++) {
 				PathNode pathNode = path.getNode(i);
-				if (getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
+				if (getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					float f = i == path.getCurrentNodeIndex() ? 1.0F : 0.0F;
 					float g = i == path.getCurrentNodeIndex() ? 0.0F : 1.0F;
 					DebugRenderer.drawBox(
@@ -109,7 +109,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 		if (bl) {
 			for (PathNode pathNode2 : path.method_22881()) {
-				if (getManhattanDistance(pathNode2.getPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
+				if (getManhattanDistance(pathNode2.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawBox(
 						new Box(
 								(double)((float)pathNode2.x + 0.5F - nodeSize / 2.0F),
@@ -129,7 +129,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 			}
 
 			for (PathNode pathNode2x : path.method_22880()) {
-				if (getManhattanDistance(pathNode2x.getPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
+				if (getManhattanDistance(pathNode2x.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawBox(
 						new Box(
 								(double)((float)pathNode2x.x + 0.5F - nodeSize / 2.0F),
@@ -152,7 +152,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 		if (drawLabels) {
 			for (int ix = 0; ix < path.getLength(); ix++) {
 				PathNode pathNode = path.getNode(ix);
-				if (getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
+				if (getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) <= 80.0F) {
 					DebugRenderer.drawString(
 						String.format("%s", pathNode.type), (double)pathNode.x + 0.5, (double)pathNode.y + 0.75, (double)pathNode.z + 0.5, -1, 0.02F, true, 0.0F, true
 					);
@@ -179,7 +179,7 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 
 		for (int i = 0; i < path.getLength(); i++) {
 			PathNode pathNode = path.getNode(i);
-			if (!(getManhattanDistance(pathNode.getPos(), cameraX, cameraY, cameraZ) > 80.0F)) {
+			if (!(getManhattanDistance(pathNode.getBlockPos(), cameraX, cameraY, cameraZ) > 80.0F)) {
 				float f = (float)i / (float)path.getLength() * 0.33F;
 				int j = i == 0 ? 0 : MathHelper.hsvToRgb(f, 0.9F, 0.9F);
 				int k = j >> 16 & 0xFF;

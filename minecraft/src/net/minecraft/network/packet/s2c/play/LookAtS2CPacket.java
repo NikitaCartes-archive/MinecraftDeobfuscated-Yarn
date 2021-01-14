@@ -24,8 +24,8 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 	public LookAtS2CPacket() {
 	}
 
-	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor entityAnchor, double targetX, double targetY, double targetZ) {
-		this.selfAnchor = entityAnchor;
+	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor selfAnchor, double targetX, double targetY, double targetZ) {
+		this.selfAnchor = selfAnchor;
 		this.targetX = targetX;
 		this.targetY = targetY;
 		this.targetZ = targetZ;

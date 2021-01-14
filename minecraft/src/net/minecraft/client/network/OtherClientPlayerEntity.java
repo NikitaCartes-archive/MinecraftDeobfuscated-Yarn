@@ -52,7 +52,7 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 			this.yaw = (float)((double)this.yaw + MathHelper.wrapDegrees(this.serverYaw - (double)this.yaw) / (double)this.bodyTrackingIncrements);
 			this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
 			this.bodyTrackingIncrements--;
-			this.updatePosition(d, e, f);
+			this.setPosition(d, e, f);
 			this.setRotation(this.yaw, this.pitch);
 		}
 
@@ -83,13 +83,13 @@ public class OtherClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	protected void updateSize() {
+	protected void updatePose() {
 	}
 
 	@Override
-	public void sendSystemMessage(Text message, UUID senderUuid) {
+	public void sendSystemMessage(Text message, UUID sender) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		if (!minecraftClient.shouldBlockMessages(senderUuid)) {
+		if (!minecraftClient.shouldBlockMessages(sender)) {
 			minecraftClient.inGameHud.getChatHud().addMessage(message);
 		}
 	}

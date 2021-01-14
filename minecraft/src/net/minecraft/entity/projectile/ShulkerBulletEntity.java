@@ -13,7 +13,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -72,35 +72,35 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.target != null) {
-			tag.putUuid("Target", this.target.getUuid());
+			nbt.putUuid("Target", this.target.getUuid());
 		}
 
 		if (this.direction != null) {
-			tag.putInt("Dir", this.direction.getId());
+			nbt.putInt("Dir", this.direction.getId());
 		}
 
-		tag.putInt("Steps", this.stepCount);
-		tag.putDouble("TXD", this.targetX);
-		tag.putDouble("TYD", this.targetY);
-		tag.putDouble("TZD", this.targetZ);
+		nbt.putInt("Steps", this.stepCount);
+		nbt.putDouble("TXD", this.targetX);
+		nbt.putDouble("TYD", this.targetY);
+		nbt.putDouble("TZD", this.targetZ);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.stepCount = tag.getInt("Steps");
-		this.targetX = tag.getDouble("TXD");
-		this.targetY = tag.getDouble("TYD");
-		this.targetZ = tag.getDouble("TZD");
-		if (tag.contains("Dir", 99)) {
-			this.direction = Direction.byId(tag.getInt("Dir"));
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.stepCount = nbt.getInt("Steps");
+		this.targetX = nbt.getDouble("TXD");
+		this.targetY = nbt.getDouble("TYD");
+		this.targetZ = nbt.getDouble("TZD");
+		if (nbt.contains("Dir", 99)) {
+			this.direction = Direction.byId(nbt.getInt("Dir"));
 		}
 
-		if (tag.containsUuid("Target")) {
-			this.targetUuid = tag.getUuid("Target");
+		if (nbt.containsUuid("Target")) {
+			this.targetUuid = nbt.getUuid("Target");
 		}
 	}
 
@@ -224,7 +224,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 
 		this.checkBlockCollision();
 		Vec3d vec3d = this.getVelocity();
-		this.updatePosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
+		this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 		ProjectileUtil.method_7484(this, 0.5F);
 		if (this.world.isClient) {
 			this.world.addParticle(ParticleTypes.END_ROD, this.getX() - vec3d.x, this.getY() - vec3d.y + 0.15, this.getZ() - vec3d.z, 0.0, 0.0, 0.0);

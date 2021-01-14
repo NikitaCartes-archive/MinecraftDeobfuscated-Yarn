@@ -77,30 +77,30 @@ public class CrashReport {
 		return this.cause;
 	}
 
-	public void addStackTrace(StringBuilder stringBuilder) {
+	public void addStackTrace(StringBuilder crashReportBuilder) {
 		if ((this.stackTrace == null || this.stackTrace.length <= 0) && !this.otherSections.isEmpty()) {
 			this.stackTrace = ArrayUtils.subarray(((CrashReportSection)this.otherSections.get(0)).getStackTrace(), 0, 1);
 		}
 
 		if (this.stackTrace != null && this.stackTrace.length > 0) {
-			stringBuilder.append("-- Head --\n");
-			stringBuilder.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
-			stringBuilder.append("Stacktrace:\n");
+			crashReportBuilder.append("-- Head --\n");
+			crashReportBuilder.append("Thread: ").append(Thread.currentThread().getName()).append("\n");
+			crashReportBuilder.append("Stacktrace:\n");
 
 			for (StackTraceElement stackTraceElement : this.stackTrace) {
-				stringBuilder.append("\t").append("at ").append(stackTraceElement);
-				stringBuilder.append("\n");
+				crashReportBuilder.append("\t").append("at ").append(stackTraceElement);
+				crashReportBuilder.append("\n");
 			}
 
-			stringBuilder.append("\n");
+			crashReportBuilder.append("\n");
 		}
 
 		for (CrashReportSection crashReportSection : this.otherSections) {
-			crashReportSection.addStackTrace(stringBuilder);
-			stringBuilder.append("\n\n");
+			crashReportSection.addStackTrace(crashReportBuilder);
+			crashReportBuilder.append("\n\n");
 		}
 
-		this.systemDetailsSection.addStackTrace(stringBuilder);
+		this.systemDetailsSection.addStackTrace(crashReportBuilder);
 	}
 
 	public String getCauseAsString() {

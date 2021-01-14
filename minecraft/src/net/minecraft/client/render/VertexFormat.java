@@ -21,7 +21,7 @@ public class VertexFormat {
 
 		for (VertexFormatElement vertexFormatElement : immutableList) {
 			this.offsets.add(i);
-			i += vertexFormatElement.getSize();
+			i += vertexFormatElement.getByteLength();
 		}
 
 		this.size = i;

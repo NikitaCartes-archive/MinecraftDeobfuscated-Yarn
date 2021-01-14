@@ -17,11 +17,11 @@ public class GlProgramManager {
 		GlStateManager.useProgram(i);
 	}
 
-	public static void deleteProgram(GlProgram glProgram) {
+	public static void deleteProgram(GlShader glShader) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		glProgram.getFragmentShader().release();
-		glProgram.getVertexShader().release();
-		GlStateManager.deleteProgram(glProgram.getProgramRef());
+		glShader.getFragmentShader().release();
+		glShader.getVertexShader().release();
+		GlStateManager.deleteProgram(glShader.getProgramRef());
 	}
 
 	public static int createProgram() throws IOException {
@@ -34,19 +34,19 @@ public class GlProgramManager {
 		}
 	}
 
-	public static void linkProgram(GlProgram glProgram) throws IOException {
+	public static void linkProgram(GlShader glShader) throws IOException {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		glProgram.getFragmentShader().attachTo(glProgram);
-		glProgram.getVertexShader().attachTo(glProgram);
-		GlStateManager.linkProgram(glProgram.getProgramRef());
-		int i = GlStateManager.getProgram(glProgram.getProgramRef(), 35714);
+		glShader.getFragmentShader().attachTo(glShader);
+		glShader.getVertexShader().attachTo(glShader);
+		GlStateManager.linkProgram(glShader.getProgramRef());
+		int i = GlStateManager.getProgram(glShader.getProgramRef(), 35714);
 		if (i == 0) {
 			LOGGER.warn(
 				"Error encountered when linking program containing VS {} and FS {}. Log output:",
-				glProgram.getVertexShader().getName(),
-				glProgram.getFragmentShader().getName()
+				glShader.getVertexShader().getName(),
+				glShader.getFragmentShader().getName()
 			);
-			LOGGER.warn(GlStateManager.getProgramInfoLog(glProgram.getProgramRef(), 32768));
+			LOGGER.warn(GlStateManager.getProgramInfoLog(glShader.getProgramRef(), 32768));
 		}
 	}
 }

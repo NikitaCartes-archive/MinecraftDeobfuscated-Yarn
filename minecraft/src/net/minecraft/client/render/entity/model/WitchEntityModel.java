@@ -62,7 +62,7 @@ public class WitchEntityModel<T extends Entity> extends VillagerResemblingModel<
 		return this.nose;
 	}
 
-	public void setLiftingNose(boolean bl) {
-		this.liftingNose = bl;
+	public void setLiftingNose(boolean liftingNose) {
+		this.liftingNose = liftingNose;
 	}
 }

@@ -39,7 +39,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.DyeColor;
 import org.apache.commons.lang3.StringUtils;
@@ -68,14 +68,14 @@ public class BuiltinModelItemRenderer {
 			if (block instanceof AbstractSkullBlock) {
 				GameProfile gameProfile = null;
 				if (stack.hasTag()) {
-					CompoundTag compoundTag = stack.getTag();
-					if (compoundTag.contains("SkullOwner", 10)) {
-						gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
-					} else if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
-						GameProfile var16 = new GameProfile(null, compoundTag.getString("SkullOwner"));
+					NbtCompound nbtCompound = stack.getTag();
+					if (nbtCompound.contains("SkullOwner", 10)) {
+						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+					} else if (nbtCompound.contains("SkullOwner", 8) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+						GameProfile var16 = new GameProfile(null, nbtCompound.getString("SkullOwner"));
 						gameProfile = SkullBlockEntity.loadProperties(var16);
-						compoundTag.remove("SkullOwner");
-						compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+						nbtCompound.remove("SkullOwner");
+						nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
 					}
 				}
 

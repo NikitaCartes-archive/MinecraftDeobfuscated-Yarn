@@ -92,7 +92,9 @@ public class FireBlock extends AbstractFireBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		return this.canPlaceAt(state, world, pos) ? this.method_24855(world, pos, (Integer)state.get(AGE)) : Blocks.AIR.getDefaultState();
 	}
 
@@ -252,14 +254,14 @@ public class FireBlock extends AbstractFireBlock {
 		return false;
 	}
 
-	private int getBurnChance(WorldView worldView, BlockPos pos) {
-		if (!worldView.isAir(pos)) {
+	private int getBurnChance(WorldView world, BlockPos pos) {
+		if (!world.isAir(pos)) {
 			return 0;
 		} else {
 			int i = 0;
 
 			for (Direction direction : Direction.values()) {
-				BlockState blockState = worldView.getBlockState(pos.offset(direction));
+				BlockState blockState = world.getBlockState(pos.offset(direction));
 				i = Math.max(this.getBurnChance(blockState), i);
 			}
 

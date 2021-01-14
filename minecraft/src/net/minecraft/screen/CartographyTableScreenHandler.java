@@ -1,6 +1,5 @@
 package net.minecraft.screen;
 
-import java.util.function.BiConsumer;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -15,8 +14,6 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 public class CartographyTableScreenHandler extends ScreenHandler {
 	private final ScreenHandlerContext context;
@@ -28,7 +25,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 			super.markDirty();
 		}
 	};
-	private final CraftingResultInventory resultSlot = new CraftingResultInventory() {
+	private final CraftingResultInventory resultInventory = new CraftingResultInventory() {
 		@Override
 		public void markDirty() {
 			CartographyTableScreenHandler.this.onContentChanged(this);
@@ -56,7 +53,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				return item == Items.PAPER || item == Items.MAP || item == Items.GLASS_PANE;
 			}
 		});
-		this.addSlot(new Slot(this.resultSlot, 2, 145, 39) {
+		this.addSlot(new Slot(this.resultInventory, 2, 145, 39) {
 			@Override
 			public boolean canInsert(ItemStack stack) {
 				return false;
@@ -67,13 +64,13 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				((Slot)CartographyTableScreenHandler.this.slots.get(0)).takeStack(1);
 				((Slot)CartographyTableScreenHandler.this.slots.get(1)).takeStack(1);
 				stack.getItem().onCraft(stack, player.world, player);
-				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				context.run((world, blockPos) -> {
 					long l = world.getTime();
 					if (CartographyTableScreenHandler.this.lastTakeResultTime != l) {
 						world.playSound(null, blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						CartographyTableScreenHandler.this.lastTakeResultTime = l;
 					}
-				}));
+				});
 				return super.onTakeItem(player, stack);
 			}
 		});
@@ -98,18 +95,18 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	public void onContentChanged(Inventory inventory) {
 		ItemStack itemStack = this.inventory.getStack(0);
 		ItemStack itemStack2 = this.inventory.getStack(1);
-		ItemStack itemStack3 = this.resultSlot.getStack(2);
+		ItemStack itemStack3 = this.resultInventory.getStack(2);
 		if (itemStack3.isEmpty() || !itemStack.isEmpty() && !itemStack2.isEmpty()) {
 			if (!itemStack.isEmpty() && !itemStack2.isEmpty()) {
 				this.updateResult(itemStack, itemStack2, itemStack3);
 			}
 		} else {
-			this.resultSlot.removeStack(2);
+			this.resultInventory.removeStack(2);
 		}
 	}
 
 	private void updateResult(ItemStack map, ItemStack item, ItemStack oldResult) {
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+		this.context.run((world, blockPos) -> {
 			Item itemx = item.getItem();
 			MapState mapState = FilledMapItem.getMapState(map, world);
 			if (mapState != null) {
@@ -126,7 +123,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 					this.sendContentUpdates();
 				} else {
 					if (itemx != Items.MAP) {
-						this.resultSlot.removeStack(2);
+						this.resultInventory.removeStack(2);
 						this.sendContentUpdates();
 						return;
 					}
@@ -137,16 +134,16 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 				}
 
 				if (!ItemStack.areEqual(itemStack4, oldResult)) {
-					this.resultSlot.setStack(2, itemStack4);
+					this.resultInventory.setStack(2, itemStack4);
 					this.sendContentUpdates();
 				}
 			}
-		}));
+		});
 	}
 
 	@Override
 	public boolean canInsertIntoSlot(ItemStack stack, Slot slot) {
-		return slot.inventory != this.resultSlot && super.canInsertIntoSlot(stack, slot);
+		return slot.inventory != this.resultInventory && super.canInsertIntoSlot(stack, slot);
 	}
 
 	@Override
@@ -163,7 +160,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index != 1 && index != 0) {
 				if (item == Items.FILLED_MAP) {
 					if (!this.insertItem(itemStack2, 0, 1, false)) {
@@ -203,7 +200,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.resultSlot.removeStack(2);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.inventory)));
+		this.resultInventory.removeStack(2);
+		this.context.run((world, blockPos) -> this.dropInventory(player, player.world, this.inventory));
 	}
 }

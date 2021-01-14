@@ -15,5 +15,5 @@ public abstract class AbstractZombieModel<T extends HostileEntity> extends Biped
 		CrossbowPosing.method_29352(this.leftArm, this.rightArm, this.isAttacking(hostileEntity), this.handSwingProgress, h);
 	}
 
-	public abstract boolean isAttacking(T hostileEntity);
+	public abstract boolean isAttacking(T entity);
 }

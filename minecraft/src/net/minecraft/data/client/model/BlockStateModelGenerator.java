@@ -3931,7 +3931,7 @@ public class BlockStateModelGenerator {
 		this.registerCubeAllModelTexturePool(Blocks.PRISMARINE).wall(Blocks.PRISMARINE_WALL).stairs(Blocks.PRISMARINE_STAIRS).slab(Blocks.PRISMARINE_SLAB);
 		this.registerCubeAllModelTexturePool(Blocks.PRISMARINE_BRICKS).stairs(Blocks.PRISMARINE_BRICK_STAIRS).slab(Blocks.PRISMARINE_BRICK_SLAB);
 		this.registerCubeAllModelTexturePool(Blocks.DARK_PRISMARINE).stairs(Blocks.DARK_PRISMARINE_STAIRS).slab(Blocks.DARK_PRISMARINE_SLAB);
-		this.registerTexturePool(Blocks.SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP)
+		this.registerTexturePool(Blocks.SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL)
 			.wall(Blocks.SANDSTONE_WALL)
 			.stairs(Blocks.SANDSTONE_STAIRS)
 			.slab(Blocks.SANDSTONE_SLAB);
@@ -3942,7 +3942,7 @@ public class BlockStateModelGenerator {
 				Blocks.CUT_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.SANDSTONE).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CUT_SANDSTONE)))
 			)
 			.slab(Blocks.CUT_SANDSTONE_SLAB);
-		this.registerTexturePool(Blocks.RED_SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP)
+		this.registerTexturePool(Blocks.RED_SANDSTONE, TexturedModel.SIDE_TOP_BOTTOM_WALL)
 			.wall(Blocks.RED_SANDSTONE_WALL)
 			.stairs(Blocks.RED_SANDSTONE_STAIRS)
 			.slab(Blocks.RED_SANDSTONE_SLAB);

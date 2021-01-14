@@ -47,7 +47,7 @@ public class EntityShapeContext implements ShapeContext {
 	}
 
 	@Override
-	public boolean method_27866(FluidState state, FlowableFluid fluid) {
+	public boolean canWalkOnFluid(FluidState state, FlowableFluid fluid) {
 		return this.field_24425.test(fluid) && !state.getFluid().matchesType(fluid);
 	}
 

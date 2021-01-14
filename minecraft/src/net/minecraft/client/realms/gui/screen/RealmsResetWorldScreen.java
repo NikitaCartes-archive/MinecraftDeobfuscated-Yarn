@@ -61,20 +61,22 @@ public class RealmsResetWorldScreen extends RealmsScreenWithCallback {
 		this.field_22712 = runnable2;
 	}
 
-	public RealmsResetWorldScreen(Screen parent, RealmsServer realmsServer, Text text, Text text2, int i, Text text3, Runnable runnable, Runnable runnable2) {
-		this(parent, realmsServer, runnable, runnable2);
-		this.title = text;
-		this.subtitle = text2;
-		this.subtitleColor = i;
-		this.buttonTitle = text3;
+	public RealmsResetWorldScreen(
+		Screen parent, RealmsServer server, Text title, Text subtitle, int subtitleColor, Text buttonTitle, Runnable resetCallback, Runnable selectFileUploadCallback
+	) {
+		this(parent, server, resetCallback, selectFileUploadCallback);
+		this.title = title;
+		this.subtitle = subtitle;
+		this.subtitleColor = subtitleColor;
+		this.buttonTitle = buttonTitle;
 	}
 
 	public void setSlot(int slot) {
 		this.slot = slot;
 	}
 
-	public void setResetTitle(Text text) {
-		this.field_20501 = text;
+	public void setResetTitle(Text resetTitle) {
+		this.field_20501 = resetTitle;
 	}
 
 	@Override

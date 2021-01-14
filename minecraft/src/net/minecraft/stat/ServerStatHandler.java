@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -83,31 +83,31 @@ public class ServerStatHandler extends StatHandler {
 				jsonReader.setLenient(false);
 				JsonElement jsonElement = Streams.parse(jsonReader);
 				if (!jsonElement.isJsonNull()) {
-					CompoundTag compoundTag = jsonToCompound(jsonElement.getAsJsonObject());
-					if (!compoundTag.contains("DataVersion", 99)) {
-						compoundTag.putInt("DataVersion", 1343);
+					NbtCompound nbtCompound = jsonToCompound(jsonElement.getAsJsonObject());
+					if (!nbtCompound.contains("DataVersion", 99)) {
+						nbtCompound.putInt("DataVersion", 1343);
 					}
 
-					compoundTag = NbtHelper.update(dataFixer, DataFixTypes.STATS, compoundTag, compoundTag.getInt("DataVersion"));
-					if (compoundTag.contains("stats", 10)) {
-						CompoundTag compoundTag2 = compoundTag.getCompound("stats");
+					nbtCompound = NbtHelper.update(dataFixer, DataFixTypes.STATS, nbtCompound, nbtCompound.getInt("DataVersion"));
+					if (nbtCompound.contains("stats", 10)) {
+						NbtCompound nbtCompound2 = nbtCompound.getCompound("stats");
 
-						for (String string : compoundTag2.getKeys()) {
-							if (compoundTag2.contains(string, 10)) {
+						for (String string : nbtCompound2.getKeys()) {
+							if (nbtCompound2.contains(string, 10)) {
 								Util.ifPresentOrElse(
 									Registry.STAT_TYPE.getOrEmpty(new Identifier(string)),
 									statType -> {
-										CompoundTag compoundTag2x = compoundTag2.getCompound(string);
+										NbtCompound nbtCompound2x = nbtCompound2.getCompound(string);
 
-										for (String string2 : compoundTag2x.getKeys()) {
-											if (compoundTag2x.contains(string2, 99)) {
+										for (String string2 : nbtCompound2x.getKeys()) {
+											if (nbtCompound2x.contains(string2, 99)) {
 												Util.ifPresentOrElse(
 													this.createStat(statType, string2),
-													stat -> this.statMap.put(stat, compoundTag2x.getInt(string2)),
+													stat -> this.statMap.put(stat, nbtCompound2x.getInt(string2)),
 													() -> LOGGER.warn("Invalid statistic in {}: Don't know what {} is", this.file, string2)
 												);
 											} else {
-												LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, compoundTag2x.get(string2), string2);
+												LOGGER.warn("Invalid statistic value in {}: Don't know what {} is for key {}", this.file, nbtCompound2x.get(string2), string2);
 											}
 										}
 									},
@@ -146,22 +146,22 @@ public class ServerStatHandler extends StatHandler {
 		return Optional.ofNullable(Identifier.tryParse(id)).flatMap(type.getRegistry()::getOrEmpty).map(type::getOrCreateStat);
 	}
 
-	private static CompoundTag jsonToCompound(JsonObject jsonObject) {
-		CompoundTag compoundTag = new CompoundTag();
+	private static NbtCompound jsonToCompound(JsonObject json) {
+		NbtCompound nbtCompound = new NbtCompound();
 
-		for (Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+		for (Entry<String, JsonElement> entry : json.entrySet()) {
 			JsonElement jsonElement = (JsonElement)entry.getValue();
 			if (jsonElement.isJsonObject()) {
-				compoundTag.put((String)entry.getKey(), jsonToCompound(jsonElement.getAsJsonObject()));
+				nbtCompound.put((String)entry.getKey(), jsonToCompound(jsonElement.getAsJsonObject()));
 			} else if (jsonElement.isJsonPrimitive()) {
 				JsonPrimitive jsonPrimitive = jsonElement.getAsJsonPrimitive();
 				if (jsonPrimitive.isNumber()) {
-					compoundTag.putInt((String)entry.getKey(), jsonPrimitive.getAsInt());
+					nbtCompound.putInt((String)entry.getKey(), jsonPrimitive.getAsInt());
 				}
 			}
 		}
 
-		return compoundTag;
+		return nbtCompound;
 	}
 
 	protected String asString() {

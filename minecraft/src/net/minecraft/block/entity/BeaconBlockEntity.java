@@ -20,7 +20,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.ContainerLock;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.screen.BeaconScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
@@ -255,17 +255,17 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 3, this.toInitialChunkDataTag());
+		return new BlockEntityUpdateS2CPacket(this.pos, 3, this.toInitialChunkDataNbt());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.writeNbt(new NbtCompound());
 	}
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public double getSquaredRenderDistance() {
+	public double getRenderDistance() {
 		return 256.0;
 	}
 
@@ -276,7 +276,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	}
 
 	@Override
-	public void fromTag(BlockState state, CompoundTag tag) {
+	public void fromTag(BlockState state, NbtCompound tag) {
 		super.fromTag(state, tag);
 		this.primary = getPotionEffectById(tag.getInt("Primary"));
 		this.secondary = getPotionEffectById(tag.getInt("Secondary"));
@@ -284,25 +284,25 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
 		}
 
-		this.lock = ContainerLock.fromTag(tag);
+		this.lock = ContainerLock.fromNbt(tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		tag.putInt("Primary", StatusEffect.getRawId(this.primary));
-		tag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
-		tag.putInt("Levels", this.level);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		nbt.putInt("Primary", StatusEffect.getRawId(this.primary));
+		nbt.putInt("Secondary", StatusEffect.getRawId(this.secondary));
+		nbt.putInt("Levels", this.level);
 		if (this.customName != null) {
-			tag.putString("CustomName", Text.Serializer.toJson(this.customName));
+			nbt.putString("CustomName", Text.Serializer.toJson(this.customName));
 		}
 
-		this.lock.toTag(tag);
-		return tag;
+		this.lock.writeNbt(nbt);
+		return nbt;
 	}
 
-	public void setCustomName(@Nullable Text text) {
-		this.customName = text;
+	public void setCustomName(@Nullable Text customName) {
+		this.customName = customName;
 	}
 
 	@Nullable

@@ -82,11 +82,11 @@ public abstract class Task<E extends LivingEntity> {
 		return this.getClass().getSimpleName();
 	}
 
-	private boolean hasRequiredMemoryState(E livingEntity) {
+	private boolean hasRequiredMemoryState(E entity) {
 		for (Entry<MemoryModuleType<?>, MemoryModuleState> entry : this.requiredMemoryStates.entrySet()) {
 			MemoryModuleType<?> memoryModuleType = (MemoryModuleType<?>)entry.getKey();
 			MemoryModuleState memoryModuleState = (MemoryModuleState)entry.getValue();
-			if (!livingEntity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState)) {
+			if (!entity.getBrain().isMemoryInState(memoryModuleType, memoryModuleState)) {
 				return false;
 			}
 		}

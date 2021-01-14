@@ -210,7 +210,7 @@ public class DamageSource {
 		return this.scaleWithDifficulty;
 	}
 
-	public boolean getMagic() {
+	public boolean isMagic() {
 		return this.magic;
 	}
 

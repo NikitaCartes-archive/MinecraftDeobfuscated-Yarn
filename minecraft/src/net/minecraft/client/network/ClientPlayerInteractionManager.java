@@ -126,7 +126,7 @@ public class ClientPlayerInteractionManager {
 		} else {
 			if (this.gameMode.isCreative()) {
 				BlockState blockState = this.client.world.getBlockState(pos);
-				this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, 1.0F);
+				this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, 1.0F);
 				this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
 				this.breakBlock(pos);
 				this.blockBreakingCooldown = 5;
@@ -136,7 +136,7 @@ public class ClientPlayerInteractionManager {
 				}
 
 				BlockState blockState = this.client.world.getBlockState(pos);
-				this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, 0.0F);
+				this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, 0.0F);
 				this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
 				boolean bl = !blockState.isAir();
 				if (bl && this.currentBreakingProgress == 0.0F) {
@@ -162,7 +162,7 @@ public class ClientPlayerInteractionManager {
 	public void cancelBlockBreaking() {
 		if (this.breakingBlock) {
 			BlockState blockState = this.client.world.getBlockState(this.currentBreakingPos);
-			this.client.getTutorialManager().onBlockAttacked(this.client.world, this.currentBreakingPos, blockState, -1.0F);
+			this.client.getTutorialManager().onBlockBreaking(this.client.world, this.currentBreakingPos, blockState, -1.0F);
 			this.sendPlayerAction(PlayerActionC2SPacket.Action.ABORT_DESTROY_BLOCK, this.currentBreakingPos, Direction.DOWN);
 			this.breakingBlock = false;
 			this.currentBreakingProgress = 0.0F;
@@ -179,7 +179,7 @@ public class ClientPlayerInteractionManager {
 		} else if (this.gameMode.isCreative() && this.client.world.getWorldBorder().contains(pos)) {
 			this.blockBreakingCooldown = 5;
 			BlockState blockState = this.client.world.getBlockState(pos);
-			this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, 1.0F);
+			this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, 1.0F);
 			this.sendPlayerAction(PlayerActionC2SPacket.Action.START_DESTROY_BLOCK, pos, direction);
 			this.breakBlock(pos);
 			return true;
@@ -202,7 +202,7 @@ public class ClientPlayerInteractionManager {
 				}
 
 				this.blockBreakingSoundCooldown++;
-				this.client.getTutorialManager().onBlockAttacked(this.client.world, pos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0F, 1.0F));
+				this.client.getTutorialManager().onBlockBreaking(this.client.world, pos, blockState, MathHelper.clamp(this.currentBreakingProgress, 0.0F, 1.0F));
 				if (this.currentBreakingProgress >= 1.0F) {
 					this.breakingBlock = false;
 					this.sendPlayerAction(PlayerActionC2SPacket.Action.STOP_DESTROY_BLOCK, pos, direction);
@@ -435,7 +435,7 @@ public class ClientPlayerInteractionManager {
 			world.setBlockStateWithoutNeighborUpdates(pos, state);
 			PlayerEntity playerEntity = this.client.player;
 			if (vec3d != null && world == playerEntity.world && playerEntity.method_30632(pos, state)) {
-				playerEntity.method_30634(vec3d.x, vec3d.y, vec3d.z);
+				playerEntity.updatePosition(vec3d.x, vec3d.y, vec3d.z);
 			}
 		}
 

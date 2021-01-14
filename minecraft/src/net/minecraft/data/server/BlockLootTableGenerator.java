@@ -1584,8 +1584,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(block, block);
 	}
 
-	private void addDrop(Block block, Function<Block, LootTable.Builder> function) {
-		this.addDrop(block, (LootTable.Builder)function.apply(block));
+	private void addDrop(Block block, Function<Block, LootTable.Builder> lootTableFunction) {
+		this.addDrop(block, (LootTable.Builder)lootTableFunction.apply(block));
 	}
 
 	private void addDrop(Block block, LootTable.Builder lootTable) {

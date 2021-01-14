@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -39,7 +39,7 @@ public class FeatureUpdater {
 		hashMap.put("TeSH", "Swamp_Hut");
 	});
 	private final boolean needsUpdate;
-	private final Map<String, Long2ObjectMap<CompoundTag>> featureIdToChunkTag = Maps.<String, Long2ObjectMap<CompoundTag>>newHashMap();
+	private final Map<String, Long2ObjectMap<NbtCompound>> featureIdToChunkNbt = Maps.<String, Long2ObjectMap<NbtCompound>>newHashMap();
 	private final Map<String, ChunkUpdateState> updateStates = Maps.<String, ChunkUpdateState>newHashMap();
 	private final List<String> field_17658;
 	private final List<String> field_17659;
@@ -51,7 +51,7 @@ public class FeatureUpdater {
 		boolean bl = false;
 
 		for (String string : this.field_17659) {
-			bl |= this.featureIdToChunkTag.get(string) != null;
+			bl |= this.featureIdToChunkNbt.get(string) != null;
 		}
 
 		this.needsUpdate = bl;
@@ -67,19 +67,19 @@ public class FeatureUpdater {
 		}
 	}
 
-	public CompoundTag getUpdatedReferences(CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = compoundTag.getCompound("Level");
-		ChunkPos chunkPos = new ChunkPos(compoundTag2.getInt("xPos"), compoundTag2.getInt("zPos"));
+	public NbtCompound getUpdatedReferences(NbtCompound nbt) {
+		NbtCompound nbtCompound = nbt.getCompound("Level");
+		ChunkPos chunkPos = new ChunkPos(nbtCompound.getInt("xPos"), nbtCompound.getInt("zPos"));
 		if (this.needsUpdate(chunkPos.x, chunkPos.z)) {
-			compoundTag = this.getUpdatedStarts(compoundTag, chunkPos);
+			nbt = this.getUpdatedStarts(nbt, chunkPos);
 		}
 
-		CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
-		CompoundTag compoundTag4 = compoundTag3.getCompound("References");
+		NbtCompound nbtCompound2 = nbtCompound.getCompound("Structures");
+		NbtCompound nbtCompound3 = nbtCompound2.getCompound("References");
 
 		for (String string : this.field_17659) {
 			StructureFeature<?> structureFeature = (StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
-			if (!compoundTag4.contains(string, 12) && structureFeature != null) {
+			if (!nbtCompound3.contains(string, 12) && structureFeature != null) {
 				int i = 8;
 				LongList longList = new LongArrayList();
 
@@ -91,20 +91,20 @@ public class FeatureUpdater {
 					}
 				}
 
-				compoundTag4.putLongArray(string, longList);
+				nbtCompound3.putLongArray(string, longList);
 			}
 		}
 
-		compoundTag3.put("References", compoundTag4);
-		compoundTag2.put("Structures", compoundTag3);
-		compoundTag.put("Level", compoundTag2);
-		return compoundTag;
+		nbtCompound2.put("References", nbtCompound3);
+		nbtCompound.put("Structures", nbtCompound2);
+		nbt.put("Level", nbtCompound);
+		return nbt;
 	}
 
 	private boolean needsUpdate(int chunkX, int chunkZ, String id) {
 		return !this.needsUpdate
 			? false
-			: this.featureIdToChunkTag.get(id) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(id))).contains(ChunkPos.toLong(chunkX, chunkZ));
+			: this.featureIdToChunkNbt.get(id) != null && ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(id))).contains(ChunkPos.toLong(chunkX, chunkZ));
 	}
 
 	private boolean needsUpdate(int chunkX, int chunkZ) {
@@ -112,7 +112,7 @@ public class FeatureUpdater {
 			return false;
 		} else {
 			for (String string : this.field_17659) {
-				if (this.featureIdToChunkTag.get(string) != null
+				if (this.featureIdToChunkNbt.get(string) != null
 					&& ((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(ChunkPos.toLong(chunkX, chunkZ))) {
 					return true;
 				}
@@ -122,57 +122,57 @@ public class FeatureUpdater {
 		}
 	}
 
-	private CompoundTag getUpdatedStarts(CompoundTag compoundTag, ChunkPos chunkPos) {
-		CompoundTag compoundTag2 = compoundTag.getCompound("Level");
-		CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
-		CompoundTag compoundTag4 = compoundTag3.getCompound("Starts");
+	private NbtCompound getUpdatedStarts(NbtCompound nbt, ChunkPos pos) {
+		NbtCompound nbtCompound = nbt.getCompound("Level");
+		NbtCompound nbtCompound2 = nbtCompound.getCompound("Structures");
+		NbtCompound nbtCompound3 = nbtCompound2.getCompound("Starts");
 
 		for (String string : this.field_17659) {
-			Long2ObjectMap<CompoundTag> long2ObjectMap = (Long2ObjectMap<CompoundTag>)this.featureIdToChunkTag.get(string);
+			Long2ObjectMap<NbtCompound> long2ObjectMap = (Long2ObjectMap<NbtCompound>)this.featureIdToChunkNbt.get(string);
 			if (long2ObjectMap != null) {
-				long l = chunkPos.toLong();
+				long l = pos.toLong();
 				if (((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(l)) {
-					CompoundTag compoundTag5 = long2ObjectMap.get(l);
-					if (compoundTag5 != null) {
-						compoundTag4.put(string, compoundTag5);
+					NbtCompound nbtCompound4 = long2ObjectMap.get(l);
+					if (nbtCompound4 != null) {
+						nbtCompound3.put(string, nbtCompound4);
 					}
 				}
 			}
 		}
 
-		compoundTag3.put("Starts", compoundTag4);
-		compoundTag2.put("Structures", compoundTag3);
-		compoundTag.put("Level", compoundTag2);
-		return compoundTag;
+		nbtCompound2.put("Starts", nbtCompound3);
+		nbtCompound.put("Structures", nbtCompound2);
+		nbt.put("Level", nbtCompound);
+		return nbt;
 	}
 
 	private void init(@Nullable PersistentStateManager persistentStateManager) {
 		if (persistentStateManager != null) {
 			for (String string : this.field_17658) {
-				CompoundTag compoundTag = new CompoundTag();
+				NbtCompound nbtCompound = new NbtCompound();
 
 				try {
-					compoundTag = persistentStateManager.readTag(string, 1493).getCompound("data").getCompound("Features");
-					if (compoundTag.isEmpty()) {
+					nbtCompound = persistentStateManager.readNbt(string, 1493).getCompound("data").getCompound("Features");
+					if (nbtCompound.isEmpty()) {
 						continue;
 					}
 				} catch (IOException var13) {
 				}
 
-				for (String string2 : compoundTag.getKeys()) {
-					CompoundTag compoundTag2 = compoundTag.getCompound(string2);
-					long l = ChunkPos.toLong(compoundTag2.getInt("ChunkX"), compoundTag2.getInt("ChunkZ"));
-					ListTag listTag = compoundTag2.getList("Children", 10);
-					if (!listTag.isEmpty()) {
-						String string3 = listTag.getCompound(0).getString("id");
+				for (String string2 : nbtCompound.getKeys()) {
+					NbtCompound nbtCompound2 = nbtCompound.getCompound(string2);
+					long l = ChunkPos.toLong(nbtCompound2.getInt("ChunkX"), nbtCompound2.getInt("ChunkZ"));
+					NbtList nbtList = nbtCompound2.getList("Children", 10);
+					if (!nbtList.isEmpty()) {
+						String string3 = nbtList.getCompound(0).getString("id");
 						String string4 = (String)ANCIENT_TO_OLD.get(string3);
 						if (string4 != null) {
-							compoundTag2.putString("id", string4);
+							nbtCompound2.putString("id", string4);
 						}
 					}
 
-					String string3 = compoundTag2.getString("id");
-					((Long2ObjectMap)this.featureIdToChunkTag.computeIfAbsent(string3, stringx -> new Long2ObjectOpenHashMap())).put(l, compoundTag2);
+					String string3 = nbtCompound2.getString("id");
+					((Long2ObjectMap)this.featureIdToChunkNbt.computeIfAbsent(string3, stringx -> new Long2ObjectOpenHashMap())).put(l, nbtCompound2);
 				}
 
 				String string5 = string + "_index";
@@ -183,9 +183,9 @@ public class FeatureUpdater {
 					ChunkUpdateState chunkUpdateState2 = new ChunkUpdateState(string5);
 					this.updateStates.put(string, chunkUpdateState2);
 
-					for (String string6 : compoundTag.getKeys()) {
-						CompoundTag compoundTag3 = compoundTag.getCompound(string6);
-						chunkUpdateState2.add(ChunkPos.toLong(compoundTag3.getInt("ChunkX"), compoundTag3.getInt("ChunkZ")));
+					for (String string6 : nbtCompound.getKeys()) {
+						NbtCompound nbtCompound3 = nbtCompound.getCompound(string6);
+						chunkUpdateState2.add(ChunkPos.toLong(nbtCompound3.getInt("ChunkX"), nbtCompound3.getInt("ChunkZ")));
 					}
 
 					chunkUpdateState2.markDirty();
@@ -194,21 +194,21 @@ public class FeatureUpdater {
 		}
 	}
 
-	public static FeatureUpdater create(RegistryKey<World> registryKey, @Nullable PersistentStateManager persistentStateManager) {
-		if (registryKey == World.OVERWORLD) {
+	public static FeatureUpdater create(RegistryKey<World> world, @Nullable PersistentStateManager persistentStateManager) {
+		if (world == World.OVERWORLD) {
 			return new FeatureUpdater(
 				persistentStateManager,
 				ImmutableList.of("Monument", "Stronghold", "Village", "Mineshaft", "Temple", "Mansion"),
 				ImmutableList.of("Village", "Mineshaft", "Mansion", "Igloo", "Desert_Pyramid", "Jungle_Pyramid", "Swamp_Hut", "Stronghold", "Monument")
 			);
-		} else if (registryKey == World.NETHER) {
+		} else if (world == World.NETHER) {
 			List<String> list = ImmutableList.of("Fortress");
 			return new FeatureUpdater(persistentStateManager, list, list);
-		} else if (registryKey == World.END) {
+		} else if (world == World.END) {
 			List<String> list = ImmutableList.of("EndCity");
 			return new FeatureUpdater(persistentStateManager, list, list);
 		} else {
-			throw new RuntimeException(String.format("Unknown dimension type : %s", registryKey));
+			throw new RuntimeException(String.format("Unknown dimension type : %s", world));
 		}
 	}
 }

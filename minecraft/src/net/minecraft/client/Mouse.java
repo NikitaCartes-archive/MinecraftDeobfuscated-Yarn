@@ -8,7 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.GlfwUtil;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.client.util.SmoothUtil;
@@ -161,20 +161,20 @@ public class Mouse {
 		}
 	}
 
-	public void setup(long l) {
+	public void setup(long window) {
 		InputUtil.setMouseCallbacks(
-			l,
-			(lx, d, e) -> this.client.execute(() -> this.onCursorPos(lx, d, e)),
-			(lx, i, j, k) -> this.client.execute(() -> this.onMouseButton(lx, i, j, k)),
-			(lx, d, e) -> this.client.execute(() -> this.onMouseScroll(lx, d, e)),
-			(lx, i, m) -> {
+			window,
+			(l, d, e) -> this.client.execute(() -> this.onCursorPos(l, d, e)),
+			(l, i, j, k) -> this.client.execute(() -> this.onMouseButton(l, i, j, k)),
+			(l, d, e) -> this.client.execute(() -> this.onMouseScroll(l, d, e)),
+			(l, i, m) -> {
 				Path[] paths = new Path[i];
 
 				for (int j = 0; j < i; j++) {
 					paths[j] = Paths.get(GLFWDropCallback.getName(m, j));
 				}
 
-				this.client.execute(() -> this.method_29616(lx, Arrays.asList(paths)));
+				this.client.execute(() -> this.method_29616(l, Arrays.asList(paths)));
 			}
 		);
 	}

@@ -230,7 +230,7 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	public void nextElement() {
 		ImmutableList<VertexFormatElement> immutableList = this.format.getElements();
 		this.currentElementId = (this.currentElementId + 1) % immutableList.size();
-		this.elementOffset = this.elementOffset + this.currentElement.getSize();
+		this.elementOffset = this.elementOffset + this.currentElement.getByteLength();
 		VertexFormatElement vertexFormatElement = (VertexFormatElement)immutableList.get(this.currentElementId);
 		this.currentElement = vertexFormatElement;
 		if (vertexFormatElement.getType() == VertexFormatElement.Type.PADDING) {

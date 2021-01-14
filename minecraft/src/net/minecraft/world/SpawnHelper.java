@@ -86,13 +86,13 @@ public final class SpawnHelper {
 		return DirectBiomeAccessType.INSTANCE.getBiome(0L, pos.getX(), pos.getY(), pos.getZ(), chunk.getBiomeArray());
 	}
 
-	public static void spawn(ServerWorld world, WorldChunk chunk, SpawnHelper.Info info, boolean spawnAnimals, boolean spawnMonsters, boolean shouldSpawnAnimals) {
+	public static void spawn(ServerWorld world, WorldChunk chunk, SpawnHelper.Info info, boolean spawnAnimals, boolean spawnMonsters, boolean rareSpawn) {
 		world.getProfiler().push("spawner");
 
 		for (SpawnGroup spawnGroup : SPAWNABLE_GROUPS) {
 			if ((spawnAnimals || !spawnGroup.isPeaceful())
 				&& (spawnMonsters || spawnGroup.isPeaceful())
-				&& (shouldSpawnAnimals || !spawnGroup.isAnimal())
+				&& (rareSpawn || !spawnGroup.isRare())
 				&& info.isBelowCap(spawnGroup)) {
 				spawnEntitiesInChunk(
 					spawnGroup, world, chunk, (entityType, blockPos, chunkx) -> info.test(entityType, blockPos, chunkx), (mobEntity, chunkx) -> info.run(mobEntity, chunkx)
@@ -252,14 +252,14 @@ public final class SpawnHelper {
 	}
 
 	private static boolean containsSpawnEntry(
-		ServerWorld serverWorld,
+		ServerWorld world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		SpawnGroup spawnGroup,
 		SpawnSettings.SpawnEntry spawnEntry,
-		BlockPos blockPos
+		BlockPos pos
 	) {
-		return method_29950(serverWorld, structureAccessor, chunkGenerator, spawnGroup, blockPos, null).contains(spawnEntry);
+		return method_29950(world, structureAccessor, chunkGenerator, spawnGroup, pos, null).contains(spawnEntry);
 	}
 
 	private static List<SpawnSettings.SpawnEntry> method_29950(

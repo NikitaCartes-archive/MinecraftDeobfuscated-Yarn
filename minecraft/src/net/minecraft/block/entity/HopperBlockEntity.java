@@ -17,7 +17,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -42,25 +42,25 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Override
-	public void fromTag(BlockState state, CompoundTag tag) {
+	public void fromTag(BlockState state, NbtCompound tag) {
 		super.fromTag(state, tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(tag)) {
-			Inventories.fromTag(tag, this.inventory);
+			Inventories.readNbt(tag, this.inventory);
 		}
 
 		this.transferCooldown = tag.getInt("TransferCooldown");
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		if (!this.serializeLootTable(tag)) {
-			Inventories.toTag(tag, this.inventory);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		if (!this.serializeLootTable(nbt)) {
+			Inventories.writeNbt(nbt, this.inventory);
 		}
 
-		tag.putInt("TransferCooldown", this.transferCooldown);
-		return tag;
+		nbt.putInt("TransferCooldown", this.transferCooldown);
+		return nbt;
 	}
 
 	@Override
@@ -166,9 +166,9 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		return inventory instanceof SidedInventory ? IntStream.of(((SidedInventory)inventory).getAvailableSlots(side)) : IntStream.range(0, inventory.size());
 	}
 
-	private boolean isInventoryFull(Inventory inv, Direction direction) {
-		return getAvailableSlots(inv, direction).allMatch(i -> {
-			ItemStack itemStack = inv.getStack(i);
+	private boolean isInventoryFull(Inventory direction, Direction direction2) {
+		return getAvailableSlots(direction, direction2).allMatch(i -> {
+			ItemStack itemStack = direction.getStack(i);
 			return itemStack.getCount() >= itemStack.getMaxCount();
 		});
 	}
@@ -316,8 +316,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Nullable
-	public static Inventory getInventoryAt(World world, BlockPos blockPos) {
-		return getInventoryAt(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+	public static Inventory getInventoryAt(World world, BlockPos pos) {
+		return getInventoryAt(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 	}
 
 	@Nullable

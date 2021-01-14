@@ -8,12 +8,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientLoginNetworkHandler;
+import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
-import net.minecraft.network.ServerAddress;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
 import net.minecraft.text.Text;
@@ -23,10 +23,20 @@ import net.minecraft.util.logging.UncaughtExceptionLogger;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * The connection screen is used to initiate a connection to a remote server.
+ * This is only used when connecting over LAN or to a remote dedicated server.
+ */
 @Environment(EnvType.CLIENT)
 public class ConnectScreen extends Screen {
 	private static final AtomicInteger CONNECTOR_THREADS_COUNT = new AtomicInteger(0);
 	private static final Logger LOGGER = LogManager.getLogger();
+	/**
+	 * The client connection to the remote server.
+	 * This is not used when connecting to the client's own integrated server.
+	 * 
+	 * @see net.minecraft.client.MinecraftClient#integratedServerConnection
+	 */
 	private ClientConnection connection;
 	private boolean connectingCancelled;
 	private final Screen parent;

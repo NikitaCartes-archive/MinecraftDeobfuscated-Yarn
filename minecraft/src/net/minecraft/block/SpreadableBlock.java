@@ -13,22 +13,22 @@ public abstract class SpreadableBlock extends SnowyBlock {
 		super(settings);
 	}
 
-	private static boolean canSurvive(BlockState state, WorldView worldView, BlockPos pos) {
+	private static boolean canSurvive(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.up();
-		BlockState blockState = worldView.getBlockState(blockPos);
+		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.isOf(Blocks.SNOW) && (Integer)blockState.get(SnowBlock.LAYERS) == 1) {
 			return true;
 		} else if (blockState.getFluidState().getLevel() == 8) {
 			return false;
 		} else {
-			int i = ChunkLightProvider.getRealisticOpacity(worldView, state, pos, blockState, blockPos, Direction.UP, blockState.getOpacity(worldView, blockPos));
-			return i < worldView.getMaxLightLevel();
+			int i = ChunkLightProvider.getRealisticOpacity(world, state, pos, blockState, blockPos, Direction.UP, blockState.getOpacity(world, blockPos));
+			return i < world.getMaxLightLevel();
 		}
 	}
 
-	private static boolean canSpread(BlockState state, WorldView worldView, BlockPos pos) {
+	private static boolean canSpread(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.up();
-		return canSurvive(state, worldView, pos) && !worldView.getFluidState(blockPos).isIn(FluidTags.WATER);
+		return canSurvive(state, world, pos) && !world.getFluidState(blockPos).isIn(FluidTags.WATER);
 	}
 
 	@Override

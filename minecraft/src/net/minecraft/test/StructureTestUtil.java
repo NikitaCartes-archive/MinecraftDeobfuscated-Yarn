@@ -21,7 +21,7 @@ import net.minecraft.block.enums.StructureBlockMode;
 import net.minecraft.command.argument.BlockStateArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.Structure;
@@ -70,13 +70,13 @@ public class StructureTestUtil {
 		return new BlockBox(blockPos, blockPos3);
 	}
 
-	public static void placeStartButton(BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, ServerWorld serverWorld) {
-		BlockPos blockPos3 = Structure.transformAround(blockPos.add(blockPos2), BlockMirror.NONE, blockRotation, blockPos);
-		serverWorld.setBlockState(blockPos3, Blocks.COMMAND_BLOCK.getDefaultState());
-		CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)serverWorld.getBlockEntity(blockPos3);
+	public static void placeStartButton(BlockPos pos, BlockPos relativePos, BlockRotation rotation, ServerWorld world) {
+		BlockPos blockPos = Structure.transformAround(pos.add(relativePos), BlockMirror.NONE, rotation, pos);
+		world.setBlockState(blockPos, Blocks.COMMAND_BLOCK.getDefaultState());
+		CommandBlockBlockEntity commandBlockBlockEntity = (CommandBlockBlockEntity)world.getBlockEntity(blockPos);
 		commandBlockBlockEntity.getCommandExecutor().setCommand("test runthis");
-		BlockPos blockPos4 = Structure.transformAround(blockPos3.add(0, 0, -1), BlockMirror.NONE, blockRotation, blockPos3);
-		serverWorld.setBlockState(blockPos4, Blocks.STONE_BUTTON.getDefaultState().rotate(blockRotation));
+		BlockPos blockPos2 = Structure.transformAround(blockPos.add(0, 0, -1), BlockMirror.NONE, rotation, blockPos);
+		world.setBlockState(blockPos2, Blocks.STONE_BUTTON.getDefaultState().rotate(rotation));
 	}
 
 	public static void createTestArea(String structure, BlockPos pos, BlockPos size, BlockRotation blockRotation, ServerWorld world) {
@@ -129,9 +129,9 @@ public class StructureTestUtil {
 		}
 	}
 
-	public static void clearArea(BlockBox area, int i, ServerWorld world) {
+	public static void clearArea(BlockBox area, int altitude, ServerWorld world) {
 		BlockBox blockBox = new BlockBox(area.minX - 2, area.minY - 3, area.minZ - 3, area.maxX + 3, area.maxY + 20, area.maxZ + 3);
-		BlockPos.stream(blockBox).forEach(blockPos -> method_22368(i, blockPos, world));
+		BlockPos.stream(blockBox).forEach(blockPos -> resetBlock(altitude, blockPos, world));
 		world.getBlockTickScheduler().getScheduledTicks(blockBox, true, false);
 		world.clearUpdatesInArea(blockBox);
 		Box box = new Box((double)blockBox.minX, (double)blockBox.minY, (double)blockBox.minZ, (double)blockBox.maxX, (double)blockBox.maxY, (double)blockBox.maxZ);
@@ -190,28 +190,28 @@ public class StructureTestUtil {
 		} else {
 			String string = structureId + ".snbt";
 			Path path = Paths.get(testStructuresDirectoryName, string);
-			CompoundTag compoundTag = loadSnbt(path);
-			if (compoundTag == null) {
+			NbtCompound nbtCompound = loadSnbt(path);
+			if (nbtCompound == null) {
 				throw new RuntimeException("Could not find structure file " + path + ", and the structure is not available in the world structures either.");
 			} else {
-				return structureManager.createStructure(compoundTag);
+				return structureManager.createStructure(nbtCompound);
 			}
 		}
 	}
 
-	private static StructureBlockBlockEntity placeStructure(String name, BlockPos pos, BlockRotation blockRotation, ServerWorld serverWorld, boolean bl) {
-		serverWorld.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
-		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(pos);
+	private static StructureBlockBlockEntity placeStructure(String name, BlockPos pos, BlockRotation rotation, ServerWorld world, boolean bl) {
+		world.setBlockState(pos, Blocks.STRUCTURE_BLOCK.getDefaultState());
+		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		structureBlockBlockEntity.setMode(StructureBlockMode.LOAD);
-		structureBlockBlockEntity.setRotation(blockRotation);
+		structureBlockBlockEntity.setRotation(rotation);
 		structureBlockBlockEntity.setIgnoreEntities(false);
 		structureBlockBlockEntity.setStructureName(new Identifier(name));
-		structureBlockBlockEntity.loadStructure(serverWorld, bl);
+		structureBlockBlockEntity.loadStructure(world, bl);
 		if (structureBlockBlockEntity.getSize() != BlockPos.ORIGIN) {
 			return structureBlockBlockEntity;
 		} else {
-			Structure structure = createStructure(name, serverWorld);
-			structureBlockBlockEntity.place(serverWorld, bl, structure);
+			Structure structure = createStructure(name, world);
+			structureBlockBlockEntity.place(world, bl, structure);
 			if (structureBlockBlockEntity.getSize() == BlockPos.ORIGIN) {
 				throw new RuntimeException("Failed to load structure " + name);
 			} else {
@@ -221,7 +221,7 @@ public class StructureTestUtil {
 	}
 
 	@Nullable
-	private static CompoundTag loadSnbt(Path path) {
+	private static NbtCompound loadSnbt(Path path) {
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
 			String string = IOUtils.toString(bufferedReader);
@@ -233,7 +233,7 @@ public class StructureTestUtil {
 		}
 	}
 
-	private static void method_22368(int altitude, BlockPos pos, ServerWorld world) {
+	private static void resetBlock(int altitude, BlockPos pos, ServerWorld world) {
 		BlockState blockState = null;
 		FlatChunkGeneratorConfig flatChunkGeneratorConfig = FlatChunkGeneratorConfig.getDefaultConfig(world.getRegistryManager().get(Registry.BIOME_KEY));
 		if (flatChunkGeneratorConfig instanceof FlatChunkGeneratorConfig) {

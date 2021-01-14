@@ -17,7 +17,7 @@ public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity> extends 
 		this(livingEntity -> true, f, bl, i);
 	}
 
-	public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float f, boolean requiresWalkTarget, int i) {
+	public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float speed, boolean requiresWalkTarget, int radius) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.LOOK_TARGET,
@@ -29,8 +29,8 @@ public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity> extends 
 			)
 		);
 		this.startCondition = startCondition;
-		this.radius = i;
-		this.field_23131 = f;
+		this.radius = radius;
+		this.field_23131 = speed;
 	}
 
 	@Override

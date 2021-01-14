@@ -28,7 +28,7 @@ import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.test.GameTest;
+import net.minecraft.test.GameTestState;
 import net.minecraft.test.StructureTestUtil;
 import net.minecraft.test.TestFunction;
 import net.minecraft.test.TestFunctions;
@@ -306,16 +306,16 @@ public class TestCommand {
 		StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity(pos);
 		String string = structureBlockBlockEntity.getStructurePath();
 		TestFunction testFunction = TestFunctions.getTestFunctionOrThrow(string);
-		GameTest gameTest = new GameTest(testFunction, structureBlockBlockEntity.getRotation(), world);
+		GameTestState gameTestState = new GameTestState(testFunction, structureBlockBlockEntity.getRotation(), world);
 		if (tests != null) {
-			tests.add(gameTest);
-			gameTest.addListener(new TestCommand.Listener(world, tests));
+			tests.add(gameTestState);
+			gameTestState.addListener(new TestCommand.Listener(world, tests));
 		}
 
 		setWorld(testFunction, world);
 		Box box = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
 		BlockPos blockPos = new BlockPos(box.minX, box.minY, box.minZ);
-		TestUtil.startTest(gameTest, blockPos, TestManager.INSTANCE);
+		TestUtil.startTest(gameTestState, blockPos, TestManager.INSTANCE);
 	}
 
 	private static void onCompletion(ServerWorld world, TestSet tests) {
@@ -345,41 +345,41 @@ public class TestCommand {
 		return 1;
 	}
 
-	private static int executeRun(ServerCommandSource source, TestFunction testFunction, int i) {
+	private static int executeRun(ServerCommandSource source, TestFunction testFunction, int rotationSteps) {
 		ServerWorld serverWorld = source.getWorld();
 		BlockPos blockPos = new BlockPos(source.getPosition());
-		int j = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
-		BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ() + 3);
+		int i = source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY();
+		BlockPos blockPos2 = new BlockPos(blockPos.getX(), i, blockPos.getZ() + 3);
 		TestUtil.clearDebugMarkers(serverWorld);
 		setWorld(testFunction, serverWorld);
-		BlockRotation blockRotation = StructureTestUtil.method_29408(i);
-		GameTest gameTest = new GameTest(testFunction, blockRotation, serverWorld);
-		TestUtil.startTest(gameTest, blockPos2, TestManager.INSTANCE);
+		BlockRotation blockRotation = StructureTestUtil.method_29408(rotationSteps);
+		GameTestState gameTestState = new GameTestState(testFunction, blockRotation, serverWorld);
+		TestUtil.startTest(gameTestState, blockPos2, TestManager.INSTANCE);
 		return 1;
 	}
 
 	private static void setWorld(TestFunction testFunction, ServerWorld world) {
-		Consumer<ServerWorld> consumer = TestFunctions.getWorldSetter(testFunction.getBatchId());
+		Consumer<ServerWorld> consumer = TestFunctions.getAfterBatchConsumer(testFunction.getBatchId());
 		if (consumer != null) {
 			consumer.accept(world);
 		}
 	}
 
-	private static int executeRunAll(ServerCommandSource source, int i, int j) {
+	private static int executeRunAll(ServerCommandSource source, int rotationSteps, int sizeZ) {
 		TestUtil.clearDebugMarkers(source.getWorld());
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions();
 		sendMessage(source, "Running all " + collection.size() + " tests...");
 		TestFunctions.method_29406();
-		run(source, collection, i, j);
+		run(source, collection, rotationSteps, sizeZ);
 		return 1;
 	}
 
-	private static int executeRunAll(ServerCommandSource source, String testClass, int i, int j) {
+	private static int executeRunAll(ServerCommandSource source, String testClass, int rotationSteps, int sizeZ) {
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions(testClass);
 		TestUtil.clearDebugMarkers(source.getWorld());
 		sendMessage(source, "Running " + collection.size() + " tests from " + testClass + "...");
 		TestFunctions.method_29406();
-		run(source, collection, i, j);
+		run(source, collection, rotationSteps, sizeZ);
 		return 1;
 	}
 
@@ -402,15 +402,15 @@ public class TestCommand {
 		}
 	}
 
-	private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int i, int j) {
+	private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int rotationSteps, int i) {
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
 		ServerWorld serverWorld = source.getWorld();
-		BlockRotation blockRotation = StructureTestUtil.method_29408(i);
-		Collection<GameTest> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, j);
+		BlockRotation blockRotation = StructureTestUtil.method_29408(rotationSteps);
+		Collection<GameTestState> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, i);
 		TestSet testSet = new TestSet(collection);
 		testSet.addListener(new TestCommand.Listener(serverWorld, testSet));
-		testSet.method_29407(gameTest -> TestFunctions.method_29404(gameTest.method_29403()));
+		testSet.method_29407(gameTestState -> TestFunctions.method_29404(gameTestState.method_29403()));
 	}
 
 	private static void sendMessage(ServerCommandSource source, String message) {
@@ -508,11 +508,11 @@ public class TestCommand {
 		}
 
 		@Override
-		public void onStarted(GameTest test) {
+		public void onStarted(GameTestState test) {
 		}
 
 		@Override
-		public void onFailed(GameTest test) {
+		public void onFailed(GameTestState test) {
 			TestCommand.onCompletion(this.world, this.tests);
 		}
 	}

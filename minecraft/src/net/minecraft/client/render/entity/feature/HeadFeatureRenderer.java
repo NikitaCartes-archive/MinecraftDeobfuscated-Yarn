@@ -12,7 +12,6 @@ import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.ZombieVillagerEntity;
@@ -21,8 +20,9 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(EnvType.CLIENT)
@@ -69,14 +69,14 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 
 				GameProfile gameProfile = null;
 				if (itemStack.hasTag()) {
-					CompoundTag compoundTag = itemStack.getTag();
-					if (compoundTag.contains("SkullOwner", 10)) {
-						gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
-					} else if (compoundTag.contains("SkullOwner", 8)) {
-						String string = compoundTag.getString("SkullOwner");
+					NbtCompound nbtCompound = itemStack.getTag();
+					if (nbtCompound.contains("SkullOwner", 10)) {
+						gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+					} else if (nbtCompound.contains("SkullOwner", 8)) {
+						String string = nbtCompound.getString("SkullOwner");
 						if (!StringUtils.isBlank(string)) {
 							gameProfile = SkullBlockEntity.loadProperties(new GameProfile(null, string));
-							compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+							nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
 						}
 					}
 				}
@@ -88,7 +88,7 @@ public class HeadFeatureRenderer<T extends LivingEntity, M extends EntityModel<T
 			} else if (!(item instanceof ArmorItem) || ((ArmorItem)item).getSlotType() != EquipmentSlot.HEAD) {
 				float mx = 0.625F;
 				matrixStack.translate(0.0, -0.25, 0.0);
-				matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
 				matrixStack.scale(0.625F, -0.625F, -0.625F);
 				if (bl) {
 					matrixStack.translate(0.0, 0.1875, 0.0);

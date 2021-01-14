@@ -52,27 +52,27 @@ public abstract class BlockStateVariantMap {
 	}
 
 	public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>> BlockStateVariantMap.DoubleProperty<T1, T2> create(
-		Property<T1> property, Property<T2> property2
+		Property<T1> first, Property<T2> second
 	) {
-		return new BlockStateVariantMap.DoubleProperty<>(property, property2);
+		return new BlockStateVariantMap.DoubleProperty<>(first, second);
 	}
 
 	public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>> BlockStateVariantMap.TripleProperty<T1, T2, T3> create(
-		Property<T1> property, Property<T2> property2, Property<T3> property3
+		Property<T1> first, Property<T2> second, Property<T3> third
 	) {
-		return new BlockStateVariantMap.TripleProperty<>(property, property2, property3);
+		return new BlockStateVariantMap.TripleProperty<>(first, second, third);
 	}
 
 	public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>> BlockStateVariantMap.QuadrupleProperty<T1, T2, T3, T4> create(
-		Property<T1> property, Property<T2> property2, Property<T3> property3, Property<T4> property4
+		Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth
 	) {
-		return new BlockStateVariantMap.QuadrupleProperty<>(property, property2, property3, property4);
+		return new BlockStateVariantMap.QuadrupleProperty<>(first, second, third, fourth);
 	}
 
 	public static <T1 extends Comparable<T1>, T2 extends Comparable<T2>, T3 extends Comparable<T3>, T4 extends Comparable<T4>, T5 extends Comparable<T5>> BlockStateVariantMap.QuintupleProperty<T1, T2, T3, T4, T5> create(
-		Property<T1> property, Property<T2> property2, Property<T3> property3, Property<T4> property4, Property<T5> property5
+		Property<T1> first, Property<T2> second, Property<T3> third, Property<T4> fourth, Property<T5> fifth
 	) {
-		return new BlockStateVariantMap.QuintupleProperty<>(property, property2, property3, property4, property5);
+		return new BlockStateVariantMap.QuintupleProperty<>(first, second, third, fourth, fifth);
 	}
 
 	public static class DoubleProperty<T1 extends Comparable<T1>, T2 extends Comparable<T2>> extends BlockStateVariantMap {

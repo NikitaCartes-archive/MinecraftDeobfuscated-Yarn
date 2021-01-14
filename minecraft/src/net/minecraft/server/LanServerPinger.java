@@ -65,12 +65,12 @@ public class LanServerPinger extends Thread {
 	 * Creates a server announcement.
 	 * 
 	 * <pre>
-	 * <blockquote>[MOTD]</blockquote> // Specifies the beginning of the message of the day
-	 * <blockquote>A message of the day</blockquote> // The message of the day
-	 * <blockquote>[/MOTD]</blockquote> // Specifies the end of the message of the day.
-	 * <blockquote>[AD]</blockquote> // Specifies the beginning of the address and the port of the local server.
-	 * <blockquote>the address of the local server.</blockquote> // Such as {@code 192.146.2.1:23132}
-	 * <blockquote>[/AD]</blockquote> // Specifies the end of the address and port of the local server.
+	 * {@code [MOTD]} // Specifies the beginning of the message of the day
+	 * {@code A message of the day} // The message of the day
+	 * {@code [/MOTD]} // Specifies the end of the message of the day.
+	 * {@code [AD]} // Specifies the beginning of the address and the port of the local server.
+	 * {@code the address of the local server.} // Such as {@code 192.146.2.1:23132}
+	 * {@code [/AD]} // Specifies the end of the address and port of the local server.
 	 * </pre>
 	 * 
 	 * <p>An example of a complete announcement:

@@ -19,8 +19,8 @@ public class SkullOverlayEntityModel extends SkullEntityModel {
 	@Override
 	public void method_2821(float f, float g, float h) {
 		super.method_2821(f, g, h);
-		this.skullOverlay.yaw = this.skull.yaw;
-		this.skullOverlay.pitch = this.skull.pitch;
+		this.skullOverlay.yaw = this.head.yaw;
+		this.skullOverlay.pitch = this.head.pitch;
 	}
 
 	@Override

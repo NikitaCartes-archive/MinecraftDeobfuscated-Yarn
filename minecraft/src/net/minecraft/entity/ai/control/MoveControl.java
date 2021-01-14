@@ -91,7 +91,7 @@ public class MoveControl {
 			}
 
 			float n = (float)(MathHelper.atan2(e, d) * 180.0F / (float)Math.PI) - 90.0F;
-			this.entity.yaw = this.changeAngle(this.entity.yaw, n, 90.0F);
+			this.entity.yaw = this.wrapDegrees(this.entity.yaw, n, 90.0F);
 			this.entity.setMovementSpeed((float)(this.speed * this.entity.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED)));
 			BlockPos blockPos = this.entity.getBlockPos();
 			BlockState blockState = this.entity.world.getBlockState(blockPos);
@@ -134,7 +134,7 @@ public class MoveControl {
 		return true;
 	}
 
-	protected float changeAngle(float from, float to, float max) {
+	protected float wrapDegrees(float from, float to, float max) {
 		float f = MathHelper.wrapDegrees(to - from);
 		if (f > max) {
 			f = max;

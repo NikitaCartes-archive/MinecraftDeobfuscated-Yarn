@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.rule.AlwaysTruePosRuleTest;
 import net.minecraft.structure.rule.PosRuleTest;
 import net.minecraft.structure.rule.RuleTest;
@@ -21,7 +21,7 @@ public class StructureProcessorRule {
 						.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE)
 						.forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate),
 					BlockState.CODEC.fieldOf("output_state").forGetter(structureProcessorRule -> structureProcessorRule.outputState),
-					CompoundTag.CODEC.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.tag))
+					NbtCompound.CODEC.optionalFieldOf("output_nbt").forGetter(structureProcessorRule -> Optional.ofNullable(structureProcessorRule.outputNbt))
 				)
 				.apply(instance, StructureProcessorRule::new)
 	);
@@ -30,7 +30,7 @@ public class StructureProcessorRule {
 	private final PosRuleTest positionPredicate;
 	private final BlockState outputState;
 	@Nullable
-	private final CompoundTag tag;
+	private final NbtCompound outputNbt;
 
 	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, BlockState blockState) {
 		this(ruleTest, ruleTest2, AlwaysTruePosRuleTest.INSTANCE, blockState, Optional.empty());
@@ -40,12 +40,12 @@ public class StructureProcessorRule {
 		this(ruleTest, ruleTest2, posRuleTest, blockState, Optional.empty());
 	}
 
-	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, PosRuleTest posRuleTest, BlockState blockState, Optional<CompoundTag> optional) {
+	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, PosRuleTest posRuleTest, BlockState blockState, Optional<NbtCompound> optional) {
 		this.inputPredicate = ruleTest;
 		this.locationPredicate = ruleTest2;
 		this.positionPredicate = posRuleTest;
 		this.outputState = blockState;
-		this.tag = (CompoundTag)optional.orElse(null);
+		this.outputNbt = (NbtCompound)optional.orElse(null);
 	}
 
 	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, Random random) {
@@ -59,7 +59,7 @@ public class StructureProcessorRule {
 	}
 
 	@Nullable
-	public CompoundTag getTag() {
-		return this.tag;
+	public NbtCompound getOutputNbt() {
+		return this.outputNbt;
 	}
 }

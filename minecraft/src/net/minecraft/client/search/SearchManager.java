@@ -7,17 +7,17 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 
 @Environment(EnvType.CLIENT)
-public class SearchManager implements SynchronousResourceReloadListener {
+public class SearchManager implements SynchronousResourceReloader {
 	public static final SearchManager.Key<ItemStack> ITEM_TOOLTIP = new SearchManager.Key<>();
 	public static final SearchManager.Key<ItemStack> ITEM_TAG = new SearchManager.Key<>();
 	public static final SearchManager.Key<RecipeResultCollection> RECIPE_OUTPUT = new SearchManager.Key<>();
 	private final Map<SearchManager.Key<?>, SearchableContainer<?>> instances = Maps.<SearchManager.Key<?>, SearchableContainer<?>>newHashMap();
 
 	@Override
-	public void apply(ResourceManager manager) {
+	public void reload(ResourceManager manager) {
 		for (SearchableContainer<?> searchableContainer : this.instances.values()) {
 			searchableContainer.reload();
 		}

@@ -28,7 +28,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -146,23 +146,23 @@ public class WanderingTraderEntity extends MerchantEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("DespawnDelay", this.despawnDelay);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("DespawnDelay", this.despawnDelay);
 		if (this.wanderTarget != null) {
-			tag.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
+			nbt.put("WanderTarget", NbtHelper.fromBlockPos(this.wanderTarget));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("DespawnDelay", 99)) {
-			this.despawnDelay = tag.getInt("DespawnDelay");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("DespawnDelay", 99)) {
+			this.despawnDelay = nbt.getInt("DespawnDelay");
 		}
 
-		if (tag.contains("WanderTarget")) {
-			this.wanderTarget = NbtHelper.toBlockPos(tag.getCompound("WanderTarget"));
+		if (nbt.contains("WanderTarget")) {
+			this.wanderTarget = NbtHelper.toBlockPos(nbt.getCompound("WanderTarget"));
 		}
 
 		this.setBreedingAge(Math.max(0, this.getBreedingAge()));

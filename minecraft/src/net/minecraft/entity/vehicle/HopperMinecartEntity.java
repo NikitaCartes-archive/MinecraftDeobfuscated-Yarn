@@ -9,7 +9,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.screen.HopperScreenHandler;
 import net.minecraft.screen.ScreenHandler;
@@ -129,17 +129,17 @@ public class HopperMinecartEntity extends StorageMinecartEntity implements Hoppe
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("TransferCooldown", this.transferCooldown);
-		tag.putBoolean("Enabled", this.enabled);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("TransferCooldown", this.transferCooldown);
+		nbt.putBoolean("Enabled", this.enabled);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.transferCooldown = tag.getInt("TransferCooldown");
-		this.enabled = tag.contains("Enabled") ? tag.getBoolean("Enabled") : true;
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.transferCooldown = nbt.getInt("TransferCooldown");
+		this.enabled = nbt.contains("Enabled") ? nbt.getBoolean("Enabled") : true;
 	}
 
 	public void setTransferCooldown(int cooldown) {

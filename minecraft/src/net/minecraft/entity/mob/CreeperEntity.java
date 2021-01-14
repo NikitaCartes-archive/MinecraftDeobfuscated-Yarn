@@ -31,7 +31,7 @@ import net.minecraft.entity.passive.OcelotEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -103,30 +103,30 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.dataTracker.get(CHARGED)) {
-			tag.putBoolean("powered", true);
+			nbt.putBoolean("powered", true);
 		}
 
-		tag.putShort("Fuse", (short)this.fuseTime);
-		tag.putByte("ExplosionRadius", (byte)this.explosionRadius);
-		tag.putBoolean("ignited", this.getIgnited());
+		nbt.putShort("Fuse", (short)this.fuseTime);
+		nbt.putByte("ExplosionRadius", (byte)this.explosionRadius);
+		nbt.putBoolean("ignited", this.isIgnited());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.dataTracker.set(CHARGED, tag.getBoolean("powered"));
-		if (tag.contains("Fuse", 99)) {
-			this.fuseTime = tag.getShort("Fuse");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.dataTracker.set(CHARGED, nbt.getBoolean("powered"));
+		if (nbt.contains("Fuse", 99)) {
+			this.fuseTime = nbt.getShort("Fuse");
 		}
 
-		if (tag.contains("ExplosionRadius", 99)) {
-			this.explosionRadius = tag.getByte("ExplosionRadius");
+		if (nbt.contains("ExplosionRadius", 99)) {
+			this.explosionRadius = nbt.getByte("ExplosionRadius");
 		}
 
-		if (tag.getBoolean("ignited")) {
+		if (nbt.getBoolean("ignited")) {
 			this.ignite();
 		}
 	}
@@ -135,7 +135,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	public void tick() {
 		if (this.isAlive()) {
 			this.lastFuseTime = this.currentFuseTime;
-			if (this.getIgnited()) {
+			if (this.isIgnited()) {
 				this.setFuseSpeed(1);
 			}
 
@@ -260,7 +260,7 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 		}
 	}
 
-	public boolean getIgnited() {
+	public boolean isIgnited() {
 		return this.dataTracker.get(IGNITED);
 	}
 

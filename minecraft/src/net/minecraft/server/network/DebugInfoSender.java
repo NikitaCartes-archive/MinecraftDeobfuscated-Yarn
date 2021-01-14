@@ -65,7 +65,7 @@ public class DebugInfoSender {
 	public static void sendNeighborUpdate(World world, BlockPos pos) {
 	}
 
-	public static void sendStructureStart(StructureWorldAccess structureWorldAccess, StructureStart<?> structureStart) {
+	public static void sendStructureStart(StructureWorldAccess world, StructureStart<?> structureStart) {
 	}
 
 	public static void sendGoalSelector(World world, MobEntity mob, GoalSelector goalSelector) {

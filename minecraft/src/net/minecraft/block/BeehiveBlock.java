@@ -25,7 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -258,14 +258,14 @@ public class BeehiveBlock extends BlockWithEntity {
 				}
 
 				if (bl) {
-					CompoundTag compoundTag = new CompoundTag();
-					compoundTag.put("Bees", beehiveBlockEntity.getBees());
-					itemStack.putSubTag("BlockEntityTag", compoundTag);
+					NbtCompound nbtCompound = new NbtCompound();
+					nbtCompound.put("Bees", beehiveBlockEntity.getBees());
+					itemStack.putSubTag("BlockEntityTag", nbtCompound);
 				}
 
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putInt("honey_level", i);
-				itemStack.putSubTag("BlockStateTag", compoundTag);
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putInt("honey_level", i);
+				itemStack.putSubTag("BlockStateTag", nbtCompound);
 				ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack);
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
@@ -294,8 +294,10 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		if (world.getBlockState(posFrom).getBlock() instanceof FireBlock) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
+		if (world.getBlockState(neighborPos).getBlock() instanceof FireBlock) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeehiveBlockEntity) {
 				BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
@@ -303,7 +305,7 @@ public class BeehiveBlock extends BlockWithEntity {
 			}
 		}
 
-		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	public static Direction getRandomGenerationDirection(Random random) {

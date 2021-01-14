@@ -19,10 +19,10 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.text.OrderedText;
 import net.minecraft.util.SignType;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity> {
@@ -39,12 +39,12 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 		if (blockState.getBlock() instanceof SignBlock) {
 			matrixStack.translate(0.5, 0.5, 0.5);
 			float h = -((float)((Integer)blockState.get(SignBlock.ROTATION) * 360) / 16.0F);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
 			this.model.foot.visible = true;
 		} else {
 			matrixStack.translate(0.5, 0.5, 0.5);
 			float h = -((Direction)blockState.get(WallSignBlock.FACING)).asRotation();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
 			matrixStack.translate(0.0, -0.3125, -0.4375);
 			this.model.foot.visible = false;
 		}
@@ -90,7 +90,7 @@ public class SignBlockEntityRenderer extends BlockEntityRenderer<SignBlockEntity
 			signType = SignType.OAK;
 		}
 
-		return TexturedRenderLayers.getSignTextureId(signType);
+		return TexturedRenderLayers.createSignTextureId(signType);
 	}
 
 	@Environment(EnvType.CLIENT)

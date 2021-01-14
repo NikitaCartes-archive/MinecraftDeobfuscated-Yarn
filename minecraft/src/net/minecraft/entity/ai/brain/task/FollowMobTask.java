@@ -20,8 +20,8 @@ public class FollowMobTask extends Task<LivingEntity> {
 		this(livingEntity -> group.equals(livingEntity.getType().getSpawnGroup()), maxDistance);
 	}
 
-	public FollowMobTask(EntityType<?> type, float maxDistance) {
-		this(livingEntity -> type.equals(livingEntity.getType()), maxDistance);
+	public FollowMobTask(EntityType<?> entityType, float maxDistance) {
+		this(livingEntity -> entityType.equals(livingEntity.getType()), maxDistance);
 	}
 
 	public FollowMobTask(float maxDistance) {

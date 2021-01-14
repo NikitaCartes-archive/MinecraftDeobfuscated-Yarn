@@ -50,7 +50,7 @@ public class PistonHandler {
 		} else {
 			for (int i = 0; i < this.movedBlocks.size(); i++) {
 				BlockPos blockPos = (BlockPos)this.movedBlocks.get(i);
-				if (isBlockSticky(this.world.getBlockState(blockPos).getBlock()) && !this.canMoveAdjacentBlock(blockPos)) {
+				if (isBlockSticky(this.world.getBlockState(blockPos).getBlock()) && !this.tryMoveAdjacentBlock(blockPos)) {
 					return false;
 				}
 			}
@@ -121,7 +121,7 @@ public class PistonHandler {
 
 						for (int m = 0; m <= l + j; m++) {
 							BlockPos blockPos3 = (BlockPos)this.movedBlocks.get(m);
-							if (isBlockSticky(this.world.getBlockState(blockPos3).getBlock()) && !this.canMoveAdjacentBlock(blockPos3)) {
+							if (isBlockSticky(this.world.getBlockState(blockPos3).getBlock()) && !this.tryMoveAdjacentBlock(blockPos3)) {
 								return false;
 							}
 						}
@@ -168,7 +168,7 @@ public class PistonHandler {
 		this.movedBlocks.addAll(list3);
 	}
 
-	private boolean canMoveAdjacentBlock(BlockPos pos) {
+	private boolean tryMoveAdjacentBlock(BlockPos pos) {
 		BlockState blockState = this.world.getBlockState(pos);
 
 		for (Direction direction : Direction.values()) {

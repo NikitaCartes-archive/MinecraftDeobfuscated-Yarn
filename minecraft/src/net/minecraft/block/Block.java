@@ -111,8 +111,8 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		return to;
 	}
 
-	public static VoxelShape createCuboidShape(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
-		return VoxelShapes.cuboid(xMin / 16.0, yMin / 16.0, zMin / 16.0, xMax / 16.0, yMax / 16.0, zMax / 16.0);
+	public static VoxelShape createCuboidShape(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+		return VoxelShapes.cuboid(minX / 16.0, minY / 16.0, minZ / 16.0, maxX / 16.0, maxY / 16.0, maxZ / 16.0);
 	}
 
 	public boolean isIn(Tag<Block> tag) {
@@ -127,7 +127,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		BlockState blockState = state;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (Direction direction : FACINGS) {
+		for (Direction direction : DIRECTIONS) {
 			mutable.set(pos, direction);
 			blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
 		}

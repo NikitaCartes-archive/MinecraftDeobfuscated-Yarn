@@ -54,7 +54,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public abstract class ChunkGenerator {
 	public static final Codec<ChunkGenerator> CODEC = Registry.CHUNK_GENERATOR.dispatchStable(ChunkGenerator::getCodec, Function.identity());
 	/**
-	 * Used to control the population step without replacing the actual biome that comes from the original {@link biomeSource}.
+	 * Used to control the population step without replacing the actual biome that comes from the original {@link #biomeSource}.
 	 * 
 	 * <p>This is used by {@link FlatChunkGenerator} to overwrite biome properties like whether lakes generate, while preserving the original biome ID.
 	 */
@@ -130,6 +130,9 @@ public abstract class ChunkGenerator {
 		((ProtoChunk)chunk).setBiomes(new BiomeArray(biomeRegistry, chunkPos, this.biomeSource));
 	}
 
+	/**
+	 * Generates caves for the given chunk.
+	 */
 	public void carve(long seed, BiomeAccess access, Chunk chunk, GenerationStep.Carver carver) {
 		BiomeAccess biomeAccess = access.withSource(this.populationSource);
 		ChunkRandom chunkRandom = new ChunkRandom();
@@ -161,11 +164,12 @@ public abstract class ChunkGenerator {
 	 * Tries to find the closest structure of a given type near a given block.
 	 * <p>
 	 * New chunks will only be generated up to the {@link net.minecraft.world.chunk.ChunkStatus#STRUCTURE_STARTS} phase by this method.
+	 * <p>
+	 * The radius is ignored for strongholds.
 	 * 
 	 * @return {@code null} if no structure could be found within the given search radius
 	 * 
-	 * @param radius The search radius in chunks around the chunk the given block position is in. A radius of 0 will only search in the given chunk.
-	 * This is ignored for strongholds.
+	 * @param radius the search radius in chunks around the chunk the given block position is in; a radius of 0 will only search in the given chunk
 	 * @param skipExistingChunks whether only structures that are not referenced by generated chunks (chunks past the STRUCTURE_STARTS stage) are returned, excluding strongholds
 	 */
 	@Nullable
@@ -218,6 +222,9 @@ public abstract class ChunkGenerator {
 		}
 	}
 
+	/**
+	 * Places the surface blocks of the biomes after the noise has been generated.
+	 */
 	public abstract void buildSurface(ChunkRegion region, Chunk chunk);
 
 	public void populateEntities(ChunkRegion region) {
@@ -247,16 +254,14 @@ public abstract class ChunkGenerator {
 	 * Determines which structures should start in the given chunk and creates their starting points.
 	 */
 	public void setStructureStarts(
-		DynamicRegistryManager dynamicRegistryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed
+		DynamicRegistryManager registryManager, StructureAccessor accessor, Chunk chunk, StructureManager structureManager, long worldSeed
 	) {
 		ChunkPos chunkPos = chunk.getPos();
 		Biome biome = this.populationSource.getBiomeForNoiseGen((chunkPos.x << 2) + 2, 0, (chunkPos.z << 2) + 2);
-		this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome);
+		this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, registryManager, accessor, chunk, structureManager, worldSeed, chunkPos, biome);
 
 		for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getGenerationSettings().getStructureFeatures()) {
-			this.setStructureStart(
-				(ConfiguredStructureFeature<?, ?>)supplier.get(), dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome
-			);
+			this.setStructureStart((ConfiguredStructureFeature<?, ?>)supplier.get(), registryManager, accessor, chunk, structureManager, worldSeed, chunkPos, biome);
 		}
 	}
 
@@ -337,9 +342,9 @@ public abstract class ChunkGenerator {
 		return this.getHeight(x, z, heightmapType) - 1;
 	}
 
-	public boolean isStrongholdStartingChunk(ChunkPos chunkPos) {
+	public boolean isStrongholdStartingChunk(ChunkPos pos) {
 		this.generateStrongholdPositions();
-		return this.strongholds.contains(chunkPos);
+		return this.strongholds.contains(pos);
 	}
 
 	static {

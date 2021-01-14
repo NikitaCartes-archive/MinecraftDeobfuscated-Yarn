@@ -22,7 +22,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -128,24 +128,24 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity player) {
-		return this.hasJockey() ? 10 : super.getCurrentExperience(player);
+	protected int getXpToDrop(PlayerEntity player) {
+		return this.hasJockey() ? 10 : super.getXpToDrop(player);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.jockey = tag.getBoolean("IsChickenJockey");
-		if (tag.contains("EggLayTime")) {
-			this.eggLayTime = tag.getInt("EggLayTime");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.jockey = nbt.getBoolean("IsChickenJockey");
+		if (nbt.contains("EggLayTime")) {
+			this.eggLayTime = nbt.getInt("EggLayTime");
 		}
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("IsChickenJockey", this.jockey);
-		tag.putInt("EggLayTime", this.eggLayTime);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("IsChickenJockey", this.jockey);
+		nbt.putInt("EggLayTime", this.eggLayTime);
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class ChickenEntity extends AnimalEntity {
 		float g = MathHelper.cos(this.bodyYaw * (float) (Math.PI / 180.0));
 		float h = 0.1F;
 		float i = 0.0F;
-		passenger.updatePosition(this.getX() + (double)(0.1F * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
+		passenger.setPosition(this.getX() + (double)(0.1F * f), this.getBodyY(0.5) + passenger.getHeightOffset() + 0.0, this.getZ() - (double)(0.1F * g));
 		if (passenger instanceof LivingEntity) {
 			((LivingEntity)passenger).bodyYaw = this.bodyYaw;
 		}

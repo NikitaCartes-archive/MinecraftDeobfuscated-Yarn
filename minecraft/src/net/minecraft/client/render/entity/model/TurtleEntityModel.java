@@ -24,10 +24,10 @@ public class TurtleEntityModel<T extends TurtleEntity> extends QuadrupedEntityMo
 		this.head = new ModelPart(this, 3, 0);
 		this.head.addCuboid(-3.0F, -1.0F, -3.0F, 6.0F, 5.0F, 6.0F, 0.0F);
 		this.head.setPivot(0.0F, 19.0F, -10.0F);
-		this.torso = new ModelPart(this);
-		this.torso.setTextureOffset(7, 37).addCuboid(-9.5F, 3.0F, -10.0F, 19.0F, 20.0F, 6.0F, 0.0F);
-		this.torso.setTextureOffset(31, 1).addCuboid(-5.5F, 3.0F, -13.0F, 11.0F, 18.0F, 3.0F, 0.0F);
-		this.torso.setPivot(0.0F, 11.0F, -10.0F);
+		this.body = new ModelPart(this);
+		this.body.setTextureOffset(7, 37).addCuboid(-9.5F, 3.0F, -10.0F, 19.0F, 20.0F, 6.0F, 0.0F);
+		this.body.setTextureOffset(31, 1).addCuboid(-5.5F, 3.0F, -13.0F, 11.0F, 18.0F, 3.0F, 0.0F);
+		this.body.setPivot(0.0F, 11.0F, -10.0F);
 		this.plastron = new ModelPart(this);
 		this.plastron.setTextureOffset(70, 33).addCuboid(-4.5F, 3.0F, -14.0F, 9.0F, 18.0F, 1.0F, 0.0F);
 		this.plastron.setPivot(0.0F, 11.0F, -10.0F);

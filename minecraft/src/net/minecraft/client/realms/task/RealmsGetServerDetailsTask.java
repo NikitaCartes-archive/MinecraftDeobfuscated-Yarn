@@ -100,7 +100,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 								try {
 									if (blx) {
 										Function<Throwable, Void> function = throwable -> {
-											MinecraftClient.getInstance().getResourcePackDownloader().clear();
+											MinecraftClient.getInstance().getResourcePackProvider().clear();
 											LOGGER.error(throwable);
 											setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
 											return null;
@@ -108,7 +108,7 @@ public class RealmsGetServerDetailsTask extends LongRunningTask {
 
 										try {
 											MinecraftClient.getInstance()
-												.getResourcePackDownloader()
+												.getResourcePackProvider()
 												.download(realmsServerAddress2.resourcePackUrl, realmsServerAddress2.resourcePackHash)
 												.thenRun(
 													() -> this.setScreen(

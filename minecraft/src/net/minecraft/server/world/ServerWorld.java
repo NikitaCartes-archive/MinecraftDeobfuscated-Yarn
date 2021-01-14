@@ -179,19 +179,19 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Executor workerExecutor,
 		LevelStorage.Session session,
 		ServerWorldProperties properties,
-		RegistryKey<World> registryKey,
+		RegistryKey<World> worldKey,
 		DimensionType dimensionType,
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		ChunkGenerator chunkGenerator,
 		boolean debugWorld,
-		long l,
-		List<Spawner> list,
-		boolean bl
+		long seed,
+		List<Spawner> spawners,
+		boolean shouldTickTime
 	) {
-		super(properties, registryKey, dimensionType, server::getProfiler, false, debugWorld, l);
-		this.shouldTickTime = bl;
+		super(properties, worldKey, dimensionType, server::getProfiler, false, debugWorld, seed);
+		this.shouldTickTime = shouldTickTime;
 		this.server = server;
-		this.spawners = list;
+		this.spawners = spawners;
 		this.worldProperties = properties;
 		this.serverChunkManager = new ServerChunkManager(
 			this,
@@ -208,7 +208,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.portalForcer = new PortalForcer(this);
 		this.calculateAmbientDarkness();
 		this.initWeatherGradients();
-		this.getWorldBorder().setMaxWorldBorderRadius(server.getMaxWorldBorderRadius());
+		this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
 		this.raidManager = this.getPersistentStateManager().getOrCreate(() -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
 		if (!server.isSinglePlayer()) {
 			properties.setGameMode(server.getDefaultGameMode());
@@ -467,7 +467,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 					SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
 					skeletonHorseEntity.setTrapped(true);
 					skeletonHorseEntity.setBreedingAge(0);
-					skeletonHorseEntity.updatePosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
+					skeletonHorseEntity.setPosition((double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ());
 					this.spawnEntity(skeletonHorseEntity);
 				}
 
@@ -694,7 +694,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	private void saveLevel() {
 		if (this.enderDragonFight != null) {
-			this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toTag());
+			this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toNbt());
 		}
 
 		this.getChunkManager().getPersistentStateManager().save();
@@ -1042,15 +1042,15 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	public Explosion createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
-		@Nullable ExplosionBehavior explosionBehavior,
-		double d,
-		double e,
-		double f,
-		float g,
-		boolean bl,
+		@Nullable ExplosionBehavior behavior,
+		double x,
+		double y,
+		double z,
+		float power,
+		boolean createFire,
 		Explosion.DestructionType destructionType
 	) {
-		Explosion explosion = new Explosion(this, entity, damageSource, explosionBehavior, d, e, f, g, bl, destructionType);
+		Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
 		explosion.collectBlocksAndDamageEntities();
 		explosion.affectWorld(false);
 		if (destructionType == Explosion.DestructionType.NONE) {
@@ -1058,9 +1058,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		for (ServerPlayerEntity serverPlayerEntity : this.players) {
-			if (serverPlayerEntity.squaredDistanceTo(d, e, f) < 4096.0) {
+			if (serverPlayerEntity.squaredDistanceTo(x, y, z) < 4096.0) {
 				serverPlayerEntity.networkHandler
-					.sendPacket(new ExplosionS2CPacket(d, e, f, g, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
+					.sendPacket(new ExplosionS2CPacket(x, y, z, power, explosion.getAffectedBlocks(), (Vec3d)explosion.getAffectedPlayers().get(serverPlayerEntity)));
 			}
 		}
 
@@ -1162,8 +1162,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Nullable
-	public Entity getEntity(UUID uUID) {
-		return (Entity)this.entitiesByUuid.get(uUID);
+	public Entity getEntity(UUID uuid) {
+		return (Entity)this.entitiesByUuid.get(uuid);
 	}
 
 	@Nullable

@@ -37,7 +37,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -174,29 +174,29 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
-			tag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
+			nbt.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
 		}
 
-		this.angerToTag(tag);
+		this.writeAngerToNbt(nbt);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
 		BlockState blockState = null;
-		if (tag.contains("carriedBlockState", 10)) {
-			blockState = NbtHelper.toBlockState(tag.getCompound("carriedBlockState"));
+		if (nbt.contains("carriedBlockState", 10)) {
+			blockState = NbtHelper.toBlockState(nbt.getCompound("carriedBlockState"));
 			if (blockState.isAir()) {
 				blockState = null;
 			}
 		}
 
 		this.setCarriedBlock(blockState);
-		this.angerFromTag((ServerWorld)this.world, tag);
+		this.angerFromTag((ServerWorld)this.world, nbt);
 	}
 
 	private boolean isPlayerStaring(PlayerEntity player) {

@@ -159,7 +159,7 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		return this.metadata;
 	}
 
-	public boolean getIgnoreEntities() {
+	public boolean shouldIgnoreEntities() {
 		return this.ignoreEntities;
 	}
 

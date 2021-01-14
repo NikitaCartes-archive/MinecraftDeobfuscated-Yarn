@@ -24,8 +24,8 @@ import net.minecraft.client.gui.ClientChatListener;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.GameInfoChatListener;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.options.AttackIndicator;
-import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.option.AttackIndicator;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.Tessellator;
@@ -349,7 +349,7 @@ public class InGameHud extends DrawableHelper {
 		GameOptions gameOptions = this.client.options;
 		if (gameOptions.getPerspective().isFirstPerson()) {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
-				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.getReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
+				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
 					RenderSystem.pushMatrix();
 					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getZOffset());
 					Camera camera = this.client.gameRenderer.getCamera();
@@ -634,7 +634,7 @@ public class InGameHud extends DrawableHelper {
 
 		for (ScoreboardPlayerScore scoreboardPlayerScore : collection) {
 			Team team = scoreboard.getPlayerTeam(scoreboardPlayerScore.getPlayerName());
-			Text text2 = Team.modifyText(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
+			Text text2 = Team.decorateName(team, new LiteralText(scoreboardPlayerScore.getPlayerName()));
 			list2.add(Pair.of(scoreboardPlayerScore, text2));
 			j = Math.max(j, this.getFontRenderer().getWidth(text2) + k + this.getFontRenderer().getWidth(Integer.toString(scoreboardPlayerScore.getScore())));
 		}
@@ -946,7 +946,7 @@ public class InGameHud extends DrawableHelper {
 		WorldBorder worldBorder = this.client.world.getWorldBorder();
 		float f = (float)worldBorder.getDistanceInsideBorder(entity);
 		double d = Math.min(
-			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getTargetSize() - worldBorder.getSize())
+			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getSizeLerpTarget() - worldBorder.getSize())
 		);
 		double e = Math.max((double)worldBorder.getWarningBlocks(), d);
 		if ((double)f < e) {
@@ -1066,8 +1066,8 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public void setRecordPlayingOverlay(Text text) {
-		this.setOverlayMessage(new TranslatableText("record.nowPlaying", text), true);
+	public void setRecordPlayingOverlay(Text description) {
+		this.setOverlayMessage(new TranslatableText("record.nowPlaying", description), true);
 	}
 
 	public void setOverlayMessage(Text message, boolean tinted) {
@@ -1105,17 +1105,17 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public UUID method_31406(Text text) {
-		String string = TextVisitFactory.method_31402(text);
+	public UUID extractSender(Text message) {
+		String string = TextVisitFactory.method_31402(message);
 		String string2 = StringUtils.substringBetween(string, "<", ">");
 		return string2 == null ? Util.NIL_UUID : this.client.getSocialInteractionsManager().method_31407(string2);
 	}
 
-	public void addChatMessage(MessageType type, Text text, UUID senderUuid) {
-		if (!this.client.shouldBlockMessages(senderUuid)) {
-			if (!this.client.options.field_26926 || !this.client.shouldBlockMessages(this.method_31406(text))) {
+	public void addChatMessage(MessageType type, Text message, UUID sender) {
+		if (!this.client.shouldBlockMessages(sender)) {
+			if (!this.client.options.field_26926 || !this.client.shouldBlockMessages(this.extractSender(message))) {
 				for (ClientChatListener clientChatListener : (List)this.listeners.get(type)) {
-					clientChatListener.onChatMessage(type, text, senderUuid);
+					clientChatListener.onChatMessage(type, message, sender);
 				}
 			}
 		}
@@ -1137,7 +1137,7 @@ public class InGameHud extends DrawableHelper {
 		return this.spectatorHud;
 	}
 
-	public PlayerListHud getPlayerListWidget() {
+	public PlayerListHud getPlayerListHud() {
 		return this.playerListHud;
 	}
 

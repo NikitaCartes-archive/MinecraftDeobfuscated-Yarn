@@ -19,7 +19,7 @@ import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
@@ -55,7 +55,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	protected ItemRenderer itemRenderer;
 	public int width;
 	public int height;
-	protected final List<AbstractButtonWidget> buttons = Lists.<AbstractButtonWidget>newArrayList();
+	protected final List<ClickableWidget> buttons = Lists.<ClickableWidget>newArrayList();
 	public boolean passEvents;
 	public TextRenderer textRenderer;
 	private URI clickedLink;
@@ -75,7 +75,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		for (int i = 0; i < this.buttons.size(); i++) {
-			((AbstractButtonWidget)this.buttons.get(i)).render(matrices, mouseX, mouseY, delta);
+			((ClickableWidget)this.buttons.get(i)).render(matrices, mouseX, mouseY, delta);
 		}
 	}
 
@@ -111,17 +111,17 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	 * Adds a button to this screen.
 	 * This method should be preferred over {@link Screen#addChild(Element)} since buttons are automatically rendered when added to a screen.
 	 */
-	protected <T extends AbstractButtonWidget> T addButton(T button) {
+	protected <T extends ClickableWidget> T addButton(T button) {
 		this.buttons.add(button);
 		return this.addChild(button);
 	}
 
 	/**
 	 * Adds a child element to this screen.
-	 * If the child element is an {@link net.minecraft.client.gui.widget.AbstractButtonWidget}, you should use {@link Screen#addButton(AbstractButtonWidget)} instead.
+	 * If the child element is an {@link net.minecraft.client.gui.widget.ClickableWidget}, you should use {@link Screen#addButton(ClickableWidget)} instead.
 	 * 
 	 * <p>Adding a child element to a screen does not guarantee the widget is rendered or ticked.
-	 * @see net.minecraft.client.gui.screen.Screen#addButton(AbstractButtonWidget)
+	 * @see net.minecraft.client.gui.screen.Screen#addButton(ClickableWidget)
 	 */
 	protected <T extends Element> T addChild(T child) {
 		this.children.add(child);
@@ -331,7 +331,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	/**
 	 * Called when a screen should be initialized.
 	 * 
-	 * <p>This method is called when this screen is {@link MinecraftClient#openScreen(Screen) opened} or resized.
+	 * <p>This method is called when this screen is {@linkplain net.minecraft.client.MinecraftClient#openScreen(Screen) opened} or resized.
 	 */
 	protected void init() {
 	}
@@ -370,7 +370,7 @@ public abstract class Screen extends AbstractParentElement implements TickableEl
 	}
 
 	/**
-	 * Renders the fullscreen {@linkplain #BACKGROUND_TEXTURE background texture} of this screen.
+	 * Renders the fullscreen {@linkplain net.minecraft.client.gui.DrawableHelper#OPTIONS_BACKGROUND_TEXTURE background texture} of this screen.
 	 * 
 	 * @param vOffset an offset applied to the V coordinate of the background texture
 	 */

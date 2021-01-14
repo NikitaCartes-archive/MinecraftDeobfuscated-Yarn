@@ -13,7 +13,7 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 	private final ModelPart head;
 	private final ModelPart rightEar;
 	private final ModelPart leftEar;
-	private final ModelPart torso;
+	private final ModelPart body;
 	private final ModelPart field_22231;
 	private final ModelPart field_22232;
 	private final ModelPart field_22233;
@@ -24,13 +24,13 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 		super(true, 8.0F, 6.0F, 1.9F, 2.0F, 24.0F);
 		this.textureWidth = 128;
 		this.textureHeight = 64;
-		this.torso = new ModelPart(this);
-		this.torso.setPivot(0.0F, 7.0F, 0.0F);
-		this.torso.setTextureOffset(1, 1).addCuboid(-8.0F, -7.0F, -13.0F, 16.0F, 14.0F, 26.0F);
+		this.body = new ModelPart(this);
+		this.body.setPivot(0.0F, 7.0F, 0.0F);
+		this.body.setTextureOffset(1, 1).addCuboid(-8.0F, -7.0F, -13.0F, 16.0F, 14.0F, 26.0F);
 		this.field_25484 = new ModelPart(this);
 		this.field_25484.setPivot(0.0F, -14.0F, -5.0F);
 		this.field_25484.setTextureOffset(90, 33).addCuboid(0.0F, 0.0F, -9.0F, 0.0F, 10.0F, 19.0F, 0.001F);
-		this.torso.addChild(this.field_25484);
+		this.body.addChild(this.field_25484);
 		this.head = new ModelPart(this);
 		this.head.setPivot(0.0F, 2.0F, -12.0F);
 		this.head.setTextureOffset(61, 1).addCuboid(-7.0F, -3.0F, -19.0F, 14.0F, 6.0F, 19.0F);
@@ -76,7 +76,7 @@ public class HoglinEntityModel<T extends MobEntity & Hoglin> extends AnimalModel
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.torso, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
+		return ImmutableList.<ModelPart>of(this.body, this.field_22231, this.field_22232, this.field_22233, this.field_22234);
 	}
 
 	public void setAngles(T mobEntity, float f, float g, float h, float i, float j) {

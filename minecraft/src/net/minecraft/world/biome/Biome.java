@@ -219,7 +219,7 @@ public final class Biome {
 	}
 
 	public void generateFeatureStep(
-		StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos pos
+		StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos origin
 	) {
 		List<List<Supplier<ConfiguredFeature<?, ?>>>> list = this.generationSettings.getFeatures();
 		int i = GenerationStep.Feature.values().length;
@@ -229,13 +229,13 @@ public final class Biome {
 			if (structureAccessor.shouldGenerateStructures()) {
 				for (StructureFeature<?> structureFeature : (List)this.structures.getOrDefault(j, Collections.emptyList())) {
 					random.setDecoratorSeed(populationSeed, k, j);
-					int l = pos.getX() >> 4;
-					int m = pos.getZ() >> 4;
+					int l = origin.getX() >> 4;
+					int m = origin.getZ() >> 4;
 					int n = l << 4;
 					int o = m << 4;
 
 					try {
-						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature)
+						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature)
 							.forEach(
 								structureStart -> structureStart.generateStructure(
 										region, structureAccessor, chunkGenerator, random, new BlockBox(n, o, n + 15, o + 15), new ChunkPos(l, m)
@@ -259,7 +259,7 @@ public final class Biome {
 					random.setDecoratorSeed(populationSeed, k, j);
 
 					try {
-						configuredFeature.generate(region, chunkGenerator, random, pos);
+						configuredFeature.generate(region, chunkGenerator, random, origin);
 					} catch (Exception var22) {
 						CrashReport crashReport2 = CrashReport.create(var22, "Feature placement");
 						crashReport2.addElement("Feature")

@@ -35,7 +35,7 @@ public class HoverPhase extends AbstractPhase {
 
 	@Nullable
 	@Override
-	public Vec3d getTarget() {
+	public Vec3d getPathTarget() {
 		return this.target;
 	}
 

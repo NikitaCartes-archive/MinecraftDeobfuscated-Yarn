@@ -173,23 +173,23 @@ public class MobNavigation extends EntityNavigation {
 		}
 	}
 
-	private boolean allVisibleAreSafe(int centerX, int centerY, int centerZ, int xSize, int ySize, int zSize, Vec3d entityPos, double lookVecX, double lookVecZ) {
-		int i = centerX - xSize / 2;
-		int j = centerZ - zSize / 2;
-		if (!this.allVisibleArePassable(i, centerY, j, xSize, ySize, zSize, entityPos, lookVecX, lookVecZ)) {
+	private boolean allVisibleAreSafe(int centerX, int centerY, int centerZ, int sizeX, int sizeY, int sizeZ, Vec3d entityPos, double lookVecX, double lookVecZ) {
+		int i = centerX - sizeX / 2;
+		int j = centerZ - sizeZ / 2;
+		if (!this.allVisibleArePassable(i, centerY, j, sizeX, sizeY, sizeZ, entityPos, lookVecX, lookVecZ)) {
 			return false;
 		} else {
-			for (int k = i; k < i + xSize; k++) {
-				for (int l = j; l < j + zSize; l++) {
+			for (int k = i; k < i + sizeX; k++) {
+				for (int l = j; l < j + sizeZ; l++) {
 					double d = (double)k + 0.5 - entityPos.x;
 					double e = (double)l + 0.5 - entityPos.z;
 					if (!(d * lookVecX + e * lookVecZ < 0.0)) {
-						PathNodeType pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY - 1, l, this.entity, xSize, ySize, zSize, true, true);
+						PathNodeType pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY - 1, l, this.entity, sizeX, sizeY, sizeZ, true, true);
 						if (!this.canWalkOnPath(pathNodeType)) {
 							return false;
 						}
 
-						pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY, l, this.entity, xSize, ySize, zSize, true, true);
+						pathNodeType = this.nodeMaker.getNodeType(this.world, k, centerY, l, this.entity, sizeX, sizeY, sizeZ, true, true);
 						float f = this.entity.getPathfindingPenalty(pathNodeType);
 						if (f < 0.0F || f >= 8.0F) {
 							return false;
@@ -217,8 +217,8 @@ public class MobNavigation extends EntityNavigation {
 	/**
 	 * Checks whether all blocks in the box which are visible (in front of) the mob can be pathed through
 	 */
-	private boolean allVisibleArePassable(int x, int y, int z, int xSize, int ySize, int zSize, Vec3d entityPos, double lookVecX, double lookVecZ) {
-		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(x, y, z), new BlockPos(x + xSize - 1, y + ySize - 1, z + zSize - 1))) {
+	private boolean allVisibleArePassable(int x, int y, int z, int sizeX, int sizeY, int sizeZ, Vec3d entityPos, double lookVecX, double lookVecZ) {
+		for (BlockPos blockPos : BlockPos.iterate(new BlockPos(x, y, z), new BlockPos(x + sizeX - 1, y + sizeY - 1, z + sizeZ - 1))) {
 			double d = (double)blockPos.getX() + 0.5 - entityPos.x;
 			double e = (double)blockPos.getZ() + 0.5 - entityPos.z;
 			if (!(d * lookVecX + e * lookVecZ < 0.0) && !this.world.getBlockState(blockPos).canPathfindThrough(this.world, blockPos, NavigationType.LAND)) {

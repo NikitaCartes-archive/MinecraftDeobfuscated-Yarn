@@ -6,10 +6,10 @@ import java.util.stream.Collectors;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.recipe.RecipeInputProvider;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.util.collection.DefaultedList;
 
 public class SimpleInventory implements Inventory, RecipeInputProvider {
@@ -172,9 +172,9 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 	}
 
 	@Override
-	public void provideRecipeInputs(RecipeFinder finder) {
+	public void provideRecipeInputs(RecipeMatcher finder) {
 		for (ItemStack itemStack : this.stacks) {
-			finder.addItem(itemStack);
+			finder.addInput(itemStack);
 		}
 	}
 
@@ -219,25 +219,25 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		}
 	}
 
-	public void readTags(ListTag tags) {
-		for (int i = 0; i < tags.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(tags.getCompound(i));
+	public void readNbtList(NbtList nbtList) {
+		for (int i = 0; i < nbtList.size(); i++) {
+			ItemStack itemStack = ItemStack.fromNbt(nbtList.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.addStack(itemStack);
 			}
 		}
 	}
 
-	public ListTag getTags() {
-		ListTag listTag = new ListTag();
+	public NbtList toNbtList() {
+		NbtList nbtList = new NbtList();
 
 		for (int i = 0; i < this.size(); i++) {
 			ItemStack itemStack = this.getStack(i);
 			if (!itemStack.isEmpty()) {
-				listTag.add(itemStack.toTag(new CompoundTag()));
+				nbtList.add(itemStack.writeNbt(new NbtCompound()));
 			}
 		}
 
-		return listTag;
+		return nbtList;
 	}
 }

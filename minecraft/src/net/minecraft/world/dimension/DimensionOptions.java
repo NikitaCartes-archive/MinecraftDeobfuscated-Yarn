@@ -28,9 +28,9 @@ public final class DimensionOptions {
 				)
 				.apply(instance, instance.stable(DimensionOptions::new))
 	);
-	public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(Registry.DIMENSION_OPTIONS, new Identifier("overworld"));
-	public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(Registry.DIMENSION_OPTIONS, new Identifier("the_nether"));
-	public static final RegistryKey<DimensionOptions> END = RegistryKey.of(Registry.DIMENSION_OPTIONS, new Identifier("the_end"));
+	public static final RegistryKey<DimensionOptions> OVERWORLD = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("overworld"));
+	public static final RegistryKey<DimensionOptions> NETHER = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("the_nether"));
+	public static final RegistryKey<DimensionOptions> END = RegistryKey.of(Registry.DIMENSION_KEY, new Identifier("the_end"));
 	private static final LinkedHashSet<RegistryKey<DimensionOptions>> BASE_DIMENSIONS = Sets.newLinkedHashSet(ImmutableList.of(OVERWORLD, NETHER, END));
 	private final Supplier<DimensionType> dimensionTypeSupplier;
 	private final ChunkGenerator chunkGenerator;
@@ -53,7 +53,7 @@ public final class DimensionOptions {
 	}
 
 	public static SimpleRegistry<DimensionOptions> method_29569(SimpleRegistry<DimensionOptions> simpleRegistry) {
-		SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<>(Registry.DIMENSION_OPTIONS, Lifecycle.experimental());
+		SimpleRegistry<DimensionOptions> simpleRegistry2 = new SimpleRegistry<>(Registry.DIMENSION_KEY, Lifecycle.experimental());
 
 		for (RegistryKey<DimensionOptions> registryKey : BASE_DIMENSIONS) {
 			DimensionOptions dimensionOptions = simpleRegistry.get(registryKey);
@@ -72,9 +72,9 @@ public final class DimensionOptions {
 		return simpleRegistry2;
 	}
 
-	public static boolean method_29567(long seed, SimpleRegistry<DimensionOptions> simpleRegistry) {
+	public static boolean hasDefaultSettings(long seed, SimpleRegistry<DimensionOptions> options) {
 		List<Entry<RegistryKey<DimensionOptions>, DimensionOptions>> list = Lists.<Entry<RegistryKey<DimensionOptions>, DimensionOptions>>newArrayList(
-			simpleRegistry.getEntries()
+			options.getEntries()
 		);
 		if (list.size() != BASE_DIMENSIONS.size()) {
 			return false;

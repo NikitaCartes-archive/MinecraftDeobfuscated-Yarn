@@ -41,10 +41,10 @@ import net.minecraft.client.gl.Framebuffer;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gl.VertexBuffer;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.options.CloudRenderMode;
-import net.minecraft.client.options.GraphicsMode;
-import net.minecraft.client.options.Option;
-import net.minecraft.client.options.ParticlesMode;
+import net.minecraft.client.option.CloudRenderMode;
+import net.minecraft.client.option.GraphicsMode;
+import net.minecraft.client.option.Option;
+import net.minecraft.client.option.ParticlesMode;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.chunk.ChunkBuilder;
@@ -56,8 +56,6 @@ import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3d;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -72,7 +70,7 @@ import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -94,6 +92,8 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 import net.minecraft.util.profiler.Profiler;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.shape.VoxelShape;
@@ -110,7 +110,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class WorldRenderer implements SynchronousResourceReloadListener, AutoCloseable {
+public class WorldRenderer implements SynchronousResourceReloader, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier MOON_PHASES = new Identifier("textures/environment/moon_phases.png");
 	private static final Identifier SUN = new Identifier("textures/environment/sun.png");
@@ -178,7 +178,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	private CloudRenderMode lastCloudsRenderMode;
 	private ChunkBuilder chunkBuilder;
 	private final VertexFormat vertexFormat = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
-	private int renderDistance = -1;
+	private int viewDistance = -1;
 	private int regularEntityCount;
 	private int blockEntityCount;
 	private boolean shouldCaptureFrustum;
@@ -435,7 +435,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	@Override
-	public void apply(ResourceManager manager) {
+	public void reload(ResourceManager manager) {
 		this.textureManager.bindTexture(FORCEFIELD);
 		RenderSystem.texParameter(3553, 10242, 10497);
 		RenderSystem.texParameter(3553, 10243, 10497);
@@ -649,16 +649,16 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		}
 	}
 
-	public void setWorld(@Nullable ClientWorld clientWorld) {
+	public void setWorld(@Nullable ClientWorld world) {
 		this.lastCameraChunkUpdateX = Double.MIN_VALUE;
 		this.lastCameraChunkUpdateY = Double.MIN_VALUE;
 		this.lastCameraChunkUpdateZ = Double.MIN_VALUE;
 		this.cameraChunkX = Integer.MIN_VALUE;
 		this.cameraChunkY = Integer.MIN_VALUE;
 		this.cameraChunkZ = Integer.MIN_VALUE;
-		this.entityRenderDispatcher.setWorld(clientWorld);
-		this.world = clientWorld;
-		if (clientWorld != null) {
+		this.entityRenderDispatcher.setWorld(world);
+		this.world = world;
+		if (world != null) {
 			this.reload();
 		} else {
 			this.chunksToRebuild.clear();
@@ -695,7 +695,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			this.needsTerrainUpdate = true;
 			this.cloudsDirty = true;
 			RenderLayers.setFancyGraphicsOrBetter(MinecraftClient.isFancyGraphicsOrBetter());
-			this.renderDistance = this.client.options.viewDistance;
+			this.viewDistance = this.client.options.viewDistance;
 			if (this.chunks != null) {
 				this.chunks.clear();
 			}
@@ -739,7 +739,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			j,
 			i,
 			this.client.chunkCullingEnabled ? "(s) " : "",
-			this.renderDistance,
+			this.viewDistance,
 			this.chunkBuilder == null ? "null" : this.chunkBuilder.getDebugString()
 		);
 	}
@@ -762,7 +762,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 
 	private void setupTerrain(Camera camera, Frustum frustum, boolean hasForcedFrustum, int frame, boolean spectator) {
 		Vec3d vec3d = camera.getPos();
-		if (this.client.options.viewDistance != this.renderDistance) {
+		if (this.client.options.viewDistance != this.viewDistance) {
 			this.reload();
 		}
 
@@ -826,8 +826,8 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				int l = MathHelper.floor(vec3d.z / 16.0) * 16;
 				List<WorldRenderer.ChunkInfo> list = Lists.<WorldRenderer.ChunkInfo>newArrayList();
 
-				for (int m = -this.renderDistance; m <= this.renderDistance; m++) {
-					for (int n = -this.renderDistance; n <= this.renderDistance; n++) {
+				for (int m = -this.viewDistance; m <= this.viewDistance; m++) {
+					for (int n = -this.viewDistance; n <= this.viewDistance; n++) {
 						ChunkBuilder.BuiltChunk builtChunk2 = this.chunks.getRenderedChunk(new BlockPos(k + (m << 4) + 8, j, l + (n << 4) + 8));
 						if (builtChunk2 != null && frustum.isVisible(builtChunk2.boundingBox)) {
 							builtChunk2.setRebuildFrame(frame);
@@ -894,12 +894,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	@Nullable
 	private ChunkBuilder.BuiltChunk getAdjacentChunk(BlockPos pos, ChunkBuilder.BuiltChunk chunk, Direction direction) {
 		BlockPos blockPos = chunk.getNeighborPosition(direction);
-		if (MathHelper.abs(pos.getX() - blockPos.getX()) > this.renderDistance * 16) {
+		if (MathHelper.abs(pos.getX() - blockPos.getX()) > this.viewDistance * 16) {
 			return null;
 		} else if (blockPos.getY() < 0 || blockPos.getY() >= 256) {
 			return null;
 		} else {
-			return MathHelper.abs(pos.getZ() - blockPos.getZ()) > this.renderDistance * 16 ? null : this.chunks.getRenderedChunk(blockPos);
+			return MathHelper.abs(pos.getZ() - blockPos.getZ()) > this.viewDistance * 16 ? null : this.chunks.getRenderedChunk(blockPos);
 		}
 	}
 
@@ -1002,7 +1002,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		if (this.world.getSkyProperties().isDarkened()) {
 			DiffuseLighting.enableForLevel(matrices.peek().getModel());
 		} else {
-			DiffuseLighting.method_27869(matrices.peek().getModel());
+			DiffuseLighting.disableForLevel(matrices.peek().getModel());
 		}
 
 		profiler.swap("entities");
@@ -1087,7 +1087,7 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 							);
 							vertexConsumerProvider2 = renderLayer -> {
 								VertexConsumer vertexConsumer2x = immediate.getBuffer(renderLayer);
-								return renderLayer.hasCrumbling() ? VertexConsumers.dual(vertexConsumer, vertexConsumer2x) : vertexConsumer2x;
+								return renderLayer.hasCrumbling() ? VertexConsumers.union(vertexConsumer, vertexConsumer2x) : vertexConsumer2x;
 							};
 						}
 					}
@@ -1533,23 +1533,23 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 		for (int i = 0; i < 6; i++) {
 			matrices.push();
 			if (i == 1) {
-				matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 			}
 
 			if (i == 2) {
-				matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F));
 			}
 
 			if (i == 3) {
-				matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
 			}
 
 			if (i == 4) {
-				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 			}
 
 			if (i == 5) {
-				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-90.0F));
 			}
 
 			Matrix4f matrix4f = matrices.peek().getModel();
@@ -1596,10 +1596,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 				RenderSystem.disableTexture();
 				RenderSystem.shadeModel(7425);
 				matrices.push();
-				matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+				matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 				float i = MathHelper.sin(this.world.getSkyAngleRadians(tickDelta)) < 0.0F ? 180.0F : 0.0F;
-				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(i));
-				matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(i));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 				float j = fs[0];
 				float k = fs[1];
 				float l = fs[2];
@@ -1626,8 +1626,8 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 			matrices.push();
 			float i = 1.0F - this.world.getRainGradient(tickDelta);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, i);
-			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
-			matrices.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(tickDelta) * 360.0F));
+			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(this.world.getSkyAngle(tickDelta) * 360.0F));
 			Matrix4f matrix4f2 = matrices.peek().getModel();
 			float k = 30.0F;
 			this.textureManager.bindTexture(SUN);
@@ -2132,10 +2132,10 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	private void drawBlockOutline(
-		MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos blockPos, BlockState blockState
+		MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos blockPos, BlockState blockState
 	) {
 		drawShapeOutline(
-			matrixStack,
+			matrices,
 			vertexConsumer,
 			blockState.getOutlineShape(this.world, blockPos, ShapeContext.of(entity)),
 			(double)blockPos.getX() - d,
@@ -2166,9 +2166,9 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 	}
 
 	private static void drawShapeOutline(
-		MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j
+		MatrixStack matrices, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j
 	) {
-		Matrix4f matrix4f = matrixStack.peek().getModel();
+		Matrix4f matrix4f = matrices.peek().getModel();
 		voxelShape.forEachEdge((k, l, m, n, o, p) -> {
 			vertexConsumer.vertex(matrix4f, (float)(k + d), (float)(l + e), (float)(m + f)).color(g, h, i, j).next();
 			vertexConsumer.vertex(matrix4f, (float)(n + d), (float)(o + e), (float)(p + f)).color(g, h, i, j).next();

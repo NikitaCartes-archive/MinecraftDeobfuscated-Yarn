@@ -48,9 +48,9 @@ public class PointOfInterestSet {
 		this(updateListener, true, ImmutableList.of());
 	}
 
-	private PointOfInterestSet(Runnable updateListener, boolean bl, List<PointOfInterest> list) {
+	private PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> list) {
 		this.updateListener = updateListener;
-		this.valid = bl;
+		this.valid = valid;
 		list.forEach(this::add);
 	}
 

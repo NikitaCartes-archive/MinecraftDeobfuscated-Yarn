@@ -87,7 +87,7 @@ public class SignEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
+	public boolean charTyped(char chr, int modifiers) {
 		this.selectionManager.insert(chr);
 		return true;
 	}
@@ -101,11 +101,11 @@ public class SignEditScreen extends Screen {
 	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
 		if (keyCode == 265) {
 			this.currentRow = this.currentRow - 1 & 3;
-			this.selectionManager.moveCaretToEnd();
+			this.selectionManager.putCursorAtEnd();
 			return true;
 		} else if (keyCode == 264 || keyCode == 257 || keyCode == 335) {
 			this.currentRow = this.currentRow + 1 & 3;
-			this.selectionManager.moveCaretToEnd();
+			this.selectionManager.putCursorAtEnd();
 			return true;
 		} else {
 			return this.selectionManager.handleSpecialKey(keyCode) ? true : super.keyPressed(keyCode, scanCode, modifiers);

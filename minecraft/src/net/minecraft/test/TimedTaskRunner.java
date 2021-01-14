@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class TimedTaskRunner {
-	private final GameTest test;
+	private final GameTestState test;
 	private final List<TimedTask> tasks;
 	private long tick;
 
@@ -34,7 +34,7 @@ public class TimedTaskRunner {
 			long m = this.tick;
 			this.tick = tick;
 			if (timedTask.duration != null && timedTask.duration != l) {
-				this.test.fail(new TimeMismatchException("Succeeded in invalid tick: expected " + (m + timedTask.duration) + ", but current tick is " + tick));
+				this.test.fail(new GameTestException("Succeeded in invalid tick: expected " + (m + timedTask.duration) + ", but current tick is " + tick));
 				break;
 			}
 		}

@@ -7,7 +7,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CommandBlock;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -67,19 +67,19 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		this.commandExecutor.serialize(tag);
-		tag.putBoolean("powered", this.isPowered());
-		tag.putBoolean("conditionMet", this.isConditionMet());
-		tag.putBoolean("auto", this.isAuto());
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		this.commandExecutor.writeNbt(nbt);
+		nbt.putBoolean("powered", this.isPowered());
+		nbt.putBoolean("conditionMet", this.isConditionMet());
+		nbt.putBoolean("auto", this.isAuto());
+		return nbt;
 	}
 
 	@Override
-	public void fromTag(BlockState state, CompoundTag tag) {
+	public void fromTag(BlockState state, NbtCompound tag) {
 		super.fromTag(state, tag);
-		this.commandExecutor.deserialize(tag);
+		this.commandExecutor.readNbt(tag);
 		this.powered = tag.getBoolean("powered");
 		this.conditionMet = tag.getBoolean("conditionMet");
 		this.setAuto(tag.getBoolean("auto"));
@@ -90,8 +90,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		if (this.needsUpdatePacket()) {
 			this.setNeedsUpdatePacket(false);
-			CompoundTag compoundTag = this.toTag(new CompoundTag());
-			return new BlockEntityUpdateS2CPacket(this.pos, 2, compoundTag);
+			NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
+			return new BlockEntityUpdateS2CPacket(this.pos, 2, nbtCompound);
 		} else {
 			return null;
 		}

@@ -19,7 +19,7 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.EightWayDirection;
 import net.minecraft.util.math.BlockPos;
@@ -42,15 +42,15 @@ public class UpgradeData {
 	private UpgradeData() {
 	}
 
-	public UpgradeData(CompoundTag tag) {
+	public UpgradeData(NbtCompound tag) {
 		this();
 		if (tag.contains("Indices", 10)) {
-			CompoundTag compoundTag = tag.getCompound("Indices");
+			NbtCompound nbtCompound = tag.getCompound("Indices");
 
 			for (int i = 0; i < this.centerIndicesToUpgrade.length; i++) {
 				String string = String.valueOf(i);
-				if (compoundTag.contains(string, 11)) {
-					this.centerIndicesToUpgrade[i] = compoundTag.getIntArray(string);
+				if (nbtCompound.contains(string, 11)) {
+					this.centerIndicesToUpgrade[i] = nbtCompound.getIntArray(string);
 				}
 			}
 		}
@@ -166,19 +166,19 @@ public class UpgradeData {
 		return this.sidesToUpgrade.isEmpty();
 	}
 
-	public CompoundTag toTag() {
-		CompoundTag compoundTag = new CompoundTag();
-		CompoundTag compoundTag2 = new CompoundTag();
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		NbtCompound nbtCompound2 = new NbtCompound();
 
 		for (int i = 0; i < this.centerIndicesToUpgrade.length; i++) {
 			String string = String.valueOf(i);
 			if (this.centerIndicesToUpgrade[i] != null && this.centerIndicesToUpgrade[i].length != 0) {
-				compoundTag2.putIntArray(string, this.centerIndicesToUpgrade[i]);
+				nbtCompound2.putIntArray(string, this.centerIndicesToUpgrade[i]);
 			}
 		}
 
-		if (!compoundTag2.isEmpty()) {
-			compoundTag.put("Indices", compoundTag2);
+		if (!nbtCompound2.isEmpty()) {
+			nbtCompound.put("Indices", nbtCompound2);
 		}
 
 		int ix = 0;
@@ -187,8 +187,8 @@ public class UpgradeData {
 			ix |= 1 << eightWayDirection.ordinal();
 		}
 
-		compoundTag.putByte("Sides", (byte)ix);
-		return compoundTag;
+		nbtCompound.putByte("Sides", (byte)ix);
+		return nbtCompound;
 	}
 
 	static enum BuiltinLogic implements UpgradeData.Logic {

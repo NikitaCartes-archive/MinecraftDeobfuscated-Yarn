@@ -33,7 +33,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -137,15 +137,15 @@ public class ClientWorld extends World {
 		this.clientWorldProperties.setTime(l);
 	}
 
-	public void setTimeOfDay(long l) {
-		if (l < 0L) {
-			l = -l;
+	public void setTimeOfDay(long timeOfDay) {
+		if (timeOfDay < 0L) {
+			timeOfDay = -timeOfDay;
 			this.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
 		} else {
 			this.getGameRules().get(GameRules.DO_DAYLIGHT_CYCLE).set(true, null);
 		}
 
-		this.clientWorldProperties.setTimeOfDay(l);
+		this.clientWorldProperties.setTimeOfDay(timeOfDay);
 	}
 
 	public Iterable<Entity> getEntities() {
@@ -334,7 +334,7 @@ public class ClientWorld extends World {
 		this.netHandler.getConnection().disconnect(new TranslatableText("multiplayer.status.quitting"));
 	}
 
-	public void doRandomBlockDisplayTicks(int xCenter, int yCenter, int zCenter) {
+	public void doRandomBlockDisplayTicks(int centerX, int centerY, int centerZ) {
 		int i = 32;
 		Random random = new Random();
 		boolean bl = false;
@@ -350,8 +350,8 @@ public class ClientWorld extends World {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int j = 0; j < 667; j++) {
-			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 16, random, bl, mutable);
-			this.randomBlockDisplayTick(xCenter, yCenter, zCenter, 32, random, bl, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 16, random, bl, mutable);
+			this.randomBlockDisplayTick(centerX, centerY, centerZ, 32, random, bl, mutable);
 		}
 	}
 
@@ -480,10 +480,10 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean bl) {
+	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
 		double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
 		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, volume, pitch, x, y, z);
-		if (bl && d > 100.0) {
+		if (useDistance && d > 100.0) {
 			double e = Math.sqrt(d) / 40.0;
 			this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));
 		} else {
@@ -492,10 +492,10 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable CompoundTag tag) {
+	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound nbt) {
 		this.client
 			.particleManager
-			.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, tag));
+			.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, nbt));
 	}
 
 	@Override

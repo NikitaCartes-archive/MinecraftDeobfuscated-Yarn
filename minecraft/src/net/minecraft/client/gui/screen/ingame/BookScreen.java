@@ -18,8 +18,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
@@ -246,12 +246,12 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	public static List<String> readPages(CompoundTag tag) {
-		ListTag listTag = tag.getList("pages", 8).copy();
+	public static List<String> readPages(NbtCompound nbt) {
+		NbtList nbtList = nbt.getList("pages", 8).copy();
 		Builder<String> builder = ImmutableList.builder();
 
-		for (int i = 0; i < listTag.size(); i++) {
-			builder.add(listTag.getString(i));
+		for (int i = 0; i < nbtList.size(); i++) {
+			builder.add(nbtList.getString(i));
 		}
 
 		return builder.build();
@@ -286,8 +286,8 @@ public class BookScreen extends Screen {
 		}
 
 		private static List<String> getPages(ItemStack stack) {
-			CompoundTag compoundTag = stack.getTag();
-			return (List<String>)(compoundTag != null ? BookScreen.readPages(compoundTag) : ImmutableList.of());
+			NbtCompound nbtCompound = stack.getTag();
+			return (List<String>)(nbtCompound != null ? BookScreen.readPages(nbtCompound) : ImmutableList.of());
 		}
 
 		@Override
@@ -310,9 +310,9 @@ public class BookScreen extends Screen {
 		}
 
 		private static List<String> getPages(ItemStack stack) {
-			CompoundTag compoundTag = stack.getTag();
-			return (List<String>)(compoundTag != null && WrittenBookItem.isValid(compoundTag)
-				? BookScreen.readPages(compoundTag)
+			NbtCompound nbtCompound = stack.getTag();
+			return (List<String>)(nbtCompound != null && WrittenBookItem.isValid(nbtCompound)
+				? BookScreen.readPages(nbtCompound)
 				: ImmutableList.of(Text.Serializer.toJson(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED))));
 		}
 

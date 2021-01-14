@@ -53,9 +53,9 @@ import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.SpawnEggItem;
 import net.minecraft.item.SwordItem;
 import net.minecraft.loot.context.LootContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.DebugInfoSender;
@@ -103,7 +103,7 @@ public abstract class MobEntity extends LivingEntity {
 	private Entity holdingEntity;
 	private int holdingEntityId;
 	@Nullable
-	private CompoundTag leashTag;
+	private NbtCompound leashNbt;
 	private BlockPos positionTarget = BlockPos.ORIGIN;
 	private float positionTargetRange = -1.0F;
 
@@ -260,7 +260,7 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	protected int getCurrentExperience(PlayerEntity player) {
+	protected int getXpToDrop(PlayerEntity player) {
 		if (this.experiencePoints > 0) {
 			int i = this.experiencePoints;
 
@@ -337,129 +337,129 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("CanPickUpLoot", this.canPickUpLoot());
-		tag.putBoolean("PersistenceRequired", this.persistent);
-		ListTag listTag = new ListTag();
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("CanPickUpLoot", this.canPickUpLoot());
+		nbt.putBoolean("PersistenceRequired", this.persistent);
+		NbtList nbtList = new NbtList();
 
 		for (ItemStack itemStack : this.armorItems) {
-			CompoundTag compoundTag = new CompoundTag();
+			NbtCompound nbtCompound = new NbtCompound();
 			if (!itemStack.isEmpty()) {
-				itemStack.toTag(compoundTag);
+				itemStack.writeNbt(nbtCompound);
 			}
 
-			listTag.add(compoundTag);
+			nbtList.add(nbtCompound);
 		}
 
-		tag.put("ArmorItems", listTag);
-		ListTag listTag2 = new ListTag();
+		nbt.put("ArmorItems", nbtList);
+		NbtList nbtList2 = new NbtList();
 
 		for (ItemStack itemStack2 : this.handItems) {
-			CompoundTag compoundTag2 = new CompoundTag();
+			NbtCompound nbtCompound2 = new NbtCompound();
 			if (!itemStack2.isEmpty()) {
-				itemStack2.toTag(compoundTag2);
+				itemStack2.writeNbt(nbtCompound2);
 			}
 
-			listTag2.add(compoundTag2);
+			nbtList2.add(nbtCompound2);
 		}
 
-		tag.put("HandItems", listTag2);
-		ListTag listTag3 = new ListTag();
+		nbt.put("HandItems", nbtList2);
+		NbtList nbtList3 = new NbtList();
 
 		for (float f : this.armorDropChances) {
-			listTag3.add(FloatTag.of(f));
+			nbtList3.add(NbtFloat.of(f));
 		}
 
-		tag.put("ArmorDropChances", listTag3);
-		ListTag listTag4 = new ListTag();
+		nbt.put("ArmorDropChances", nbtList3);
+		NbtList nbtList4 = new NbtList();
 
 		for (float g : this.handDropChances) {
-			listTag4.add(FloatTag.of(g));
+			nbtList4.add(NbtFloat.of(g));
 		}
 
-		tag.put("HandDropChances", listTag4);
+		nbt.put("HandDropChances", nbtList4);
 		if (this.holdingEntity != null) {
-			CompoundTag compoundTag2 = new CompoundTag();
+			NbtCompound nbtCompound2 = new NbtCompound();
 			if (this.holdingEntity instanceof LivingEntity) {
 				UUID uUID = this.holdingEntity.getUuid();
-				compoundTag2.putUuid("UUID", uUID);
+				nbtCompound2.putUuid("UUID", uUID);
 			} else if (this.holdingEntity instanceof AbstractDecorationEntity) {
 				BlockPos blockPos = ((AbstractDecorationEntity)this.holdingEntity).getDecorationBlockPos();
-				compoundTag2.putInt("X", blockPos.getX());
-				compoundTag2.putInt("Y", blockPos.getY());
-				compoundTag2.putInt("Z", blockPos.getZ());
+				nbtCompound2.putInt("X", blockPos.getX());
+				nbtCompound2.putInt("Y", blockPos.getY());
+				nbtCompound2.putInt("Z", blockPos.getZ());
 			}
 
-			tag.put("Leash", compoundTag2);
-		} else if (this.leashTag != null) {
-			tag.put("Leash", this.leashTag.copy());
+			nbt.put("Leash", nbtCompound2);
+		} else if (this.leashNbt != null) {
+			nbt.put("Leash", this.leashNbt.copy());
 		}
 
-		tag.putBoolean("LeftHanded", this.isLeftHanded());
+		nbt.putBoolean("LeftHanded", this.isLeftHanded());
 		if (this.lootTable != null) {
-			tag.putString("DeathLootTable", this.lootTable.toString());
+			nbt.putString("DeathLootTable", this.lootTable.toString());
 			if (this.lootTableSeed != 0L) {
-				tag.putLong("DeathLootTableSeed", this.lootTableSeed);
+				nbt.putLong("DeathLootTableSeed", this.lootTableSeed);
 			}
 		}
 
 		if (this.isAiDisabled()) {
-			tag.putBoolean("NoAI", this.isAiDisabled());
+			nbt.putBoolean("NoAI", this.isAiDisabled());
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		if (tag.contains("CanPickUpLoot", 1)) {
-			this.setCanPickUpLoot(tag.getBoolean("CanPickUpLoot"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		if (nbt.contains("CanPickUpLoot", 1)) {
+			this.setCanPickUpLoot(nbt.getBoolean("CanPickUpLoot"));
 		}
 
-		this.persistent = tag.getBoolean("PersistenceRequired");
-		if (tag.contains("ArmorItems", 9)) {
-			ListTag listTag = tag.getList("ArmorItems", 10);
+		this.persistent = nbt.getBoolean("PersistenceRequired");
+		if (nbt.contains("ArmorItems", 9)) {
+			NbtList nbtList = nbt.getList("ArmorItems", 10);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+				this.armorItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
-		if (tag.contains("HandItems", 9)) {
-			ListTag listTag = tag.getList("HandItems", 10);
+		if (nbt.contains("HandItems", 9)) {
+			NbtList nbtList = nbt.getList("HandItems", 10);
 
 			for (int i = 0; i < this.handItems.size(); i++) {
-				this.handItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+				this.handItems.set(i, ItemStack.fromNbt(nbtList.getCompound(i)));
 			}
 		}
 
-		if (tag.contains("ArmorDropChances", 9)) {
-			ListTag listTag = tag.getList("ArmorDropChances", 5);
+		if (nbt.contains("ArmorDropChances", 9)) {
+			NbtList nbtList = nbt.getList("ArmorDropChances", 5);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				this.armorDropChances[i] = listTag.getFloat(i);
+			for (int i = 0; i < nbtList.size(); i++) {
+				this.armorDropChances[i] = nbtList.getFloat(i);
 			}
 		}
 
-		if (tag.contains("HandDropChances", 9)) {
-			ListTag listTag = tag.getList("HandDropChances", 5);
+		if (nbt.contains("HandDropChances", 9)) {
+			NbtList nbtList = nbt.getList("HandDropChances", 5);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				this.handDropChances[i] = listTag.getFloat(i);
+			for (int i = 0; i < nbtList.size(); i++) {
+				this.handDropChances[i] = nbtList.getFloat(i);
 			}
 		}
 
-		if (tag.contains("Leash", 10)) {
-			this.leashTag = tag.getCompound("Leash");
+		if (nbt.contains("Leash", 10)) {
+			this.leashNbt = nbt.getCompound("Leash");
 		}
 
-		this.setLeftHanded(tag.getBoolean("LeftHanded"));
-		if (tag.contains("DeathLootTable", 8)) {
-			this.lootTable = new Identifier(tag.getString("DeathLootTable"));
-			this.lootTableSeed = tag.getLong("DeathLootTableSeed");
+		this.setLeftHanded(nbt.getBoolean("LeftHanded"));
+		if (nbt.contains("DeathLootTable", 8)) {
+			this.lootTable = new Identifier(nbt.getString("DeathLootTable"));
+			this.lootTableSeed = nbt.getLong("DeathLootTableSeed");
 		}
 
-		this.setAiDisabled(tag.getBoolean("NoAI"));
+		this.setAiDisabled(nbt.getBoolean("NoAI"));
 	}
 
 	@Override
@@ -993,7 +993,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	@Nullable
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE)
 			.addPersistentModifier(new EntityAttributeModifier("Random spawn bonus", this.random.nextGaussian() * 0.05, EntityAttributeModifier.Operation.MULTIPLY_BASE));
@@ -1168,8 +1168,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	protected void updateLeash() {
-		if (this.leashTag != null) {
-			this.deserializeLeashTag();
+		if (this.leashNbt != null) {
+			this.readLeashNbt();
 		}
 
 		if (this.holdingEntity != null) {
@@ -1187,7 +1187,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			this.holdingEntity = null;
-			this.leashTag = null;
+			this.leashNbt = null;
 			if (!this.world.isClient && dropItem) {
 				this.dropItem(Items.LEAD);
 			}
@@ -1217,7 +1217,7 @@ public abstract class MobEntity extends LivingEntity {
 
 	public void attachLeash(Entity entity, boolean sendPacket) {
 		this.holdingEntity = entity;
-		this.leashTag = null;
+		this.leashNbt = null;
 		this.teleporting = true;
 		if (!(this.holdingEntity instanceof PlayerEntity)) {
 			this.holdingEntity.teleporting = true;
@@ -1248,24 +1248,24 @@ public abstract class MobEntity extends LivingEntity {
 		return bl;
 	}
 
-	private void deserializeLeashTag() {
-		if (this.leashTag != null && this.world instanceof ServerWorld) {
-			if (this.leashTag.containsUuid("UUID")) {
-				UUID uUID = this.leashTag.getUuid("UUID");
+	private void readLeashNbt() {
+		if (this.leashNbt != null && this.world instanceof ServerWorld) {
+			if (this.leashNbt.containsUuid("UUID")) {
+				UUID uUID = this.leashNbt.getUuid("UUID");
 				Entity entity = ((ServerWorld)this.world).getEntity(uUID);
 				if (entity != null) {
 					this.attachLeash(entity, true);
 					return;
 				}
-			} else if (this.leashTag.contains("X", 99) && this.leashTag.contains("Y", 99) && this.leashTag.contains("Z", 99)) {
-				BlockPos blockPos = new BlockPos(this.leashTag.getInt("X"), this.leashTag.getInt("Y"), this.leashTag.getInt("Z"));
+			} else if (this.leashNbt.contains("X", 99) && this.leashNbt.contains("Y", 99) && this.leashNbt.contains("Z", 99)) {
+				BlockPos blockPos = new BlockPos(this.leashNbt.getInt("X"), this.leashNbt.getInt("Y"), this.leashNbt.getInt("Z"));
 				this.attachLeash(LeashKnotEntity.getOrCreate(this.world, blockPos), true);
 				return;
 			}
 
 			if (this.age > 100) {
 				this.dropItem(Items.LEAD);
-				this.leashTag = null;
+				this.leashNbt = null;
 			}
 		}
 	}

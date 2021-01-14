@@ -13,6 +13,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+/**
+ * A collection allowing getting all elements of a specific type. Backed
+ * by {@link java.util.ArrayList}s.
+ * 
+ * <p>This implementation is not efficient for frequent modifications. You
+ * shouldn't use this if you don't call {@link #getAllOfType(Class)}.
+ * 
+ * @see #getAllOfType(Class)
+ * @param <T> the {@link #elementType common element type}
+ */
 public class TypeFilterableList<T> extends AbstractCollection<T> {
 	private final Map<Class<?>, List<T>> elementsByType = Maps.<Class<?>, List<T>>newHashMap();
 	private final Class<T> elementType;
@@ -48,10 +58,29 @@ public class TypeFilterableList<T> extends AbstractCollection<T> {
 		return bl;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * @throws IllegalArgumentException if {@code o} is not an instance of
+	 * {@link #elementType}
+	 */
 	public boolean contains(Object o) {
 		return this.getAllOfType(o.getClass()).contains(o);
 	}
 
+	/**
+	 * Returns all elements in this collection that are instances of {@code type}.
+	 * The result is unmodifiable.
+	 * 
+	 * <p>The {@code type}, or {@code S}, must extend the class' type parameter {@code T}.
+	 * 
+	 * @param <S> the specialized type, effectively {@code S extends T}
+	 * @throws IllegalArgumentException when {@code type} does not extend
+	 * {@link #elementType}
+	 * @return this collection's elements that are instances of {@code type}
+	 * 
+	 * @param type the specialized type, must extend {@link #elementType}
+	 */
 	public <S> Collection<S> getAllOfType(Class<S> type) {
 		if (!this.elementType.isAssignableFrom(type)) {
 			throw new IllegalArgumentException("Don't know how to search for " + type);

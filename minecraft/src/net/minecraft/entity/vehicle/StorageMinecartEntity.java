@@ -15,7 +15,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -137,27 +137,27 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	protected void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		if (this.lootTableId != null) {
-			tag.putString("LootTable", this.lootTableId.toString());
+			nbt.putString("LootTable", this.lootTableId.toString());
 			if (this.lootSeed != 0L) {
-				tag.putLong("LootTableSeed", this.lootSeed);
+				nbt.putLong("LootTableSeed", this.lootSeed);
 			}
 		} else {
-			Inventories.toTag(tag, this.inventory);
+			Inventories.writeNbt(nbt, this.inventory);
 		}
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	protected void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (tag.contains("LootTable", 8)) {
-			this.lootTableId = new Identifier(tag.getString("LootTable"));
-			this.lootSeed = tag.getLong("LootTableSeed");
+		if (nbt.contains("LootTable", 8)) {
+			this.lootTableId = new Identifier(nbt.getString("LootTable"));
+			this.lootSeed = nbt.getLong("LootTableSeed");
 		} else {
-			Inventories.fromTag(tag, this.inventory);
+			Inventories.readNbt(nbt, this.inventory);
 		}
 	}
 

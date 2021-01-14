@@ -62,6 +62,8 @@ public class ChunkSectionPos extends Vec3i {
 
 	/**
 	 * Converts a world coordinate to the corresponding chunk-section coordinate.
+	 * 
+	 * @implNote This implementation returns {@code coord / 16}.
 	 */
 	public static int getSectionCoord(int coord) {
 		return coord >> 4;

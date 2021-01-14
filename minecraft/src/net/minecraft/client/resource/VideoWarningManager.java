@@ -20,14 +20,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class VideoWarningManager extends SinglePreparationResourceReloadListener<VideoWarningManager.WarningPatternLoader> {
+public class VideoWarningManager extends SinglePreparationResourceReloader<VideoWarningManager.WarningPatternLoader> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Identifier GPU_WARNLIST_ID = new Identifier("gpu_warnlist.json");
 	private ImmutableMap<String, String> warnings = ImmutableMap.of();

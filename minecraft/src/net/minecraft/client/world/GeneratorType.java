@@ -127,38 +127,38 @@ public abstract class GeneratorType {
 								generatorOptions.shouldGenerateStructures(),
 								generatorOptions.hasBonusChest(),
 								GeneratorOptions.method_28608(
-									screen.moreOptionsDialog.method_29700().get(Registry.DIMENSION_TYPE_KEY), generatorOptions.getDimensions(), new FlatChunkGenerator(config)
+									screen.moreOptionsDialog.getRegistryManager().get(Registry.DIMENSION_TYPE_KEY), generatorOptions.getDimensions(), new FlatChunkGenerator(config)
 								)
 							)
 						),
 				chunkGenerator instanceof FlatChunkGenerator
 					? ((FlatChunkGenerator)chunkGenerator).getConfig()
-					: FlatChunkGeneratorConfig.getDefaultConfig(screen.moreOptionsDialog.method_29700().get(Registry.BIOME_KEY))
+					: FlatChunkGeneratorConfig.getDefaultConfig(screen.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY))
 			);
 		},
 		Optional.of(SINGLE_BIOME_SURFACE),
 		(screen, generatorOptions) -> new CustomizeBuffetLevelScreen(
 				screen,
-				screen.moreOptionsDialog.method_29700(),
+				screen.moreOptionsDialog.getRegistryManager(),
 				biome -> screen.moreOptionsDialog
-						.setGeneratorOptions(createFixedBiomeOptions(screen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_SURFACE, biome)),
-				getFirstBiome(screen.moreOptionsDialog.method_29700(), generatorOptions)
+						.setGeneratorOptions(createFixedBiomeOptions(screen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_SURFACE, biome)),
+				getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)
 			),
 		Optional.of(SINGLE_BIOME_CAVES),
 		(screen, generatorOptions) -> new CustomizeBuffetLevelScreen(
 				screen,
-				screen.moreOptionsDialog.method_29700(),
+				screen.moreOptionsDialog.getRegistryManager(),
 				biome -> screen.moreOptionsDialog
-						.setGeneratorOptions(createFixedBiomeOptions(screen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_CAVES, biome)),
-				getFirstBiome(screen.moreOptionsDialog.method_29700(), generatorOptions)
+						.setGeneratorOptions(createFixedBiomeOptions(screen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_CAVES, biome)),
+				getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)
 			),
 		Optional.of(SINGLE_BIOME_FLOATING_ISLANDS),
 		(screen, generatorOptions) -> new CustomizeBuffetLevelScreen(
 				screen,
-				screen.moreOptionsDialog.method_29700(),
+				screen.moreOptionsDialog.getRegistryManager(),
 				biome -> screen.moreOptionsDialog
-						.setGeneratorOptions(createFixedBiomeOptions(screen.moreOptionsDialog.method_29700(), generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)),
-				getFirstBiome(screen.moreOptionsDialog.method_29700(), generatorOptions)
+						.setGeneratorOptions(createFixedBiomeOptions(screen.moreOptionsDialog.getRegistryManager(), generatorOptions, SINGLE_BIOME_FLOATING_ISLANDS, biome)),
+				getFirstBiome(screen.moreOptionsDialog.getRegistryManager(), generatorOptions)
 			)
 	);
 	private final Text translationKey;

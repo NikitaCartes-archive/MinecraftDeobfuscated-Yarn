@@ -1,6 +1,6 @@
 package net.minecraft.world.timer;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.function.CommandFunction;
 import net.minecraft.server.function.CommandFunctionManager;
@@ -28,12 +28,12 @@ public class FunctionTagTimerCallback implements TimerCallback<MinecraftServer> 
 			super(new Identifier("function_tag"), FunctionTagTimerCallback.class);
 		}
 
-		public void serialize(CompoundTag compoundTag, FunctionTagTimerCallback functionTagTimerCallback) {
-			compoundTag.putString("Name", functionTagTimerCallback.name.toString());
+		public void serialize(NbtCompound nbtCompound, FunctionTagTimerCallback functionTagTimerCallback) {
+			nbtCompound.putString("Name", functionTagTimerCallback.name.toString());
 		}
 
-		public FunctionTagTimerCallback deserialize(CompoundTag compoundTag) {
-			Identifier identifier = new Identifier(compoundTag.getString("Name"));
+		public FunctionTagTimerCallback deserialize(NbtCompound nbtCompound) {
+			Identifier identifier = new Identifier(nbtCompound.getString("Name"));
 			return new FunctionTagTimerCallback(identifier);
 		}
 	}

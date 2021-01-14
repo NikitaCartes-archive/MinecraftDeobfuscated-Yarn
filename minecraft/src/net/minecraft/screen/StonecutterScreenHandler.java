@@ -2,7 +2,6 @@ package net.minecraft.screen;
 
 import com.google.common.collect.Lists;
 import java.util.List;
-import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -18,7 +17,6 @@ import net.minecraft.recipe.StonecuttingRecipe;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class StonecutterScreenHandler extends ScreenHandler {
@@ -66,13 +64,13 @@ public class StonecutterScreenHandler extends ScreenHandler {
 					StonecutterScreenHandler.this.populateResult();
 				}
 
-				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				context.run((world, blockPos) -> {
 					long l = world.getTime();
 					if (StonecutterScreenHandler.this.lastTakeTime != l) {
 						world.playSound(null, blockPos, SoundEvents.UI_STONECUTTER_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						StonecutterScreenHandler.this.lastTakeTime = l;
 					}
-				}));
+				});
 				return super.onTakeItem(player, stack);
 			}
 		});
@@ -188,7 +186,7 @@ public class StonecutterScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index == 0) {
 				if (!this.insertItem(itemStack2, 2, 38, false)) {
 					return ItemStack.EMPTY;
@@ -225,6 +223,6 @@ public class StonecutterScreenHandler extends ScreenHandler {
 	public void close(PlayerEntity player) {
 		super.close(player);
 		this.output.removeStack(1);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.input)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, player.world, this.input));
 	}
 }

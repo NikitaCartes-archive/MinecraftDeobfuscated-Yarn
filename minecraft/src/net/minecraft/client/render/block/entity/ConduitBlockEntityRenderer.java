@@ -11,10 +11,10 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlockEntity> {
@@ -51,7 +51,7 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			VertexConsumer vertexConsumer = BASE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntitySolid);
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(h));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
 			this.field_20825.render(matrixStack, vertexConsumer, i, j);
 			matrixStack.pop();
 		} else {
@@ -60,18 +60,18 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			k = k * k + k;
 			matrixStack.push();
 			matrixStack.translate(0.5, (double)(0.3F + k * 0.2F), 0.5);
-			Vector3f vector3f = new Vector3f(0.5F, 1.0F, 0.5F);
-			vector3f.normalize();
-			matrixStack.multiply(new Quaternion(vector3f, h, true));
+			Vec3f vec3f = new Vec3f(0.5F, 1.0F, 0.5F);
+			vec3f.normalize();
+			matrixStack.multiply(new Quaternion(vec3f, h, true));
 			this.field_20826.render(matrixStack, CAGE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
 			matrixStack.pop();
 			int l = conduitBlockEntity.ticks / 66 % 3;
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
 			if (l == 1) {
-				matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F));
 			} else if (l == 2) {
-				matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
+				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(90.0F));
 			}
 
 			VertexConsumer vertexConsumer2 = (l == 1 ? WIND_VERTICAL_TEXTURE : WIND_TEXTURE)
@@ -81,8 +81,8 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			matrixStack.push();
 			matrixStack.translate(0.5, 0.5, 0.5);
 			matrixStack.scale(0.875F, 0.875F, 0.875F);
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(180.0F));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			this.field_20824.render(matrixStack, vertexConsumer2, i, j);
 			matrixStack.pop();
 			Camera camera = this.dispatcher.camera;
@@ -90,9 +90,9 @@ public class ConduitBlockEntityRenderer extends BlockEntityRenderer<ConduitBlock
 			matrixStack.translate(0.5, (double)(0.3F + k * 0.2F), 0.5);
 			matrixStack.scale(0.5F, 0.5F, 0.5F);
 			float m = -camera.getYaw();
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(m));
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
-			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(m));
+			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(camera.getPitch()));
+			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(180.0F));
 			float n = 1.3333334F;
 			matrixStack.scale(1.3333334F, 1.3333334F, 1.3333334F);
 			this.field_20823

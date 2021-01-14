@@ -2,7 +2,6 @@ package net.minecraft.screen;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -17,7 +16,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class GrindstoneScreenHandler extends ScreenHandler {
@@ -58,7 +56,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 
 			@Override
 			public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				context.run((world, blockPos) -> {
 					int i = this.getExperience(world);
 
 					while (i > 0) {
@@ -68,7 +66,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 					}
 
 					world.syncWorldEvent(1042, blockPos, 0);
-				}));
+				});
 				GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
 				GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);
 				return stack;
@@ -223,7 +221,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, world, this.input)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, world, this.input));
 	}
 
 	@Override
@@ -245,7 +243,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index != 0 && index != 1) {
 				if (!itemStack3.isEmpty() && !itemStack4.isEmpty()) {
 					if (index >= 3 && index < 30) {

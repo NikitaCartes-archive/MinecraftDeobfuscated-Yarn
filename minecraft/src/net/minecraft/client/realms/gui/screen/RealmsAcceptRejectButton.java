@@ -32,7 +32,7 @@ public abstract class RealmsAcceptRejectButton {
 		this.render(matrices, m, n, bl);
 	}
 
-	protected abstract void render(MatrixStack matrixStack, int y, int i, boolean bl);
+	protected abstract void render(MatrixStack matrices, int x, int y, boolean bl);
 
 	public int getRight() {
 		return this.x + this.width;

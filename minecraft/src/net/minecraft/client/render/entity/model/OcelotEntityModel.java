@@ -16,7 +16,7 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 	protected final ModelPart upperTail;
 	protected final ModelPart lowerTail;
 	protected final ModelPart head;
-	protected final ModelPart torso;
+	protected final ModelPart body;
 	protected int animationState = 1;
 
 	public OcelotEntityModel(float scale) {
@@ -27,9 +27,9 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 		this.head.addCuboid("ear1", -2.0F, -3.0F, 0.0F, 1, 1, 2, scale, 0, 10);
 		this.head.addCuboid("ear2", 1.0F, -3.0F, 0.0F, 1, 1, 2, scale, 6, 10);
 		this.head.setPivot(0.0F, 15.0F, -9.0F);
-		this.torso = new ModelPart(this, 20, 0);
-		this.torso.addCuboid(-2.0F, 3.0F, -8.0F, 4.0F, 16.0F, 6.0F, scale);
-		this.torso.setPivot(0.0F, 12.0F, -10.0F);
+		this.body = new ModelPart(this, 20, 0);
+		this.body.addCuboid(-2.0F, 3.0F, -8.0F, 4.0F, 16.0F, 6.0F, scale);
+		this.body.setPivot(0.0F, 12.0F, -10.0F);
 		this.upperTail = new ModelPart(this, 0, 15);
 		this.upperTail.addCuboid(-0.5F, 0.0F, 0.0F, 1.0F, 8.0F, 1.0F, scale);
 		this.upperTail.pitch = 0.9F;
@@ -58,7 +58,7 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 
 	@Override
 	protected Iterable<ModelPart> getBodyParts() {
-		return ImmutableList.<ModelPart>of(this.torso, this.leftBackLeg, this.rightBackLeg, this.leftFrontLeg, this.rightFrontLeg, this.upperTail, this.lowerTail);
+		return ImmutableList.<ModelPart>of(this.body, this.leftBackLeg, this.rightBackLeg, this.leftFrontLeg, this.rightFrontLeg, this.upperTail, this.lowerTail);
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 		this.head.pitch = headPitch * (float) (Math.PI / 180.0);
 		this.head.yaw = headYaw * (float) (Math.PI / 180.0);
 		if (this.animationState != 3) {
-			this.torso.pitch = (float) (Math.PI / 2);
+			this.body.pitch = (float) (Math.PI / 2);
 			if (this.animationState == 2) {
 				this.leftBackLeg.pitch = MathHelper.cos(limbAngle * 0.6662F) * limbDistance;
 				this.rightBackLeg.pitch = MathHelper.cos(limbAngle * 0.6662F + 0.3F) * limbDistance;
@@ -89,8 +89,8 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 
 	@Override
 	public void animateModel(T entity, float limbAngle, float limbDistance, float tickDelta) {
-		this.torso.pivotY = 12.0F;
-		this.torso.pivotZ = -10.0F;
+		this.body.pivotY = 12.0F;
+		this.body.pivotZ = -10.0F;
 		this.head.pivotY = 15.0F;
 		this.head.pivotZ = -9.0F;
 		this.upperTail.pivotY = 15.0F;
@@ -107,7 +107,7 @@ public class OcelotEntityModel<T extends Entity> extends AnimalModel<T> {
 		this.rightBackLeg.pivotZ = 5.0F;
 		this.upperTail.pitch = 0.9F;
 		if (entity.isInSneakingPose()) {
-			this.torso.pivotY++;
+			this.body.pivotY++;
 			this.head.pivotY += 2.0F;
 			this.upperTail.pivotY++;
 			this.lowerTail.pivotY += -4.0F;

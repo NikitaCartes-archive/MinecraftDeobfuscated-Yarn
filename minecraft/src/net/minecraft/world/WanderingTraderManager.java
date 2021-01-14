@@ -87,7 +87,7 @@ public class WanderingTraderManager implements Spawner {
 			BlockPos blockPos2 = (BlockPos)optional.orElse(blockPos);
 			BlockPos blockPos3 = this.getNearbySpawnPos(serverWorld, blockPos2, 48);
 			if (blockPos3 != null && this.doesNotSuffocateAt(serverWorld, blockPos3)) {
-				if (serverWorld.method_31081(blockPos3).equals(Optional.of(BiomeKeys.THE_VOID))) {
+				if (serverWorld.getBiomeKey(blockPos3).equals(Optional.of(BiomeKeys.THE_VOID))) {
 					return false;
 				}
 
@@ -109,37 +109,37 @@ public class WanderingTraderManager implements Spawner {
 		}
 	}
 
-	private void spawnLlama(ServerWorld serverWorld, WanderingTraderEntity wanderingTraderEntity, int i) {
-		BlockPos blockPos = this.getNearbySpawnPos(serverWorld, wanderingTraderEntity.getBlockPos(), i);
+	private void spawnLlama(ServerWorld world, WanderingTraderEntity wanderingTrader, int range) {
+		BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.getBlockPos(), range);
 		if (blockPos != null) {
-			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(serverWorld, null, null, null, blockPos, SpawnReason.EVENT, false, false);
+			TraderLlamaEntity traderLlamaEntity = EntityType.TRADER_LLAMA.spawn(world, null, null, null, blockPos, SpawnReason.EVENT, false, false);
 			if (traderLlamaEntity != null) {
-				traderLlamaEntity.attachLeash(wanderingTraderEntity, true);
+				traderLlamaEntity.attachLeash(wanderingTrader, true);
 			}
 		}
 	}
 
 	@Nullable
-	private BlockPos getNearbySpawnPos(WorldView worldView, BlockPos blockPos, int i) {
-		BlockPos blockPos2 = null;
+	private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int range) {
+		BlockPos blockPos = null;
 
-		for (int j = 0; j < 10; j++) {
-			int k = blockPos.getX() + this.random.nextInt(i * 2) - i;
-			int l = blockPos.getZ() + this.random.nextInt(i * 2) - i;
-			int m = worldView.getTopY(Heightmap.Type.WORLD_SURFACE, k, l);
-			BlockPos blockPos3 = new BlockPos(k, m, l);
-			if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, worldView, blockPos3, EntityType.WANDERING_TRADER)) {
-				blockPos2 = blockPos3;
+		for (int i = 0; i < 10; i++) {
+			int j = pos.getX() + this.random.nextInt(range * 2) - range;
+			int k = pos.getZ() + this.random.nextInt(range * 2) - range;
+			int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, j, k);
+			BlockPos blockPos2 = new BlockPos(j, l, k);
+			if (SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, world, blockPos2, EntityType.WANDERING_TRADER)) {
+				blockPos = blockPos2;
 				break;
 			}
 		}
 
-		return blockPos2;
+		return blockPos;
 	}
 
-	private boolean doesNotSuffocateAt(BlockView blockView, BlockPos blockPos) {
-		for (BlockPos blockPos2 : BlockPos.iterate(blockPos, blockPos.add(1, 2, 1))) {
-			if (!blockView.getBlockState(blockPos2).getCollisionShape(blockView, blockPos2).isEmpty()) {
+	private boolean doesNotSuffocateAt(BlockView world, BlockPos pos) {
+		for (BlockPos blockPos : BlockPos.iterate(pos, pos.add(1, 2, 1))) {
+			if (!world.getBlockState(blockPos).getCollisionShape(world, blockPos).isEmpty()) {
 				return false;
 			}
 		}

@@ -13,41 +13,41 @@ import net.minecraft.world.timer.Timer;
 
 public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	private final SaveProperties field_24179;
-	private final ServerWorldProperties properties;
+	private final ServerWorldProperties worldProperties;
 
 	public UnmodifiableLevelProperties(SaveProperties saveProperties, ServerWorldProperties serverWorldProperties) {
 		this.field_24179 = saveProperties;
-		this.properties = serverWorldProperties;
+		this.worldProperties = serverWorldProperties;
 	}
 
 	@Override
 	public int getSpawnX() {
-		return this.properties.getSpawnX();
+		return this.worldProperties.getSpawnX();
 	}
 
 	@Override
 	public int getSpawnY() {
-		return this.properties.getSpawnY();
+		return this.worldProperties.getSpawnY();
 	}
 
 	@Override
 	public int getSpawnZ() {
-		return this.properties.getSpawnZ();
+		return this.worldProperties.getSpawnZ();
 	}
 
 	@Override
 	public float getSpawnAngle() {
-		return this.properties.getSpawnAngle();
+		return this.worldProperties.getSpawnAngle();
 	}
 
 	@Override
 	public long getTime() {
-		return this.properties.getTime();
+		return this.worldProperties.getTime();
 	}
 
 	@Override
 	public long getTimeOfDay() {
-		return this.properties.getTimeOfDay();
+		return this.worldProperties.getTimeOfDay();
 	}
 
 	@Override
@@ -57,7 +57,7 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public int getClearWeatherTime() {
-		return this.properties.getClearWeatherTime();
+		return this.worldProperties.getClearWeatherTime();
 	}
 
 	@Override
@@ -66,22 +66,22 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public boolean isThundering() {
-		return this.properties.isThundering();
+		return this.worldProperties.isThundering();
 	}
 
 	@Override
 	public int getThunderTime() {
-		return this.properties.getThunderTime();
+		return this.worldProperties.getThunderTime();
 	}
 
 	@Override
 	public boolean isRaining() {
-		return this.properties.isRaining();
+		return this.worldProperties.isRaining();
 	}
 
 	@Override
 	public int getRainTime() {
-		return this.properties.getRainTime();
+		return this.worldProperties.getRainTime();
 	}
 
 	@Override
@@ -149,7 +149,7 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public boolean isInitialized() {
-		return this.properties.isInitialized();
+		return this.worldProperties.isInitialized();
 	}
 
 	@Override
@@ -163,7 +163,7 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public WorldBorder.Properties getWorldBorder() {
-		return this.properties.getWorldBorder();
+		return this.worldProperties.getWorldBorder();
 	}
 
 	@Override
@@ -182,7 +182,7 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 
 	@Override
 	public Timer<MinecraftServer> getScheduledEvents() {
-		return this.properties.getScheduledEvents();
+		return this.worldProperties.getScheduledEvents();
 	}
 
 	@Override
@@ -210,6 +210,6 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	@Override
 	public void populateCrashReport(CrashReportSection reportSection) {
 		reportSection.add("Derived", true);
-		this.properties.populateCrashReport(reportSection);
+		this.worldProperties.populateCrashReport(reportSection);
 	}
 }

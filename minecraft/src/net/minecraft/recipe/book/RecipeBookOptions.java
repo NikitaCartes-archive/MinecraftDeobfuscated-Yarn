@@ -6,7 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.Util;
 
@@ -78,21 +78,21 @@ public final class RecipeBookOptions {
 		}
 	}
 
-	public static RecipeBookOptions fromTag(CompoundTag tag) {
+	public static RecipeBookOptions fromNbt(NbtCompound nbt) {
 		Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
 		CATEGORY_OPTION_NAMES.forEach((recipeBookCategory, pair) -> {
-			boolean bl = tag.getBoolean((String)pair.getFirst());
-			boolean bl2 = tag.getBoolean((String)pair.getSecond());
+			boolean bl = nbt.getBoolean((String)pair.getFirst());
+			boolean bl2 = nbt.getBoolean((String)pair.getSecond());
 			map.put(recipeBookCategory, new RecipeBookOptions.CategoryOption(bl, bl2));
 		});
 		return new RecipeBookOptions(map);
 	}
 
-	public void toTag(CompoundTag tag) {
+	public void writeNbt(NbtCompound nbt) {
 		CATEGORY_OPTION_NAMES.forEach((recipeBookCategory, pair) -> {
 			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions.get(recipeBookCategory);
-			tag.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
-			tag.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
+			nbt.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
+			nbt.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
 		});
 	}
 

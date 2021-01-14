@@ -38,12 +38,12 @@ public class VillagerData {
 		return this.level;
 	}
 
-	public VillagerData withType(VillagerType villagerType) {
-		return new VillagerData(villagerType, this.profession, this.level);
+	public VillagerData withType(VillagerType type) {
+		return new VillagerData(type, this.profession, this.level);
 	}
 
-	public VillagerData withProfession(VillagerProfession villagerProfession) {
-		return new VillagerData(this.type, villagerProfession, this.level);
+	public VillagerData withProfession(VillagerProfession profession) {
+		return new VillagerData(this.type, profession, this.level);
 	}
 
 	public VillagerData withLevel(int level) {

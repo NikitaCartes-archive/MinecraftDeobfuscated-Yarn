@@ -1,5 +1,5 @@
 package net.minecraft.test;
 
 public interface TestCompletionListener {
-	void onTestFailed(GameTest gameTest);
+	void onTestFailed(GameTestState test);
 }

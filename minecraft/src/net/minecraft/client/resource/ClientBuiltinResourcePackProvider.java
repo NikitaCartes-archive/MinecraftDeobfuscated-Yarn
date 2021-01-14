@@ -60,21 +60,21 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 	}
 
 	@Override
-	public void register(Consumer<ResourcePackProfile> consumer, ResourcePackProfile.Factory factory) {
+	public void register(Consumer<ResourcePackProfile> profileAdder, ResourcePackProfile.Factory factory) {
 		ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(
 			"vanilla", true, () -> this.pack, factory, ResourcePackProfile.InsertionPosition.BOTTOM, ResourcePackSource.PACK_SOURCE_BUILTIN
 		);
 		if (resourcePackProfile != null) {
-			consumer.accept(resourcePackProfile);
+			profileAdder.accept(resourcePackProfile);
 		}
 
 		if (this.serverContainer != null) {
-			consumer.accept(this.serverContainer);
+			profileAdder.accept(this.serverContainer);
 		}
 
 		ResourcePackProfile resourcePackProfile2 = this.method_25454(factory);
 		if (resourcePackProfile2 != null) {
-			consumer.accept(resourcePackProfile2);
+			profileAdder.accept(resourcePackProfile2);
 		}
 	}
 
@@ -111,7 +111,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 				Map<String, String> map = getDownloadHeaders();
 				MinecraftClient minecraftClient = MinecraftClient.getInstance();
 				minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
-				completableFuture = NetworkUtils.download(file, string, map, 104857600, progressScreen, minecraftClient.getNetworkProxy());
+				completableFuture = NetworkUtils.downloadResourcePack(file, string, map, 104857600, progressScreen, minecraftClient.getNetworkProxy());
 			}
 
 			this.downloadTask = completableFuture.thenCompose(
@@ -219,7 +219,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 		}
 	}
 
-	public CompletableFuture<Void> loadServerPack(File packZip, ResourcePackSource resourcePackSource) {
+	public CompletableFuture<Void> loadServerPack(File packZip, ResourcePackSource packSource) {
 		PackResourceMetadata packResourceMetadata;
 		try (ZipResourcePack zipResourcePack = new ZipResourcePack(packZip)) {
 			packResourceMetadata = zipResourcePack.parseMetadata(PackResourceMetadata.READER);
@@ -237,7 +237,7 @@ public class ClientBuiltinResourcePackProvider implements ResourcePackProvider {
 			ResourcePackCompatibility.from(packResourceMetadata.getPackFormat()),
 			ResourcePackProfile.InsertionPosition.TOP,
 			true,
-			resourcePackSource
+			packSource
 		);
 		return MinecraftClient.getInstance().reloadResourcesConcurrently();
 	}

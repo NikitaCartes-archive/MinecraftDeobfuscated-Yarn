@@ -16,12 +16,12 @@ public class CoralTreeFeature extends CoralFeature {
 	}
 
 	@Override
-	protected boolean spawnCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
+	protected boolean generateCoral(WorldAccess world, Random random, BlockPos pos, BlockState state) {
 		BlockPos.Mutable mutable = pos.mutableCopy();
 		int i = random.nextInt(3) + 1;
 
 		for (int j = 0; j < i; j++) {
-			if (!this.spawnCoralPiece(world, random, mutable, state)) {
+			if (!this.generateCoralPiece(world, random, mutable, state)) {
 				return true;
 			}
 
@@ -39,7 +39,7 @@ public class CoralTreeFeature extends CoralFeature {
 			int l = random.nextInt(5) + 2;
 			int m = 0;
 
-			for (int n = 0; n < l && this.spawnCoralPiece(world, random, mutable, state); n++) {
+			for (int n = 0; n < l && this.generateCoralPiece(world, random, mutable, state); n++) {
 				m++;
 				mutable.move(Direction.UP);
 				if (n == 0 || m >= 2 && random.nextFloat() < 0.25F) {

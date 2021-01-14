@@ -18,7 +18,7 @@ public interface BufferVertexConsumer extends VertexConsumer {
 
 	@Override
 	default VertexConsumer vertex(double x, double y, double z) {
-		if (this.getCurrentElement().getFormat() != VertexFormatElement.Format.FLOAT) {
+		if (this.getCurrentElement().getDataType() != VertexFormatElement.Format.FLOAT) {
 			throw new IllegalStateException();
 		} else {
 			this.putFloat(0, (float)x);
@@ -34,7 +34,7 @@ public interface BufferVertexConsumer extends VertexConsumer {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
 		if (vertexFormatElement.getType() != VertexFormatElement.Type.COLOR) {
 			return this;
-		} else if (vertexFormatElement.getFormat() != VertexFormatElement.Format.UBYTE) {
+		} else if (vertexFormatElement.getDataType() != VertexFormatElement.Format.UBYTE) {
 			throw new IllegalStateException();
 		} else {
 			this.putByte(0, (byte)red);
@@ -49,8 +49,8 @@ public interface BufferVertexConsumer extends VertexConsumer {
 	@Override
 	default VertexConsumer texture(float u, float v) {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
-		if (vertexFormatElement.getType() == VertexFormatElement.Type.UV && vertexFormatElement.getIndex() == 0) {
-			if (vertexFormatElement.getFormat() != VertexFormatElement.Format.FLOAT) {
+		if (vertexFormatElement.getType() == VertexFormatElement.Type.UV && vertexFormatElement.getTextureIndex() == 0) {
+			if (vertexFormatElement.getDataType() != VertexFormatElement.Format.FLOAT) {
 				throw new IllegalStateException();
 			} else {
 				this.putFloat(0, u);
@@ -75,9 +75,9 @@ public interface BufferVertexConsumer extends VertexConsumer {
 
 	default VertexConsumer texture(short u, short v, int index) {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
-		if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getIndex() != index) {
+		if (vertexFormatElement.getType() != VertexFormatElement.Type.UV || vertexFormatElement.getTextureIndex() != index) {
 			return this;
-		} else if (vertexFormatElement.getFormat() != VertexFormatElement.Format.SHORT) {
+		} else if (vertexFormatElement.getDataType() != VertexFormatElement.Format.SHORT) {
 			throw new IllegalStateException();
 		} else {
 			this.putShort(0, u);
@@ -92,7 +92,7 @@ public interface BufferVertexConsumer extends VertexConsumer {
 		VertexFormatElement vertexFormatElement = this.getCurrentElement();
 		if (vertexFormatElement.getType() != VertexFormatElement.Type.NORMAL) {
 			return this;
-		} else if (vertexFormatElement.getFormat() != VertexFormatElement.Format.BYTE) {
+		} else if (vertexFormatElement.getDataType() != VertexFormatElement.Format.BYTE) {
 			throw new IllegalStateException();
 		} else {
 			this.putByte(0, method_24212(x));

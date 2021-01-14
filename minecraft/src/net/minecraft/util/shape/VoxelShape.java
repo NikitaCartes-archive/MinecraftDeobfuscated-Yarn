@@ -174,9 +174,9 @@ public abstract class VoxelShape {
 		}
 	}
 
-	private VoxelShape getUncachedFace(Direction facing) {
-		Direction.Axis axis = facing.getAxis();
-		Direction.AxisDirection axisDirection = facing.getDirection();
+	private VoxelShape getUncachedFace(Direction direction) {
+		Direction.Axis axis = direction.getAxis();
+		Direction.AxisDirection axisDirection = direction.getDirection();
 		DoubleList doubleList = this.getPointPositions(axis);
 		if (doubleList.size() == 2 && DoubleMath.fuzzyEquals(doubleList.getDouble(0), 0.0, 1.0E-7) && DoubleMath.fuzzyEquals(doubleList.getDouble(1), 1.0, 1.0E-7)) {
 			return this;

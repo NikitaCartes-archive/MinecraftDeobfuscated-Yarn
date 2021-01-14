@@ -47,7 +47,7 @@ public class TexturedRenderLayers {
 		.map(string -> new SpriteIdentifier(SHULKER_BOXES_ATLAS_TEXTURE, new Identifier("entity/shulker/shulker_" + string)))
 		.collect(ImmutableList.toImmutableList());
 	public static final Map<SignType, SpriteIdentifier> WOOD_TYPE_TEXTURES = (Map<SignType, SpriteIdentifier>)SignType.stream()
-		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::getSignTextureId));
+		.collect(Collectors.toMap(Function.identity(), TexturedRenderLayers::createSignTextureId));
 	public static final SpriteIdentifier[] BED_TEXTURES = (SpriteIdentifier[])Arrays.stream(DyeColor.values())
 		.sorted(Comparator.comparingInt(DyeColor::getId))
 		.map(dyeColor -> new SpriteIdentifier(BEDS_ATLAS_TEXTURE, new Identifier("entity/bed/" + dyeColor.getName())))
@@ -130,7 +130,7 @@ public class TexturedRenderLayers {
 		adder.accept(ENDER);
 	}
 
-	public static SpriteIdentifier getSignTextureId(SignType type) {
+	public static SpriteIdentifier createSignTextureId(SignType type) {
 		return new SpriteIdentifier(SIGNS_ATLAS_TEXTURE, new Identifier("entity/signs/" + type.getName()));
 	}
 

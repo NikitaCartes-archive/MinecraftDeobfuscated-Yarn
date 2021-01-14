@@ -111,24 +111,26 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 		return this.sample(x, y, z, 0.0, 0.0, false);
 	}
 
-	public double sample(double x, double y, double z, double d, double e, boolean bl) {
-		double f = 0.0;
-		double g = this.field_20660;
-		double h = this.field_20659;
+	public double sample(double x, double y, double z, double yScale, double yMax, boolean useOrigin) {
+		double d = 0.0;
+		double e = this.field_20660;
+		double f = this.field_20659;
 
 		for (int i = 0; i < this.octaveSamplers.length; i++) {
 			PerlinNoiseSampler perlinNoiseSampler = this.octaveSamplers[i];
 			if (perlinNoiseSampler != null) {
-				f += this.field_26445.getDouble(i)
-					* perlinNoiseSampler.sample(maintainPrecision(x * g), bl ? -perlinNoiseSampler.originY : maintainPrecision(y * g), maintainPrecision(z * g), d * g, e * g)
-					* h;
+				d += this.field_26445.getDouble(i)
+					* perlinNoiseSampler.sample(
+						maintainPrecision(x * e), useOrigin ? -perlinNoiseSampler.originY : maintainPrecision(y * e), maintainPrecision(z * e), yScale * e, yMax * e
+					)
+					* f;
 			}
 
-			g *= 2.0;
-			h /= 2.0;
+			e *= 2.0;
+			f /= 2.0;
 		}
 
-		return f;
+		return d;
 	}
 
 	@Nullable
@@ -136,12 +138,12 @@ public class OctavePerlinNoiseSampler implements NoiseSampler {
 		return this.octaveSamplers[this.octaveSamplers.length - 1 - octave];
 	}
 
-	public static double maintainPrecision(double d) {
-		return d - (double)MathHelper.lfloor(d / 3.3554432E7 + 0.5) * 3.3554432E7;
+	public static double maintainPrecision(double value) {
+		return value - (double)MathHelper.lfloor(value / 3.3554432E7 + 0.5) * 3.3554432E7;
 	}
 
 	@Override
-	public double sample(double x, double y, double d, double e) {
-		return this.sample(x, y, 0.0, d, e, false);
+	public double sample(double x, double y, double yScale, double yMax) {
+		return this.sample(x, y, 0.0, yScale, yMax, false);
 	}
 }

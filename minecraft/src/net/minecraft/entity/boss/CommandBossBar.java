@@ -4,9 +4,9 @@ import com.google.common.collect.Sets;
 import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.LiteralText;
@@ -132,41 +132,41 @@ public class CommandBossBar extends ServerBossBar {
 		return !set.isEmpty() || !set2.isEmpty();
 	}
 
-	public CompoundTag toTag() {
-		CompoundTag compoundTag = new CompoundTag();
-		compoundTag.putString("Name", Text.Serializer.toJson(this.name));
-		compoundTag.putBoolean("Visible", this.isVisible());
-		compoundTag.putInt("Value", this.value);
-		compoundTag.putInt("Max", this.maxValue);
-		compoundTag.putString("Color", this.getColor().getName());
-		compoundTag.putString("Overlay", this.getOverlay().getName());
-		compoundTag.putBoolean("DarkenScreen", this.getDarkenSky());
-		compoundTag.putBoolean("PlayBossMusic", this.hasDragonMusic());
-		compoundTag.putBoolean("CreateWorldFog", this.getThickenFog());
-		ListTag listTag = new ListTag();
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		nbtCompound.putString("Name", Text.Serializer.toJson(this.name));
+		nbtCompound.putBoolean("Visible", this.isVisible());
+		nbtCompound.putInt("Value", this.value);
+		nbtCompound.putInt("Max", this.maxValue);
+		nbtCompound.putString("Color", this.getColor().getName());
+		nbtCompound.putString("Overlay", this.getStyle().getName());
+		nbtCompound.putBoolean("DarkenScreen", this.shouldDarkenSky());
+		nbtCompound.putBoolean("PlayBossMusic", this.hasDragonMusic());
+		nbtCompound.putBoolean("CreateWorldFog", this.shouldThickenFog());
+		NbtList nbtList = new NbtList();
 
 		for (UUID uUID : this.playerUuids) {
-			listTag.add(NbtHelper.fromUuid(uUID));
+			nbtList.add(NbtHelper.fromUuid(uUID));
 		}
 
-		compoundTag.put("Players", listTag);
-		return compoundTag;
+		nbtCompound.put("Players", nbtList);
+		return nbtCompound;
 	}
 
-	public static CommandBossBar fromTag(CompoundTag tag, Identifier id) {
-		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serializer.fromJson(tag.getString("Name")));
-		commandBossBar.setVisible(tag.getBoolean("Visible"));
-		commandBossBar.setValue(tag.getInt("Value"));
-		commandBossBar.setMaxValue(tag.getInt("Max"));
-		commandBossBar.setColor(BossBar.Color.byName(tag.getString("Color")));
-		commandBossBar.setOverlay(BossBar.Style.byName(tag.getString("Overlay")));
-		commandBossBar.setDarkenSky(tag.getBoolean("DarkenScreen"));
-		commandBossBar.setDragonMusic(tag.getBoolean("PlayBossMusic"));
-		commandBossBar.setThickenFog(tag.getBoolean("CreateWorldFog"));
-		ListTag listTag = tag.getList("Players", 11);
+	public static CommandBossBar fromNbt(NbtCompound nbt, Identifier id) {
+		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serializer.fromJson(nbt.getString("Name")));
+		commandBossBar.setVisible(nbt.getBoolean("Visible"));
+		commandBossBar.setValue(nbt.getInt("Value"));
+		commandBossBar.setMaxValue(nbt.getInt("Max"));
+		commandBossBar.setColor(BossBar.Color.byName(nbt.getString("Color")));
+		commandBossBar.setStyle(BossBar.Style.byName(nbt.getString("Overlay")));
+		commandBossBar.setDarkenSky(nbt.getBoolean("DarkenScreen"));
+		commandBossBar.setDragonMusic(nbt.getBoolean("PlayBossMusic"));
+		commandBossBar.setThickenFog(nbt.getBoolean("CreateWorldFog"));
+		NbtList nbtList = nbt.getList("Players", 11);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			commandBossBar.addPlayer(NbtHelper.toUuid(listTag.get(i)));
+		for (int i = 0; i < nbtList.size(); i++) {
+			commandBossBar.addPlayer(NbtHelper.toUuid(nbtList.get(i)));
 		}
 
 		return commandBossBar;

@@ -16,7 +16,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -226,30 +226,30 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void fromTag(BlockState state, CompoundTag tag) {
+	public void fromTag(BlockState state, NbtCompound tag) {
 		super.fromTag(state, tag);
-		this.deserializeInventory(tag);
+		this.readInventoryNbt(tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		return this.serializeInventory(tag);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		return this.writeInventoryNbt(nbt);
 	}
 
-	public void deserializeInventory(CompoundTag tag) {
+	public void readInventoryNbt(NbtCompound nbt) {
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		if (!this.deserializeLootTable(tag) && tag.contains("Items", 9)) {
-			Inventories.fromTag(tag, this.inventory);
+		if (!this.deserializeLootTable(nbt) && nbt.contains("Items", 9)) {
+			Inventories.readNbt(nbt, this.inventory);
 		}
 	}
 
-	public CompoundTag serializeInventory(CompoundTag tag) {
-		if (!this.serializeLootTable(tag)) {
-			Inventories.toTag(tag, this.inventory, false);
+	public NbtCompound writeInventoryNbt(NbtCompound nbt) {
+		if (!this.serializeLootTable(nbt)) {
+			Inventories.writeNbt(nbt, this.inventory, false);
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	@Override
@@ -277,8 +277,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return true;
 	}
 
-	public float getAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.prevAnimationProgress, this.animationProgress);
+	public float getAnimationProgress(float delta) {
+		return MathHelper.lerp(delta, this.prevAnimationProgress, this.animationProgress);
 	}
 
 	@Nullable

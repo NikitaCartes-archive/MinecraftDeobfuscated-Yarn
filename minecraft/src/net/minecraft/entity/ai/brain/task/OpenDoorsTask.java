@@ -54,7 +54,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 		this.field_26387 = path.method_29301();
 		PathNode pathNode = path.method_30850();
 		PathNode pathNode2 = path.method_29301();
-		BlockPos blockPos = pathNode.getPos();
+		BlockPos blockPos = pathNode.getBlockPos();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (blockState.isIn(BlockTags.WOODEN_DOORS)) {
 			DoorBlock doorBlock = (DoorBlock)blockState.getBlock();
@@ -65,7 +65,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 			this.method_30767(world, entity, blockPos);
 		}
 
-		BlockPos blockPos2 = pathNode2.getPos();
+		BlockPos blockPos2 = pathNode2.getBlockPos();
 		BlockState blockState2 = world.getBlockState(blockPos2);
 		if (blockState2.isIn(BlockTags.WOODEN_DOORS)) {
 			DoorBlock doorBlock2 = (DoorBlock)blockState2.getBlock();
@@ -86,7 +86,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 			while (iterator.hasNext()) {
 				GlobalPos globalPos = (GlobalPos)iterator.next();
 				BlockPos blockPos = globalPos.getPos();
-				if ((pathNode == null || !pathNode.getPos().equals(blockPos)) && (pathNode2 == null || !pathNode2.getPos().equals(blockPos))) {
+				if ((pathNode == null || !pathNode.getBlockPos().equals(blockPos)) && (pathNode2 == null || !pathNode2.getBlockPos().equals(blockPos))) {
 					if (method_30762(serverWorld, livingEntity, globalPos)) {
 						iterator.remove();
 					} else {
@@ -134,7 +134,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 					return false;
 				} else {
 					PathNode pathNode2 = path.method_29301();
-					return blockPos.equals(pathNode.getPos()) || blockPos.equals(pathNode2.getPos());
+					return blockPos.equals(pathNode.getBlockPos()) || blockPos.equals(pathNode2.getBlockPos());
 				}
 			}
 		}

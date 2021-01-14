@@ -223,13 +223,13 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 		return world.getBlockState(pos.down()).getMaterial() == Material.AIR;
 	}
 
-	private void method_13418(WorldAccess world, BlockPos pos, int i, int j, boolean bl, int k) {
-		int l = bl ? k : i / 2;
+	private void method_13418(WorldAccess world, BlockPos pos, int i, int height, boolean bl, int j) {
+		int k = bl ? j : i / 2;
 
-		for (int m = -l; m <= l; m++) {
-			for (int n = -l; n <= l; n++) {
-				for (int o = 0; o <= j; o++) {
-					BlockPos blockPos = pos.add(m, o, n);
+		for (int l = -k; l <= k; l++) {
+			for (int m = -k; m <= k; m++) {
+				for (int n = 0; n <= height; n++) {
+					BlockPos blockPos = pos.add(l, n, m);
 					Block block = world.getBlockState(blockPos).getBlock();
 					if (this.isSnowyOrIcy(block) || block == Blocks.SNOW) {
 						if (this.isAirBelow(world, blockPos)) {
@@ -242,15 +242,15 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 								world.getBlockState(blockPos.north()).getBlock(),
 								world.getBlockState(blockPos.south()).getBlock()
 							};
-							int p = 0;
+							int o = 0;
 
 							for (Block block2 : blocks) {
 								if (!this.isSnowyOrIcy(block2)) {
-									p++;
+									o++;
 								}
 							}
 
-							if (p >= 3) {
+							if (o >= 3) {
 								this.setBlockState(world, blockPos, Blocks.AIR.getDefaultState());
 							}
 						}

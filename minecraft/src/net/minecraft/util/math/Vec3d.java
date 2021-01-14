@@ -3,14 +3,45 @@ package net.minecraft.util.math;
 import java.util.EnumSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector3f;
 
+/**
+ * An immutable vector composed of 3 doubles.
+ * 
+ * <p>This vector class is used for representing position, velocity,
+ * rotation, color, etc.
+ * 
+ * <p>This vector has proper {@link #hashCode()} and {@link #equals(Object)}
+ * implementations and can be used as a map key.
+ * 
+ * @see Vec3i
+ * @see Vec3f
+ */
 public class Vec3d implements Position {
+	/**
+	 * The zero vector (0, 0, 0).
+	 */
 	public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
+	/**
+	 * The X coordinate of this vector.
+	 */
 	public final double x;
+	/**
+	 * The Y coordinate of this vector.
+	 */
 	public final double y;
+	/**
+	 * The Z coordinate of this vector.
+	 */
 	public final double z;
 
+	/**
+	 * Converts a packed RGB color into a vector of (red, green, blue).
+	 * 
+	 * @return the vector representing the given color; each coordinate has
+	 * value between 0 and 1
+	 * 
+	 * @param rgb the color in the 0xRRGGBB format
+	 */
 	@Environment(EnvType.CLIENT)
 	public static Vec3d unpackRgb(int rgb) {
 		double d = (double)(rgb >> 16 & 0xFF) / 255.0;
@@ -19,69 +50,150 @@ public class Vec3d implements Position {
 		return new Vec3d(d, e, f);
 	}
 
+	/**
+	 * Creates a vector representing the center of the given block position.
+	 */
 	public static Vec3d ofCenter(Vec3i vec) {
 		return new Vec3d((double)vec.getX() + 0.5, (double)vec.getY() + 0.5, (double)vec.getZ() + 0.5);
 	}
 
+	/**
+	 * Copies the given vector.
+	 */
 	public static Vec3d of(Vec3i vec) {
 		return new Vec3d((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
 	}
 
+	/**
+	 * Creates a vector representing the bottom center of the given block
+	 * position.
+	 * 
+	 * <p>The bottom center of a block position {@code pos} is
+	 * {@code (pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5)}.
+	 * 
+	 * @see #ofCenter(Vec3i)
+	 */
 	public static Vec3d ofBottomCenter(Vec3i vec) {
 		return new Vec3d((double)vec.getX() + 0.5, (double)vec.getY(), (double)vec.getZ() + 0.5);
 	}
 
+	/**
+	 * Creates a vector representing the center of the given block position but
+	 * with the given offset for the Y coordinate.
+	 * 
+	 * @return a vector of {@code (vec.getX() + 0.5, vec.getY() + deltaY,
+	 * vec.getZ() + 0.5)}
+	 */
 	public static Vec3d ofCenter(Vec3i vec, double deltaY) {
 		return new Vec3d((double)vec.getX() + 0.5, (double)vec.getY() + deltaY, (double)vec.getZ() + 0.5);
 	}
 
+	/**
+	 * Creates a vector of the given coordinates.
+	 */
 	public Vec3d(double x, double y, double z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
-	public Vec3d(Vector3f vec) {
+	/**
+	 * Copies the given vector.
+	 */
+	public Vec3d(Vec3f vec) {
 		this((double)vec.getX(), (double)vec.getY(), (double)vec.getZ());
 	}
 
-	public Vec3d reverseSubtract(Vec3d vec) {
+	/**
+	 * Subtracts this vector from the given vector.
+	 * 
+	 * @see #subtract(Vec3d)
+	 * @return the difference between the given vector and this vector
+	 */
+	public Vec3d relativize(Vec3d vec) {
 		return new Vec3d(vec.x - this.x, vec.y - this.y, vec.z - this.z);
 	}
 
+	/**
+	 * Normalizes this vector.
+	 * 
+	 * <p>Normalized vector is a vector with the same direction but with
+	 * length 1. Each coordinate of normalized vector has value between 0
+	 * and 1.
+	 * 
+	 * @return the normalized vector of this vector
+	 */
 	public Vec3d normalize() {
 		double d = (double)MathHelper.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 		return d < 1.0E-4 ? ZERO : new Vec3d(this.x / d, this.y / d, this.z / d);
 	}
 
+	/**
+	 * Returns the dot product of this vector and the given vector.
+	 */
 	public double dotProduct(Vec3d vec) {
 		return this.x * vec.x + this.y * vec.y + this.z * vec.z;
 	}
 
+	/**
+	 * Returns the cross product of this vector and the given vector.
+	 */
 	public Vec3d crossProduct(Vec3d vec) {
 		return new Vec3d(this.y * vec.z - this.z * vec.y, this.z * vec.x - this.x * vec.z, this.x * vec.y - this.y * vec.x);
 	}
 
+	/**
+	 * Subtracts the given vector from this vector.
+	 * 
+	 * @see #subtract(double, double, double)
+	 * @see #relativize(Vec3d)
+	 * @return the difference between this vector and the given vector
+	 */
 	public Vec3d subtract(Vec3d vec) {
 		return this.subtract(vec.x, vec.y, vec.z);
 	}
 
+	/**
+	 * Subtracts the given vector from this vector.
+	 * 
+	 * @see #relativize(Vec3d)
+	 * @return the difference between this vector and the given vector
+	 */
 	public Vec3d subtract(double x, double y, double z) {
 		return this.add(-x, -y, -z);
 	}
 
+	/**
+	 * Returns the sum of this vector and the given vector.
+	 * 
+	 * @see #add(double, double, double)
+	 */
 	public Vec3d add(Vec3d vec) {
 		return this.add(vec.x, vec.y, vec.z);
 	}
 
+	/**
+	 * Returns the sum of this vector and the given vector.
+	 * 
+	 * @see #add(Vec3d)
+	 */
 	public Vec3d add(double x, double y, double z) {
 		return new Vec3d(this.x + x, this.y + y, this.z + z);
 	}
 
+	/**
+	 * Checks if the distance between this vector and the given position is
+	 * less than {@code radius}.
+	 */
 	public boolean isInRange(Position pos, double radius) {
 		return this.squaredDistanceTo(pos.getX(), pos.getY(), pos.getZ()) < radius * radius;
 	}
 
+	/**
+	 * Returns the distance between this vector and the given vector.
+	 * 
+	 * @see #squaredDistanceTo(Vec3d)
+	 */
 	public double distanceTo(Vec3d vec) {
 		double d = vec.x - this.x;
 		double e = vec.y - this.y;
@@ -89,6 +201,14 @@ public class Vec3d implements Position {
 		return (double)MathHelper.sqrt(d * d + e * e + f * f);
 	}
 
+	/**
+	 * Returns the squared distance between this vector and the given vector.
+	 * 
+	 * <p>Can be used for fast comparison between distances.
+	 * 
+	 * @see #squaredDistanceTo(double, double, double)
+	 * @see #distanceTo(Vec3d)
+	 */
 	public double squaredDistanceTo(Vec3d vec) {
 		double d = vec.x - this.x;
 		double e = vec.y - this.y;
@@ -96,6 +216,14 @@ public class Vec3d implements Position {
 		return d * d + e * e + f * f;
 	}
 
+	/**
+	 * Returns the squared distance between this vector and the given vector.
+	 * 
+	 * <p>Can be used for fast comparison between distances.
+	 * 
+	 * @see #squaredDistanceTo(Vec3d)
+	 * @see #distanceTo(Vec3d)
+	 */
 	public double squaredDistanceTo(double x, double y, double z) {
 		double d = x - this.x;
 		double e = y - this.y;
@@ -103,27 +231,66 @@ public class Vec3d implements Position {
 		return d * d + e * e + f * f;
 	}
 
-	public Vec3d multiply(double mult) {
-		return this.multiply(mult, mult, mult);
+	/**
+	 * Return a vector whose coordinates are the coordinates of this vector
+	 * each multiplied by the given scalar value.
+	 * 
+	 * @see #multiply(Vec3d)
+	 * @see #multiply(double, double, double)
+	 */
+	public Vec3d multiply(double value) {
+		return this.multiply(value, value, value);
 	}
 
+	/**
+	 * Creates a vector with the same length but with the opposite direction.
+	 */
 	@Environment(EnvType.CLIENT)
 	public Vec3d negate() {
 		return this.multiply(-1.0);
 	}
 
-	public Vec3d multiply(Vec3d mult) {
-		return this.multiply(mult.x, mult.y, mult.z);
+	/**
+	 * Returns a vector whose coordinates are the product of each pair of
+	 * coordinates in this vector and the given vector.
+	 * 
+	 * @see #multiply(double, double, double)
+	 * @see #multiply(double)
+	 */
+	public Vec3d multiply(Vec3d vec) {
+		return this.multiply(vec.x, vec.y, vec.z);
 	}
 
-	public Vec3d multiply(double multX, double multY, double multZ) {
-		return new Vec3d(this.x * multX, this.y * multY, this.z * multZ);
+	/**
+	 * Returns a vector whose coordinates are the product of each pair of
+	 * coordinates in this vector and the given vector.
+	 * 
+	 * @see #multiply(Vec3d)
+	 * @see #multiply(double)
+	 */
+	public Vec3d multiply(double x, double y, double z) {
+		return new Vec3d(this.x * x, this.y * y, this.z * z);
 	}
 
+	/**
+	 * Returns the length of this vector.
+	 * 
+	 * <p>The length of a vector is equivalent to the distance between that
+	 * vector and the {@linkplain #ZERO} vector.
+	 * 
+	 * @see #lengthSquared()
+	 */
 	public double length() {
 		return (double)MathHelper.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
 	}
 
+	/**
+	 * Returns the squared length of this vector.
+	 * 
+	 * <p>Can be used for fast comparison between lengths.
+	 * 
+	 * @see #length()
+	 */
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
@@ -156,6 +323,11 @@ public class Vec3d implements Position {
 		return "(" + this.x + ", " + this.y + ", " + this.z + ")";
 	}
 
+	/**
+	 * Rotates this vector by the given angle counterclockwise around the X axis.
+	 * 
+	 * @param angle the angle in radians
+	 */
 	public Vec3d rotateX(float angle) {
 		float f = MathHelper.cos(angle);
 		float g = MathHelper.sin(angle);
@@ -165,6 +337,11 @@ public class Vec3d implements Position {
 		return new Vec3d(d, e, h);
 	}
 
+	/**
+	 * Rotates this vector by the given angle counterclockwise around the Y axis.
+	 * 
+	 * @param angle the angle in radians
+	 */
 	public Vec3d rotateY(float angle) {
 		float f = MathHelper.cos(angle);
 		float g = MathHelper.sin(angle);
@@ -174,6 +351,11 @@ public class Vec3d implements Position {
 		return new Vec3d(d, e, h);
 	}
 
+	/**
+	 * Rotates this vector by the given angle counterclockwise around the Z axis.
+	 * 
+	 * @param angle the angle in radians
+	 */
 	@Environment(EnvType.CLIENT)
 	public Vec3d rotateZ(float angle) {
 		float f = MathHelper.cos(angle);
@@ -184,11 +366,23 @@ public class Vec3d implements Position {
 		return new Vec3d(d, e, h);
 	}
 
+	/**
+	 * Converts pitch and yaw into a direction vector.
+	 * 
+	 * @see #fromPolar(float, float)
+	 * 
+	 * @param polar the vector composed of pitch and yaw
+	 */
 	@Environment(EnvType.CLIENT)
 	public static Vec3d fromPolar(Vec2f polar) {
 		return fromPolar(polar.x, polar.y);
 	}
 
+	/**
+	 * Converts pitch and yaw into a direction vector.
+	 * 
+	 * @see #fromPolar(Vec2f)
+	 */
 	@Environment(EnvType.CLIENT)
 	public static Vec3d fromPolar(float pitch, float yaw) {
 		float f = MathHelper.cos(-yaw * (float) (Math.PI / 180.0) - (float) Math.PI);
@@ -198,6 +392,9 @@ public class Vec3d implements Position {
 		return new Vec3d((double)(g * h), (double)i, (double)(f * h));
 	}
 
+	/**
+	 * Applies the floor function to the coordinates chosen by the given axes.
+	 */
 	public Vec3d floorAlongAxes(EnumSet<Direction.Axis> axes) {
 		double d = axes.contains(Direction.Axis.X) ? (double)MathHelper.floor(this.x) : this.x;
 		double e = axes.contains(Direction.Axis.Y) ? (double)MathHelper.floor(this.y) : this.y;
@@ -205,6 +402,9 @@ public class Vec3d implements Position {
 		return new Vec3d(d, e, f);
 	}
 
+	/**
+	 * Returns the coordinate chosen by the given axis.
+	 */
 	public double getComponentAlongAxis(Direction.Axis axis) {
 		return axis.choose(this.x, this.y, this.z);
 	}

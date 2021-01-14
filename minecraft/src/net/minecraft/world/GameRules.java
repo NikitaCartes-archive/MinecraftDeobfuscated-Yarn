@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.server.MinecraftServer;
@@ -192,10 +192,10 @@ public class GameRules {
 		return (T)this.rules.get(key);
 	}
 
-	public CompoundTag toNbt() {
-		CompoundTag compoundTag = new CompoundTag();
-		this.rules.forEach((key, rule) -> compoundTag.putString(key.name, rule.serialize()));
-		return compoundTag;
+	public NbtCompound toNbt() {
+		NbtCompound nbtCompound = new NbtCompound();
+		this.rules.forEach((key, rule) -> nbtCompound.putString(key.name, rule.serialize()));
+		return nbtCompound;
 	}
 
 	private void load(DynamicLike<?> dynamicLike) {

@@ -70,13 +70,13 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public IntList getIds() {
+	public IntList getMatchingItemIds() {
 		if (this.ids == null) {
 			this.cacheMatchingStacks();
 			this.ids = new IntArrayList(this.matchingStacks.length);
 
 			for (ItemStack itemStack : this.matchingStacks) {
-				this.ids.add(RecipeFinder.getItemId(itemStack));
+				this.ids.add(RecipeMatcher.getItemId(itemStack));
 			}
 
 			this.ids.sort(IntComparators.NATURAL_COMPARATOR);

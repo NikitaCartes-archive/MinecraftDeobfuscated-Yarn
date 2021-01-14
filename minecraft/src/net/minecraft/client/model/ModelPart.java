@@ -7,11 +7,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public class ModelPart {
@@ -50,17 +50,17 @@ public class ModelPart {
 
 	public ModelPart method_29991() {
 		ModelPart modelPart = new ModelPart();
-		modelPart.copyPositionAndRotation(this);
+		modelPart.copyTransform(this);
 		return modelPart;
 	}
 
-	public void copyPositionAndRotation(ModelPart modelPart) {
-		this.pitch = modelPart.pitch;
-		this.yaw = modelPart.yaw;
-		this.roll = modelPart.roll;
-		this.pivotX = modelPart.pivotX;
-		this.pivotY = modelPart.pivotY;
-		this.pivotZ = modelPart.pivotZ;
+	public void copyTransform(ModelPart part) {
+		this.pitch = part.pitch;
+		this.yaw = part.yaw;
+		this.roll = part.roll;
+		this.pivotX = part.pivotX;
+		this.pivotY = part.pivotY;
+		this.pivotZ = part.pivotZ;
 	}
 
 	public void addChild(ModelPart part) {
@@ -136,29 +136,29 @@ public class ModelPart {
 	public void rotate(MatrixStack matrix) {
 		matrix.translate((double)(this.pivotX / 16.0F), (double)(this.pivotY / 16.0F), (double)(this.pivotZ / 16.0F));
 		if (this.roll != 0.0F) {
-			matrix.multiply(Vector3f.POSITIVE_Z.getRadialQuaternion(this.roll));
+			matrix.multiply(Vec3f.POSITIVE_Z.getRadialQuaternion(this.roll));
 		}
 
 		if (this.yaw != 0.0F) {
-			matrix.multiply(Vector3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
+			matrix.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(this.yaw));
 		}
 
 		if (this.pitch != 0.0F) {
-			matrix.multiply(Vector3f.POSITIVE_X.getRadialQuaternion(this.pitch));
+			matrix.multiply(Vec3f.POSITIVE_X.getRadialQuaternion(this.pitch));
 		}
 	}
 
-	private void renderCuboids(MatrixStack.Entry matrices, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
-		Matrix4f matrix4f = matrices.getModel();
-		Matrix3f matrix3f = matrices.getNormal();
+	private void renderCuboids(MatrixStack.Entry entry, VertexConsumer vertexConsumer, int light, int overlay, float red, float green, float blue, float alpha) {
+		Matrix4f matrix4f = entry.getModel();
+		Matrix3f matrix3f = entry.getNormal();
 
 		for (ModelPart.Cuboid cuboid : this.cuboids) {
 			for (ModelPart.Quad quad : cuboid.sides) {
-				Vector3f vector3f = quad.direction.copy();
-				vector3f.transform(matrix3f);
-				float f = vector3f.getX();
-				float g = vector3f.getY();
-				float h = vector3f.getZ();
+				Vec3f vec3f = quad.direction.copy();
+				vec3f.transform(matrix3f);
+				float f = vec3f.getX();
+				float g = vec3f.getY();
+				float h = vec3f.getZ();
 
 				for (int i = 0; i < 4; i++) {
 					ModelPart.Vertex vertex = quad.vertices[i];
@@ -270,7 +270,7 @@ public class ModelPart {
 	@Environment(EnvType.CLIENT)
 	static class Quad {
 		public final ModelPart.Vertex[] vertices;
-		public final Vector3f direction;
+		public final Vec3f direction;
 
 		public Quad(ModelPart.Vertex[] vertices, float u1, float v1, float u2, float v2, float squishU, float squishV, boolean flip, Direction direction) {
 			this.vertices = vertices;
@@ -299,19 +299,19 @@ public class ModelPart {
 
 	@Environment(EnvType.CLIENT)
 	static class Vertex {
-		public final Vector3f pos;
+		public final Vec3f pos;
 		public final float u;
 		public final float v;
 
 		public Vertex(float x, float y, float z, float u, float v) {
-			this(new Vector3f(x, y, z), u, v);
+			this(new Vec3f(x, y, z), u, v);
 		}
 
 		public ModelPart.Vertex remap(float u, float v) {
 			return new ModelPart.Vertex(this.pos, u, v);
 		}
 
-		public Vertex(Vector3f pos, float u, float v) {
+		public Vertex(Vec3f pos, float u, float v) {
 			this.pos = pos;
 			this.u = u;
 			this.v = v;

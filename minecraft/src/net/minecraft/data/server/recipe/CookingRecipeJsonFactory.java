@@ -18,17 +18,17 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class CookingRecipeJsonFactory {
-	private final Item result;
-	private final Ingredient ingredient;
+	private final Item output;
+	private final Ingredient input;
 	private final float experience;
 	private final int cookingTime;
 	private final Advancement.Task builder = Advancement.Task.create();
 	private String group;
 	private final CookingRecipeSerializer<?> serializer;
 
-	private CookingRecipeJsonFactory(ItemConvertible result, Ingredient ingredient, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
-		this.result = result.asItem();
-		this.ingredient = ingredient;
+	private CookingRecipeJsonFactory(ItemConvertible output, Ingredient input, float experience, int cookingTime, CookingRecipeSerializer<?> serializer) {
+		this.output = output.asItem();
+		this.input = input;
 		this.experience = experience;
 		this.cookingTime = cookingTime;
 		this.serializer = serializer;
@@ -54,11 +54,11 @@ public class CookingRecipeJsonFactory {
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> exporter) {
-		this.offerTo(exporter, Registry.ITEM.getId(this.result));
+		this.offerTo(exporter, Registry.ITEM.getId(this.output));
 	}
 
 	public void offerTo(Consumer<RecipeJsonProvider> exporter, String recipeIdStr) {
-		Identifier identifier = Registry.ITEM.getId(this.result);
+		Identifier identifier = Registry.ITEM.getId(this.output);
 		Identifier identifier2 = new Identifier(recipeIdStr);
 		if (identifier2.equals(identifier)) {
 			throw new IllegalStateException("Recipe " + identifier2 + " should remove its 'save' argument");
@@ -78,12 +78,12 @@ public class CookingRecipeJsonFactory {
 			new CookingRecipeJsonFactory.CookingRecipeJsonProvider(
 				recipeId,
 				this.group == null ? "" : this.group,
-				this.ingredient,
-				this.result,
+				this.input,
+				this.output,
 				this.experience,
 				this.cookingTime,
 				this.builder,
-				new Identifier(recipeId.getNamespace(), "recipes/" + this.result.getGroup().getName() + "/" + recipeId.getPath()),
+				new Identifier(recipeId.getNamespace(), "recipes/" + this.output.getGroup().getName() + "/" + recipeId.getPath()),
 				(RecipeSerializer<? extends AbstractCookingRecipe>)this.serializer
 			)
 		);

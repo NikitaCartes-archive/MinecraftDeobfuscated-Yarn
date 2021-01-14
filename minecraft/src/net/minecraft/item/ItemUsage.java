@@ -6,9 +6,9 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public class ItemUsage {
-	public static TypedActionResult<ItemStack> consumeHeldItem(World world, PlayerEntity playerEntity, Hand hand) {
-		playerEntity.setCurrentHand(hand);
-		return TypedActionResult.consume(playerEntity.getStackInHand(hand));
+	public static TypedActionResult<ItemStack> consumeHeldItem(World world, PlayerEntity player, Hand hand) {
+		player.setCurrentHand(hand);
+		return TypedActionResult.consume(player.getStackInHand(hand));
 	}
 
 	public static ItemStack method_30270(ItemStack itemStack, PlayerEntity playerEntity, ItemStack itemStack2, boolean bl) {

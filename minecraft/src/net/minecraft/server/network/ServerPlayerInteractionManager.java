@@ -248,7 +248,7 @@ public class ServerPlayerInteractionManager {
 				} else {
 					ItemStack itemStack = this.player.getMainHandStack();
 					ItemStack itemStack2 = itemStack.copy();
-					boolean bl2 = this.player.isUsingEffectiveTool(blockState);
+					boolean bl2 = this.player.canHarvest(blockState);
 					itemStack.postMine(this.world, blockState, pos, this.player);
 					if (bl && bl2) {
 						block.afterBreak(this.world, this.player, pos, blockState, blockEntity, itemStack2);

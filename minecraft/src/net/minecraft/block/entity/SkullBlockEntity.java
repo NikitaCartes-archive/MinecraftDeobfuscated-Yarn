@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.util.ChatUtil;
@@ -39,26 +39,26 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		super.writeNbt(nbt);
 		if (this.owner != null) {
-			CompoundTag compoundTag = new CompoundTag();
-			NbtHelper.fromGameProfile(compoundTag, this.owner);
-			tag.put("SkullOwner", compoundTag);
+			NbtCompound nbtCompound = new NbtCompound();
+			NbtHelper.writeGameProfile(nbtCompound, this.owner);
+			nbt.put("SkullOwner", nbtCompound);
 		}
 
-		return tag;
+		return nbt;
 	}
 
 	@Override
-	public void fromTag(BlockState state, CompoundTag tag) {
+	public void fromTag(BlockState state, NbtCompound tag) {
 		super.fromTag(state, tag);
 		if (tag.contains("SkullOwner", 10)) {
-			this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
+			this.setOwner(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
 		} else if (tag.contains("ExtraType", 8)) {
 			String string = tag.getString("ExtraType");
 			if (!ChatUtil.isEmpty(string)) {
-				this.setOwnerAndType(new GameProfile(null, string));
+				this.setOwner(new GameProfile(null, string));
 			}
 		}
 	}
@@ -90,16 +90,16 @@ public class SkullBlockEntity extends BlockEntity implements Tickable {
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataTag());
+		return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataNbt());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.writeNbt(new NbtCompound());
 	}
 
-	public void setOwnerAndType(@Nullable GameProfile gameProfile) {
-		this.owner = gameProfile;
+	public void setOwner(@Nullable GameProfile owner) {
+		this.owner = owner;
 		this.loadOwnerProperties();
 	}
 

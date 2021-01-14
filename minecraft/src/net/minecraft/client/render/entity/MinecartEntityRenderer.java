@@ -11,11 +11,11 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
 import net.minecraft.client.render.entity.model.MinecartEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends EntityRenderer<T> {
@@ -63,8 +63,8 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		matrixStack.translate(0.0, 0.375, 0.0);
-		matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
-		matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(-o));
+		matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F - f));
+		matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-o));
 		float p = (float)abstractMinecartEntity.getDamageWobbleTicks() - g;
 		float q = abstractMinecartEntity.getDamageWobbleStrength() - g;
 		if (q < 0.0F) {
@@ -72,7 +72,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 		}
 
 		if (p > 0.0F) {
-			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(MathHelper.sin(p) * p * q / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide()));
+			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(MathHelper.sin(p) * p * q / 10.0F * (float)abstractMinecartEntity.getDamageWobbleSide()));
 		}
 
 		int r = abstractMinecartEntity.getBlockOffset();
@@ -82,7 +82,7 @@ public class MinecartEntityRenderer<T extends AbstractMinecartEntity> extends En
 			float s = 0.75F;
 			matrixStack.scale(0.75F, 0.75F, 0.75F);
 			matrixStack.translate(-0.5, (double)((float)(r - 8) / 16.0F), 0.5);
-			matrixStack.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
+			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F));
 			this.renderBlock(abstractMinecartEntity, g, blockState, matrixStack, vertexConsumerProvider, i);
 			matrixStack.pop();
 		}

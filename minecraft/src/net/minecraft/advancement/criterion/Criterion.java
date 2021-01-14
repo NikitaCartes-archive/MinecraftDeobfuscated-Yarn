@@ -9,9 +9,9 @@ import net.minecraft.util.Identifier;
 public interface Criterion<T extends CriterionConditions> {
 	Identifier getId();
 
-	void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditionsContainer);
+	void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditions);
 
-	void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditionsContainer);
+	void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditions);
 
 	void endTracking(PlayerAdvancementTracker tracker);
 

@@ -15,7 +15,7 @@ import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class LecternScreen extends BookScreen implements ScreenHandlerProvider<LecternScreenHandler> {
-	private final LecternScreenHandler container;
+	private final LecternScreenHandler handler;
 	private final ScreenHandlerListener listener = new ScreenHandlerListener() {
 		@Override
 		public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
@@ -35,18 +35,18 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 		}
 	};
 
-	public LecternScreen(LecternScreenHandler container, PlayerInventory inventory, Text title) {
-		this.container = container;
+	public LecternScreen(LecternScreenHandler handler, PlayerInventory inventory, Text title) {
+		this.handler = handler;
 	}
 
 	public LecternScreenHandler getScreenHandler() {
-		return this.container;
+		return this.handler;
 	}
 
 	@Override
 	protected void init() {
 		super.init();
-		this.container.addListener(this.listener);
+		this.handler.addListener(this.listener);
 	}
 
 	@Override
@@ -58,7 +58,7 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 	@Override
 	public void removed() {
 		super.removed();
-		this.container.removeListener(this.listener);
+		this.handler.removeListener(this.listener);
 	}
 
 	@Override
@@ -83,7 +83,7 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 
 	@Override
 	protected boolean jumpToPage(int page) {
-		if (page != this.container.getPage()) {
+		if (page != this.handler.getPage()) {
 			this.sendButtonPressPacket(100 + page);
 			return true;
 		} else {
@@ -92,7 +92,7 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 	}
 
 	private void sendButtonPressPacket(int id) {
-		this.client.interactionManager.clickButton(this.container.syncId, id);
+		this.client.interactionManager.clickButton(this.handler.syncId, id);
 	}
 
 	@Override
@@ -101,11 +101,11 @@ public class LecternScreen extends BookScreen implements ScreenHandlerProvider<L
 	}
 
 	private void updatePageProvider() {
-		ItemStack itemStack = this.container.getBookItem();
+		ItemStack itemStack = this.handler.getBookItem();
 		this.setPageProvider(BookScreen.Contents.create(itemStack));
 	}
 
 	private void updatePage() {
-		this.setPage(this.container.getPage());
+		this.setPage(this.handler.getPage());
 	}
 }

@@ -13,12 +13,12 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 	public EndermanEntityModel(float f) {
 		super(0.0F, -14.0F, 64, 32);
 		float g = -14.0F;
-		this.helmet = new ModelPart(this, 0, 16);
-		this.helmet.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f - 0.5F);
-		this.helmet.setPivot(0.0F, -14.0F, 0.0F);
-		this.torso = new ModelPart(this, 32, 16);
-		this.torso.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f);
-		this.torso.setPivot(0.0F, -14.0F, 0.0F);
+		this.hat = new ModelPart(this, 0, 16);
+		this.hat.addCuboid(-4.0F, -8.0F, -4.0F, 8.0F, 8.0F, 8.0F, f - 0.5F);
+		this.hat.setPivot(0.0F, -14.0F, 0.0F);
+		this.body = new ModelPart(this, 32, 16);
+		this.body.addCuboid(-4.0F, 0.0F, -2.0F, 8.0F, 12.0F, 4.0F, f);
+		this.body.setPivot(0.0F, -14.0F, 0.0F);
 		this.rightArm = new ModelPart(this, 56, 0);
 		this.rightArm.addCuboid(-1.0F, -2.0F, -1.0F, 2.0F, 30.0F, 2.0F, f);
 		this.rightArm.setPivot(-3.0F, -12.0F, 0.0F);
@@ -40,9 +40,9 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 		super.setAngles(livingEntity, f, g, h, i, j);
 		this.head.visible = true;
 		float k = -14.0F;
-		this.torso.pitch = 0.0F;
-		this.torso.pivotY = -14.0F;
-		this.torso.pivotZ = -0.0F;
+		this.body.pitch = 0.0F;
+		this.body.pivotY = -14.0F;
+		this.body.pivotZ = -0.0F;
 		this.rightLeg.pitch -= 0.0F;
 		this.leftLeg.pitch -= 0.0F;
 		this.rightArm.pitch = (float)((double)this.rightArm.pitch * 0.5);
@@ -97,12 +97,12 @@ public class EndermanEntityModel<T extends LivingEntity> extends BipedEntityMode
 		this.leftLeg.pivotY = -5.0F;
 		this.head.pivotZ = -0.0F;
 		this.head.pivotY = -13.0F;
-		this.helmet.pivotX = this.head.pivotX;
-		this.helmet.pivotY = this.head.pivotY;
-		this.helmet.pivotZ = this.head.pivotZ;
-		this.helmet.pitch = this.head.pitch;
-		this.helmet.yaw = this.head.yaw;
-		this.helmet.roll = this.head.roll;
+		this.hat.pivotX = this.head.pivotX;
+		this.hat.pivotY = this.head.pivotY;
+		this.hat.pivotZ = this.head.pivotZ;
+		this.hat.pitch = this.head.pitch;
+		this.hat.yaw = this.head.yaw;
+		this.hat.roll = this.head.roll;
 		if (this.angry) {
 			float m = 1.0F;
 			this.head.pivotY -= 5.0F;

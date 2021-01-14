@@ -96,7 +96,7 @@ public abstract class AbstractRedstoneGateBlock extends HorizontalFacingBlock {
 		}
 	}
 
-	public boolean isLocked(WorldView worldView, BlockPos pos, BlockState state) {
+	public boolean isLocked(WorldView world, BlockPos pos, BlockState state) {
 		return false;
 	}
 

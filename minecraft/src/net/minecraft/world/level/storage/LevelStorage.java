@@ -37,20 +37,20 @@ import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.datafixer.Schemas;
 import net.minecraft.datafixer.TypeReferences;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.FileNameUtil;
 import net.minecraft.util.ProgressListener;
 import net.minecraft.util.Util;
 import net.minecraft.util.WorldSavePath;
+import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
-import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldSaveHandler;
@@ -102,35 +102,35 @@ public class LevelStorage {
 		return new LevelStorage(path, path.resolve("../backups"), Schemas.getFixer());
 	}
 
-	private static <T> Pair<GeneratorOptions, Lifecycle> readGeneratorProperties(Dynamic<T> dynamic, DataFixer dataFixer, int i) {
-		Dynamic<T> dynamic2 = dynamic.get("WorldGenSettings").orElseEmptyMap();
+	private static <T> Pair<GeneratorOptions, Lifecycle> readGeneratorProperties(Dynamic<T> levelData, DataFixer dataFixer, int version) {
+		Dynamic<T> dynamic = levelData.get("WorldGenSettings").orElseEmptyMap();
 
 		for (String string : GENERATOR_OPTION_KEYS) {
-			Optional<? extends Dynamic<?>> optional = dynamic.get(string).result();
+			Optional<? extends Dynamic<?>> optional = levelData.get(string).result();
 			if (optional.isPresent()) {
-				dynamic2 = dynamic2.set(string, (Dynamic<?>)optional.get());
+				dynamic = dynamic.set(string, (Dynamic<?>)optional.get());
 			}
 		}
 
-		Dynamic<T> dynamic3 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic2, i, SharedConstants.getGameVersion().getWorldVersion());
-		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC.parse(dynamic3);
+		Dynamic<T> dynamic2 = dataFixer.update(TypeReferences.CHUNK_GENERATOR_SETTINGS, dynamic, version, SharedConstants.getGameVersion().getWorldVersion());
+		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC.parse(dynamic2);
 		return Pair.of(
 			(GeneratorOptions)dataResult.resultOrPartial(Util.method_29188("WorldGenSettings: ", LOGGER::error))
 				.orElseGet(
 					() -> {
 						Registry<DimensionType> registry = (Registry<DimensionType>)RegistryLookupCodec.of(Registry.DIMENSION_TYPE_KEY)
 							.codec()
-							.parse(dynamic3)
+							.parse(dynamic2)
 							.resultOrPartial(Util.method_29188("Dimension type registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get dimension registry"));
 						Registry<Biome> registry2 = (Registry<Biome>)RegistryLookupCodec.of(Registry.BIOME_KEY)
 							.codec()
-							.parse(dynamic3)
+							.parse(dynamic2)
 							.resultOrPartial(Util.method_29188("Biome registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get biome registry"));
 						Registry<ChunkGeneratorSettings> registry3 = (Registry<ChunkGeneratorSettings>)RegistryLookupCodec.of(Registry.NOISE_SETTINGS_WORLDGEN)
 							.codec()
-							.parse(dynamic3)
+							.parse(dynamic2)
 							.resultOrPartial(Util.method_29188("Noise settings registry: ", LOGGER::error))
 							.orElseThrow(() -> new IllegalStateException("Failed to get noise settings registry"));
 						return GeneratorOptions.getDefaultOptions(registry, registry2, registry3);
@@ -198,12 +198,12 @@ public class LevelStorage {
 	@Nullable
 	private static DataPackSettings readDataPackSettings(File file, DataFixer dataFixer) {
 		try {
-			CompoundTag compoundTag = NbtIo.readCompressed(file);
-			CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-			compoundTag2.remove("Player");
-			int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
-			Dynamic<Tag> dynamic = dataFixer.update(
-				DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
+			NbtCompound nbtCompound = NbtIo.readCompressed(file);
+			NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
+			nbtCompound2.remove("Player");
+			int i = nbtCompound2.contains("DataVersion", 99) ? nbtCompound2.getInt("DataVersion") : -1;
+			Dynamic<NbtElement> dynamic = dataFixer.update(
+				DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
 			);
 			return (DataPackSettings)dynamic.get("DataPacks").result().map(LevelStorage::parseDataPackSettings).orElse(DataPackSettings.SAFE_MODE);
 		} catch (Exception var6) {
@@ -212,21 +212,21 @@ public class LevelStorage {
 		}
 	}
 
-	private static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<Tag> dynamicOps, DataPackSettings dataPackSettings) {
+	private static BiFunction<File, DataFixer, LevelProperties> createLevelDataParser(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
 		return (file, dataFixer) -> {
 			try {
-				CompoundTag compoundTag = NbtIo.readCompressed(file);
-				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-				CompoundTag compoundTag3 = compoundTag2.contains("Player", 10) ? compoundTag2.getCompound("Player") : null;
-				compoundTag2.remove("Player");
-				int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
-				Dynamic<Tag> dynamic = dataFixer.update(
-					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(dynamicOps, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
+				NbtCompound nbtCompound = NbtIo.readCompressed(file);
+				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
+				NbtCompound nbtCompound3 = nbtCompound2.contains("Player", 10) ? nbtCompound2.getCompound("Player") : null;
+				nbtCompound2.remove("Player");
+				int i = nbtCompound2.contains("DataVersion", 99) ? nbtCompound2.getInt("DataVersion") : -1;
+				Dynamic<NbtElement> dynamic = dataFixer.update(
+					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(dynamicOps, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
 				);
 				Pair<GeneratorOptions, Lifecycle> pair = readGeneratorProperties(dynamic, dataFixer, i);
 				SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
 				LevelInfo levelInfo = LevelInfo.fromDynamic(dynamic, dataPackSettings);
-				return LevelProperties.readProperties(dynamic, dataFixer, i, compoundTag3, levelInfo, saveVersionInfo, pair.getFirst(), pair.getSecond());
+				return LevelProperties.readProperties(dynamic, dataFixer, i, nbtCompound3, levelInfo, saveVersionInfo, pair.getFirst(), pair.getSecond());
 			} catch (Exception var12) {
 				LOGGER.error("Exception reading {}", file, var12);
 				return null;
@@ -237,12 +237,12 @@ public class LevelStorage {
 	private BiFunction<File, DataFixer, LevelSummary> createLevelDataParser(File file, boolean locked) {
 		return (file2, dataFixer) -> {
 			try {
-				CompoundTag compoundTag = NbtIo.readCompressed(file2);
-				CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-				compoundTag2.remove("Player");
-				int i = compoundTag2.contains("DataVersion", 99) ? compoundTag2.getInt("DataVersion") : -1;
-				Dynamic<Tag> dynamic = dataFixer.update(
-					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, compoundTag2), i, SharedConstants.getGameVersion().getWorldVersion()
+				NbtCompound nbtCompound = NbtIo.readCompressed(file2);
+				NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
+				nbtCompound2.remove("Player");
+				int i = nbtCompound2.contains("DataVersion", 99) ? nbtCompound2.getInt("DataVersion") : -1;
+				Dynamic<NbtElement> dynamic = dataFixer.update(
+					DataFixTypes.LEVEL.getTypeReference(), new Dynamic<>(NbtOps.INSTANCE, nbtCompound2), i, SharedConstants.getGameVersion().getWorldVersion()
 				);
 				SaveVersionInfo saveVersionInfo = SaveVersionInfo.fromDynamic(dynamic);
 				int j = saveVersionInfo.getLevelFormatVersion();
@@ -348,7 +348,7 @@ public class LevelStorage {
 		}
 
 		@Nullable
-		public SaveProperties readLevelProperties(DynamicOps<Tag> dynamicOps, DataPackSettings dataPackSettings) {
+		public SaveProperties readLevelProperties(DynamicOps<NbtElement> dynamicOps, DataPackSettings dataPackSettings) {
 			this.checkValid();
 			return LevelStorage.this.readLevelProperties(this.directory.toFile(), LevelStorage.createLevelDataParser(dynamicOps, dataPackSettings));
 		}
@@ -363,15 +363,15 @@ public class LevelStorage {
 			this.backupLevelDataFile(dynamicRegistryManager, saveProperties, null);
 		}
 
-		public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties, @Nullable CompoundTag compoundTag) {
+		public void backupLevelDataFile(DynamicRegistryManager dynamicRegistryManager, SaveProperties saveProperties, @Nullable NbtCompound nbtCompound) {
 			File file = this.directory.toFile();
-			CompoundTag compoundTag2 = saveProperties.cloneWorldTag(dynamicRegistryManager, compoundTag);
-			CompoundTag compoundTag3 = new CompoundTag();
-			compoundTag3.put("Data", compoundTag2);
+			NbtCompound nbtCompound2 = saveProperties.cloneWorldNbt(dynamicRegistryManager, nbtCompound);
+			NbtCompound nbtCompound3 = new NbtCompound();
+			nbtCompound3.put("Data", nbtCompound2);
 
 			try {
 				File file2 = File.createTempFile("level", ".dat", file);
-				NbtIo.writeCompressed(compoundTag3, file2);
+				NbtIo.writeCompressed(nbtCompound3, file2);
 				File file3 = new File(file, "level.dat_old");
 				File file4 = new File(file, "level.dat");
 				Util.backupAndReplace(file4, file2, file3);
@@ -441,10 +441,10 @@ public class LevelStorage {
 			if (file.exists()) {
 				File file2 = new File(file, "level.dat");
 				if (file2.exists()) {
-					CompoundTag compoundTag = NbtIo.readCompressed(file2);
-					CompoundTag compoundTag2 = compoundTag.getCompound("Data");
-					compoundTag2.putString("LevelName", name);
-					NbtIo.writeCompressed(compoundTag, file2);
+					NbtCompound nbtCompound = NbtIo.readCompressed(file2);
+					NbtCompound nbtCompound2 = nbtCompound.getCompound("Data");
+					nbtCompound2.putString("LevelName", name);
+					NbtIo.writeCompressed(nbtCompound, file2);
 				}
 			}
 		}

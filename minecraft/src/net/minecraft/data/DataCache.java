@@ -73,9 +73,9 @@ public class DataCache {
 		return (String)this.oldSha1.get(path);
 	}
 
-	public void updateSha1(Path path, String string) {
-		this.newSha1.put(path, string);
-		if (Objects.equals(this.oldSha1.remove(path), string)) {
+	public void updateSha1(Path path, String sha1) {
+		this.newSha1.put(path, sha1);
+		if (Objects.equals(this.oldSha1.remove(path), sha1)) {
 			this.unchanged++;
 		}
 	}

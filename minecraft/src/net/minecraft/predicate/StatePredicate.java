@@ -42,8 +42,8 @@ public class StatePredicate {
 		return json.isJsonNull() ? null : json.getAsString();
 	}
 
-	private StatePredicate(List<StatePredicate.Condition> testers) {
-		this.conditions = ImmutableList.copyOf(testers);
+	private StatePredicate(List<StatePredicate.Condition> conditions) {
+		this.conditions = ImmutableList.copyOf(conditions);
 	}
 
 	public <S extends State<?, S>> boolean test(StateManager<?, S> stateManager, S container) {

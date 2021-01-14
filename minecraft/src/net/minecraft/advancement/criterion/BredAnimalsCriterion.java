@@ -28,11 +28,11 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		return new BredAnimalsCriterion.Conditions(extended, extended2, extended3, extended4);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity) {
-		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(serverPlayerEntity, animalEntity);
-		LootContext lootContext2 = EntityPredicate.createAdvancementEntityLootContext(serverPlayerEntity, animalEntity2);
-		LootContext lootContext3 = passiveEntity != null ? EntityPredicate.createAdvancementEntityLootContext(serverPlayerEntity, passiveEntity) : null;
-		this.test(serverPlayerEntity, conditions -> conditions.matches(lootContext, lootContext2, lootContext3));
+	public void trigger(ServerPlayerEntity player, AnimalEntity parent, AnimalEntity partner, @Nullable PassiveEntity child) {
+		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, parent);
+		LootContext lootContext2 = EntityPredicate.createAdvancementEntityLootContext(player, partner);
+		LootContext lootContext3 = child != null ? EntityPredicate.createAdvancementEntityLootContext(player, child) : null;
+		this.test(player, conditions -> conditions.matches(lootContext, lootContext2, lootContext3));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {

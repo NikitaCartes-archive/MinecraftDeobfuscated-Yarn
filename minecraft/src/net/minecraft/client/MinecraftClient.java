@@ -90,15 +90,15 @@ import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.network.SocialInteractionsManager;
-import net.minecraft.client.options.AoMode;
-import net.minecraft.client.options.ChatVisibility;
-import net.minecraft.client.options.CloudRenderMode;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.GraphicsMode;
-import net.minecraft.client.options.HotbarStorage;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.client.options.Option;
-import net.minecraft.client.options.Perspective;
+import net.minecraft.client.option.AoMode;
+import net.minecraft.client.option.ChatVisibility;
+import net.minecraft.client.option.CloudRenderMode;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.GraphicsMode;
+import net.minecraft.client.option.HotbarStorage;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.option.Option;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
@@ -165,11 +165,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.SkullItem;
 import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
@@ -241,6 +241,48 @@ import net.minecraft.world.level.storage.LevelStorage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Represents a logical Minecraft client.
+ * The logical Minecraft client is responsible for rendering, sound playback and control input.
+ * The Minecraft client also manages connections to a logical server which may be the client's {@link net.minecraft.server.integrated.IntegratedServer} or a remote server.
+ * The Minecraft client instance may be obtained using {@link MinecraftClient#getInstance()}.
+ * 
+ * <p>Rendering on a Minecraft client is split into several facilities.
+ * The primary entrypoint for rendering is {@link net.minecraft.client.render.GameRenderer#render(float, long, boolean)}.
+ * <div class="fabric"><table border=1>
+ * <caption>Rendering facilities</caption>
+ * <tr>
+ *  <th><b>Thing to render</b></th> <th><b>Rendering facility</b></th>
+ * </tr>
+ * <tr>
+ *  <td>World</td> <td>{@link net.minecraft.client.render.WorldRenderer}</td>
+ * </tr>
+ * <tr>
+ *  <td>Blocks and Fluids</td> <td>{@link net.minecraft.client.render.block.BlockRenderManager}</td>
+ * </tr>
+ * <tr>
+ *  <td>Entities</td> <td>{@link net.minecraft.client.render.entity.EntityRenderDispatcher}</td>
+ * </tr>
+ * <tr>
+ *  <td>Block entities</td> <td>{@link net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher}</td>
+ * </tr>
+ * <tr>
+ *  <td>Items</td> <td>{@link net.minecraft.client.render.item.ItemRenderer}</td>
+ * </tr>
+ * <tr>
+ *  <td>Items held in hand</td> <td>{@link net.minecraft.client.render.item.HeldItemRenderer}</td>
+ * </tr>
+ * <tr>
+ *  <td>Text</td> <td>{@link net.minecraft.client.font.TextRenderer}</td>
+ * </tr>
+ * <tr>
+ *  <td>Game hud (health bar, hunger bar)</td> <td>{@link net.minecraft.client.gui.hud.InGameHud}</td>
+ * </tr>
+ * </table></div>
+ * 
+ * @see net.minecraft.server.integrated.IntegratedServer
+ * @see net.minecraft.client.render.GameRenderer
+ */
 @Environment(EnvType.CLIENT)
 public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implements SnooperListener, WindowEventHandler {
 	private static MinecraftClient instance;
@@ -276,6 +318,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final HotbarStorage creativeHotbarStorage;
 	public final Mouse mouse;
 	public final Keyboard keyboard;
+	/**
+	 * The directory that stores options, worlds, resource packs, logs, etc.
+	 */
 	public final File runDirectory;
 	private final String gameVersion;
 	private final String versionType;
@@ -328,8 +373,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private IntegratedServer server;
 	@Nullable
 	private ServerInfo currentServerEntry;
+	/**
+	 * The client connection to the integrated server.
+	 * This is only used when connecting to the integrated server.
+	 * 
+	 * @see net.minecraft.client.gui.screen.ConnectScreen
+	 */
 	@Nullable
-	private ClientConnection connection;
+	private ClientConnection integratedServerConnection;
 	private boolean integratedServerRunning;
 	@Nullable
 	public Entity cameraEntity;
@@ -337,6 +388,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public Entity targetedEntity;
 	@Nullable
 	public HitResult crosshairTarget;
+	/**
+	 * The cooldown for using items when {@linkplain net.minecraft.client.option.GameOptions#keyUse the item use button} is held down.
+	 */
 	private int itemUseCooldown;
 	protected int attackCooldown;
 	private boolean paused;
@@ -345,6 +399,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private long nextDebugInfoUpdateTime;
 	private int fpsCounter;
 	public boolean skipGameRender;
+	/**
+	 * The Minecraft client's currently open screen.
+	 * This field should only be used to get the current screen.
+	 * For changing the screen use {@link MinecraftClient#openScreen(Screen)}
+	 * 
+	 * @see MinecraftClient#openScreen(Screen)
+	 */
 	@Nullable
 	public Screen currentScreen;
 	@Nullable
@@ -434,8 +495,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.onWindowFocusChanged(true);
 
 		try {
-			InputStream inputStream = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
-			InputStream inputStream2 = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
+			InputStream inputStream = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
+			InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
 			this.window.setIcon(inputStream, inputStream2);
 		} catch (IOException var9) {
 			LOGGER.error("Couldn't set icon", (Throwable)var9);
@@ -453,51 +514,51 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.resourcePackManager.scanPacks();
 		this.options.addResourcePackProfilesToManager(this.resourcePackManager);
 		this.languageManager = new LanguageManager(this.options.language);
-		this.resourceManager.registerListener(this.languageManager);
+		this.resourceManager.registerReloader(this.languageManager);
 		this.textureManager = new TextureManager(this.resourceManager);
-		this.resourceManager.registerListener(this.textureManager);
+		this.resourceManager.registerReloader(this.textureManager);
 		this.skinProvider = new PlayerSkinProvider(this.textureManager, new File(file, "skins"), this.sessionService);
 		this.levelStorage = new LevelStorage(this.runDirectory.toPath().resolve("saves"), this.runDirectory.toPath().resolve("backups"), this.dataFixer);
 		this.soundManager = new SoundManager(this.resourceManager, this.options);
-		this.resourceManager.registerListener(this.soundManager);
+		this.resourceManager.registerReloader(this.soundManager);
 		this.splashTextLoader = new SplashTextResourceSupplier(this.session);
-		this.resourceManager.registerListener(this.splashTextLoader);
+		this.resourceManager.registerReloader(this.splashTextLoader);
 		this.musicTracker = new MusicTracker(this);
 		this.fontManager = new FontManager(this.textureManager);
 		this.textRenderer = this.fontManager.createTextRenderer();
-		this.resourceManager.registerListener(this.fontManager.getResourceReloadListener());
+		this.resourceManager.registerReloader(this.fontManager.getResourceReloadListener());
 		this.initFont(this.forcesUnicodeFont());
-		this.resourceManager.registerListener(new GrassColormapResourceSupplier());
-		this.resourceManager.registerListener(new FoliageColormapResourceSupplier());
+		this.resourceManager.registerReloader(new GrassColormapResourceSupplier());
+		this.resourceManager.registerReloader(new FoliageColormapResourceSupplier());
 		this.window.setPhase("Startup");
 		RenderSystem.setupDefaultState(0, 0, this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
 		this.window.setPhase("Post startup");
 		this.blockColors = BlockColors.create();
 		this.itemColors = ItemColors.create(this.blockColors);
 		this.bakedModelManager = new BakedModelManager(this.textureManager, this.blockColors, this.options.mipmapLevels);
-		this.resourceManager.registerListener(this.bakedModelManager);
+		this.resourceManager.registerReloader(this.bakedModelManager);
 		this.itemRenderer = new ItemRenderer(this.textureManager, this.bakedModelManager, this.itemColors);
 		this.entityRenderDispatcher = new EntityRenderDispatcher(this.textureManager, this.itemRenderer, this.resourceManager, this.textRenderer, this.options);
 		this.heldItemRenderer = new HeldItemRenderer(this);
-		this.resourceManager.registerListener(this.itemRenderer);
+		this.resourceManager.registerReloader(this.itemRenderer);
 		this.bufferBuilders = new BufferBuilderStorage();
 		this.gameRenderer = new GameRenderer(this, this.resourceManager, this.bufferBuilders);
-		this.resourceManager.registerListener(this.gameRenderer);
+		this.resourceManager.registerReloader(this.gameRenderer);
 		this.socialInteractionsManager = new SocialInteractionsManager(this, this.field_26902);
 		this.blockRenderManager = new BlockRenderManager(this.bakedModelManager.getBlockModels(), this.blockColors);
-		this.resourceManager.registerListener(this.blockRenderManager);
+		this.resourceManager.registerReloader(this.blockRenderManager);
 		this.worldRenderer = new WorldRenderer(this, this.bufferBuilders);
-		this.resourceManager.registerListener(this.worldRenderer);
+		this.resourceManager.registerReloader(this.worldRenderer);
 		this.initializeSearchableContainers();
-		this.resourceManager.registerListener(this.searchManager);
+		this.resourceManager.registerReloader(this.searchManager);
 		this.particleManager = new ParticleManager(this.world, this.textureManager);
-		this.resourceManager.registerListener(this.particleManager);
+		this.resourceManager.registerReloader(this.particleManager);
 		this.paintingManager = new PaintingManager(this.textureManager);
-		this.resourceManager.registerListener(this.paintingManager);
+		this.resourceManager.registerReloader(this.paintingManager);
 		this.statusEffectSpriteManager = new StatusEffectSpriteManager(this.textureManager);
-		this.resourceManager.registerListener(this.statusEffectSpriteManager);
+		this.resourceManager.registerReloader(this.statusEffectSpriteManager);
 		this.videoWarningManager = new VideoWarningManager();
-		this.resourceManager.registerListener(this.videoWarningManager);
+		this.resourceManager.registerReloader(this.videoWarningManager);
 		this.inGameHud = new InGameHud(this);
 		this.debugRenderer = new DebugRenderer(this);
 		RenderSystem.setErrorCallback(this::handleGlErrorByDisableVsync);
@@ -521,7 +582,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.setOverlay(
 			new SplashScreen(
 				this,
-				this.resourceManager.beginMonitoredReload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+				this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 				optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
 						if (SharedConstants.isDevelopment) {
 							this.checkGameData();
@@ -579,18 +640,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return !"vanilla".equals(ClientBrandRetriever.getClientModName()) || MinecraftClient.class.getSigners() == null;
 	}
 
-	private void handleResourceReloadException(Throwable throwable) {
+	private void handleResourceReloadException(Throwable exception) {
 		if (this.resourcePackManager.getEnabledNames().size() > 1) {
 			Text text;
-			if (throwable instanceof ReloadableResourceManagerImpl.PackAdditionFailedException) {
-				text = new LiteralText(((ReloadableResourceManagerImpl.PackAdditionFailedException)throwable).getPack().getName());
+			if (exception instanceof ReloadableResourceManagerImpl.PackAdditionFailedException) {
+				text = new LiteralText(((ReloadableResourceManagerImpl.PackAdditionFailedException)exception).getPack().getName());
 			} else {
 				text = null;
 			}
 
-			this.method_31186(throwable, text);
+			this.method_31186(exception, text);
 		} else {
-			Util.throwUnchecked(throwable);
+			Util.throwUnchecked(exception);
 		}
 	}
 
@@ -757,7 +818,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.setOverlay(
 					new SplashScreen(
 						this,
-						this.resourceManager.beginMonitoredReload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
+						this.resourceManager.reload(Util.getMainWorkerExecutor(), this, COMPLETED_UNIT_FUTURE, list),
 						optional -> Util.ifPresentOrElse(optional, this::handleResourceReloadException, () -> {
 								this.worldRenderer.reload();
 								completableFuture.complete(null);
@@ -814,7 +875,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		bl |= HandledScreens.validateScreens();
+		bl |= HandledScreens.isMissingScreens();
 		if (bl) {
 			throw new IllegalStateException("Your game data is foobar, fix the errors above!");
 		}
@@ -832,6 +893,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
+	/**
+	 * Opens a new screen, changing the current screen if needed.
+	 * 
+	 * <p>If the screen being opened is {@code null} and the client is not in game, the title screen will be opened.
+	 * If the currently opened screen is {@code null} and player is dead then the death screen will be opened.
+	 * Otherwise the currently open screen will be closed.
+	 */
 	public void openScreen(@Nullable Screen screen) {
 		if (this.currentScreen != null) {
 			this.currentScreen.removed();
@@ -1475,7 +1543,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			if (!this.paused) {
 				if (!this.options.joinedFirstServer && this.method_31321()) {
 					Text text = new TranslatableText("tutorial.socialInteractions.title");
-					Text text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.getKeybindName("socialInteractions"));
+					Text text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
 					this.field_26843 = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
 					this.tutorialManager.method_31365(this.field_26843, 160);
 					this.options.joinedFirstServer = true;
@@ -1508,9 +1576,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			if (!this.paused) {
 				this.particleManager.tick();
 			}
-		} else if (this.connection != null) {
+		} else if (this.integratedServerConnection != null) {
 			this.profiler.swap("pendingConnection");
-			this.connection.tick();
+			this.integratedServerConnection.tick();
 		}
 
 		this.profiler.swap("keyboard");
@@ -1648,7 +1716,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static SaveProperties createSaveProperties(
 		LevelStorage.Session session, DynamicRegistryManager.Impl registryTracker, ResourceManager resourceManager, DataPackSettings dataPackSettings
 	) {
-		RegistryOps<Tag> registryOps = RegistryOps.of(NbtOps.INSTANCE, resourceManager, registryTracker);
+		RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, resourceManager, registryTracker);
 		SaveProperties saveProperties = session.readLevelProperties(registryOps, dataPackSettings);
 		if (saveProperties == null) {
 			throw new IllegalStateException("Failed to load world");
@@ -1668,7 +1736,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		);
 	}
 
-	public void method_29607(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
+	public void createWorld(String worldName, LevelInfo levelInfo, DynamicRegistryManager.Impl registryTracker, GeneratorOptions generatorOptions) {
 		this.startIntegratedServer(
 			worldName,
 			registryTracker,
@@ -1694,8 +1762,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private void startIntegratedServer(
 		String worldName,
 		DynamicRegistryManager.Impl registryTracker,
-		Function<LevelStorage.Session, DataPackSettings> function,
-		Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> function4,
+		Function<LevelStorage.Session, DataPackSettings> dataPackSettingsGetter,
+		Function4<LevelStorage.Session, DynamicRegistryManager.Impl, ResourceManager, DataPackSettings, SaveProperties> savePropertiesGetter,
 		boolean safeMode,
 		MinecraftClient.WorldLoadAction worldLoadAction
 	) {
@@ -1711,10 +1779,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		MinecraftClient.IntegratedResourceManager integratedResourceManager;
 		try {
-			integratedResourceManager = this.method_29604(registryTracker, function, function4, safeMode, session);
+			integratedResourceManager = this.method_29604(registryTracker, dataPackSettingsGetter, savePropertiesGetter, safeMode, session);
 		} catch (Exception var20) {
 			LOGGER.warn("Failed to load datapacks, can't proceed with server load", (Throwable)var20);
-			this.openScreen(new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, registryTracker, function, function4, true, worldLoadAction)));
+			this.openScreen(
+				new DatapackFailureScreen(() -> this.startIntegratedServer(worldName, registryTracker, dataPackSettingsGetter, savePropertiesGetter, true, worldLoadAction))
+			);
 
 			try {
 				session.close();
@@ -1801,13 +1871,13 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}));
 			clientConnection.send(new HandshakeC2SPacket(socketAddress.toString(), 0, NetworkState.LOGIN));
 			clientConnection.send(new LoginHelloC2SPacket(this.getSession().getProfile()));
-			this.connection = clientConnection;
+			this.integratedServerConnection = clientConnection;
 		} else {
 			this.method_29601(
 				worldLoadAction,
 				worldName,
 				bl,
-				() -> this.startIntegratedServer(worldName, registryTracker, function, function4, safeMode, MinecraftClient.WorldLoadAction.NONE)
+				() -> this.startIntegratedServer(worldName, registryTracker, dataPackSettingsGetter, savePropertiesGetter, safeMode, MinecraftClient.WorldLoadAction.NONE)
 			);
 			integratedResourceManager.close();
 
@@ -1833,7 +1903,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 			this.openScreen(new BackupPromptScreen(null, (blx, bl2) -> {
 				if (blx) {
-					EditWorldScreen.method_29784(this.levelStorage, string);
+					EditWorldScreen.onBackupConfirm(this.levelStorage, string);
 				}
 
 				runnable.run();
@@ -1952,7 +2022,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.profiler.push("forcedTick");
 		this.soundManager.stopAll();
 		this.cameraEntity = null;
-		this.connection = null;
+		this.integratedServerConnection = null;
 		this.openScreen(screen);
 		this.render(false);
 		this.profiler.pop();
@@ -2128,18 +2198,18 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private ItemStack addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-		CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
-		if (stack.getItem() instanceof SkullItem && compoundTag.contains("SkullOwner")) {
-			CompoundTag compoundTag2 = compoundTag.getCompound("SkullOwner");
-			stack.getOrCreateTag().put("SkullOwner", compoundTag2);
+		NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+		if (stack.getItem() instanceof SkullItem && nbtCompound.contains("SkullOwner")) {
+			NbtCompound nbtCompound2 = nbtCompound.getCompound("SkullOwner");
+			stack.getOrCreateTag().put("SkullOwner", nbtCompound2);
 			return stack;
 		} else {
-			stack.putSubTag("BlockEntityTag", compoundTag);
-			CompoundTag compoundTag2 = new CompoundTag();
-			ListTag listTag = new ListTag();
-			listTag.add(StringTag.of("\"(+NBT)\""));
-			compoundTag2.put("Lore", listTag);
-			stack.putSubTag("display", compoundTag2);
+			stack.putSubTag("BlockEntityTag", nbtCompound);
+			NbtCompound nbtCompound2 = new NbtCompound();
+			NbtList nbtList = new NbtList();
+			nbtList.add(NbtString.of("\"(+NBT)\""));
+			nbtCompound2.put("Lore", nbtList);
+			stack.putSubTag("display", nbtCompound2);
 			return stack;
 		}
 	}
@@ -2253,8 +2323,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 	}
 
-	public void setCurrentServerEntry(@Nullable ServerInfo serverInfo) {
-		this.currentServerEntry = serverInfo;
+	public void setCurrentServerEntry(@Nullable ServerInfo serverEntry) {
+		this.currentServerEntry = serverEntry;
 	}
 
 	@Nullable
@@ -2313,7 +2383,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.resourcePackManager;
 	}
 
-	public ClientBuiltinResourcePackProvider getResourcePackDownloader() {
+	public ClientBuiltinResourcePackProvider getResourcePackProvider() {
 		return this.builtinPackProvider;
 	}
 
@@ -2357,7 +2427,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 					&& (!this.player.isSubmergedInWater() || category != Biome.Category.OCEAN && category != Biome.Category.RIVER)) {
 					return this.player.world.getRegistryKey() != World.NETHER && this.player.abilities.creativeMode && this.player.abilities.allowFlying
 						? MusicType.CREATIVE
-						: (MusicSound)this.world.getBiomeAccess().method_27344(this.player.getBlockPos()).getMusic().orElse(MusicType.GAME);
+						: (MusicSound)this.world.getBiomeAccess().getBiomeForNoiseGen(this.player.getBlockPos()).getMusic().orElse(MusicType.GAME);
 				} else {
 					return MusicType.UNDERWATER;
 				}
@@ -2457,7 +2527,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	public boolean hasReducedDebugInfo() {
-		return this.player != null && this.player.getReducedDebugInfo() || this.options.reducedDebugInfo;
+		return this.player != null && this.player.hasReducedDebugInfo() || this.options.reducedDebugInfo;
 	}
 
 	public ToastManager getToastManager() {
@@ -2556,8 +2626,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return () -> new Format4ResourcePack((ResourcePack)packFactory.get());
 	}
 
-	public void resetMipmapLevels(int mipmapLevels) {
-		this.bakedModelManager.resetMipmapLevels(mipmapLevels);
+	public void setMipmapLevels(int mipmapLevels) {
+		this.bakedModelManager.setMipmapLevels(mipmapLevels);
 	}
 
 	@Environment(EnvType.CLIENT)

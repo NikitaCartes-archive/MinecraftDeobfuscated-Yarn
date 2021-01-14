@@ -156,15 +156,19 @@ public class WallBlock extends Block implements Waterloggable {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
 		if (direction == Direction.DOWN) {
-			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		} else {
-			return direction == Direction.UP ? this.method_24421(world, state, posFrom, newState) : this.method_24423(world, pos, state, posFrom, newState, direction);
+			return direction == Direction.UP
+				? this.method_24421(world, state, neighborPos, neighborState)
+				: this.method_24423(world, pos, state, neighborPos, neighborState, direction);
 		}
 	}
 

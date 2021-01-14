@@ -7,51 +7,60 @@ import net.fabricmc.api.Environment;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Represents a singular field within a larger vertex format.
+ * <p>
+ * This element comprises a data type, a field length,
+ * and the corresponding GL element type to which this field corresponds.
+ */
 @Environment(EnvType.CLIENT)
 public class VertexFormatElement {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private final VertexFormatElement.Format format;
+	private final VertexFormatElement.Format dataType;
 	private final VertexFormatElement.Type type;
-	private final int index;
-	private final int count;
-	private final int size;
+	private final int textureIndex;
+	private final int length;
+	/**
+	 * The total length of this element (in bytes).
+	 */
+	private final int byteLength;
 
-	public VertexFormatElement(int index, VertexFormatElement.Format format, VertexFormatElement.Type type, int count) {
-		if (this.isValidType(index, type)) {
+	public VertexFormatElement(int textureIndex, VertexFormatElement.Format dataType, VertexFormatElement.Type type, int length) {
+		if (this.isValidType(textureIndex, type)) {
 			this.type = type;
 		} else {
 			LOGGER.warn("Multiple vertex elements of the same type other than UVs are not supported. Forcing type to UV.");
 			this.type = VertexFormatElement.Type.UV;
 		}
 
-		this.format = format;
-		this.index = index;
-		this.count = count;
-		this.size = format.getSize() * this.count;
+		this.dataType = dataType;
+		this.textureIndex = textureIndex;
+		this.length = length;
+		this.byteLength = dataType.getSize() * this.length;
 	}
 
 	private boolean isValidType(int index, VertexFormatElement.Type type) {
 		return index == 0 || type == VertexFormatElement.Type.UV;
 	}
 
-	public final VertexFormatElement.Format getFormat() {
-		return this.format;
+	public final VertexFormatElement.Format getDataType() {
+		return this.dataType;
 	}
 
 	public final VertexFormatElement.Type getType() {
 		return this.type;
 	}
 
-	public final int getIndex() {
-		return this.index;
+	public final int getTextureIndex() {
+		return this.textureIndex;
 	}
 
 	public String toString() {
-		return this.count + "," + this.type.getName() + "," + this.format.getName();
+		return this.length + "," + this.type.getName() + "," + this.dataType.getName();
 	}
 
-	public final int getSize() {
-		return this.size;
+	public final int getByteLength() {
+		return this.byteLength;
 	}
 
 	public boolean equals(Object o) {
@@ -59,12 +68,12 @@ public class VertexFormatElement {
 			return true;
 		} else if (o != null && this.getClass() == o.getClass()) {
 			VertexFormatElement vertexFormatElement = (VertexFormatElement)o;
-			if (this.count != vertexFormatElement.count) {
+			if (this.length != vertexFormatElement.length) {
 				return false;
-			} else if (this.index != vertexFormatElement.index) {
+			} else if (this.textureIndex != vertexFormatElement.textureIndex) {
 				return false;
 			} else {
-				return this.format != vertexFormatElement.format ? false : this.type == vertexFormatElement.type;
+				return this.dataType != vertexFormatElement.dataType ? false : this.type == vertexFormatElement.type;
 			}
 		} else {
 			return false;
@@ -72,18 +81,18 @@ public class VertexFormatElement {
 	}
 
 	public int hashCode() {
-		int i = this.format.hashCode();
+		int i = this.dataType.hashCode();
 		i = 31 * i + this.type.hashCode();
-		i = 31 * i + this.index;
-		return 31 * i + this.count;
+		i = 31 * i + this.textureIndex;
+		return 31 * i + this.length;
 	}
 
 	public void startDrawing(long pointer, int stride) {
-		this.type.startDrawing(this.count, this.format.getGlId(), stride, pointer, this.index);
+		this.type.startDrawing(this.length, this.dataType.getGlId(), stride, pointer, this.textureIndex);
 	}
 
 	public void endDrawing() {
-		this.type.endDrawing(this.index);
+		this.type.endDrawing(this.textureIndex);
 	}
 
 	@Environment(EnvType.CLIENT)

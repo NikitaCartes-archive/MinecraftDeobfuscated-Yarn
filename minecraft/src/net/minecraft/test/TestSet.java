@@ -6,50 +6,50 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 
 public class TestSet {
-	private final Collection<GameTest> tests = Lists.<GameTest>newArrayList();
+	private final Collection<GameTestState> tests = Lists.<GameTestState>newArrayList();
 	@Nullable
 	private Collection<TestListener> field_25303 = Lists.<TestListener>newArrayList();
 
 	public TestSet() {
 	}
 
-	public TestSet(Collection<GameTest> tests) {
+	public TestSet(Collection<GameTestState> tests) {
 		this.tests.addAll(tests);
 	}
 
-	public void add(GameTest test) {
+	public void add(GameTestState test) {
 		this.tests.add(test);
 		this.field_25303.forEach(test::addListener);
 	}
 
 	public void addListener(TestListener listener) {
 		this.field_25303.add(listener);
-		this.tests.forEach(gameTest -> gameTest.addListener(listener));
+		this.tests.forEach(gameTestState -> gameTestState.addListener(listener));
 	}
 
-	public void method_29407(Consumer<GameTest> consumer) {
+	public void method_29407(Consumer<GameTestState> consumer) {
 		this.addListener(new TestListener() {
 			@Override
-			public void onStarted(GameTest test) {
+			public void onStarted(GameTestState test) {
 			}
 
 			@Override
-			public void onFailed(GameTest test) {
+			public void onFailed(GameTestState test) {
 				consumer.accept(test);
 			}
 		});
 	}
 
 	public int getFailedRequiredTestCount() {
-		return (int)this.tests.stream().filter(GameTest::isFailed).filter(GameTest::isRequired).count();
+		return (int)this.tests.stream().filter(GameTestState::isFailed).filter(GameTestState::isRequired).count();
 	}
 
 	public int getFailedOptionalTestCount() {
-		return (int)this.tests.stream().filter(GameTest::isFailed).filter(GameTest::isOptional).count();
+		return (int)this.tests.stream().filter(GameTestState::isFailed).filter(GameTestState::isOptional).count();
 	}
 
 	public int getCompletedTestCount() {
-		return (int)this.tests.stream().filter(GameTest::isCompleted).count();
+		return (int)this.tests.stream().filter(GameTestState::isCompleted).count();
 	}
 
 	public boolean failed() {
@@ -71,13 +71,13 @@ public class TestSet {
 	public String getResultString() {
 		StringBuffer stringBuffer = new StringBuffer();
 		stringBuffer.append('[');
-		this.tests.forEach(gameTest -> {
-			if (!gameTest.isStarted()) {
+		this.tests.forEach(gameTestState -> {
+			if (!gameTestState.isStarted()) {
 				stringBuffer.append(' ');
-			} else if (gameTest.isPassed()) {
+			} else if (gameTestState.isPassed()) {
 				stringBuffer.append('+');
-			} else if (gameTest.isFailed()) {
-				stringBuffer.append((char)(gameTest.isRequired() ? 'X' : 'x'));
+			} else if (gameTestState.isFailed()) {
+				stringBuffer.append((char)(gameTestState.isRequired() ? 'X' : 'x'));
 			} else {
 				stringBuffer.append('_');
 			}

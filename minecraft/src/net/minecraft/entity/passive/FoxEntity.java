@@ -56,9 +56,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -290,9 +290,9 @@ public class FoxEntity extends AnimalEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
-		Optional<RegistryKey<Biome>> optional = world.method_31081(this.getBlockPos());
+		Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
 		FoxEntity.Type type = FoxEntity.Type.fromBiome(optional);
 		boolean bl = false;
 		if (entityData instanceof FoxEntity.FoxData) {
@@ -314,7 +314,7 @@ public class FoxEntity extends AnimalEntity {
 		}
 
 		this.initEquipment(difficulty);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	private void addTypeSpecificGoals() {
@@ -367,37 +367,37 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
 		List<UUID> list = this.getTrustedUuids();
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (UUID uUID : list) {
 			if (uUID != null) {
-				listTag.add(NbtHelper.fromUuid(uUID));
+				nbtList.add(NbtHelper.fromUuid(uUID));
 			}
 		}
 
-		tag.put("Trusted", listTag);
-		tag.putBoolean("Sleeping", this.isSleeping());
-		tag.putString("Type", this.getFoxType().getKey());
-		tag.putBoolean("Sitting", this.isSitting());
-		tag.putBoolean("Crouching", this.isInSneakingPose());
+		nbt.put("Trusted", nbtList);
+		nbt.putBoolean("Sleeping", this.isSleeping());
+		nbt.putString("Type", this.getFoxType().getKey());
+		nbt.putBoolean("Sitting", this.isSitting());
+		nbt.putBoolean("Crouching", this.isInSneakingPose());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		ListTag listTag = tag.getList("Trusted", 11);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		NbtList nbtList = nbt.getList("Trusted", 11);
 
-		for (int i = 0; i < listTag.size(); i++) {
-			this.addTrustedUuid(NbtHelper.toUuid(listTag.get(i)));
+		for (int i = 0; i < nbtList.size(); i++) {
+			this.addTrustedUuid(NbtHelper.toUuid(nbtList.get(i)));
 		}
 
-		this.setSleeping(tag.getBoolean("Sleeping"));
-		this.setType(FoxEntity.Type.byName(tag.getString("Type")));
-		this.setSitting(tag.getBoolean("Sitting"));
-		this.setCrouching(tag.getBoolean("Crouching"));
+		this.setSleeping(nbt.getBoolean("Sleeping"));
+		this.setType(FoxEntity.Type.byName(nbt.getString("Type")));
+		this.setSitting(nbt.getBoolean("Sitting"));
+		this.setCrouching(nbt.getBoolean("Crouching"));
 		if (this.world instanceof ServerWorld) {
 			this.addTypeSpecificGoals();
 		}

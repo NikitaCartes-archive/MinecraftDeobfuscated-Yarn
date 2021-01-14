@@ -10,8 +10,8 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -71,39 +71,39 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("ChestedHorse", this.hasChest());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("ChestedHorse", this.hasChest());
 		if (this.hasChest()) {
-			ListTag listTag = new ListTag();
+			NbtList nbtList = new NbtList();
 
 			for (int i = 2; i < this.items.size(); i++) {
 				ItemStack itemStack = this.items.getStack(i);
 				if (!itemStack.isEmpty()) {
-					CompoundTag compoundTag = new CompoundTag();
-					compoundTag.putByte("Slot", (byte)i);
-					itemStack.toTag(compoundTag);
-					listTag.add(compoundTag);
+					NbtCompound nbtCompound = new NbtCompound();
+					nbtCompound.putByte("Slot", (byte)i);
+					itemStack.writeNbt(nbtCompound);
+					nbtList.add(nbtCompound);
 				}
 			}
 
-			tag.put("Items", listTag);
+			nbt.put("Items", nbtList);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setHasChest(tag.getBoolean("ChestedHorse"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setHasChest(nbt.getBoolean("ChestedHorse"));
 		if (this.hasChest()) {
-			ListTag listTag = tag.getList("Items", 10);
+			NbtList nbtList = nbt.getList("Items", 10);
 			this.onChestedStatusChanged();
 
-			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag = listTag.getCompound(i);
-				int j = compoundTag.getByte("Slot") & 255;
+			for (int i = 0; i < nbtList.size(); i++) {
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				int j = nbtCompound.getByte("Slot") & 255;
 				if (j >= 2 && j < this.items.size()) {
-					this.items.setStack(j, ItemStack.fromTag(compoundTag));
+					this.items.setStack(j, ItemStack.fromNbt(nbtCompound));
 				}
 			}
 		}

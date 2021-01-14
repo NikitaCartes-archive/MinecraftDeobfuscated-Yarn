@@ -18,7 +18,7 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -126,8 +126,8 @@ public class SpawnEggItem extends Item {
 		}
 	}
 
-	public boolean isOfSameEntityType(@Nullable CompoundTag tag, EntityType<?> type) {
-		return Objects.equals(this.getEntityType(tag), type);
+	public boolean isOfSameEntityType(@Nullable NbtCompound nbt, EntityType<?> type) {
+		return Objects.equals(this.getEntityType(nbt), type);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -145,11 +145,11 @@ public class SpawnEggItem extends Item {
 		return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
 	}
 
-	public EntityType<?> getEntityType(@Nullable CompoundTag tag) {
-		if (tag != null && tag.contains("EntityTag", 10)) {
-			CompoundTag compoundTag = tag.getCompound("EntityTag");
-			if (compoundTag.contains("id", 8)) {
-				return (EntityType<?>)EntityType.get(compoundTag.getString("id")).orElse(this.type);
+	public EntityType<?> getEntityType(@Nullable NbtCompound nbt) {
+		if (nbt != null && nbt.contains("EntityTag", 10)) {
+			NbtCompound nbtCompound = nbt.getCompound("EntityTag");
+			if (nbtCompound.contains("id", 8)) {
+				return (EntityType<?>)EntityType.get(nbtCompound.getString("id")).orElse(this.type);
 			}
 		}
 
@@ -157,36 +157,36 @@ public class SpawnEggItem extends Item {
 	}
 
 	public Optional<MobEntity> spawnBaby(
-		PlayerEntity user, MobEntity mobEntity, EntityType<? extends MobEntity> entityType, ServerWorld serverWorld, Vec3d vec3d, ItemStack itemStack
+		PlayerEntity user, MobEntity entity, EntityType<? extends MobEntity> entityType, ServerWorld world, Vec3d pos, ItemStack stack
 	) {
-		if (!this.isOfSameEntityType(itemStack.getTag(), entityType)) {
+		if (!this.isOfSameEntityType(stack.getTag(), entityType)) {
 			return Optional.empty();
 		} else {
-			MobEntity mobEntity2;
-			if (mobEntity instanceof PassiveEntity) {
-				mobEntity2 = ((PassiveEntity)mobEntity).createChild(serverWorld, (PassiveEntity)mobEntity);
+			MobEntity mobEntity;
+			if (entity instanceof PassiveEntity) {
+				mobEntity = ((PassiveEntity)entity).createChild(world, (PassiveEntity)entity);
 			} else {
-				mobEntity2 = entityType.create(serverWorld);
+				mobEntity = entityType.create(world);
 			}
 
-			if (mobEntity2 == null) {
+			if (mobEntity == null) {
 				return Optional.empty();
 			} else {
-				mobEntity2.setBaby(true);
-				if (!mobEntity2.isBaby()) {
+				mobEntity.setBaby(true);
+				if (!mobEntity.isBaby()) {
 					return Optional.empty();
 				} else {
-					mobEntity2.refreshPositionAndAngles(vec3d.getX(), vec3d.getY(), vec3d.getZ(), 0.0F, 0.0F);
-					serverWorld.spawnEntityAndPassengers(mobEntity2);
-					if (itemStack.hasCustomName()) {
-						mobEntity2.setCustomName(itemStack.getName());
+					mobEntity.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), 0.0F, 0.0F);
+					world.spawnEntityAndPassengers(mobEntity);
+					if (stack.hasCustomName()) {
+						mobEntity.setCustomName(stack.getName());
 					}
 
 					if (!user.abilities.creativeMode) {
-						itemStack.decrement(1);
+						stack.decrement(1);
 					}
 
-					return Optional.of(mobEntity2);
+					return Optional.of(mobEntity);
 				}
 			}
 		}

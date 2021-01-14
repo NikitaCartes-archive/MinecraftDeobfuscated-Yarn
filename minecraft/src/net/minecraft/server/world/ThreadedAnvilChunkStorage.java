@@ -44,7 +44,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
@@ -165,11 +165,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return f * f + g * g;
 	}
 
-	private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useCameraPosition) {
+	private static int getChebyshevDistance(ChunkPos pos, ServerPlayerEntity player, boolean useWatchedPosition) {
 		int i;
 		int j;
-		if (useCameraPosition) {
-			ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+		if (useWatchedPosition) {
+			ChunkSectionPos chunkSectionPos = player.getWatchedSection();
 			i = chunkSectionPos.getSectionX();
 			j = chunkSectionPos.getSectionZ();
 		} else {
@@ -479,11 +479,11 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				this.world.getProfiler().visit("chunkLoad");
-				CompoundTag compoundTag = this.getUpdatedChunkTag(pos);
-				if (compoundTag != null) {
-					boolean bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
+				NbtCompound nbtCompound = this.getUpdatedChunkNbt(pos);
+				if (nbtCompound != null) {
+					boolean bl = nbtCompound.contains("Level", 10) && nbtCompound.getCompound("Level").contains("Status", 8);
 					if (bl) {
-						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, compoundTag);
+						Chunk chunk = ChunkSerializer.deserialize(this.world, this.structureManager, this.pointOfInterestStorage, pos, nbtCompound);
 						chunk.setLastSaveTime(this.world.getTime());
 						this.method_27053(pos, chunk.getStatus().getChunkType());
 						return Either.left(chunk);
@@ -666,8 +666,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				}
 
 				this.world.getProfiler().visit("chunkSave");
-				CompoundTag compoundTag = ChunkSerializer.serialize(this.world, chunk);
-				this.setTagAt(chunkPos, compoundTag);
+				NbtCompound nbtCompound = ChunkSerializer.serialize(this.world, chunk);
+				this.setNbt(chunkPos, nbtCompound);
 				this.method_27053(chunkPos, chunkStatus.getChunkType());
 				return true;
 			} catch (Exception var5) {
@@ -682,10 +682,10 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		if (b != 0) {
 			return b == 1;
 		} else {
-			CompoundTag compoundTag;
+			NbtCompound nbtCompound;
 			try {
-				compoundTag = this.getUpdatedChunkTag(chunkPos);
-				if (compoundTag == null) {
+				nbtCompound = this.getUpdatedChunkNbt(chunkPos);
+				if (nbtCompound == null) {
 					this.method_27054(chunkPos);
 					return false;
 				}
@@ -695,7 +695,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				return false;
 			}
 
-			ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(compoundTag);
+			ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(nbtCompound);
 			return this.method_27053(chunkPos, chunkType) == 1;
 		}
 	}
@@ -804,9 +804,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	@Nullable
-	private CompoundTag getUpdatedChunkTag(ChunkPos pos) throws IOException {
-		CompoundTag compoundTag = this.getNbt(pos);
-		return compoundTag == null ? null : this.updateChunkTag(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
+	private NbtCompound getUpdatedChunkNbt(ChunkPos pos) throws IOException {
+		NbtCompound nbtCompound = this.getNbt(pos);
+		return nbtCompound == null ? null : this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, nbtCompound);
 	}
 
 	boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {
@@ -834,7 +834,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				this.ticketManager.handleChunkEnter(ChunkSectionPos.from(player), player);
 			}
 		} else {
-			ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+			ChunkSectionPos chunkSectionPos = player.getWatchedSection();
 			this.playerChunkWatchingManager.remove(chunkSectionPos.toChunkPos().toLong(), player);
 			if (!bl2) {
 				this.ticketManager.handleChunkLeave(chunkSectionPos, player);
@@ -851,12 +851,18 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	private ChunkSectionPos method_20726(ServerPlayerEntity serverPlayerEntity) {
 		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(serverPlayerEntity);
-		serverPlayerEntity.setCameraPosition(chunkSectionPos);
+		serverPlayerEntity.setWatchedSection(chunkSectionPos);
 		serverPlayerEntity.networkHandler.sendPacket(new ChunkRenderDistanceCenterS2CPacket(chunkSectionPos.getSectionX(), chunkSectionPos.getSectionZ()));
 		return chunkSectionPos;
 	}
 
-	public void updateCameraPosition(ServerPlayerEntity player) {
+	/**
+	 * Updates the chunk section position of the {@code player}. This updates the player
+	 * position for both entity tracking and chunk loading (watching) logic.
+	 * 
+	 * @see ServerChunkManager#updatePosition(ServerPlayerEntity)
+	 */
+	public void updatePosition(ServerPlayerEntity player) {
 		for (ThreadedAnvilChunkStorage.EntityTracker entityTracker : this.entityTrackers.values()) {
 			if (entityTracker.entity == player) {
 				entityTracker.updateCameraPosition(this.world.getPlayers());
@@ -867,7 +873,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 		int i = MathHelper.floor(player.getX()) >> 4;
 		int j = MathHelper.floor(player.getZ()) >> 4;
-		ChunkSectionPos chunkSectionPos = player.getCameraPosition();
+		ChunkSectionPos chunkSectionPos = player.getWatchedSection();
 		ChunkSectionPos chunkSectionPos2 = ChunkSectionPos.from(player);
 		long l = chunkSectionPos.toChunkPos().toLong();
 		long m = chunkSectionPos2.toChunkPos().toLong();
@@ -983,7 +989,15 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		}
 	}
 
-	protected void tickPlayerMovement() {
+	/**
+	 * Ticks and updates the tracked status of each tracker.
+	 * 
+	 * <p>This first checks if entities have changed chunk sections, and updates
+	 * tracking status of those entities to all players. It then checks if any player
+	 * has changed chunk sections, and updates all entities tracking status to those
+	 * players. This ensures all possible updates are accounted for.
+	 */
+	protected void tickEntityMovement() {
 		List<ServerPlayerEntity> list = Lists.<ServerPlayerEntity>newArrayList();
 		List<ServerPlayerEntity> list2 = this.world.getPlayers();
 

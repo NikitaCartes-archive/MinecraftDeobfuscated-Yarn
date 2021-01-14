@@ -27,7 +27,7 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.recipe.RecipeManager;
@@ -66,10 +66,10 @@ import org.apache.logging.log4j.Logger;
 
 public abstract class World implements WorldAccess, AutoCloseable {
 	protected static final Logger LOGGER = LogManager.getLogger();
-	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.DIMENSION), RegistryKey::getValue);
-	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.DIMENSION, new Identifier("overworld"));
-	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.DIMENSION, new Identifier("the_nether"));
-	public static final RegistryKey<World> END = RegistryKey.of(Registry.DIMENSION, new Identifier("the_end"));
+	public static final Codec<RegistryKey<World>> CODEC = Identifier.CODEC.xmap(RegistryKey.createKeyFactory(Registry.WORLD_KEY), RegistryKey::getValue);
+	public static final RegistryKey<World> OVERWORLD = RegistryKey.of(Registry.WORLD_KEY, new Identifier("overworld"));
+	public static final RegistryKey<World> NETHER = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_nether"));
+	public static final RegistryKey<World> END = RegistryKey.of(Registry.WORLD_KEY, new Identifier("the_end"));
 	private static final Direction[] DIRECTIONS = Direction.values();
 	public final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 	public final List<BlockEntity> tickingBlockEntities = Lists.<BlockEntity>newArrayList();
@@ -79,7 +79,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	private final boolean debugWorld;
 	private int ambientDarkness;
 	protected int lcgBlockSeed = new Random().nextInt();
-	protected final int unusedIncrement = 1013904223;
+	protected final int lcgBlockSeedIncrement = 1013904223;
 	protected float rainGradientPrev;
 	protected float rainGradient;
 	protected float thunderGradientPrev;
@@ -139,8 +139,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return null;
 	}
 
-	public static boolean isInBuildLimit(BlockPos pos) {
-		return !isOutOfBuildLimitVertically(pos) && isValidHorizontally(pos);
+	public static boolean isInBuildLimit(BlockPos blockPos) {
+		return !isOutOfBuildLimitVertically(blockPos) && isValidHorizontally(blockPos);
 	}
 
 	public static boolean isValid(BlockPos pos) {
@@ -319,12 +319,12 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		}
 	}
 
-	public void updateNeighbor(BlockPos sourcePos, Block sourceBlock, BlockPos neighborPos) {
+	public void updateNeighbor(BlockPos pos, Block sourceBlock, BlockPos neighborPos) {
 		if (!this.isClient) {
-			BlockState blockState = this.getBlockState(sourcePos);
+			BlockState blockState = this.getBlockState(pos);
 
 			try {
-				blockState.neighborUpdate(this, sourcePos, sourceBlock, neighborPos, false);
+				blockState.neighborUpdate(this, pos, sourceBlock, neighborPos, false);
 			} catch (Throwable var8) {
 				CrashReport crashReport = CrashReport.create(var8, "Exception while updating neighbours");
 				CrashReportSection crashReportSection = crashReport.addElement("Block being updated");
@@ -335,7 +335,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 						return "ID #" + Registry.BLOCK.getId(sourceBlock);
 					}
 				}));
-				CrashReportSection.addBlockInfo(crashReportSection, sourcePos, blockState);
+				CrashReportSection.addBlockInfo(crashReportSection, pos, blockState);
 				throw new CrashException(crashReport);
 			}
 		}
@@ -401,7 +401,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	public abstract void playSoundFromEntity(@Nullable PlayerEntity player, Entity entity, SoundEvent sound, SoundCategory category, float volume, float pitch);
 
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean bl) {
+	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
 	}
 
 	@Override
@@ -547,15 +547,15 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public Explosion createExplosion(
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
-		@Nullable ExplosionBehavior explosionBehavior,
-		double d,
-		double e,
-		double f,
-		float g,
-		boolean bl,
+		@Nullable ExplosionBehavior behavior,
+		double x,
+		double y,
+		double z,
+		float power,
+		boolean createFire,
 		Explosion.DestructionType destructionType
 	) {
-		Explosion explosion = new Explosion(this, entity, damageSource, explosionBehavior, d, e, f, g, bl, destructionType);
+		Explosion explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, destructionType);
 		explosion.collectBlocksAndDamageEntities();
 		explosion.affectWorld(true);
 		return explosion;
@@ -685,7 +685,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Nullable
 	@Override
-	public BlockView getExistingChunk(int chunkX, int chunkZ) {
+	public BlockView getChunkAsView(int chunkX, int chunkZ) {
 		return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, false);
 	}
 
@@ -980,7 +980,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public abstract void setBlockBreakingInfo(int entityId, BlockPos pos, int progress);
 
 	@Environment(EnvType.CLIENT)
-	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable CompoundTag tag) {
+	public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound nbt) {
 	}
 
 	public abstract Scoreboard getScoreboard();

@@ -6,7 +6,7 @@ import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
@@ -67,16 +67,16 @@ public class BookCloningRecipe extends SpecialCraftingRecipe {
 
 		if (!itemStack.isEmpty() && itemStack.hasTag() && i >= 1 && WrittenBookItem.getGeneration(itemStack) < 2) {
 			ItemStack itemStack3 = new ItemStack(Items.WRITTEN_BOOK, i);
-			CompoundTag compoundTag = itemStack.getTag().copy();
-			compoundTag.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
-			itemStack3.setTag(compoundTag);
+			NbtCompound nbtCompound = itemStack.getTag().copy();
+			nbtCompound.putInt("generation", WrittenBookItem.getGeneration(itemStack) + 1);
+			itemStack3.setTag(nbtCompound);
 			return itemStack3;
 		} else {
 			return ItemStack.EMPTY;
 		}
 	}
 
-	public DefaultedList<ItemStack> getRemainingStacks(CraftingInventory craftingInventory) {
+	public DefaultedList<ItemStack> getRemainder(CraftingInventory craftingInventory) {
 		DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(craftingInventory.size(), ItemStack.EMPTY);
 
 		for (int i = 0; i < defaultedList.size(); i++) {

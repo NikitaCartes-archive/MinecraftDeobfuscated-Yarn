@@ -8,13 +8,13 @@ public class TestFunction {
 	private final String structurePath;
 	private final String structureName;
 	private final boolean required;
-	private final Consumer<StartupParameter> starter;
+	private final Consumer<TestContext> starter;
 	private final int tickLimit;
 	private final long duration;
 	private final BlockRotation field_25306;
 
-	public void start(StartupParameter startupParameter) {
-		this.starter.accept(startupParameter);
+	public void start(TestContext parameter) {
+		this.starter.accept(parameter);
 	}
 
 	public String getStructurePath() {

@@ -39,7 +39,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.BlockStateParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -56,6 +56,10 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
 public class IronGolemEntity extends GolemEntity implements Angerable {
+	/**
+	 * The tracked flags of iron golems. Only has the {@code 1} bit for whether a
+	 * golem is {@linkplain #isPlayerCreated() created by a player}.
+	 */
 	protected static final TrackedData<Byte> IRON_GOLEM_FLAGS = DataTracker.registerData(IronGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private int attackTicksLeft;
 	private int lookingAtVillagerTicksLeft;
@@ -161,17 +165,17 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putBoolean("PlayerCreated", this.isPlayerCreated());
-		this.angerToTag(tag);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putBoolean("PlayerCreated", this.isPlayerCreated());
+		this.writeAngerToNbt(nbt);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
-		this.angerFromTag((ServerWorld)this.world, tag);
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setPlayerCreated(nbt.getBoolean("PlayerCreated"));
+		this.angerFromTag((ServerWorld)this.world, nbt);
 	}
 
 	@Override

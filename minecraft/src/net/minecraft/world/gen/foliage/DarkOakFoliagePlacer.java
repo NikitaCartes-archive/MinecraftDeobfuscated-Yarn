@@ -65,11 +65,11 @@ public class DarkOakFoliagePlacer extends FoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
-		if (dx == -1 && !giantTrunk) {
-			return baseHeight == dz && y == dz;
+	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+		if (y == -1 && !giantTrunk) {
+			return dx == radius && dz == radius;
 		} else {
-			return dx == 1 ? baseHeight + y > dz * 2 - 2 : false;
+			return y == 1 ? dx + dz > radius * 2 - 2 : false;
 		}
 	}
 }

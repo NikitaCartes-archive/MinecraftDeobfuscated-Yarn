@@ -1,8 +1,8 @@
 package net.minecraft.scoreboard;
 
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.world.PersistentState;
@@ -12,7 +12,7 @@ import org.apache.logging.log4j.Logger;
 public class ScoreboardState extends PersistentState {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private Scoreboard scoreboard;
-	private CompoundTag tag;
+	private NbtCompound tag;
 
 	public ScoreboardState() {
 		super("scoreboard");
@@ -26,195 +26,195 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
+	public void fromTag(NbtCompound tag) {
 		if (this.scoreboard == null) {
 			this.tag = tag;
 		} else {
-			this.deserializeObjectives(tag.getList("Objectives", 10));
-			this.scoreboard.fromTag(tag.getList("PlayerScores", 10));
+			this.readObjectivesNbt(tag.getList("Objectives", 10));
+			this.scoreboard.readNbt(tag.getList("PlayerScores", 10));
 			if (tag.contains("DisplaySlots", 10)) {
-				this.deserializeDisplaySlots(tag.getCompound("DisplaySlots"));
+				this.readDisplaySlotsNbt(tag.getCompound("DisplaySlots"));
 			}
 
 			if (tag.contains("Teams", 9)) {
-				this.deserializeTeams(tag.getList("Teams", 10));
+				this.readTeamsNbt(tag.getList("Teams", 10));
 			}
 		}
 	}
 
-	protected void deserializeTeams(ListTag listTag) {
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
-			String string = compoundTag.getString("Name");
+	protected void readTeamsNbt(NbtList nbt) {
+		for (int i = 0; i < nbt.size(); i++) {
+			NbtCompound nbtCompound = nbt.getCompound(i);
+			String string = nbtCompound.getString("Name");
 			if (string.length() > 16) {
 				string = string.substring(0, 16);
 			}
 
 			Team team = this.scoreboard.addTeam(string);
-			Text text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
+			Text text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
 			if (text != null) {
 				team.setDisplayName(text);
 			}
 
-			if (compoundTag.contains("TeamColor", 8)) {
-				team.setColor(Formatting.byName(compoundTag.getString("TeamColor")));
+			if (nbtCompound.contains("TeamColor", 8)) {
+				team.setColor(Formatting.byName(nbtCompound.getString("TeamColor")));
 			}
 
-			if (compoundTag.contains("AllowFriendlyFire", 99)) {
-				team.setFriendlyFireAllowed(compoundTag.getBoolean("AllowFriendlyFire"));
+			if (nbtCompound.contains("AllowFriendlyFire", 99)) {
+				team.setFriendlyFireAllowed(nbtCompound.getBoolean("AllowFriendlyFire"));
 			}
 
-			if (compoundTag.contains("SeeFriendlyInvisibles", 99)) {
-				team.setShowFriendlyInvisibles(compoundTag.getBoolean("SeeFriendlyInvisibles"));
+			if (nbtCompound.contains("SeeFriendlyInvisibles", 99)) {
+				team.setShowFriendlyInvisibles(nbtCompound.getBoolean("SeeFriendlyInvisibles"));
 			}
 
-			if (compoundTag.contains("MemberNamePrefix", 8)) {
-				Text text2 = Text.Serializer.fromJson(compoundTag.getString("MemberNamePrefix"));
+			if (nbtCompound.contains("MemberNamePrefix", 8)) {
+				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNamePrefix"));
 				if (text2 != null) {
 					team.setPrefix(text2);
 				}
 			}
 
-			if (compoundTag.contains("MemberNameSuffix", 8)) {
-				Text text2 = Text.Serializer.fromJson(compoundTag.getString("MemberNameSuffix"));
+			if (nbtCompound.contains("MemberNameSuffix", 8)) {
+				Text text2 = Text.Serializer.fromJson(nbtCompound.getString("MemberNameSuffix"));
 				if (text2 != null) {
 					team.setSuffix(text2);
 				}
 			}
 
-			if (compoundTag.contains("NameTagVisibility", 8)) {
-				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(compoundTag.getString("NameTagVisibility"));
+			if (nbtCompound.contains("NameTagVisibility", 8)) {
+				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("NameTagVisibility"));
 				if (visibilityRule != null) {
 					team.setNameTagVisibilityRule(visibilityRule);
 				}
 			}
 
-			if (compoundTag.contains("DeathMessageVisibility", 8)) {
-				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(compoundTag.getString("DeathMessageVisibility"));
+			if (nbtCompound.contains("DeathMessageVisibility", 8)) {
+				AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(nbtCompound.getString("DeathMessageVisibility"));
 				if (visibilityRule != null) {
 					team.setDeathMessageVisibilityRule(visibilityRule);
 				}
 			}
 
-			if (compoundTag.contains("CollisionRule", 8)) {
-				AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(compoundTag.getString("CollisionRule"));
+			if (nbtCompound.contains("CollisionRule", 8)) {
+				AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(nbtCompound.getString("CollisionRule"));
 				if (collisionRule != null) {
 					team.setCollisionRule(collisionRule);
 				}
 			}
 
-			this.deserializeTeamPlayers(team, compoundTag.getList("Players", 8));
+			this.readTeamPlayersNbt(team, nbtCompound.getList("Players", 8));
 		}
 	}
 
-	protected void deserializeTeamPlayers(Team team, ListTag listTag) {
-		for (int i = 0; i < listTag.size(); i++) {
-			this.scoreboard.addPlayerToTeam(listTag.getString(i), team);
+	protected void readTeamPlayersNbt(Team team, NbtList nbt) {
+		for (int i = 0; i < nbt.size(); i++) {
+			this.scoreboard.addPlayerToTeam(nbt.getString(i), team);
 		}
 	}
 
-	protected void deserializeDisplaySlots(CompoundTag compoundTag) {
+	protected void readDisplaySlotsNbt(NbtCompound nbt) {
 		for (int i = 0; i < 19; i++) {
-			if (compoundTag.contains("slot_" + i, 8)) {
-				String string = compoundTag.getString("slot_" + i);
+			if (nbt.contains("slot_" + i, 8)) {
+				String string = nbt.getString("slot_" + i);
 				ScoreboardObjective scoreboardObjective = this.scoreboard.getNullableObjective(string);
 				this.scoreboard.setObjectiveSlot(i, scoreboardObjective);
 			}
 		}
 	}
 
-	protected void deserializeObjectives(ListTag listTag) {
-		for (int i = 0; i < listTag.size(); i++) {
-			CompoundTag compoundTag = listTag.getCompound(i);
-			ScoreboardCriterion.createStatCriterion(compoundTag.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
-				String string = compoundTag.getString("Name");
+	protected void readObjectivesNbt(NbtList nbt) {
+		for (int i = 0; i < nbt.size(); i++) {
+			NbtCompound nbtCompound = nbt.getCompound(i);
+			ScoreboardCriterion.getOrCreateStatCriterion(nbtCompound.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
+				String string = nbtCompound.getString("Name");
 				if (string.length() > 16) {
 					string = string.substring(0, 16);
 				}
 
-				Text text = Text.Serializer.fromJson(compoundTag.getString("DisplayName"));
-				ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(compoundTag.getString("RenderType"));
+				Text text = Text.Serializer.fromJson(nbtCompound.getString("DisplayName"));
+				ScoreboardCriterion.RenderType renderType = ScoreboardCriterion.RenderType.getType(nbtCompound.getString("RenderType"));
 				this.scoreboard.addObjective(string, scoreboardCriterion, text, renderType);
 			});
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
+	public NbtCompound writeNbt(NbtCompound nbt) {
 		if (this.scoreboard == null) {
 			LOGGER.warn("Tried to save scoreboard without having a scoreboard...");
-			return tag;
+			return nbt;
 		} else {
-			tag.put("Objectives", this.serializeObjectives());
-			tag.put("PlayerScores", this.scoreboard.toTag());
-			tag.put("Teams", this.serializeTeams());
-			this.serializeSlots(tag);
-			return tag;
+			nbt.put("Objectives", this.objectivesToNbt());
+			nbt.put("PlayerScores", this.scoreboard.toNbt());
+			nbt.put("Teams", this.teamsToNbt());
+			this.writeDisplaySlotsNbt(nbt);
+			return nbt;
 		}
 	}
 
-	protected ListTag serializeTeams() {
-		ListTag listTag = new ListTag();
+	protected NbtList teamsToNbt() {
+		NbtList nbtList = new NbtList();
 
 		for (Team team : this.scoreboard.getTeams()) {
-			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.putString("Name", team.getName());
-			compoundTag.putString("DisplayName", Text.Serializer.toJson(team.getDisplayName()));
+			NbtCompound nbtCompound = new NbtCompound();
+			nbtCompound.putString("Name", team.getName());
+			nbtCompound.putString("DisplayName", Text.Serializer.toJson(team.getDisplayName()));
 			if (team.getColor().getColorIndex() >= 0) {
-				compoundTag.putString("TeamColor", team.getColor().getName());
+				nbtCompound.putString("TeamColor", team.getColor().getName());
 			}
 
-			compoundTag.putBoolean("AllowFriendlyFire", team.isFriendlyFireAllowed());
-			compoundTag.putBoolean("SeeFriendlyInvisibles", team.shouldShowFriendlyInvisibles());
-			compoundTag.putString("MemberNamePrefix", Text.Serializer.toJson(team.getPrefix()));
-			compoundTag.putString("MemberNameSuffix", Text.Serializer.toJson(team.getSuffix()));
-			compoundTag.putString("NameTagVisibility", team.getNameTagVisibilityRule().name);
-			compoundTag.putString("DeathMessageVisibility", team.getDeathMessageVisibilityRule().name);
-			compoundTag.putString("CollisionRule", team.getCollisionRule().name);
-			ListTag listTag2 = new ListTag();
+			nbtCompound.putBoolean("AllowFriendlyFire", team.isFriendlyFireAllowed());
+			nbtCompound.putBoolean("SeeFriendlyInvisibles", team.shouldShowFriendlyInvisibles());
+			nbtCompound.putString("MemberNamePrefix", Text.Serializer.toJson(team.getPrefix()));
+			nbtCompound.putString("MemberNameSuffix", Text.Serializer.toJson(team.getSuffix()));
+			nbtCompound.putString("NameTagVisibility", team.getNameTagVisibilityRule().name);
+			nbtCompound.putString("DeathMessageVisibility", team.getDeathMessageVisibilityRule().name);
+			nbtCompound.putString("CollisionRule", team.getCollisionRule().name);
+			NbtList nbtList2 = new NbtList();
 
 			for (String string : team.getPlayerList()) {
-				listTag2.add(StringTag.of(string));
+				nbtList2.add(NbtString.of(string));
 			}
 
-			compoundTag.put("Players", listTag2);
-			listTag.add(compoundTag);
+			nbtCompound.put("Players", nbtList2);
+			nbtList.add(nbtCompound);
 		}
 
-		return listTag;
+		return nbtList;
 	}
 
-	protected void serializeSlots(CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = new CompoundTag();
+	protected void writeDisplaySlotsNbt(NbtCompound nbt) {
+		NbtCompound nbtCompound = new NbtCompound();
 		boolean bl = false;
 
 		for (int i = 0; i < 19; i++) {
 			ScoreboardObjective scoreboardObjective = this.scoreboard.getObjectiveForSlot(i);
 			if (scoreboardObjective != null) {
-				compoundTag2.putString("slot_" + i, scoreboardObjective.getName());
+				nbtCompound.putString("slot_" + i, scoreboardObjective.getName());
 				bl = true;
 			}
 		}
 
 		if (bl) {
-			compoundTag.put("DisplaySlots", compoundTag2);
+			nbt.put("DisplaySlots", nbtCompound);
 		}
 	}
 
-	protected ListTag serializeObjectives() {
-		ListTag listTag = new ListTag();
+	protected NbtList objectivesToNbt() {
+		NbtList nbtList = new NbtList();
 
 		for (ScoreboardObjective scoreboardObjective : this.scoreboard.getObjectives()) {
 			if (scoreboardObjective.getCriterion() != null) {
-				CompoundTag compoundTag = new CompoundTag();
-				compoundTag.putString("Name", scoreboardObjective.getName());
-				compoundTag.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
-				compoundTag.putString("DisplayName", Text.Serializer.toJson(scoreboardObjective.getDisplayName()));
-				compoundTag.putString("RenderType", scoreboardObjective.getRenderType().getName());
-				listTag.add(compoundTag);
+				NbtCompound nbtCompound = new NbtCompound();
+				nbtCompound.putString("Name", scoreboardObjective.getName());
+				nbtCompound.putString("CriteriaName", scoreboardObjective.getCriterion().getName());
+				nbtCompound.putString("DisplayName", Text.Serializer.toJson(scoreboardObjective.getDisplayName()));
+				nbtCompound.putString("RenderType", scoreboardObjective.getRenderType().getName());
+				nbtList.add(nbtCompound);
 			}
 		}
 
-		return listTag;
+		return nbtList;
 	}
 }

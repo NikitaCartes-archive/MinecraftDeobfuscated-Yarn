@@ -6,6 +6,12 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+/**
+ * Represents a property that has integer values.
+ * 
+ * <p>See {@link net.minecraft.state.property.Properties} for example
+ * usages.
+ */
 public class IntProperty extends Property<Integer> {
 	private final ImmutableSet<Integer> values;
 
@@ -51,13 +57,15 @@ public class IntProperty extends Property<Integer> {
 	/**
 	 * Creates an integer property.
 	 * 
-	 * <p>{@code min} must be non-negative and {@code max} must be greater than {@code min}.
+	 * <p>Note that this method computes all possible values.
 	 * 
-	 * <p>Note that this method takes O({@code max} - {@code min}) time as it computes all possible values during instantiation.
+	 * @throws IllegalArgumentException if {@code 0 <= min < max} is not
+	 * satisfied
 	 * 
-	 * @param name the name of the property
-	 * @param min the minimum value the property can take
-	 * @param max the maximum value the property can take
+	 * @param name the name of the property; see {@linkplain Property#name the note on the
+	 * name}
+	 * @param min the minimum value the property contains
+	 * @param max the maximum value the property contains
 	 */
 	public static IntProperty of(String name, int min, int max) {
 		return new IntProperty(name, min, max);

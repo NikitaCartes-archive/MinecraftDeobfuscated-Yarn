@@ -443,7 +443,7 @@ public abstract class FlowableFluid extends Fluid {
 		this.tryFlow(world, pos, state);
 	}
 
-	protected static int method_15741(FluidState state) {
+	protected static int getBlockStateLevel(FluidState state) {
 		return state.isStill() ? 0 : 8 - Math.min(state.getLevel(), 8) + (state.get(FALLING) ? 8 : 0);
 	}
 

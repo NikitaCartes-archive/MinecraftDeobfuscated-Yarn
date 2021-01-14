@@ -64,7 +64,7 @@ public class RealmsConnection {
 						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getProfile()));
 						minecraftClient.setCurrentServerEntry(realmsServer.method_31403(string));
 					} catch (UnknownHostException var5) {
-						minecraftClient.getResourcePackDownloader().clear();
+						minecraftClient.getResourcePackProvider().clear();
 						if (RealmsConnection.this.aborted) {
 							return;
 						}
@@ -75,7 +75,7 @@ public class RealmsConnection {
 						);
 						minecraftClient.execute(() -> minecraftClient.openScreen(disconnectedRealmsScreen));
 					} catch (Exception var6) {
-						minecraftClient.getResourcePackDownloader().clear();
+						minecraftClient.getResourcePackProvider().clear();
 						if (RealmsConnection.this.aborted) {
 							return;
 						}

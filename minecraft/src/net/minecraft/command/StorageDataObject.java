@@ -7,8 +7,8 @@ import java.util.Locale;
 import java.util.function.Function;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
@@ -53,12 +53,12 @@ public class StorageDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public void setTag(CompoundTag tag) {
-		this.storage.set(this.id, tag);
+	public void setNbt(NbtCompound nbt) {
+		this.storage.set(this.id, nbt);
 	}
 
 	@Override
-	public CompoundTag getTag() {
+	public NbtCompound getNbt() {
 		return this.storage.get(this.id);
 	}
 
@@ -68,12 +68,12 @@ public class StorageDataObject implements DataCommandObject {
 	}
 
 	@Override
-	public Text feedbackQuery(Tag tag) {
-		return new TranslatableText("commands.data.storage.query", this.id, tag.toText());
+	public Text feedbackQuery(NbtElement element) {
+		return new TranslatableText("commands.data.storage.query", this.id, element.toText());
 	}
 
 	@Override
-	public Text feedbackGet(NbtPathArgumentType.NbtPath nbtPath, double scale, int result) {
-		return new TranslatableText("commands.data.storage.get", nbtPath, this.id, String.format(Locale.ROOT, "%.2f", scale), result);
+	public Text feedbackGet(NbtPathArgumentType.NbtPath path, double scale, int result) {
+		return new TranslatableText("commands.data.storage.get", path, this.id, String.format(Locale.ROOT, "%.2f", scale), result);
 	}
 }

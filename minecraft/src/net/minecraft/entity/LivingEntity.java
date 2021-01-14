@@ -20,7 +20,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5459;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -69,10 +68,10 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
@@ -95,6 +94,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -107,6 +107,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
@@ -309,7 +310,7 @@ public abstract class LivingEntity extends Entity {
 			if (this.isInsideWall()) {
 				this.damage(DamageSource.IN_WALL, 1.0F);
 			} else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox())) {
-				double d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getBuffer();
+				double d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone();
 				if (d < 0.0) {
 					double e = this.world.getWorldBorder().getDamagePerBlock();
 					if (e > 0.0) {
@@ -515,7 +516,19 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	protected boolean canDropLootAndXp() {
+	/**
+	 * Returns if this entity should drop experience on death when the {@linkplain
+	 * net.minecraft.world.GameRules#DO_MOB_LOOT doMobLoot} game rule is
+	 * enabled and has been attacked by a player.
+	 * 
+	 * <p>If {@link #shouldAlwaysDropXp() shouldAlwaysDropXp()} returns {@code
+	 * true}, this check is disregarded.
+	 * 
+	 * @see #dropXp()
+	 * @see #shouldAlwaysDropXp()
+	 * @see #getXpToDrop(PlayerEntity)
+	 */
+	protected boolean shouldDropXp() {
 		return !this.isBaby();
 	}
 
@@ -532,10 +545,30 @@ public abstract class LivingEntity extends Entity {
 		return Math.min(air + 4, this.getMaxAir());
 	}
 
-	protected int getCurrentExperience(PlayerEntity player) {
+	/**
+	 * Called when this entity is killed and returns the amount of experience
+	 * to drop.
+	 * 
+	 * <p>{@code player} may be {@code null} if {@linkplain #shouldAlwaysDropXp
+	 * shouldAlwaysDropXp()} returns {@code true}.
+	 * 
+	 * @see #dropXp()
+	 * @see #shouldAlwaysDropXp()
+	 * @see #shouldDropXp()
+	 * 
+	 * @param player the attacking player
+	 */
+	protected int getXpToDrop(PlayerEntity player) {
 		return 0;
 	}
 
+	/**
+	 * Returns if this entity may always drop experience, skipping any
+	 * other checks.
+	 * 
+	 * @see #dropXp()
+	 * @see #getXpToDrop(PlayerEntity)
+	 */
 	protected boolean shouldAlwaysDropXp() {
 		return false;
 	}
@@ -605,61 +638,61 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		tag.putFloat("Health", this.getHealth());
-		tag.putShort("HurtTime", (short)this.hurtTime);
-		tag.putInt("HurtByTimestamp", this.lastAttackedTime);
-		tag.putShort("DeathTime", (short)this.deathTime);
-		tag.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
-		tag.put("Attributes", this.getAttributes().toTag());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.putFloat("Health", this.getHealth());
+		nbt.putShort("HurtTime", (short)this.hurtTime);
+		nbt.putInt("HurtByTimestamp", this.lastAttackedTime);
+		nbt.putShort("DeathTime", (short)this.deathTime);
+		nbt.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
+		nbt.put("Attributes", this.getAttributes().toNbt());
 		if (!this.activeStatusEffects.isEmpty()) {
-			ListTag listTag = new ListTag();
+			NbtList nbtList = new NbtList();
 
 			for (StatusEffectInstance statusEffectInstance : this.activeStatusEffects.values()) {
-				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+				nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
 			}
 
-			tag.put("ActiveEffects", listTag);
+			nbt.put("ActiveEffects", nbtList);
 		}
 
-		tag.putBoolean("FallFlying", this.isFallFlying());
+		nbt.putBoolean("FallFlying", this.isFallFlying());
 		this.getSleepingPosition().ifPresent(blockPos -> {
-			tag.putInt("SleepingX", blockPos.getX());
-			tag.putInt("SleepingY", blockPos.getY());
-			tag.putInt("SleepingZ", blockPos.getZ());
+			nbt.putInt("SleepingX", blockPos.getX());
+			nbt.putInt("SleepingY", blockPos.getY());
+			nbt.putInt("SleepingZ", blockPos.getZ());
 		});
-		DataResult<Tag> dataResult = this.brain.encode(NbtOps.INSTANCE);
-		dataResult.resultOrPartial(LOGGER::error).ifPresent(tagx -> tag.put("Brain", tagx));
+		DataResult<NbtElement> dataResult = this.brain.encode(NbtOps.INSTANCE);
+		dataResult.resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("Brain", nbtElement));
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		this.setAbsorptionAmount(tag.getFloat("AbsorptionAmount"));
-		if (tag.contains("Attributes", 9) && this.world != null && !this.world.isClient) {
-			this.getAttributes().fromTag(tag.getList("Attributes", 10));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		this.setAbsorptionAmount(nbt.getFloat("AbsorptionAmount"));
+		if (nbt.contains("Attributes", 9) && this.world != null && !this.world.isClient) {
+			this.getAttributes().readNbt(nbt.getList("Attributes", 10));
 		}
 
-		if (tag.contains("ActiveEffects", 9)) {
-			ListTag listTag = tag.getList("ActiveEffects", 10);
+		if (nbt.contains("ActiveEffects", 9)) {
+			NbtList nbtList = nbt.getList("ActiveEffects", 10);
 
-			for (int i = 0; i < listTag.size(); i++) {
-				CompoundTag compoundTag = listTag.getCompound(i);
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(compoundTag);
+			for (int i = 0; i < nbtList.size(); i++) {
+				NbtCompound nbtCompound = nbtList.getCompound(i);
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtCompound);
 				if (statusEffectInstance != null) {
 					this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
 				}
 			}
 		}
 
-		if (tag.contains("Health", 99)) {
-			this.setHealth(tag.getFloat("Health"));
+		if (nbt.contains("Health", 99)) {
+			this.setHealth(nbt.getFloat("Health"));
 		}
 
-		this.hurtTime = tag.getShort("HurtTime");
-		this.deathTime = tag.getShort("DeathTime");
-		this.lastAttackedTime = tag.getInt("HurtByTimestamp");
-		if (tag.contains("Team", 8)) {
-			String string = tag.getString("Team");
+		this.hurtTime = nbt.getShort("HurtTime");
+		this.deathTime = nbt.getShort("DeathTime");
+		this.lastAttackedTime = nbt.getInt("HurtByTimestamp");
+		if (nbt.contains("Team", 8)) {
+			String string = nbt.getString("Team");
 			Team team = this.world.getScoreboard().getTeam(string);
 			boolean bl = team != null && this.world.getScoreboard().addPlayerToTeam(this.getUuidAsString(), team);
 			if (!bl) {
@@ -667,12 +700,12 @@ public abstract class LivingEntity extends Entity {
 			}
 		}
 
-		if (tag.getBoolean("FallFlying")) {
+		if (nbt.getBoolean("FallFlying")) {
 			this.setFlag(7, true);
 		}
 
-		if (tag.contains("SleepingX", 99) && tag.contains("SleepingY", 99) && tag.contains("SleepingZ", 99)) {
-			BlockPos blockPos = new BlockPos(tag.getInt("SleepingX"), tag.getInt("SleepingY"), tag.getInt("SleepingZ"));
+		if (nbt.contains("SleepingX", 99) && nbt.contains("SleepingY", 99) && nbt.contains("SleepingZ", 99)) {
+			BlockPos blockPos = new BlockPos(nbt.getInt("SleepingX"), nbt.getInt("SleepingY"), nbt.getInt("SleepingZ"));
 			this.setSleepingPosition(blockPos);
 			this.dataTracker.set(POSE, EntityPose.SLEEPING);
 			if (!this.firstUpdate) {
@@ -680,8 +713,8 @@ public abstract class LivingEntity extends Entity {
 			}
 		}
 
-		if (tag.contains("Brain", 10)) {
-			this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, tag.get("Brain")));
+		if (nbt.contains("Brain", 10)) {
+			this.brain = this.deserializeBrain(new Dynamic<>(NbtOps.INSTANCE, nbt.get("Brain")));
 		}
 	}
 
@@ -932,6 +965,13 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
+	/**
+	 * Heals this entity by the given {@code amount} of half-hearts.
+	 * 
+	 * <p>A dead entity cannot be healed.
+	 * 
+	 * @see #isDead()
+	 */
 	public void heal(float amount) {
 		float f = this.getHealth();
 		if (f > 0.0F) {
@@ -1177,7 +1217,7 @@ public abstract class LivingEntity extends Entity {
 			Vec3d vec3d = source.getPosition();
 			if (vec3d != null) {
 				Vec3d vec3d2 = this.getRotationVec(1.0F);
-				Vec3d vec3d3 = vec3d.reverseSubtract(this.getPos()).normalize();
+				Vec3d vec3d3 = vec3d.relativize(this.getPos()).normalize();
 				vec3d3 = new Vec3d(vec3d3.x, 0.0, vec3d3.z);
 				if (vec3d3.dotProduct(vec3d2) < 0.0) {
 					return true;
@@ -1280,10 +1320,17 @@ public abstract class LivingEntity extends Entity {
 	protected void dropInventory() {
 	}
 
+	/**
+	 * Drops experience when this entity is killed.
+	 * 
+	 * <p>To control the details of experience dropping, consider overriding
+	 * {@link #shouldAlwaysDropXp()}, {@link #shouldDropXp()}, and
+	 * {@link #getXpToDrop(PlayerEntity)}.
+	 */
 	protected void dropXp() {
 		if (!this.world.isClient
-			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-			int i = this.getCurrentExperience(this.attackingPlayer);
+			&& (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+			int i = this.getXpToDrop(this.attackingPlayer);
 
 			while (i > 0) {
 				int j = ExperienceOrbEntity.roundToOrbSize(i);
@@ -1565,7 +1612,7 @@ public abstract class LivingEntity extends Entity {
 		this.swingHand(hand, false);
 	}
 
-	public void swingHand(Hand hand, boolean bl) {
+	public void swingHand(Hand hand, boolean fromServerPlayer) {
 		if (!this.handSwinging || this.handSwingTicks >= this.getHandSwingDuration() / 2 || this.handSwingTicks < 0) {
 			this.handSwingTicks = -1;
 			this.handSwinging = true;
@@ -1573,7 +1620,7 @@ public abstract class LivingEntity extends Entity {
 			if (this.world instanceof ServerWorld) {
 				EntityAnimationS2CPacket entityAnimationS2CPacket = new EntityAnimationS2CPacket(this, hand == Hand.MAIN_HAND ? 0 : 3);
 				ServerChunkManager serverChunkManager = ((ServerWorld)this.world).getChunkManager();
-				if (bl) {
+				if (fromServerPlayer) {
 					serverChunkManager.sendToNearbyPlayers(this, entityAnimationS2CPacket);
 				} else {
 					serverChunkManager.sendToOtherNearbyPlayers(this, entityAnimationS2CPacket);
@@ -1727,7 +1774,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	protected void destroy() {
+	protected void tickInVoid() {
 		this.damage(DamageSource.OUT_OF_WORLD, 4.0F);
 	}
 
@@ -1917,7 +1964,7 @@ public abstract class LivingEntity extends Entity {
 		this.setVelocity(this.getVelocity().add(0.0, -0.04F, 0.0));
 	}
 
-	protected void swimUpward(net.minecraft.tag.Tag<Fluid> fluid) {
+	protected void swimUpward(Tag<Fluid> fluid) {
 		this.setVelocity(this.getVelocity().add(0.0, 0.04F, 0.0));
 	}
 
@@ -2401,7 +2448,7 @@ public abstract class LivingEntity extends Entity {
 			this.yaw = (float)((double)this.yaw + g / (double)this.bodyTrackingIncrements);
 			this.pitch = (float)((double)this.pitch + (this.serverPitch - (double)this.pitch) / (double)this.bodyTrackingIncrements);
 			this.bodyTrackingIncrements--;
-			this.updatePosition(d, e, f);
+			this.setPosition(d, e, f);
 			this.setRotation(this.yaw, this.pitch);
 		} else if (!this.canMoveVoluntarily()) {
 			this.setVelocity(this.getVelocity().multiply(0.98));
@@ -2472,7 +2519,7 @@ public abstract class LivingEntity extends Entity {
 		this.world.getProfiler().push("travel");
 		this.sidewaysSpeed *= 0.98F;
 		this.forwardSpeed *= 0.98F;
-		this.initAi();
+		this.tickFallFlying();
 		Box box = this.getBoundingBox();
 		this.travel(new Vec3d((double)this.sidewaysSpeed, (double)this.upwardSpeed, (double)this.forwardSpeed));
 		this.world.getProfiler().pop();
@@ -2493,7 +2540,7 @@ public abstract class LivingEntity extends Entity {
 		return false;
 	}
 
-	private void initAi() {
+	private void tickFallFlying() {
 		boolean bl = this.getFlag(7);
 		if (bl && !this.onGround && !this.hasVehicle() && !this.hasStatusEffect(StatusEffects.LEVITATION)) {
 			ItemStack itemStack = this.getEquippedStack(EquipmentSlot.CHEST);
@@ -2571,8 +2618,8 @@ public abstract class LivingEntity extends Entity {
 	protected void attackLivingEntity(LivingEntity target) {
 	}
 
-	public void setRiptideTicks(int i) {
-		this.riptideTicks = i;
+	public void setRiptideTicks(int riptideTicks) {
+		this.riptideTicks = riptideTicks;
 		if (!this.world.isClient) {
 			this.setLivingFlag(4, true);
 		}
@@ -2688,13 +2735,13 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void setYaw(float yaw) {
-		this.bodyYaw = yaw;
+	public void setBodyYaw(float bodyYaw) {
+		this.bodyYaw = bodyYaw;
 	}
 
 	@Override
-	protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-		return method_31079(super.method_30633(axis, arg));
+	protected Vec3d method_30633(Direction.Axis axis, PortalUtil.Rectangle rectangle) {
+		return method_31079(super.method_30633(axis, rectangle));
 	}
 
 	public static Vec3d method_31079(Vec3d vec3d) {
@@ -3048,7 +3095,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	private void setPositionInBed(BlockPos pos) {
-		this.updatePosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.6875, (double)pos.getZ() + 0.5);
+		this.setPosition((double)pos.getX() + 0.5, (double)pos.getY() + 0.6875, (double)pos.getZ() + 0.5);
 	}
 
 	private boolean isSleepingInBed() {
@@ -3066,14 +3113,14 @@ public abstract class LivingEntity extends Entity {
 				});
 				Vec3d vec3d2 = Vec3d.ofBottomCenter(blockPos).subtract(vec3dx).normalize();
 				float f = (float)MathHelper.wrapDegrees(MathHelper.atan2(vec3d2.z, vec3d2.x) * 180.0F / (float)Math.PI - 90.0);
-				this.updatePosition(vec3dx.x, vec3dx.y, vec3dx.z);
+				this.setPosition(vec3dx.x, vec3dx.y, vec3dx.z);
 				this.yaw = f;
 				this.pitch = 0.0F;
 			}
 		});
 		Vec3d vec3d = this.getPos();
 		this.setPose(EntityPose.STANDING);
-		this.updatePosition(vec3d.x, vec3d.y, vec3d.z);
+		this.setPosition(vec3d.x, vec3d.y, vec3d.z);
 		this.clearSleepingPosition();
 	}
 

@@ -15,7 +15,7 @@ public class CodEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 	private final ModelPart face;
 	private final ModelPart rightFin;
 	private final ModelPart leftFin;
-	private final ModelPart tail;
+	private final ModelPart tailFin;
 
 	public CodEntityModel() {
 		this.textureWidth = 32;
@@ -38,9 +38,9 @@ public class CodEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 		this.leftFin.addCuboid(0.0F, 0.0F, -1.0F, 2.0F, 0.0F, 2.0F);
 		this.leftFin.setPivot(1.0F, 23.0F, 0.0F);
 		this.leftFin.roll = (float) (Math.PI / 4);
-		this.tail = new ModelPart(this, 22, 3);
-		this.tail.addCuboid(0.0F, -2.0F, 0.0F, 0.0F, 4.0F, 4.0F);
-		this.tail.setPivot(0.0F, 22.0F, 7.0F);
+		this.tailFin = new ModelPart(this, 22, 3);
+		this.tailFin.addCuboid(0.0F, -2.0F, 0.0F, 0.0F, 4.0F, 4.0F);
+		this.tailFin.setPivot(0.0F, 22.0F, 7.0F);
 		this.topFin = new ModelPart(this, 20, -6);
 		this.topFin.addCuboid(0.0F, -1.0F, -1.0F, 0.0F, 1.0F, 6.0F);
 		this.topFin.setPivot(0.0F, 20.0F, 0.0F);
@@ -48,7 +48,7 @@ public class CodEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 
 	@Override
 	public Iterable<ModelPart> getParts() {
-		return ImmutableList.<ModelPart>of(this.body, this.head, this.face, this.rightFin, this.leftFin, this.tail, this.topFin);
+		return ImmutableList.<ModelPart>of(this.body, this.head, this.face, this.rightFin, this.leftFin, this.tailFin, this.topFin);
 	}
 
 	@Override
@@ -58,6 +58,6 @@ public class CodEntityModel<T extends Entity> extends CompositeEntityModel<T> {
 			f = 1.5F;
 		}
 
-		this.tail.yaw = -f * 0.45F * MathHelper.sin(0.6F * animationProgress);
+		this.tailFin.yaw = -f * 0.45F * MathHelper.sin(0.6F * animationProgress);
 	}
 }

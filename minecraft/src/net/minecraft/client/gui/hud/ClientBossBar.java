@@ -46,7 +46,7 @@ public class ClientBossBar extends BossBar {
 				break;
 			case UPDATE_STYLE:
 				this.setColor(packet.getColor());
-				this.setOverlay(packet.getOverlay());
+				this.setStyle(packet.getOverlay());
 				break;
 			case UPDATE_PROPERTIES:
 				this.setDarkenSky(packet.shouldDarkenSky());

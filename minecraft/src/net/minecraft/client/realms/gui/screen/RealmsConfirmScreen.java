@@ -4,8 +4,8 @@ import it.unimi.dsi.fastutil.booleans.BooleanConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ScreenTexts;
-import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 
@@ -40,8 +40,8 @@ public class RealmsConfirmScreen extends RealmsScreen {
 	public void tick() {
 		super.tick();
 		if (--this.delayTicker == 0) {
-			for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
-				abstractButtonWidget.active = true;
+			for (ClickableWidget clickableWidget : this.buttons) {
+				clickableWidget.active = true;
 			}
 		}
 	}

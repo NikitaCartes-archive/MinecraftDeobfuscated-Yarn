@@ -44,7 +44,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -140,43 +140,43 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("HomePosX", this.getHomePos().getX());
-		tag.putInt("HomePosY", this.getHomePos().getY());
-		tag.putInt("HomePosZ", this.getHomePos().getZ());
-		tag.putBoolean("HasEgg", this.hasEgg());
-		tag.putInt("TravelPosX", this.getTravelPos().getX());
-		tag.putInt("TravelPosY", this.getTravelPos().getY());
-		tag.putInt("TravelPosZ", this.getTravelPos().getZ());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("HomePosX", this.getHomePos().getX());
+		nbt.putInt("HomePosY", this.getHomePos().getY());
+		nbt.putInt("HomePosZ", this.getHomePos().getZ());
+		nbt.putBoolean("HasEgg", this.hasEgg());
+		nbt.putInt("TravelPosX", this.getTravelPos().getX());
+		nbt.putInt("TravelPosY", this.getTravelPos().getY());
+		nbt.putInt("TravelPosZ", this.getTravelPos().getZ());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		int i = tag.getInt("HomePosX");
-		int j = tag.getInt("HomePosY");
-		int k = tag.getInt("HomePosZ");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		int i = nbt.getInt("HomePosX");
+		int j = nbt.getInt("HomePosY");
+		int k = nbt.getInt("HomePosZ");
 		this.setHomePos(new BlockPos(i, j, k));
-		super.readCustomDataFromTag(tag);
-		this.setHasEgg(tag.getBoolean("HasEgg"));
-		int l = tag.getInt("TravelPosX");
-		int m = tag.getInt("TravelPosY");
-		int n = tag.getInt("TravelPosZ");
+		super.readCustomDataFromNbt(nbt);
+		this.setHasEgg(nbt.getBoolean("HasEgg"));
+		int l = nbt.getInt("TravelPosX");
+		int m = nbt.getInt("TravelPosY");
+		int n = nbt.getInt("TravelPosZ");
 		this.setTravelPos(new BlockPos(l, m, n));
 	}
 
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		this.setHomePos(this.getBlockPos());
 		this.setTravelPos(BlockPos.ORIGIN);
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	public static boolean canSpawn(EntityType<TurtleEntity> type, WorldAccess world, SpawnReason spawnReason, BlockPos pos, Random random) {
-		return pos.getY() < world.getSeaLevel() + 4 && TurtleEggBlock.isSand(world, pos) && world.getBaseLightLevel(pos, 0) > 8;
+		return pos.getY() < world.getSeaLevel() + 4 && TurtleEggBlock.isSandBelow(world, pos) && world.getBaseLightLevel(pos, 0) > 8;
 	}
 
 	@Override
@@ -197,7 +197,7 @@ public class TurtleEntity extends AnimalEntity {
 	}
 
 	@Override
-	public boolean canFly() {
+	public boolean isPushedByFluids() {
 		return false;
 	}
 
@@ -286,7 +286,7 @@ public class TurtleEntity extends AnimalEntity {
 		if (!this.isLandBound() && world.getFluidState(pos).isIn(FluidTags.WATER)) {
 			return 10.0F;
 		} else {
-			return TurtleEggBlock.isSand(world, pos) ? 10.0F : world.getBrightness(pos) - 0.5F;
+			return TurtleEggBlock.isSandBelow(world, pos) ? 10.0F : world.getBrightness(pos) - 0.5F;
 		}
 	}
 
@@ -295,7 +295,7 @@ public class TurtleEntity extends AnimalEntity {
 		super.tickMovement();
 		if (this.isAlive() && this.isDiggingSand() && this.sandDiggingCounter >= 1 && this.sandDiggingCounter % 5 == 0) {
 			BlockPos blockPos = this.getBlockPos();
-			if (TurtleEggBlock.isSand(this.world, blockPos)) {
+			if (TurtleEggBlock.isSandBelow(this.world, blockPos)) {
 				this.world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(Blocks.SAND.getDefaultState()));
 			}
 		}
@@ -667,7 +667,7 @@ public class TurtleEntity extends AnimalEntity {
 				double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 				e /= g;
 				float h = (float)(MathHelper.atan2(f, d) * 180.0F / (float)Math.PI) - 90.0F;
-				this.turtle.yaw = this.changeAngle(this.turtle.yaw, h, 90.0F);
+				this.turtle.yaw = this.wrapDegrees(this.turtle.yaw, h, 90.0F);
 				this.turtle.bodyYaw = this.turtle.yaw;
 				float i = (float)(this.speed * this.turtle.getAttributeValue(EntityAttributes.GENERIC_MOVEMENT_SPEED));
 				this.turtle.setMovementSpeed(MathHelper.lerp(0.125F, this.turtle.getMovementSpeed(), i));

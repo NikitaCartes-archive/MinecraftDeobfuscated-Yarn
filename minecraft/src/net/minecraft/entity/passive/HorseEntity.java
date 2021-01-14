@@ -17,7 +17,7 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundEvent;
@@ -51,11 +51,11 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		tag.putInt("Variant", this.getVariant());
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		super.writeCustomDataToNbt(nbt);
+		nbt.putInt("Variant", this.getVariant());
 		if (!this.items.getStack(1).isEmpty()) {
-			tag.put("ArmorItem", this.items.getStack(1).toTag(new CompoundTag()));
+			nbt.put("ArmorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
 		}
 	}
 
@@ -69,11 +69,11 @@ public class HorseEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.setVariant(tag.getInt("Variant"));
-		if (tag.contains("ArmorItem", 10)) {
-			ItemStack itemStack = ItemStack.fromTag(tag.getCompound("ArmorItem"));
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		super.readCustomDataFromNbt(nbt);
+		this.setVariant(nbt.getInt("Variant"));
+		if (nbt.contains("ArmorItem", 10)) {
+			ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("ArmorItem"));
 			if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
 				this.items.setStack(1, itemStack);
 			}
@@ -274,7 +274,7 @@ public class HorseEntity extends HorseBaseEntity {
 	@Nullable
 	@Override
 	public EntityData initialize(
-		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag
+		ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityNbt
 	) {
 		HorseColor horseColor;
 		if (entityData instanceof HorseEntity.HorseData) {
@@ -285,7 +285,7 @@ public class HorseEntity extends HorseBaseEntity {
 		}
 
 		this.setVariant(horseColor, Util.getRandom(HorseMarking.values(), this.random));
-		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+		return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
 	}
 
 	public static class HorseData extends PassiveEntity.PassiveData {

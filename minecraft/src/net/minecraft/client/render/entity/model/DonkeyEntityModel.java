@@ -19,8 +19,8 @@ public class DonkeyEntityModel<T extends AbstractDonkeyEntity> extends HorseEnti
 		this.rightChest.yaw = (float) (Math.PI / 2);
 		this.leftChest.setPivot(6.0F, -8.0F, 0.0F);
 		this.rightChest.setPivot(-6.0F, -8.0F, 0.0F);
-		this.torso.addChild(this.leftChest);
-		this.torso.addChild(this.rightChest);
+		this.body.addChild(this.leftChest);
+		this.body.addChild(this.rightChest);
 	}
 
 	@Override

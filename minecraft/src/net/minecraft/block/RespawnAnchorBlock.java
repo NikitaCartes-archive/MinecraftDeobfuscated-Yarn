@@ -215,9 +215,9 @@ public class RespawnAnchorBlock extends Block {
 		return getLightLevel(state, 15);
 	}
 
-	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView collisionView, BlockPos pos) {
-		Optional<Vec3d> optional = method_30842(entity, collisionView, pos, true);
-		return optional.isPresent() ? optional : method_30842(entity, collisionView, pos, false);
+	public static Optional<Vec3d> findRespawnPosition(EntityType<?> entity, CollisionView world, BlockPos pos) {
+		Optional<Vec3d> optional = method_30842(entity, world, pos, true);
+		return optional.isPresent() ? optional : method_30842(entity, world, pos, false);
 	}
 
 	private static Optional<Vec3d> method_30842(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, boolean bl) {

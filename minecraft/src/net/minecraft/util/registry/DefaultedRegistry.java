@@ -11,8 +11,8 @@ public class DefaultedRegistry<T> extends SimpleRegistry<T> {
 	private final Identifier defaultId;
 	private T defaultValue;
 
-	public DefaultedRegistry(String defaultId, RegistryKey<? extends Registry<T>> registryKey, Lifecycle lifecycle) {
-		super(registryKey, lifecycle);
+	public DefaultedRegistry(String defaultId, RegistryKey<? extends Registry<T>> key, Lifecycle lifecycle) {
+		super(key, lifecycle);
 		this.defaultId = new Identifier(defaultId);
 	}
 

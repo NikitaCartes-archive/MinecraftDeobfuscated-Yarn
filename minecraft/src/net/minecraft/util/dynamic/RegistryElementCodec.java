@@ -16,7 +16,7 @@ import net.minecraft.util.registry.RegistryKey;
  * decoding behavior if it cannot do so.
  * 
  * <p>The codec's saves and loads {@code Supplier<E>} in order to avoid early
- * loading from registry before a registry is fully loaded from a codec.</p>
+ * loading from registry before a registry is fully loaded from a codec.
  * 
  * @param <E> the element type
  * @see RegistryCodec
@@ -28,8 +28,8 @@ public final class RegistryElementCodec<E> implements Codec<Supplier<E>> {
 	private final Codec<E> elementCodec;
 	private final boolean field_26758;
 
-	public static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec) {
-		return method_31192(registryRef, codec, true);
+	public static <E> RegistryElementCodec<E> of(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec) {
+		return method_31192(registryRef, elementCodec, true);
 	}
 
 	public static <E> Codec<List<Supplier<E>>> method_31194(RegistryKey<? extends Registry<E>> registryKey, Codec<E> codec) {
@@ -41,10 +41,10 @@ public final class RegistryElementCodec<E> implements Codec<Supplier<E>> {
 		return new RegistryElementCodec<>(registryKey, codec, bl);
 	}
 
-	private RegistryElementCodec(RegistryKey<? extends Registry<E>> registryRef, Codec<E> codec, boolean bl) {
+	private RegistryElementCodec(RegistryKey<? extends Registry<E>> registryRef, Codec<E> elementCodec, boolean allowInlineDefinitions) {
 		this.registryRef = registryRef;
-		this.elementCodec = codec;
-		this.field_26758 = bl;
+		this.elementCodec = elementCodec;
+		this.field_26758 = allowInlineDefinitions;
 	}
 
 	public <T> DataResult<T> encode(Supplier<E> supplier, DynamicOps<T> dynamicOps, T object) {

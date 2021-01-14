@@ -133,7 +133,7 @@ public class RealmsServer extends ValueObject {
 		server.players
 			.sort(
 				(playerInfo, playerInfo2) -> ComparisonChain.start()
-						.compareFalseFirst(playerInfo2.getAccepted(), playerInfo.getAccepted())
+						.compareFalseFirst(playerInfo2.isAccepted(), playerInfo.isAccepted())
 						.compare(playerInfo.getName().toLowerCase(Locale.ROOT), playerInfo2.getName().toLowerCase(Locale.ROOT))
 						.result()
 			);
@@ -226,15 +226,15 @@ public class RealmsServer extends ValueObject {
 		return Objects.hash(new Object[]{this.id, this.name, this.motd, this.state, this.owner, this.expired});
 	}
 
-	public boolean equals(Object obj) {
-		if (obj == null) {
+	public boolean equals(Object o) {
+		if (o == null) {
 			return false;
-		} else if (obj == this) {
+		} else if (o == this) {
 			return true;
-		} else if (obj.getClass() != this.getClass()) {
+		} else if (o.getClass() != this.getClass()) {
 			return false;
 		} else {
-			RealmsServer realmsServer = (RealmsServer)obj;
+			RealmsServer realmsServer = (RealmsServer)o;
 			return new EqualsBuilder()
 				.append(this.id, realmsServer.id)
 				.append(this.name, realmsServer.name)

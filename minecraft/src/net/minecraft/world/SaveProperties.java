@@ -5,7 +5,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashReportSection;
@@ -46,16 +46,16 @@ public interface SaveProperties {
 	}
 
 	@Nullable
-	CompoundTag getCustomBossEvents();
+	NbtCompound getCustomBossEvents();
 
-	void setCustomBossEvents(@Nullable CompoundTag tag);
+	void setCustomBossEvents(@Nullable NbtCompound nbt);
 
 	ServerWorldProperties getMainWorldProperties();
 
 	@Environment(EnvType.CLIENT)
 	LevelInfo getLevelInfo();
 
-	CompoundTag cloneWorldTag(DynamicRegistryManager dynamicRegistryManager, @Nullable CompoundTag compoundTag);
+	NbtCompound cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable NbtCompound playerNbt);
 
 	boolean isHardcore();
 
@@ -79,11 +79,11 @@ public interface SaveProperties {
 
 	GameRules getGameRules();
 
-	CompoundTag getPlayerData();
+	NbtCompound getPlayerData();
 
-	CompoundTag getDragonFight();
+	NbtCompound getDragonFight();
 
-	void setDragonFight(CompoundTag tag);
+	void setDragonFight(NbtCompound nbt);
 
 	GeneratorOptions getGeneratorOptions();
 

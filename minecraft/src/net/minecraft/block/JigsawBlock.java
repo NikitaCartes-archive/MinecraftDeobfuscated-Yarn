@@ -84,11 +84,11 @@ public class JigsawBlock extends Block implements BlockEntityProvider {
 		return direction == direction2.getOpposite() && (bl || direction3 == direction4) && info1.tag.getString("target").equals(info2.tag.getString("name"));
 	}
 
-	public static Direction getFacing(BlockState blockState) {
-		return ((JigsawOrientation)blockState.get(ORIENTATION)).getFacing();
+	public static Direction getFacing(BlockState state) {
+		return ((JigsawOrientation)state.get(ORIENTATION)).getFacing();
 	}
 
-	public static Direction getRotation(BlockState blockState) {
-		return ((JigsawOrientation)blockState.get(ORIENTATION)).getRotation();
+	public static Direction getRotation(BlockState state) {
+		return ((JigsawOrientation)state.get(ORIENTATION)).getRotation();
 	}
 }

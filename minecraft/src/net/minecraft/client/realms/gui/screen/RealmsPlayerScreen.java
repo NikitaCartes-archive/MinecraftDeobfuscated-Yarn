@@ -262,36 +262,36 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		}
 	}
 
-	private void drawRemoveIcon(MatrixStack matrixStack, int i, int j, int k, int l) {
+	private void drawRemoveIcon(MatrixStack matrices, int i, int j, int k, int l) {
 		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
 		this.client.getTextureManager().bindTexture(CROSS_PLAYER_ICON);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 7.0F : 0.0F;
-		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, f, 8, 7, 8, 14);
+		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 7, 8, 14);
 		if (bl) {
 			this.tooltipText = field_26500;
 			this.operation = RealmsPlayerScreen.PlayerOperation.REMOVE;
 		}
 	}
 
-	private void drawOpped(MatrixStack matrixStack, int i, int j, int k, int l) {
+	private void drawOpped(MatrixStack matrices, int i, int j, int k, int l) {
 		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
 		this.client.getTextureManager().bindTexture(OP_ICON);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 8.0F : 0.0F;
-		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, f, 8, 8, 8, 16);
+		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
 			this.tooltipText = field_26499;
 			this.operation = RealmsPlayerScreen.PlayerOperation.TOGGLE_OP;
 		}
 	}
 
-	private void drawNormal(MatrixStack matrixStack, int i, int j, int k, int l) {
+	private void drawNormal(MatrixStack matrices, int i, int j, int k, int l) {
 		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
 		this.client.getTextureManager().bindTexture(USER_ICON);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 8.0F : 0.0F;
-		DrawableHelper.drawTexture(matrixStack, i, j, 0.0F, f, 8, 8, 8, 16);
+		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
 			this.tooltipText = field_26498;
 			this.operation = RealmsPlayerScreen.PlayerOperation.TOGGLE_OP;
@@ -325,7 +325,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 				int j = RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width;
 				int k = (int)Math.floor(mouseY - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
 				int l = k / this.itemHeight;
-				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getItemCount()) {
+				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getEntryCount()) {
 					this.setSelected(l);
 					this.itemClicked(k, l, mouseX, mouseY, this.width);
 				}
@@ -386,7 +386,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 		@Override
 		public int getMaxPosition() {
-			return this.getItemCount() * 13;
+			return this.getEntryCount() * 13;
 		}
 	}
 
@@ -405,9 +405,9 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 		private void renderInvitedItem(MatrixStack matrices, PlayerInfo playerInfo, int x, int y, int mouseX, int mouseY) {
 			int i;
-			if (!playerInfo.getAccepted()) {
+			if (!playerInfo.isAccepted()) {
 				i = 10526880;
-			} else if (playerInfo.getOnline()) {
+			} else if (playerInfo.isOnline()) {
 				i = 8388479;
 			} else {
 				i = 16777215;

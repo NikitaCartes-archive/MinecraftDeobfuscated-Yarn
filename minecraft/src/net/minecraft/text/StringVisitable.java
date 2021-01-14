@@ -163,7 +163,7 @@ public interface StringVisitable {
 		 * 
 		 * <p>When a {@link Optional#isPresent() present optional} is returned,
 		 * the visit is terminated before visiting all text. Can return {@link
-		 * StringRenderable#TERMINATE_VISIT} for convenience.</p>
+		 * StringVisitable#TERMINATE_VISIT} for convenience.</p>
 		 * 
 		 * @return {@code Optional.empty()} to continue, a non-empty result to terminate
 		 * 
@@ -182,7 +182,7 @@ public interface StringVisitable {
 		 * 
 		 * <p>When a {@link Optional#isPresent() present optional} is returned,
 		 * the visit is terminated before visiting all text. Can return {@link
-		 * StringRenderable#TERMINATE_VISIT} for convenience.</p>
+		 * StringVisitable#TERMINATE_VISIT} for convenience.</p>
 		 * 
 		 * @return {@code Optional.empty()} to continue, a non-empty result to terminate
 		 * 

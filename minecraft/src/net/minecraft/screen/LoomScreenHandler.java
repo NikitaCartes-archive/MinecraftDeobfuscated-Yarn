@@ -1,6 +1,5 @@
 package net.minecraft.screen;
 
-import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -13,14 +12,12 @@ import net.minecraft.item.BannerItem;
 import net.minecraft.item.BannerPatternItem;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.DyeColor;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 public class LoomScreenHandler extends ScreenHandler {
 	private final ScreenHandlerContext context;
@@ -87,13 +84,13 @@ public class LoomScreenHandler extends ScreenHandler {
 					LoomScreenHandler.this.selectedPattern.set(0);
 				}
 
-				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				context.run((world, blockPos) -> {
 					long l = world.getTime();
 					if (LoomScreenHandler.this.lastTakeResultTime != l) {
 						world.playSound(null, blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						LoomScreenHandler.this.lastTakeResultTime = l;
 					}
-				}));
+				});
 				return super.onTakeItem(player, stack);
 			}
 		});
@@ -144,8 +141,8 @@ public class LoomScreenHandler extends ScreenHandler {
 				&& this.selectedPattern.get() > 0
 				&& (this.selectedPattern.get() < BannerPattern.COUNT - BannerPattern.field_24417 || !itemStack3.isEmpty())) {
 			if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {
-				CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-				boolean bl = compoundTag.contains("Patterns", 9) && !itemStack.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+				NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+				boolean bl = nbtCompound.contains("Patterns", 9) && !itemStack.isEmpty() && nbtCompound.getList("Patterns", 10).size() >= 6;
 				if (bl) {
 					this.selectedPattern.set(0);
 				} else {
@@ -178,7 +175,7 @@ public class LoomScreenHandler extends ScreenHandler {
 					return ItemStack.EMPTY;
 				}
 
-				slot.onStackChanged(itemStack2, itemStack);
+				slot.onQuickTransfer(itemStack2, itemStack);
 			} else if (index != this.dyeSlot.id && index != this.bannerSlot.id && index != this.patternSlot.id) {
 				if (itemStack2.getItem() instanceof BannerItem) {
 					if (!this.insertItem(itemStack2, this.bannerSlot.id, this.bannerSlot.id + 1, false)) {
@@ -222,7 +219,7 @@ public class LoomScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, player.world, this.input)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, player.world, this.input));
 	}
 
 	private void updateOutputSlot() {
@@ -235,19 +232,19 @@ public class LoomScreenHandler extends ScreenHandler {
 				itemStack3.setCount(1);
 				BannerPattern bannerPattern = BannerPattern.values()[this.selectedPattern.get()];
 				DyeColor dyeColor = ((DyeItem)itemStack2.getItem()).getColor();
-				CompoundTag compoundTag = itemStack3.getOrCreateSubTag("BlockEntityTag");
-				ListTag listTag;
-				if (compoundTag.contains("Patterns", 9)) {
-					listTag = compoundTag.getList("Patterns", 10);
+				NbtCompound nbtCompound = itemStack3.getOrCreateSubTag("BlockEntityTag");
+				NbtList nbtList;
+				if (nbtCompound.contains("Patterns", 9)) {
+					nbtList = nbtCompound.getList("Patterns", 10);
 				} else {
-					listTag = new ListTag();
-					compoundTag.put("Patterns", listTag);
+					nbtList = new NbtList();
+					nbtCompound.put("Patterns", nbtList);
 				}
 
-				CompoundTag compoundTag2 = new CompoundTag();
-				compoundTag2.putString("Pattern", bannerPattern.getId());
-				compoundTag2.putInt("Color", dyeColor.getId());
-				listTag.add(compoundTag2);
+				NbtCompound nbtCompound2 = new NbtCompound();
+				nbtCompound2.putString("Pattern", bannerPattern.getId());
+				nbtCompound2.putInt("Color", dyeColor.getId());
+				nbtList.add(nbtCompound2);
 			}
 
 			if (!ItemStack.areEqual(itemStack3, this.outputSlot.getStack())) {

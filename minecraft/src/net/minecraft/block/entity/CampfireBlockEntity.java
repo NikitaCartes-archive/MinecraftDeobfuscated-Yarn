@@ -9,7 +9,7 @@ import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
@@ -114,10 +114,10 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	}
 
 	@Override
-	public void fromTag(BlockState state, CompoundTag tag) {
+	public void fromTag(BlockState state, NbtCompound tag) {
 		super.fromTag(state, tag);
 		this.itemsBeingCooked.clear();
-		Inventories.fromTag(tag, this.itemsBeingCooked);
+		Inventories.readNbt(tag, this.itemsBeingCooked);
 		if (tag.contains("CookingTimes", 11)) {
 			int[] is = tag.getIntArray("CookingTimes");
 			System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
@@ -130,28 +130,28 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable, Ticka
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		this.saveInitialChunkData(tag);
-		tag.putIntArray("CookingTimes", this.cookingTimes);
-		tag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
-		return tag;
+	public NbtCompound writeNbt(NbtCompound nbt) {
+		this.saveInitialChunkData(nbt);
+		nbt.putIntArray("CookingTimes", this.cookingTimes);
+		nbt.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
+		return nbt;
 	}
 
-	private CompoundTag saveInitialChunkData(CompoundTag tag) {
-		super.toTag(tag);
-		Inventories.toTag(tag, this.itemsBeingCooked, true);
-		return tag;
+	private NbtCompound saveInitialChunkData(NbtCompound nbt) {
+		super.writeNbt(nbt);
+		Inventories.writeNbt(nbt, this.itemsBeingCooked, true);
+		return nbt;
 	}
 
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataTag());
+		return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataNbt());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.saveInitialChunkData(new CompoundTag());
+	public NbtCompound toInitialChunkDataNbt() {
+		return this.saveInitialChunkData(new NbtCompound());
 	}
 
 	public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {

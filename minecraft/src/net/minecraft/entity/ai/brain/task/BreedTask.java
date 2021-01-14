@@ -16,7 +16,7 @@ public class BreedTask extends Task<AnimalEntity> {
 	private final float field_23129;
 	private long breedTime;
 
-	public BreedTask(EntityType<? extends AnimalEntity> targetType, float f) {
+	public BreedTask(EntityType<? extends AnimalEntity> targetType, float speed) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.VISIBLE_MOBS,
@@ -31,7 +31,7 @@ public class BreedTask extends Task<AnimalEntity> {
 			325
 		);
 		this.targetType = targetType;
-		this.field_23129 = f;
+		this.field_23129 = speed;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, AnimalEntity animalEntity) {

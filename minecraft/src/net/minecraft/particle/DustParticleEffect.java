@@ -12,7 +12,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 
 public class DustParticleEffect implements ParticleEffect {
-	public static final DustParticleEffect RED = new DustParticleEffect(1.0F, 0.0F, 0.0F, 1.0F);
+	public static final DustParticleEffect DEFAULT = new DustParticleEffect(1.0F, 0.0F, 0.0F, 1.0F);
 	public static final Codec<DustParticleEffect> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					Codec.FLOAT.fieldOf("r").forGetter(dustParticleEffect -> dustParticleEffect.red),

@@ -24,8 +24,8 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public int getColorMultiplier(float tint) {
-		int i = super.getColorMultiplier(tint);
+	public int getBrightness(float tint) {
+		int i = super.getBrightness(tint);
 		int j = 240;
 		int k = i >> 16 & 0xFF;
 		return 240 | k << 16;

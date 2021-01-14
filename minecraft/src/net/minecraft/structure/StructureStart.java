@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -110,26 +110,26 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		}
 	}
 
-	public CompoundTag toTag(int chunkX, int chunkZ) {
-		CompoundTag compoundTag = new CompoundTag();
+	public NbtCompound toTag(int chunkX, int chunkZ) {
+		NbtCompound nbtCompound = new NbtCompound();
 		if (this.hasChildren()) {
-			compoundTag.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
-			compoundTag.putInt("ChunkX", chunkX);
-			compoundTag.putInt("ChunkZ", chunkZ);
-			compoundTag.putInt("references", this.references);
-			compoundTag.put("BB", this.boundingBox.toNbt());
-			ListTag listTag = new ListTag();
+			nbtCompound.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
+			nbtCompound.putInt("ChunkX", chunkX);
+			nbtCompound.putInt("ChunkZ", chunkZ);
+			nbtCompound.putInt("references", this.references);
+			nbtCompound.put("BB", this.boundingBox.toNbt());
+			NbtList nbtList = new NbtList();
 			synchronized (this.children) {
 				for (StructurePiece structurePiece : this.children) {
-					listTag.add(structurePiece.getTag());
+					nbtList.add(structurePiece.getTag());
 				}
 			}
 
-			compoundTag.put("Children", listTag);
-			return compoundTag;
+			nbtCompound.put("Children", nbtList);
+			return nbtCompound;
 		} else {
-			compoundTag.putString("id", "INVALID");
-			return compoundTag;
+			nbtCompound.putString("id", "INVALID");
+			return nbtCompound;
 		}
 	}
 
@@ -177,7 +177,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		return this.chunkZ;
 	}
 
-	public BlockPos getPos() {
+	public BlockPos getBlockPos() {
 		return new BlockPos(this.chunkX << 4, 0, this.chunkZ << 4);
 	}
 

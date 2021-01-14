@@ -2,7 +2,6 @@ package net.minecraft.world;
 
 import java.util.Comparator;
 import java.util.Optional;
-import net.minecraft.class_5459;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
@@ -25,7 +24,7 @@ public class PortalForcer {
 		this.world = world;
 	}
 
-	public Optional<class_5459.class_5460> method_30483(BlockPos blockPos, boolean bl) {
+	public Optional<PortalUtil.Rectangle> method_30483(BlockPos blockPos, boolean bl) {
 		PointOfInterestStorage pointOfInterestStorage = this.world.getPointOfInterestStorage();
 		int i = bl ? 16 : 128;
 		pointOfInterestStorage.preloadChunks(this.world, blockPos, i);
@@ -43,14 +42,14 @@ public class PortalForcer {
 				BlockPos blockPosx = pointOfInterest.getPos();
 				this.world.getChunkManager().addTicket(ChunkTicketType.PORTAL, new ChunkPos(blockPosx), 3, blockPosx);
 				BlockState blockState = this.world.getBlockState(blockPosx);
-				return class_5459.method_30574(
+				return PortalUtil.getLargestRectangle(
 					blockPosx, blockState.get(Properties.HORIZONTAL_AXIS), 21, Direction.Axis.Y, 21, blockPosxx -> this.world.getBlockState(blockPosxx) == blockState
 				);
 			}
 		);
 	}
 
-	public Optional<class_5459.class_5460> method_30482(BlockPos blockPos, Direction.Axis axis) {
+	public Optional<PortalUtil.Rectangle> method_30482(BlockPos blockPos, Direction.Axis axis) {
 		Direction direction = Direction.get(Direction.AxisDirection.POSITIVE, axis);
 		double d = -1.0;
 		BlockPos blockPos2 = null;
@@ -139,7 +138,7 @@ public class PortalForcer {
 			}
 		}
 
-		return Optional.of(new class_5459.class_5460(blockPos2.toImmutable(), 2, 3));
+		return Optional.of(new PortalUtil.Rectangle(blockPos2.toImmutable(), 2, 3));
 	}
 
 	private boolean method_30481(BlockPos blockPos, BlockPos.Mutable mutable, Direction direction, int i) {

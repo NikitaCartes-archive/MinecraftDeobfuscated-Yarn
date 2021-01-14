@@ -31,12 +31,12 @@ public class RegistryReadingOps<T> extends ForwardingDynamicOps<T> {
 	 * Encode an id for a registry element than a full object if possible.
 	 * 
 	 * <p>This method is called by casting an arbitrary dynamic ops to a registry
-	 * reading ops.</p>
+	 * reading ops.
 	 * 
-	 * @see RegistryOps#decodeOrId(Object, RegistryKey, MapCodec)
+	 * @see RegistryOps#decodeOrId(Object, RegistryKey, Codec, boolean)
 	 */
 	protected <E> DataResult<T> encodeOrId(E input, T prefix, RegistryKey<? extends Registry<E>> registryReference, Codec<E> codec) {
-		Optional<MutableRegistry<E>> optional = this.manager.getOptional(registryReference);
+		Optional<MutableRegistry<E>> optional = this.manager.getOptionalMutable(registryReference);
 		if (optional.isPresent()) {
 			MutableRegistry<E> mutableRegistry = (MutableRegistry<E>)optional.get();
 			Optional<RegistryKey<E>> optional2 = mutableRegistry.getKey(input);

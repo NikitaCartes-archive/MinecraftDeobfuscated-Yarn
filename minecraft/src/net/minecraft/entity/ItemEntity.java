@@ -13,7 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
@@ -29,21 +29,27 @@ import net.minecraft.world.World;
 
 public class ItemEntity extends Entity {
 	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
-	private int age;
+	/**
+	 * The number of ticks since this item entity has been created.
+	 * It is a short value with key {@code Age} in the NBT structure.
+	 * 
+	 * <p>It differs from {@link Entity#age}.
+	 */
+	private int itemAge;
 	private int pickupDelay;
 	private int health = 5;
 	private UUID thrower;
 	private UUID owner;
-	public final float hoverHeight;
+	public final float uniqueOffset;
 
 	public ItemEntity(EntityType<? extends ItemEntity> entityType, World world) {
 		super(entityType, world);
-		this.hoverHeight = (float)(Math.random() * Math.PI * 2.0);
+		this.uniqueOffset = (float)(Math.random() * Math.PI * 2.0);
 	}
 
 	public ItemEntity(World world, double x, double y, double z) {
 		this(EntityType.ITEM, world);
-		this.updatePosition(x, y, z);
+		this.setPosition(x, y, z);
 		this.yaw = this.random.nextFloat() * 360.0F;
 		this.setVelocity(this.random.nextDouble() * 0.2 - 0.1, 0.2, this.random.nextDouble() * 0.2 - 0.1);
 	}
@@ -58,8 +64,8 @@ public class ItemEntity extends Entity {
 		super(itemEntity.getType(), itemEntity.world);
 		this.setStack(itemEntity.getStack().copy());
 		this.copyPositionAndRotation(itemEntity);
-		this.age = itemEntity.age;
-		this.hoverHeight = itemEntity.hoverHeight;
+		this.itemAge = itemEntity.itemAge;
+		this.uniqueOffset = itemEntity.uniqueOffset;
 	}
 
 	@Override
@@ -88,7 +94,7 @@ public class ItemEntity extends Entity {
 			Vec3d vec3d = this.getVelocity();
 			float f = this.getStandingEyeHeight() - 0.11111111F;
 			if (this.isTouchingWater() && this.getFluidHeight(FluidTags.WATER) > (double)f) {
-				this.applyBuoyancy();
+				this.applyWaterBuoyancy();
 			} else if (this.isInLava() && this.getFluidHeight(FluidTags.LAVA) > (double)f) {
 				this.method_24348();
 			} else if (!this.hasNoGravity()) {
@@ -134,8 +140,8 @@ public class ItemEntity extends Entity {
 				}
 			}
 
-			if (this.age != -32768) {
-				this.age++;
+			if (this.itemAge != -32768) {
+				this.itemAge++;
 			}
 
 			this.velocityDirty = this.velocityDirty | this.updateWaterState();
@@ -146,13 +152,13 @@ public class ItemEntity extends Entity {
 				}
 			}
 
-			if (!this.world.isClient && this.age >= 6000) {
+			if (!this.world.isClient && this.itemAge >= 6000) {
 				this.remove();
 			}
 		}
 	}
 
-	private void applyBuoyancy() {
+	private void applyWaterBuoyancy() {
 		Vec3d vec3d = this.getVelocity();
 		this.setVelocity(vec3d.x * 0.99F, vec3d.y + (double)(vec3d.y < 0.06F ? 5.0E-4F : 0.0F), vec3d.z * 0.99F);
 	}
@@ -178,7 +184,7 @@ public class ItemEntity extends Entity {
 
 	private boolean canMerge() {
 		ItemStack itemStack = this.getStack();
-		return this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < 6000 && itemStack.getCount() < itemStack.getMaxCount();
+		return this.isAlive() && this.pickupDelay != 32767 && this.itemAge != -32768 && this.itemAge < 6000 && itemStack.getCount() < itemStack.getMaxCount();
 	}
 
 	private void tryMerge(ItemEntity other) {
@@ -219,7 +225,7 @@ public class ItemEntity extends Entity {
 	private static void merge(ItemEntity targetEntity, ItemStack targetStack, ItemEntity sourceEntity, ItemStack sourceStack) {
 		merge(targetEntity, targetStack, sourceStack);
 		targetEntity.pickupDelay = Math.max(targetEntity.pickupDelay, sourceEntity.pickupDelay);
-		targetEntity.age = Math.min(targetEntity.age, sourceEntity.age);
+		targetEntity.itemAge = Math.min(targetEntity.itemAge, sourceEntity.itemAge);
 		if (sourceStack.isEmpty()) {
 			sourceEntity.remove();
 		}
@@ -250,41 +256,41 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		tag.putShort("Health", (short)this.health);
-		tag.putShort("Age", (short)this.age);
-		tag.putShort("PickupDelay", (short)this.pickupDelay);
+	public void writeCustomDataToNbt(NbtCompound nbt) {
+		nbt.putShort("Health", (short)this.health);
+		nbt.putShort("Age", (short)this.itemAge);
+		nbt.putShort("PickupDelay", (short)this.pickupDelay);
 		if (this.getThrower() != null) {
-			tag.putUuid("Thrower", this.getThrower());
+			nbt.putUuid("Thrower", this.getThrower());
 		}
 
 		if (this.getOwner() != null) {
-			tag.putUuid("Owner", this.getOwner());
+			nbt.putUuid("Owner", this.getOwner());
 		}
 
 		if (!this.getStack().isEmpty()) {
-			tag.put("Item", this.getStack().toTag(new CompoundTag()));
+			nbt.put("Item", this.getStack().writeNbt(new NbtCompound()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		this.health = tag.getShort("Health");
-		this.age = tag.getShort("Age");
-		if (tag.contains("PickupDelay")) {
-			this.pickupDelay = tag.getShort("PickupDelay");
+	public void readCustomDataFromNbt(NbtCompound nbt) {
+		this.health = nbt.getShort("Health");
+		this.itemAge = nbt.getShort("Age");
+		if (nbt.contains("PickupDelay")) {
+			this.pickupDelay = nbt.getShort("PickupDelay");
 		}
 
-		if (tag.containsUuid("Owner")) {
-			this.owner = tag.getUuid("Owner");
+		if (nbt.containsUuid("Owner")) {
+			this.owner = nbt.getUuid("Owner");
 		}
 
-		if (tag.containsUuid("Thrower")) {
-			this.thrower = tag.getUuid("Thrower");
+		if (nbt.containsUuid("Thrower")) {
+			this.thrower = nbt.getUuid("Thrower");
 		}
 
-		CompoundTag compoundTag = tag.getCompound("Item");
-		this.setStack(ItemStack.fromTag(compoundTag));
+		NbtCompound nbtCompound = nbt.getCompound("Item");
+		this.setStack(ItemStack.fromNbt(nbtCompound));
 		if (this.getStack().isEmpty()) {
 			this.remove();
 		}
@@ -331,10 +337,16 @@ public class ItemEntity extends Entity {
 		return entity;
 	}
 
+	/**
+	 * Returns the item stack contained in this item entity.
+	 */
 	public ItemStack getStack() {
 		return this.getDataTracker().get(STACK);
 	}
 
+	/**
+	 * Sets the item stack contained in this item entity to {@code stack}.
+	 */
 	public void setStack(ItemStack stack) {
 		this.getDataTracker().set(STACK, stack);
 	}
@@ -347,61 +359,112 @@ public class ItemEntity extends Entity {
 		}
 	}
 
+	/**
+	 * Returns the UUID of the entity to which belongs this item entity,
+	 * or {@code null} if there is not.
+	 * 
+	 * <p>If there is one, the owner is the only entity which can pick
+	 * up this item entity.
+	 */
 	@Nullable
 	public UUID getOwner() {
 		return this.owner;
 	}
 
+	/**
+	 * Sets the owner of this item entity to {@code uuid}.
+	 * 
+	 * <p>Used when an item is given to an entity, but this entity
+	 * does not have enough space in its inventory.
+	 */
 	public void setOwner(@Nullable UUID uuid) {
 		this.owner = uuid;
 	}
 
+	/**
+	 * Returns the UUID of the entity which created this item entity
+	 * by throwing an item, or {@code null} if it was created otherwise.
+	 */
 	@Nullable
 	public UUID getThrower() {
 		return this.thrower;
 	}
 
+	/**
+	 * Sets the thrower of this item entity to {@code uuid}.
+	 */
 	public void setThrower(@Nullable UUID uuid) {
 		this.thrower = uuid;
 	}
 
+	/**
+	 * Returns the number of ticks since this item entity has been created.
+	 * 
+	 * <p>Increases every tick. When it equals to 6000 ticks (5 minutes),
+	 * this item entity disappears.
+	 * 
+	 * <p>Unlike {@linkplain Entity#age}, it is persistent and not synchronized
+	 * between the client and the server.
+	 * 
+	 * @see #tick()
+	 */
 	@Environment(EnvType.CLIENT)
-	public int getAge() {
-		return this.age;
+	public int getItemAge() {
+		return this.itemAge;
 	}
 
+	/**
+	 * Sets the number of ticks before this item entity can be picked up
+	 * to the default value of 10.
+	 */
 	public void setToDefaultPickupDelay() {
 		this.pickupDelay = 10;
 	}
 
+	/**
+	 * Sets the number of ticks before this item entity can be picked up
+	 * to 0.
+	 */
 	public void resetPickupDelay() {
 		this.pickupDelay = 0;
 	}
 
+	/**
+	 * Makes this item entity impossible to be picked up by setting its
+	 * pickup delay to 32767.
+	 */
 	public void setPickupDelayInfinite() {
 		this.pickupDelay = 32767;
 	}
 
+	/**
+	 * Sets the number of ticks before this item entity can be picked up
+	 * to {@code pickupDelay}.
+	 */
 	public void setPickupDelay(int pickupDelay) {
 		this.pickupDelay = pickupDelay;
 	}
 
+	/**
+	 * Returns whether the pickup delay of this item entity is greater
+	 * than 0.
+	 */
 	public boolean cannotPickup() {
 		return this.pickupDelay > 0;
 	}
 
 	public void setCovetedItem() {
-		this.age = -6000;
+		this.itemAge = -6000;
 	}
 
 	public void setDespawnImmediately() {
 		this.setPickupDelayInfinite();
-		this.age = 5999;
+		this.itemAge = 5999;
 	}
 
 	@Environment(EnvType.CLIENT)
 	public float method_27314(float f) {
-		return ((float)this.getAge() + f) / 20.0F + this.hoverHeight;
+		return ((float)this.getItemAge() + f) / 20.0F + this.uniqueOffset;
 	}
 
 	@Override

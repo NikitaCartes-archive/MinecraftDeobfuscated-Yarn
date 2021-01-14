@@ -11,9 +11,9 @@ public class EntityLookTarget implements LookTarget {
 	private final Entity entity;
 	private final boolean field_24382;
 
-	public EntityLookTarget(Entity entity, boolean bl) {
+	public EntityLookTarget(Entity entity, boolean useEyeHeight) {
 		this.entity = entity;
-		this.field_24382 = bl;
+		this.field_24382 = useEyeHeight;
 	}
 
 	@Override

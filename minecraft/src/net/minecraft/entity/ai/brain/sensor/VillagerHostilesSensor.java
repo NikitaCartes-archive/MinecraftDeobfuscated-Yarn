@@ -54,9 +54,9 @@ public class VillagerHostilesSensor extends Sensor<LivingEntity> {
 		return MathHelper.floor(hostile1.squaredDistanceTo(entity) - hostile2.squaredDistanceTo(entity));
 	}
 
-	private boolean isCloseEnoughForDanger(LivingEntity entity, LivingEntity hostile) {
-		float f = SQUARED_DISTANCES_FOR_DANGER.get(hostile.getType());
-		return hostile.squaredDistanceTo(entity) <= (double)(f * f);
+	private boolean isCloseEnoughForDanger(LivingEntity villager, LivingEntity target) {
+		float f = SQUARED_DISTANCES_FOR_DANGER.get(target.getType());
+		return target.squaredDistanceTo(villager) <= (double)(f * f);
 	}
 
 	private boolean isHostile(LivingEntity entity) {

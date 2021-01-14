@@ -22,9 +22,9 @@ public interface EntityView {
 	 * 
 	 * @return a list of entities within a box, excluding the given entity, all satisfying the given predicate
 	 * 
-	 * @param except the entity the box logically surrounds. This entity is ignored if it is inside the box.
+	 * @param except the entity the box logically surrounds; this entity is ignored if it is inside the box
 	 * @param box the box in which to search for entities
-	 * @param predicate a predicate which entities must satisfy in order to be included in the returned list.
+	 * @param predicate a predicate which entities must satisfy in order to be included in the returned list
 	 */
 	List<Entity> getOtherEntities(@Nullable Entity except, Box box, @Nullable Predicate<? super Entity> predicate);
 
@@ -50,10 +50,10 @@ public interface EntityView {
 	 * Computes a list of entities within some box, excluding the given entity, that are not spectators.
 	 * 
 	 * @return a list of entities within a box, excluding the given entity
-	 * @see #getSurroundingEntities(Entity, Box, Predicate)
+	 * @see #getOtherEntities(Entity, Box, Predicate)
 	 * @see Entity#isSpectator()
 	 * 
-	 * @param except the entity the box logically surrounds. This entity is ignored if it is inside the box.
+	 * @param except the entity the box logically surrounds; this entity is ignored if it is inside the box
 	 * @param box the box in which to search for entities
 	 */
 	default List<Entity> getOtherEntities(@Nullable Entity except, Box box) {

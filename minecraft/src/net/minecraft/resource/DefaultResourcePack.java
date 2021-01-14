@@ -147,17 +147,15 @@ public class DefaultResourcePack implements ResourcePack {
 		return set;
 	}
 
-	private static void getIdentifiers(
-		Collection<Identifier> collection, int maxDepth, String namespace, Path path, String searchLocation, Predicate<String> predicate
-	) throws IOException {
-		Path path2 = path.resolve(namespace);
-		Stream<Path> stream = Files.walk(path2.resolve(searchLocation), maxDepth, new FileVisitOption[0]);
+	private static void getIdentifiers(Collection<Identifier> results, int maxDepth, String namespace, Path root, String prefix, Predicate<String> pathFilter) throws IOException {
+		Path path = root.resolve(namespace);
+		Stream<Path> stream = Files.walk(path.resolve(prefix), maxDepth, new FileVisitOption[0]);
 		Throwable var8 = null;
 
 		try {
-			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]) && predicate.test(pathx.getFileName().toString()))
-				.map(path2x -> new Identifier(namespace, path2.relativize(path2x).toString().replaceAll("\\\\", "/")))
-				.forEach(collection::add);
+			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]) && pathFilter.test(pathx.getFileName().toString()))
+				.map(path2 -> new Identifier(namespace, path.relativize(path2).toString().replaceAll("\\\\", "/")))
+				.forEach(results::add);
 		} catch (Throwable var17) {
 			var8 = var17;
 			throw var17;

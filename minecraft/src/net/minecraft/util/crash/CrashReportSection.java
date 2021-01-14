@@ -76,18 +76,18 @@ public class CrashReportSection {
 		return stringBuilder.toString();
 	}
 
-	public CrashReportSection add(String string, CrashCallable<String> crashCallable) {
+	public CrashReportSection add(String name, CrashCallable<String> crashCallable) {
 		try {
-			this.add(string, crashCallable.call());
+			this.add(name, crashCallable.call());
 		} catch (Throwable var4) {
-			this.add(string, var4);
+			this.add(name, var4);
 		}
 
 		return this;
 	}
 
-	public CrashReportSection add(String name, Object object) {
-		this.elements.add(new CrashReportSection.Element(name, object));
+	public CrashReportSection add(String name, Object detail) {
+		this.elements.add(new CrashReportSection.Element(name, detail));
 		return this;
 	}
 
@@ -135,23 +135,23 @@ public class CrashReportSection {
 		this.stackTrace = stackTraceElements;
 	}
 
-	public void addStackTrace(StringBuilder stringBuilder) {
-		stringBuilder.append("-- ").append(this.title).append(" --\n");
-		stringBuilder.append("Details:");
+	public void addStackTrace(StringBuilder crashReportBuilder) {
+		crashReportBuilder.append("-- ").append(this.title).append(" --\n");
+		crashReportBuilder.append("Details:");
 
 		for (CrashReportSection.Element element : this.elements) {
-			stringBuilder.append("\n\t");
-			stringBuilder.append(element.getName());
-			stringBuilder.append(": ");
-			stringBuilder.append(element.getDetail());
+			crashReportBuilder.append("\n\t");
+			crashReportBuilder.append(element.getName());
+			crashReportBuilder.append(": ");
+			crashReportBuilder.append(element.getDetail());
 		}
 
 		if (this.stackTrace != null && this.stackTrace.length > 0) {
-			stringBuilder.append("\nStacktrace:");
+			crashReportBuilder.append("\nStacktrace:");
 
 			for (StackTraceElement stackTraceElement : this.stackTrace) {
-				stringBuilder.append("\n\tat ");
-				stringBuilder.append(stackTraceElement);
+				crashReportBuilder.append("\n\tat ");
+				crashReportBuilder.append(stackTraceElement);
 			}
 		}
 	}

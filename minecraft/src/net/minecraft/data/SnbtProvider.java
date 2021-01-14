@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.Util;
@@ -39,14 +39,14 @@ public class SnbtProvider implements DataProvider {
 		return this;
 	}
 
-	private CompoundTag write(String string, CompoundTag compoundTag) {
-		CompoundTag compoundTag2 = compoundTag;
+	private NbtCompound write(String key, NbtCompound compound) {
+		NbtCompound nbtCompound = compound;
 
 		for (SnbtProvider.Tweaker tweaker : this.write) {
-			compoundTag2 = tweaker.write(string, compoundTag2);
+			nbtCompound = tweaker.write(key, nbtCompound);
 		}
 
-		return compoundTag2;
+		return nbtCompound;
 	}
 
 	@Override
@@ -84,14 +84,14 @@ public class SnbtProvider implements DataProvider {
 			SnbtProvider.CompressedData var11;
 			try {
 				String string = IOUtils.toString(bufferedReader);
-				CompoundTag compoundTag = this.write(name, StringNbtReader.parse(string));
+				NbtCompound nbtCompound = this.write(name, StringNbtReader.parse(string));
 				ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-				NbtIo.writeCompressed(compoundTag, byteArrayOutputStream);
+				NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
 				byte[] bs = byteArrayOutputStream.toByteArray();
 				String string2 = SHA1.hashBytes(bs).toString();
 				String string3;
 				if (field_24615 != null) {
-					string3 = compoundTag.toText("    ", 0).getString() + "\n";
+					string3 = nbtCompound.toText("    ", 0).getString() + "\n";
 				} else {
 					string3 = null;
 				}
@@ -124,27 +124,27 @@ public class SnbtProvider implements DataProvider {
 		return null;
 	}
 
-	private void write(DataCache dataCache, SnbtProvider.CompressedData compressedData, Path path) {
-		if (compressedData.field_24616 != null) {
-			Path path2 = field_24615.resolve(compressedData.name + ".snbt");
+	private void write(DataCache cache, SnbtProvider.CompressedData data, Path root) {
+		if (data.field_24616 != null) {
+			Path path = field_24615.resolve(data.name + ".snbt");
 
 			try {
-				FileUtils.write(path2.toFile(), compressedData.field_24616, StandardCharsets.UTF_8);
+				FileUtils.write(path.toFile(), data.field_24616, StandardCharsets.UTF_8);
 			} catch (IOException var18) {
-				LOGGER.error("Couldn't write structure SNBT {} at {}", compressedData.name, path2, var18);
+				LOGGER.error("Couldn't write structure SNBT {} at {}", data.name, path, var18);
 			}
 		}
 
-		Path path2 = path.resolve(compressedData.name + ".nbt");
+		Path path = root.resolve(data.name + ".nbt");
 
 		try {
-			if (!Objects.equals(dataCache.getOldSha1(path2), compressedData.sha1) || !Files.exists(path2, new LinkOption[0])) {
-				Files.createDirectories(path2.getParent());
-				OutputStream outputStream = Files.newOutputStream(path2);
+			if (!Objects.equals(cache.getOldSha1(path), data.sha1) || !Files.exists(path, new LinkOption[0])) {
+				Files.createDirectories(path.getParent());
+				OutputStream outputStream = Files.newOutputStream(path);
 				Throwable var6 = null;
 
 				try {
-					outputStream.write(compressedData.bytes);
+					outputStream.write(data.bytes);
 				} catch (Throwable var17) {
 					var6 = var17;
 					throw var17;
@@ -163,9 +163,9 @@ public class SnbtProvider implements DataProvider {
 				}
 			}
 
-			dataCache.updateSha1(path2, compressedData.sha1);
+			cache.updateSha1(path, data.sha1);
 		} catch (IOException var20) {
-			LOGGER.error("Couldn't write structure {} at {}", compressedData.name, path2, var20);
+			LOGGER.error("Couldn't write structure {} at {}", data.name, path, var20);
 		}
 	}
 
@@ -186,6 +186,6 @@ public class SnbtProvider implements DataProvider {
 
 	@FunctionalInterface
 	public interface Tweaker {
-		CompoundTag write(String name, CompoundTag nbt);
+		NbtCompound write(String name, NbtCompound nbt);
 	}
 }

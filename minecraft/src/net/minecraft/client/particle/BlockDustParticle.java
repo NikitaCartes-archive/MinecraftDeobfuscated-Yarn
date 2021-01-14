@@ -18,10 +18,10 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 	private final float sampleU;
 	private final float sampleV;
 
-	public BlockDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState blockState) {
+	public BlockDustParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, BlockState state) {
 		super(world, x, y, z, velocityX, velocityY, velocityZ);
-		this.blockState = blockState;
-		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(blockState));
+		this.blockState = state;
+		this.setSprite(MinecraftClient.getInstance().getBlockRenderManager().getModels().getSprite(state));
 		this.gravityStrength = 1.0F;
 		this.colorRed = 0.6F;
 		this.colorGreen = 0.6F;
@@ -84,8 +84,8 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public int getColorMultiplier(float tint) {
-		int i = super.getColorMultiplier(tint);
+	public int getBrightness(float tint) {
+		int i = super.getBrightness(tint);
 		int j = 0;
 		if (this.world.isChunkLoaded(this.blockPos)) {
 			j = WorldRenderer.getLightmapCoordinates(this.world, this.blockPos);

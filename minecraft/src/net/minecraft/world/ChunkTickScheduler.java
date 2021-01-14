@@ -3,7 +3,7 @@ package net.minecraft.world;
 import it.unimi.dsi.fastutil.shorts.ShortList;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.Chunk;
@@ -15,23 +15,23 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	private final ShortList[] scheduledPositions = new ShortList[16];
 
 	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos) {
-		this(shouldExclude, pos, new ListTag());
+		this(shouldExclude, pos, new NbtList());
 	}
 
-	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, ListTag tag) {
+	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, NbtList tag) {
 		this.shouldExclude = shouldExclude;
 		this.pos = pos;
 
 		for (int i = 0; i < tag.size(); i++) {
-			ListTag listTag = tag.getList(i);
+			NbtList nbtList = tag.getList(i);
 
-			for (int j = 0; j < listTag.size(); j++) {
-				Chunk.getList(this.scheduledPositions, i).add(listTag.getShort(j));
+			for (int j = 0; j < nbtList.size(); j++) {
+				Chunk.getList(this.scheduledPositions, i).add(nbtList.getShort(j));
 			}
 		}
 	}
 
-	public ListTag toNbt() {
+	public NbtList toNbt() {
 		return ChunkSerializer.toNbt(this.scheduledPositions);
 	}
 

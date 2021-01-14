@@ -52,7 +52,7 @@ public class SelectWorldScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("selectWorld.select"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::play)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)
 			)
 		);
 		this.addButton(
@@ -62,7 +62,7 @@ public class SelectWorldScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("selectWorld.create"),
-				buttonWidget -> this.client.openScreen(CreateWorldScreen.method_31130(this))
+				buttonWidget -> this.client.openScreen(CreateWorldScreen.create(this))
 			)
 		);
 		this.editButton = this.addButton(
@@ -72,7 +72,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				new TranslatableText("selectWorld.edit"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)
 			)
 		);
 		this.deleteButton = this.addButton(
@@ -82,7 +82,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				new TranslatableText("selectWorld.delete"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::delete)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::delete)
 			)
 		);
 		this.recreateButton = this.addButton(
@@ -92,7 +92,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				new TranslatableText("selectWorld.recreate"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::recreate)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
@@ -111,8 +111,8 @@ public class SelectWorldScreen extends Screen {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
-		return this.searchBox.charTyped(chr, keyCode);
+	public boolean charTyped(char chr, int modifiers) {
+		return this.searchBox.charTyped(chr, modifiers);
 	}
 
 	@Override
@@ -127,8 +127,8 @@ public class SelectWorldScreen extends Screen {
 		}
 	}
 
-	public void setTooltip(List<OrderedText> list) {
-		this.tooltipText = list;
+	public void setTooltip(List<OrderedText> tooltipText) {
+		this.tooltipText = tooltipText;
 	}
 
 	public void worldSelected(boolean active) {

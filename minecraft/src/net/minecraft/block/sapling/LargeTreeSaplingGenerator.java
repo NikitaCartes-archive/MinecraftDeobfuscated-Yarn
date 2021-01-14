@@ -14,39 +14,39 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 
 public abstract class LargeTreeSaplingGenerator extends SaplingGenerator {
 	@Override
-	public boolean generate(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockState blockState, Random random) {
+	public boolean generate(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random) {
 		for (int i = 0; i >= -1; i--) {
 			for (int j = 0; j >= -1; j--) {
-				if (canGenerateLargeTree(blockState, serverWorld, blockPos, i, j)) {
-					return this.generateLargeTree(serverWorld, chunkGenerator, blockPos, blockState, random, i, j);
+				if (canGenerateLargeTree(state, world, pos, i, j)) {
+					return this.generateLargeTree(world, chunkGenerator, pos, state, random, i, j);
 				}
 			}
 		}
 
-		return super.generate(serverWorld, chunkGenerator, blockPos, blockState, random);
+		return super.generate(world, chunkGenerator, pos, state, random);
 	}
 
 	@Nullable
 	protected abstract ConfiguredFeature<TreeFeatureConfig, ?> createLargeTreeFeature(Random random);
 
-	public boolean generateLargeTree(ServerWorld serverWorld, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockState blockState, Random random, int i, int j) {
+	public boolean generateLargeTree(ServerWorld world, ChunkGenerator chunkGenerator, BlockPos pos, BlockState state, Random random, int x, int z) {
 		ConfiguredFeature<TreeFeatureConfig, ?> configuredFeature = this.createLargeTreeFeature(random);
 		if (configuredFeature == null) {
 			return false;
 		} else {
 			configuredFeature.config.ignoreFluidCheck();
-			BlockState blockState2 = Blocks.AIR.getDefaultState();
-			serverWorld.setBlockState(blockPos.add(i, 0, j), blockState2, 4);
-			serverWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState2, 4);
-			serverWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState2, 4);
-			serverWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState2, 4);
-			if (configuredFeature.generate(serverWorld, chunkGenerator, random, blockPos.add(i, 0, j))) {
+			BlockState blockState = Blocks.AIR.getDefaultState();
+			world.setBlockState(pos.add(x, 0, z), blockState, 4);
+			world.setBlockState(pos.add(x + 1, 0, z), blockState, 4);
+			world.setBlockState(pos.add(x, 0, z + 1), blockState, 4);
+			world.setBlockState(pos.add(x + 1, 0, z + 1), blockState, 4);
+			if (configuredFeature.generate(world, chunkGenerator, random, pos.add(x, 0, z))) {
 				return true;
 			} else {
-				serverWorld.setBlockState(blockPos.add(i, 0, j), blockState, 4);
-				serverWorld.setBlockState(blockPos.add(i + 1, 0, j), blockState, 4);
-				serverWorld.setBlockState(blockPos.add(i, 0, j + 1), blockState, 4);
-				serverWorld.setBlockState(blockPos.add(i + 1, 0, j + 1), blockState, 4);
+				world.setBlockState(pos.add(x, 0, z), state, 4);
+				world.setBlockState(pos.add(x + 1, 0, z), state, 4);
+				world.setBlockState(pos.add(x, 0, z + 1), state, 4);
+				world.setBlockState(pos.add(x + 1, 0, z + 1), state, 4);
 				return false;
 			}
 		}

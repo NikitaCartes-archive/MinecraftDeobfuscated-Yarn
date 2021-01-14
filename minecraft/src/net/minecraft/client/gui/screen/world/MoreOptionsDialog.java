@@ -20,8 +20,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5489;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.MultilineText;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -56,11 +56,11 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 @Environment(EnvType.CLIENT)
 public class MoreOptionsDialog implements TickableElement, Drawable {
-	private static final Logger field_25046 = LogManager.getLogger();
-	private static final Text field_25047 = new TranslatableText("generator.custom");
+	private static final Logger LOGGER = LogManager.getLogger();
+	private static final Text CUSTOM_TEXT = new TranslatableText("generator.custom");
 	private static final Text AMPLIFIED_INFO_TEXT = new TranslatableText("generator.amplified.info");
-	private static final Text field_26604 = new TranslatableText("selectWorld.mapFeatures.info");
-	private class_5489 field_26605 = class_5489.field_26528;
+	private static final Text MAP_FEATURES_INFO_TEXT = new TranslatableText("selectWorld.mapFeatures.info");
+	private MultilineText generatorInfoText = MultilineText.EMPTY;
 	private TextRenderer textRenderer;
 	private int parentWidth;
 	private TextFieldWidget seedTextField;
@@ -68,25 +68,27 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 	public ButtonWidget bonusItemsButton;
 	private ButtonWidget mapTypeButton;
 	private ButtonWidget customizeTypeButton;
-	private ButtonWidget field_25048;
-	private DynamicRegistryManager.Impl field_25483;
+	private ButtonWidget importSettingsButton;
+	private DynamicRegistryManager.Impl registryManager;
 	private GeneratorOptions generatorOptions;
-	private Optional<GeneratorType> field_25049;
-	private OptionalLong seedText;
+	private Optional<GeneratorType> generatorType;
+	private OptionalLong seed;
 
-	public MoreOptionsDialog(DynamicRegistryManager.Impl impl, GeneratorOptions generatorOptions, Optional<GeneratorType> optional, OptionalLong optionalLong) {
-		this.field_25483 = impl;
+	public MoreOptionsDialog(
+		DynamicRegistryManager.Impl registryManager, GeneratorOptions generatorOptions, Optional<GeneratorType> generatorType, OptionalLong seed
+	) {
+		this.registryManager = registryManager;
 		this.generatorOptions = generatorOptions;
-		this.field_25049 = optional;
-		this.seedText = optionalLong;
+		this.generatorType = generatorType;
+		this.seed = seed;
 	}
 
-	public void method_28092(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
+	public void init(CreateWorldScreen parent, MinecraftClient client, TextRenderer textRenderer) {
 		this.textRenderer = textRenderer;
 		this.parentWidth = parent.width;
 		this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterSeed"));
-		this.seedTextField.setText(method_30510(this.seedText));
-		this.seedTextField.setChangedListener(string -> this.seedText = this.method_30511());
+		this.seedTextField.setText(seedToString(this.seed));
+		this.seedTextField.setChangedListener(string -> this.seed = this.getSeed());
 		parent.addChild(this.seedTextField);
 		int i = this.parentWidth / 2 - 155;
 		int j = this.parentWidth / 2 + 5;
@@ -113,16 +115,16 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 				20,
 				new TranslatableText("selectWorld.mapType"),
 				buttonWidget -> {
-					while (this.field_25049.isPresent()) {
-						int ix = GeneratorType.VALUES.indexOf(this.field_25049.get()) + 1;
+					while (this.generatorType.isPresent()) {
+						int ix = GeneratorType.VALUES.indexOf(this.generatorType.get()) + 1;
 						if (ix >= GeneratorType.VALUES.size()) {
 							ix = 0;
 						}
 
 						GeneratorType generatorType = (GeneratorType)GeneratorType.VALUES.get(ix);
-						this.field_25049 = Optional.of(generatorType);
+						this.generatorType = Optional.of(generatorType);
 						this.generatorOptions = generatorType.createDefaultOptions(
-							this.field_25483, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest()
+							this.registryManager, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest()
 						);
 						if (!this.generatorOptions.isDebugWorld() || Screen.hasShiftDown()) {
 							break;
@@ -138,21 +140,21 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 					return super.getMessage()
 						.shallowCopy()
 						.append(" ")
-						.append((Text)MoreOptionsDialog.this.field_25049.map(GeneratorType::getTranslationKey).orElse(MoreOptionsDialog.field_25047));
+						.append((Text)MoreOptionsDialog.this.generatorType.map(GeneratorType::getTranslationKey).orElse(MoreOptionsDialog.CUSTOM_TEXT));
 				}
 
 				@Override
 				protected MutableText getNarrationMessage() {
-					return Objects.equals(MoreOptionsDialog.this.field_25049, Optional.of(GeneratorType.AMPLIFIED))
+					return Objects.equals(MoreOptionsDialog.this.generatorType, Optional.of(GeneratorType.AMPLIFIED))
 						? super.getNarrationMessage().append(". ").append(MoreOptionsDialog.AMPLIFIED_INFO_TEXT)
 						: super.getNarrationMessage();
 				}
 			}
 		);
 		this.mapTypeButton.visible = false;
-		this.mapTypeButton.active = this.field_25049.isPresent();
+		this.mapTypeButton.active = this.generatorType.isPresent();
 		this.customizeTypeButton = parent.addButton(new ButtonWidget(j, 120, 150, 20, new TranslatableText("selectWorld.customizeType"), buttonWidget -> {
-			GeneratorType.ScreenProvider screenProvider = (GeneratorType.ScreenProvider)GeneratorType.SCREEN_PROVIDERS.get(this.field_25049);
+			GeneratorType.ScreenProvider screenProvider = (GeneratorType.ScreenProvider)GeneratorType.SCREEN_PROVIDERS.get(this.generatorType);
 			if (screenProvider != null) {
 				client.openScreen(screenProvider.createEditScreen(parent, this.generatorOptions));
 			}
@@ -168,7 +170,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 			}
 		});
 		this.bonusItemsButton.visible = false;
-		this.field_25048 = parent.addButton(
+		this.importSettingsButton = parent.addButton(
 			new ButtonWidget(
 				i,
 				185,
@@ -181,19 +183,19 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 					if (string != null) {
 						DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
 						ResourcePackManager resourcePackManager = new ResourcePackManager(
-							new VanillaDataPackProvider(), new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
+							new VanillaDataPackProvider(), new FileResourcePackProvider(parent.getDataPackTempDir().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 						);
 
 						ServerResourceManager serverResourceManager;
 						try {
-							MinecraftServer.loadDataPacks(resourcePackManager, parent.field_25479, false);
+							MinecraftServer.loadDataPacks(resourcePackManager, parent.dataPackSettings, false);
 							CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(
 								resourcePackManager.createResourcePacks(), CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), client
 							);
 							client.runTasks(completableFuture::isDone);
 							serverResourceManager = (ServerResourceManager)completableFuture.get();
 						} catch (ExecutionException | InterruptedException var25) {
-							field_25046.error("Error loading data packs when importing world settings", (Throwable)var25);
+							LOGGER.error("Error loading data packs when importing world settings", (Throwable)var25);
 							Text text = new TranslatableText("selectWorld.import_worldgen_settings.failure");
 							Text text2 = new LiteralText(var25.getMessage());
 							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text, text2));
@@ -235,24 +237,24 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 						if (dataResult.error().isPresent()) {
 							Text text3 = new TranslatableText("selectWorld.import_worldgen_settings.failure");
 							String string2 = ((PartialResult)dataResult.error().get()).message();
-							field_25046.error("Error parsing world settings: {}", string2);
+							LOGGER.error("Error parsing world settings: {}", string2);
 							Text text4 = new LiteralText(string2);
 							client.getToastManager().add(SystemToast.create(client, SystemToast.Type.WORLD_GEN_SETTINGS_TRANSFER, text3, text4));
 						}
 
 						serverResourceManager.close();
 						Lifecycle lifecycle = dataResult.lifecycle();
-						dataResult.resultOrPartial(field_25046::error)
+						dataResult.resultOrPartial(LOGGER::error)
 							.ifPresent(
 								generatorOptions -> {
 									BooleanConsumer booleanConsumer = bl -> {
 										client.openScreen(parent);
 										if (bl) {
-											this.method_29073(impl, generatorOptions);
+											this.importOptions(impl, generatorOptions);
 										}
 									};
 									if (lifecycle == Lifecycle.stable()) {
-										this.method_29073(impl, generatorOptions);
+										this.importOptions(impl, generatorOptions);
 									} else if (lifecycle == Lifecycle.experimental()) {
 										client.openScreen(
 											new ConfirmScreen(
@@ -276,17 +278,17 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 				}
 			)
 		);
-		this.field_25048.visible = false;
-		this.field_26605 = class_5489.method_30890(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
+		this.importSettingsButton.visible = false;
+		this.generatorInfoText = MultilineText.create(textRenderer, AMPLIFIED_INFO_TEXT, this.mapTypeButton.getWidth());
 	}
 
-	private void method_29073(DynamicRegistryManager.Impl impl, GeneratorOptions generatorOptions) {
-		this.field_25483 = impl;
+	private void importOptions(DynamicRegistryManager.Impl registryManager, GeneratorOptions generatorOptions) {
+		this.registryManager = registryManager;
 		this.generatorOptions = generatorOptions;
-		this.field_25049 = GeneratorType.method_29078(generatorOptions);
-		this.seedText = OptionalLong.of(generatorOptions.getSeed());
-		this.seedTextField.setText(method_30510(this.seedText));
-		this.mapTypeButton.active = this.field_25049.isPresent();
+		this.generatorType = GeneratorType.method_29078(generatorOptions);
+		this.seed = OptionalLong.of(generatorOptions.getSeed());
+		this.seedTextField.setText(seedToString(this.seed));
+		this.mapTypeButton.active = this.generatorType.isPresent();
 	}
 
 	@Override
@@ -297,12 +299,12 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.mapFeaturesButton.visible) {
-			this.textRenderer.drawWithShadow(matrices, field_26604, (float)(this.parentWidth / 2 - 150), 122.0F, -6250336);
+			this.textRenderer.drawWithShadow(matrices, MAP_FEATURES_INFO_TEXT, (float)(this.parentWidth / 2 - 150), 122.0F, -6250336);
 		}
 
 		this.seedTextField.render(matrices, mouseX, mouseY, delta);
-		if (this.field_25049.equals(Optional.of(GeneratorType.AMPLIFIED))) {
-			this.field_26605.method_30893(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, 9, 10526880);
+		if (this.generatorType.equals(Optional.of(GeneratorType.AMPLIFIED))) {
+			this.generatorInfoText.drawWithShadow(matrices, this.mapTypeButton.x + 2, this.mapTypeButton.y + 22, 9, 10526880);
 		}
 	}
 
@@ -310,8 +312,8 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		this.generatorOptions = generatorOptions;
 	}
 
-	private static String method_30510(OptionalLong optionalLong) {
-		return optionalLong.isPresent() ? Long.toString(optionalLong.getAsLong()) : "";
+	private static String seedToString(OptionalLong seed) {
+		return seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
 	}
 
 	private static OptionalLong tryParseLong(String string) {
@@ -323,11 +325,11 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 	}
 
 	public GeneratorOptions getGeneratorOptions(boolean hardcore) {
-		OptionalLong optionalLong = this.method_30511();
+		OptionalLong optionalLong = this.getSeed();
 		return this.generatorOptions.withHardcore(hardcore, optionalLong);
 	}
 
-	private OptionalLong method_30511() {
+	private OptionalLong getSeed() {
 		String string = this.seedTextField.getText();
 		OptionalLong optionalLong;
 		if (StringUtils.isEmpty(string)) {
@@ -354,32 +356,31 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 			this.mapFeaturesButton.visible = false;
 			this.bonusItemsButton.visible = false;
 			this.customizeTypeButton.visible = false;
-			this.field_25048.visible = false;
+			this.importSettingsButton.visible = false;
 		} else {
 			this.mapFeaturesButton.visible = visible;
 			this.bonusItemsButton.visible = visible;
-			this.customizeTypeButton.visible = visible && GeneratorType.SCREEN_PROVIDERS.containsKey(this.field_25049);
-			this.field_25048.visible = visible;
+			this.customizeTypeButton.visible = visible && GeneratorType.SCREEN_PROVIDERS.containsKey(this.generatorType);
+			this.importSettingsButton.visible = visible;
 		}
 
 		this.seedTextField.setVisible(visible);
 	}
 
-	public DynamicRegistryManager.Impl method_29700() {
-		return this.field_25483;
+	public DynamicRegistryManager.Impl getRegistryManager() {
+		return this.registryManager;
 	}
 
-	void method_31132(ServerResourceManager serverResourceManager) {
+	void loadDatapacks(ServerResourceManager serverResourceManager) {
 		DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-		RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.field_25483);
+		RegistryReadingOps<JsonElement> registryReadingOps = RegistryReadingOps.of(JsonOps.INSTANCE, this.registryManager);
 		RegistryOps<JsonElement> registryOps = RegistryOps.of(JsonOps.INSTANCE, serverResourceManager.getResourceManager(), impl);
 		DataResult<GeneratorOptions> dataResult = GeneratorOptions.CODEC
 			.encodeStart(registryReadingOps, this.generatorOptions)
 			.flatMap(jsonElement -> GeneratorOptions.CODEC.parse(registryOps, jsonElement));
-		dataResult.resultOrPartial(Util.method_29188("Error parsing worldgen settings after loading data packs: ", field_25046::error))
-			.ifPresent(generatorOptions -> {
-				this.generatorOptions = generatorOptions;
-				this.field_25483 = impl;
-			});
+		dataResult.resultOrPartial(Util.method_29188("Error parsing worldgen settings after loading data packs: ", LOGGER::error)).ifPresent(generatorOptions -> {
+			this.generatorOptions = generatorOptions;
+			this.registryManager = impl;
+		});
 	}
 }

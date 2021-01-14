@@ -9,7 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
-import net.minecraft.recipe.RecipeFinder;
+import net.minecraft.recipe.RecipeMatcher;
 import net.minecraft.recipe.book.RecipeBook;
 
 @Environment(EnvType.CLIENT)
@@ -25,11 +25,11 @@ public class RecipeResultCollection {
 		if (list.size() <= 1) {
 			this.singleOutput = true;
 		} else {
-			this.singleOutput = method_30295(list);
+			this.singleOutput = shouldHaveSingleOutput(list);
 		}
 	}
 
-	private static boolean method_30295(List<Recipe<?>> list) {
+	private static boolean shouldHaveSingleOutput(List<Recipe<?>> list) {
 		int i = list.size();
 		ItemStack itemStack = ((Recipe)list.get(0)).getOutput();
 
@@ -55,7 +55,7 @@ public class RecipeResultCollection {
 		}
 	}
 
-	public void computeCraftables(RecipeFinder recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
+	public void computeCraftables(RecipeMatcher recipeFinder, int gridWidth, int gridHeight, RecipeBook recipeBook) {
 		for (Recipe<?> recipe : this.recipes) {
 			boolean bl = recipe.fits(gridWidth, gridHeight) && recipeBook.contains(recipe);
 			if (bl) {
@@ -64,7 +64,7 @@ public class RecipeResultCollection {
 				this.fittingRecipes.remove(recipe);
 			}
 
-			if (bl && recipeFinder.findRecipe(recipe, null)) {
+			if (bl && recipeFinder.match(recipe, null)) {
 				this.craftableRecipes.add(recipe);
 			} else {
 				this.craftableRecipes.remove(recipe);

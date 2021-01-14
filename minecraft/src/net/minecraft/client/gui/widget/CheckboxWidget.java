@@ -12,19 +12,19 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class CheckboxWidget extends AbstractPressableButtonWidget {
+public class CheckboxWidget extends PressableWidget {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/checkbox.png");
 	private boolean checked;
-	private final boolean field_24253;
+	private final boolean showMessage;
 
-	public CheckboxWidget(int x, int y, int width, int height, Text text, boolean checked) {
-		this(x, y, width, height, text, checked, true);
+	public CheckboxWidget(int x, int y, int width, int height, Text message, boolean checked) {
+		this(x, y, width, height, message, checked, true);
 	}
 
-	public CheckboxWidget(int i, int j, int k, int l, Text text, boolean bl, boolean bl2) {
-		super(i, j, k, l, text);
-		this.checked = bl;
-		this.field_24253 = bl2;
+	public CheckboxWidget(int x, int y, int width, int height, Text message, boolean checked, boolean showMessage) {
+		super(x, y, width, height, message);
+		this.checked = checked;
+		this.showMessage = showMessage;
 	}
 
 	@Override
@@ -47,8 +47,8 @@ public class CheckboxWidget extends AbstractPressableButtonWidget {
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
 		drawTexture(matrices, this.x, this.y, this.isFocused() ? 20.0F : 0.0F, this.checked ? 20.0F : 0.0F, 20, this.height, 64, 64);
-		this.renderBg(matrices, minecraftClient, mouseX, mouseY);
-		if (this.field_24253) {
+		this.renderBackground(matrices, minecraftClient, mouseX, mouseY);
+		if (this.showMessage) {
 			drawTextWithShadow(
 				matrices, textRenderer, this.getMessage(), this.x + 24, this.y + (this.height - 8) / 2, 14737632 | MathHelper.ceil(this.alpha * 255.0F) << 24
 			);

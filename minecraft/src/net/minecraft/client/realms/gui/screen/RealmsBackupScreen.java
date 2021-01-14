@@ -234,13 +234,13 @@ public class RealmsBackupScreen extends RealmsScreen {
 		}
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
+	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
 		if (text != null) {
 			int k = i + 12;
 			int l = j - 12;
 			int m = this.textRenderer.getWidth(text);
-			this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 16777215);
+			this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
+			this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 16777215);
 		}
 	}
 
@@ -266,7 +266,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 
 		@Override
 		public int getMaxPosition() {
-			return this.getItemCount() * 36;
+			return this.getEntryCount() * 36;
 		}
 
 		@Override
@@ -283,7 +283,7 @@ public class RealmsBackupScreen extends RealmsScreen {
 				int j = this.width;
 				int k = (int)Math.floor(mouseY - (double)this.top) - this.headerHeight + (int)this.getScrollAmount();
 				int l = k / this.itemHeight;
-				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getItemCount()) {
+				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getEntryCount()) {
 					this.setSelected(l);
 					this.itemClicked(k, l, mouseX, mouseY, this.width);
 				}

@@ -1,8 +1,18 @@
 package net.minecraft.util.math;
 
 import com.google.common.base.MoreObjects;
-import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.NbtIntArray;
 
+/**
+ * A mutable box with integer coordinates. The box is axis-aligned and the
+ * coordinates are inclusive.
+ * 
+ * <p>This box, though mutable, has proper {@code hashCode} and {@code
+ * equals} implementations and can be used as map keys if user can ensure
+ * they are not modified.
+ * 
+ * @see Box
+ */
 public class BlockBox {
 	public int minX;
 	public int minY;
@@ -25,6 +35,9 @@ public class BlockBox {
 		}
 	}
 
+	/**
+	 * Creates an empty box.
+	 */
 	public static BlockBox empty() {
 		return new BlockBox(Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MAX_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE);
 	}
@@ -119,6 +132,13 @@ public class BlockBox {
 		this.maxZ += dz;
 	}
 
+	/**
+	 * Creates a new box that is translated by {@code x}, {@code y}, {@code z}
+	 * on each axis from this box.
+	 * 
+	 * @return the new box created
+	 * @see #move(int, int, int)
+	 */
 	public BlockBox offset(int x, int y, int z) {
 		return new BlockBox(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
@@ -170,7 +190,7 @@ public class BlockBox {
 			.toString();
 	}
 
-	public IntArrayTag toNbt() {
-		return new IntArrayTag(new int[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
+	public NbtIntArray toNbt() {
+		return new NbtIntArray(new int[]{this.minX, this.minY, this.minZ, this.maxX, this.maxY, this.maxZ});
 	}
 }

@@ -20,9 +20,9 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.state.property.Property;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 
 @Environment(EnvType.CLIENT)
@@ -87,7 +87,7 @@ public class ChestBlockEntityRenderer<T extends BlockEntity & ChestAnimationProg
 			matrices.push();
 			float f = ((Direction)blockState.get(ChestBlock.FACING)).asRotation();
 			matrices.translate(0.5, 0.5, 0.5);
-			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-f));
+			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-f));
 			matrices.translate(-0.5, -0.5, -0.5);
 			DoubleBlockProperties.PropertySource<? extends ChestBlockEntity> propertySource;
 			if (bl) {

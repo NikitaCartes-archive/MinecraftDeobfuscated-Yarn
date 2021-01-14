@@ -46,8 +46,8 @@ public class EnchantGlyphParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public int getColorMultiplier(float tint) {
-		int i = super.getColorMultiplier(tint);
+	public int getBrightness(float tint) {
+		int i = super.getBrightness(tint);
 		float f = (float)this.age / (float)this.maxAge;
 		f *= f;
 		f *= f;

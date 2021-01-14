@@ -90,24 +90,24 @@ public class Explosion {
 		World world,
 		@Nullable Entity entity,
 		@Nullable DamageSource damageSource,
-		@Nullable ExplosionBehavior explosionBehavior,
-		double d,
-		double e,
-		double f,
-		float g,
-		boolean bl,
+		@Nullable ExplosionBehavior behavior,
+		double x,
+		double y,
+		double z,
+		float power,
+		boolean createFire,
 		Explosion.DestructionType destructionType
 	) {
 		this.world = world;
 		this.entity = entity;
-		this.power = g;
-		this.x = d;
-		this.y = e;
-		this.z = f;
-		this.createFire = bl;
+		this.power = power;
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.createFire = createFire;
 		this.destructionType = destructionType;
 		this.damageSource = damageSource == null ? DamageSource.explosion(this) : damageSource;
-		this.behavior = explosionBehavior == null ? this.chooseBehavior(entity) : explosionBehavior;
+		this.behavior = behavior == null ? this.chooseBehavior(entity) : behavior;
 	}
 
 	private ExplosionBehavior chooseBehavior(@Nullable Entity entity) {
@@ -235,7 +235,10 @@ public class Explosion {
 		}
 	}
 
-	public void affectWorld(boolean bl) {
+	/**
+	 * @param particles whether this explosion should emit explosion or explosion emitter particles around the source of the explosion
+	 */
+	public void affectWorld(boolean particles) {
 		if (this.world.isClient) {
 			this.world
 				.playSound(
@@ -250,16 +253,16 @@ public class Explosion {
 				);
 		}
 
-		boolean bl2 = this.destructionType != Explosion.DestructionType.NONE;
-		if (bl) {
-			if (!(this.power < 2.0F) && bl2) {
+		boolean bl = this.destructionType != Explosion.DestructionType.NONE;
+		if (particles) {
+			if (!(this.power < 2.0F) && bl) {
 				this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 			} else {
 				this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
 			}
 		}
 
-		if (bl2) {
+		if (bl) {
 			ObjectArrayList<Pair<ItemStack, BlockPos>> objectArrayList = new ObjectArrayList<>();
 			Collections.shuffle(this.affectedBlocks, this.world.random);
 

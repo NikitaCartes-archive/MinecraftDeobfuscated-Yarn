@@ -45,7 +45,6 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
@@ -65,12 +64,13 @@ import net.minecraft.client.gui.screen.recipebook.RecipeBookProvider;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.input.KeyboardInput;
-import net.minecraft.client.options.GameOptions;
-import net.minecraft.client.options.ServerList;
+import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.option.ServerList;
 import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.render.MapRenderer;
 import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
@@ -152,7 +152,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
@@ -207,7 +207,6 @@ import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.HealthUpdateS2CPacket;
-import net.minecraft.network.packet.s2c.play.HeldItemChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.InventoryS2CPacket;
 import net.minecraft.network.packet.s2c.play.ItemPickupAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
@@ -215,6 +214,7 @@ import net.minecraft.network.packet.s2c.play.LightUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.LookAtS2CPacket;
 import net.minecraft.network.packet.s2c.play.MapUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
+import net.minecraft.network.packet.s2c.play.NbtQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
@@ -246,11 +246,11 @@ import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
-import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
+import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
@@ -393,7 +393,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.player.setShowsDeathScreen(packet.showsDeathScreen());
 		this.client.interactionManager.setGameMode(packet.getGameMode());
 		this.client.interactionManager.setPreviousGameMode(packet.getPreviousGameMode());
-		this.client.options.onPlayerModelPartChange();
+		this.client.options.sendClientSettings();
 		this.connection
 			.send(new CustomPayloadC2SPacket(CustomPayloadC2SPacket.BRAND, new PacketByteBuf(Unpooled.buffer()).writeString(ClientBrandRetriever.getClientModName())));
 		this.client.getGame().onStartGameSession();
@@ -590,7 +590,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onHeldItemChange(HeldItemChangeS2CPacket packet) {
+	public void onHeldItemChange(UpdateSelectedSlotS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		if (PlayerInventory.isValidHotbarIndex(packet.getSlot())) {
 			this.client.player.inventory.selectedSlot = packet.getSlot();
@@ -737,11 +737,11 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			this.world.scheduleBlockRenders(i, k, j);
 		}
 
-		for (CompoundTag compoundTag : packet.getBlockEntityTagList()) {
-			BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+		for (NbtCompound nbtCompound : packet.getBlockEntityTagList()) {
+			BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
 			BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 			if (blockEntity != null) {
-				blockEntity.fromTag(this.world.getBlockState(blockPos), compoundTag);
+				blockEntity.fromTag(this.world.getBlockState(blockPos), nbtCompound);
 			}
 		}
 	}
@@ -852,7 +852,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onGameMessage(GameMessageS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSenderUuid());
+		this.client.inGameHud.addChatMessage(packet.getLocation(), packet.getMessage(), packet.getSender());
 	}
 
 	@Override
@@ -1003,7 +1003,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		this.client.player.updateHealth(packet.getHealth());
 		this.client.player.getHungerManager().setFoodLevel(packet.getFood());
-		this.client.player.getHungerManager().setSaturationLevelClient(packet.getSaturation());
+		this.client.player.getHungerManager().setSaturationLevel(packet.getSaturation());
 	}
 
 	@Override
@@ -1060,7 +1060,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		clientPlayerEntity2.yaw = -180.0F;
 		clientPlayerEntity2.input = new KeyboardInput(this.client.options);
 		this.client.interactionManager.copyAbilities(clientPlayerEntity2);
-		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.getReducedDebugInfo());
+		clientPlayerEntity2.setReducedDebugInfo(clientPlayerEntity.hasReducedDebugInfo());
 		clientPlayerEntity2.setShowsDeathScreen(clientPlayerEntity.showsDeathScreen());
 		if (this.client.currentScreen instanceof DeathScreen) {
 			this.client.openScreen(null);
@@ -1196,7 +1196,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			|| i == 12 && blockEntity instanceof JigsawBlockEntity
 			|| i == 13 && blockEntity instanceof CampfireBlockEntity
 			|| i == 14 && blockEntity instanceof BeehiveBlockEntity) {
-			blockEntity.fromTag(this.client.world.getBlockState(blockPos), packet.getCompoundTag());
+			blockEntity.fromTag(this.client.world.getBlockState(blockPos), packet.getNbt());
 		}
 
 		if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
@@ -1408,9 +1408,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onTagQuery(TagQueryResponseS2CPacket packet) {
+	public void onTagQuery(NbtQueryResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		if (!this.dataQueryHandler.handleQueryResponse(packet.getTransactionId(), packet.getTag())) {
+		if (!this.dataQueryHandler.handleQueryResponse(packet.getTransactionId(), packet.getNbt())) {
 			LOGGER.debug("Got unhandled response to tag query {}", packet.getTransactionId());
 		}
 	}
@@ -1566,8 +1566,8 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 	@Override
 	public void onPlayerListHeader(PlayerListHeaderS2CPacket packet) {
-		this.client.inGameHud.getPlayerListWidget().setHeader(packet.getHeader().getString().isEmpty() ? null : packet.getHeader());
-		this.client.inGameHud.getPlayerListWidget().setFooter(packet.getFooter().getString().isEmpty() ? null : packet.getFooter());
+		this.client.inGameHud.getPlayerListHud().setHeader(packet.getHeader().getString().isEmpty() ? null : packet.getHeader());
+		this.client.inGameHud.getPlayerListHud().setFooter(packet.getFooter().getString().isEmpty() ? null : packet.getFooter());
 	}
 
 	@Override
@@ -1684,7 +1684,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					File file2 = new File(file, string3);
 					if (file2.isFile()) {
 						this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-						CompletableFuture<?> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2, ResourcePackSource.PACK_SOURCE_WORLD);
+						CompletableFuture<?> completableFuture = this.client.getResourcePackProvider().loadServerPack(file2, ResourcePackSource.PACK_SOURCE_WORLD);
 						this.feedbackAfterDownload(completableFuture);
 						return;
 					}
@@ -1694,10 +1694,10 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.FAILED_DOWNLOAD);
 			} else {
 				ServerInfo serverInfo = this.client.getCurrentServerEntry();
-				if (serverInfo != null && serverInfo.getResourcePack() == ServerInfo.ResourcePackState.ENABLED) {
+				if (serverInfo != null && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackState.ENABLED) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-					this.feedbackAfterDownload(this.client.getResourcePackDownloader().download(string, string2));
-				} else if (serverInfo != null && serverInfo.getResourcePack() != ServerInfo.ResourcePackState.PROMPT) {
+					this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
+				} else if (serverInfo != null && serverInfo.getResourcePackPolicy() != ServerInfo.ResourcePackState.PROMPT) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 				} else {
 					this.client.execute(() -> this.client.openScreen(new ConfirmScreen(bl -> {
@@ -1705,14 +1705,14 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 							ServerInfo serverInfox = this.client.getCurrentServerEntry();
 							if (bl) {
 								if (serverInfox != null) {
-									serverInfox.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
+									serverInfox.setResourcePackPolicy(ServerInfo.ResourcePackState.ENABLED);
 								}
 
 								this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-								this.feedbackAfterDownload(this.client.getResourcePackDownloader().download(string, string2));
+								this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
 							} else {
 								if (serverInfox != null) {
-									serverInfox.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
+									serverInfox.setResourcePackPolicy(ServerInfo.ResourcePackState.DISABLED);
 								}
 
 								this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
@@ -2215,7 +2215,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
 		if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler) {
-			((MerchantScreenHandler)screenHandler).setOffers(new TradeOfferList(packet.getOffers().toTag()));
+			((MerchantScreenHandler)screenHandler).setOffers(new TradeOfferList(packet.getOffers().toNbt()));
 			((MerchantScreenHandler)screenHandler).setExperienceFromServer(packet.getExperience());
 			((MerchantScreenHandler)screenHandler).setLevelProgress(packet.getLevelProgress());
 			((MerchantScreenHandler)screenHandler).setCanLevel(packet.isLeveled());

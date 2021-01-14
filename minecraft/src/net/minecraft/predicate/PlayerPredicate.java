@@ -32,7 +32,7 @@ import net.minecraft.world.GameMode;
 public class PlayerPredicate {
 	public static final PlayerPredicate ANY = new PlayerPredicate.Builder().build();
 	private final NumberRange.IntRange experienceLevel;
-	private final GameMode gamemode;
+	private final GameMode gameMode;
 	private final Map<Stat<?>, NumberRange.IntRange> stats;
 	private final Object2BooleanMap<Identifier> recipes;
 	private final Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements;
@@ -54,13 +54,13 @@ public class PlayerPredicate {
 
 	private PlayerPredicate(
 		NumberRange.IntRange experienceLevel,
-		GameMode gamemode,
+		GameMode gameMode,
 		Map<Stat<?>, NumberRange.IntRange> stats,
 		Object2BooleanMap<Identifier> recipes,
 		Map<Identifier, PlayerPredicate.AdvancementPredicate> advancements
 	) {
 		this.experienceLevel = experienceLevel;
-		this.gamemode = gamemode;
+		this.gameMode = gameMode;
 		this.stats = stats;
 		this.recipes = recipes;
 		this.advancements = advancements;
@@ -75,7 +75,7 @@ public class PlayerPredicate {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 			if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
 				return false;
-			} else if (this.gamemode != GameMode.NOT_SET && this.gamemode != serverPlayerEntity.interactionManager.getGameMode()) {
+			} else if (this.gameMode != GameMode.NOT_SET && this.gameMode != serverPlayerEntity.interactionManager.getGameMode()) {
 				return false;
 			} else {
 				StatHandler statHandler = serverPlayerEntity.getStatHandler();
@@ -180,8 +180,8 @@ public class PlayerPredicate {
 		} else {
 			JsonObject jsonObject = new JsonObject();
 			jsonObject.add("level", this.experienceLevel.toJson());
-			if (this.gamemode != GameMode.NOT_SET) {
-				jsonObject.addProperty("gamemode", this.gamemode.getName());
+			if (this.gameMode != GameMode.NOT_SET) {
+				jsonObject.addProperty("gamemode", this.gameMode.getName());
 			}
 
 			if (!this.stats.isEmpty()) {

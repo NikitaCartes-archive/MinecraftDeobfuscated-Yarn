@@ -14,14 +14,14 @@ public class EntityDimensions {
 		this.fixed = fixed;
 	}
 
-	public Box method_30757(Vec3d vec3d) {
-		return this.method_30231(vec3d.x, vec3d.y, vec3d.z);
+	public Box getBoxAt(Vec3d pos) {
+		return this.getBoxAt(pos.x, pos.y, pos.z);
 	}
 
-	public Box method_30231(double d, double e, double f) {
-		float g = this.width / 2.0F;
-		float h = this.height;
-		return new Box(d - (double)g, e, f - (double)g, d + (double)g, e + (double)h, f + (double)g);
+	public Box getBoxAt(double x, double y, double z) {
+		float f = this.width / 2.0F;
+		float g = this.height;
+		return new Box(x - (double)f, y, z - (double)f, x + (double)f, y + (double)g, z + (double)f);
 	}
 
 	public EntityDimensions scaled(float ratio) {

@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import org.apache.logging.log4j.LogManager;
@@ -61,8 +61,8 @@ public class PersistentStateManager {
 			File file = this.getFile(id);
 			if (file.exists()) {
 				T persistentState = (T)factory.get();
-				CompoundTag compoundTag = this.readTag(id, SharedConstants.getGameVersion().getWorldVersion());
-				persistentState.fromTag(compoundTag.getCompound("data"));
+				NbtCompound nbtCompound = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
+				persistentState.fromTag(nbtCompound.getCompound("data"));
 				return persistentState;
 			}
 		} catch (Exception var6) {
@@ -76,26 +76,26 @@ public class PersistentStateManager {
 		this.loadedStates.put(state.getId(), state);
 	}
 
-	public CompoundTag readTag(String id, int dataVersion) throws IOException {
+	public NbtCompound readNbt(String id, int dataVersion) throws IOException {
 		File file = this.getFile(id);
 		FileInputStream fileInputStream = new FileInputStream(file);
 		Throwable var5 = null;
 
-		CompoundTag var61;
+		NbtCompound var61;
 		try {
 			PushbackInputStream pushbackInputStream = new PushbackInputStream(fileInputStream, 2);
 			Throwable var7 = null;
 
 			try {
-				CompoundTag compoundTag;
+				NbtCompound nbtCompound;
 				if (this.isCompressed(pushbackInputStream)) {
-					compoundTag = NbtIo.readCompressed(pushbackInputStream);
+					nbtCompound = NbtIo.readCompressed(pushbackInputStream);
 				} else {
 					DataInputStream dataInputStream = new DataInputStream(pushbackInputStream);
 					Throwable var10 = null;
 
 					try {
-						compoundTag = NbtIo.read(dataInputStream);
+						nbtCompound = NbtIo.read(dataInputStream);
 					} catch (Throwable var54) {
 						var10 = var54;
 						throw var54;
@@ -114,8 +114,8 @@ public class PersistentStateManager {
 					}
 				}
 
-				int i = compoundTag.contains("DataVersion", 99) ? compoundTag.getInt("DataVersion") : 1343;
-				var61 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, compoundTag, i, dataVersion);
+				int i = nbtCompound.contains("DataVersion", 99) ? nbtCompound.getInt("DataVersion") : 1343;
+				var61 = NbtHelper.update(this.dataFixer, DataFixTypes.SAVED_DATA, nbtCompound, i, dataVersion);
 			} catch (Throwable var56) {
 				var7 = var56;
 				throw var56;

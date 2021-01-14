@@ -4,8 +4,8 @@ import com.google.common.collect.Lists;
 import com.mojang.serialization.Dynamic;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
@@ -40,7 +40,7 @@ public class PoolStructurePiece extends StructurePiece {
 		this.boundingBox = blockBox;
 	}
 
-	public PoolStructurePiece(StructureManager manager, CompoundTag tag) {
+	public PoolStructurePiece(StructureManager manager, NbtCompound tag) {
 		super(StructurePieceType.JIGSAW, tag);
 		this.structureManager = manager;
 		this.pos = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
@@ -51,13 +51,13 @@ public class PoolStructurePiece extends StructurePiece {
 			.orElse(EmptyPoolElement.INSTANCE);
 		this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
 		this.boundingBox = this.poolElement.getBoundingBox(manager, this.pos, this.rotation);
-		ListTag listTag = tag.getList("junctions", 10);
+		NbtList nbtList = tag.getList("junctions", 10);
 		this.junctions.clear();
-		listTag.forEach(tagx -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<>(NbtOps.INSTANCE, tagx))));
+		nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<>(NbtOps.INSTANCE, nbtElement))));
 	}
 
 	@Override
-	protected void toNbt(CompoundTag tag) {
+	protected void toNbt(NbtCompound tag) {
 		tag.putInt("PosX", this.pos.getX());
 		tag.putInt("PosY", this.pos.getY());
 		tag.putInt("PosZ", this.pos.getZ());
@@ -65,41 +65,41 @@ public class PoolStructurePiece extends StructurePiece {
 		StructurePoolElement.CODEC
 			.encodeStart(NbtOps.INSTANCE, this.poolElement)
 			.resultOrPartial(field_24991::error)
-			.ifPresent(tagx -> tag.put("pool_element", tagx));
+			.ifPresent(nbtElement -> tag.put("pool_element", nbtElement));
 		tag.putString("rotation", this.rotation.name());
-		ListTag listTag = new ListTag();
+		NbtList nbtList = new NbtList();
 
 		for (JigsawJunction jigsawJunction : this.junctions) {
-			listTag.add(jigsawJunction.serialize(NbtOps.INSTANCE).getValue());
+			nbtList.add(jigsawJunction.serialize(NbtOps.INSTANCE).getValue());
 		}
 
-		tag.put("junctions", listTag);
+		tag.put("junctions", nbtList);
 	}
 
 	@Override
 	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
+		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
 		BlockBox boundingBox,
 		ChunkPos chunkPos,
-		BlockPos blockPos
+		BlockPos pos
 	) {
-		return this.method_27236(structureWorldAccess, structureAccessor, chunkGenerator, random, boundingBox, blockPos, false);
+		return this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
 	}
 
-	public boolean method_27236(
-		StructureWorldAccess structureWorldAccess,
+	public boolean generate(
+		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
-		BlockBox blockBox,
-		BlockPos blockPos,
+		BlockBox boundingBox,
+		BlockPos pos,
 		boolean keepJigsaws
 	) {
 		return this.poolElement
-			.generate(this.structureManager, structureWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, keepJigsaws);
+			.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
 	}
 
 	@Override

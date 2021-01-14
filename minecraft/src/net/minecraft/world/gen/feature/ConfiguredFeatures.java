@@ -48,11 +48,11 @@ import net.minecraft.world.gen.stateprovider.PillarBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.PlainsFlowerBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
-import net.minecraft.world.gen.tree.AlterGroundTreeDecorator;
-import net.minecraft.world.gen.tree.BeehiveTreeDecorator;
-import net.minecraft.world.gen.tree.CocoaBeansTreeDecorator;
-import net.minecraft.world.gen.tree.LeaveVineTreeDecorator;
-import net.minecraft.world.gen.tree.TrunkVineTreeDecorator;
+import net.minecraft.world.gen.treedecorator.AlterGroundTreeDecorator;
+import net.minecraft.world.gen.treedecorator.BeehiveTreeDecorator;
+import net.minecraft.world.gen.treedecorator.CocoaBeansTreeDecorator;
+import net.minecraft.world.gen.treedecorator.LeavesVineTreeDecorator;
+import net.minecraft.world.gen.treedecorator.TrunkVineTreeDecorator;
 import net.minecraft.world.gen.trunk.DarkOakTrunkPlacer;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 import net.minecraft.world.gen.trunk.GiantTrunkPlacer;
@@ -105,7 +105,7 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> BASALT_BLOBS = register(
 		"basalt_blobs",
 		Feature.NETHERRACK_REPLACE_BLOBS
-			.configure(new NetherrackReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BASALT, UniformIntDistribution.of(3, 4)))
+			.configure(new ReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BASALT, UniformIntDistribution.of(3, 4)))
 			.rangeOf(128)
 			.spreadHorizontally()
 			.repeat(75)
@@ -113,9 +113,7 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> BLACKSTONE_BLOBS = register(
 		"blackstone_blobs",
 		Feature.NETHERRACK_REPLACE_BLOBS
-			.configure(
-				new NetherrackReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BLACKSTONE, UniformIntDistribution.of(3, 4))
-			)
+			.configure(new ReplaceBlobsFeatureConfig(ConfiguredFeatures.States.NETHERRACK, ConfiguredFeatures.States.BLACKSTONE, UniformIntDistribution.of(3, 4)))
 			.rangeOf(128)
 			.spreadHorizontally()
 			.repeat(25)
@@ -1006,7 +1004,7 @@ public class ConfiguredFeatures {
 						new StraightTrunkPlacer(4, 8, 0),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
-					.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.INSTANCE, LeaveVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.INSTANCE, LeavesVineTreeDecorator.INSTANCE))
 					.ignoreVines()
 					.build()
 			)
@@ -1053,7 +1051,7 @@ public class ConfiguredFeatures {
 						new MegaJungleTrunkPlacer(10, 2, 19),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
-					.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, LeaveVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, LeavesVineTreeDecorator.INSTANCE))
 					.build()
 			)
 	);
@@ -1115,7 +1113,7 @@ public class ConfiguredFeatures {
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
 					.maxWaterDepth(1)
-					.decorators(ImmutableList.of(LeaveVineTreeDecorator.INSTANCE))
+					.decorators(ImmutableList.of(LeavesVineTreeDecorator.INSTANCE))
 					.build()
 			)
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)

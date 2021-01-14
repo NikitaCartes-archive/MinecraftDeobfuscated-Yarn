@@ -10,8 +10,8 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.LongArrayTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtLongArray;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
@@ -26,11 +26,11 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	private int chunkX;
 	private int chunkZ;
 	private int verticalStripBitmask;
-	private CompoundTag heightmaps;
+	private NbtCompound heightmaps;
 	@Nullable
 	private int[] biomeArray;
 	private byte[] data;
-	private List<CompoundTag> blockEntities;
+	private List<NbtCompound> blockEntities;
 	private boolean isFullChunk;
 
 	public ChunkDataS2CPacket() {
@@ -45,11 +45,11 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.chunkX = chunkPos.x;
 		this.chunkZ = chunkPos.z;
 		this.isFullChunk = includedSectionsMask == 65535;
-		this.heightmaps = new CompoundTag();
+		this.heightmaps = new NbtCompound();
 
 		for (Entry<Heightmap.Type, Heightmap> entry : chunk.getHeightmaps()) {
 			if (((Heightmap.Type)entry.getKey()).shouldSendToClient()) {
-				this.heightmaps.put(((Heightmap.Type)entry.getKey()).getName(), new LongArrayTag(((Heightmap)entry.getValue()).asLongArray()));
+				this.heightmaps.put(((Heightmap.Type)entry.getKey()).getName(), new NbtLongArray(((Heightmap)entry.getValue()).asLongArray()));
 			}
 		}
 
@@ -59,15 +59,15 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		this.data = new byte[this.getDataSize(chunk, includedSectionsMask)];
 		this.verticalStripBitmask = this.writeData(new PacketByteBuf(this.getWriteBuffer()), chunk, includedSectionsMask);
-		this.blockEntities = Lists.<CompoundTag>newArrayList();
+		this.blockEntities = Lists.<NbtCompound>newArrayList();
 
 		for (Entry<BlockPos, BlockEntity> entryx : chunk.getBlockEntities().entrySet()) {
 			BlockPos blockPos = (BlockPos)entryx.getKey();
 			BlockEntity blockEntity = (BlockEntity)entryx.getValue();
 			int i = blockPos.getY() >> 4;
 			if (this.isFullChunk() || (includedSectionsMask & 1 << i) != 0) {
-				CompoundTag compoundTag = blockEntity.toInitialChunkDataTag();
-				this.blockEntities.add(compoundTag);
+				NbtCompound nbtCompound = blockEntity.toInitialChunkDataNbt();
+				this.blockEntities.add(nbtCompound);
 			}
 		}
 	}
@@ -78,7 +78,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.chunkZ = buf.readInt();
 		this.isFullChunk = buf.readBoolean();
 		this.verticalStripBitmask = buf.readVarInt();
-		this.heightmaps = buf.readCompoundTag();
+		this.heightmaps = buf.readNbt();
 		if (this.isFullChunk) {
 			this.biomeArray = buf.readIntArray(BiomeArray.DEFAULT_LENGTH);
 		}
@@ -90,10 +90,10 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.data = new byte[i];
 			buf.readBytes(this.data);
 			int j = buf.readVarInt();
-			this.blockEntities = Lists.<CompoundTag>newArrayList();
+			this.blockEntities = Lists.<NbtCompound>newArrayList();
 
 			for (int k = 0; k < j; k++) {
-				this.blockEntities.add(buf.readCompoundTag());
+				this.blockEntities.add(buf.readNbt());
 			}
 		}
 	}
@@ -104,7 +104,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeInt(this.chunkZ);
 		buf.writeBoolean(this.isFullChunk);
 		buf.writeVarInt(this.verticalStripBitmask);
-		buf.writeCompoundTag(this.heightmaps);
+		buf.writeNbt(this.heightmaps);
 		if (this.biomeArray != null) {
 			buf.writeIntArray(this.biomeArray);
 		}
@@ -113,8 +113,8 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeBytes(this.data);
 		buf.writeVarInt(this.blockEntities.size());
 
-		for (CompoundTag compoundTag : this.blockEntities) {
-			buf.writeCompoundTag(compoundTag);
+		for (NbtCompound nbtCompound : this.blockEntities) {
+			buf.writeNbt(nbtCompound);
 		}
 	}
 
@@ -184,12 +184,12 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public CompoundTag getHeightmaps() {
+	public NbtCompound getHeightmaps() {
 		return this.heightmaps;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public List<CompoundTag> getBlockEntityTagList() {
+	public List<NbtCompound> getBlockEntityTagList() {
 		return this.blockEntities;
 	}
 

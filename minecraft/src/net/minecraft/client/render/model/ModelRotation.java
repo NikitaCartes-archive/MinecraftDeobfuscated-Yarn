@@ -5,11 +5,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.AffineTransformation;
-import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.DirectionTransformation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(EnvType.CLIENT)
 public enum ModelRotation implements ModelBakeSettings {
@@ -42,8 +42,8 @@ public enum ModelRotation implements ModelBakeSettings {
 
 	private ModelRotation(int x, int y) {
 		this.index = getIndex(x, y);
-		Quaternion quaternion = new Quaternion(new Vector3f(0.0F, 1.0F, 0.0F), (float)(-y), true);
-		quaternion.hamiltonProduct(new Quaternion(new Vector3f(1.0F, 0.0F, 0.0F), (float)(-x), true));
+		Quaternion quaternion = new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), (float)(-y), true);
+		quaternion.hamiltonProduct(new Quaternion(new Vec3f(1.0F, 0.0F, 0.0F), (float)(-x), true));
 		DirectionTransformation directionTransformation = DirectionTransformation.IDENTITY;
 
 		for (int j = 0; j < y; j += 90) {

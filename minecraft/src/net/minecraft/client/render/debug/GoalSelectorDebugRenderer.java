@@ -22,8 +22,8 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 		this.goalSelectors.clear();
 	}
 
-	public void setGoalSelectorList(int i, List<GoalSelectorDebugRenderer.GoalSelector> list) {
-		this.goalSelectors.put(i, list);
+	public void setGoalSelectorList(int index, List<GoalSelectorDebugRenderer.GoalSelector> list) {
+		this.goalSelectors.put(index, list);
 	}
 
 	public GoalSelectorDebugRenderer(MinecraftClient minecraftClient) {

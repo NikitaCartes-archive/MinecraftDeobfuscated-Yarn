@@ -10,7 +10,7 @@ import net.minecraft.predicate.NumberRange;
 import net.minecraft.server.command.ServerCommandSource;
 
 public interface NumberRangeArgumentType<T extends NumberRange<?>> extends ArgumentType<T> {
-	static NumberRangeArgumentType.IntRangeArgumentType numberRange() {
+	static NumberRangeArgumentType.IntRangeArgumentType intRange() {
 		return new NumberRangeArgumentType.IntRangeArgumentType();
 	}
 
