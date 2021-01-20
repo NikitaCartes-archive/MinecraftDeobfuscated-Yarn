@@ -31,7 +31,7 @@ public abstract class AbstractSkullBlock extends BlockWithEntity implements Wear
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 		return !world.isClient || !state.isOf(Blocks.DRAGON_HEAD) && !state.isOf(Blocks.DRAGON_WALL_HEAD)
 			? null
-			: checkType(type, BlockEntityType.SKULL, SkullBlockEntity::method_31695);
+			: checkType(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
 	}
 
 	@Environment(EnvType.CLIENT)

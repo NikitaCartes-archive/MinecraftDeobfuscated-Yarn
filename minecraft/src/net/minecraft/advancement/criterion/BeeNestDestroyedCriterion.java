@@ -43,8 +43,8 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 		}
 	}
 
-	public void test(ServerPlayerEntity player, BlockState blockState, ItemStack stack, int beeCount) {
-		this.test(player, conditions -> conditions.test(blockState, stack, beeCount));
+	public void test(ServerPlayerEntity player, BlockState state, ItemStack stack, int beeCount) {
+		this.test(player, conditions -> conditions.test(state, stack, beeCount));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -64,8 +64,8 @@ public class BeeNestDestroyedCriterion extends AbstractCriterion<BeeNestDestroye
 			return new BeeNestDestroyedCriterion.Conditions(EntityPredicate.Extended.EMPTY, block, itemPredicateBuilder.build(), beeCountRange);
 		}
 
-		public boolean test(BlockState blockState, ItemStack stack, int count) {
-			if (this.block != null && !blockState.isOf(this.block)) {
+		public boolean test(BlockState state, ItemStack stack, int count) {
+			if (this.block != null && !state.isOf(this.block)) {
 				return false;
 			} else {
 				return !this.item.test(stack) ? false : this.beeCount.test(count);

@@ -26,12 +26,12 @@ public class LimitCountLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.limit.method_32386();
+		return this.limit.getRequiredParameters();
 	}
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		int i = this.limit.method_32389(context, stack.getCount());
+		int i = this.limit.apply(context, stack.getCount());
 		stack.setCount(i);
 		return stack;
 	}

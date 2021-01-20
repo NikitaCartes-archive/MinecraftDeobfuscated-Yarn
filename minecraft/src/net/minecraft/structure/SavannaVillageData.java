@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class SavannaVillageData {
-	public static final StructurePool field_26285 = StructurePools.register(
+	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
 		new StructurePool(
 			new Identifier("village/savanna/town_centers"),
 			new Identifier("empty"),

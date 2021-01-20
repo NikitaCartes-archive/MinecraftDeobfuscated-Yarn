@@ -36,7 +36,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 	public void tick() {
 		super.tick();
 		Vec3d vec3d = this.getVelocity();
-		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
+		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
 		if (hitResult != null) {
 			this.onCollision(hitResult);
 		}
@@ -44,7 +44,7 @@ public class LlamaSpitEntity extends ProjectileEntity {
 		double d = this.getX() + vec3d.x;
 		double e = this.getY() + vec3d.y;
 		double f = this.getZ() + vec3d.z;
-		this.method_26962();
+		this.updateRotation();
 		float g = 0.99F;
 		float h = 0.06F;
 		if (this.world.getStatesInBox(this.getBoundingBox()).noneMatch(AbstractBlock.AbstractBlockState::isAir)) {

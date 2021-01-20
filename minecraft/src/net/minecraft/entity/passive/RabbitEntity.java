@@ -293,8 +293,8 @@ public class RabbitEntity extends AnimalEntity {
 		return this.getRabbitType() == 99 ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
 	}
 
-	private static boolean method_6614(ItemStack itemStack) {
-		return itemStack.isOf(Items.CARROT) || itemStack.isOf(Items.GOLDEN_CARROT) || itemStack.isOf(Blocks.DANDELION.asItem());
+	private static boolean isTempting(ItemStack stack) {
+		return stack.isOf(Items.CARROT) || stack.isOf(Items.GOLDEN_CARROT) || stack.isOf(Blocks.DANDELION.asItem());
 	}
 
 	public RabbitEntity createChild(ServerWorld serverWorld, PassiveEntity passiveEntity) {
@@ -314,7 +314,7 @@ public class RabbitEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return method_6614(stack);
+		return isTempting(stack);
 	}
 
 	public int getRabbitType() {

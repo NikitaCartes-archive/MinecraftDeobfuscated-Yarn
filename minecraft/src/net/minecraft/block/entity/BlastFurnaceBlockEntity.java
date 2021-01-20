@@ -11,8 +11,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class BlastFurnaceBlockEntity extends AbstractFurnaceBlockEntity {
-	public BlastFurnaceBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.BLAST_FURNACE, blockPos, blockState, RecipeType.BLASTING);
+	public BlastFurnaceBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.BLAST_FURNACE, pos, state, RecipeType.BLASTING);
 	}
 
 	@Override

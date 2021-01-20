@@ -5,8 +5,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
@@ -20,7 +18,7 @@ public interface CollisionView extends BlockView {
 	WorldBorder getWorldBorder();
 
 	@Nullable
-	BlockView getExistingChunk(int chunkX, int chunkZ);
+	BlockView getChunkAsView(int chunkX, int chunkZ);
 
 	default boolean intersectsEntities(@Nullable Entity except, VoxelShape shape) {
 		return true;
@@ -61,7 +59,6 @@ public interface CollisionView extends BlockView {
 		return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box), false);
 	}
 
-	@Environment(EnvType.CLIENT)
 	default boolean isBlockSpaceEmpty(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
 		return this.getBlockCollisions(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
 	}

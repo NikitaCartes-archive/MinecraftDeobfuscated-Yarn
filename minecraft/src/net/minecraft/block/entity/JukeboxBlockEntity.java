@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockPos;
 public class JukeboxBlockEntity extends BlockEntity implements Clearable {
 	private ItemStack record = ItemStack.EMPTY;
 
-	public JukeboxBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.JUKEBOX, blockPos, blockState);
+	public JukeboxBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.JUKEBOX, pos, state);
 	}
 
 	@Override

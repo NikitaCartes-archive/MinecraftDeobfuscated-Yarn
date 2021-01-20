@@ -11,6 +11,7 @@ import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -107,7 +108,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
 		BlockState blockState = world.getBlockState(pos);
 		if (blockState.get(VERTICAL_DIRECTION) == Direction.UP && blockState.get(THICKNESS) == Thickness.TIP) {
-			entity.handleFallDamage(distance + 2.0F, 2.0F);
+			entity.handleFallDamage(distance + 2.0F, 2.0F, DamageSource.STALAGMITE);
 		} else {
 			super.onLandedUpon(world, pos, entity, distance);
 		}
@@ -346,11 +347,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 			Thickness thickness = blockState.get(THICKNESS);
 			if (thickness != Thickness.TIP && thickness != Thickness.TIP_MERGE) {
 				BlockState blockState2 = world.getBlockState(pos.offset(direction2));
-				if (thickness != Thickness.FRUSTUM && thickness != Thickness.MIDDLE) {
-					return null;
-				} else {
-					return isPointedDripstoneFacingDirection(blockState2, direction) ? Thickness.MIDDLE : Thickness.BASE;
-				}
+				return !isPointedDripstoneFacingDirection(blockState2, direction) ? Thickness.BASE : Thickness.MIDDLE;
 			} else {
 				return Thickness.FRUSTUM;
 			}
@@ -388,6 +385,11 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 
 	private static boolean isHeldByPointedDripstone(BlockState state, WorldView world, BlockPos pos) {
 		return isPointingDown(state) && !world.getBlockState(pos.up()).isOf(Blocks.POINTED_DRIPSTONE);
+	}
+
+	@Override
+	public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+		return false;
 	}
 
 	private static boolean isPointedDripstoneFacingDirection(BlockState state, Direction direction) {

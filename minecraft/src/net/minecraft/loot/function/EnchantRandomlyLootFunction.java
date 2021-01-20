@@ -64,19 +64,19 @@ public class EnchantRandomlyLootFunction extends ConditionalLootFunction {
 			enchantment = (Enchantment)this.enchantments.get(random.nextInt(this.enchantments.size()));
 		}
 
-		return method_26266(stack, enchantment, random);
+		return addEnchantmentToStack(stack, enchantment, random);
 	}
 
-	private static ItemStack method_26266(ItemStack itemStack, Enchantment enchantment, Random random) {
+	private static ItemStack addEnchantmentToStack(ItemStack stack, Enchantment enchantment, Random random) {
 		int i = MathHelper.nextInt(random, enchantment.getMinLevel(), enchantment.getMaxLevel());
-		if (itemStack.isOf(Items.BOOK)) {
-			itemStack = new ItemStack(Items.ENCHANTED_BOOK);
-			EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry(enchantment, i));
+		if (stack.isOf(Items.BOOK)) {
+			stack = new ItemStack(Items.ENCHANTED_BOOK);
+			EnchantedBookItem.addEnchantment(stack, new EnchantmentLevelEntry(enchantment, i));
 		} else {
-			itemStack.addEnchantment(enchantment, i);
+			stack.addEnchantment(enchantment, i);
 		}
 
-		return itemStack;
+		return stack;
 	}
 
 	public static ConditionalLootFunction.Builder<?> builder() {

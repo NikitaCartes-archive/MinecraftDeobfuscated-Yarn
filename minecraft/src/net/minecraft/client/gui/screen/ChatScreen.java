@@ -32,7 +32,7 @@ public class ChatScreen extends Screen {
 		this.chatField = new TextFieldWidget(this.textRenderer, 4, this.height - 12, this.width - 4, 12, new TranslatableText("chat.editBox")) {
 			@Override
 			protected MutableText getNarrationMessage() {
-				return super.getNarrationMessage().append(ChatScreen.this.commandSuggestor.method_23958());
+				return super.getNarrationMessage().append(ChatScreen.this.commandSuggestor.getNarration());
 			}
 		};
 		this.chatField.setMaxLength(256);

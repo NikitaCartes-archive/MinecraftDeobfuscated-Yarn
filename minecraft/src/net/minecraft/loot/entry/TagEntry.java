@@ -76,8 +76,7 @@ public class TagEntry extends LeafEntry {
 			JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions
 		) {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
-			Tag<Item> tag = ServerTagManagerHolder.getTagManager()
-				.getTag(Registry.ITEM_KEY, identifier, identifierx -> new JsonParseException("Can't find tag: " + identifierx));
+			Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> new JsonParseException("Can't find tag: " + id));
 			boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
 			return new TagEntry(tag, bl, i, j, lootConditions, lootFunctions);
 		}

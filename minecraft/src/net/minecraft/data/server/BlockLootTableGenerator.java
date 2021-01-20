@@ -247,7 +247,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							ItemEntry.builder(drop)
 								.apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
 								.apply(
-									CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914)
+									CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY)
 										.withOperation("Lock", "BlockEntityTag.Lock")
 										.withOperation("LootTable", "BlockEntityTag.LootTable")
 										.withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed")
@@ -268,7 +268,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						.with(
 							ItemEntry.builder(drop)
 								.apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))
-								.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Patterns", "BlockEntityTag.Patterns"))
+								.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Patterns", "BlockEntityTag.Patterns"))
 						)
 				)
 			);
@@ -282,8 +282,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						ItemEntry.builder(drop)
-							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Bees", "BlockEntityTag.Bees"))
-							.apply(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))
+							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
+							.apply(CopyStateFunction.getBuilder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
 					)
 			);
 	}
@@ -295,8 +295,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					.rolls(ConstantLootNumberProvider.create(1.0F))
 					.with(
 						((LeafEntry.Builder)ItemEntry.builder(drop).conditionally(WITH_SILK_TOUCH))
-							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Bees", "BlockEntityTag.Bees"))
-							.apply(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))
+							.apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))
+							.apply(CopyStateFunction.getBuilder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))
 							.alternatively(ItemEntry.builder(drop))
 					)
 			);
@@ -456,7 +456,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))
 					)
 					.conditionally(
-						LocationCheckLootCondition.method_30151(
+						LocationCheckLootCondition.builder(
 							LocationPredicate.Builder.create()
 								.block(
 									BlockPredicate.Builder.create()
@@ -475,7 +475,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 						BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))
 					)
 					.conditionally(
-						LocationCheckLootCondition.method_30151(
+						LocationCheckLootCondition.builder(
 							LocationPredicate.Builder.create()
 								.block(
 									BlockPredicate.Builder.create()
@@ -1233,7 +1233,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 							blockx,
 							LootPool.builder()
 								.rolls(ConstantLootNumberProvider.create(1.0F))
-								.with(ItemEntry.builder(blockx).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("SkullOwner", "SkullOwner")))
+								.with(ItemEntry.builder(blockx).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("SkullOwner", "SkullOwner")))
 						)
 					)
 		);
@@ -1347,6 +1347,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.VINE, BlockLootTableGenerator::dropsWithShears);
+		this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::dropsWithShears);
 		this.addDrop(Blocks.TALL_SEAGRASS, seagrassDrops(Blocks.SEAGRASS));
 		this.addDrop(Blocks.LARGE_FERN, blockx -> tallGrassDrops(blockx, Blocks.FERN));
 		this.addDrop(Blocks.TALL_GRASS, blockx -> tallGrassDrops(blockx, Blocks.GRASS));

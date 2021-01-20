@@ -27,8 +27,8 @@ public class CampfireBlockEntity extends BlockEntity implements Clearable {
 	private final int[] cookingTimes = new int[4];
 	private final int[] cookingTotalTimes = new int[4];
 
-	public CampfireBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.CAMPFIRE, blockPos, blockState);
+	public CampfireBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.CAMPFIRE, pos, state);
 	}
 
 	public static void litServerTick(World world, BlockPos pos, BlockState state, CampfireBlockEntity campfire) {

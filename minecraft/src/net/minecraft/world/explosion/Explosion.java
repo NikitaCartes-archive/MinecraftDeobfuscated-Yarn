@@ -45,7 +45,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
 public class Explosion {
-	private static final ExplosionBehavior field_25818 = new ExplosionBehavior();
+	private static final ExplosionBehavior DEFAULT_BEHAVIOR = new ExplosionBehavior();
 	private final boolean createFire;
 	private final Explosion.DestructionType destructionType;
 	private final Random random = new Random();
@@ -114,7 +114,7 @@ public class Explosion {
 	}
 
 	private ExplosionBehavior chooseBehavior(@Nullable Entity entity) {
-		return (ExplosionBehavior)(entity == null ? field_25818 : new EntityExplosionBehavior(entity));
+		return (ExplosionBehavior)(entity == null ? DEFAULT_BEHAVIOR : new EntityExplosionBehavior(entity));
 	}
 
 	public static float getExposure(Vec3d source, Entity entity) {

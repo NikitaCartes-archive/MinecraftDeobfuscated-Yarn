@@ -124,7 +124,7 @@ public class FlatChunkGeneratorConfig implements HeightLimitView {
 		this.biomeRegistry = biomeRegistry;
 		this.structuresConfig = structuresConfig;
 		this.biome = () -> biomeRegistry.getOrThrow(BiomeKeys.PLAINS);
-		this.layerBlocks = new BlockState[this.getBottomSectionLimit()];
+		this.layerBlocks = new BlockState[this.getSectionCount()];
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -194,7 +194,7 @@ public class FlatChunkGeneratorConfig implements HeightLimitView {
 			BlockState blockState = blockStates[i];
 			if (blockState != null && !Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
 				this.layerBlocks[i] = null;
-				int j = this.getSectionCount() + i;
+				int j = this.getBottomSectionLimit() + i;
 				builder.feature(GenerationStep.Feature.TOP_LAYER_MODIFICATION, Feature.FILL_LAYER.configure(new FillLayerFeatureConfig(j, blockState)));
 			}
 		}
@@ -235,7 +235,7 @@ public class FlatChunkGeneratorConfig implements HeightLimitView {
 
 	public void updateLayerBlocks() {
 		Arrays.fill(this.layerBlocks, 0, this.layerBlocks.length, null);
-		int i = this.getSectionCount();
+		int i = this.getBottomSectionLimit();
 
 		for(FlatChunkGeneratorLayer flatChunkGeneratorLayer : this.layers) {
 			flatChunkGeneratorLayer.setStartY(i);
@@ -272,16 +272,16 @@ public class FlatChunkGeneratorConfig implements HeightLimitView {
 	}
 
 	public int method_31926(int i) {
-		return i - this.getSectionCount();
-	}
-
-	@Override
-	public int getSectionCount() {
-		return 0;
+		return i - this.getBottomSectionLimit();
 	}
 
 	@Override
 	public int getBottomSectionLimit() {
+		return 0;
+	}
+
+	@Override
+	public int getSectionCount() {
 		return 256;
 	}
 }

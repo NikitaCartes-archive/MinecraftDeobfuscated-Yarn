@@ -36,8 +36,8 @@ public class JigsawBlockEntity extends BlockEntity {
 	private JigsawBlockEntity.Joint joint = JigsawBlockEntity.Joint.ROLLABLE;
 	private String finalState = "minecraft:air";
 
-	public JigsawBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.JIGSAW, blockPos, blockState);
+	public JigsawBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.JIGSAW, pos, state);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -160,7 +160,7 @@ public class JigsawBlockEntity extends BlockEntity {
 		}
 
 		@Environment(EnvType.CLIENT)
-		public Text method_32357() {
+		public Text asText() {
 			return new TranslatableText("jigsaw_block.joint." + this.name);
 		}
 	}

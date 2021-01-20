@@ -68,7 +68,7 @@ public class RevengeGoal extends TrackTargetGoal {
 
 	protected void callSameTypeForRevenge() {
 		double d = this.getFollowRange();
-		Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0, d);
+		Box box = Box.from(this.mob.getPos()).expand(d, 10.0, d);
 		List<? extends MobEntity> list = this.mob.world.getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
 		Iterator var5 = list.iterator();
 

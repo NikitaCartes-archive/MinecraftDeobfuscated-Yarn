@@ -17,7 +17,6 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -68,6 +67,7 @@ import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
@@ -243,10 +243,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static <T extends MutableRegistry<?>> void validate(MutableRegistry<T> registry) {
 		registry.forEach(mutableRegistry2 -> {
 			if (mutableRegistry2.getIds().isEmpty()) {
-				LOGGER.error("Registry '{}' was empty after loading", registry.getId((T)mutableRegistry2));
-				if (SharedConstants.isDevelopment) {
-					throw new IllegalStateException("Registry: '" + registry.getId((T)mutableRegistry2) + "' is empty, not allowed, fix me!");
-				}
+				Util.method_33559("Registry '" + registry.getId((T)mutableRegistry2) + "' was empty after loading");
 			}
 
 			if (mutableRegistry2 instanceof DefaultedRegistry) {

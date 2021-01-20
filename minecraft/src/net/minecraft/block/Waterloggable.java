@@ -43,7 +43,7 @@ public interface Waterloggable extends FluidDrainable, FluidFillable {
 	}
 
 	@Override
-	default Optional<SoundEvent> getDrainSound() {
-		return Fluids.WATER.getFillSound();
+	default Optional<SoundEvent> getBucketFillSound() {
+		return Fluids.WATER.getBucketFillSound();
 	}
 }

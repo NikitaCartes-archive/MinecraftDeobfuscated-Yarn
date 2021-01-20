@@ -81,14 +81,14 @@ public class SetAttributesLootFunction extends ConditionalLootFunction {
 
 		private Attribute(
 			String name,
-			EntityAttribute entityAttribute,
+			EntityAttribute attribute,
 			EntityAttributeModifier.Operation operation,
 			LootNumberProvider amountRange,
 			EquipmentSlot[] slots,
 			@Nullable UUID id
 		) {
 			this.name = name;
-			this.attribute = entityAttribute;
+			this.attribute = attribute;
 			this.operation = operation;
 			this.amountRange = amountRange;
 			this.id = id;

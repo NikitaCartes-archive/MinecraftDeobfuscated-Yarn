@@ -13,14 +13,14 @@ import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
 
 public class ScoreLootNumberProvider implements LootNumberProvider {
-	private final LootScoreProvider field_27925;
-	private final String field_27926;
-	private final float field_27927;
+	private final LootScoreProvider target;
+	private final String score;
+	private final float scale;
 
-	private ScoreLootNumberProvider(LootScoreProvider lootScoreProvider, String string, float f) {
-		this.field_27925 = lootScoreProvider;
-		this.field_27926 = string;
-		this.field_27927 = f;
+	private ScoreLootNumberProvider(LootScoreProvider target, String score, float scale) {
+		this.target = target;
+		this.score = score;
+		this.scale = scale;
 	}
 
 	@Override
@@ -30,23 +30,23 @@ public class ScoreLootNumberProvider implements LootNumberProvider {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.field_27925.method_32477();
+		return this.target.getRequiredParameters();
 	}
 
 	@Override
 	public float nextFloat(LootContext context) {
-		String string = this.field_27925.getName(context);
+		String string = this.target.getName(context);
 		if (string == null) {
 			return 0.0F;
 		} else {
 			Scoreboard scoreboard = context.getWorld().getScoreboard();
-			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.field_27926);
+			ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(this.score);
 			if (scoreboardObjective == null) {
 				return 0.0F;
 			} else {
 				return !scoreboard.playerHasObjective(string, scoreboardObjective)
 					? 0.0F
-					: (float)scoreboard.getPlayerScore(string, scoreboardObjective).getScore() * this.field_27927;
+					: (float)scoreboard.getPlayerScore(string, scoreboardObjective).getScore() * this.scale;
 			}
 		}
 	}
@@ -60,9 +60,9 @@ public class ScoreLootNumberProvider implements LootNumberProvider {
 		}
 
 		public void toJson(JsonObject jsonObject, ScoreLootNumberProvider scoreLootNumberProvider, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("score", scoreLootNumberProvider.field_27926);
-			jsonObject.add("target", jsonSerializationContext.serialize(scoreLootNumberProvider.field_27925));
-			jsonObject.addProperty("scale", scoreLootNumberProvider.field_27927);
+			jsonObject.addProperty("score", scoreLootNumberProvider.score);
+			jsonObject.add("target", jsonSerializationContext.serialize(scoreLootNumberProvider.target));
+			jsonObject.addProperty("scale", scoreLootNumberProvider.scale);
 		}
 	}
 }

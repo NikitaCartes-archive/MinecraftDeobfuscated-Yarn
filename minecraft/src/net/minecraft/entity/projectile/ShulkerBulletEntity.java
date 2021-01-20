@@ -208,7 +208,7 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 				this.setVelocity(vec3d.add((this.targetX - vec3d.x) * 0.2, (this.targetY - vec3d.y) * 0.2, (this.targetZ - vec3d.z) * 0.2));
 			}
 
-			HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
+			HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
 			if (hitResult.getType() != HitResult.Type.MISS) {
 				this.onCollision(hitResult);
 			}
@@ -246,8 +246,8 @@ public class ShulkerBulletEntity extends ProjectileEntity {
 	}
 
 	@Override
-	protected boolean method_26958(Entity entity) {
-		return super.method_26958(entity) && !entity.noClip;
+	protected boolean canHit(Entity entity) {
+		return super.canHit(entity) && !entity.noClip;
 	}
 
 	@Override

@@ -8,9 +8,9 @@ import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.server.world.ServerWorld;
 
 public class StartRidingTask<E extends LivingEntity> extends Task<E> {
-	private final float field_23132;
+	private final float speed;
 
-	public StartRidingTask(float f) {
+	public StartRidingTask(float speed) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.LOOK_TARGET,
@@ -21,7 +21,7 @@ public class StartRidingTask<E extends LivingEntity> extends Task<E> {
 				MemoryModuleState.VALUE_PRESENT
 			)
 		);
-		this.field_23132 = f;
+		this.speed = speed;
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class StartRidingTask<E extends LivingEntity> extends Task<E> {
 		if (this.isRideTargetClose(entity)) {
 			entity.startRiding(this.getRideTarget(entity));
 		} else {
-			LookTargetUtil.walkTowards(entity, this.getRideTarget(entity), this.field_23132, 1);
+			LookTargetUtil.walkTowards(entity, this.getRideTarget(entity), this.speed, 1);
 		}
 	}
 

@@ -10,9 +10,9 @@ public class SpectatorMenuState {
 	private final List<SpectatorMenuCommand> commands;
 	private final int selectedSlot;
 
-	public SpectatorMenuState(List<SpectatorMenuCommand> list, int i) {
-		this.commands = list;
-		this.selectedSlot = i;
+	public SpectatorMenuState(List<SpectatorMenuCommand> commands, int selectedSlot) {
+		this.commands = commands;
+		this.selectedSlot = selectedSlot;
 	}
 
 	public SpectatorMenuCommand getCommand(int slot) {

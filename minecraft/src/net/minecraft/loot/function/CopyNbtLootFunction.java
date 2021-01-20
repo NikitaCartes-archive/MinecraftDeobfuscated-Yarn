@@ -49,12 +49,12 @@ public class CopyNbtLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.source.method_32441();
+		return this.source.getRequiredParameters();
 	}
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		Tag tag = this.source.method_32440(context);
+		Tag tag = this.source.getNbtTag(context);
 		if (tag != null) {
 			this.operations.forEach(operation -> operation.execute(stack::getOrCreateTag, tag));
 		}

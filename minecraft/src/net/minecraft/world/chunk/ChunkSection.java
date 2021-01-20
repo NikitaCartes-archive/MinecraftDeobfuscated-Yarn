@@ -141,14 +141,14 @@ public class ChunkSection {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void fromPacket(PacketByteBuf packetByteBuf) {
-		this.nonEmptyBlockCount = packetByteBuf.readShort();
-		this.container.fromPacket(packetByteBuf);
+	public void fromPacket(PacketByteBuf buf) {
+		this.nonEmptyBlockCount = buf.readShort();
+		this.container.fromPacket(buf);
 	}
 
-	public void toPacket(PacketByteBuf packetByteBuf) {
-		packetByteBuf.writeShort(this.nonEmptyBlockCount);
-		this.container.toPacket(packetByteBuf);
+	public void toPacket(PacketByteBuf buf) {
+		buf.writeShort(this.nonEmptyBlockCount);
+		this.container.toPacket(buf);
 	}
 
 	public int getPacketSize() {

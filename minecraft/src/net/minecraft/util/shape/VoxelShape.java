@@ -74,7 +74,11 @@ public abstract class VoxelShape {
 
 	public VoxelShape simplify() {
 		VoxelShape[] voxelShapes = new VoxelShape[]{VoxelShapes.empty()};
-		this.forEachBox((d, e, f, g, h, i) -> voxelShapes[0] = VoxelShapes.combine(voxelShapes[0], VoxelShapes.cuboid(d, e, f, g, h, i), BooleanBiFunction.OR));
+		this.forEachBox(
+			(xMin, yMin, zMin, xMax, yMax, zMax) -> voxelShapes[0] = VoxelShapes.combine(
+					voxelShapes[0], VoxelShapes.cuboid(xMin, yMin, zMin, xMax, yMax, zMax), BooleanBiFunction.OR
+				)
+		);
 		return voxelShapes[0];
 	}
 
@@ -109,7 +113,7 @@ public abstract class VoxelShape {
 
 	public List<Box> getBoundingBoxes() {
 		List<Box> list = Lists.<Box>newArrayList();
-		this.forEachBox((d, e, f, g, h, i) -> list.add(new Box(d, e, f, g, h, i)));
+		this.forEachBox((x1, y1, z1, x2, y2, z2) -> list.add(new Box(x1, y1, z1, x2, y2, z2)));
 		return list;
 	}
 

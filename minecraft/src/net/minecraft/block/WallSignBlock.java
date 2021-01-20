@@ -36,7 +36,9 @@ public class WallSignBlock extends AbstractSignBlock {
 
 	public WallSignBlock(AbstractBlock.Settings settings, SignType signType) {
 		super(settings, signType);
-		this.setDefaultState(this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)));
+		this.setDefaultState(
+			this.stateManager.getDefaultState().with(FACING, Direction.NORTH).with(WATERLOGGED, Boolean.valueOf(false)).with(LIT, Boolean.valueOf(false))
+		);
 	}
 
 	@Override
@@ -95,6 +97,6 @@ public class WallSignBlock extends AbstractSignBlock {
 
 	@Override
 	protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-		builder.add(FACING, WATERLOGGED);
+		builder.add(FACING, WATERLOGGED, LIT);
 	}
 }

@@ -29,7 +29,7 @@ public class FlintAndSteelItem extends Item {
 		BlockState blockState = world.getBlockState(blockPos);
 		if (!CampfireBlock.canBeLit(blockState) && !CandleBlock.canBeLit(blockState) && !CandleCakeBlock.canBeLit(blockState)) {
 			BlockPos blockPos2 = blockPos.offset(context.getSide());
-			if (AbstractFireBlock.method_30032(world, blockPos2, context.getPlayerFacing())) {
+			if (AbstractFireBlock.canPlaceAt(world, blockPos2, context.getPlayerFacing())) {
 				world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
 				world.emitGameEvent(playerEntity, GameEvent.FLINT_AND_STEEL_USE, blockPos);
 				BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);

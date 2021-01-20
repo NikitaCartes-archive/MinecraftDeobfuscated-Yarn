@@ -4,20 +4,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 
 public interface HeightLimitView {
-	int getBottomSectionLimit();
-
 	int getSectionCount();
 
+	int getBottomSectionLimit();
+
 	default int getTopHeightLimit() {
-		return this.getSectionCount() + this.getBottomSectionLimit();
+		return this.getBottomSectionLimit() + this.getSectionCount();
 	}
 
-	default int method_32890() {
-		return this.getTopSectionLimit() - this.method_32891();
+	default int getSections() {
+		return this.getTopSectionLimit() - this.getMinimumSection();
 	}
 
-	default int method_32891() {
-		return ChunkSectionPos.getSectionCoord(this.getSectionCount());
+	default int getMinimumSection() {
+		return ChunkSectionPos.getSectionCoord(this.getBottomSectionLimit());
 	}
 
 	default int getTopSectionLimit() {
@@ -29,7 +29,7 @@ public interface HeightLimitView {
 	}
 
 	default boolean isOutOfHeightLimit(int y) {
-		return y < this.getSectionCount() || y >= this.getTopHeightLimit();
+		return y < this.getBottomSectionLimit() || y >= this.getTopHeightLimit();
 	}
 
 	default int getSectionIndex(int y) {
@@ -37,10 +37,10 @@ public interface HeightLimitView {
 	}
 
 	default int getSectionIndexFromSection(int section) {
-		return section - this.method_32891();
+		return section - this.getMinimumSection();
 	}
 
 	default int getSection(int sectionIndex) {
-		return sectionIndex + this.method_32891();
+		return sectionIndex + this.getMinimumSection();
 	}
 }

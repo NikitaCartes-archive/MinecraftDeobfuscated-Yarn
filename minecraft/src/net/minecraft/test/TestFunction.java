@@ -8,12 +8,12 @@ public class TestFunction {
 	private final String structurePath;
 	private final String structureName;
 	private final boolean required;
-	private final int field_27814;
-	private final int field_27815;
+	private final int maxAttempts;
+	private final int requiredSuccesses;
 	private final Consumer<StartupParameter> starter;
 	private final int tickLimit;
 	private final long duration;
-	private final BlockRotation field_25306;
+	private final BlockRotation rotation;
 
 	public void start(StartupParameter startupParameter) {
 		this.starter.accept(startupParameter);
@@ -47,19 +47,19 @@ public class TestFunction {
 		return this.duration;
 	}
 
-	public BlockRotation method_29424() {
-		return this.field_25306;
+	public BlockRotation getRotation() {
+		return this.rotation;
 	}
 
-	public boolean method_32257() {
-		return this.field_27814 > 1;
+	public boolean isFlaky() {
+		return this.maxAttempts > 1;
 	}
 
-	public int method_32258() {
-		return this.field_27814;
+	public int getMaxAttempts() {
+		return this.maxAttempts;
 	}
 
-	public int method_32259() {
-		return this.field_27815;
+	public int getRequiredSuccesses() {
+		return this.requiredSuccesses;
 	}
 }

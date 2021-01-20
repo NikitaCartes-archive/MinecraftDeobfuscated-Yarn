@@ -17,10 +17,10 @@ public class WalkTowardClosestAdultTask<E extends PassiveEntity> extends Task<E>
 		this(executionRange, livingEntity -> speed);
 	}
 
-	public WalkTowardClosestAdultTask(IntRange intRange, Function<LivingEntity, Float> function) {
+	public WalkTowardClosestAdultTask(IntRange executionRange, Function<LivingEntity, Float> speed) {
 		super(ImmutableMap.of(MemoryModuleType.NEAREST_VISIBLE_ADULT, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT));
-		this.executionRange = intRange;
-		this.speed = function;
+		this.executionRange = executionRange;
+		this.speed = speed;
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, E passiveEntity) {

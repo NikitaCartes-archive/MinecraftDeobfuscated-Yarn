@@ -38,14 +38,14 @@ public class ItemUsedOnBlockCriterion extends AbstractCriterion<ItemUsedOnBlockC
 		private final LocationPredicate location;
 		private final ItemPredicate item;
 
-		public Conditions(EntityPredicate.Extended extended, LocationPredicate location, ItemPredicate item) {
-			super(ItemUsedOnBlockCriterion.ID, extended);
+		public Conditions(EntityPredicate.Extended player, LocationPredicate location, ItemPredicate item) {
+			super(ItemUsedOnBlockCriterion.ID, player);
 			this.location = location;
 			this.item = item;
 		}
 
-		public static ItemUsedOnBlockCriterion.Conditions create(LocationPredicate.Builder builder, ItemPredicate.Builder builder2) {
-			return new ItemUsedOnBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, builder.build(), builder2.build());
+		public static ItemUsedOnBlockCriterion.Conditions create(LocationPredicate.Builder location, ItemPredicate.Builder item) {
+			return new ItemUsedOnBlockCriterion.Conditions(EntityPredicate.Extended.EMPTY, location.build(), item.build());
 		}
 
 		public boolean test(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {

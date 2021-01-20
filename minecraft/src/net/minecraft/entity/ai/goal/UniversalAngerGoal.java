@@ -12,7 +12,7 @@ import net.minecraft.world.GameRules;
 public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 	private final T mob;
 	private final boolean triggerOthers;
-	private int field_25606;
+	private int lastAttackedTime;
 
 	public UniversalAngerGoal(T mob, boolean triggerOthers) {
 		this.mob = mob;
@@ -21,16 +21,16 @@ public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 
 	@Override
 	public boolean canStart() {
-		return this.mob.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.method_29932();
+		return this.mob.world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.canStartUniversalAnger();
 	}
 
-	private boolean method_29932() {
-		return this.mob.getAttacker() != null && this.mob.getAttacker().getType() == EntityType.PLAYER && this.mob.getLastAttackedTime() > this.field_25606;
+	private boolean canStartUniversalAnger() {
+		return this.mob.getAttacker() != null && this.mob.getAttacker().getType() == EntityType.PLAYER && this.mob.getLastAttackedTime() > this.lastAttackedTime;
 	}
 
 	@Override
 	public void start() {
-		this.field_25606 = this.mob.getLastAttackedTime();
+		this.lastAttackedTime = this.mob.getLastAttackedTime();
 		this.mob.universallyAnger();
 		if (this.triggerOthers) {
 			this.getOthersInRange().stream().filter(entity -> entity != this.mob).map(entity -> (Angerable)entity).forEach(Angerable::universallyAnger);
@@ -41,7 +41,7 @@ public class UniversalAngerGoal<T extends MobEntity & Angerable> extends Goal {
 
 	private List<? extends MobEntity> getOthersInRange() {
 		double d = this.mob.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
-		Box box = Box.method_29968(this.mob.getPos()).expand(d, 10.0, d);
+		Box box = Box.from(this.mob.getPos()).expand(d, 10.0, d);
 		return this.mob.world.getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
 	}
 }

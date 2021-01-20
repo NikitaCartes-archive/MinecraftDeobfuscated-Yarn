@@ -105,8 +105,8 @@ public class EntityFlagsPredicate {
 			return this;
 		}
 
-		public EntityFlagsPredicate.Builder method_29935(@Nullable Boolean boolean_) {
-			this.isBaby = boolean_;
+		public EntityFlagsPredicate.Builder isBaby(@Nullable Boolean isBaby) {
+			this.isBaby = isBaby;
 			return this;
 		}
 

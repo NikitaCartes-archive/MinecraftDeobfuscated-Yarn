@@ -25,35 +25,35 @@ public class WorldSaveHandler {
 		this.playerDataDir.mkdirs();
 	}
 
-	public void savePlayerData(PlayerEntity playerEntity) {
+	public void savePlayerData(PlayerEntity player) {
 		try {
-			CompoundTag compoundTag = playerEntity.toTag(new CompoundTag());
-			File file = File.createTempFile(playerEntity.getUuidAsString() + "-", ".dat", this.playerDataDir);
+			CompoundTag compoundTag = player.toTag(new CompoundTag());
+			File file = File.createTempFile(player.getUuidAsString() + "-", ".dat", this.playerDataDir);
 			NbtIo.writeCompressed(compoundTag, file);
-			File file2 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
-			File file3 = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat_old");
+			File file2 = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
+			File file3 = new File(this.playerDataDir, player.getUuidAsString() + ".dat_old");
 			Util.backupAndReplace(file2, file, file3);
 		} catch (Exception var6) {
-			LOGGER.warn("Failed to save player data for {}", playerEntity.getName().getString());
+			LOGGER.warn("Failed to save player data for {}", player.getName().getString());
 		}
 	}
 
 	@Nullable
-	public CompoundTag loadPlayerData(PlayerEntity playerEntity) {
+	public CompoundTag loadPlayerData(PlayerEntity player) {
 		CompoundTag compoundTag = null;
 
 		try {
-			File file = new File(this.playerDataDir, playerEntity.getUuidAsString() + ".dat");
+			File file = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
 			if (file.exists() && file.isFile()) {
 				compoundTag = NbtIo.readCompressed(file);
 			}
 		} catch (Exception var4) {
-			LOGGER.warn("Failed to load player data for {}", playerEntity.getName().getString());
+			LOGGER.warn("Failed to load player data for {}", player.getName().getString());
 		}
 
 		if (compoundTag != null) {
 			int i = compoundTag.contains("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-			playerEntity.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
+			player.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
 		}
 
 		return compoundTag;

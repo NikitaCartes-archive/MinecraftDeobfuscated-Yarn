@@ -20,6 +20,7 @@ public class LootNumberProviderTypes {
 				Registry.LOOT_NUMBER_PROVIDER_TYPE, "provider", "type", LootNumberProvider::getType
 			)
 			.method_32385(CONSTANT, new ConstantLootNumberProvider.CustomSerializer())
+			.method_33409(UNIFORM)
 			.createGsonSerializer();
 	}
 }

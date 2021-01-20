@@ -452,7 +452,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	@Override
 	public void tickRiding() {
-		if (this.shouldDismount() && this.hasVehicle()) {
+		if (!this.world.isClient && this.shouldDismount() && this.hasVehicle()) {
 			this.stopRiding();
 			this.setSneaking(false);
 		} else {
@@ -547,9 +547,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
-		if (compoundTag != null && (!compoundTag.contains("Silent") || !compoundTag.getBoolean("Silent")) && this.world.random.nextInt(200) == 0) {
-			String string = compoundTag.getString("id");
+	private void updateShoulderEntity(@Nullable CompoundTag tag) {
+		if (tag != null && (!tag.contains("Silent") || !tag.getBoolean("Silent")) && this.world.random.nextInt(200) == 0) {
+			String string = tag.getString("id");
 			EntityType.get(string)
 				.filter(entityType -> entityType == EntityType.PARROT)
 				.ifPresent(
@@ -829,7 +829,7 @@ public abstract class PlayerEntity extends LivingEntity {
 			return true;
 		} else if (damageSource == DamageSource.DROWN) {
 			return !this.world.getGameRules().getBoolean(GameRules.DROWNING_DAMAGE);
-		} else if (damageSource == DamageSource.FALL) {
+		} else if (damageSource.isFromFalling()) {
 			return !this.world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
 		} else if (damageSource.isFire()) {
 			return !this.world.getGameRules().getBoolean(GameRules.FIRE_DAMAGE);
@@ -1542,7 +1542,7 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		if (this.abilities.allowFlying) {
 			return false;
 		} else {
@@ -1550,7 +1550,7 @@ public abstract class PlayerEntity extends LivingEntity {
 				this.increaseStat(Stats.FALL_ONE_CM, (int)Math.round((double)fallDistance * 100.0));
 			}
 
-			return super.handleFallDamage(fallDistance, damageMultiplier);
+			return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 		}
 	}
 

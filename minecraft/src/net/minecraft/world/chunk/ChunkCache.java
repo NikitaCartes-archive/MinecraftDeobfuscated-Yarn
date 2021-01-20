@@ -53,18 +53,18 @@ public class ChunkCache implements BlockView, CollisionView {
 		}
 	}
 
-	private Chunk method_22354(BlockPos blockPos) {
-		return this.method_22353(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+	private Chunk getChunk(BlockPos pos) {
+		return this.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
 	}
 
-	private Chunk method_22353(int i, int j) {
-		int k = i - this.minX;
-		int l = j - this.minZ;
-		if (k >= 0 && k < this.chunks.length && l >= 0 && l < this.chunks[k].length) {
-			Chunk chunk = this.chunks[k][l];
-			return (Chunk)(chunk != null ? chunk : new EmptyChunk(this.world, new ChunkPos(i, j)));
+	private Chunk getChunk(int chunkX, int chunkZ) {
+		int i = chunkX - this.minX;
+		int j = chunkZ - this.minZ;
+		if (i >= 0 && i < this.chunks.length && j >= 0 && j < this.chunks[i].length) {
+			Chunk chunk = this.chunks[i][j];
+			return (Chunk)(chunk != null ? chunk : new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ)));
 		} else {
-			return new EmptyChunk(this.world, new ChunkPos(i, j));
+			return new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ));
 		}
 	}
 
@@ -74,14 +74,14 @@ public class ChunkCache implements BlockView, CollisionView {
 	}
 
 	@Override
-	public BlockView getExistingChunk(int chunkX, int chunkZ) {
-		return this.method_22353(chunkX, chunkZ);
+	public BlockView getChunkAsView(int chunkX, int chunkZ) {
+		return this.getChunk(chunkX, chunkZ);
 	}
 
 	@Nullable
 	@Override
 	public BlockEntity getBlockEntity(BlockPos pos) {
-		Chunk chunk = this.method_22354(pos);
+		Chunk chunk = this.getChunk(pos);
 		return chunk.getBlockEntity(pos);
 	}
 
@@ -90,7 +90,7 @@ public class ChunkCache implements BlockView, CollisionView {
 		if (this.isOutOfHeightLimit(pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
-			Chunk chunk = this.method_22354(pos);
+			Chunk chunk = this.getChunk(pos);
 			return chunk.getBlockState(pos);
 		}
 	}
@@ -110,18 +110,18 @@ public class ChunkCache implements BlockView, CollisionView {
 		if (this.isOutOfHeightLimit(pos)) {
 			return Fluids.EMPTY.getDefaultState();
 		} else {
-			Chunk chunk = this.method_22354(pos);
+			Chunk chunk = this.getChunk(pos);
 			return chunk.getFluidState(pos);
 		}
 	}
 
 	@Override
-	public int getSectionCount() {
-		return this.world.getSectionCount();
+	public int getBottomSectionLimit() {
+		return this.world.getBottomSectionLimit();
 	}
 
 	@Override
-	public int getBottomSectionLimit() {
-		return this.world.getBottomSectionLimit();
+	public int getSectionCount() {
+		return this.world.getSectionCount();
 	}
 }

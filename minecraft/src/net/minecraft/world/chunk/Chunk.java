@@ -57,7 +57,7 @@ public interface Chunk extends BlockView, StructureHolder {
 
 	default int getHighestNonEmptySectionYOffset() {
 		ChunkSection chunkSection = this.getHighestNonEmptySection();
-		return chunkSection == null ? this.getSectionCount() : chunkSection.getYOffset();
+		return chunkSection == null ? this.getBottomSectionLimit() : chunkSection.getYOffset();
 	}
 
 	Set<BlockPos> getBlockEntityPositions();
@@ -79,8 +79,8 @@ public interface Chunk extends BlockView, StructureHolder {
 	void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> structureStarts);
 
 	default boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
-		if (lowerHeight < this.getSectionCount()) {
-			lowerHeight = this.getSectionCount();
+		if (lowerHeight < this.getBottomSectionLimit()) {
+			lowerHeight = this.getBottomSectionLimit();
 		}
 
 		if (upperHeight >= this.getTopHeightLimit()) {

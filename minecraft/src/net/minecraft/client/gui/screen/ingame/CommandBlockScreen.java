@@ -66,15 +66,15 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 				.value(this.autoActivate)
 				.build(this.width / 2 + 50 + 4, 165, 100, 20, new TranslatableText("advMode.triggering"), (cyclingButtonWidget, boolean_) -> this.autoActivate = boolean_)
 		);
-		this.method_32647(false);
+		this.setButtonsActive(false);
 	}
 
-	private void method_32647(boolean bl) {
-		this.doneButton.active = bl;
-		this.toggleTrackingOutputButton.active = bl;
-		this.modeButton.active = bl;
-		this.conditionalModeButton.active = bl;
-		this.redstoneTriggerButton.active = bl;
+	private void setButtonsActive(boolean active) {
+		this.doneButton.active = active;
+		this.toggleTrackingOutputButton.active = active;
+		this.modeButton.active = active;
+		this.conditionalModeButton.active = active;
+		this.redstoneTriggerButton.active = active;
 	}
 
 	public void updateCommandBlock() {
@@ -84,17 +84,17 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 		this.mode = this.blockEntity.getCommandBlockType();
 		this.conditional = this.blockEntity.isConditionalCommandBlock();
 		this.autoActivate = this.blockEntity.isAuto();
-		this.toggleTrackingOutputButton.method_32605(this.trackingOutput);
-		this.modeButton.method_32605(this.mode);
-		this.conditionalModeButton.method_32605(this.conditional);
-		this.redstoneTriggerButton.method_32605(this.autoActivate);
-		this.method_32647(true);
+		this.toggleTrackingOutputButton.setValue(this.trackingOutput);
+		this.modeButton.setValue(this.mode);
+		this.conditionalModeButton.setValue(this.conditional);
+		this.redstoneTriggerButton.setValue(this.autoActivate);
+		this.setButtonsActive(true);
 	}
 
 	@Override
 	public void resize(MinecraftClient client, int width, int height) {
 		super.resize(client, width, height);
-		this.method_32647(true);
+		this.setButtonsActive(true);
 	}
 
 	@Override

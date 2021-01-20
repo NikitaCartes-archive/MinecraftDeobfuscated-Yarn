@@ -88,14 +88,14 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class EntityFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17873;
+		private final SpriteProvider spriteProvider;
 
 		public EntityFactory(SpriteProvider spriteProvider) {
-			this.field_17873 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			Particle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17873);
+			Particle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 			particle.setColor((float)g, (float)h, (float)i);
 			return particle;
 		}
@@ -103,27 +103,27 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Environment(EnvType.CLIENT)
 	public static class InstantFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17872;
+		private final SpriteProvider spriteProvider;
 
 		public InstantFactory(SpriteProvider spriteProvider) {
-			this.field_17872 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			return new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17872);
+			return new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public static class WitchFactory implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_17875;
+		private final SpriteProvider spriteProvider;
 
 		public WitchFactory(SpriteProvider spriteProvider) {
-			this.field_17875 = spriteProvider;
+			this.spriteProvider = spriteProvider;
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			SpellParticle spellParticle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17875);
+			SpellParticle spellParticle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
 			float j = clientWorld.random.nextFloat() * 0.5F + 0.35F;
 			spellParticle.setColor(1.0F * j, 0.0F * j, 1.0F * j);
 			return spellParticle;

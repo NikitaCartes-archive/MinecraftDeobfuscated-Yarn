@@ -27,8 +27,8 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 		return new ItemDurabilityChangedCriterion.Conditions(extended, itemPredicate, intRange, intRange2);
 	}
 
-	public void trigger(ServerPlayerEntity player, ItemStack stack, int damage) {
-		this.test(player, conditions -> conditions.matches(stack, damage));
+	public void trigger(ServerPlayerEntity player, ItemStack stack, int durability) {
+		this.test(player, conditions -> conditions.matches(stack, durability));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -43,17 +43,17 @@ public class ItemDurabilityChangedCriterion extends AbstractCriterion<ItemDurabi
 			this.delta = delta;
 		}
 
-		public static ItemDurabilityChangedCriterion.Conditions create(EntityPredicate.Extended extended, ItemPredicate itemPredicate, NumberRange.IntRange intRange) {
-			return new ItemDurabilityChangedCriterion.Conditions(extended, itemPredicate, intRange, NumberRange.IntRange.ANY);
+		public static ItemDurabilityChangedCriterion.Conditions create(EntityPredicate.Extended player, ItemPredicate item, NumberRange.IntRange durability) {
+			return new ItemDurabilityChangedCriterion.Conditions(player, item, durability, NumberRange.IntRange.ANY);
 		}
 
-		public boolean matches(ItemStack stack, int damage) {
+		public boolean matches(ItemStack stack, int durability) {
 			if (!this.item.test(stack)) {
 				return false;
-			} else if (!this.durability.test(stack.getMaxDamage() - damage)) {
+			} else if (!this.durability.test(stack.getMaxDamage() - durability)) {
 				return false;
 			} else {
-				return this.delta.test(stack.getDamage() - damage);
+				return this.delta.test(stack.getDamage() - durability);
 			}
 		}
 

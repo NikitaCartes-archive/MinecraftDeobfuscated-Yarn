@@ -7,20 +7,20 @@ import net.minecraft.nbt.CompoundTag;
 public class ForcedChunkState extends PersistentState {
 	private final LongSet chunks;
 
-	private ForcedChunkState(LongSet longSet) {
-		this.chunks = longSet;
+	private ForcedChunkState(LongSet chunks) {
+		this.chunks = chunks;
 	}
 
 	public ForcedChunkState() {
 		this(new LongOpenHashSet());
 	}
 
-	public static ForcedChunkState method_32350(CompoundTag compoundTag) {
-		return new ForcedChunkState(new LongOpenHashSet(compoundTag.getLongArray("Forced")));
+	public static ForcedChunkState fromNbt(CompoundTag tag) {
+		return new ForcedChunkState(new LongOpenHashSet(tag.getLongArray("Forced")));
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag toNbt(CompoundTag tag) {
 		tag.putLongArray("Forced", this.chunks.toLongArray());
 		return tag;
 	}

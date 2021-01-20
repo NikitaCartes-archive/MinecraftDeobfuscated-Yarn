@@ -18,11 +18,11 @@ public class RealmsLongConfirmationScreen extends RealmsScreen {
 	protected final BooleanConsumer field_22697;
 	private final boolean yesNoQuestion;
 
-	public RealmsLongConfirmationScreen(BooleanConsumer booleanConsumer, RealmsLongConfirmationScreen.Type type, Text text, Text text2, boolean yesNoQuestion) {
+	public RealmsLongConfirmationScreen(BooleanConsumer booleanConsumer, RealmsLongConfirmationScreen.Type type, Text line2, Text line3, boolean yesNoQuestion) {
 		this.field_22697 = booleanConsumer;
 		this.type = type;
-		this.line2 = text;
-		this.line3 = text2;
+		this.line2 = line2;
+		this.line3 = line3;
 		this.yesNoQuestion = yesNoQuestion;
 	}
 

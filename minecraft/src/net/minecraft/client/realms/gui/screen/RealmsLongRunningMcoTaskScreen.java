@@ -107,9 +107,9 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 	}
 
 	@Override
-	public void error(Text text) {
-		this.errorMessage = text;
-		Realms.narrateNow(text.getString());
+	public void error(Text errorMessage) {
+		this.errorMessage = errorMessage;
+		Realms.narrateNow(errorMessage.getString());
 		this.onError();
 		this.addButton(
 			new ButtonWidget(this.width / 2 - 106, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.BACK, buttonWidget -> this.cancelOrBackButtonClicked())
@@ -122,8 +122,8 @@ public class RealmsLongRunningMcoTaskScreen extends RealmsScreen implements Erra
 		this.buttons.clear();
 	}
 
-	public void setTitle(Text text) {
-		this.title = text;
+	public void setTitle(Text title) {
+		this.title = title;
 	}
 
 	public boolean aborted() {

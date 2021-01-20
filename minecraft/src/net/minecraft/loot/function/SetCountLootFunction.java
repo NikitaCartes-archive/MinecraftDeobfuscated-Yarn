@@ -14,12 +14,12 @@ import net.minecraft.util.math.MathHelper;
 
 public class SetCountLootFunction extends ConditionalLootFunction {
 	private final LootNumberProvider countRange;
-	private final boolean field_27909;
+	private final boolean add;
 
-	private SetCountLootFunction(LootCondition[] conditions, LootNumberProvider countRange, boolean bl) {
+	private SetCountLootFunction(LootCondition[] conditions, LootNumberProvider countRange, boolean add) {
 		super(conditions);
 		this.countRange = countRange;
-		this.field_27909 = bl;
+		this.add = add;
 	}
 
 	@Override
@@ -34,7 +34,7 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 
 	@Override
 	public ItemStack process(ItemStack stack, LootContext context) {
-		int i = this.field_27909 ? stack.getCount() : 0;
+		int i = this.add ? stack.getCount() : 0;
 		stack.setCount(MathHelper.clamp(i + this.countRange.nextInt(context), 0, stack.getMaxCount()));
 		return stack;
 	}
@@ -47,7 +47,7 @@ public class SetCountLootFunction extends ConditionalLootFunction {
 		public void toJson(JsonObject jsonObject, SetCountLootFunction setCountLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setCountLootFunction, jsonSerializationContext);
 			jsonObject.add("count", jsonSerializationContext.serialize(setCountLootFunction.countRange));
-			jsonObject.addProperty("add", setCountLootFunction.field_27909);
+			jsonObject.addProperty("add", setCountLootFunction.add);
 		}
 
 		public SetCountLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {

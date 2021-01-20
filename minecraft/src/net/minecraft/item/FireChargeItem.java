@@ -26,7 +26,7 @@ public class FireChargeItem extends Item {
 		boolean bl = false;
 		if (!CampfireBlock.canBeLit(blockState) && !CandleBlock.canBeLit(blockState) && !CandleCakeBlock.canBeLit(blockState)) {
 			blockPos = blockPos.offset(context.getSide());
-			if (AbstractFireBlock.method_30032(world, blockPos, context.getPlayerFacing())) {
+			if (AbstractFireBlock.canPlaceAt(world, blockPos, context.getPlayerFacing())) {
 				this.playUseSound(world, blockPos);
 				world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
 				bl = true;

@@ -36,7 +36,7 @@ public class ProtectionEnchantment extends Enchantment {
 			return level;
 		} else if (this.protectionType == ProtectionEnchantment.Type.FIRE && source.isFire()) {
 			return level * 2;
-		} else if (this.protectionType == ProtectionEnchantment.Type.FALL && source == DamageSource.FALL) {
+		} else if (this.protectionType == ProtectionEnchantment.Type.FALL && source.isFromFalling()) {
 			return level * 3;
 		} else if (this.protectionType == ProtectionEnchantment.Type.EXPLOSION && source.isExplosive()) {
 			return level * 2;

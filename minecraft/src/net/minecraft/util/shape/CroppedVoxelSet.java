@@ -35,17 +35,17 @@ public final class CroppedVoxelSet extends VoxelSet {
 
 	@Override
 	public int getMin(Direction.Axis axis) {
-		return this.method_31944(axis, this.parent.getMin(axis));
+		return this.clamp(axis, this.parent.getMin(axis));
 	}
 
 	@Override
 	public int getMax(Direction.Axis axis) {
-		return this.method_31944(axis, this.parent.getMax(axis));
+		return this.clamp(axis, this.parent.getMax(axis));
 	}
 
-	private int method_31944(Direction.Axis axis, int i) {
-		int j = axis.choose(this.xMin, this.yMin, this.zMin);
-		int k = axis.choose(this.xMax, this.yMax, this.zMax);
-		return MathHelper.clamp(i, j, k) - j;
+	private int clamp(Direction.Axis axis, int value) {
+		int i = axis.choose(this.xMin, this.yMin, this.zMin);
+		int j = axis.choose(this.xMax, this.yMax, this.zMax);
+		return MathHelper.clamp(value, i, j) - i;
 	}
 }

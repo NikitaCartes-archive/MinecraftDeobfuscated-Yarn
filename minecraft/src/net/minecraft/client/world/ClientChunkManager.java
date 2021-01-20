@@ -1,5 +1,6 @@
 package net.minecraft.client.world;
 
+import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.BooleanSupplier;
 import javax.annotation.Nullable;
@@ -80,7 +81,7 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask) {
+	public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, BitSet bitSet) {
 		if (!this.chunks.isInRadius(x, z)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", x, z);
 			return null;
@@ -95,10 +96,10 @@ public class ClientChunkManager extends ChunkManager {
 				}
 
 				worldChunk = new WorldChunk(this.world, chunkPos, biomes);
-				worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
+				worldChunk.loadFromPacket(biomes, buf, tag, bitSet);
 				this.chunks.set(i, worldChunk);
 			} else {
-				worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
+				worldChunk.loadFromPacket(biomes, buf, tag, bitSet);
 			}
 
 			ChunkSection[] chunkSections = worldChunk.getSectionArray();

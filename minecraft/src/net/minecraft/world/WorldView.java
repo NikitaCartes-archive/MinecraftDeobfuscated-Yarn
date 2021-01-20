@@ -78,12 +78,12 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	DimensionType getDimension();
 
 	@Override
-	default int getSectionCount() {
+	default int getBottomSectionLimit() {
 		return this.getDimension().getMinimumY();
 	}
 
 	@Override
-	default int getBottomSectionLimit() {
+	default int getSectionCount() {
 		return this.getDimension().getHeight();
 	}
 
@@ -138,7 +138,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Nullable
 	@Override
-	default BlockView getExistingChunk(int chunkX, int chunkZ) {
+	default BlockView getChunkAsView(int chunkX, int chunkZ) {
 		return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
 	}
 
@@ -191,7 +191,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Deprecated
 	default boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		if (maxY >= this.getSectionCount() && minY < this.getTopHeightLimit()) {
+		if (maxY >= this.getBottomSectionLimit() && minY < this.getTopHeightLimit()) {
 			minX >>= 4;
 			minZ >>= 4;
 			maxX >>= 4;

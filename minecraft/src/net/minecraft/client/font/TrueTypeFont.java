@@ -27,20 +27,20 @@ public class TrueTypeFont implements Font {
 	private final float scaleFactor;
 	private final float ascent;
 
-	public TrueTypeFont(ByteBuffer byteBuffer, STBTTFontinfo sTBTTFontinfo, float f, float g, float h, float i, String string) {
+	public TrueTypeFont(ByteBuffer byteBuffer, STBTTFontinfo info, float f, float oversample, float g, float h, String string) {
 		this.field_21839 = byteBuffer;
-		this.info = sTBTTFontinfo;
-		this.oversample = g;
+		this.info = info;
+		this.oversample = oversample;
 		string.codePoints().forEach(this.excludedCharacters::add);
-		this.shiftX = h * g;
-		this.shiftY = i * g;
-		this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(sTBTTFontinfo, f * g);
+		this.shiftX = g * oversample;
+		this.shiftY = h * oversample;
+		this.scaleFactor = STBTruetype.stbtt_ScaleForPixelHeight(info, f * oversample);
 
 		try (MemoryStack memoryStack = MemoryStack.stackPush()) {
 			IntBuffer intBuffer = memoryStack.mallocInt(1);
 			IntBuffer intBuffer2 = memoryStack.mallocInt(1);
 			IntBuffer intBuffer3 = memoryStack.mallocInt(1);
-			STBTruetype.stbtt_GetFontVMetrics(sTBTTFontinfo, intBuffer, intBuffer2, intBuffer3);
+			STBTruetype.stbtt_GetFontVMetrics(info, intBuffer, intBuffer2, intBuffer3);
 			this.ascent = (float)intBuffer.get(0) * this.scaleFactor;
 		}
 	}

@@ -502,6 +502,15 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_SCULK_SENSOR_HIT,
 		SoundEvents.BLOCK_SCULK_SENSOR_FALL
 	);
+	public static final BlockSoundGroup GLOW_LICHEN = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_GRASS_BREAK,
+		SoundEvents.BLOCK_VINE_STEP,
+		SoundEvents.BLOCK_GRASS_PLACE,
+		SoundEvents.BLOCK_GRASS_HIT,
+		SoundEvents.BLOCK_GRASS_FALL
+	);
 	public final float volume;
 	public final float pitch;
 	private final SoundEvent breakSound;

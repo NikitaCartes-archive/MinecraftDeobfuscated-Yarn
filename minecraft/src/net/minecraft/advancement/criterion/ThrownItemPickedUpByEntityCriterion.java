@@ -36,23 +36,23 @@ public class ThrownItemPickedUpByEntityCriterion extends AbstractCriterion<Throw
 		private final ItemPredicate item;
 		private final EntityPredicate.Extended entity;
 
-		public Conditions(EntityPredicate.Extended extended, ItemPredicate item, EntityPredicate.Extended entity) {
-			super(ThrownItemPickedUpByEntityCriterion.ID, extended);
+		public Conditions(EntityPredicate.Extended player, ItemPredicate item, EntityPredicate.Extended entity) {
+			super(ThrownItemPickedUpByEntityCriterion.ID, player);
 			this.item = item;
 			this.entity = entity;
 		}
 
 		public static ThrownItemPickedUpByEntityCriterion.Conditions create(
-			EntityPredicate.Extended extended, ItemPredicate.Builder builder, EntityPredicate.Extended extended2
+			EntityPredicate.Extended player, ItemPredicate.Builder item, EntityPredicate.Extended entity
 		) {
-			return new ThrownItemPickedUpByEntityCriterion.Conditions(extended, builder.build(), extended2);
+			return new ThrownItemPickedUpByEntityCriterion.Conditions(player, item.build(), entity);
 		}
 
-		public boolean test(ServerPlayerEntity player, ItemStack stack, LootContext lootContext) {
+		public boolean test(ServerPlayerEntity player, ItemStack stack, LootContext entityContext) {
 			if (!this.item.test(stack)) {
 				return false;
 			} else {
-				return this.entity.test(lootContext);
+				return this.entity.test(entityContext);
 			}
 		}
 

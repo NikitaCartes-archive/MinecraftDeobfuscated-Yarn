@@ -110,7 +110,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		this.mapFeaturesButton.visible = false;
 		this.mapTypeButton = parent.addButton(
 			CyclingButtonWidget.<GeneratorType>method_32606(GeneratorType::getTranslationKey)
-				.method_32621((List<GeneratorType>)GeneratorType.VALUES.stream().filter(GeneratorType::method_32685).collect(Collectors.toList()), GeneratorType.VALUES)
+				.method_32621((List<GeneratorType>)GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES)
 				.method_32623(
 					cyclingButtonWidget -> cyclingButtonWidget.getValue() == GeneratorType.AMPLIFIED
 							? cyclingButtonWidget.method_32611().append(". ").append(AMPLIFIED_INFO_TEXT)
@@ -131,10 +131,10 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 					}
 				)
 		);
-		this.generatorType.ifPresent(this.mapTypeButton::method_32605);
+		this.generatorType.ifPresent(this.mapTypeButton::setValue);
 		this.mapTypeButton.visible = false;
 		this.field_28001 = parent.addButton(
-			new ButtonWidget(j, 100, 150, 20, ScreenTexts.method_32700(new TranslatableText("selectWorld.mapType"), CUSTOM_TEXT), buttonWidget -> {
+			new ButtonWidget(j, 100, 150, 20, ScreenTexts.composeGenericOptionText(new TranslatableText("selectWorld.mapType"), CUSTOM_TEXT), buttonWidget -> {
 			})
 		);
 		this.field_28001.active = false;
@@ -385,11 +385,11 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 
 	public void disableBonusItems() {
 		this.bonusItemsButton.active = false;
-		this.bonusItemsButton.method_32605(false);
+		this.bonusItemsButton.setValue(false);
 	}
 
 	public void enableBonusItems() {
 		this.bonusItemsButton.active = true;
-		this.bonusItemsButton.method_32605(this.generatorOptions.hasBonusChest());
+		this.bonusItemsButton.setValue(this.generatorOptions.hasBonusChest());
 	}
 }

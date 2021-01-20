@@ -29,8 +29,8 @@ public class BeehiveBlockEntity extends BlockEntity {
 	@Nullable
 	private BlockPos flowerPos;
 
-	public BeehiveBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.BEEHIVE, blockPos, blockState);
+	public BeehiveBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.BEEHIVE, pos, state);
 	}
 
 	@Override

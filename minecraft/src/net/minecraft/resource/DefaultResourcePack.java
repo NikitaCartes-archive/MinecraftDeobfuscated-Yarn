@@ -62,12 +62,12 @@ public class DefaultResourcePack implements ResourcePack {
 			}
 		}
 	});
-	public final PackResourceMetadata field_26938;
+	public final PackResourceMetadata metadata;
 	public final Set<String> namespaces;
 
-	public DefaultResourcePack(PackResourceMetadata packResourceMetadata, String... strings) {
-		this.field_26938 = packResourceMetadata;
-		this.namespaces = ImmutableSet.copyOf(strings);
+	public DefaultResourcePack(PackResourceMetadata metadata, String... namespaces) {
+		this.metadata = metadata;
+		this.namespaces = ImmutableSet.copyOf(namespaces);
 	}
 
 	@Override
@@ -247,12 +247,12 @@ public class DefaultResourcePack implements ResourcePack {
 			Object var5;
 			try {
 				if (inputStream == null) {
-					return (T)(metaReader == PackResourceMetadata.READER ? this.field_26938 : null);
+					return (T)(metaReader == PackResourceMetadata.READER ? this.metadata : null);
 				}
 
 				T object = AbstractFileResourcePack.parseMetadata(metaReader, inputStream);
 				if (object == null) {
-					return (T)(metaReader == PackResourceMetadata.READER ? this.field_26938 : null);
+					return (T)(metaReader == PackResourceMetadata.READER ? this.metadata : null);
 				}
 
 				var5 = object;
@@ -275,7 +275,7 @@ public class DefaultResourcePack implements ResourcePack {
 
 			return (T)var5;
 		} catch (FileNotFoundException | RuntimeException var18) {
-			return (T)(metaReader == PackResourceMetadata.READER ? this.field_26938 : null);
+			return (T)(metaReader == PackResourceMetadata.READER ? this.metadata : null);
 		}
 	}
 

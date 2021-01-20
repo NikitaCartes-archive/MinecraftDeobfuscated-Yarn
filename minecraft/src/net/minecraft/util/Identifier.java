@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
  * The namespace and path must contain only lowercase letters ([a-z]), digits ([0-9]), or the characters '_', '.', and '-'. The path can also contain the standard path separator '/'.
  */
 public class Identifier implements Comparable<Identifier> {
-	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::method_29186, Identifier::toString).stable();
+	public static final Codec<Identifier> CODEC = Codec.STRING.<Identifier>comapFlatMap(Identifier::validate, Identifier::toString).stable();
 	private static final SimpleCommandExceptionType COMMAND_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.id.invalid"));
 	protected final String namespace;
 	protected final String path;
@@ -82,11 +82,11 @@ public class Identifier implements Comparable<Identifier> {
 		return strings;
 	}
 
-	private static DataResult<Identifier> method_29186(String string) {
+	private static DataResult<Identifier> validate(String id) {
 		try {
-			return DataResult.success(new Identifier(string));
+			return DataResult.success(new Identifier(id));
 		} catch (InvalidIdentifierException var2) {
-			return DataResult.error("Not a valid resource location: " + string + " " + var2.getMessage());
+			return DataResult.error("Not a valid resource location: " + id + " " + var2.getMessage());
 		}
 	}
 
@@ -102,13 +102,13 @@ public class Identifier implements Comparable<Identifier> {
 		return this.namespace + ':' + this.path;
 	}
 
-	public boolean equals(Object object) {
-		if (this == object) {
+	public boolean equals(Object other) {
+		if (this == other) {
 			return true;
-		} else if (!(object instanceof Identifier)) {
+		} else if (!(other instanceof Identifier)) {
 			return false;
 		} else {
-			Identifier identifier = (Identifier)object;
+			Identifier identifier = (Identifier)other;
 			return this.namespace.equals(identifier.namespace) && this.path.equals(identifier.path);
 		}
 	}
@@ -167,12 +167,17 @@ public class Identifier implements Comparable<Identifier> {
 		return true;
 	}
 
-	public static boolean isPathCharacterValid(char c) {
-		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '/' || c == '.';
+	public static boolean isPathCharacterValid(char character) {
+		return character == '_'
+			|| character == '-'
+			|| character >= 'a' && character <= 'z'
+			|| character >= '0' && character <= '9'
+			|| character == '/'
+			|| character == '.';
 	}
 
-	private static boolean isNamespaceCharacterValid(char c) {
-		return c == '_' || c == '-' || c >= 'a' && c <= 'z' || c >= '0' && c <= '9' || c == '.';
+	private static boolean isNamespaceCharacterValid(char character) {
+		return character == '_' || character == '-' || character >= 'a' && character <= 'z' || character >= '0' && character <= '9' || character == '.';
 	}
 
 	@Environment(EnvType.CLIENT)

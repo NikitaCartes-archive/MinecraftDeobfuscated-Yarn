@@ -1,6 +1,5 @@
 package net.minecraft.world.biome.source;
 
-import net.minecraft.SharedConstants;
 import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
@@ -27,12 +26,8 @@ public class BiomeLayerSampler {
 		} else {
 			Biome biome = biomeRegistry.get(registryKey);
 			if (biome == null) {
-				if (SharedConstants.isDevelopment) {
-					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("Unknown biome id: " + i));
-				} else {
-					LOGGER.warn("Unknown biome id: {}", i);
-					return biomeRegistry.get(BuiltinBiomes.fromRawId(0));
-				}
+				Util.method_33559("Unknown biome id: " + i);
+				return biomeRegistry.get(BuiltinBiomes.fromRawId(0));
 			} else {
 				return biome;
 			}

@@ -62,12 +62,12 @@ public class BookEditScreen extends Screen {
 	private final SelectionManager field_24269 = new SelectionManager(
 		this::getCurrentPageContent,
 		this::setPageContent,
-		this::method_27595,
-		this::method_27584,
+		this::getClipboard,
+		this::setClipboard,
 		string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight(string, 114) <= 128
 	);
 	private final SelectionManager field_24270 = new SelectionManager(
-		() -> this.title, string -> this.title = string, this::method_27595, this::method_27584, string -> string.length() < 16
+		() -> this.title, string -> this.title = string, this::getClipboard, this::setClipboard, string -> string.length() < 16
 	);
 	private long lastClickTime;
 	private int lastClickIndex = -1;
@@ -83,9 +83,9 @@ public class BookEditScreen extends Screen {
 	private Text field_25891 = LiteralText.EMPTY;
 	private final Text field_25892;
 
-	public BookEditScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
+	public BookEditScreen(PlayerEntity player, ItemStack itemStack, Hand hand) {
 		super(NarratorManager.EMPTY);
-		this.player = playerEntity;
+		this.player = player;
 		this.itemStack = itemStack;
 		this.hand = hand;
 		CompoundTag compoundTag = itemStack.getTag();
@@ -101,16 +101,16 @@ public class BookEditScreen extends Screen {
 			this.pages.add("");
 		}
 
-		this.field_25892 = new TranslatableText("book.byAuthor", playerEntity.getName()).formatted(Formatting.DARK_GRAY);
+		this.field_25892 = new TranslatableText("book.byAuthor", player.getName()).formatted(Formatting.DARK_GRAY);
 	}
 
-	private void method_27584(String string) {
+	private void setClipboard(String clipboard) {
 		if (this.client != null) {
-			SelectionManager.setClipboard(this.client, string);
+			SelectionManager.setClipboard(this.client, clipboard);
 		}
 	}
 
-	private String method_27595() {
+	private String getClipboard() {
 		return this.client != null ? SelectionManager.getClipboard(this.client) : "";
 	}
 
@@ -246,8 +246,8 @@ public class BookEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
-		if (super.charTyped(chr, keyCode)) {
+	public boolean charTyped(char chr, int modifiers) {
+		if (super.charTyped(chr, modifiers)) {
 			return true;
 		} else if (this.signing) {
 			boolean bl = this.field_24270.insert(chr);

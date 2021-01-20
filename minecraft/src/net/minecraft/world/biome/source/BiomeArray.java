@@ -26,8 +26,8 @@ public class BiomeArray implements BiomeAccess.Storage {
 	protected BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView heightLimitView, Biome[] biomes) {
 		this.field_25831 = indexedIterable;
 		this.data = biomes;
-		this.field_28126 = class_5742.method_33100(heightLimitView.getSectionCount());
-		this.field_28127 = class_5742.method_33100(heightLimitView.getBottomSectionLimit()) - 1;
+		this.field_28126 = class_5742.method_33100(heightLimitView.getBottomSectionLimit());
+		this.field_28127 = class_5742.method_33100(heightLimitView.getSectionCount()) - 1;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -54,7 +54,7 @@ public class BiomeArray implements BiomeAccess.Storage {
 		this(
 			indexedIterable,
 			heightLimitView,
-			new Biome[(1 << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT) * method_32915(heightLimitView.getBottomSectionLimit(), 4)]
+			new Biome[(1 << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT) * method_32915(heightLimitView.getSectionCount(), 4)]
 		);
 		int i = class_5742.method_33100(chunkPos.getStartX());
 		int j = this.field_28126;

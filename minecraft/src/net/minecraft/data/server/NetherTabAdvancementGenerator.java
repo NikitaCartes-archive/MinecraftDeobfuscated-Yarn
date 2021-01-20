@@ -509,7 +509,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 					field_25712,
 					ItemPredicate.Builder.create().tag(ItemTags.PIGLIN_LOVED),
 					EntityPredicate.Extended.ofLegacy(
-						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
+						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
 					)
 				)
 			)
@@ -519,7 +519,7 @@ public class NetherTabAdvancementGenerator implements Consumer<Consumer<Advancem
 					field_25712,
 					ItemPredicate.Builder.create().item(PiglinBrain.BARTERING_ITEM),
 					EntityPredicate.Extended.ofLegacy(
-						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().method_29935(false).build()).build()
+						EntityPredicate.Builder.create().type(EntityType.PIGLIN).flags(EntityFlagsPredicate.Builder.create().isBaby(false).build()).build()
 					)
 				)
 			)

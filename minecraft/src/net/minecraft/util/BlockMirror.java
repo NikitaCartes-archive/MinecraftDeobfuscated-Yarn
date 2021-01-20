@@ -12,11 +12,11 @@ public enum BlockMirror {
 	LEFT_RIGHT(new TranslatableText("mirror.left_right"), DirectionTransformation.INVERT_Z),
 	FRONT_BACK(new TranslatableText("mirror.front_back"), DirectionTransformation.INVERT_X);
 
-	private final Text field_27883;
+	private final Text name;
 	private final DirectionTransformation directionTransformation;
 
-	private BlockMirror(Text text, DirectionTransformation directionTransformation) {
-		this.field_27883 = text;
+	private BlockMirror(Text name, DirectionTransformation directionTransformation) {
+		this.name = name;
 		this.directionTransformation = directionTransformation;
 	}
 
@@ -53,7 +53,7 @@ public enum BlockMirror {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_32354() {
-		return this.field_27883;
+	public Text getName() {
+		return this.name;
 	}
 }

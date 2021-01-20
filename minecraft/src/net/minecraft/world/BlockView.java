@@ -39,24 +39,24 @@ public interface BlockView extends HeightLimitView {
 		return BlockPos.stream(box).map(this::getBlockState);
 	}
 
-	default BlockHitResult raycast(BlockStateRaycastContext blockStateRaycastContext) {
+	default BlockHitResult raycast(BlockStateRaycastContext context) {
 		return raycast(
-			blockStateRaycastContext.getStart(),
-			blockStateRaycastContext.getEnd(),
-			blockStateRaycastContext,
-			(blockStateRaycastContextx, blockPos) -> {
+			context.getStart(),
+			context.getEnd(),
+			context,
+			(blockStateRaycastContext, blockPos) -> {
 				BlockState blockState = this.getBlockState(blockPos);
-				Vec3d vec3d = blockStateRaycastContextx.getStart().subtract(blockStateRaycastContextx.getEnd());
-				return blockStateRaycastContextx.getState().test(blockState)
+				Vec3d vec3d = blockStateRaycastContext.getStart().subtract(blockStateRaycastContext.getEnd());
+				return blockStateRaycastContext.getState().test(blockState)
 					? new BlockHitResult(
-						blockStateRaycastContextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContextx.getEnd()), false
+						blockStateRaycastContext.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContext.getEnd()), false
 					)
 					: null;
 			},
-			blockStateRaycastContextx -> {
-				Vec3d vec3d = blockStateRaycastContextx.getStart().subtract(blockStateRaycastContextx.getEnd());
+			blockStateRaycastContext -> {
+				Vec3d vec3d = blockStateRaycastContext.getStart().subtract(blockStateRaycastContext.getEnd());
 				return BlockHitResult.createMissed(
-					blockStateRaycastContextx.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContextx.getEnd())
+					blockStateRaycastContext.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContext.getEnd())
 				);
 			}
 		);

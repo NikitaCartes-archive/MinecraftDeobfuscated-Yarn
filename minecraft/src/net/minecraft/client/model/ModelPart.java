@@ -69,6 +69,12 @@ public final class ModelPart {
 		this.pivotZ = z;
 	}
 
+	public void method_33425(float f, float g, float h) {
+		this.pitch = f;
+		this.yaw = g;
+		this.roll = h;
+	}
+
 	public void render(MatrixStack matrices, VertexConsumer vertices, int light, int overlay) {
 		this.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 	}

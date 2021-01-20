@@ -209,8 +209,8 @@ public class UnmodifiableLevelProperties implements ServerWorldProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
+	public void populateCrashReport(CrashReportSection reportSection, HeightLimitView world) {
 		reportSection.add("Derived", true);
-		this.worldProperties.populateCrashReport(reportSection, heightLimitView);
+		this.worldProperties.populateCrashReport(reportSection, world);
 	}
 }

@@ -222,13 +222,13 @@ public class PistonBlock extends FacingBlock {
 	}
 
 	public static boolean isMovable(BlockState state, World world, BlockPos pos, Direction direction, boolean canBreak, Direction pistonDir) {
-		if (pos.getY() < world.getSectionCount() || pos.getY() > world.getTopHeightLimit() - 1 || !world.getWorldBorder().contains(pos)) {
+		if (pos.getY() < world.getBottomSectionLimit() || pos.getY() > world.getTopHeightLimit() - 1 || !world.getWorldBorder().contains(pos)) {
 			return false;
 		} else if (state.isAir()) {
 			return true;
 		} else if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR)) {
 			return false;
-		} else if (direction == Direction.DOWN && pos.getY() == world.getSectionCount()) {
+		} else if (direction == Direction.DOWN && pos.getY() == world.getBottomSectionLimit()) {
 			return false;
 		} else if (direction == Direction.UP && pos.getY() == world.getTopHeightLimit() - 1) {
 			return false;

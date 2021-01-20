@@ -48,9 +48,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	private float integrity = 1.0F;
 	private long seed;
 
-	public StructureBlockBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.STRUCTURE_BLOCK, blockPos, blockState);
-		this.mode = blockState.get(StructureBlock.MODE);
+	public StructureBlockBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.STRUCTURE_BLOCK, pos, state);
+		this.mode = state.get(StructureBlock.MODE);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -179,8 +179,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.setStructureName(ChatUtil.isEmpty(name) ? null : Identifier.tryParse(name));
 	}
 
-	public void setStructureName(@Nullable Identifier identifier) {
-		this.structureName = identifier;
+	public void setStructureName(@Nullable Identifier structureName) {
+		this.structureName = structureName;
 	}
 
 	public void setAuthor(LivingEntity entity) {
@@ -385,17 +385,17 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		}
 	}
 
-	public boolean loadStructure(ServerWorld serverWorld) {
-		return this.loadStructure(serverWorld, true);
+	public boolean loadStructure(ServerWorld world) {
+		return this.loadStructure(world, true);
 	}
 
 	private static Random createRandom(long seed) {
 		return seed == 0L ? new Random(Util.getMeasuringTimeMs()) : new Random(seed);
 	}
 
-	public boolean loadStructure(ServerWorld serverWorld, boolean bl) {
+	public boolean loadStructure(ServerWorld world, boolean bl) {
 		if (this.mode == StructureBlockMode.LOAD && this.structureName != null) {
-			StructureManager structureManager = serverWorld.getStructureManager();
+			StructureManager structureManager = world.getStructureManager();
 
 			Structure structure;
 			try {
@@ -404,13 +404,13 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				return false;
 			}
 
-			return structure == null ? false : this.place(serverWorld, bl, structure);
+			return structure == null ? false : this.place(world, bl, structure);
 		} else {
 			return false;
 		}
 	}
 
-	public boolean place(ServerWorld serverWorld, boolean bl, Structure structure) {
+	public boolean place(ServerWorld world, boolean bl, Structure structure) {
 		BlockPos blockPos = this.getPos();
 		if (!ChatUtil.isEmpty(structure.getAuthor())) {
 			this.author = structure.getAuthor();
@@ -421,8 +421,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		if (!bl2) {
 			this.size = blockPos2;
 			this.markDirty();
-			BlockState blockState = serverWorld.getBlockState(blockPos);
-			serverWorld.updateListeners(blockPos, blockState, blockState, 3);
+			BlockState blockState = world.getBlockState(blockPos);
+			world.updateListeners(blockPos, blockState, blockState, 3);
 		}
 
 		if (bl && !bl2) {
@@ -439,7 +439,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			}
 
 			BlockPos blockPos3 = blockPos.add(this.offset);
-			structure.place(serverWorld, blockPos3, blockPos3, structurePlacementData, createRandom(this.seed), 2);
+			structure.place(world, blockPos3, blockPos3, structurePlacementData, createRandom(this.seed), 2);
 			return true;
 		}
 	}

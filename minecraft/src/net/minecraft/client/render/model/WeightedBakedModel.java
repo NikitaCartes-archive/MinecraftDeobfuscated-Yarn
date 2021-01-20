@@ -1,6 +1,7 @@
 package net.minecraft.client.render.model;
 
 import com.google.common.collect.Lists;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nullable;
@@ -27,7 +28,9 @@ public class WeightedBakedModel implements BakedModel {
 
 	@Override
 	public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
-		return WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight).model.getQuads(state, face, random);
+		return (List<BakedQuad>)WeightedPicker.getAt(this.models, Math.abs((int)random.nextLong()) % this.totalWeight)
+			.map(entry -> entry.model.getQuads(state, face, random))
+			.orElse(Collections.emptyList());
 	}
 
 	@Override

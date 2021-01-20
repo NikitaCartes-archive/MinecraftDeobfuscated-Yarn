@@ -14,12 +14,12 @@ public abstract class AbstractBeeSoundInstance extends MovingSoundInstance {
 	protected final BeeEntity bee;
 	private boolean replaced;
 
-	public AbstractBeeSoundInstance(BeeEntity beeEntity, SoundEvent soundEvent, SoundCategory soundCategory) {
-		super(soundEvent, soundCategory);
-		this.bee = beeEntity;
-		this.x = (double)((float)beeEntity.getX());
-		this.y = (double)((float)beeEntity.getY());
-		this.z = (double)((float)beeEntity.getZ());
+	public AbstractBeeSoundInstance(BeeEntity entity, SoundEvent sound, SoundCategory soundCategory) {
+		super(sound, soundCategory);
+		this.bee = entity;
+		this.x = (double)((float)entity.getX());
+		this.y = (double)((float)entity.getY());
+		this.z = (double)((float)entity.getZ());
 		this.repeat = true;
 		this.repeatDelay = 0;
 		this.volume = 0.0F;

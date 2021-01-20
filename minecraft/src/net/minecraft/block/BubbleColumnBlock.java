@@ -191,7 +191,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public Optional<SoundEvent> getDrainSound() {
-		return Fluids.WATER.getFillSound();
+	public Optional<SoundEvent> getBucketFillSound() {
+		return Fluids.WATER.getBucketFillSound();
 	}
 }

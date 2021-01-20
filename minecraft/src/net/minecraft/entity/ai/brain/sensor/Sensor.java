@@ -38,7 +38,7 @@ public abstract class Sensor<E extends LivingEntity> {
 
 	public abstract Set<MemoryModuleType<?>> getOutputMemoryModules();
 
-	protected static boolean method_30954(LivingEntity entity, LivingEntity target) {
+	protected static boolean testTargetPredicate(LivingEntity entity, LivingEntity target) {
 		return entity.getBrain().hasMemoryModuleWithValue(MemoryModuleType.ATTACK_TARGET, target)
 			? TARGET_PREDICATE_IGNORE_DISTANCE_SCALING.test(entity, target)
 			: TARGET_PREDICATE.test(entity, target);

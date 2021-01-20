@@ -333,7 +333,7 @@ public class LevelStorage {
 
 		public boolean needsConversion() {
 			LevelSummary levelSummary = this.getLevelSummary();
-			return levelSummary != null && levelSummary.method_29586().getLevelFormatVersion() != LevelStorage.this.getCurrentVersion();
+			return levelSummary != null && levelSummary.getVersionInfo().getLevelFormatVersion() != LevelStorage.this.getCurrentVersion();
 		}
 
 		public boolean convert(ProgressListener progressListener) {

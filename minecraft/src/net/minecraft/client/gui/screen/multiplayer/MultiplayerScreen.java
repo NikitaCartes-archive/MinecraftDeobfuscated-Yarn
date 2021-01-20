@@ -249,8 +249,8 @@ public class MultiplayerScreen extends Screen {
 		return this.serverListPinger;
 	}
 
-	public void setTooltip(List<Text> list) {
-		this.tooltipText = list;
+	public void setTooltip(List<Text> tooltipText) {
+		this.tooltipText = tooltipText;
 	}
 
 	public ServerList getServerList() {

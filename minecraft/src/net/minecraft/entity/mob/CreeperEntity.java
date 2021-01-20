@@ -84,8 +84,8 @@ public class CreeperEntity extends HostileEntity implements SkinOverlayOwner {
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
-		boolean bl = super.handleFallDamage(fallDistance, damageMultiplier);
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+		boolean bl = super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 		this.currentFuseTime = (int)((float)this.currentFuseTime + fallDistance * 1.5F);
 		if (this.currentFuseTime > this.fuseTime - 5) {
 			this.currentFuseTime = this.fuseTime - 5;

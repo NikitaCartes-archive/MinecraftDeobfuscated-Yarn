@@ -123,6 +123,8 @@ public class ItemModelGenerator {
 		this.register(Items.GLISTERING_MELON_SLICE, Models.GENERATED);
 		this.register(Items.GLOBE_BANNER_PATTERN, Models.GENERATED);
 		this.register(Items.GLOWSTONE_DUST, Models.GENERATED);
+		this.register(Items.GLOW_INK_SAC, Models.GENERATED);
+		this.register(Items.GLOW_ITEM_FRAME, Models.GENERATED);
 		this.register(Items.GOLDEN_APPLE, Models.GENERATED);
 		this.register(Items.GOLDEN_AXE, Models.HANDHELD);
 		this.register(Items.GOLDEN_BOOTS, Models.GENERATED);

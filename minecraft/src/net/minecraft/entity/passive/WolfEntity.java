@@ -199,7 +199,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 				this.furWet = true;
 				if (this.canShakeWaterOff && !this.world.isClient) {
 					this.world.sendEntityStatus(this, (byte)56);
-					this.method_31167();
+					this.resetShake();
 				}
 			} else if ((this.furWet || this.canShakeWaterOff) && this.canShakeWaterOff) {
 				if (this.shakeProgress == 0.0F) {
@@ -231,7 +231,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 		}
 	}
 
-	private void method_31167() {
+	private void resetShake() {
 		this.canShakeWaterOff = false;
 		this.shakeProgress = 0.0F;
 		this.lastShakeProgress = 0.0F;
@@ -405,7 +405,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 			this.shakeProgress = 0.0F;
 			this.lastShakeProgress = 0.0F;
 		} else if (status == 56) {
-			this.method_31167();
+			this.resetShake();
 		} else {
 			super.handleStatus(status);
 		}

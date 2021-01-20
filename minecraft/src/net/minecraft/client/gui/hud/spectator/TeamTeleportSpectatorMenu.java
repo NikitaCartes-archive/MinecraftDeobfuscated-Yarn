@@ -54,9 +54,9 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 	}
 
 	@Override
-	public void renderIcon(MatrixStack matrixStack, float f, int i) {
+	public void renderIcon(MatrixStack matrices, float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
-		DrawableHelper.drawTexture(matrixStack, 0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
+		DrawableHelper.drawTexture(matrices, 0, 0, 16.0F, 0.0F, 16, 16, 256, 256);
 	}
 
 	@Override
@@ -107,19 +107,19 @@ public class TeamTeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spe
 		}
 
 		@Override
-		public void renderIcon(MatrixStack matrixStack, float f, int i) {
+		public void renderIcon(MatrixStack matrices, float f, int i) {
 			Integer integer = this.team.getColor().getColorValue();
 			if (integer != null) {
 				float g = (float)(integer >> 16 & 0xFF) / 255.0F;
 				float h = (float)(integer >> 8 & 0xFF) / 255.0F;
 				float j = (float)(integer & 0xFF) / 255.0F;
-				DrawableHelper.fill(matrixStack, 1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
+				DrawableHelper.fill(matrices, 1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
 			}
 
 			MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
 			RenderSystem.color4f(f, f, f, (float)i / 255.0F);
-			DrawableHelper.drawTexture(matrixStack, 2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
-			DrawableHelper.drawTexture(matrixStack, 2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
+			DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
+			DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
 		}
 
 		@Override

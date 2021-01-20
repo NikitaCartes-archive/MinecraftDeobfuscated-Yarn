@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class TaigaVillageData {
-	public static final StructurePool field_26341 = StructurePools.register(
+	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
 		new StructurePool(
 			new Identifier("village/taiga/town_centers"),
 			new Identifier("empty"),

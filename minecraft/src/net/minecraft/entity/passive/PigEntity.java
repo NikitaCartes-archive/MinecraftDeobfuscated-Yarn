@@ -64,7 +64,7 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 		this.goalSelector.add(1, new EscapeDangerGoal(this, 1.25));
 		this.goalSelector.add(3, new AnimalMateGoal(this, 1.0));
 		this.goalSelector.add(4, new TemptGoal(this, 1.2, Ingredient.ofItems(Items.CARROT_ON_A_STICK), false));
-		this.goalSelector.add(4, new TemptGoal(this, 1.2, false, BREEDING_INGREDIENT));
+		this.goalSelector.add(4, new TemptGoal(this, 1.2, BREEDING_INGREDIENT, false));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
 		this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));

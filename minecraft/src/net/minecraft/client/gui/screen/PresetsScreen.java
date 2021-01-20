@@ -46,14 +46,14 @@ import org.apache.logging.log4j.Logger;
 public class PresetsScreen extends Screen {
 	private static final Logger field_25043 = LogManager.getLogger();
 	private static final List<PresetsScreen.SuperflatPreset> PRESETS = Lists.<PresetsScreen.SuperflatPreset>newArrayList();
-	private static final RegistryKey<Biome> field_27985 = BiomeKeys.PLAINS;
+	private static final RegistryKey<Biome> BIOME_KEY = BiomeKeys.PLAINS;
 	private final CustomizeFlatLevelScreen parent;
 	private Text shareText;
 	private Text listText;
 	private PresetsScreen.SuperflatPresetsListWidget listWidget;
 	private ButtonWidget selectPresetButton;
 	private TextFieldWidget customPresetField;
-	private FlatChunkGeneratorConfig field_25044;
+	private FlatChunkGeneratorConfig config;
 
 	public PresetsScreen(CustomizeFlatLevelScreen parent) {
 		super(new TranslatableText("createWorld.customize.presets.title"));
@@ -125,7 +125,7 @@ public class PresetsScreen extends Screen {
 				return FlatChunkGeneratorConfig.getDefaultConfig(registry);
 			} else {
 				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getStructuresConfig());
-				RegistryKey<Biome> registryKey = field_27985;
+				RegistryKey<Biome> registryKey = BIOME_KEY;
 				if (iterator.hasNext()) {
 					try {
 						Identifier identifier = new Identifier((String)iterator.next());
@@ -133,7 +133,7 @@ public class PresetsScreen extends Screen {
 						registry.getOrEmpty(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
 					} catch (Exception var8) {
 						field_25043.error("Error while parsing flat world string => {}", var8.getMessage());
-						registryKey = field_27985;
+						registryKey = BIOME_KEY;
 					}
 				}
 
@@ -168,15 +168,15 @@ public class PresetsScreen extends Screen {
 		this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
 		this.customPresetField.setMaxLength(1230);
 		Registry<Biome> registry = this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
-		this.customPresetField.setText(method_29062(registry, this.parent.method_29055()));
-		this.field_25044 = this.parent.method_29055();
+		this.customPresetField.setText(method_29062(registry, this.parent.getConfig()));
+		this.config = this.parent.getConfig();
 		this.children.add(this.customPresetField);
 		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget();
 		this.children.add(this.listWidget);
 		this.selectPresetButton = this.addButton(
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
-				FlatChunkGeneratorConfig flatChunkGeneratorConfig = method_29060(registry, this.customPresetField.getText(), this.field_25044);
-				this.parent.method_29054(flatChunkGeneratorConfig);
+				FlatChunkGeneratorConfig flatChunkGeneratorConfig = method_29060(registry, this.customPresetField.getText(), this.config);
+				this.parent.setConfig(flatChunkGeneratorConfig);
 				this.client.openScreen(this.parent);
 			})
 		);
@@ -466,8 +466,8 @@ public class PresetsScreen extends Screen {
 				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.PRESETS
 					.get(SuperflatPresetsListWidget.this.children().indexOf(this));
 				Registry<Biome> registry = PresetsScreen.this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
-				PresetsScreen.this.field_25044 = (FlatChunkGeneratorConfig)superflatPreset.field_25045.apply(registry);
-				PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(registry, PresetsScreen.this.field_25044));
+				PresetsScreen.this.config = (FlatChunkGeneratorConfig)superflatPreset.field_25045.apply(registry);
+				PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(registry, PresetsScreen.this.config));
 				PresetsScreen.this.customPresetField.setCursorToStart();
 			}
 

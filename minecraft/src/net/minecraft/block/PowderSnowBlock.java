@@ -106,7 +106,7 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public Optional<SoundEvent> getDrainSound() {
+	public Optional<SoundEvent> getBucketFillSound() {
 		return Optional.of(SoundEvents.ITEM_BUCKET_FILL_POWDER_SNOW);
 	}
 }

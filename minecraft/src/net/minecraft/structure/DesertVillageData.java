@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class DesertVillageData {
-	public static final StructurePool field_25948 = StructurePools.register(
+	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
 		new StructurePool(
 			new Identifier("village/desert/town_centers"),
 			new Identifier("empty"),

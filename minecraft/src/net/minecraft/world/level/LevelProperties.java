@@ -100,7 +100,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		int wanderingTraderSpawnDelay,
 		int wanderingTraderSpawnChance,
 		@Nullable UUID wanderingTraderId,
-		Set<String> set,
+		Set<String> serverBrands,
 		Timer<MinecraftServer> scheduledEvents,
 		@Nullable CompoundTag customBossEvents,
 		CompoundTag dragonFight,
@@ -128,7 +128,7 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 		this.wanderingTraderSpawnDelay = wanderingTraderSpawnDelay;
 		this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
 		this.wanderingTraderId = wanderingTraderId;
-		this.serverBrands = set;
+		this.serverBrands = serverBrands;
 		this.playerData = playerData;
 		this.dataVersion = dataVersion;
 		this.scheduledEvents = scheduledEvents;
@@ -511,8 +511,8 @@ public class LevelProperties implements ServerWorldProperties, SaveProperties {
 	}
 
 	@Override
-	public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
-		ServerWorldProperties.super.populateCrashReport(reportSection, heightLimitView);
+	public void populateCrashReport(CrashReportSection reportSection, HeightLimitView world) {
+		ServerWorldProperties.super.populateCrashReport(reportSection, world);
 		SaveProperties.super.populateCrashReport(reportSection);
 	}
 

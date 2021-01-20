@@ -228,7 +228,7 @@ public abstract class GeneratorType {
 
 	protected abstract ChunkGenerator getChunkGenerator(Registry<Biome> biomeRegistry, Registry<ChunkGeneratorSettings> chunkGeneratorSettingsRegistry, long seed);
 
-	public static boolean method_32685(GeneratorType generatorType) {
+	public static boolean isNotDebug(GeneratorType generatorType) {
 		return generatorType != DEBUG_ALL_BLOCK_STATES;
 	}
 

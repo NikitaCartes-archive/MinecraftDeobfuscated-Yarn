@@ -528,7 +528,7 @@ public class ServerPlayNetworkHandler implements class_5629, ServerPlayPacketLis
 
 				commandBlockBlockEntity.setAuto(packet.isAlwaysActive());
 				if (type != packet.getType()) {
-					commandBlockBlockEntity.method_23359();
+					commandBlockBlockEntity.updateCommandBlock();
 				}
 
 				commandBlockExecutor.markDirty();

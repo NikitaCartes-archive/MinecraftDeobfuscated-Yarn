@@ -1,6 +1,6 @@
 package net.minecraft.client.texture;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -34,10 +34,7 @@ public final class MissingSprite extends Sprite {
 		return nativeImage;
 	});
 	private static final Sprite.Info INFO = new Sprite.Info(
-		MISSINGNO,
-		16,
-		16,
-		new AnimationResourceMetadata(Lists.<AnimationFrameResourceMetadata>newArrayList(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false)
+		MISSINGNO, 16, 16, new AnimationResourceMetadata(ImmutableList.of(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false)
 	);
 
 	private MissingSprite(SpriteAtlasTexture spriteAtlasTexture, int maxLevel, int atlasWidth, int atlasHeight, int x, int y) {

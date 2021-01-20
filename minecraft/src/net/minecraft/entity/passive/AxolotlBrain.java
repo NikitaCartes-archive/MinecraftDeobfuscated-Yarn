@@ -40,7 +40,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.math.IntRange;
 
 public class AxolotlBrain {
-	private static final IntRange field_28351 = IntRange.between(5, 16);
+	private static final IntRange WALK_TOWARD_ADULT_RANGE = IntRange.between(5, 16);
 
 	protected static Brain<?> create(Brain<AxolotlEntity> brain) {
 		addCoreActivities(brain);
@@ -93,7 +93,7 @@ public class AxolotlBrain {
 						ImmutableList.of(
 							Pair.of(new BreedTask(EntityType.AXOLOTL, 0.2F), 1),
 							Pair.of(new TemptTask(AxolotlBrain::method_33248), 1),
-							Pair.of(new WalkTowardClosestAdultTask<>(field_28351, AxolotlBrain::method_33245), 1)
+							Pair.of(new WalkTowardClosestAdultTask<>(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::method_33245), 1)
 						)
 					)
 				),

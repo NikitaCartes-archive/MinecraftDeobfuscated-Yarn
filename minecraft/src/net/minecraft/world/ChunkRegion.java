@@ -63,7 +63,7 @@ public class ChunkRegion implements StructureWorldAccess {
 	private final BiomeAccess biomeAccess;
 	private final ChunkPos lowerCorner;
 	private final ChunkPos upperCorner;
-	private final StructureAccessor field_26822;
+	private final StructureAccessor structureAccessor;
 
 	public ChunkRegion(ServerWorld world, List<Chunk> chunks) {
 		int i = MathHelper.floor(Math.sqrt((double)chunks.size()));
@@ -83,7 +83,7 @@ public class ChunkRegion implements StructureWorldAccess {
 			this.biomeAccess = new BiomeAccess(this, BiomeAccess.hashSeed(this.seed), world.getDimension().getBiomeAccessType());
 			this.lowerCorner = ((Chunk)chunks.get(0)).getPos();
 			this.upperCorner = ((Chunk)chunks.get(chunks.size() - 1)).getPos();
-			this.field_26822 = world.getStructureAccessor().forRegion(this);
+			this.structureAccessor = world.getStructureAccessor().forRegion(this);
 		}
 	}
 
@@ -392,16 +392,16 @@ public class ChunkRegion implements StructureWorldAccess {
 
 	@Override
 	public Stream<? extends StructureStart<?>> getStructures(ChunkSectionPos pos, StructureFeature<?> feature) {
-		return this.field_26822.getStructuresWithChildren(pos, feature);
-	}
-
-	@Override
-	public int getSectionCount() {
-		return this.world.getSectionCount();
+		return this.structureAccessor.getStructuresWithChildren(pos, feature);
 	}
 
 	@Override
 	public int getBottomSectionLimit() {
 		return this.world.getBottomSectionLimit();
+	}
+
+	@Override
+	public int getSectionCount() {
+		return this.world.getSectionCount();
 	}
 }

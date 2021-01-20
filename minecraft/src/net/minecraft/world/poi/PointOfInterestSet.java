@@ -49,9 +49,9 @@ public class PointOfInterestSet {
 		this(updateListener, true, ImmutableList.of());
 	}
 
-	private PointOfInterestSet(Runnable updateListener, boolean bl, List<PointOfInterest> list) {
+	private PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> list) {
 		this.updateListener = updateListener;
-		this.valid = bl;
+		this.valid = valid;
 		list.forEach(this::add);
 	}
 
@@ -79,14 +79,14 @@ public class PointOfInterestSet {
 		if (pointOfInterest != null) {
 			if (pointOfInterestType.equals(pointOfInterest.getType())) {
 				return false;
-			} else {
-				throw (IllegalStateException)Util.throwOrPause(new IllegalStateException("POI data mismatch: already registered at " + blockPos));
 			}
-		} else {
-			this.pointsOfInterestByPos.put(s, poi);
-			((Set)this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType, pointOfInterestTypex -> Sets.newHashSet())).add(poi);
-			return true;
+
+			Util.method_33559("POI data mismatch: already registered at " + blockPos);
 		}
+
+		this.pointsOfInterestByPos.put(s, poi);
+		((Set)this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType, pointOfInterestTypex -> Sets.newHashSet())).add(poi);
+		return true;
 	}
 
 	public void remove(BlockPos pos) {

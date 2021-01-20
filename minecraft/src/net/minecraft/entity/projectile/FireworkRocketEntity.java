@@ -144,13 +144,13 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 			this.setVelocity(vec3d);
 		}
 
-		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
+		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
 		if (!this.noClip) {
 			this.onCollision(hitResult);
 			this.velocityDirty = true;
 		}
 
-		this.method_26962();
+		this.updateRotation();
 		if (this.life == 0 && !this.isSilent()) {
 			this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_FIREWORK_ROCKET_LAUNCH, SoundCategory.AMBIENT, 3.0F, 1.0F);
 		}

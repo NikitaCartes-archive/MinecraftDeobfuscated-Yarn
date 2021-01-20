@@ -29,7 +29,7 @@ public interface ResourceManager {
 	 * <p>Starts by scanning each resource pack from highest priority to lowest. If no resource packs were found
 	 * to contain the requested entry, will throw a {@code FileNotFoundException}.
 	 * 
-	 * @throws FileNotFoundException if the identified resource could not be found, or could not be loaded.
+	 * @throws java.io.FileNotFoundException if the identified resource could not be found, or could not be loaded.
 	 * @throws IOException if the identified resource was found but a stream to it could not be opened.
 	 * 
 	 * @param id the resource identifier to search for
@@ -53,7 +53,7 @@ public interface ResourceManager {
 	 * <p>Resources are returned in load order, or ascending order of priority, so the last element in the returned
 	 * list is what would be returned normally by {@link #getResource}
 	 * 
-	 * @throws FileNotFoundException if no matching resources could be found (i.e. if the list would be empty)
+	 * @throws java.io.FileNotFoundException if no matching resources could be found (i.e. if the list would be empty)
 	 * @throws IOException if resources were found, but any one of them could not be opened to be read.
 	 * 
 	 * @param id the resource identifier to search for

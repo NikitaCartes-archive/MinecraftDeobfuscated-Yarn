@@ -90,7 +90,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	@Override
 	public void tick() {
 		if (!this.world.isClient) {
-			this.destroyInVoid();
+			this.attemptTickInVoid();
 			if (this.obstructionCheckCounter++ == 100) {
 				this.obstructionCheckCounter = 0;
 				if (!this.isRemoved() && !this.canStayAttached()) {

@@ -27,8 +27,8 @@ public class ServerResourceManager implements AutoCloseable {
 	private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootConditionManager);
 	private final FunctionLoader functionLoader;
 
-	public ServerResourceManager(DynamicRegistryManager dynamicRegistryManager, CommandManager.RegistrationEnvironment registrationEnvironment, int i) {
-		this.registryTagManager = new TagManagerLoader(dynamicRegistryManager);
+	public ServerResourceManager(DynamicRegistryManager registryManager, CommandManager.RegistrationEnvironment registrationEnvironment, int i) {
+		this.registryTagManager = new TagManagerLoader(registryManager);
 		this.commandManager = new CommandManager(registrationEnvironment);
 		this.functionLoader = new FunctionLoader(i, this.commandManager.getDispatcher());
 		this.resourceManager.registerListener(this.registryTagManager);
@@ -78,13 +78,13 @@ public class ServerResourceManager implements AutoCloseable {
 
 	public static CompletableFuture<ServerResourceManager> reload(
 		List<ResourcePack> packs,
-		DynamicRegistryManager dynamicRegistryManager,
+		DynamicRegistryManager registryManager,
 		CommandManager.RegistrationEnvironment registrationEnvironment,
 		int i,
 		Executor executor,
 		Executor executor2
 	) {
-		ServerResourceManager serverResourceManager = new ServerResourceManager(dynamicRegistryManager, registrationEnvironment, i);
+		ServerResourceManager serverResourceManager = new ServerResourceManager(registryManager, registrationEnvironment, i);
 		CompletableFuture<Unit> completableFuture = serverResourceManager.resourceManager.beginReload(executor, executor2, packs, field_25334);
 		return completableFuture.whenComplete((unit, throwable) -> {
 			if (throwable != null) {

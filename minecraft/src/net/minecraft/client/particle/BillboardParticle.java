@@ -53,7 +53,7 @@ public abstract class BillboardParticle extends Particle {
 		float m = this.getMaxU();
 		float n = this.getMinV();
 		float o = this.getMaxV();
-		int p = this.getColorMultiplier(tickDelta);
+		int p = this.getBrightness(tickDelta);
 		vertexConsumer.vertex((double)vec3fs[0].getX(), (double)vec3fs[0].getY(), (double)vec3fs[0].getZ())
 			.texture(m, o)
 			.color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)

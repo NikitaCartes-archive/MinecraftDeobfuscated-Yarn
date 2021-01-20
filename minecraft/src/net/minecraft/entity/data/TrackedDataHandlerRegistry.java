@@ -21,7 +21,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.village.VillagerData;
 
 public class TrackedDataHandlerRegistry {
-	private static final Int2ObjectBiMap<TrackedDataHandler<?>> field_13328 = new Int2ObjectBiMap<>(16);
+	private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = new Int2ObjectBiMap<>(16);
 	public static final TrackedDataHandler<Byte> BYTE = new TrackedDataHandler<Byte>() {
 		public void write(PacketByteBuf packetByteBuf, Byte byte_) {
 			packetByteBuf.writeByte(byte_);
@@ -299,16 +299,16 @@ public class TrackedDataHandlerRegistry {
 	};
 
 	public static void register(TrackedDataHandler<?> handler) {
-		field_13328.add(handler);
+		DATA_HANDLERS.add(handler);
 	}
 
 	@Nullable
 	public static TrackedDataHandler<?> get(int id) {
-		return field_13328.get(id);
+		return DATA_HANDLERS.get(id);
 	}
 
 	public static int getId(TrackedDataHandler<?> handler) {
-		return field_13328.getRawId(handler);
+		return DATA_HANDLERS.getRawId(handler);
 	}
 
 	static {

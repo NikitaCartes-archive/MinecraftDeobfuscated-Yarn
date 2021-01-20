@@ -73,6 +73,7 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.DonkeyEntity;
 import net.minecraft.entity.passive.FoxEntity;
+import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -274,6 +275,16 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 	);
 	public static final EntityType<GiantEntity> GIANT = register(
 		"giant", EntityType.Builder.<GiantEntity>create(GiantEntity::new, SpawnGroup.MONSTER).setDimensions(3.6F, 12.0F).maxTrackingRange(10)
+	);
+	public static final EntityType<ItemFrameEntity> GLOW_ITEM_FRAME = register(
+		"glow_item_frame",
+		EntityType.Builder.<ItemFrameEntity>create(ItemFrameEntity::new, SpawnGroup.MISC)
+			.setDimensions(0.5F, 0.5F)
+			.maxTrackingRange(10)
+			.trackingTickInterval(Integer.MAX_VALUE)
+	);
+	public static final EntityType<GlowSquidEntity> GLOW_SQUID = register(
+		"glow_squid", EntityType.Builder.<GlowSquidEntity>create(GlowSquidEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.8F, 0.8F).maxTrackingRange(10)
 	);
 	public static final EntityType<GuardianEntity> GUARDIAN = register(
 		"guardian", EntityType.Builder.<GuardianEntity>create(GuardianEntity::new, SpawnGroup.MONSTER).setDimensions(0.85F, 0.85F).maxTrackingRange(8)
@@ -631,10 +642,10 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 		boolean summonable,
 		boolean fireImmune,
 		boolean spawnableFarFromPlayer,
-		ImmutableSet<Block> immutableSet,
-		EntityDimensions entityDimensions,
-		int i,
-		int j
+		ImmutableSet<Block> canSpawnInside,
+		EntityDimensions dimensions,
+		int maxTrackDistance,
+		int trackTickInterval
 	) {
 		this.factory = factory;
 		this.spawnGroup = spawnGroup;
@@ -642,24 +653,18 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 		this.saveable = saveable;
 		this.summonable = summonable;
 		this.fireImmune = fireImmune;
-		this.canSpawnInside = immutableSet;
-		this.dimensions = entityDimensions;
-		this.maxTrackDistance = i;
-		this.trackTickInterval = j;
+		this.canSpawnInside = canSpawnInside;
+		this.dimensions = dimensions;
+		this.maxTrackDistance = maxTrackDistance;
+		this.trackTickInterval = trackTickInterval;
 	}
 
 	@Nullable
 	public Entity spawnFromItemStack(
-		ServerWorld serverWorld,
-		@Nullable ItemStack stack,
-		@Nullable PlayerEntity player,
-		BlockPos pos,
-		SpawnReason spawnReason,
-		boolean alignPosition,
-		boolean invertY
+		ServerWorld world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY
 	) {
 		return this.spawn(
-			serverWorld,
+			world,
 			stack == null ? null : stack.getTag(),
 			stack != null && stack.hasCustomName() ? stack.getName() : null,
 			player,
@@ -672,7 +677,7 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 
 	@Nullable
 	public T spawn(
-		ServerWorld serverWorld,
+		ServerWorld world,
 		@Nullable CompoundTag itemTag,
 		@Nullable Text name,
 		@Nullable PlayerEntity player,
@@ -681,9 +686,9 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 		boolean alignPosition,
 		boolean invertY
 	) {
-		T entity = this.create(serverWorld, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
+		T entity = this.create(world, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
 		if (entity != null) {
-			serverWorld.spawnEntityAndPassengers(entity);
+			world.spawnEntityAndPassengers(entity);
 		}
 
 		return entity;
@@ -691,7 +696,7 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 
 	@Nullable
 	public T create(
-		ServerWorld serverWorld,
+		ServerWorld world,
 		@Nullable CompoundTag itemTag,
 		@Nullable Text name,
 		@Nullable PlayerEntity player,
@@ -700,26 +705,26 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 		boolean alignPosition,
 		boolean invertY
 	) {
-		T entity = this.create(serverWorld);
+		T entity = this.create(world);
 		if (entity == null) {
 			return null;
 		} else {
 			double d;
 			if (alignPosition) {
 				entity.setPosition((double)pos.getX() + 0.5, (double)(pos.getY() + 1), (double)pos.getZ() + 0.5);
-				d = getOriginY(serverWorld, pos, invertY, entity.getBoundingBox());
+				d = getOriginY(world, pos, invertY, entity.getBoundingBox());
 			} else {
 				d = 0.0;
 			}
 
 			entity.refreshPositionAndAngles(
-				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(serverWorld.random.nextFloat() * 360.0F), 0.0F
+				(double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0F), 0.0F
 			);
 			if (entity instanceof MobEntity) {
 				MobEntity mobEntity = (MobEntity)entity;
 				mobEntity.headYaw = mobEntity.yaw;
 				mobEntity.bodyYaw = mobEntity.yaw;
-				mobEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
+				mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
 				mobEntity.playAmbientSound();
 			}
 
@@ -727,7 +732,7 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 				entity.setCustomName(name);
 			}
 
-			loadFromEntityTag(serverWorld, player, entity, itemTag);
+			loadFromEntityTag(world, player, entity, itemTag);
 			return entity;
 		}
 	}
@@ -941,6 +946,7 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 			&& this != WITHER
 			&& this != BAT
 			&& this != ITEM_FRAME
+			&& this != GLOW_ITEM_FRAME
 			&& this != LEASH_KNOT
 			&& this != PAINTING
 			&& this != END_CRYSTAL

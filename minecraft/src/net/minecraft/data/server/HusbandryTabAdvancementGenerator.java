@@ -248,7 +248,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 			.criterion(
 				"safely_harvest_honey",
 				ItemUsedOnBlockCriterion.Conditions.create(
-					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().method_29233(BlockTags.BEEHIVES).build()).smokey(true),
+					LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().tag(BlockTags.BEEHIVES).build()).smokey(true),
 					ItemPredicate.Builder.create().item(Items.GLASS_BOTTLE)
 				)
 			)
@@ -301,7 +301,7 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 
 		task.criterion(
 			EntityType.getId(EntityType.TURTLE).toString(),
-			BredAnimalsCriterion.Conditions.method_29918(
+			BredAnimalsCriterion.Conditions.create(
 				EntityPredicate.Builder.create().type(EntityType.TURTLE).build(), EntityPredicate.Builder.create().type(EntityType.TURTLE).build(), EntityPredicate.ANY
 			)
 		);

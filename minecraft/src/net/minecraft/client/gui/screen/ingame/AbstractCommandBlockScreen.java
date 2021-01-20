@@ -68,7 +68,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.consoleCommandTextField = new TextFieldWidget(this.textRenderer, this.width / 2 - 150, 50, 300, 20, new TranslatableText("advMode.command")) {
 			@Override
 			protected MutableText getNarrationMessage() {
-				return super.getNarrationMessage().append(AbstractCommandBlockScreen.this.commandSuggestor.method_23958());
+				return super.getNarrationMessage().append(AbstractCommandBlockScreen.this.commandSuggestor.getNarration());
 			}
 		};
 		this.consoleCommandTextField.setMaxLength(32500);

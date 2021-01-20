@@ -8,21 +8,21 @@ public class ChunkUpdateState extends PersistentState {
 	private final LongSet all;
 	private final LongSet remaining;
 
-	private ChunkUpdateState(LongSet longSet, LongSet longSet2) {
-		this.all = longSet;
-		this.remaining = longSet2;
+	private ChunkUpdateState(LongSet all, LongSet remaining) {
+		this.all = all;
+		this.remaining = remaining;
 	}
 
 	public ChunkUpdateState() {
 		this(new LongOpenHashSet(), new LongOpenHashSet());
 	}
 
-	public static ChunkUpdateState method_32358(CompoundTag compoundTag) {
-		return new ChunkUpdateState(new LongOpenHashSet(compoundTag.getLongArray("All")), new LongOpenHashSet(compoundTag.getLongArray("Remaining")));
+	public static ChunkUpdateState fromNbt(CompoundTag tag) {
+		return new ChunkUpdateState(new LongOpenHashSet(tag.getLongArray("All")), new LongOpenHashSet(tag.getLongArray("Remaining")));
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag toNbt(CompoundTag tag) {
 		tag.putLongArray("All", this.all.toLongArray());
 		tag.putLongArray("Remaining", this.remaining.toLongArray());
 		return tag;

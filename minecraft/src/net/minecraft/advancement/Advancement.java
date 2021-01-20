@@ -227,15 +227,15 @@ public class Advancement {
 			return this;
 		}
 
-		public Advancement.Task criterion(String name, CriterionConditions criterionConditions) {
-			return this.criterion(name, new AdvancementCriterion(criterionConditions));
+		public Advancement.Task criterion(String name, CriterionConditions conditions) {
+			return this.criterion(name, new AdvancementCriterion(conditions));
 		}
 
-		public Advancement.Task criterion(String name, AdvancementCriterion advancementCriterion) {
+		public Advancement.Task criterion(String name, AdvancementCriterion criterion) {
 			if (this.criteria.containsKey(name)) {
 				throw new IllegalArgumentException("Duplicate criterion " + name);
 			} else {
-				this.criteria.put(name, advancementCriterion);
+				this.criteria.put(name, criterion);
 				return this;
 			}
 		}
@@ -258,7 +258,7 @@ public class Advancement {
 		}
 
 		public Advancement build(Identifier id) {
-			if (!this.findParent(identifier -> null)) {
+			if (!this.findParent(idx -> null)) {
 				throw new IllegalStateException("Tried to build incomplete advancement!");
 			} else {
 				if (this.requirements == null) {
@@ -269,8 +269,8 @@ public class Advancement {
 			}
 		}
 
-		public Advancement build(Consumer<Advancement> consumer, String string) {
-			Advancement advancement = this.build(new Identifier(string));
+		public Advancement build(Consumer<Advancement> consumer, String id) {
+			Advancement advancement = this.build(new Identifier(id));
 			consumer.accept(advancement);
 			return advancement;
 		}

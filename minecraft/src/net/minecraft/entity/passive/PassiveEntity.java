@@ -159,17 +159,17 @@ public abstract class PassiveEntity extends PathAwareEntity {
 		private final boolean babyAllowed;
 		private final float babyChance;
 
-		private PassiveData(boolean bl, float f) {
-			this.babyAllowed = bl;
-			this.babyChance = f;
+		private PassiveData(boolean babyAllowed, float babyChance) {
+			this.babyAllowed = babyAllowed;
+			this.babyChance = babyChance;
 		}
 
-		public PassiveData(boolean bl) {
-			this(bl, 0.05F);
+		public PassiveData(boolean babyAllowed) {
+			this(babyAllowed, 0.05F);
 		}
 
-		public PassiveData(float f) {
-			this(true, f);
+		public PassiveData(float babyChance) {
+			this(true, babyChance);
 		}
 
 		public int getSpawnedCount() {

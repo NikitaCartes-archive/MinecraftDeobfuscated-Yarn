@@ -54,8 +54,8 @@ public abstract class AbstractPhase implements Phase {
 	}
 
 	@Override
-	public float modifyDamageTaken(DamageSource damageSource, float f) {
-		return f;
+	public float modifyDamageTaken(DamageSource damageSource, float damage) {
+		return damage;
 	}
 
 	@Override
