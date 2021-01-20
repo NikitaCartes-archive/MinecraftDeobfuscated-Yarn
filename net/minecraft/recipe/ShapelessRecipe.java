@@ -70,7 +70,7 @@ implements CraftingRecipe {
             ItemStack itemStack = craftingInventory.getStack(j);
             if (itemStack.isEmpty()) continue;
             ++i;
-            recipeFinder.method_20478(itemStack, 1);
+            recipeFinder.addItem(itemStack, 1);
         }
         return i == this.input.size() && recipeFinder.findRecipe(this, null);
     }

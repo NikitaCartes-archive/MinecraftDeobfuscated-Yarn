@@ -45,13 +45,13 @@ implements HeightLimitView {
     }
 
     @Override
-    public int getSectionCount() {
-        return this.world.getSectionCount();
+    public int getBottomSectionLimit() {
+        return this.world.getBottomSectionLimit();
     }
 
     @Override
-    public int getBottomSectionLimit() {
-        return this.world.getBottomSectionLimit();
+    public int getSectionCount() {
+        return this.world.getSectionCount();
     }
 }
 

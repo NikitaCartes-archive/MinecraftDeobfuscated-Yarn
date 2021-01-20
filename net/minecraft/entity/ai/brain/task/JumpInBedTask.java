@@ -38,12 +38,12 @@ extends Task<MobEntity> {
     @Override
     protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
         super.run(serverWorld, mobEntity, l);
-        this.getNearestBed(mobEntity).ifPresent(blockPos -> {
-            this.bedPos = blockPos;
+        this.getNearestBed(mobEntity).ifPresent(pos -> {
+            this.bedPos = pos;
             this.ticksOutOfBedUntilStopped = 100;
             this.jumpsRemaining = 3 + serverWorld.random.nextInt(4);
             this.ticksToNextJump = 0;
-            this.setWalkTarget(mobEntity, (BlockPos)blockPos);
+            this.setWalkTarget(mobEntity, (BlockPos)pos);
         });
     }
 

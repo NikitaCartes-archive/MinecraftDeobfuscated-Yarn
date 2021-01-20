@@ -75,8 +75,8 @@ extends Screen {
     }
 
     @Override
-    public boolean charTyped(char chr, int keyCode) {
-        return this.searchBox.charTyped(chr, keyCode);
+    public boolean charTyped(char chr, int modifiers) {
+        return this.searchBox.charTyped(chr, modifiers);
     }
 
     @Override
@@ -91,8 +91,8 @@ extends Screen {
         }
     }
 
-    public void setTooltip(List<OrderedText> list) {
-        this.tooltipText = list;
+    public void setTooltip(List<OrderedText> tooltipText) {
+        this.tooltipText = tooltipText;
     }
 
     public void worldSelected(boolean active) {

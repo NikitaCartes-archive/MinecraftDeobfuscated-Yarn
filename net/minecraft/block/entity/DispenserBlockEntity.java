@@ -27,8 +27,8 @@ extends LootableContainerBlockEntity {
         super(blockEntityType, blockPos, blockState);
     }
 
-    public DispenserBlockEntity(BlockPos blockPos, BlockState blockState) {
-        this(BlockEntityType.DISPENSER, blockPos, blockState);
+    public DispenserBlockEntity(BlockPos pos, BlockState state) {
+        this(BlockEntityType.DISPENSER, pos, state);
     }
 
     @Override

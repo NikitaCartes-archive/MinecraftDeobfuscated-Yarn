@@ -44,6 +44,8 @@ extends Item {
             abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
         } else if (this.entityType == EntityType.ITEM_FRAME) {
             abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
+        } else if (this.entityType == EntityType.GLOW_ITEM_FRAME) {
+            abstractDecorationEntity = new ItemFrameEntity(EntityType.GLOW_ITEM_FRAME, world, blockPos2, direction);
         } else {
             return ActionResult.success(world.isClient);
         }

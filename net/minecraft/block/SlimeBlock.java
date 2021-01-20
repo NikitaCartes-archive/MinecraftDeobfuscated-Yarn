@@ -7,6 +7,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.TransparentBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
@@ -23,7 +24,7 @@ extends TransparentBlock {
         if (entity.bypassesLandingEffects()) {
             super.onLandedUpon(world, pos, entity, distance);
         } else {
-            entity.handleFallDamage(distance, 0.0f);
+            entity.handleFallDamage(distance, 0.0f, DamageSource.FALL);
         }
     }
 

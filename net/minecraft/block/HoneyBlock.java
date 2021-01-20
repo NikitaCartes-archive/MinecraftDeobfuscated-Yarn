@@ -15,6 +15,7 @@ import net.minecraft.block.TransparentBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.TntEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -50,7 +51,7 @@ extends TransparentBlock {
         if (!world.isClient) {
             world.sendEntityStatus(entity, (byte)54);
         }
-        if (entity.handleFallDamage(distance, 0.2f)) {
+        if (entity.handleFallDamage(distance, 0.2f, DamageSource.FALL)) {
             entity.playSound(this.soundGroup.getFallSound(), this.soundGroup.getVolume() * 0.5f, this.soundGroup.getPitch() * 0.75f);
         }
     }

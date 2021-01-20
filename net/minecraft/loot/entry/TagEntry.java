@@ -84,8 +84,8 @@ extends LeafEntry {
 
         @Override
         protected TagEntry fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, int i, int j, LootCondition[] lootConditions, LootFunction[] lootFunctions) {
-            Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "name"));
-            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier2, identifier -> new JsonParseException("Can't find tag: " + identifier));
+            Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "name"));
+            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> new JsonParseException("Can't find tag: " + id));
             boolean bl = JsonHelper.getBoolean(jsonObject, "expand");
             return new TagEntry(tag, bl, i, j, lootConditions, lootFunctions);
         }

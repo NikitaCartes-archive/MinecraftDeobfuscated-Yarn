@@ -39,10 +39,10 @@ extends AbstractSlowingParticle {
     }
 
     @Override
-    public int getColorMultiplier(float tint) {
+    public int getBrightness(float tint) {
         float f = ((float)this.age + tint) / (float)this.maxAge;
         f = MathHelper.clamp(f, 0.0f, 1.0f);
-        int i = super.getColorMultiplier(tint);
+        int i = super.getBrightness(tint);
         int j = i & 0xFF;
         int k = i >> 16 & 0xFF;
         if ((j += (int)(f * 15.0f * 16.0f)) > 240) {

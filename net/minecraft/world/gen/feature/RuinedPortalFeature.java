@@ -47,8 +47,8 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         return Start::new;
     }
 
-    private static boolean method_27209(BlockPos blockPos, Biome biome) {
-        return biome.getTemperature(blockPos) < 0.15f;
+    private static boolean isColdAt(BlockPos pos, Biome biome) {
+        return biome.getTemperature(pos) < 0.15f;
     }
 
     private static int method_27211(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean bl, int i, int j, BlockBox blockBox) {
@@ -74,7 +74,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             int n = 0;
             mutable.set(0, m, 0);
             for (VerticalBlockSample verticalBlockSample : list2) {
-                BlockState blockState = verticalBlockSample.method_32892(mutable);
+                BlockState blockState = verticalBlockSample.getState(mutable);
                 if (blockState == null || !type.getBlockPredicate().test(blockState) || ++n != 3) continue;
                 break block0;
             }
@@ -184,7 +184,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             int n = RuinedPortalFeature.method_27211(this.random, chunkGenerator, verticalPlacement, properties.airPocket, m, blockBox.getBlockCountY(), blockBox);
             BlockPos blockPos3 = new BlockPos(blockPos2.getX(), n, blockPos2.getZ());
             if (ruinedPortalFeatureConfig.portalType == Type.MOUNTAIN || ruinedPortalFeatureConfig.portalType == Type.OCEAN || ruinedPortalFeatureConfig.portalType == Type.STANDARD) {
-                properties.cold = RuinedPortalFeature.method_27209(blockPos3, biome);
+                properties.cold = RuinedPortalFeature.isColdAt(blockPos3, biome);
             }
             this.children.add(new RuinedPortalStructurePiece(blockPos3, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));
             this.setBoundingBoxFromChildren();

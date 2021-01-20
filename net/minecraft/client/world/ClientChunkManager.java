@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.world;
 
+import java.util.BitSet;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.BooleanSupplier;
 import net.fabricmc.api.EnvType;
@@ -87,7 +88,7 @@ extends ChunkManager {
     }
 
     @Nullable
-    public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask) {
+    public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, BitSet bitSet) {
         if (!this.chunks.isInRadius(x, z)) {
             LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", (Object)x, (Object)z);
             return null;
@@ -101,10 +102,10 @@ extends ChunkManager {
                 return null;
             }
             worldChunk = new WorldChunk(this.world, chunkPos, biomes);
-            worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
+            worldChunk.loadFromPacket(biomes, buf, tag, bitSet);
             this.chunks.set(i, worldChunk);
         } else {
-            worldChunk.loadFromPacket(biomes, buf, tag, verticalStripBitmask);
+            worldChunk.loadFromPacket(biomes, buf, tag, bitSet);
         }
         ChunkSection[] chunkSections = worldChunk.getSectionArray();
         LightingProvider lightingProvider = this.getLightingProvider();

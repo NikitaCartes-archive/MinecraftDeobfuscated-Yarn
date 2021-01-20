@@ -39,15 +39,15 @@ public enum RecipeBookGroup {
     public static final List<RecipeBookGroup> BLAST_FURNACE;
     public static final List<RecipeBookGroup> FURNACE;
     public static final List<RecipeBookGroup> CRAFTING;
-    public static final Map<RecipeBookGroup, List<RecipeBookGroup>> field_25783;
+    public static final Map<RecipeBookGroup, List<RecipeBookGroup>> SEARCH_MAP;
     private final List<ItemStack> icons;
 
     private RecipeBookGroup(ItemStack ... entries) {
         this.icons = ImmutableList.copyOf(entries);
     }
 
-    public static List<RecipeBookGroup> method_30285(RecipeBookCategory recipeBookCategory) {
-        switch (recipeBookCategory) {
+    public static List<RecipeBookGroup> getGroups(RecipeBookCategory category) {
+        switch (category) {
             case CRAFTING: {
                 return CRAFTING;
             }
@@ -73,7 +73,7 @@ public enum RecipeBookGroup {
         BLAST_FURNACE = ImmutableList.of(BLAST_FURNACE_SEARCH, BLAST_FURNACE_BLOCKS, BLAST_FURNACE_MISC);
         FURNACE = ImmutableList.of(FURNACE_SEARCH, FURNACE_FOOD, FURNACE_BLOCKS, FURNACE_MISC);
         CRAFTING = ImmutableList.of(CRAFTING_SEARCH, CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE);
-        field_25783 = ImmutableMap.of(CRAFTING_SEARCH, ImmutableList.of(CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE), FURNACE_SEARCH, ImmutableList.of(FURNACE_FOOD, FURNACE_BLOCKS, FURNACE_MISC), BLAST_FURNACE_SEARCH, ImmutableList.of(BLAST_FURNACE_BLOCKS, BLAST_FURNACE_MISC), SMOKER_SEARCH, ImmutableList.of(SMOKER_FOOD));
+        SEARCH_MAP = ImmutableMap.of(CRAFTING_SEARCH, ImmutableList.of(CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE), FURNACE_SEARCH, ImmutableList.of(FURNACE_FOOD, FURNACE_BLOCKS, FURNACE_MISC), BLAST_FURNACE_SEARCH, ImmutableList.of(BLAST_FURNACE_BLOCKS, BLAST_FURNACE_MISC), SMOKER_SEARCH, ImmutableList.of(SMOKER_FOOD));
     }
 }
 

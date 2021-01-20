@@ -34,8 +34,8 @@ extends ConditionalLootFunction {
     private final Block block;
     private final Set<Property<?>> properties;
 
-    private CopyStateFunction(LootCondition[] lootConditions, Block block, Set<Property<?>> properties) {
-        super(lootConditions);
+    private CopyStateFunction(LootCondition[] conditions, Block block, Set<Property<?>> properties) {
+        super(conditions);
         this.block = block;
         this.properties = properties;
     }
@@ -62,7 +62,7 @@ extends ConditionalLootFunction {
                 compoundTag2 = new CompoundTag();
                 compoundTag.put("BlockStateTag", compoundTag2);
             }
-            this.properties.stream().filter(blockState::contains).forEach(property -> compoundTag2.putString(property.getName(), CopyStateFunction.method_21893(blockState, property)));
+            this.properties.stream().filter(blockState::contains).forEach(property -> compoundTag2.putString(property.getName(), CopyStateFunction.getPropertyName(blockState, property)));
         }
         return stack;
     }
@@ -71,8 +71,8 @@ extends ConditionalLootFunction {
         return new Builder(block);
     }
 
-    private static <T extends Comparable<T>> String method_21893(BlockState blockState, Property<T> property) {
-        T comparable = blockState.get(property);
+    private static <T extends Comparable<T>> String getPropertyName(BlockState state, Property<T> property) {
+        T comparable = state.get(property);
         return property.name(comparable);
     }
 
@@ -115,7 +115,7 @@ extends ConditionalLootFunction {
             this.block = block;
         }
 
-        public Builder method_21898(Property<?> property) {
+        public Builder addProperty(Property<?> property) {
             if (!this.block.getStateManager().getProperties().contains(property)) {
                 throw new IllegalStateException("Property " + property + " is not present on block " + this.block);
             }

@@ -58,7 +58,7 @@ extends RealmsScreen {
     private WorldTemplatePaginatedList field_20497;
     private WorldTemplatePaginatedList field_20498;
     public int slot = -1;
-    private Text field_20501 = new TranslatableText("mco.reset.world.resetting.screen.title");
+    private Text resetTitle = new TranslatableText("mco.reset.world.resetting.screen.title");
     private final Runnable field_22711;
     private final Runnable field_22712;
 
@@ -69,20 +69,20 @@ extends RealmsScreen {
         this.field_22712 = runnable2;
     }
 
-    public RealmsResetWorldScreen(Screen parent, RealmsServer realmsServer, Text text, Text text2, int i, Text text3, Runnable runnable, Runnable runnable2) {
+    public RealmsResetWorldScreen(Screen parent, RealmsServer realmsServer, Text title, Text subtitle, int subtitleColor, Text buttonTitle, Runnable runnable, Runnable runnable2) {
         this(parent, realmsServer, runnable, runnable2);
-        this.title = text;
-        this.subtitle = text2;
-        this.subtitleColor = i;
-        this.buttonTitle = text3;
+        this.title = title;
+        this.subtitle = subtitle;
+        this.subtitleColor = subtitleColor;
+        this.buttonTitle = buttonTitle;
     }
 
     public void setSlot(int slot) {
         this.slot = slot;
     }
 
-    public void setResetTitle(Text text) {
-        this.field_20501 = text;
+    public void setResetTitle(Text resetTitle) {
+        this.resetTitle = resetTitle;
     }
 
     @Override
@@ -165,23 +165,23 @@ extends RealmsScreen {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private void drawFrame(MatrixStack matrixStack, int x, int y, Text text, Identifier identifier, boolean bl, boolean bl2) {
+    private void drawFrame(MatrixStack matrices, int x, int y, Text text, Identifier identifier, boolean bl, boolean bl2) {
         this.client.getTextureManager().bindTexture(identifier);
         if (bl) {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         } else {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
-        DrawableHelper.drawTexture(matrixStack, x + 2, y + 14, 0.0f, 0.0f, 56, 56, 56, 56);
+        DrawableHelper.drawTexture(matrices, x + 2, y + 14, 0.0f, 0.0f, 56, 56, 56, 56);
         this.client.getTextureManager().bindTexture(SLOT_FRAME_TEXTURE);
         if (bl) {
             RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
         } else {
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         }
-        DrawableHelper.drawTexture(matrixStack, x, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
+        DrawableHelper.drawTexture(matrices, x, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
         int i = bl ? 0xA0A0A0 : 0xFFFFFF;
-        RealmsResetWorldScreen.drawCenteredText(matrixStack, this.textRenderer, text, x + 30, y, i);
+        RealmsResetWorldScreen.drawCenteredText(matrices, this.textRenderer, text, x + 30, y, i);
     }
 
     private void method_32490(LongRunningTask longRunningTask) {
@@ -195,14 +195,14 @@ extends RealmsScreen {
     private void method_32488(@Nullable WorldTemplate worldTemplate) {
         this.client.openScreen(this);
         if (worldTemplate != null) {
-            this.method_32493(() -> this.method_32490(new class_5674(worldTemplate, this.serverData.id, this.field_20501, this.field_22711)));
+            this.method_32493(() -> this.method_32490(new class_5674(worldTemplate, this.serverData.id, this.resetTitle, this.field_22711)));
         }
     }
 
     private void method_32489(@Nullable ResetWorldInfo resetWorldInfo) {
         this.client.openScreen(this);
         if (resetWorldInfo != null) {
-            this.method_32493(() -> this.method_32490(new class_5673(resetWorldInfo, this.serverData.id, this.field_20501, this.field_22711)));
+            this.method_32493(() -> this.method_32490(new class_5673(resetWorldInfo, this.serverData.id, this.resetTitle, this.field_22711)));
         }
     }
 

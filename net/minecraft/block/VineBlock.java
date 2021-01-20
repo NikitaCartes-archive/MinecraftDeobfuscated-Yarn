@@ -154,7 +154,7 @@ extends Block {
         BlockState blockState3;
         BlockPos blockPos2;
         BlockState blockState;
-        if (world.random.nextInt(4) != 0) {
+        if (random.nextInt(4) != 0) {
             return;
         }
         Direction direction = Direction.random(random);
@@ -182,7 +182,7 @@ extends Block {
                         world.setBlockState(blockPos3, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), 2);
                     } else if (bl2 && world.isAir(blockPos4) && VineBlock.shouldConnectTo(world, pos.offset(direction3), direction4)) {
                         world.setBlockState(blockPos4, (BlockState)this.getDefaultState().with(VineBlock.getFacingProperty(direction4), true), 2);
-                    } else if ((double)world.random.nextFloat() < 0.05 && VineBlock.shouldConnectTo(world, blockPos22.up(), Direction.UP)) {
+                    } else if ((double)random.nextFloat() < 0.05 && VineBlock.shouldConnectTo(world, blockPos22.up(), Direction.UP)) {
                         world.setBlockState(blockPos22, (BlockState)this.getDefaultState().with(UP, true), 2);
                     }
                 }
@@ -211,7 +211,7 @@ extends Block {
                 return;
             }
         }
-        if (pos.getY() > world.getSectionCount() && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.isOf(this)) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
+        if (pos.getY() > world.getBottomSectionLimit() && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.isOf(this)) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
             world.setBlockState(blockPos2, blockState4, 2);
         }
     }

@@ -40,7 +40,7 @@ extends Screen {
 
             @Override
             protected MutableText getNarrationMessage() {
-                return super.getNarrationMessage().append(ChatScreen.this.commandSuggestor.method_23958());
+                return super.getNarrationMessage().append(ChatScreen.this.commandSuggestor.getNarration());
             }
         };
         this.chatField.setMaxLength(256);

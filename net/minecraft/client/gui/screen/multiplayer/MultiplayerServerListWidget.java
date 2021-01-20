@@ -154,7 +154,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.server.playerCountLabel = LiteralText.EMPTY;
                 SERVER_PINGER_THREAD_POOL.submit(() -> {
                     try {
-                        this.screen.getServerListPinger().add(this.server, () -> this.client.execute(this::method_29978));
+                        this.screen.getServerListPinger().add(this.server, () -> this.client.execute(this::saveFile));
                     } catch (UnknownHostException unknownHostException) {
                         this.server.ping = -1L;
                         this.server.label = CANNOT_RESOLVE_TEXT;
@@ -205,7 +205,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     this.iconUri = string;
                 } else {
                     this.server.setIcon(null);
-                    this.method_29978();
+                    this.saveFile();
                 }
             }
             if (this.icon != null) {
@@ -250,14 +250,14 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             }
         }
 
-        public void method_29978() {
+        public void saveFile() {
             this.screen.getServerList().saveFile();
         }
 
-        protected void draw(MatrixStack matrixStack, int i, int j, Identifier identifier) {
+        protected void draw(MatrixStack matrices, int i, int j, Identifier identifier) {
             this.client.getTextureManager().bindTexture(identifier);
             RenderSystem.enableBlend();
-            DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, 0.0f, 32, 32, 32, 32);
+            DrawableHelper.drawTexture(matrices, i, j, 0.0f, 0.0f, 32, 32, 32, 32);
             RenderSystem.disableBlend();
         }
 

@@ -149,7 +149,7 @@ Flutterer {
         this.goalSelector.add(0, new StingGoal(this, 1.4f, true));
         this.goalSelector.add(1, new EnterHiveGoal());
         this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-        this.goalSelector.add(3, new TemptGoal((PathAwareEntity)this, 1.25, Ingredient.fromTag(ItemTags.FLOWERS), false));
+        this.goalSelector.add(3, new TemptGoal(this, 1.25, Ingredient.fromTag(ItemTags.FLOWERS), false));
         this.pollinateGoal = new PollinateGoal();
         this.goalSelector.add(4, this.pollinateGoal);
         this.goalSelector.add(5, new FollowParentGoal(this, 1.25));
@@ -544,7 +544,7 @@ Flutterer {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 

@@ -247,9 +247,15 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             if (this.level.isLocked()) {
                 return;
             }
-            if (this.level.isOutdatedLevel()) {
-                TranslatableText text = new TranslatableText("selectWorld.backupQuestion");
-                TranslatableText text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion(), SharedConstants.getGameVersion().getName());
+            LevelSummary.class_5781 lv = this.level.method_33405();
+            if (lv.method_33406()) {
+                String string = "selectWorld.backupQuestion." + lv.method_33408();
+                String string2 = "selectWorld.backupWarning." + lv.method_33408();
+                TranslatableText mutableText = new TranslatableText(string);
+                if (lv.method_33407()) {
+                    mutableText.formatted(Formatting.BOLD, Formatting.RED);
+                }
+                TranslatableText text = new TranslatableText(string2, this.level.getVersion(), SharedConstants.getGameVersion().getName());
                 this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
                     if (bl) {
                         String string = this.level.getName();
@@ -261,7 +267,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                         }
                     }
                     this.start();
-                }, text, text2, false));
+                }, mutableText, text, false));
             } else if (this.level.isFutureLevel()) {
                 this.client.openScreen(new ConfirmScreen(bl -> {
                     if (bl) {

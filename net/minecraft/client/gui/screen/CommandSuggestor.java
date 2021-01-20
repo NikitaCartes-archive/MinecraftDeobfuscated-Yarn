@@ -54,8 +54,8 @@ import org.jetbrains.annotations.Nullable;
 @Environment(value=EnvType.CLIENT)
 public class CommandSuggestor {
     private static final Pattern BACKSLASH_S_PATTERN = Pattern.compile("(\\s+)");
-    private static final Style field_25885 = Style.EMPTY.withColor(Formatting.RED);
-    private static final Style field_25886 = Style.EMPTY.withColor(Formatting.GRAY);
+    private static final Style RED_FORMAT = Style.EMPTY.withColor(Formatting.RED);
+    private static final Style GRAY_FORMAT = Style.EMPTY.withColor(Formatting.GRAY);
     private static final List<Style> field_25887 = Stream.of(Formatting.AQUA, Formatting.YELLOW, Formatting.GREEN, Formatting.LIGHT_PURPLE, Formatting.GOLD).map(Style.EMPTY::withColor).collect(ImmutableList.toImmutableList());
     private final MinecraftClient client;
     private final Screen owner;
@@ -287,35 +287,35 @@ public class CommandSuggestor {
             if ((k = Math.max(parsedArgument.getRange().getStart() - firstCharacterIndex, 0)) >= original.length()) break;
             int l = Math.min(parsedArgument.getRange().getEnd() - firstCharacterIndex, original.length());
             if (l <= 0) continue;
-            list.add(OrderedText.styledString(original.substring(i, k), field_25886));
+            list.add(OrderedText.styledString(original.substring(i, k), GRAY_FORMAT));
             list.add(OrderedText.styledString(original.substring(k, l), field_25887.get(j)));
             i = l;
         }
         if (parse.getReader().canRead() && (m = Math.max(parse.getReader().getCursor() - firstCharacterIndex, 0)) < original.length()) {
             int n = Math.min(m + parse.getReader().getRemainingLength(), original.length());
-            list.add(OrderedText.styledString(original.substring(i, m), field_25886));
-            list.add(OrderedText.styledString(original.substring(m, n), field_25885));
+            list.add(OrderedText.styledString(original.substring(i, m), GRAY_FORMAT));
+            list.add(OrderedText.styledString(original.substring(m, n), RED_FORMAT));
             i = n;
         }
-        list.add(OrderedText.styledString(original.substring(i), field_25886));
+        list.add(OrderedText.styledString(original.substring(i), GRAY_FORMAT));
         return OrderedText.concat(list);
     }
 
-    public void render(MatrixStack matrixStack, int i, int j) {
+    public void render(MatrixStack matrices, int i, int j) {
         if (this.window != null) {
-            this.window.render(matrixStack, i, j);
+            this.window.render(matrices, i, j);
         } else {
             int k = 0;
             for (OrderedText orderedText : this.messages) {
                 int l = this.chatScreenSized ? this.owner.height - 14 - 13 - 12 * k : 72 + 12 * k;
-                DrawableHelper.fill(matrixStack, this.x - 1, l, this.x + this.width + 1, l + 12, this.color);
-                this.textRenderer.drawWithShadow(matrixStack, orderedText, (float)this.x, (float)(l + 2), -1);
+                DrawableHelper.fill(matrices, this.x - 1, l, this.x + this.width + 1, l + 12, this.color);
+                this.textRenderer.drawWithShadow(matrices, orderedText, (float)this.x, (float)(l + 2), -1);
                 ++k;
             }
         }
     }
 
-    public String method_23958() {
+    public String getNarration() {
         if (this.window != null) {
             return "\n" + this.window.getNarration();
         }
@@ -343,7 +343,7 @@ public class CommandSuggestor {
             this.select(0);
         }
 
-        public void render(MatrixStack matrixStack, int i, int j) {
+        public void render(MatrixStack matrices, int i, int j) {
             Message message;
             boolean bl4;
             int k = Math.min(this.field_25709.size(), CommandSuggestor.this.maxSuggestionSize);
@@ -357,35 +357,35 @@ public class CommandSuggestor {
             }
             if (bl3) {
                 int m;
-                DrawableHelper.fill(matrixStack, this.area.getX(), this.area.getY() - 1, this.area.getX() + this.area.getWidth(), this.area.getY(), CommandSuggestor.this.color);
-                DrawableHelper.fill(matrixStack, this.area.getX(), this.area.getY() + this.area.getHeight(), this.area.getX() + this.area.getWidth(), this.area.getY() + this.area.getHeight() + 1, CommandSuggestor.this.color);
+                DrawableHelper.fill(matrices, this.area.getX(), this.area.getY() - 1, this.area.getX() + this.area.getWidth(), this.area.getY(), CommandSuggestor.this.color);
+                DrawableHelper.fill(matrices, this.area.getX(), this.area.getY() + this.area.getHeight(), this.area.getX() + this.area.getWidth(), this.area.getY() + this.area.getHeight() + 1, CommandSuggestor.this.color);
                 if (bl) {
                     for (m = 0; m < this.area.getWidth(); ++m) {
                         if (m % 2 != 0) continue;
-                        DrawableHelper.fill(matrixStack, this.area.getX() + m, this.area.getY() - 1, this.area.getX() + m + 1, this.area.getY(), -1);
+                        DrawableHelper.fill(matrices, this.area.getX() + m, this.area.getY() - 1, this.area.getX() + m + 1, this.area.getY(), -1);
                     }
                 }
                 if (bl2) {
                     for (m = 0; m < this.area.getWidth(); ++m) {
                         if (m % 2 != 0) continue;
-                        DrawableHelper.fill(matrixStack, this.area.getX() + m, this.area.getY() + this.area.getHeight(), this.area.getX() + m + 1, this.area.getY() + this.area.getHeight() + 1, -1);
+                        DrawableHelper.fill(matrices, this.area.getX() + m, this.area.getY() + this.area.getHeight(), this.area.getX() + m + 1, this.area.getY() + this.area.getHeight() + 1, -1);
                     }
                 }
             }
             boolean bl52 = false;
             for (int n = 0; n < k; ++n) {
                 Suggestion suggestion = this.field_25709.get(n + this.inWindowIndex);
-                DrawableHelper.fill(matrixStack, this.area.getX(), this.area.getY() + 12 * n, this.area.getX() + this.area.getWidth(), this.area.getY() + 12 * n + 12, CommandSuggestor.this.color);
+                DrawableHelper.fill(matrices, this.area.getX(), this.area.getY() + 12 * n, this.area.getX() + this.area.getWidth(), this.area.getY() + 12 * n + 12, CommandSuggestor.this.color);
                 if (i > this.area.getX() && i < this.area.getX() + this.area.getWidth() && j > this.area.getY() + 12 * n && j < this.area.getY() + 12 * n + 12) {
                     if (bl4) {
                         this.select(n + this.inWindowIndex);
                     }
                     bl52 = true;
                 }
-                CommandSuggestor.this.textRenderer.drawWithShadow(matrixStack, suggestion.getText(), (float)(this.area.getX() + 1), (float)(this.area.getY() + 2 + 12 * n), n + this.inWindowIndex == this.selection ? -256 : -5592406);
+                CommandSuggestor.this.textRenderer.drawWithShadow(matrices, suggestion.getText(), (float)(this.area.getX() + 1), (float)(this.area.getY() + 2 + 12 * n), n + this.inWindowIndex == this.selection ? -256 : -5592406);
             }
             if (bl52 && (message = this.field_25709.get(this.selection).getTooltip()) != null) {
-                CommandSuggestor.this.owner.renderTooltip(matrixStack, Texts.toText(message), i, j);
+                CommandSuggestor.this.owner.renderTooltip(matrices, Texts.toText(message), i, j);
             }
         }
 

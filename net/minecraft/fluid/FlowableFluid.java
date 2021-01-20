@@ -379,7 +379,7 @@ extends Fluid {
         this.tryFlow(world, pos, state);
     }
 
-    protected static int method_15741(FluidState state) {
+    protected static int getBlockStateLevel(FluidState state) {
         if (state.isStill()) {
             return 0;
         }

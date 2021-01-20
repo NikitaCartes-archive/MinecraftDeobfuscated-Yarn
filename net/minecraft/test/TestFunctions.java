@@ -21,7 +21,7 @@ public class TestFunctions {
     private static final Set<String> testClasses = Sets.newHashSet();
     private static final Map<String, Consumer<ServerWorld>> WORLD_SETTERS = Maps.newHashMap();
     private static final Map<String, Consumer<ServerWorld>> field_27806 = Maps.newHashMap();
-    private static final Collection<TestFunction> field_25302 = Sets.newHashSet();
+    private static final Collection<TestFunction> FAILED_TEST_FUNCTIONS = Sets.newHashSet();
 
     public static Collection<TestFunction> getTestFunctions(String testClass) {
         return TEST_FUNCTIONS.stream().filter(testFunction -> TestFunctions.isInClass(testFunction, testClass)).collect(Collectors.toList());
@@ -45,8 +45,8 @@ public class TestFunctions {
     }
 
     @Nullable
-    public static Consumer<ServerWorld> method_32244(String string) {
-        return field_27806.get(string);
+    public static Consumer<ServerWorld> method_32244(String batchId) {
+        return field_27806.get(batchId);
     }
 
     public static Optional<TestFunction> getTestFunction(String structurePath) {
@@ -65,16 +65,16 @@ public class TestFunctions {
         return testFunction.getStructurePath().toLowerCase().startsWith(testClass.toLowerCase() + ".");
     }
 
-    public static Collection<TestFunction> method_29405() {
-        return field_25302;
+    public static Collection<TestFunction> getFailedTestFunctions() {
+        return FAILED_TEST_FUNCTIONS;
     }
 
-    public static void method_29404(TestFunction testFunction) {
-        field_25302.add(testFunction);
+    public static void addFailedTestFunction(TestFunction testFunction) {
+        FAILED_TEST_FUNCTIONS.add(testFunction);
     }
 
-    public static void method_29406() {
-        field_25302.clear();
+    public static void clearFailedTestFunctions() {
+        FAILED_TEST_FUNCTIONS.clear();
     }
 }
 

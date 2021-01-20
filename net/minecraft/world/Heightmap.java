@@ -24,8 +24,8 @@ import net.minecraft.world.chunk.Chunk;
 import org.jetbrains.annotations.Nullable;
 
 public class Heightmap {
-    private static final Predicate<BlockState> ALWAYS_TRUE = blockState -> !blockState.isAir();
-    private static final Predicate<BlockState> SUFFOCATES = blockState -> blockState.getMaterial().blocksMovement();
+    private static final Predicate<BlockState> NOT_AIR = state -> !state.isAir();
+    private static final Predicate<BlockState> SUFFOCATES = state -> state.getMaterial().blocksMovement();
     private final PackedIntegerArray storage;
     private final Predicate<BlockState> blockPredicate;
     private final Chunk chunk;
@@ -33,7 +33,7 @@ public class Heightmap {
     public Heightmap(Chunk chunk, Type type) {
         this.blockPredicate = type.getBlockPredicate();
         this.chunk = chunk;
-        int i = MathHelper.log2DeBruijn(chunk.getBottomSectionLimit() + 1);
+        int i = MathHelper.log2DeBruijn(chunk.getSectionCount() + 1);
         this.storage = new PackedIntegerArray(i, 256);
     }
 
@@ -48,7 +48,7 @@ public class Heightmap {
                 for (Type type : types) {
                     objectList.add(chunk.getHeightmap(type));
                 }
-                for (int m = j - 1; m >= chunk.getSectionCount(); --m) {
+                for (int m = j - 1; m >= chunk.getBottomSectionLimit(); --m) {
                     mutable.set(k, m, l);
                     BlockState blockState = chunk.getBlockState(mutable);
                     if (blockState.isOf(Blocks.AIR)) continue;
@@ -77,13 +77,13 @@ public class Heightmap {
             }
         } else if (i - 1 == y) {
             BlockPos.Mutable mutable = new BlockPos.Mutable();
-            for (int j = y - 1; j >= this.chunk.getSectionCount(); --j) {
+            for (int j = y - 1; j >= this.chunk.getBottomSectionLimit(); --j) {
                 mutable.set(x, j, z);
                 if (!this.blockPredicate.test(this.chunk.getBlockState(mutable))) continue;
                 this.set(x, z, j + 1);
                 return true;
             }
-            this.set(x, z, this.chunk.getSectionCount());
+            this.set(x, z, this.chunk.getBottomSectionLimit());
             return true;
         }
         return false;
@@ -94,11 +94,11 @@ public class Heightmap {
     }
 
     private int get(int index) {
-        return this.storage.get(index) + this.chunk.getSectionCount();
+        return this.storage.get(index) + this.chunk.getBottomSectionLimit();
     }
 
     private void set(int x, int z, int height) {
-        this.storage.set(Heightmap.toIndex(x, z), height - this.chunk.getSectionCount());
+        this.storage.set(Heightmap.toIndex(x, z), height - this.chunk.getBottomSectionLimit());
     }
 
     public void setTo(long[] heightmap) {
@@ -114,7 +114,7 @@ public class Heightmap {
     }
 
     static /* synthetic */ Predicate method_16683() {
-        return ALWAYS_TRUE;
+        return NOT_AIR;
     }
 
     static /* synthetic */ Predicate method_16681() {

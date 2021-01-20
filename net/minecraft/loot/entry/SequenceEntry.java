@@ -33,9 +33,9 @@ extends CombinedEntry {
             case 2: {
                 EntryCombiner entryCombiner = children[0];
                 EntryCombiner entryCombiner2 = children[1];
-                return (lootContext, consumer) -> {
-                    entryCombiner.expand(lootContext, consumer);
-                    entryCombiner2.expand(lootContext, consumer);
+                return (context, consumer) -> {
+                    entryCombiner.expand(context, consumer);
+                    entryCombiner2.expand(context, consumer);
                     return true;
                 };
             }

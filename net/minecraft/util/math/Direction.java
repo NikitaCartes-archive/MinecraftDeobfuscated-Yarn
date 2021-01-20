@@ -347,6 +347,10 @@ public enum Direction implements StringIdentifiable
             return Util.getRandom(this.facingArray, random);
         }
 
+        public Axis randomAxis(Random random) {
+            return Util.getRandom(this.axisArray, random);
+        }
+
         @Override
         public boolean test(@Nullable Direction direction) {
             return direction != null && direction.getAxis().getType() == this;

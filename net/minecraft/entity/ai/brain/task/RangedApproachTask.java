@@ -24,9 +24,9 @@ extends Task<MobEntity> {
         this((LivingEntity livingEntity) -> Float.valueOf(speed));
     }
 
-    public RangedApproachTask(Function<LivingEntity, Float> function) {
+    public RangedApproachTask(Function<LivingEntity, Float> speed) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.REGISTERED));
-        this.speed = function;
+        this.speed = speed;
     }
 
     @Override

@@ -73,14 +73,14 @@ extends Goal {
         if (skeletonEntity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
             skeletonEntity.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.IRON_HELMET));
         }
-        skeletonEntity.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(skeletonEntity.getRandom(), this.method_30768(skeletonEntity.getMainHandStack()), (int)(5.0f + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)), false));
-        skeletonEntity.equipStack(EquipmentSlot.HEAD, EnchantmentHelper.enchant(skeletonEntity.getRandom(), this.method_30768(skeletonEntity.getEquippedStack(EquipmentSlot.HEAD)), (int)(5.0f + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)), false));
+        skeletonEntity.equipStack(EquipmentSlot.MAINHAND, EnchantmentHelper.enchant(skeletonEntity.getRandom(), this.removeEnchantments(skeletonEntity.getMainHandStack()), (int)(5.0f + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)), false));
+        skeletonEntity.equipStack(EquipmentSlot.HEAD, EnchantmentHelper.enchant(skeletonEntity.getRandom(), this.removeEnchantments(skeletonEntity.getEquippedStack(EquipmentSlot.HEAD)), (int)(5.0f + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)), false));
         return skeletonEntity;
     }
 
-    private ItemStack method_30768(ItemStack itemStack) {
-        itemStack.removeSubTag("Enchantments");
-        return itemStack;
+    private ItemStack removeEnchantments(ItemStack stack) {
+        stack.removeSubTag("Enchantments");
+        return stack;
     }
 }
 

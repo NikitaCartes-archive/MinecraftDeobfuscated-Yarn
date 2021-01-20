@@ -50,7 +50,7 @@ extends ConditionalLootFunction {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return this.effects.values().stream().flatMap(lootNumberProvider -> lootNumberProvider.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
+        return this.effects.values().stream().flatMap(numberProvider -> numberProvider.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
     }
 
     @Override

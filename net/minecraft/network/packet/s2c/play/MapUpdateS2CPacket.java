@@ -22,17 +22,17 @@ implements Packet<ClientPlayPacketListener> {
     @Nullable
     private MapIcon[] icons;
     @Nullable
-    private MapState.class_5637 field_28016;
+    private MapState.UpdateData updateData;
 
     public MapUpdateS2CPacket() {
     }
 
-    public MapUpdateS2CPacket(int id, byte scale, boolean showIcons, @Nullable Collection<MapIcon> collection, @Nullable MapState.class_5637 arg) {
+    public MapUpdateS2CPacket(int id, byte scale, boolean showIcons, @Nullable Collection<MapIcon> icons, @Nullable MapState.UpdateData updateData) {
         this.id = id;
         this.scale = scale;
         this.locked = showIcons;
-        this.icons = collection != null ? collection.toArray(new MapIcon[0]) : null;
-        this.field_28016 = arg;
+        this.icons = icons != null ? icons.toArray(new MapIcon[0]) : null;
+        this.updateData = updateData;
     }
 
     @Override
@@ -53,7 +53,7 @@ implements Packet<ClientPlayPacketListener> {
             short k = buf.readUnsignedByte();
             short l = buf.readUnsignedByte();
             byte[] bs = buf.readByteArray();
-            this.field_28016 = new MapState.class_5637(k, l, i, j, bs);
+            this.updateData = new MapState.UpdateData(k, l, i, j, bs);
         }
     }
 
@@ -80,12 +80,12 @@ implements Packet<ClientPlayPacketListener> {
         } else {
             buf.writeBoolean(false);
         }
-        if (this.field_28016 != null) {
-            buf.writeByte(this.field_28016.field_27894);
-            buf.writeByte(this.field_28016.field_27895);
-            buf.writeByte(this.field_28016.field_27892);
-            buf.writeByte(this.field_28016.field_27893);
-            buf.writeByteArray(this.field_28016.field_27896);
+        if (this.updateData != null) {
+            buf.writeByte(this.updateData.width);
+            buf.writeByte(this.updateData.height);
+            buf.writeByte(this.updateData.startX);
+            buf.writeByte(this.updateData.startZ);
+            buf.writeByteArray(this.updateData.colors);
         } else {
             buf.writeByte(0);
         }
@@ -105,10 +105,10 @@ implements Packet<ClientPlayPacketListener> {
     @Environment(value=EnvType.CLIENT)
     public void apply(MapState mapState) {
         if (this.icons != null) {
-            mapState.method_32369(this.icons);
+            mapState.replaceIcons(this.icons);
         }
-        if (this.field_28016 != null) {
-            this.field_28016.method_32380(mapState);
+        if (this.updateData != null) {
+            this.updateData.setColorsTo(mapState);
         }
     }
 

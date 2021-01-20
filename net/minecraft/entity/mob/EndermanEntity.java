@@ -263,7 +263,7 @@ implements Angerable {
 
     private boolean teleportTo(double x, double y, double z) {
         BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
-        while (mutable.getY() > this.world.getSectionCount() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+        while (mutable.getY() > this.world.getBottomSectionLimit() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
             mutable.move(Direction.DOWN);
         }
         BlockState blockState = this.world.getBlockState(mutable);
@@ -429,7 +429,7 @@ implements Angerable {
         }
 
         private boolean canPlaceOn(World world, BlockPos posAbove, BlockState carriedState, BlockState stateAbove, BlockState state, BlockPos pos) {
-            return stateAbove.isAir() && !state.isAir() && !state.isOf(Blocks.BEDROCK) && state.isFullCube(world, pos) && carriedState.canPlaceAt(world, posAbove) && world.getOtherEntities(this.enderman, Box.method_29968(Vec3d.of(posAbove))).isEmpty();
+            return stateAbove.isAir() && !state.isAir() && !state.isOf(Blocks.BEDROCK) && state.isFullCube(world, pos) && carriedState.canPlaceAt(world, posAbove) && world.getOtherEntities(this.enderman, Box.from(Vec3d.of(posAbove))).isEmpty();
         }
     }
 

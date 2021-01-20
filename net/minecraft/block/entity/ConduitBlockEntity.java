@@ -48,8 +48,8 @@ extends BlockEntity {
     private UUID targetUuid;
     private long nextAmbientSoundTime;
 
-    public ConduitBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.CONDUIT, blockPos, blockState);
+    public ConduitBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.CONDUIT, pos, state);
     }
 
     @Override
@@ -78,63 +78,63 @@ extends BlockEntity {
         return this.toTag(new CompoundTag());
     }
 
-    public static void clientTick(World world, BlockPos blockPos, BlockState blockState, ConduitBlockEntity conduitBlockEntity) {
-        ++conduitBlockEntity.ticks;
+    public static void clientTick(World world, BlockPos pos, BlockState state, ConduitBlockEntity blockEntity) {
+        ++blockEntity.ticks;
         long l = world.getTime();
-        List<BlockPos> list = conduitBlockEntity.activatingBlocks;
+        List<BlockPos> list = blockEntity.activatingBlocks;
         if (l % 40L == 0L) {
-            conduitBlockEntity.active = ConduitBlockEntity.updateActivatingBlocks(world, blockPos, list);
-            ConduitBlockEntity.method_31676(conduitBlockEntity, list);
+            blockEntity.active = ConduitBlockEntity.updateActivatingBlocks(world, pos, list);
+            ConduitBlockEntity.openEye(blockEntity, list);
         }
-        ConduitBlockEntity.updateTargetEntity(world, blockPos, conduitBlockEntity);
-        ConduitBlockEntity.spawnNautilusParticles(world, blockPos, list, conduitBlockEntity.targetEntity, conduitBlockEntity.ticks);
-        if (conduitBlockEntity.isActive()) {
-            conduitBlockEntity.ticksActive += 1.0f;
+        ConduitBlockEntity.updateTargetEntity(world, pos, blockEntity);
+        ConduitBlockEntity.spawnNautilusParticles(world, pos, list, blockEntity.targetEntity, blockEntity.ticks);
+        if (blockEntity.isActive()) {
+            blockEntity.ticksActive += 1.0f;
         }
     }
 
-    public static void serverTick(World world, BlockPos blockPos, BlockState blockState, ConduitBlockEntity conduitBlockEntity) {
-        ++conduitBlockEntity.ticks;
+    public static void serverTick(World world, BlockPos pos, BlockState state, ConduitBlockEntity blockEntity) {
+        ++blockEntity.ticks;
         long l = world.getTime();
-        List<BlockPos> list = conduitBlockEntity.activatingBlocks;
+        List<BlockPos> list = blockEntity.activatingBlocks;
         if (l % 40L == 0L) {
-            boolean bl = ConduitBlockEntity.updateActivatingBlocks(world, blockPos, list);
-            if (bl != conduitBlockEntity.active) {
+            boolean bl = ConduitBlockEntity.updateActivatingBlocks(world, pos, list);
+            if (bl != blockEntity.active) {
                 SoundEvent soundEvent = bl ? SoundEvents.BLOCK_CONDUIT_ACTIVATE : SoundEvents.BLOCK_CONDUIT_DEACTIVATE;
-                world.playSound(null, blockPos, soundEvent, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
-            conduitBlockEntity.active = bl;
-            ConduitBlockEntity.method_31676(conduitBlockEntity, list);
+            blockEntity.active = bl;
+            ConduitBlockEntity.openEye(blockEntity, list);
             if (bl) {
-                ConduitBlockEntity.givePlayersEffects(world, blockPos, list);
-                ConduitBlockEntity.attackHostileEntity(world, blockPos, blockState, list, conduitBlockEntity);
+                ConduitBlockEntity.givePlayersEffects(world, pos, list);
+                ConduitBlockEntity.attackHostileEntity(world, pos, state, list, blockEntity);
             }
         }
-        if (conduitBlockEntity.isActive()) {
+        if (blockEntity.isActive()) {
             if (l % 80L == 0L) {
-                world.playSound(null, blockPos, SoundEvents.BLOCK_CONDUIT_AMBIENT, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.playSound(null, pos, SoundEvents.BLOCK_CONDUIT_AMBIENT, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
-            if (l > conduitBlockEntity.nextAmbientSoundTime) {
-                conduitBlockEntity.nextAmbientSoundTime = l + 60L + (long)world.getRandom().nextInt(40);
-                world.playSound(null, blockPos, SoundEvents.BLOCK_CONDUIT_AMBIENT_SHORT, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            if (l > blockEntity.nextAmbientSoundTime) {
+                blockEntity.nextAmbientSoundTime = l + 60L + (long)world.getRandom().nextInt(40);
+                world.playSound(null, pos, SoundEvents.BLOCK_CONDUIT_AMBIENT_SHORT, SoundCategory.BLOCKS, 1.0f, 1.0f);
             }
         }
     }
 
-    private static void method_31676(ConduitBlockEntity conduitBlockEntity, List<BlockPos> list) {
-        conduitBlockEntity.setEyeOpen(list.size() >= 42);
+    private static void openEye(ConduitBlockEntity blockEntity, List<BlockPos> activatingBlocks) {
+        blockEntity.setEyeOpen(activatingBlocks.size() >= 42);
     }
 
-    private static boolean updateActivatingBlocks(World world, BlockPos blockPos, List<BlockPos> list) {
+    private static boolean updateActivatingBlocks(World world, BlockPos pos, List<BlockPos> activatingBlocks) {
         int k;
         int j;
         int i;
-        list.clear();
+        activatingBlocks.clear();
         for (i = -1; i <= 1; ++i) {
             for (j = -1; j <= 1; ++j) {
                 for (k = -1; k <= 1; ++k) {
-                    BlockPos blockPos2 = blockPos.add(i, j, k);
-                    if (world.isWater(blockPos2)) continue;
+                    BlockPos blockPos = pos.add(i, j, k);
+                    if (world.isWater(blockPos)) continue;
                     return false;
                 }
             }
@@ -146,99 +146,99 @@ extends BlockEntity {
                     int m = Math.abs(j);
                     int n = Math.abs(k);
                     if (l <= 1 && m <= 1 && n <= 1 || (i != 0 || m != 2 && n != 2) && (j != 0 || l != 2 && n != 2) && (k != 0 || l != 2 && m != 2)) continue;
-                    BlockPos blockPos3 = blockPos.add(i, j, k);
-                    BlockState blockState = world.getBlockState(blockPos3);
+                    BlockPos blockPos2 = pos.add(i, j, k);
+                    BlockState blockState = world.getBlockState(blockPos2);
                     for (Block block : ACTIVATING_BLOCKS) {
                         if (!blockState.isOf(block)) continue;
-                        list.add(blockPos3);
+                        activatingBlocks.add(blockPos2);
                     }
                 }
             }
         }
-        return list.size() >= 16;
+        return activatingBlocks.size() >= 16;
     }
 
-    private static void givePlayersEffects(World world, BlockPos blockPos, List<BlockPos> list) {
+    private static void givePlayersEffects(World world, BlockPos pos, List<BlockPos> activatingBlocks) {
         int m;
         int l;
-        int i = list.size();
+        int i = activatingBlocks.size();
         int j = i / 7 * 16;
-        int k = blockPos.getX();
-        Box box = new Box(k, l = blockPos.getY(), m = blockPos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, world.getBottomSectionLimit(), 0.0);
-        List<PlayerEntity> list2 = world.getNonSpectatingEntities(PlayerEntity.class, box);
-        if (list2.isEmpty()) {
+        int k = pos.getX();
+        Box box = new Box(k, l = pos.getY(), m = pos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, world.getSectionCount(), 0.0);
+        List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
+        if (list.isEmpty()) {
             return;
         }
-        for (PlayerEntity playerEntity : list2) {
-            if (!blockPos.isWithinDistance(playerEntity.getBlockPos(), (double)j) || !playerEntity.isTouchingWaterOrRain()) continue;
+        for (PlayerEntity playerEntity : list) {
+            if (!pos.isWithinDistance(playerEntity.getBlockPos(), (double)j) || !playerEntity.isTouchingWaterOrRain()) continue;
             playerEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.CONDUIT_POWER, 260, 0, true, true));
         }
     }
 
-    private static void attackHostileEntity(World world, BlockPos blockPos, BlockState blockState, List<BlockPos> list, ConduitBlockEntity conduitBlockEntity) {
-        LivingEntity livingEntity2 = conduitBlockEntity.targetEntity;
-        int i = list.size();
+    private static void attackHostileEntity(World world, BlockPos pos, BlockState state, List<BlockPos> activatingBlocks, ConduitBlockEntity blockEntity) {
+        LivingEntity livingEntity2 = blockEntity.targetEntity;
+        int i = activatingBlocks.size();
         if (i < 42) {
-            conduitBlockEntity.targetEntity = null;
-        } else if (conduitBlockEntity.targetEntity == null && conduitBlockEntity.targetUuid != null) {
-            conduitBlockEntity.targetEntity = ConduitBlockEntity.findTargetEntity(world, blockPos, conduitBlockEntity.targetUuid);
-            conduitBlockEntity.targetUuid = null;
-        } else if (conduitBlockEntity.targetEntity == null) {
-            List<LivingEntity> list2 = world.getEntitiesByClass(LivingEntity.class, ConduitBlockEntity.getAttackZone(blockPos), livingEntity -> livingEntity instanceof Monster && livingEntity.isTouchingWaterOrRain());
-            if (!list2.isEmpty()) {
-                conduitBlockEntity.targetEntity = list2.get(world.random.nextInt(list2.size()));
+            blockEntity.targetEntity = null;
+        } else if (blockEntity.targetEntity == null && blockEntity.targetUuid != null) {
+            blockEntity.targetEntity = ConduitBlockEntity.findTargetEntity(world, pos, blockEntity.targetUuid);
+            blockEntity.targetUuid = null;
+        } else if (blockEntity.targetEntity == null) {
+            List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, ConduitBlockEntity.getAttackZone(pos), livingEntity -> livingEntity instanceof Monster && livingEntity.isTouchingWaterOrRain());
+            if (!list.isEmpty()) {
+                blockEntity.targetEntity = list.get(world.random.nextInt(list.size()));
             }
-        } else if (!conduitBlockEntity.targetEntity.isAlive() || !blockPos.isWithinDistance(conduitBlockEntity.targetEntity.getBlockPos(), 8.0)) {
-            conduitBlockEntity.targetEntity = null;
+        } else if (!blockEntity.targetEntity.isAlive() || !pos.isWithinDistance(blockEntity.targetEntity.getBlockPos(), 8.0)) {
+            blockEntity.targetEntity = null;
         }
-        if (conduitBlockEntity.targetEntity != null) {
-            world.playSound(null, conduitBlockEntity.targetEntity.getX(), conduitBlockEntity.targetEntity.getY(), conduitBlockEntity.targetEntity.getZ(), SoundEvents.BLOCK_CONDUIT_ATTACK_TARGET, SoundCategory.BLOCKS, 1.0f, 1.0f);
-            conduitBlockEntity.targetEntity.damage(DamageSource.MAGIC, 4.0f);
+        if (blockEntity.targetEntity != null) {
+            world.playSound(null, blockEntity.targetEntity.getX(), blockEntity.targetEntity.getY(), blockEntity.targetEntity.getZ(), SoundEvents.BLOCK_CONDUIT_ATTACK_TARGET, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            blockEntity.targetEntity.damage(DamageSource.MAGIC, 4.0f);
         }
-        if (livingEntity2 != conduitBlockEntity.targetEntity) {
-            world.updateListeners(blockPos, blockState, blockState, 2);
+        if (livingEntity2 != blockEntity.targetEntity) {
+            world.updateListeners(pos, state, state, 2);
         }
     }
 
-    private static void updateTargetEntity(World world, BlockPos blockPos, ConduitBlockEntity conduitBlockEntity) {
-        if (conduitBlockEntity.targetUuid == null) {
-            conduitBlockEntity.targetEntity = null;
-        } else if (conduitBlockEntity.targetEntity == null || !conduitBlockEntity.targetEntity.getUuid().equals(conduitBlockEntity.targetUuid)) {
-            conduitBlockEntity.targetEntity = ConduitBlockEntity.findTargetEntity(world, blockPos, conduitBlockEntity.targetUuid);
-            if (conduitBlockEntity.targetEntity == null) {
-                conduitBlockEntity.targetUuid = null;
+    private static void updateTargetEntity(World world, BlockPos pos, ConduitBlockEntity blockEntity) {
+        if (blockEntity.targetUuid == null) {
+            blockEntity.targetEntity = null;
+        } else if (blockEntity.targetEntity == null || !blockEntity.targetEntity.getUuid().equals(blockEntity.targetUuid)) {
+            blockEntity.targetEntity = ConduitBlockEntity.findTargetEntity(world, pos, blockEntity.targetUuid);
+            if (blockEntity.targetEntity == null) {
+                blockEntity.targetUuid = null;
             }
         }
     }
 
-    private static Box getAttackZone(BlockPos blockPos) {
-        int i = blockPos.getX();
-        int j = blockPos.getY();
-        int k = blockPos.getZ();
+    private static Box getAttackZone(BlockPos pos) {
+        int i = pos.getX();
+        int j = pos.getY();
+        int k = pos.getZ();
         return new Box(i, j, k, i + 1, j + 1, k + 1).expand(8.0);
     }
 
     @Nullable
-    private static LivingEntity findTargetEntity(World world, BlockPos blockPos, UUID uUID) {
-        List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, ConduitBlockEntity.getAttackZone(blockPos), livingEntity -> livingEntity.getUuid().equals(uUID));
+    private static LivingEntity findTargetEntity(World world, BlockPos pos, UUID uuid) {
+        List<LivingEntity> list = world.getEntitiesByClass(LivingEntity.class, ConduitBlockEntity.getAttackZone(pos), livingEntity -> livingEntity.getUuid().equals(uuid));
         if (list.size() == 1) {
             return list.get(0);
         }
         return null;
     }
 
-    private static void spawnNautilusParticles(World world, BlockPos blockPos, List<BlockPos> list, @Nullable Entity entity, int i) {
+    private static void spawnNautilusParticles(World world, BlockPos pos, List<BlockPos> activatingBlocks, @Nullable Entity entity, int i) {
         float f;
         Random random = world.random;
         double d = MathHelper.sin((float)(i + 35) * 0.1f) / 2.0f + 0.5f;
         d = (d * d + d) * (double)0.3f;
-        Vec3d vec3d = new Vec3d((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 1.5 + d, (double)blockPos.getZ() + 0.5);
-        for (BlockPos blockPos2 : list) {
+        Vec3d vec3d = new Vec3d((double)pos.getX() + 0.5, (double)pos.getY() + 1.5 + d, (double)pos.getZ() + 0.5);
+        for (BlockPos blockPos : activatingBlocks) {
             if (random.nextInt(50) != 0) continue;
-            BlockPos blockPos3 = blockPos2.subtract(blockPos);
-            f = -0.5f + random.nextFloat() + (float)blockPos3.getX();
-            float g = -2.0f + random.nextFloat() + (float)blockPos3.getY();
-            float h = -0.5f + random.nextFloat() + (float)blockPos3.getZ();
+            BlockPos blockPos2 = blockPos.subtract(pos);
+            f = -0.5f + random.nextFloat() + (float)blockPos2.getX();
+            float g = -2.0f + random.nextFloat() + (float)blockPos2.getY();
+            float h = -0.5f + random.nextFloat() + (float)blockPos2.getZ();
             world.addParticle(ParticleTypes.NAUTILUS, vec3d.x, vec3d.y, vec3d.z, f, g, h);
         }
         if (entity != null) {

@@ -36,7 +36,6 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.WolfEntity;
@@ -86,7 +85,7 @@ extends AnimalEntity {
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(1, new EscapeDangerGoal(this, 2.2));
         this.goalSelector.add(2, new AnimalMateGoal(this, 0.8));
-        this.goalSelector.add(3, new TemptGoal((PathAwareEntity)this, 1.0, Ingredient.ofItems(Items.CARROT, Items.GOLDEN_CARROT, Blocks.DANDELION), false));
+        this.goalSelector.add(3, new TemptGoal(this, 1.0, Ingredient.ofItems(Items.CARROT, Items.GOLDEN_CARROT, Blocks.DANDELION), false));
         this.goalSelector.add(4, new FleeGoal<PlayerEntity>(this, PlayerEntity.class, 8.0f, 2.2, 2.2));
         this.goalSelector.add(4, new FleeGoal<WolfEntity>(this, WolfEntity.class, 10.0f, 2.2, 2.2));
         this.goalSelector.add(4, new FleeGoal<HostileEntity>(this, HostileEntity.class, 4.0f, 2.2, 2.2));
@@ -289,8 +288,8 @@ extends AnimalEntity {
         return this.getRabbitType() == 99 ? SoundCategory.HOSTILE : SoundCategory.NEUTRAL;
     }
 
-    private static boolean method_6614(ItemStack itemStack) {
-        return itemStack.isOf(Items.CARROT) || itemStack.isOf(Items.GOLDEN_CARROT) || itemStack.isOf(Blocks.DANDELION.asItem());
+    private static boolean isTempting(ItemStack stack) {
+        return stack.isOf(Items.CARROT) || stack.isOf(Items.GOLDEN_CARROT) || stack.isOf(Blocks.DANDELION.asItem());
     }
 
     @Override
@@ -306,7 +305,7 @@ extends AnimalEntity {
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        return RabbitEntity.method_6614(stack);
+        return RabbitEntity.isTempting(stack);
     }
 
     public int getRabbitType() {

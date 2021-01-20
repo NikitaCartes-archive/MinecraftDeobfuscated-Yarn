@@ -47,7 +47,7 @@ public class Box {
         return new Box(mutable.minX, mutable.minY, mutable.minZ, mutable.maxX + 1, mutable.maxY + 1, mutable.maxZ + 1);
     }
 
-    public static Box method_29968(Vec3d vec3d) {
+    public static Box from(Vec3d vec3d) {
         return new Box(vec3d.x, vec3d.y, vec3d.z, vec3d.x + 1.0, vec3d.y + 1.0, vec3d.z + 1.0);
     }
 

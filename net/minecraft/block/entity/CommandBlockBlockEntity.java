@@ -58,8 +58,8 @@ extends BlockEntity {
         }
     };
 
-    public CommandBlockBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.COMMAND_BLOCK, blockPos, blockState);
+    public CommandBlockBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.COMMAND_BLOCK, pos, state);
     }
 
     @Override
@@ -117,18 +117,18 @@ extends BlockEntity {
         boolean bl = this.auto;
         this.auto = auto;
         if (!bl && auto && !this.powered && this.world != null && this.getCommandBlockType() != Type.SEQUENCE) {
-            this.method_23360();
+            this.scheduleAutoTick();
         }
     }
 
-    public void method_23359() {
+    public void updateCommandBlock() {
         Type type = this.getCommandBlockType();
         if (type == Type.AUTO && (this.powered || this.auto) && this.world != null) {
-            this.method_23360();
+            this.scheduleAutoTick();
         }
     }
 
-    private void method_23360() {
+    private void scheduleAutoTick() {
         Block block = this.getCachedState().getBlock();
         if (block instanceof CommandBlock) {
             this.updateConditionMet();

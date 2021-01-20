@@ -20,7 +20,7 @@ extends AbstractMinecartEntity {
     private final MobSpawnerLogic logic = new MobSpawnerLogic(){
 
         @Override
-        public void sendStatus(World world, BlockPos blockPos, int i) {
+        public void sendStatus(World world, BlockPos pos, int i) {
             world.sendEntityStatus(SpawnerMinecartEntity.this, (byte)i);
         }
     };
@@ -37,7 +37,7 @@ extends AbstractMinecartEntity {
     }
 
     private Runnable method_31553(World world) {
-        return world instanceof ServerWorld ? () -> this.logic.method_31588((ServerWorld)world, this.getBlockPos()) : () -> this.logic.method_31589(world, this.getBlockPos());
+        return world instanceof ServerWorld ? () -> this.logic.serverTick((ServerWorld)world, this.getBlockPos()) : () -> this.logic.clientTick(world, this.getBlockPos());
     }
 
     @Override

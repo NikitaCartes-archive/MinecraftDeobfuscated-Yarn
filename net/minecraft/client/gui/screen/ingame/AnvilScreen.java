@@ -120,8 +120,8 @@ extends ForgingScreen<AnvilScreenHandler> {
     }
 
     @Override
-    public void renderForeground(MatrixStack matrixStack, int mouseY, int i, float f) {
-        this.nameField.render(matrixStack, mouseY, i, f);
+    public void renderForeground(MatrixStack matrices, int mouseY, int i, float f) {
+        this.nameField.render(matrices, mouseY, i, f);
     }
 
     @Override

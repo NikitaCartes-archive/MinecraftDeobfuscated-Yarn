@@ -13,6 +13,11 @@ import net.minecraft.world.WorldAccess;
 public interface FluidDrainable {
     public ItemStack tryDrainFluid(WorldAccess var1, BlockPos var2, BlockState var3);
 
-    public Optional<SoundEvent> getDrainSound();
+    /**
+     * Returns the sound played when filling a bucket with the fluid contained in this block.
+     * 
+     * @see net.minecraft.fluid.Fluid#getBucketFillSound()
+     */
+    public Optional<SoundEvent> getBucketFillSound();
 }
 

@@ -161,24 +161,24 @@ public class Scoreboard {
     }
 
     @Nullable
-    public ScoreboardObjective getObjectiveForSlot(int i) {
-        return this.objectiveSlots[i];
+    public ScoreboardObjective getObjectiveForSlot(int slot) {
+        return this.objectiveSlots[slot];
     }
 
-    public Team getTeam(String string) {
-        return this.teams.get(string);
+    public Team getTeam(String name) {
+        return this.teams.get(name);
     }
 
-    public Team addTeam(String string) {
-        if (string.length() > 16) {
-            throw new IllegalArgumentException("The team name '" + string + "' is too long!");
+    public Team addTeam(String name) {
+        if (name.length() > 16) {
+            throw new IllegalArgumentException("The team name '" + name + "' is too long!");
         }
-        Team team = this.getTeam(string);
+        Team team = this.getTeam(name);
         if (team != null) {
-            throw new IllegalArgumentException("A team with the name '" + string + "' already exists!");
+            throw new IllegalArgumentException("A team with the name '" + name + "' already exists!");
         }
-        team = new Team(this, string);
-        this.teams.put(string, team);
+        team = new Team(this, name);
+        this.teams.put(name, team);
         this.updateScoreboardTeamAndPlayers(team);
         return team;
     }
@@ -202,10 +202,10 @@ public class Scoreboard {
         return team.getPlayerList().add(playerName);
     }
 
-    public boolean clearPlayerTeam(String string) {
-        Team team = this.getPlayerTeam(string);
+    public boolean clearPlayerTeam(String playerName) {
+        Team team = this.getPlayerTeam(playerName);
         if (team != null) {
-            this.removePlayerFromTeam(string, team);
+            this.removePlayerFromTeam(playerName, team);
             return true;
         }
         return false;
@@ -228,8 +228,8 @@ public class Scoreboard {
     }
 
     @Nullable
-    public Team getPlayerTeam(String string) {
-        return this.teamsByPlayer.get(string);
+    public Team getPlayerTeam(String playerName) {
+        return this.teamsByPlayer.get(playerName);
     }
 
     public void updateObjective(ScoreboardObjective objective) {

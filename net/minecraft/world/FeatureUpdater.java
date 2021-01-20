@@ -114,22 +114,22 @@ public class FeatureUpdater {
         return false;
     }
 
-    private CompoundTag getUpdatedStarts(CompoundTag compoundTag, ChunkPos chunkPos) {
-        CompoundTag compoundTag2 = compoundTag.getCompound("Level");
-        CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
-        CompoundTag compoundTag4 = compoundTag3.getCompound("Starts");
+    private CompoundTag getUpdatedStarts(CompoundTag tag, ChunkPos pos) {
+        CompoundTag compoundTag = tag.getCompound("Level");
+        CompoundTag compoundTag2 = compoundTag.getCompound("Structures");
+        CompoundTag compoundTag3 = compoundTag2.getCompound("Starts");
         for (String string : this.field_17659) {
-            CompoundTag compoundTag5;
+            CompoundTag compoundTag4;
             Long2ObjectMap<CompoundTag> long2ObjectMap = this.featureIdToChunkTag.get(string);
             if (long2ObjectMap == null) continue;
-            long l = chunkPos.toLong();
-            if (!this.updateStates.get(OLD_TO_NEW.get(string)).isRemaining(l) || (compoundTag5 = (CompoundTag)long2ObjectMap.get(l)) == null) continue;
-            compoundTag4.put(string, compoundTag5);
+            long l = pos.toLong();
+            if (!this.updateStates.get(OLD_TO_NEW.get(string)).isRemaining(l) || (compoundTag4 = (CompoundTag)long2ObjectMap.get(l)) == null) continue;
+            compoundTag3.put(string, compoundTag4);
         }
-        compoundTag3.put("Starts", compoundTag4);
-        compoundTag2.put("Structures", compoundTag3);
-        compoundTag.put("Level", compoundTag2);
-        return compoundTag;
+        compoundTag2.put("Starts", compoundTag3);
+        compoundTag.put("Structures", compoundTag2);
+        tag.put("Level", compoundTag);
+        return tag;
     }
 
     private void init(@Nullable PersistentStateManager persistentStateManager) {
@@ -159,7 +159,7 @@ public class FeatureUpdater {
                 this.featureIdToChunkTag.computeIfAbsent(string3, string -> new Long2ObjectOpenHashMap()).put(l, compoundTag2);
             }
             String string5 = string2 + "_index";
-            ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState::method_32358, ChunkUpdateState::new, string5);
+            ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState::fromNbt, ChunkUpdateState::new, string5);
             if (chunkUpdateState.getAll().isEmpty()) {
                 ChunkUpdateState chunkUpdateState2 = new ChunkUpdateState();
                 this.updateStates.put(string2, chunkUpdateState2);

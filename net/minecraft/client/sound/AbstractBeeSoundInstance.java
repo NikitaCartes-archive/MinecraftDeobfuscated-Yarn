@@ -19,12 +19,12 @@ extends MovingSoundInstance {
     protected final BeeEntity bee;
     private boolean replaced;
 
-    public AbstractBeeSoundInstance(BeeEntity beeEntity, SoundEvent soundEvent, SoundCategory soundCategory) {
-        super(soundEvent, soundCategory);
-        this.bee = beeEntity;
-        this.x = (float)beeEntity.getX();
-        this.y = (float)beeEntity.getY();
-        this.z = (float)beeEntity.getZ();
+    public AbstractBeeSoundInstance(BeeEntity entity, SoundEvent sound, SoundCategory soundCategory) {
+        super(sound, soundCategory);
+        this.bee = entity;
+        this.x = (float)entity.getX();
+        this.y = (float)entity.getY();
+        this.z = (float)entity.getZ();
         this.repeat = true;
         this.repeatDelay = 0;
         this.volume = 0.0f;

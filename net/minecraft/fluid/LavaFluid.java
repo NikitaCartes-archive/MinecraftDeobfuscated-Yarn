@@ -110,7 +110,7 @@ extends FlowableFluid {
     }
 
     private boolean hasBurnableBlock(WorldView world, BlockPos pos) {
-        if (pos.getY() >= world.getSectionCount() && pos.getY() < world.getTopHeightLimit() && !world.isChunkLoaded(pos)) {
+        if (pos.getY() >= world.getBottomSectionLimit() && pos.getY() < world.getTopHeightLimit() && !world.isChunkLoaded(pos)) {
             return false;
         }
         return world.getBlockState(pos).getMaterial().isBurnable();
@@ -135,7 +135,7 @@ extends FlowableFluid {
 
     @Override
     public BlockState toBlockState(FluidState state) {
-        return (BlockState)Blocks.LAVA.getDefaultState().with(FluidBlock.LEVEL, LavaFluid.method_15741(state));
+        return (BlockState)Blocks.LAVA.getDefaultState().with(FluidBlock.LEVEL, LavaFluid.getBlockStateLevel(state));
     }
 
     @Override
@@ -202,7 +202,7 @@ extends FlowableFluid {
     }
 
     @Override
-    public Optional<SoundEvent> getFillSound() {
+    public Optional<SoundEvent> getBucketFillSound() {
         return Optional.of(SoundEvents.ITEM_BUCKET_FILL_LAVA);
     }
 

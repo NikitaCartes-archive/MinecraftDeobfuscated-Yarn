@@ -21,9 +21,9 @@ public class BrewingRecipeRegistry {
     private static final List<Recipe<Potion>> POTION_RECIPES = Lists.newArrayList();
     private static final List<Recipe<Item>> ITEM_RECIPES = Lists.newArrayList();
     private static final List<Ingredient> POTION_TYPES = Lists.newArrayList();
-    private static final Predicate<ItemStack> POTION_TYPE_PREDICATE = itemStack -> {
+    private static final Predicate<ItemStack> POTION_TYPE_PREDICATE = stack -> {
         for (Ingredient ingredient : POTION_TYPES) {
-            if (!ingredient.test((ItemStack)itemStack)) continue;
+            if (!ingredient.test((ItemStack)stack)) continue;
             return true;
         }
         return false;
@@ -200,10 +200,10 @@ public class BrewingRecipeRegistry {
         private final Ingredient ingredient;
         private final T output;
 
-        public Recipe(T object, Ingredient ingredient, T object2) {
-            this.input = object;
+        public Recipe(T input, Ingredient ingredient, T output) {
+            this.input = input;
             this.ingredient = ingredient;
-            this.output = object2;
+            this.output = output;
         }
     }
 }

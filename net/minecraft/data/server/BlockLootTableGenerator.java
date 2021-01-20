@@ -167,19 +167,19 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     private static LootTable.Builder shulkerBoxDrops(Block drop) {
-        return LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(drop).apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Lock", "BlockEntityTag.Lock").withOperation("LootTable", "BlockEntityTag.LootTable").withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed"))).apply(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS))))));
+        return LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(drop).apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Lock", "BlockEntityTag.Lock").withOperation("LootTable", "BlockEntityTag.LootTable").withOperation("LootTableSeed", "BlockEntityTag.LootTableSeed"))).apply(SetContentsLootFunction.builder().withEntry(DynamicEntry.builder(ShulkerBoxBlock.CONTENTS))))));
     }
 
     private static LootTable.Builder bannerDrops(Block drop) {
-        return LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(drop).apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Patterns", "BlockEntityTag.Patterns")))));
+        return LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(drop, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(drop).apply(CopyNameLootFunction.builder(CopyNameLootFunction.Source.BLOCK_ENTITY))).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Patterns", "BlockEntityTag.Patterns")))));
     }
 
     private static LootTable.Builder beeNestDrops(Block drop) {
-        return LootTable.builder().pool(LootPool.builder().conditionally(WITH_SILK_TOUCH).rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(drop).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Bees", "BlockEntityTag.Bees"))).apply(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))));
+        return LootTable.builder().pool(LootPool.builder().conditionally(WITH_SILK_TOUCH).rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)((LeafEntry.Builder)ItemEntry.builder(drop).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).apply(CopyStateFunction.getBuilder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))));
     }
 
     private static LootTable.Builder beehiveDrops(Block drop) {
-        return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with(((LootPoolEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(drop).conditionally(WITH_SILK_TOUCH)).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("Bees", "BlockEntityTag.Bees"))).apply(CopyStateFunction.getBuilder(drop).method_21898(BeehiveBlock.HONEY_LEVEL))).alternatively(ItemEntry.builder(drop))));
+        return LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with(((LootPoolEntry.Builder)((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(drop).conditionally(WITH_SILK_TOUCH)).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("Bees", "BlockEntityTag.Bees"))).apply(CopyStateFunction.getBuilder(drop).addProperty(BeehiveBlock.HONEY_LEVEL))).alternatively(ItemEntry.builder(drop))));
     }
 
     private static LootTable.Builder oreDrops(Block dropWithSilkTouch, Item drop) {
@@ -224,7 +224,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
 
     private static LootTable.Builder tallGrassDrops(Block tallGrass, Block grass) {
         AlternativeEntry.Builder builder = ((LeafEntry.Builder)((LootPoolEntry.Builder)ItemEntry.builder(grass).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0f)))).conditionally(WITH_SHEARS)).alternatively((LootPoolEntry.Builder<?>)((LeafEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionCondition(tallGrass, ItemEntry.builder(Items.WHEAT_SEEDS))).conditionally(RandomChanceLootCondition.builder(0.125f)));
-        return LootTable.builder().pool(LootPool.builder().with(builder).conditionally(BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))).conditionally(LocationCheckLootCondition.method_30151(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(tallGrass).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER).build()).build()), new BlockPos(0, 1, 0)))).pool(LootPool.builder().with(builder).conditionally(BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))).conditionally(LocationCheckLootCondition.method_30151(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(tallGrass).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER).build()).build()), new BlockPos(0, -1, 0))));
+        return LootTable.builder().pool(LootPool.builder().with(builder).conditionally(BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER))).conditionally(LocationCheckLootCondition.builder(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(tallGrass).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER).build()).build()), new BlockPos(0, 1, 0)))).pool(LootPool.builder().with(builder).conditionally(BlockStatePropertyLootCondition.builder(tallGrass).properties(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.UPPER))).conditionally(LocationCheckLootCondition.builder(LocationPredicate.Builder.create().block(BlockPredicate.Builder.create().block(tallGrass).state(StatePredicate.Builder.create().exactMatch(TallPlantBlock.HALF, DoubleBlockHalf.LOWER).build()).build()), new BlockPos(0, -1, 0))));
     }
 
     private static LootTable.Builder candleDrops(Block candle) {
@@ -877,7 +877,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.RED_BANNER, BlockLootTableGenerator::bannerDrops);
         this.addDrop(Blocks.WHITE_BANNER, BlockLootTableGenerator::bannerDrops);
         this.addDrop(Blocks.YELLOW_BANNER, BlockLootTableGenerator::bannerDrops);
-        this.addDrop(Blocks.PLAYER_HEAD, (Block block) -> LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(block, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)ItemEntry.builder(block).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.field_27914).withOperation("SkullOwner", "SkullOwner"))))));
+        this.addDrop(Blocks.PLAYER_HEAD, (Block block) -> LootTable.builder().pool(BlockLootTableGenerator.addSurvivesExplosionCondition(block, LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder<?>)ItemEntry.builder(block).apply(CopyNbtLootFunction.builder(ContextLootNbtProvider.BLOCK_ENTITY).withOperation("SkullOwner", "SkullOwner"))))));
         this.addDrop(Blocks.BEE_NEST, BlockLootTableGenerator::beeNestDrops);
         this.addDrop(Blocks.BEEHIVE, BlockLootTableGenerator::beehiveDrops);
         this.addDrop(Blocks.BIRCH_LEAVES, (Block block) -> BlockLootTableGenerator.leavesDrop(block, Blocks.BIRCH_SAPLING, SAPLING_DROP_CHANCE));
@@ -908,6 +908,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.NETHER_SPROUTS, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.SEAGRASS, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.VINE, BlockLootTableGenerator::dropsWithShears);
+        this.addDrop(Blocks.GLOW_LICHEN, BlockLootTableGenerator::dropsWithShears);
         this.addDrop(Blocks.TALL_SEAGRASS, BlockLootTableGenerator.seagrassDrops(Blocks.SEAGRASS));
         this.addDrop(Blocks.LARGE_FERN, (Block block) -> BlockLootTableGenerator.tallGrassDrops(block, Blocks.FERN));
         this.addDrop(Blocks.TALL_GRASS, (Block block) -> BlockLootTableGenerator.tallGrassDrops(block, Blocks.GRASS));

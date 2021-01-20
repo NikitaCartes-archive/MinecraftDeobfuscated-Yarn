@@ -15,8 +15,8 @@ public class FunctionTimerCallback
 implements TimerCallback<MinecraftServer> {
     private final Identifier name;
 
-    public FunctionTimerCallback(Identifier identifier) {
-        this.name = identifier;
+    public FunctionTimerCallback(Identifier name) {
+        this.name = name;
     }
 
     @Override

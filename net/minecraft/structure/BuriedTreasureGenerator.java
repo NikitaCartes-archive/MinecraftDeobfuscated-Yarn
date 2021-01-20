@@ -41,7 +41,7 @@ public class BuriedTreasureGenerator {
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
             int i = world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, this.boundingBox.minX, this.boundingBox.minZ);
             BlockPos.Mutable mutable = new BlockPos.Mutable(this.boundingBox.minX, i, this.boundingBox.minZ);
-            while (mutable.getY() > world.getSectionCount()) {
+            while (mutable.getY() > world.getBottomSectionLimit()) {
                 BlockState blockState = world.getBlockState(mutable);
                 BlockState blockState2 = world.getBlockState((BlockPos)mutable.down());
                 if (blockState2 == Blocks.SANDSTONE.getDefaultState() || blockState2 == Blocks.STONE.getDefaultState() || blockState2 == Blocks.ANDESITE.getDefaultState() || blockState2 == Blocks.GRANITE.getDefaultState() || blockState2 == Blocks.DIORITE.getDefaultState()) {

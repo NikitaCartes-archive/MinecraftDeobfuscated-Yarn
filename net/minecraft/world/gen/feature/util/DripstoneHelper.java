@@ -31,7 +31,7 @@ public class DripstoneHelper {
     }
 
     protected static boolean canGenerateBase(StructureWorldAccess world, BlockPos pos, int height) {
-        if (DripstoneHelper.canGenerate(world, pos)) {
+        if (DripstoneHelper.canGenerateOrLava(world, pos)) {
             return false;
         }
         float f = 6.0f;
@@ -39,7 +39,7 @@ public class DripstoneHelper {
         for (float h = 0.0f; h < (float)Math.PI * 2; h += g) {
             int j;
             int i = (int)(MathHelper.cos(h) * (float)height);
-            if (!DripstoneHelper.canGenerate(world, pos.add(i, 0, j = (int)(MathHelper.sin(h) * (float)height)))) continue;
+            if (!DripstoneHelper.canGenerateOrLava(world, pos.add(i, 0, j = (int)(MathHelper.sin(h) * (float)height)))) continue;
             return false;
         }
         return true;
@@ -47,6 +47,10 @@ public class DripstoneHelper {
 
     protected static boolean canGenerate(WorldAccess world, BlockPos pos) {
         return world.testBlockState(pos, DripstoneHelper::canGenerate);
+    }
+
+    protected static boolean canGenerateOrLava(WorldAccess world, BlockPos pos) {
+        return world.testBlockState(pos, DripstoneHelper::canGenerateOrLava);
     }
 
     protected static void getDripstoneThickness(Direction direction, int height, boolean merge, Consumer<BlockState> callback) {
@@ -88,12 +92,20 @@ public class DripstoneHelper {
         return (BlockState)((BlockState)Blocks.POINTED_DRIPSTONE.getDefaultState().with(PointedDripstoneBlock.VERTICAL_DIRECTION, direction)).with(PointedDripstoneBlock.THICKNESS, thickness);
     }
 
+    public static boolean canReplaceOrLava(BlockState state) {
+        return DripstoneHelper.canReplace(state) || state.isOf(Blocks.LAVA);
+    }
+
     public static boolean canReplace(BlockState state) {
         return state.isOf(Blocks.DRIPSTONE_BLOCK) || state.isIn(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS);
     }
 
     public static boolean canGenerate(BlockState state) {
         return state.isAir() || state.isOf(Blocks.WATER);
+    }
+
+    public static boolean canGenerateOrLava(BlockState state) {
+        return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.LAVA);
     }
 }
 

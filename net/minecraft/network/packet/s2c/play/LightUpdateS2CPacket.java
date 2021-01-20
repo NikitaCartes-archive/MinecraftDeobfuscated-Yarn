@@ -65,10 +65,10 @@ implements Packet<ClientPlayPacketListener> {
         this.chunkX = buf.readVarInt();
         this.chunkZ = buf.readVarInt();
         this.field_25659 = buf.readBoolean();
-        this.skyLightMask = BitSet.valueOf(buf.method_33134());
-        this.blockLightMask = BitSet.valueOf(buf.method_33134());
-        this.filledSkyLightMask = BitSet.valueOf(buf.method_33134());
-        this.filledBlockLightMask = BitSet.valueOf(buf.method_33134());
+        this.skyLightMask = buf.method_33558();
+        this.blockLightMask = buf.method_33558();
+        this.filledSkyLightMask = buf.method_33558();
+        this.filledBlockLightMask = buf.method_33558();
         int i = buf.readVarInt();
         for (j = 0; j < i; ++j) {
             this.skyLightUpdates.add(buf.readByteArray(2048));
@@ -84,10 +84,10 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.chunkX);
         buf.writeVarInt(this.chunkZ);
         buf.writeBoolean(this.field_25659);
-        buf.writeLongArray(this.skyLightMask.toLongArray());
-        buf.writeLongArray(this.blockLightMask.toLongArray());
-        buf.writeLongArray(this.filledSkyLightMask.toLongArray());
-        buf.writeLongArray(this.filledBlockLightMask.toLongArray());
+        buf.method_33557(this.skyLightMask);
+        buf.method_33557(this.blockLightMask);
+        buf.method_33557(this.filledSkyLightMask);
+        buf.method_33557(this.filledBlockLightMask);
         buf.writeVarInt(this.skyLightUpdates.size());
         for (byte[] bs : this.skyLightUpdates) {
             buf.writeByteArray(bs);

@@ -84,7 +84,7 @@ SaveProperties {
     private boolean modded;
     private final Timer<MinecraftServer> scheduledEvents;
 
-    private LevelProperties(@Nullable DataFixer dataFixer, int dataVersion, @Nullable CompoundTag playerData, boolean modded, int spawnX, int spawnY, int spawnZ, float spawnAngle, long time, long timeOfDay, int version, int clearWeatherTime, int rainTime, boolean raining, int thunderTime, boolean thundering, boolean initialized, boolean difficultyLocked, WorldBorder.Properties worldBorder, int wanderingTraderSpawnDelay, int wanderingTraderSpawnChance, @Nullable UUID wanderingTraderId, Set<String> set, Timer<MinecraftServer> scheduledEvents, @Nullable CompoundTag customBossEvents, CompoundTag dragonFight, LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
+    private LevelProperties(@Nullable DataFixer dataFixer, int dataVersion, @Nullable CompoundTag playerData, boolean modded, int spawnX, int spawnY, int spawnZ, float spawnAngle, long time, long timeOfDay, int version, int clearWeatherTime, int rainTime, boolean raining, int thunderTime, boolean thundering, boolean initialized, boolean difficultyLocked, WorldBorder.Properties worldBorder, int wanderingTraderSpawnDelay, int wanderingTraderSpawnChance, @Nullable UUID wanderingTraderId, Set<String> serverBrands, Timer<MinecraftServer> scheduledEvents, @Nullable CompoundTag customBossEvents, CompoundTag dragonFight, LevelInfo levelInfo, GeneratorOptions generatorOptions, Lifecycle lifecycle) {
         this.dataFixer = dataFixer;
         this.modded = modded;
         this.spawnX = spawnX;
@@ -105,7 +105,7 @@ SaveProperties {
         this.wanderingTraderSpawnDelay = wanderingTraderSpawnDelay;
         this.wanderingTraderSpawnChance = wanderingTraderSpawnChance;
         this.wanderingTraderId = wanderingTraderId;
-        this.serverBrands = set;
+        this.serverBrands = serverBrands;
         this.playerData = playerData;
         this.dataVersion = dataVersion;
         this.scheduledEvents = scheduledEvents;
@@ -406,8 +406,8 @@ SaveProperties {
     }
 
     @Override
-    public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
-        ServerWorldProperties.super.populateCrashReport(reportSection, heightLimitView);
+    public void populateCrashReport(CrashReportSection reportSection, HeightLimitView world) {
+        ServerWorldProperties.super.populateCrashReport(reportSection, world);
         SaveProperties.super.populateCrashReport(reportSection);
     }
 

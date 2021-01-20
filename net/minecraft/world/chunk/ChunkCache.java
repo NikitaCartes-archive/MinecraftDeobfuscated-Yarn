@@ -60,18 +60,18 @@ CollisionView {
         }
     }
 
-    private Chunk method_22354(BlockPos blockPos) {
-        return this.method_22353(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+    private Chunk getChunk(BlockPos pos) {
+        return this.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
 
-    private Chunk method_22353(int i, int j) {
-        int k = i - this.minX;
-        int l = j - this.minZ;
-        if (k < 0 || k >= this.chunks.length || l < 0 || l >= this.chunks[k].length) {
-            return new EmptyChunk(this.world, new ChunkPos(i, j));
+    private Chunk getChunk(int chunkX, int chunkZ) {
+        int i = chunkX - this.minX;
+        int j = chunkZ - this.minZ;
+        if (i < 0 || i >= this.chunks.length || j < 0 || j >= this.chunks[i].length) {
+            return new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ));
         }
-        Chunk chunk = this.chunks[k][l];
-        return chunk != null ? chunk : new EmptyChunk(this.world, new ChunkPos(i, j));
+        Chunk chunk = this.chunks[i][j];
+        return chunk != null ? chunk : new EmptyChunk(this.world, new ChunkPos(chunkX, chunkZ));
     }
 
     @Override
@@ -80,14 +80,14 @@ CollisionView {
     }
 
     @Override
-    public BlockView getExistingChunk(int chunkX, int chunkZ) {
-        return this.method_22353(chunkX, chunkZ);
+    public BlockView getChunkAsView(int chunkX, int chunkZ) {
+        return this.getChunk(chunkX, chunkZ);
     }
 
     @Override
     @Nullable
     public BlockEntity getBlockEntity(BlockPos pos) {
-        Chunk chunk = this.method_22354(pos);
+        Chunk chunk = this.getChunk(pos);
         return chunk.getBlockEntity(pos);
     }
 
@@ -96,7 +96,7 @@ CollisionView {
         if (this.isOutOfHeightLimit(pos)) {
             return Blocks.AIR.getDefaultState();
         }
-        Chunk chunk = this.method_22354(pos);
+        Chunk chunk = this.getChunk(pos);
         return chunk.getBlockState(pos);
     }
 
@@ -115,18 +115,18 @@ CollisionView {
         if (this.isOutOfHeightLimit(pos)) {
             return Fluids.EMPTY.getDefaultState();
         }
-        Chunk chunk = this.method_22354(pos);
+        Chunk chunk = this.getChunk(pos);
         return chunk.getFluidState(pos);
-    }
-
-    @Override
-    public int getSectionCount() {
-        return this.world.getSectionCount();
     }
 
     @Override
     public int getBottomSectionLimit() {
         return this.world.getBottomSectionLimit();
+    }
+
+    @Override
+    public int getSectionCount() {
+        return this.world.getSectionCount();
     }
 }
 

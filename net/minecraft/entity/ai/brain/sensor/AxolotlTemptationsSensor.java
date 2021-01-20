@@ -23,7 +23,7 @@ import net.minecraft.server.world.ServerWorld;
 
 public class AxolotlTemptationsSensor
 extends Sensor<PathAwareEntity> {
-    private static final TargetPredicate field_28330 = new TargetPredicate().setBaseMaxDistance(10.0).includeInvulnerable().includeTeammates().ignoreEntityTargetRules().includeHidden();
+    private static final TargetPredicate TEMPTER_PREDICATE = new TargetPredicate().setBaseMaxDistance(10.0).includeInvulnerable().includeTeammates().ignoreEntityTargetRules().includeHidden();
     private final Ingredient ingredient;
 
     public AxolotlTemptationsSensor(Ingredient ingredient) {
@@ -33,7 +33,7 @@ extends Sensor<PathAwareEntity> {
     @Override
     protected void sense(ServerWorld serverWorld, PathAwareEntity pathAwareEntity) {
         Brain<?> brain = pathAwareEntity.getBrain();
-        List list = serverWorld.getPlayers().stream().filter(EntityPredicates.EXCEPT_SPECTATOR).filter(player -> field_28330.test(pathAwareEntity, (LivingEntity)player)).filter(serverPlayerEntity -> pathAwareEntity.isInRange((Entity)serverPlayerEntity, 10.0)).filter(this::test).sorted(Comparator.comparingDouble(pathAwareEntity::squaredDistanceTo)).collect(Collectors.toList());
+        List list = serverWorld.getPlayers().stream().filter(EntityPredicates.EXCEPT_SPECTATOR).filter(player -> TEMPTER_PREDICATE.test(pathAwareEntity, (LivingEntity)player)).filter(serverPlayerEntity -> pathAwareEntity.isInRange((Entity)serverPlayerEntity, 10.0)).filter(this::test).sorted(Comparator.comparingDouble(pathAwareEntity::squaredDistanceTo)).collect(Collectors.toList());
         if (!list.isEmpty()) {
             PlayerEntity playerEntity = (PlayerEntity)list.get(0);
             brain.remember(MemoryModuleType.TEMPTING_PLAYER, playerEntity);

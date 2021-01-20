@@ -80,26 +80,26 @@ extends Block {
         }
     }
 
-    protected void updatePlateState(@Nullable Entity entity, World world, BlockPos blockPos, BlockState blockState, int i) {
+    protected void updatePlateState(@Nullable Entity entity, World world, BlockPos pos, BlockState state, int output) {
         boolean bl2;
-        int j = this.getRedstoneOutput(world, blockPos);
-        boolean bl = i > 0;
-        boolean bl3 = bl2 = j > 0;
-        if (i != j) {
-            BlockState blockState2 = this.setRedstoneOutput(blockState, j);
-            world.setBlockState(blockPos, blockState2, 2);
-            this.updateNeighbors(world, blockPos);
-            world.scheduleBlockRerenderIfNeeded(blockPos, blockState, blockState2);
+        int i = this.getRedstoneOutput(world, pos);
+        boolean bl = output > 0;
+        boolean bl3 = bl2 = i > 0;
+        if (output != i) {
+            BlockState blockState = this.setRedstoneOutput(state, i);
+            world.setBlockState(pos, blockState, 2);
+            this.updateNeighbors(world, pos);
+            world.scheduleBlockRerenderIfNeeded(pos, state, blockState);
         }
         if (!bl2 && bl) {
-            this.playDepressSound(world, blockPos);
-            world.emitGameEvent(entity, GameEvent.BLOCK_UNPRESS, blockPos);
+            this.playDepressSound(world, pos);
+            world.emitGameEvent(entity, GameEvent.BLOCK_UNPRESS, pos);
         } else if (bl2 && !bl) {
-            this.playPressSound(world, blockPos);
-            world.emitGameEvent(entity, GameEvent.BLOCK_PRESS, blockPos);
+            this.playPressSound(world, pos);
+            world.emitGameEvent(entity, GameEvent.BLOCK_PRESS, pos);
         }
         if (bl2) {
-            world.getBlockTickScheduler().schedule(new BlockPos(blockPos), this, this.getTickRate());
+            world.getBlockTickScheduler().schedule(new BlockPos(pos), this, this.getTickRate());
         }
     }
 

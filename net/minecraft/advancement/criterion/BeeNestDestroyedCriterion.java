@@ -47,8 +47,8 @@ extends AbstractCriterion<Conditions> {
         return null;
     }
 
-    public void test(ServerPlayerEntity player, BlockState blockState, ItemStack stack, int beeCount) {
-        this.test(player, conditions -> conditions.test(blockState, stack, beeCount));
+    public void test(ServerPlayerEntity player, BlockState state, ItemStack stack, int beeCount) {
+        this.test(player, conditions -> conditions.test(state, stack, beeCount));
     }
 
     @Override
@@ -74,8 +74,8 @@ extends AbstractCriterion<Conditions> {
             return new Conditions(EntityPredicate.Extended.EMPTY, block, itemPredicateBuilder.build(), beeCountRange);
         }
 
-        public boolean test(BlockState blockState, ItemStack stack, int count) {
-            if (this.block != null && !blockState.isOf(this.block)) {
+        public boolean test(BlockState state, ItemStack stack, int count) {
+            if (this.block != null && !state.isOf(this.block)) {
                 return false;
             }
             if (!this.item.test(stack)) {

@@ -13,7 +13,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class TaigaVillageData {
-    public static final StructurePool field_26341 = StructurePools.register(new StructurePool(new Identifier("village/taiga/town_centers"), new Identifier("empty"), ImmutableList.of(Pair.of(StructurePoolElement.method_30426("village/taiga/town_centers/taiga_meeting_point_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 49), Pair.of(StructurePoolElement.method_30426("village/taiga/town_centers/taiga_meeting_point_2", StructureProcessorLists.MOSSIFY_10_PERCENT), 49), Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/town_centers/taiga_meeting_point_1", StructureProcessorLists.ZOMBIE_TAIGA), 1), Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/town_centers/taiga_meeting_point_2", StructureProcessorLists.ZOMBIE_TAIGA), 1)), StructurePool.Projection.RIGID));
+    public static final StructurePool STRUCTURE_POOLS = StructurePools.register(new StructurePool(new Identifier("village/taiga/town_centers"), new Identifier("empty"), ImmutableList.of(Pair.of(StructurePoolElement.method_30426("village/taiga/town_centers/taiga_meeting_point_1", StructureProcessorLists.MOSSIFY_10_PERCENT), 49), Pair.of(StructurePoolElement.method_30426("village/taiga/town_centers/taiga_meeting_point_2", StructureProcessorLists.MOSSIFY_10_PERCENT), 49), Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/town_centers/taiga_meeting_point_1", StructureProcessorLists.ZOMBIE_TAIGA), 1), Pair.of(StructurePoolElement.method_30426("village/taiga/zombie/town_centers/taiga_meeting_point_2", StructureProcessorLists.ZOMBIE_TAIGA), 1)), StructurePool.Projection.RIGID));
 
     public static void init() {
     }

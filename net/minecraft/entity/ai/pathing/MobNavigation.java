@@ -49,10 +49,10 @@ extends EntityNavigation {
         BlockPos blockPos;
         if (this.world.getBlockState(target).isAir()) {
             blockPos = target.down();
-            while (blockPos.getY() > this.world.getSectionCount() && this.world.getBlockState(blockPos).isAir()) {
+            while (blockPos.getY() > this.world.getBottomSectionLimit() && this.world.getBlockState(blockPos).isAir()) {
                 blockPos = blockPos.down();
             }
-            if (blockPos.getY() > this.world.getSectionCount()) {
+            if (blockPos.getY() > this.world.getBottomSectionLimit()) {
                 return super.findPathTo(blockPos.up(), distance);
             }
             while (blockPos.getY() < this.world.getTopHeightLimit() && this.world.getBlockState(blockPos).isAir()) {

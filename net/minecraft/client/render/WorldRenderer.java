@@ -376,7 +376,7 @@ AutoCloseable {
             int l = random.nextInt(21) - 10;
             BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l)).down();
             Biome biome = worldView.getBiome(blockPos3);
-            if (blockPos3.getY() <= worldView.getSectionCount() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos3) >= 0.15f)) continue;
+            if (blockPos3.getY() <= worldView.getBottomSectionLimit() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos3) >= 0.15f)) continue;
             blockPos2 = blockPos3;
             if (this.client.options.particles == ParticlesMode.MINIMAL) break;
             double d = random.nextDouble();
@@ -609,17 +609,17 @@ AutoCloseable {
         }
     }
 
-    public void setWorld(@Nullable ClientWorld clientWorld) {
+    public void setWorld(@Nullable ClientWorld world) {
         this.lastCameraChunkUpdateX = Double.MIN_VALUE;
         this.lastCameraChunkUpdateY = Double.MIN_VALUE;
         this.lastCameraChunkUpdateZ = Double.MIN_VALUE;
         this.cameraChunkX = Integer.MIN_VALUE;
         this.cameraChunkY = Integer.MIN_VALUE;
         this.cameraChunkZ = Integer.MIN_VALUE;
-        this.entityRenderDispatcher.setWorld(clientWorld);
-        this.world = clientWorld;
-        if (clientWorld != null) {
-            this.visibleChunks.ensureCapacity(4356 * clientWorld.method_32890());
+        this.entityRenderDispatcher.setWorld(world);
+        this.world = world;
+        if (world != null) {
+            this.visibleChunks.ensureCapacity(4356 * world.getSections());
             this.reload();
         } else {
             this.chunksToRebuild.clear();
@@ -719,9 +719,9 @@ AutoCloseable {
         double g = d - this.lastCameraChunkUpdateX;
         double h = e - this.lastCameraChunkUpdateY;
         double i = f - this.lastCameraChunkUpdateZ;
-        int j = ChunkSectionPos.method_32204(d);
-        int k = ChunkSectionPos.method_32204(e);
-        int l = ChunkSectionPos.method_32204(f);
+        int j = ChunkSectionPos.getSectionCoord(d);
+        int k = ChunkSectionPos.getSectionCoord(e);
+        int l = ChunkSectionPos.getSectionCoord(f);
         if (this.cameraChunkX != j || this.cameraChunkY != k || this.cameraChunkZ != l || g * g + h * h + i * i > 16.0) {
             this.lastCameraChunkUpdateX = d;
             this.lastCameraChunkUpdateY = e;
@@ -754,7 +754,7 @@ AutoCloseable {
             Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5) * (double)this.client.options.entityDistanceScaling);
             boolean bl = this.client.chunkCullingEnabled;
             if (builtChunk == null) {
-                int p = blockPos.getY() > this.world.getSectionCount() ? this.world.getTopHeightLimit() - 8 : this.world.getSectionCount() + 8;
+                int p = blockPos.getY() > this.world.getBottomSectionLimit() ? this.world.getTopHeightLimit() - 8 : this.world.getBottomSectionLimit() + 8;
                 int q = MathHelper.floor(vec3d.x / 16.0) * 16;
                 int r = MathHelper.floor(vec3d.z / 16.0) * 16;
                 Direction[] list = Lists.newArrayList();
@@ -820,7 +820,7 @@ AutoCloseable {
         if (MathHelper.abs(pos.getX() - blockPos.getX()) > this.renderDistance * 16) {
             return null;
         }
-        if (blockPos.getY() < this.world.getSectionCount() || blockPos.getY() >= this.world.getTopHeightLimit()) {
+        if (blockPos.getY() < this.world.getBottomSectionLimit() || blockPos.getY() >= this.world.getTopHeightLimit()) {
             return null;
         }
         if (MathHelper.abs(pos.getZ() - blockPos.getZ()) > this.renderDistance * 16) {
@@ -1137,7 +1137,7 @@ AutoCloseable {
         this.entityRenderDispatcher.render(entity, d - cameraX, e - cameraY, f - cameraZ, g, tickDelta, matrices, vertexConsumers, this.entityRenderDispatcher.getLight(entity, tickDelta));
     }
 
-    private void renderLayer(RenderLayer renderLayer, MatrixStack matrixStack, double d, double e, double f) {
+    private void renderLayer(RenderLayer renderLayer, MatrixStack matrices, double d, double e, double f) {
         renderLayer.startDrawing();
         if (renderLayer == RenderLayer.getTranslucent()) {
             this.client.getProfiler().push("translucent_sort");
@@ -1165,13 +1165,13 @@ AutoCloseable {
             ChunkBuilder.BuiltChunk builtChunk = chunkInfo2.chunk;
             if (builtChunk.getData().isEmpty(renderLayer)) continue;
             VertexBuffer vertexBuffer = builtChunk.getBuffer(renderLayer);
-            matrixStack.push();
+            matrices.push();
             BlockPos blockPos = builtChunk.getOrigin();
-            matrixStack.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
+            matrices.translate((double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f);
             vertexBuffer.bind();
             this.vertexFormat.startDrawing(0L);
-            vertexBuffer.draw(matrixStack.peek().getModel());
-            matrixStack.pop();
+            vertexBuffer.draw(matrices.peek().getModel());
+            matrices.pop();
         }
         VertexBuffer.unbind();
         RenderSystem.clearCurrentColor();
@@ -1823,8 +1823,8 @@ AutoCloseable {
         RenderSystem.depthMask(true);
     }
 
-    private void drawBlockOutline(MatrixStack matrixStack, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos blockPos, BlockState blockState) {
-        WorldRenderer.drawShapeOutline(matrixStack, vertexConsumer, blockState.getOutlineShape(this.world, blockPos, ShapeContext.of(entity)), (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f, 0.0f, 0.0f, 0.0f, 0.4f);
+    private void drawBlockOutline(MatrixStack matrices, VertexConsumer vertexConsumer, Entity entity, double d, double e, double f, BlockPos blockPos, BlockState blockState) {
+        WorldRenderer.drawShapeOutline(matrices, vertexConsumer, blockState.getOutlineShape(this.world, blockPos, ShapeContext.of(entity)), (double)blockPos.getX() - d, (double)blockPos.getY() - e, (double)blockPos.getZ() - f, 0.0f, 0.0f, 0.0f, 0.4f);
     }
 
     public static void method_22983(MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
@@ -1841,8 +1841,8 @@ AutoCloseable {
         }
     }
 
-    private static void drawShapeOutline(MatrixStack matrixStack, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
-        Matrix4f matrix4f = matrixStack.peek().getModel();
+    private static void drawShapeOutline(MatrixStack matrices, VertexConsumer vertexConsumer, VoxelShape voxelShape, double d, double e, double f, float g, float h, float i, float j) {
+        Matrix4f matrix4f = matrices.peek().getModel();
         voxelShape.forEachEdge((k, l, m, n, o, p) -> {
             vertexConsumer.vertex(matrix4f, (float)(k + d), (float)(l + e), (float)(m + f)).color(g, h, i, j).next();
             vertexConsumer.vertex(matrix4f, (float)(n + d), (float)(o + e), (float)(p + f)).color(g, h, i, j).next();

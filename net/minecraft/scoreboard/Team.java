@@ -177,9 +177,9 @@ extends AbstractTeam {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setFriendlyFlagsBitwise(int i) {
-        this.setFriendlyFireAllowed((i & 1) > 0);
-        this.setShowFriendlyInvisibles((i & 2) > 0);
+    public void setFriendlyFlagsBitwise(int flags) {
+        this.setFriendlyFireAllowed((flags & 1) > 0);
+        this.setShowFriendlyInvisibles((flags & 2) > 0);
     }
 
     public void setColor(Formatting color) {

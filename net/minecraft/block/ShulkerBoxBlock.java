@@ -23,7 +23,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.PiglinBrain;
-import net.minecraft.entity.mob.ShulkerLidCollisions;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -51,6 +51,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -97,15 +98,8 @@ extends BlockWithEntity {
         }
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ShulkerBoxBlockEntity) {
-            boolean bl;
             ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-            if (shulkerBoxBlockEntity.getAnimationStage() == ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
-                Direction direction = state.get(FACING);
-                bl = world.isSpaceEmpty(ShulkerLidCollisions.getLidCollisionBox(pos, direction));
-            } else {
-                bl = true;
-            }
-            if (bl) {
+            if (ShulkerBoxBlock.method_33383(state, world, pos, shulkerBoxBlockEntity)) {
                 player.openHandledScreen(shulkerBoxBlockEntity);
                 player.incrementStat(Stats.OPEN_SHULKER_BOX);
                 PiglinBrain.onGuardedBlockInteracted(player, true);
@@ -113,6 +107,14 @@ extends BlockWithEntity {
             return ActionResult.CONSUME;
         }
         return ActionResult.PASS;
+    }
+
+    private static boolean method_33383(BlockState blockState, World world, BlockPos blockPos, ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
+        if (shulkerBoxBlockEntity.getAnimationStage() != ShulkerBoxBlockEntity.AnimationStage.CLOSED) {
+            return true;
+        }
+        Box box = ShulkerEntity.method_33347(blockState.get(FACING), 0.0f, 0.5f).offset(blockPos).contract(1.0E-6);
+        return world.isSpaceEmpty(box);
     }
 
     @Override

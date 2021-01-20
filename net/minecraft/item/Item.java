@@ -170,9 +170,9 @@ implements ItemConvertible {
         return TypedActionResult.pass(user.getStackInHand(hand));
     }
 
-    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity livingEntity) {
+    public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
         if (this.isFood()) {
-            return livingEntity.eatFood(world, stack);
+            return user.eatFood(world, stack);
         }
         return stack;
     }

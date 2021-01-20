@@ -17,12 +17,12 @@ public class DoubleOptionSliderWidget
 extends OptionSliderWidget
 implements OrderableTooltip {
     private final DoubleOption option;
-    private final List<OrderedText> field_27984;
+    private final List<OrderedText> orderedTooltip;
 
-    public DoubleOptionSliderWidget(GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option, List<OrderedText> list) {
+    public DoubleOptionSliderWidget(GameOptions gameOptions, int x, int y, int width, int height, DoubleOption option, List<OrderedText> orderedTooltip) {
         super(gameOptions, x, y, width, height, (double)((float)option.getRatio(option.get(gameOptions))));
         this.option = option;
-        this.field_27984 = list;
+        this.orderedTooltip = orderedTooltip;
         this.updateMessage();
     }
 
@@ -39,7 +39,7 @@ implements OrderableTooltip {
 
     @Override
     public List<OrderedText> getOrderedTooltip() {
-        return this.field_27984;
+        return this.orderedTooltip;
     }
 }
 

@@ -136,7 +136,7 @@ public class ModelLoader {
     });
     private static final StateManager<Block, BlockState> ITEM_FRAME_STATE_FACTORY = new StateManager.Builder(Blocks.AIR).add(BooleanProperty.of("map")).build(Block::getDefaultState, BlockState::new);
     private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
-    private static final Map<Identifier, StateManager<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY);
+    private static final Map<Identifier, StateManager<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY, new Identifier("glow_item_frame"), ITEM_FRAME_STATE_FACTORY);
     private final ResourceManager resourceManager;
     @Nullable
     private SpriteAtlasManager spriteAtlasManager;
@@ -428,20 +428,20 @@ public class ModelLoader {
     }
 
     @Nullable
-    public BakedModel bake(Identifier identifier, ModelBakeSettings settings) {
+    public BakedModel bake(Identifier id, ModelBakeSettings settings) {
         JsonUnbakedModel jsonUnbakedModel;
-        Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isUvLocked());
+        Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(id, settings.getRotation(), settings.isUvLocked());
         if (this.bakedModelCache.containsKey(triple)) {
             return this.bakedModelCache.get(triple);
         }
         if (this.spriteAtlasManager == null) {
             throw new IllegalStateException("bake called too early");
         }
-        UnbakedModel unbakedModel = this.getOrLoadModel(identifier);
+        UnbakedModel unbakedModel = this.getOrLoadModel(id);
         if (unbakedModel instanceof JsonUnbakedModel && (jsonUnbakedModel = (JsonUnbakedModel)unbakedModel).getRootModel() == GENERATION_MARKER) {
-            return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, identifier, false);
+            return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel).bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, id, false);
         }
-        BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, identifier);
+        BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, id);
         this.bakedModelCache.put(triple, bakedModel);
         return bakedModel;
     }

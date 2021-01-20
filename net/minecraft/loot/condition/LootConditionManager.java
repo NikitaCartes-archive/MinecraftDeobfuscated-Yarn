@@ -43,22 +43,22 @@ extends JsonDataLoader {
     @Override
     protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder builder = ImmutableMap.builder();
-        map.forEach((identifier, jsonElement) -> {
+        map.forEach((id, json) -> {
             try {
-                if (jsonElement.isJsonArray()) {
-                    LootCondition[] lootConditions = GSON.fromJson((JsonElement)jsonElement, LootCondition[].class);
-                    builder.put(identifier, new AndCondition(lootConditions));
+                if (json.isJsonArray()) {
+                    LootCondition[] lootConditions = GSON.fromJson((JsonElement)json, LootCondition[].class);
+                    builder.put(id, new AndCondition(lootConditions));
                 } else {
-                    LootCondition lootCondition = GSON.fromJson((JsonElement)jsonElement, LootCondition.class);
-                    builder.put(identifier, lootCondition);
+                    LootCondition lootCondition = GSON.fromJson((JsonElement)json, LootCondition.class);
+                    builder.put(id, lootCondition);
                 }
             } catch (Exception exception) {
-                LOGGER.error("Couldn't parse loot table {}", identifier, (Object)exception);
+                LOGGER.error("Couldn't parse loot table {}", id, (Object)exception);
             }
         });
         ImmutableMap<Identifier, LootCondition> map2 = builder.build();
-        LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, map2::get, identifier -> null);
-        map2.forEach((identifier, lootCondition) -> lootCondition.validate(lootTableReporter.withCondition("{" + identifier + "}", (Identifier)identifier)));
+        LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, map2::get, id -> null);
+        map2.forEach((id, condition) -> condition.validate(lootTableReporter.withCondition("{" + id + "}", (Identifier)id)));
         lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found validation problem in {}: {}", string, string2));
         this.conditions = map2;
     }

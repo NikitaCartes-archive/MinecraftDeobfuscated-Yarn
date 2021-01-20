@@ -96,6 +96,8 @@ public class ParticleTypes {
     public static final DefaultParticleType FALLING_DRIPSTONE_LAVA = ParticleTypes.register("falling_dripstone_lava", false);
     public static final DefaultParticleType DRIPPING_DRIPSTONE_WATER = ParticleTypes.register("dripping_dripstone_water", false);
     public static final DefaultParticleType FALLING_DRIPSTONE_WATER = ParticleTypes.register("falling_dripstone_water", false);
+    public static final DefaultParticleType GLOW_SQUID_INK = ParticleTypes.register("glow_squid_ink", true);
+    public static final DefaultParticleType GLOW = ParticleTypes.register("glow", true);
     public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
     private static DefaultParticleType register(String name, boolean alwaysShow) {

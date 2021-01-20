@@ -23,10 +23,10 @@ extends Task<LivingEntity> {
         this((LivingEntity livingEntity) -> Float.valueOf(speed), completionRange);
     }
 
-    public GoTowardsLookTarget(Function<LivingEntity, Float> function, int i) {
+    public GoTowardsLookTarget(Function<LivingEntity, Float> speed, int completionRange) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.VALUE_PRESENT));
-        this.speed = function;
-        this.completionRange = i;
+        this.speed = speed;
+        this.completionRange = completionRange;
     }
 
     @Override

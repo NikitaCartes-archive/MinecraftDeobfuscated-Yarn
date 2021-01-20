@@ -45,7 +45,7 @@ extends Item {
             return ActionResult.success(world.isClient());
         }
         BlockPos blockPos2 = blockPos.offset(context.getSide());
-        if (AbstractFireBlock.method_30032(world, blockPos2, context.getPlayerFacing())) {
+        if (AbstractFireBlock.canPlaceAt(world, blockPos2, context.getPlayerFacing())) {
             world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0f, world.getRandom().nextFloat() * 0.4f + 0.8f);
             world.emitGameEvent((Entity)playerEntity, GameEvent.FLINT_AND_STEEL_USE, blockPos);
             BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);

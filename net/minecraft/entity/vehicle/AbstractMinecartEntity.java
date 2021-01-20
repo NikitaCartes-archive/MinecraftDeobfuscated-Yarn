@@ -156,7 +156,7 @@ extends Entity {
 
     @Override
     public boolean collidesWith(Entity other) {
-        return BoatEntity.method_30959(this, other);
+        return BoatEntity.canCollide(this, other);
     }
 
     @Override
@@ -296,7 +296,7 @@ extends Entity {
         if (this.getDamageWobbleStrength() > 0.0f) {
             this.setDamageWobbleStrength(this.getDamageWobbleStrength() - 1.0f);
         }
-        this.destroyInVoid();
+        this.attemptTickInVoid();
         this.tickNetherPortal();
         if (this.world.isClient) {
             if (this.clientInterpolationSteps > 0) {
@@ -751,8 +751,8 @@ extends Entity {
         this.setVelocity(this.clientXVelocity, this.clientYVelocity, this.clientZVelocity);
     }
 
-    public void setDamageWobbleStrength(float f) {
-        this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, Float.valueOf(f));
+    public void setDamageWobbleStrength(float damageWobbleStrength) {
+        this.dataTracker.set(DAMAGE_WOBBLE_STRENGTH, Float.valueOf(damageWobbleStrength));
     }
 
     public float getDamageWobbleStrength() {

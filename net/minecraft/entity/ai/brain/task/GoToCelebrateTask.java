@@ -17,12 +17,12 @@ import net.minecraft.util.math.BlockPos;
 public class GoToCelebrateTask<E extends MobEntity>
 extends Task<E> {
     private final int completionRange;
-    private final float field_23130;
+    private final float speed;
 
-    public GoToCelebrateTask(int completionRange, float f) {
+    public GoToCelebrateTask(int completionRange, float speed) {
         super(ImmutableMap.of(MemoryModuleType.CELEBRATE_LOCATION, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.ATTACK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED));
         this.completionRange = completionRange;
-        this.field_23130 = f;
+        this.speed = speed;
     }
 
     @Override
@@ -30,7 +30,7 @@ extends Task<E> {
         BlockPos blockPos = GoToCelebrateTask.getCelebrateLocation(mobEntity);
         boolean bl = blockPos.isWithinDistance(mobEntity.getBlockPos(), (double)this.completionRange);
         if (!bl) {
-            LookTargetUtil.walkTowards((LivingEntity)mobEntity, GoToCelebrateTask.fuzz(mobEntity, blockPos), this.field_23130, this.completionRange);
+            LookTargetUtil.walkTowards((LivingEntity)mobEntity, GoToCelebrateTask.fuzz(mobEntity, blockPos), this.speed, this.completionRange);
         }
     }
 

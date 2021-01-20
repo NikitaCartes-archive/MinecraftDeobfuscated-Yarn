@@ -106,7 +106,7 @@ RecipeGridAligner<Ingredient> {
         this.toggleCraftableButton = new ToggleButtonWidget(i + 110, j + 12, 26, 16, this.recipeBook.isFilteringCraftable(this.craftingScreenHandler));
         this.setBookButtonTexture();
         this.tabButtons.clear();
-        for (RecipeBookGroup recipeBookGroup : RecipeBookGroup.method_30285(this.craftingScreenHandler.getCategory())) {
+        for (RecipeBookGroup recipeBookGroup : RecipeBookGroup.getGroups(this.craftingScreenHandler.getCategory())) {
             this.tabButtons.add(new RecipeGroupButtonWidget(recipeBookGroup));
         }
         if (this.currentTab != null) {
@@ -243,18 +243,18 @@ RecipeGridAligner<Ingredient> {
         RenderSystem.popMatrix();
     }
 
-    public void drawTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {
+    public void drawTooltip(MatrixStack matrices, int i, int j, int k, int l) {
         if (!this.isOpen()) {
             return;
         }
-        this.recipesArea.drawTooltip(matrixStack, k, l);
+        this.recipesArea.drawTooltip(matrices, k, l);
         if (this.toggleCraftableButton.isHovered()) {
             Text text = this.getCraftableButtonText();
             if (this.client.currentScreen != null) {
-                this.client.currentScreen.renderTooltip(matrixStack, text, k, l);
+                this.client.currentScreen.renderTooltip(matrices, text, k, l);
             }
         }
-        this.drawGhostSlotTooltip(matrixStack, i, j, k, l);
+        this.drawGhostSlotTooltip(matrices, i, j, k, l);
     }
 
     private Text getCraftableButtonText() {
@@ -265,7 +265,7 @@ RecipeGridAligner<Ingredient> {
         return TOGGLE_CRAFTABLE_RECIPES_TEXT;
     }
 
-    private void drawGhostSlotTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {
+    private void drawGhostSlotTooltip(MatrixStack matrices, int i, int j, int k, int l) {
         ItemStack itemStack = null;
         for (int m = 0; m < this.ghostSlots.getSlotCount(); ++m) {
             RecipeBookGhostSlots.GhostInputSlot ghostInputSlot = this.ghostSlots.getSlot(m);
@@ -275,12 +275,12 @@ RecipeGridAligner<Ingredient> {
             itemStack = ghostInputSlot.getCurrentItemStack();
         }
         if (itemStack != null && this.client.currentScreen != null) {
-            this.client.currentScreen.renderTooltip(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
+            this.client.currentScreen.renderTooltip(matrices, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
         }
     }
 
-    public void drawGhostSlots(MatrixStack matrixStack, int i, int j, boolean bl, float f) {
-        this.ghostSlots.draw(matrixStack, this.client, i, j, bl, f);
+    public void drawGhostSlots(MatrixStack matrices, int i, int j, boolean bl, float f) {
+        this.ghostSlots.draw(matrices, this.client, i, j, bl, f);
     }
 
     @Override
@@ -374,18 +374,18 @@ RecipeGridAligner<Ingredient> {
     }
 
     @Override
-    public boolean charTyped(char chr, int keyCode) {
+    public boolean charTyped(char chr, int modifiers) {
         if (this.searching) {
             return false;
         }
         if (!this.isOpen() || this.client.player.isSpectator()) {
             return false;
         }
-        if (this.searchField.charTyped(chr, keyCode)) {
+        if (this.searchField.charTyped(chr, modifiers)) {
             this.refreshSearchResults();
             return true;
         }
-        return Element.super.charTyped(chr, keyCode);
+        return Element.super.charTyped(chr, modifiers);
     }
 
     @Override

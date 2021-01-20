@@ -157,9 +157,9 @@ public abstract class DynamicRegistryManager {
     /**
      * Loads a dynamic registry manager from the resource manager's data files.
      */
-    public static void load(Impl impl, RegistryOps<?> registryOps) {
+    public static void load(Impl registryManager, RegistryOps<?> registryOps) {
         for (Info<?> info : INFOS.values()) {
-            DynamicRegistryManager.load(registryOps, impl, info);
+            DynamicRegistryManager.load(registryOps, registryManager, info);
         }
     }
 

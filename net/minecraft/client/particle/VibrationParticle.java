@@ -26,14 +26,14 @@ import net.minecraft.world.Vibration;
 @Environment(value=EnvType.CLIENT)
 public class VibrationParticle
 extends SpriteBillboardParticle {
-    private final Vibration field_28249;
+    private final Vibration vibration;
     private float field_28250;
     private float field_28248;
 
     private VibrationParticle(ClientWorld world, Vibration vibration, int maxAge) {
         super(world, (float)vibration.getOrigin().getX() + 0.5f, (float)vibration.getOrigin().getY() + 0.5f, (float)vibration.getOrigin().getZ() + 0.5f, 0.0, 0.0, 0.0);
         this.scale = 0.3f;
-        this.field_28249 = vibration;
+        this.vibration = vibration;
         this.maxAge = maxAge;
     }
 
@@ -77,7 +77,7 @@ extends SpriteBillboardParticle {
         float m = this.getMaxU();
         float n = this.getMinV();
         float o = this.getMaxV();
-        int p = this.getColorMultiplier(f);
+        int p = this.getBrightness(f);
         vertexConsumer.vertex(vec3fs[0].getX(), vec3fs[0].getY(), vec3fs[0].getZ()).texture(m, o).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(p).next();
         vertexConsumer.vertex(vec3fs[1].getX(), vec3fs[1].getY(), vec3fs[1].getZ()).texture(m, n).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(p).next();
         vertexConsumer.vertex(vec3fs[2].getX(), vec3fs[2].getY(), vec3fs[2].getZ()).texture(l, n).color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha).light(p).next();
@@ -85,7 +85,7 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getColorMultiplier(float tint) {
+    public int getBrightness(float tint) {
         return 240;
     }
 
@@ -97,13 +97,13 @@ extends SpriteBillboardParticle {
     @Override
     public void tick() {
         super.tick();
-        Optional<BlockPos> optional = this.field_28249.getDestination().getPos(this.world);
+        Optional<BlockPos> optional = this.vibration.getDestination().getPos(this.world);
         if (!optional.isPresent()) {
             this.markDead();
             return;
         }
         double d = (double)this.age / (double)this.maxAge;
-        BlockPos blockPos = this.field_28249.getOrigin();
+        BlockPos blockPos = this.vibration.getOrigin();
         BlockPos blockPos2 = optional.get();
         this.x = MathHelper.lerp(d, (double)blockPos.getX() + 0.5, (double)blockPos2.getX() + 0.5);
         this.y = MathHelper.lerp(d, (double)blockPos.getY() + 0.5, (double)blockPos2.getY() + 0.5);
@@ -115,16 +115,16 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<VibrationParticleEffect> {
-        private final SpriteProvider field_28251;
+        private final SpriteProvider spriteProvider;
 
         public Factory(SpriteProvider spriteProvider) {
-            this.field_28251 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(VibrationParticleEffect vibrationParticleEffect, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             VibrationParticle vibrationParticle = new VibrationParticle(clientWorld, vibrationParticleEffect.method_33125(), vibrationParticleEffect.method_33125().getArrivalInTicks());
-            vibrationParticle.setSprite(this.field_28251);
+            vibrationParticle.setSprite(this.spriteProvider);
             vibrationParticle.setColorAlpha(1.0f);
             return vibrationParticle;
         }

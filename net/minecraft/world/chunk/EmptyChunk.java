@@ -23,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 public class EmptyChunk
 extends WorldChunk {
     public EmptyChunk(World world, ChunkPos pos) {
-        super(world, pos, new class_5706(world));
+        super(world, pos, new EmptyBiomeArray(world));
     }
 
     @Override
@@ -84,12 +84,12 @@ extends WorldChunk {
         return ChunkHolder.LevelType.BORDER;
     }
 
-    static class class_5706
+    static class EmptyBiomeArray
     extends BiomeArray {
-        private static final Biome[] field_28128 = new Biome[0];
+        private static final Biome[] EMPTY_ARRAY = new Biome[0];
 
-        public class_5706(World world) {
-            super(world.getRegistryManager().get(Registry.BIOME_KEY), (HeightLimitView)world, field_28128);
+        public EmptyBiomeArray(World world) {
+            super(world.getRegistryManager().get(Registry.BIOME_KEY), (HeightLimitView)world, EMPTY_ARRAY);
         }
 
         @Override

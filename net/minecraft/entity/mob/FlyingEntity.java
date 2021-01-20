@@ -6,6 +6,7 @@ package net.minecraft.entity.mob;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -18,7 +19,7 @@ extends MobEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 

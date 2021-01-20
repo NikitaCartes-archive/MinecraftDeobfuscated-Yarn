@@ -25,7 +25,7 @@ import net.minecraft.village.VillagerData;
 import org.jetbrains.annotations.Nullable;
 
 public class TrackedDataHandlerRegistry {
-    private static final Int2ObjectBiMap<TrackedDataHandler<?>> field_13328 = new Int2ObjectBiMap(16);
+    private static final Int2ObjectBiMap<TrackedDataHandler<?>> DATA_HANDLERS = new Int2ObjectBiMap(16);
     public static final TrackedDataHandler<Byte> BYTE = new TrackedDataHandler<Byte>(){
 
         @Override
@@ -44,8 +44,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Integer> INTEGER = new TrackedDataHandler<Integer>(){
@@ -66,8 +66,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Float> FLOAT = new TrackedDataHandler<Float>(){
@@ -88,8 +88,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<String> STRING = new TrackedDataHandler<String>(){
@@ -110,8 +110,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Text> TEXT_COMPONENT = new TrackedDataHandler<Text>(){
@@ -132,8 +132,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Optional<Text>> OPTIONAL_TEXT_COMPONENT = new TrackedDataHandler<Optional<Text>>(){
@@ -159,8 +159,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<ItemStack> ITEM_STACK = new TrackedDataHandler<ItemStack>(){
@@ -181,8 +181,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Optional<BlockState>> OPTIONAL_BLOCK_STATE = new TrackedDataHandler<Optional<BlockState>>(){
@@ -211,8 +211,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Boolean> BOOLEAN = new TrackedDataHandler<Boolean>(){
@@ -233,8 +233,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<ParticleEffect> PARTICLE = new TrackedDataHandler<ParticleEffect>(){
@@ -260,8 +260,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<EulerAngle> ROTATION = new TrackedDataHandler<EulerAngle>(){
@@ -284,8 +284,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<BlockPos> BLOCK_POS = new TrackedDataHandler<BlockPos>(){
@@ -306,8 +306,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Optional<BlockPos>> OPTIONAL_BLOCK_POS = new TrackedDataHandler<Optional<BlockPos>>(){
@@ -334,8 +334,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Direction> FACING = new TrackedDataHandler<Direction>(){
@@ -356,8 +356,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<Optional<UUID>> OPTIONAL_UUID = new TrackedDataHandler<Optional<UUID>>(){
@@ -384,8 +384,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<CompoundTag> TAG_COMPOUND = new TrackedDataHandler<CompoundTag>(){
@@ -406,8 +406,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<VillagerData> VILLAGER_DATA = new TrackedDataHandler<VillagerData>(){
@@ -430,8 +430,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<OptionalInt> FIREWORK_DATA = new TrackedDataHandler<OptionalInt>(){
@@ -453,8 +453,8 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
     public static final TrackedDataHandler<EntityPose> ENTITY_POSE = new TrackedDataHandler<EntityPose>(){
@@ -475,22 +475,22 @@ public class TrackedDataHandlerRegistry {
         }
 
         @Override
-        public /* synthetic */ Object read(PacketByteBuf packetByteBuf) {
-            return this.read(packetByteBuf);
+        public /* synthetic */ Object read(PacketByteBuf buf) {
+            return this.read(buf);
         }
     };
 
     public static void register(TrackedDataHandler<?> handler) {
-        field_13328.add(handler);
+        DATA_HANDLERS.add(handler);
     }
 
     @Nullable
     public static TrackedDataHandler<?> get(int id) {
-        return field_13328.get(id);
+        return DATA_HANDLERS.get(id);
     }
 
     public static int getId(TrackedDataHandler<?> handler) {
-        return field_13328.getRawId(handler);
+        return DATA_HANDLERS.getRawId(handler);
     }
 
     static {

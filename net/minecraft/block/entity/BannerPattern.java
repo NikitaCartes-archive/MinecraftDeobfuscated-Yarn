@@ -60,9 +60,9 @@ public enum BannerPattern {
 
     private static final BannerPattern[] VALUES;
     public static final int COUNT;
-    public static final int field_24417;
+    public static final int HAS_PATTERN_ITEM_COUNT;
     public static final int LOOM_APPLICABLE_COUNT;
-    private final boolean field_24419;
+    private final boolean hasPatternItem;
     private final String name;
     private final String id;
 
@@ -70,15 +70,15 @@ public enum BannerPattern {
         this(name, id, false);
     }
 
-    private BannerPattern(String name, String id, boolean bl) {
+    private BannerPattern(String name, String id, boolean hasPatternItem) {
         this.name = name;
         this.id = id;
-        this.field_24419 = bl;
+        this.hasPatternItem = hasPatternItem;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Identifier getSpriteId(boolean bl) {
-        String string = bl ? "banner" : "shield";
+    public Identifier getSpriteId(boolean banner) {
+        String string = banner ? "banner" : "shield";
         return new Identifier("entity/" + string + "/" + this.getName());
     }
 
@@ -101,9 +101,9 @@ public enum BannerPattern {
     }
 
     @Nullable
-    public static BannerPattern method_31652(String string) {
+    public static BannerPattern byName(String name) {
         for (BannerPattern bannerPattern : BannerPattern.values()) {
-            if (!bannerPattern.name.equals(string)) continue;
+            if (!bannerPattern.name.equals(name)) continue;
             return bannerPattern;
         }
         return null;
@@ -112,8 +112,8 @@ public enum BannerPattern {
     static {
         VALUES = BannerPattern.values();
         COUNT = VALUES.length;
-        field_24417 = (int)Arrays.stream(VALUES).filter(bannerPattern -> bannerPattern.field_24419).count();
-        LOOM_APPLICABLE_COUNT = COUNT - field_24417 - 1;
+        HAS_PATTERN_ITEM_COUNT = (int)Arrays.stream(VALUES).filter(bannerPattern -> bannerPattern.hasPatternItem).count();
+        LOOM_APPLICABLE_COUNT = COUNT - HAS_PATTERN_ITEM_COUNT - 1;
     }
 
     public static class Patterns {

@@ -55,8 +55,8 @@ implements Predicate<BlockState> {
     }
 
     @Override
-    public /* synthetic */ boolean test(@Nullable Object object) {
-        return this.test((BlockState)object);
+    public /* synthetic */ boolean test(@Nullable Object state) {
+        return this.test((BlockState)state);
     }
 }
 

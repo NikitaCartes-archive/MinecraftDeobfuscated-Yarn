@@ -12,9 +12,9 @@ import org.jetbrains.annotations.Nullable;
 
 public interface LootNbtProvider {
     @Nullable
-    public Tag method_32440(LootContext var1);
+    public Tag getNbtTag(LootContext var1);
 
-    public Set<LootContextParameter<?>> method_32441();
+    public Set<LootContextParameter<?>> getRequiredParameters();
 
     public LootNbtProviderType getType();
 }

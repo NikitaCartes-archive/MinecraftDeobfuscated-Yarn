@@ -33,7 +33,7 @@ extends Feature<LargeDripstoneFeatureConfig> {
         if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
             return false;
         }
-        Optional<DripstoneColumn> optional = DripstoneColumn.create(structureWorldAccess, blockPos, largeDripstoneFeatureConfig.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplace);
+        Optional<DripstoneColumn> optional = DripstoneColumn.create(structureWorldAccess, blockPos, largeDripstoneFeatureConfig.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava);
         if (!optional.isPresent() || !(optional.get() instanceof DripstoneColumn.Bounded)) {
             return false;
         }
@@ -69,7 +69,9 @@ extends Feature<LargeDripstoneFeatureConfig> {
 
         private WindModifier(int y, Random random, UniformFloatDistribution wind) {
             this.y = y;
-            this.wind = new Vec3d(wind.getValue(random), 0.0, wind.getValue(random));
+            float f = wind.getValue(random);
+            float g = MathHelper.nextBetween(random, 0.0f, (float)Math.PI);
+            this.wind = new Vec3d(MathHelper.cos(g) * f, 0.0, MathHelper.sin(g) * f);
         }
 
         private WindModifier() {
@@ -129,6 +131,9 @@ extends Feature<LargeDripstoneFeatureConfig> {
                 BlockPos.Mutable mutable = this.pos.mutableCopy();
                 int i = Math.min(10, this.getBaseScale());
                 for (int j = 0; j < i; ++j) {
+                    if (world.getBlockState(mutable).isOf(Blocks.LAVA)) {
+                        return false;
+                    }
                     if (DripstoneHelper.canGenerateBase(world, wind.modify(mutable), this.scale)) {
                         this.pos = mutable;
                         return true;
@@ -157,7 +162,7 @@ extends Feature<LargeDripstoneFeatureConfig> {
                     boolean bl = false;
                     for (int l = 0; l < k; ++l) {
                         BlockPos blockPos = wind.modify(mutable);
-                        if (DripstoneHelper.canGenerate(world, blockPos)) {
+                        if (DripstoneHelper.canGenerateOrLava(world, blockPos)) {
                             bl = true;
                             Block block = Blocks.DRIPSTONE_BLOCK;
                             world.setBlockState(blockPos, block.getDefaultState(), 2);

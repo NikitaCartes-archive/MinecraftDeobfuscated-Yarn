@@ -76,7 +76,7 @@ extends ProjectileEntity {
         if (this.isBurning()) {
             this.setOnFireFor(1);
         }
-        if ((hitResult = ProjectileUtil.getCollision(this, this::method_26958)).getType() != HitResult.Type.MISS) {
+        if ((hitResult = ProjectileUtil.getCollision(this, this::canHit)).getType() != HitResult.Type.MISS) {
             this.onCollision(hitResult);
         }
         this.checkBlockCollision();
@@ -99,8 +99,8 @@ extends ProjectileEntity {
     }
 
     @Override
-    protected boolean method_26958(Entity entity) {
-        return super.method_26958(entity) && !entity.noClip;
+    protected boolean canHit(Entity entity) {
+        return super.canHit(entity) && !entity.noClip;
     }
 
     protected boolean isBurning() {

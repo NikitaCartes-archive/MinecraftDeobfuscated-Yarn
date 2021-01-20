@@ -251,7 +251,8 @@ import org.jetbrains.annotations.Nullable;
  * 
  * <p>Rendering on a Minecraft client is split into several facilities.
  * The primary entrypoint for rendering is {@link net.minecraft.client.render.GameRenderer#render(float, long, boolean)}.
- * <table border=1>
+ * <div class="fabric"><table border=1>
+ * <caption>Rendering facilities</caption>
  * <tr>
  *  <th><b>Thing to render</b></th> <th><b>Rendering facility</b></th>
  * </tr>
@@ -279,7 +280,7 @@ import org.jetbrains.annotations.Nullable;
  * <tr>
  *  <td>Game hud (health bar, hunger bar)</td> <td>{@link net.minecraft.client.gui.hud.InGameHud}</td>
  * </tr>
- * </table>
+ * </table></div>
  * 
  * @see net.minecraft.server.integrated.IntegratedServer
  * @see net.minecraft.client.render.GameRenderer
@@ -296,7 +297,7 @@ WindowEventHandler {
     public static final Identifier UNICODE_FONT_ID;
     public static final Identifier ALT_TEXT_RENDERER_ID;
     private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE;
-    private static final Text field_26841;
+    private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE;
     private final File resourcePackDir;
     private final PropertyMap sessionPropertyMap;
     private final TextureManager textureManager;
@@ -449,7 +450,7 @@ WindowEventHandler {
         this.netProxy = args.network.netProxy;
         YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
         this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-        this.socialInteractionsService = this.method_31382(yggdrasilAuthenticationService, args);
+        this.socialInteractionsService = this.createSocialInteractionsService(yggdrasilAuthenticationService, args);
         this.session = args.network.session;
         LOGGER.info("Setting user: {}", (Object)this.session.getUsername());
         LOGGER.debug("(Session ID is {})", (Object)this.session.getSessionId());
@@ -601,7 +602,7 @@ WindowEventHandler {
         return stringBuilder.toString();
     }
 
-    private SocialInteractionsService method_31382(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
+    private SocialInteractionsService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
         try {
             return yggdrasilAuthenticationService.createSocialInteractionsService(runArgs.network.session.getAccessToken());
         } catch (AuthenticationException authenticationException) {
@@ -1050,7 +1051,7 @@ WindowEventHandler {
 
     @Override
     public void onCursorEnterChanged() {
-        this.mouse.method_30134();
+        this.mouse.setResolutionChanged();
     }
 
     private int getFramerateLimit() {
@@ -1469,8 +1470,8 @@ WindowEventHandler {
         }
         while (this.options.keySocialInteractions.wasPressed()) {
             if (!this.isConnectedToServer()) {
-                this.player.sendMessage(field_26841, true);
-                NarratorManager.INSTANCE.narrate(field_26841.getString());
+                this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
+                NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE.getString());
                 continue;
             }
             if (this.field_26843 != null) {
@@ -2312,7 +2313,7 @@ WindowEventHandler {
         UNICODE_FONT_ID = new Identifier("uniform");
         ALT_TEXT_RENDERER_ID = new Identifier("alt");
         COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
-        field_26841 = new TranslatableText("multiplayer.socialInteractions.not_available");
+        SOCIAL_INTERACTIONS_NOT_AVAILABLE = new TranslatableText("multiplayer.socialInteractions.not_available");
         memoryReservedForCrash = new byte[0xA00000];
     }
 

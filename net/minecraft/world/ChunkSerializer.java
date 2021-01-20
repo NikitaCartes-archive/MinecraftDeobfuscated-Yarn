@@ -79,7 +79,7 @@ public class ChunkSerializer {
         ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, compoundTag.getList("LiquidsToBeTicked", 9), world);
         boolean bl = compoundTag.getBoolean("isLightOn");
         ListTag listTag = compoundTag.getList("Sections", 10);
-        int i = world.method_32890();
+        int i = world.getSections();
         ChunkSection[] chunkSections = new ChunkSection[i];
         boolean bl2 = world.getDimension().hasSkyLight();
         ServerChunkManager chunkManager = world.getChunkManager();
@@ -122,7 +122,7 @@ public class ChunkSerializer {
                 protoChunk.setLightingProvider(lightingProvider);
             }
             if (!bl && chunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
-                for (BlockPos blockPos : BlockPos.iterate(pos.getStartX(), world.getSectionCount(), pos.getStartZ(), pos.getEndX(), world.getTopHeightLimit() - 1, pos.getEndZ())) {
+                for (BlockPos blockPos : BlockPos.iterate(pos.getStartX(), world.getBottomSectionLimit(), pos.getStartZ(), pos.getEndX(), world.getTopHeightLimit() - 1, pos.getEndZ())) {
                     if (chunk.getBlockState(blockPos).getLuminance() == 0) continue;
                     protoChunk.addLightSource(blockPos);
                 }

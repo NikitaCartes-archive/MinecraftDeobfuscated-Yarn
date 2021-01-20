@@ -67,30 +67,30 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class InstantFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17872;
+        private final SpriteProvider spriteProvider;
 
         public InstantFactory(SpriteProvider spriteProvider) {
-            this.field_17872 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            return new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17872);
+            return new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     public static class WitchFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17875;
+        private final SpriteProvider spriteProvider;
 
         public WitchFactory(SpriteProvider spriteProvider) {
-            this.field_17875 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            SpellParticle spellParticle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17875);
+            SpellParticle spellParticle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
             float j = clientWorld.random.nextFloat() * 0.5f + 0.35f;
             spellParticle.setColor(1.0f * j, 0.0f * j, 1.0f * j);
             return spellParticle;
@@ -118,15 +118,15 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     public static class EntityFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_17873;
+        private final SpriteProvider spriteProvider;
 
         public EntityFactory(SpriteProvider spriteProvider) {
-            this.field_17873 = spriteProvider;
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            SpellParticle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.field_17873);
+            SpellParticle particle = new SpellParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
             particle.setColor((float)g, (float)h, (float)i);
             return particle;
         }

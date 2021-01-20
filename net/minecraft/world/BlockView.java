@@ -46,8 +46,8 @@ extends HeightLimitView {
         return BlockPos.stream(box).map(this::getBlockState);
     }
 
-    default public BlockHitResult raycast(BlockStateRaycastContext blockStateRaycastContext2) {
-        return BlockView.raycast(blockStateRaycastContext2.getStart(), blockStateRaycastContext2.getEnd(), blockStateRaycastContext2, (blockStateRaycastContext, blockPos) -> {
+    default public BlockHitResult raycast(BlockStateRaycastContext context) {
+        return BlockView.raycast(context.getStart(), context.getEnd(), context, (blockStateRaycastContext, blockPos) -> {
             BlockState blockState = this.getBlockState((BlockPos)blockPos);
             Vec3d vec3d = blockStateRaycastContext.getStart().subtract(blockStateRaycastContext.getEnd());
             return blockStateRaycastContext.getState().test(blockState) ? new BlockHitResult(blockStateRaycastContext.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(blockStateRaycastContext.getEnd()), false) : null;

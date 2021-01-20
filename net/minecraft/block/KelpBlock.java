@@ -57,7 +57,7 @@ implements FluidFillable {
     }
 
     @Override
-    protected int method_26376(Random random) {
+    protected int getGrowthLength(Random random) {
         return 1;
     }
 

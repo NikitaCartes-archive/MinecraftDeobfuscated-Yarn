@@ -16,17 +16,17 @@ extends PersistentState {
         this.idCounts.defaultReturnValue(-1);
     }
 
-    public static IdCountsState method_32360(CompoundTag compoundTag) {
+    public static IdCountsState fromNbt(CompoundTag tag) {
         IdCountsState idCountsState = new IdCountsState();
-        for (String string : compoundTag.getKeys()) {
-            if (!compoundTag.contains(string, 99)) continue;
-            idCountsState.idCounts.put(string, compoundTag.getInt(string));
+        for (String string : tag.getKeys()) {
+            if (!tag.contains(string, 99)) continue;
+            idCountsState.idCounts.put(string, tag.getInt(string));
         }
         return idCountsState;
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public CompoundTag toNbt(CompoundTag tag) {
         for (Object2IntMap.Entry entry : this.idCounts.object2IntEntrySet()) {
             tag.putInt((String)entry.getKey(), entry.getIntValue());
         }

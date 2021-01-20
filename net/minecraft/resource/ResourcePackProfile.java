@@ -43,11 +43,11 @@ implements AutoCloseable {
      * Enabled aggressive exception aggregation
      */
     @Nullable
-    public static ResourcePackProfile of(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Factory containerFactory, InsertionPosition insertionPosition, ResourcePackSource resourcePackSource) {
+    public static ResourcePackProfile of(String name, boolean alwaysEnabled, Supplier<ResourcePack> packFactory, Factory containerFactory, InsertionPosition insertionPosition, ResourcePackSource packSource) {
         try (ResourcePack resourcePack = packFactory.get();){
             PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
             if (packResourceMetadata != null) {
-                ResourcePackProfile resourcePackProfile = containerFactory.create(name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, resourcePackSource);
+                ResourcePackProfile resourcePackProfile = containerFactory.create(name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource);
                 return resourcePackProfile;
             }
             LOGGER.warn("Couldn't find pack meta for pack {}", (Object)name);

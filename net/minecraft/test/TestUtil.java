@@ -13,11 +13,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.class_5624;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.test.GameTest;
 import net.minecraft.test.GameTestBatch;
+import net.minecraft.test.StructureTestListener;
 import net.minecraft.test.StructureTestUtil;
 import net.minecraft.test.TestFunction;
 import net.minecraft.test.TestFunctions;
@@ -29,21 +29,21 @@ import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 public class TestUtil {
-    public static void startTest(GameTest gameTest, BlockPos blockPos, TestManager testManager) {
-        gameTest.startCountdown();
-        testManager.start(gameTest);
-        gameTest.addListener(new class_5624(gameTest, testManager, blockPos));
-        gameTest.init(blockPos, 2);
+    public static void startTest(GameTest test, BlockPos pos, TestManager testManager) {
+        test.startCountdown();
+        testManager.start(test);
+        test.addListener(new StructureTestListener(test, testManager, pos));
+        test.init(pos, 2);
     }
 
-    public static Collection<GameTest> runTestBatches(Collection<GameTestBatch> batches, BlockPos pos, BlockRotation blockRotation, ServerWorld serverWorld, TestManager testManager, int i) {
-        TestRunner testRunner = new TestRunner(batches, pos, blockRotation, serverWorld, testManager, i);
+    public static Collection<GameTest> runTestBatches(Collection<GameTestBatch> batches, BlockPos pos, BlockRotation rotation, ServerWorld world, TestManager testManager, int i) {
+        TestRunner testRunner = new TestRunner(batches, pos, rotation, world, testManager, i);
         testRunner.run();
         return testRunner.getTests();
     }
 
-    public static Collection<GameTest> runTestFunctions(Collection<TestFunction> testFunctions, BlockPos pos, BlockRotation blockRotation, ServerWorld serverWorld, TestManager testManager, int i) {
-        return TestUtil.runTestBatches(TestUtil.createBatches(testFunctions), pos, blockRotation, serverWorld, testManager, i);
+    public static Collection<GameTest> runTestFunctions(Collection<TestFunction> testFunctions, BlockPos pos, BlockRotation rotation, ServerWorld world, TestManager testManager, int i) {
+        return TestUtil.runTestBatches(TestUtil.createBatches(testFunctions), pos, rotation, world, testManager, i);
     }
 
     public static Collection<GameTestBatch> createBatches(Collection<TestFunction> testFunctions) {
@@ -65,7 +65,7 @@ public class TestUtil {
         BlockPos.stream(blockPos2, blockPos22).filter(blockPos -> world.getBlockState((BlockPos)blockPos).isOf(Blocks.STRUCTURE_BLOCK)).forEach(blockPos -> {
             StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)world.getBlockEntity((BlockPos)blockPos);
             BlockPos blockPos2 = structureBlockBlockEntity.getPos();
-            BlockBox blockBox = StructureTestUtil.method_29410(structureBlockBlockEntity);
+            BlockBox blockBox = StructureTestUtil.getStructureBlockBox(structureBlockBlockEntity);
             StructureTestUtil.clearArea(blockBox, blockPos2.getY(), world);
         });
     }

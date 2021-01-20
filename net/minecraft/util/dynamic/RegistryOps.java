@@ -44,22 +44,22 @@ extends ForwardingDynamicOps<T> {
     private final Map<RegistryKey<? extends Registry<?>>, ValueHolder<?>> valueHolders;
     private final RegistryOps<JsonElement> entryOps;
 
-    public static <T> RegistryOps<T> of(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager.Impl impl) {
-        return RegistryOps.of(delegate, EntryLoader.resourceBacked(resourceManager), impl);
+    public static <T> RegistryOps<T> of(DynamicOps<T> delegate, ResourceManager resourceManager, DynamicRegistryManager.Impl registryManager) {
+        return RegistryOps.of(delegate, EntryLoader.resourceBacked(resourceManager), registryManager);
     }
 
-    public static <T> RegistryOps<T> of(DynamicOps<T> dynamicOps, EntryLoader entryLoader, DynamicRegistryManager.Impl impl) {
-        RegistryOps<T> registryOps = new RegistryOps<T>(dynamicOps, entryLoader, impl, Maps.newIdentityHashMap());
-        DynamicRegistryManager.load(impl, registryOps);
+    public static <T> RegistryOps<T> of(DynamicOps<T> delegate, EntryLoader entryLoader, DynamicRegistryManager.Impl registryManager) {
+        RegistryOps<T> registryOps = new RegistryOps<T>(delegate, entryLoader, registryManager, Maps.newIdentityHashMap());
+        DynamicRegistryManager.load(registryManager, registryOps);
         return registryOps;
     }
 
-    private RegistryOps(DynamicOps<T> delegate, EntryLoader entryLoader, DynamicRegistryManager.Impl impl, IdentityHashMap<RegistryKey<? extends Registry<?>>, ValueHolder<?>> identityHashMap) {
+    private RegistryOps(DynamicOps<T> delegate, EntryLoader entryLoader, DynamicRegistryManager.Impl registryManager, IdentityHashMap<RegistryKey<? extends Registry<?>>, ValueHolder<?>> valueHolders) {
         super(delegate);
         this.entryLoader = entryLoader;
-        this.registryManager = impl;
-        this.valueHolders = identityHashMap;
-        this.entryOps = delegate == JsonOps.INSTANCE ? this : new RegistryOps<JsonElement>(JsonOps.INSTANCE, entryLoader, impl, identityHashMap);
+        this.registryManager = registryManager;
+        this.valueHolders = valueHolders;
+        this.entryOps = delegate == JsonOps.INSTANCE ? this : new RegistryOps<JsonElement>(JsonOps.INSTANCE, entryLoader, registryManager, valueHolders);
     }
 
     /**
@@ -238,8 +238,8 @@ extends ForwardingDynamicOps<T> {
             private final Object2IntMap<RegistryKey<?>> entryToRawId = new Object2IntOpenCustomHashMap(Util.identityHashStrategy());
             private final Map<RegistryKey<?>, Lifecycle> entryToLifecycle = Maps.newIdentityHashMap();
 
-            public <E> void add(DynamicRegistryManager.Impl impl, RegistryKey<E> registryKey, Encoder<E> encoder, int rawId, E object, Lifecycle lifecycle) {
-                DataResult<JsonElement> dataResult = encoder.encodeStart(RegistryReadingOps.of(JsonOps.INSTANCE, impl), object);
+            public <E> void add(DynamicRegistryManager.Impl registryManager, RegistryKey<E> registryKey, Encoder<E> encoder, int rawId, E object, Lifecycle lifecycle) {
+                DataResult<JsonElement> dataResult = encoder.encodeStart(RegistryReadingOps.of(JsonOps.INSTANCE, registryManager), object);
                 Optional<DataResult.PartialResult<JsonElement>> optional = dataResult.error();
                 if (optional.isPresent()) {
                     LOGGER.error("Error adding element: {}", (Object)optional.get().message());

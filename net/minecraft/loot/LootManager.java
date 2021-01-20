@@ -40,22 +40,22 @@ extends JsonDataLoader {
     @Override
     protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder<Identifier, LootTable> builder = ImmutableMap.builder();
-        JsonElement jsonElement2 = map.remove(LootTables.EMPTY);
-        if (jsonElement2 != null) {
+        JsonElement jsonElement = map.remove(LootTables.EMPTY);
+        if (jsonElement != null) {
             LOGGER.warn("Datapack tried to redefine {} loot table, ignoring", (Object)LootTables.EMPTY);
         }
-        map.forEach((identifier, jsonElement) -> {
+        map.forEach((id, json) -> {
             try {
-                LootTable lootTable = GSON.fromJson((JsonElement)jsonElement, LootTable.class);
-                builder.put((Identifier)identifier, lootTable);
+                LootTable lootTable = GSON.fromJson((JsonElement)json, LootTable.class);
+                builder.put((Identifier)id, lootTable);
             } catch (Exception exception) {
-                LOGGER.error("Couldn't parse loot table {}", identifier, (Object)exception);
+                LOGGER.error("Couldn't parse loot table {}", id, (Object)exception);
             }
         });
         builder.put(LootTables.EMPTY, LootTable.EMPTY);
         ImmutableMap<Identifier, LootTable> immutableMap = builder.build();
         LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.conditionManager::get, immutableMap::get);
-        immutableMap.forEach((identifier, lootTable) -> LootManager.validate(lootTableReporter, identifier, lootTable));
+        immutableMap.forEach((id, lootTable) -> LootManager.validate(lootTableReporter, id, lootTable));
         lootTableReporter.getMessages().forEach((key, value) -> LOGGER.warn("Found validation problem in {}: {}", key, value));
         this.tables = immutableMap;
     }

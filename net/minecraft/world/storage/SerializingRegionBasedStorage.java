@@ -43,15 +43,15 @@ implements AutoCloseable {
     private final Function<Runnable, Codec<R>> codecFactory;
     private final Function<Runnable, R> factory;
     private final DataFixer dataFixer;
-    private final DataFixTypes dataFixType;
-    protected final HeightLimitView field_27240;
+    private final DataFixTypes dataFixTypes;
+    protected final HeightLimitView world;
 
-    public SerializingRegionBasedStorage(File directory, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, HeightLimitView heightLimitView) {
+    public SerializingRegionBasedStorage(File directory, Function<Runnable, Codec<R>> codecFactory, Function<Runnable, R> factory, DataFixer dataFixer, DataFixTypes dataFixTypes, boolean dsync, HeightLimitView world) {
         this.codecFactory = codecFactory;
         this.factory = factory;
         this.dataFixer = dataFixer;
-        this.dataFixType = dataFixTypes;
-        this.field_27240 = heightLimitView;
+        this.dataFixTypes = dataFixTypes;
+        this.world = world;
         this.worker = new StorageIoWorker(directory, dsync, directory.getName());
     }
 
@@ -86,7 +86,7 @@ implements AutoCloseable {
 
     protected boolean isPosInvalid(ChunkSectionPos pos) {
         int i = ChunkSectionPos.getBlockCoord(pos.getSectionY());
-        return this.field_27240.isOutOfHeightLimit(i);
+        return this.world.isOutOfHeightLimit(i);
     }
 
     protected R getOrCreate(long pos) {
@@ -115,7 +115,7 @@ implements AutoCloseable {
 
     private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
         if (data == null) {
-            for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); ++i) {
+            for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
                 this.loadedElements.put(ChunkSectionPos.from(pos, i).asLong(), (Optional<R>)Optional.empty());
             }
         } else {
@@ -123,9 +123,9 @@ implements AutoCloseable {
             Dynamic<T> dynamic2 = new Dynamic<T>(dynamicOps, data);
             int j = SerializingRegionBasedStorage.getDataVersion(dynamic2);
             boolean bl = j != (k = SharedConstants.getGameVersion().getWorldVersion());
-            Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixType.getTypeReference(), dynamic2, j, k);
+            Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic2, j, k);
             OptionalDynamic<T> optionalDynamic = dynamic22.get("Sections");
-            for (int l = this.field_27240.method_32891(); l < this.field_27240.getTopSectionLimit(); ++l) {
+            for (int l = this.world.getMinimumSection(); l < this.world.getTopSectionLimit(); ++l) {
                 long m = ChunkSectionPos.from(pos, l).asLong();
                 Optional optional = optionalDynamic.get(Integer.toString(l)).result().flatMap(dynamic -> this.codecFactory.apply(() -> this.onUpdate(m)).parse(dynamic).resultOrPartial(LOGGER::error));
                 this.loadedElements.put(m, (Optional<R>)optional);
@@ -151,7 +151,7 @@ implements AutoCloseable {
 
     private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
         HashMap map = Maps.newHashMap();
-        for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); ++i) {
+        for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
             long l = ChunkSectionPos.from(chunkPos, i).asLong();
             this.unsavedElements.remove(l);
             Optional optional = (Optional)this.loadedElements.get(l);
@@ -181,7 +181,7 @@ implements AutoCloseable {
 
     public void saveChunk(ChunkPos pos) {
         if (!this.unsavedElements.isEmpty()) {
-            for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); ++i) {
+            for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
                 long l = ChunkSectionPos.from(pos, i).asLong();
                 if (!this.unsavedElements.contains(l)) continue;
                 this.save(pos);

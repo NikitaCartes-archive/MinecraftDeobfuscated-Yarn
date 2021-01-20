@@ -34,12 +34,12 @@ implements LootNbtProvider {
 
     @Override
     @Nullable
-    public Tag method_32440(LootContext lootContext) {
-        return lootContext.getWorld().getServer().getDataCommandStorage().get(this.source);
+    public Tag getNbtTag(LootContext context) {
+        return context.getWorld().getServer().getDataCommandStorage().get(this.source);
     }
 
     @Override
-    public Set<LootContextParameter<?>> method_32441() {
+    public Set<LootContextParameter<?>> getRequiredParameters() {
         return ImmutableSet.of();
     }
 

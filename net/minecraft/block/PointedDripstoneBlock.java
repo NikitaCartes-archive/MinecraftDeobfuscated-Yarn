@@ -21,6 +21,7 @@ import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.TridentEntity;
@@ -121,7 +122,7 @@ Waterloggable {
     public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
         BlockState blockState = world.getBlockState(pos);
         if (blockState.get(VERTICAL_DIRECTION) == Direction.UP && blockState.get(THICKNESS) == Thickness.TIP) {
-            entity.handleFallDamage(distance + 2.0f, 2.0f);
+            entity.handleFallDamage(distance + 2.0f, 2.0f, DamageSource.STALAGMITE);
         } else {
             super.onLandedUpon(world, pos, entity, distance);
         }
@@ -346,13 +347,10 @@ Waterloggable {
             return Thickness.FRUSTUM;
         }
         BlockState blockState2 = world.getBlockState(pos.offset(direction2));
-        if (thickness == Thickness.FRUSTUM || thickness == Thickness.MIDDLE) {
-            if (PointedDripstoneBlock.isPointedDripstoneFacingDirection(blockState2, direction)) {
-                return Thickness.MIDDLE;
-            }
+        if (!PointedDripstoneBlock.isPointedDripstoneFacingDirection(blockState2, direction)) {
             return Thickness.BASE;
         }
-        return null;
+        return Thickness.MIDDLE;
     }
 
     public static boolean canDrip(BlockState state) {
@@ -385,6 +383,11 @@ Waterloggable {
 
     private static boolean isHeldByPointedDripstone(BlockState state, WorldView world, BlockPos pos) {
         return PointedDripstoneBlock.isPointingDown(state) && !world.getBlockState(pos.up()).isOf(Blocks.POINTED_DRIPSTONE);
+    }
+
+    @Override
+    public boolean canPathfindThrough(BlockState state, BlockView world, BlockPos pos, NavigationType type) {
+        return false;
     }
 
     private static boolean isPointedDripstoneFacingDirection(BlockState state, Direction direction) {

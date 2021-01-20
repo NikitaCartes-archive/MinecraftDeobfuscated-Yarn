@@ -16,8 +16,8 @@ public class OrderedTextTooltipComponent
 implements TooltipComponent {
     private final OrderedText text;
 
-    public OrderedTextTooltipComponent(OrderedText orderedText) {
-        this.text = orderedText;
+    public OrderedTextTooltipComponent(OrderedText text) {
+        this.text = text;
     }
 
     @Override

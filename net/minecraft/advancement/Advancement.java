@@ -191,15 +191,15 @@ public class Advancement {
             return this;
         }
 
-        public Task criterion(String name, CriterionConditions criterionConditions) {
-            return this.criterion(name, new AdvancementCriterion(criterionConditions));
+        public Task criterion(String name, CriterionConditions conditions) {
+            return this.criterion(name, new AdvancementCriterion(conditions));
         }
 
-        public Task criterion(String name, AdvancementCriterion advancementCriterion) {
+        public Task criterion(String name, AdvancementCriterion criterion) {
             if (this.criteria.containsKey(name)) {
                 throw new IllegalArgumentException("Duplicate criterion " + name);
             }
-            this.criteria.put(name, advancementCriterion);
+            this.criteria.put(name, criterion);
             return this;
         }
 
@@ -218,18 +218,18 @@ public class Advancement {
             return this.parentObj != null;
         }
 
-        public Advancement build(Identifier id) {
-            if (!this.findParent(identifier -> null)) {
+        public Advancement build(Identifier id2) {
+            if (!this.findParent(id -> null)) {
                 throw new IllegalStateException("Tried to build incomplete advancement!");
             }
             if (this.requirements == null) {
                 this.requirements = this.merger.createRequirements(this.criteria.keySet());
             }
-            return new Advancement(id, this.parentObj, this.display, this.rewards, this.criteria, this.requirements);
+            return new Advancement(id2, this.parentObj, this.display, this.rewards, this.criteria, this.requirements);
         }
 
-        public Advancement build(Consumer<Advancement> consumer, String string) {
-            Advancement advancement = this.build(new Identifier(string));
+        public Advancement build(Consumer<Advancement> consumer, String id) {
+            Advancement advancement = this.build(new Identifier(id));
             consumer.accept(advancement);
             return advancement;
         }

@@ -91,8 +91,8 @@ extends RealmsScreen {
         this.title = title;
     }
 
-    public void setWarning(Text ... texts) {
-        this.warning = texts;
+    public void setWarning(Text ... warning) {
+        this.warning = warning;
         this.displayWarning = true;
     }
 
@@ -293,15 +293,15 @@ extends RealmsScreen {
         }
     }
 
-    protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
+    protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
         if (text == null) {
             return;
         }
         int k = i + 12;
         int l = j - 12;
         int m = this.textRenderer.getWidth(text);
-        this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 0xFFFFFF);
+        this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
+        this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 0xFFFFFF);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -318,29 +318,29 @@ extends RealmsScreen {
             this.renderWorldTemplateItem(matrices, this.mTemplate, x, y, mouseX, mouseY);
         }
 
-        private void renderWorldTemplateItem(MatrixStack matrixStack, WorldTemplate worldTemplate, int i, int j, int k, int l) {
+        private void renderWorldTemplateItem(MatrixStack matrices, WorldTemplate worldTemplate, int i, int j, int k, int l) {
             int m = i + 45 + 20;
-            RealmsSelectWorldTemplateScreen.this.textRenderer.draw(matrixStack, worldTemplate.name, (float)m, (float)(j + 2), 0xFFFFFF);
-            RealmsSelectWorldTemplateScreen.this.textRenderer.draw(matrixStack, worldTemplate.author, (float)m, (float)(j + 15), 0x6C6C6C);
-            RealmsSelectWorldTemplateScreen.this.textRenderer.draw(matrixStack, worldTemplate.version, (float)(m + 227 - RealmsSelectWorldTemplateScreen.this.textRenderer.getWidth(worldTemplate.version)), (float)(j + 1), 0x6C6C6C);
+            RealmsSelectWorldTemplateScreen.this.textRenderer.draw(matrices, worldTemplate.name, (float)m, (float)(j + 2), 0xFFFFFF);
+            RealmsSelectWorldTemplateScreen.this.textRenderer.draw(matrices, worldTemplate.author, (float)m, (float)(j + 15), 0x6C6C6C);
+            RealmsSelectWorldTemplateScreen.this.textRenderer.draw(matrices, worldTemplate.version, (float)(m + 227 - RealmsSelectWorldTemplateScreen.this.textRenderer.getWidth(worldTemplate.version)), (float)(j + 1), 0x6C6C6C);
             if (!("".equals(worldTemplate.link) && "".equals(worldTemplate.trailer) && "".equals(worldTemplate.recommendedPlayers))) {
-                this.drawIcons(matrixStack, m - 1, j + 25, k, l, worldTemplate.link, worldTemplate.trailer, worldTemplate.recommendedPlayers);
+                this.drawIcons(matrices, m - 1, j + 25, k, l, worldTemplate.link, worldTemplate.trailer, worldTemplate.recommendedPlayers);
             }
-            this.drawImage(matrixStack, i, j + 1, k, l, worldTemplate);
+            this.drawImage(matrices, i, j + 1, k, l, worldTemplate);
         }
 
-        private void drawImage(MatrixStack matrixStack, int y, int xm, int ym, int i, WorldTemplate worldTemplate) {
+        private void drawImage(MatrixStack matrices, int y, int xm, int ym, int i, WorldTemplate worldTemplate) {
             RealmsTextureManager.bindWorldTemplate(worldTemplate.id, worldTemplate.image);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.drawTexture(matrixStack, y + 1, xm + 1, 0.0f, 0.0f, 38, 38, 38, 38);
+            DrawableHelper.drawTexture(matrices, y + 1, xm + 1, 0.0f, 0.0f, 38, 38, 38, 38);
             RealmsSelectWorldTemplateScreen.this.client.getTextureManager().bindTexture(SLOT_FRAME);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            DrawableHelper.drawTexture(matrixStack, y, xm, 0.0f, 0.0f, 40, 40, 40, 40);
+            DrawableHelper.drawTexture(matrices, y, xm, 0.0f, 0.0f, 40, 40, 40, 40);
         }
 
-        private void drawIcons(MatrixStack matrixStack, int i, int j, int k, int l, String string, String string2, String string3) {
+        private void drawIcons(MatrixStack matrices, int i, int j, int k, int l, String string, String string2, String string3) {
             if (!"".equals(string3)) {
-                RealmsSelectWorldTemplateScreen.this.textRenderer.draw(matrixStack, string3, (float)i, (float)(j + 4), 0x4C4C4C);
+                RealmsSelectWorldTemplateScreen.this.textRenderer.draw(matrices, string3, (float)i, (float)(j + 4), 0x4C4C4C);
             }
             int m = "".equals(string3) ? 0 : RealmsSelectWorldTemplateScreen.this.textRenderer.getWidth(string3) + 2;
             boolean bl = false;
@@ -363,7 +363,7 @@ extends RealmsScreen {
                 RenderSystem.pushMatrix();
                 RenderSystem.scalef(1.0f, 1.0f, 1.0f);
                 float f = bl ? 15.0f : 0.0f;
-                DrawableHelper.drawTexture(matrixStack, i + m, j, f, 0.0f, 15, 15, 30, 15);
+                DrawableHelper.drawTexture(matrices, i + m, j, f, 0.0f, 15, 15, 30, 15);
                 RenderSystem.popMatrix();
             }
             if (!"".equals(string2)) {
@@ -373,7 +373,7 @@ extends RealmsScreen {
                 RenderSystem.scalef(1.0f, 1.0f, 1.0f);
                 int n = i + m + (bl3 ? 0 : 17);
                 float g = bl2 ? 15.0f : 0.0f;
-                DrawableHelper.drawTexture(matrixStack, n, j, g, 0.0f, 15, 15, 30, 15);
+                DrawableHelper.drawTexture(matrices, n, j, g, 0.0f, 15, 15, 30, 15);
                 RenderSystem.popMatrix();
             }
             if (bl) {

@@ -176,7 +176,7 @@ implements CraftingRecipe {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean method_31584() {
+    public boolean isEmpty() {
         DefaultedList<Ingredient> defaultedList = this.getPreviewInputs();
         return defaultedList.isEmpty() || defaultedList.stream().filter(ingredient -> !ingredient.isEmpty()).anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
     }

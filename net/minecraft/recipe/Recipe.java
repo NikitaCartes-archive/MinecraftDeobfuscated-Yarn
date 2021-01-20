@@ -61,7 +61,7 @@ public interface Recipe<C extends Inventory> {
     public RecipeType<?> getType();
 
     @Environment(value=EnvType.CLIENT)
-    default public boolean method_31584() {
+    default public boolean isEmpty() {
         DefaultedList<Ingredient> defaultedList = this.getPreviewInputs();
         return defaultedList.isEmpty() || defaultedList.stream().anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
     }

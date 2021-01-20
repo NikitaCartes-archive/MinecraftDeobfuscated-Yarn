@@ -109,18 +109,18 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         this.soundSystem.reloadSounds();
     }
 
-    private static boolean isSoundResourcePresent(Sound sound, Identifier identifier, ResourceManager resourceManager) {
-        Identifier identifier2 = sound.getLocation();
-        if (!resourceManager.containsResource(identifier2)) {
-            LOGGER.warn("File {} does not exist, cannot add it to event {}", (Object)identifier2, (Object)identifier);
+    private static boolean isSoundResourcePresent(Sound sound, Identifier id, ResourceManager resourceManager) {
+        Identifier identifier = sound.getLocation();
+        if (!resourceManager.containsResource(identifier)) {
+            LOGGER.warn("File {} does not exist, cannot add it to event {}", (Object)identifier, (Object)id);
             return false;
         }
         return true;
     }
 
     @Nullable
-    public WeightedSoundSet get(Identifier identifier) {
-        return this.sounds.get(identifier);
+    public WeightedSoundSet get(Identifier id) {
+        return this.sounds.get(id);
     }
 
     public Collection<Identifier> getKeys() {
@@ -186,8 +186,8 @@ extends SinglePreparationResourceReloadListener<SoundList> {
         this.soundSystem.unregisterListener(soundInstanceListener);
     }
 
-    public void stopSounds(@Nullable Identifier identifier, @Nullable SoundCategory soundCategory) {
-        this.soundSystem.stopSounds(identifier, soundCategory);
+    public void stopSounds(@Nullable Identifier id, @Nullable SoundCategory soundCategory) {
+        this.soundSystem.stopSounds(id, soundCategory);
     }
 
     public String getDebugString() {

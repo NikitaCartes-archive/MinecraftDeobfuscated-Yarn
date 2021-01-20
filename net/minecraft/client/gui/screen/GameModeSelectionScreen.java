@@ -41,10 +41,10 @@ extends Screen {
 
     public GameModeSelectionScreen() {
         super(NarratorManager.EMPTY);
-        this.currentGameMode = GameMode.of(this.method_30106());
+        this.currentGameMode = GameMode.of(this.getPreviousGameMode());
     }
 
-    private net.minecraft.world.GameMode method_30106() {
+    private net.minecraft.world.GameMode getPreviousGameMode() {
         ClientPlayerInteractionManager clientPlayerInteractionManager = MinecraftClient.getInstance().interactionManager;
         net.minecraft.world.GameMode gameMode = clientPlayerInteractionManager.getPreviousGameMode();
         if (gameMode != null) {

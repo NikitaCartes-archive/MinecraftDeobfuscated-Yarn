@@ -20,7 +20,7 @@ extends DiskFeature {
 
     @Override
     public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
-        while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getSectionCount() + 2) {
+        while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 2) {
             blockPos = blockPos.down();
         }
         if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.SNOW_BLOCK)) {

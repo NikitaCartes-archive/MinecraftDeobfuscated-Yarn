@@ -19,7 +19,7 @@ import net.minecraft.world.gen.feature.Feature;
 
 public class DeltaFeature
 extends Feature<DeltaFeatureConfig> {
-    private static final ImmutableList<Block> field_24133 = ImmutableList.of(Blocks.BEDROCK, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER);
+    private static final ImmutableList<Block> BLOCKS = ImmutableList.of(Blocks.BEDROCK, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER);
     private static final Direction[] DIRECTIONS = Direction.values();
 
     public DeltaFeature(Codec<DeltaFeatureConfig> codec) {
@@ -56,7 +56,7 @@ extends Feature<DeltaFeatureConfig> {
         if (blockState.isOf(deltaFeatureConfig.getContents().getBlock())) {
             return false;
         }
-        if (field_24133.contains(blockState.getBlock())) {
+        if (BLOCKS.contains(blockState.getBlock())) {
             return false;
         }
         for (Direction direction : DIRECTIONS) {

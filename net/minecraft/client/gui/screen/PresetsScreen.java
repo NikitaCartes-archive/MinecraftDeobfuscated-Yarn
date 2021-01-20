@@ -54,14 +54,14 @@ public class PresetsScreen
 extends Screen {
     private static final Logger field_25043 = LogManager.getLogger();
     private static final List<SuperflatPreset> PRESETS = Lists.newArrayList();
-    private static final RegistryKey<Biome> field_27985 = BiomeKeys.PLAINS;
+    private static final RegistryKey<Biome> BIOME_KEY = BiomeKeys.PLAINS;
     private final CustomizeFlatLevelScreen parent;
     private Text shareText;
     private Text listText;
     private SuperflatPresetsListWidget listWidget;
     private ButtonWidget selectPresetButton;
     private TextFieldWidget customPresetField;
-    private FlatChunkGeneratorConfig field_25044;
+    private FlatChunkGeneratorConfig config;
 
     public PresetsScreen(CustomizeFlatLevelScreen parent) {
         super(new TranslatableText("createWorld.customize.presets.title"));
@@ -126,7 +126,7 @@ extends Screen {
             return FlatChunkGeneratorConfig.getDefaultConfig(registry);
         }
         FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getStructuresConfig());
-        RegistryKey<Biome> registryKey = field_27985;
+        RegistryKey<Biome> registryKey = BIOME_KEY;
         if (iterator.hasNext()) {
             try {
                 Identifier identifier = new Identifier(iterator.next());
@@ -134,7 +134,7 @@ extends Screen {
                 registry.getOrEmpty(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
             } catch (Exception exception) {
                 field_25043.error("Error while parsing flat world string => {}", (Object)exception.getMessage());
-                registryKey = field_27985;
+                registryKey = BIOME_KEY;
             }
         }
         RegistryKey<Biome> registryKey2 = registryKey;
@@ -163,14 +163,14 @@ extends Screen {
         this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
         this.customPresetField.setMaxLength(1230);
         Registry<Biome> registry = this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
-        this.customPresetField.setText(PresetsScreen.method_29062(registry, this.parent.method_29055()));
-        this.field_25044 = this.parent.method_29055();
+        this.customPresetField.setText(PresetsScreen.method_29062(registry, this.parent.getConfig()));
+        this.config = this.parent.getConfig();
         this.children.add(this.customPresetField);
         this.listWidget = new SuperflatPresetsListWidget();
         this.children.add(this.listWidget);
         this.selectPresetButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
-            FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.method_29060(registry, this.customPresetField.getText(), this.field_25044);
-            this.parent.method_29054(flatChunkGeneratorConfig);
+            FlatChunkGeneratorConfig flatChunkGeneratorConfig = PresetsScreen.method_29060(registry, this.customPresetField.getText(), this.config);
+            this.parent.setConfig(flatChunkGeneratorConfig);
             this.client.openScreen(this.parent);
         }));
         this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));
@@ -332,8 +332,8 @@ extends Screen {
                 SuperflatPresetsListWidget.this.setSelected(this);
                 SuperflatPreset superflatPreset = (SuperflatPreset)PRESETS.get(SuperflatPresetsListWidget.this.children().indexOf(this));
                 Registry<Biome> registry = ((PresetsScreen)PresetsScreen.this).parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
-                PresetsScreen.this.field_25044 = superflatPreset.field_25045.apply(registry);
-                PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(registry, PresetsScreen.this.field_25044));
+                PresetsScreen.this.config = superflatPreset.field_25045.apply(registry);
+                PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(registry, PresetsScreen.this.config));
                 PresetsScreen.this.customPresetField.setCursorToStart();
             }
 

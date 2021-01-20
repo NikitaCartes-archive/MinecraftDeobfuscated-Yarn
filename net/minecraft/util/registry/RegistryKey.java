@@ -97,7 +97,7 @@ public class RegistryKey<T> {
      * @param registry the reference to the value-holding registry in the root registry
      */
     public static <T> Function<Identifier, RegistryKey<T>> createKeyFactory(RegistryKey<? extends Registry<T>> registry) {
-        return identifier -> RegistryKey.of(registry, identifier);
+        return id -> RegistryKey.of(registry, id);
     }
 }
 

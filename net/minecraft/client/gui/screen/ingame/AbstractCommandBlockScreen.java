@@ -62,7 +62,7 @@ extends Screen {
 
             @Override
             protected MutableText getNarrationMessage() {
-                return super.getNarrationMessage().append(AbstractCommandBlockScreen.this.commandSuggestor.method_23958());
+                return super.getNarrationMessage().append(AbstractCommandBlockScreen.this.commandSuggestor.getNarration());
             }
         };
         this.consoleCommandTextField.setMaxLength(32500);

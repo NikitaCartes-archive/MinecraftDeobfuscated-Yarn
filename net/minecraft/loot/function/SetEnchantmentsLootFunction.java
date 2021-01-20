@@ -51,33 +51,33 @@ extends ConditionalLootFunction {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return this.enchantments.values().stream().flatMap(lootNumberProvider -> lootNumberProvider.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
+        return this.enchantments.values().stream().flatMap(numberProvider -> numberProvider.getRequiredParameters().stream()).collect(ImmutableSet.toImmutableSet());
     }
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
         Object2IntOpenHashMap<Enchantment> object2IntMap = new Object2IntOpenHashMap<Enchantment>();
-        this.enchantments.forEach((enchantment, lootNumberProvider) -> object2IntMap.put((Enchantment)enchantment, lootNumberProvider.nextInt(context)));
+        this.enchantments.forEach((enchantment, numberProvider) -> object2IntMap.put((Enchantment)enchantment, numberProvider.nextInt(context)));
         if (stack.getItem() == Items.BOOK) {
             ItemStack itemStack = new ItemStack(Items.ENCHANTED_BOOK);
-            object2IntMap.forEach((enchantment, integer) -> EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry((Enchantment)enchantment, (int)integer)));
+            object2IntMap.forEach((enchantment, level) -> EnchantedBookItem.addEnchantment(itemStack, new EnchantmentLevelEntry((Enchantment)enchantment, (int)level)));
             return itemStack;
         }
         Map<Enchantment, Integer> map = EnchantmentHelper.get(stack);
         if (this.add) {
-            object2IntMap.forEach((enchantment, integer) -> SetEnchantmentsLootFunction.method_32411(map, enchantment, Math.max(map.getOrDefault(enchantment, 0) + integer, 0)));
+            object2IntMap.forEach((enchantment, level) -> SetEnchantmentsLootFunction.addEnchantmentToMap(map, enchantment, Math.max(map.getOrDefault(enchantment, 0) + level, 0)));
         } else {
-            object2IntMap.forEach((enchantment, integer) -> SetEnchantmentsLootFunction.method_32411(map, enchantment, Math.max(integer, 0)));
+            object2IntMap.forEach((enchantment, level) -> SetEnchantmentsLootFunction.addEnchantmentToMap(map, enchantment, Math.max(level, 0)));
         }
         EnchantmentHelper.set(map, stack);
         return stack;
     }
 
-    private static void method_32411(Map<Enchantment, Integer> map, Enchantment enchantment, int i) {
-        if (i == 0) {
+    private static void addEnchantmentToMap(Map<Enchantment, Integer> map, Enchantment enchantment, int level) {
+        if (level == 0) {
             map.remove(enchantment);
         } else {
-            map.put(enchantment, i);
+            map.put(enchantment, level);
         }
     }
 

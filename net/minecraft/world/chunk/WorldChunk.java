@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.shorts.ShortList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -138,7 +139,7 @@ implements Chunk {
         this.fluidTickScheduler = fluidTickScheduler;
         this.inhabitedTime = inhabitedTime;
         this.loadToWorldConsumer = loadToWorldConsumer;
-        this.sections = new ChunkSection[world.method_32890()];
+        this.sections = new ChunkSection[world.getSections()];
         if (sections != null) {
             if (this.sections.length == sections.length) {
                 System.arraycopy(sections, 0, this.sections, 0, this.sections.length);
@@ -146,7 +147,7 @@ implements Chunk {
                 LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", (Object)sections.length, (Object)this.sections.length);
             }
         }
-        this.postProcessingLists = new ShortList[world.method_32890()];
+        this.postProcessingLists = new ShortList[world.getSections()];
     }
 
     public WorldChunk(ServerWorld serverWorld, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> consumer) {
@@ -453,7 +454,7 @@ implements Chunk {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask) {
+    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, BitSet bitSet) {
         boolean bl;
         boolean bl2 = bl = biomes != null;
         if (bl) {
@@ -461,7 +462,8 @@ implements Chunk {
             this.blockEntities.clear();
         } else {
             this.blockEntities.values().removeIf(blockEntity -> {
-                if (this.method_31717(verticalStripBitmask, blockEntity.getPos())) {
+                int i = this.getSectionIndex(blockEntity.getPos().getY());
+                if (bitSet.get(i)) {
                     blockEntity.markRemoved();
                     return true;
                 }
@@ -470,7 +472,7 @@ implements Chunk {
         }
         for (int i = 0; i < this.sections.length; ++i) {
             ChunkSection chunkSection = this.sections[i];
-            if ((verticalStripBitmask & 1 << i) == 0) {
+            if (!bitSet.get(i)) {
                 if (!bl || chunkSection == EMPTY_SECTION) continue;
                 this.sections[i] = EMPTY_SECTION;
                 continue;
@@ -493,11 +495,6 @@ implements Chunk {
     private void removeBlockEntity(BlockEntity blockEntity) {
         blockEntity.markRemoved();
         this.blockEntityTickers.remove(blockEntity.getPos());
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    private boolean method_31717(int i, BlockPos blockPos) {
-        return (i & 1 << this.getSectionIndex(blockPos.getY())) != 0;
     }
 
     @Override
@@ -529,7 +526,7 @@ implements Chunk {
 
     @Override
     public Stream<BlockPos> getLightSourcesStream() {
-        return StreamSupport.stream(BlockPos.iterate(this.pos.getStartX(), this.getSectionCount(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopHeightLimit() - 1, this.pos.getEndZ()).spliterator(), false).filter(blockPos -> this.getBlockState((BlockPos)blockPos).getLuminance() != 0);
+        return StreamSupport.stream(BlockPos.iterate(this.pos.getStartX(), this.getBottomSectionLimit(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopHeightLimit() - 1, this.pos.getEndZ()).spliterator(), false).filter(blockPos -> this.getBlockState((BlockPos)blockPos).getLuminance() != 0);
     }
 
     @Override
@@ -687,13 +684,13 @@ implements Chunk {
     }
 
     @Override
-    public int getSectionCount() {
-        return this.world.getSectionCount();
+    public int getBottomSectionLimit() {
+        return this.world.getBottomSectionLimit();
     }
 
     @Override
-    public int getBottomSectionLimit() {
-        return this.world.getBottomSectionLimit();
+    public int getSectionCount() {
+        return this.world.getSectionCount();
     }
 
     @Override

@@ -36,7 +36,7 @@ implements LootCondition {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return this.value.method_32386();
+        return this.value.getRequiredParameters();
     }
 
     @Override
@@ -46,7 +46,7 @@ implements LootCondition {
         if (this.period != null) {
             l %= this.period.longValue();
         }
-        return this.value.method_32393(lootContext, (int)l);
+        return this.value.test(lootContext, (int)l);
     }
 
     @Override

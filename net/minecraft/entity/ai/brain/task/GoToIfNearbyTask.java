@@ -22,11 +22,11 @@ extends Task<PathAwareEntity> {
     private final int maxDistance;
     private final float field_25752;
 
-    public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float f, int i) {
+    public GoToIfNearbyTask(MemoryModuleType<GlobalPos> target, float f, int maxDistance) {
         super(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, target, MemoryModuleState.VALUE_PRESENT));
         this.target = target;
         this.field_25752 = f;
-        this.maxDistance = i;
+        this.maxDistance = maxDistance;
     }
 
     @Override

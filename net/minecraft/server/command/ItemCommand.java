@@ -51,7 +51,7 @@ public class ItemCommand {
     private static final Dynamic2CommandExceptionType KNOWN_ITEM_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("commands.item.target.no_changed.known_item", object, object2));
     private static final SuggestionProvider<ServerCommandSource> MODIFIER_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
         LootFunctionManager lootFunctionManager = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getItemModifierManager();
-        return CommandSource.suggestIdentifiers(lootFunctionManager.method_32399(), suggestionsBuilder);
+        return CommandSource.suggestIdentifiers(lootFunctionManager.getFunctionIds(), suggestionsBuilder);
     };
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

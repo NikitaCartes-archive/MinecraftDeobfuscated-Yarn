@@ -53,8 +53,8 @@ extends AbstractCriterion<Conditions> {
             this.projectile = projectile;
         }
 
-        public static Conditions create(NumberRange.IntRange signalStrength, EntityPredicate.Extended extended) {
-            return new Conditions(EntityPredicate.Extended.EMPTY, signalStrength, extended);
+        public static Conditions create(NumberRange.IntRange signalStrength, EntityPredicate.Extended projectile) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, signalStrength, projectile);
         }
 
         @Override

@@ -3,6 +3,7 @@
  */
 package net.minecraft.world.level.storage;
 
+import com.mojang.bridge.game.GameVersion;
 import java.io.File;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -31,13 +32,13 @@ implements Comparable<LevelSummary> {
     @Environment(value=EnvType.CLIENT)
     private Text details;
 
-    public LevelSummary(LevelInfo levelInfo, SaveVersionInfo saveVersionInfo, String string, boolean bl, boolean bl2, File file) {
+    public LevelSummary(LevelInfo levelInfo, SaveVersionInfo versionInfo, String name, boolean requiresConversion, boolean locked, File file) {
         this.levelInfo = levelInfo;
-        this.versionInfo = saveVersionInfo;
-        this.name = string;
-        this.locked = bl2;
+        this.versionInfo = versionInfo;
+        this.name = name;
+        this.locked = locked;
         this.file = file;
-        this.requiresConversion = bl;
+        this.requiresConversion = requiresConversion;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -99,13 +100,13 @@ implements Comparable<LevelSummary> {
         return new LiteralText(this.versionInfo.getVersionName());
     }
 
-    public SaveVersionInfo method_29586() {
+    public SaveVersionInfo getVersionInfo() {
         return this.versionInfo;
     }
 
     @Environment(value=EnvType.CLIENT)
     public boolean isDifferentVersion() {
-        return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.versionInfo.isStable() || this.isOutdatedLevel();
+        return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.versionInfo.isStable() || this.method_33405().method_33406();
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -114,8 +115,17 @@ implements Comparable<LevelSummary> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean isOutdatedLevel() {
-        return this.versionInfo.getVersionId() < SharedConstants.getGameVersion().getWorldVersion();
+    public class_5781 method_33405() {
+        GameVersion gameVersion = SharedConstants.getGameVersion();
+        int i = gameVersion.getWorldVersion();
+        int j = this.versionInfo.getVersionId();
+        if (!gameVersion.isStable() && j < i) {
+            return class_5781.field_28439;
+        }
+        if (j > i) {
+            return class_5781.field_28438;
+        }
+        return class_5781.field_28437;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -158,6 +168,35 @@ implements Comparable<LevelSummary> {
     @Override
     public /* synthetic */ int compareTo(Object object) {
         return this.compareTo((LevelSummary)object);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static enum class_5781 {
+        field_28437(false, false, ""),
+        field_28438(true, true, "downgrade"),
+        field_28439(true, false, "snapshot");
+
+        private final boolean field_28440;
+        private final boolean field_28441;
+        private final String field_28442;
+
+        private class_5781(boolean bl, boolean bl2, String string2) {
+            this.field_28440 = bl;
+            this.field_28441 = bl2;
+            this.field_28442 = string2;
+        }
+
+        public boolean method_33406() {
+            return this.field_28440;
+        }
+
+        public boolean method_33407() {
+            return this.field_28441;
+        }
+
+        public String method_33408() {
+            return this.field_28442;
+        }
     }
 }
 

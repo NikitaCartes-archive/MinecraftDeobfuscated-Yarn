@@ -57,9 +57,9 @@ extends ChunkGenerator {
             BlockState blockState;
             BlockState blockState2 = blockState = blockStates[i] == null ? Blocks.AIR.getDefaultState() : blockStates[i];
             if (Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) continue;
-            return this.config.getSectionCount() + i - 1;
+            return this.config.getBottomSectionLimit() + i - 1;
         }
-        return this.config.getSectionCount() + blockStates.length;
+        return this.config.getBottomSectionLimit() + blockStates.length;
     }
 
     @Override
@@ -71,7 +71,7 @@ extends ChunkGenerator {
         for (int i = 0; i < blockStates.length; ++i) {
             BlockState blockState = blockStates[i];
             if (blockState == null) continue;
-            int j = world.getSectionCount() + i;
+            int j = world.getBottomSectionLimit() + i;
             for (int k = 0; k < 16; ++k) {
                 for (int l = 0; l < 16; ++l) {
                     chunk.setBlockState(mutable.set(k, j, l), blockState, false);
@@ -88,7 +88,7 @@ extends ChunkGenerator {
         for (int i = blockStates.length - 1; i >= 0; --i) {
             BlockState blockState = blockStates[i];
             if (blockState == null || !heightmapType.getBlockPredicate().test(blockState)) continue;
-            return this.config.getSectionCount() + i + 1;
+            return this.config.getBottomSectionLimit() + i + 1;
         }
         return 0;
     }

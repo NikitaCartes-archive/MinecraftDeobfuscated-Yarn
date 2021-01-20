@@ -69,44 +69,44 @@ AutoCloseable {
         abstractTexture.bindTexture();
     }
 
-    public void registerTexture(Identifier identifier, AbstractTexture abstractTexture) {
-        AbstractTexture abstractTexture2 = this.textures.put(identifier, abstractTexture = this.method_24303(identifier, abstractTexture));
-        if (abstractTexture2 != abstractTexture) {
-            if (abstractTexture2 != null && abstractTexture2 != MissingSprite.getMissingSpriteTexture()) {
-                this.tickListeners.remove(abstractTexture2);
-                this.method_30299(identifier, abstractTexture2);
+    public void registerTexture(Identifier id, AbstractTexture texture) {
+        AbstractTexture abstractTexture = this.textures.put(id, texture = this.loadTexture(id, texture));
+        if (abstractTexture != texture) {
+            if (abstractTexture != null && abstractTexture != MissingSprite.getMissingSpriteTexture()) {
+                this.tickListeners.remove(abstractTexture);
+                this.closeTexture(id, abstractTexture);
             }
-            if (abstractTexture instanceof TextureTickListener) {
-                this.tickListeners.add((TextureTickListener)((Object)abstractTexture));
+            if (texture instanceof TextureTickListener) {
+                this.tickListeners.add((TextureTickListener)((Object)texture));
             }
         }
     }
 
-    private void method_30299(Identifier identifier, AbstractTexture abstractTexture) {
-        if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
+    private void closeTexture(Identifier id, AbstractTexture texture) {
+        if (texture != MissingSprite.getMissingSpriteTexture()) {
             try {
-                abstractTexture.close();
+                texture.close();
             } catch (Exception exception) {
-                LOGGER.warn("Failed to close texture {}", (Object)identifier, (Object)exception);
+                LOGGER.warn("Failed to close texture {}", (Object)id, (Object)exception);
             }
         }
-        abstractTexture.clearGlId();
+        texture.clearGlId();
     }
 
-    private AbstractTexture method_24303(Identifier identifier, AbstractTexture abstractTexture) {
+    private AbstractTexture loadTexture(Identifier id, AbstractTexture texture) {
         try {
-            abstractTexture.load(this.resourceContainer);
-            return abstractTexture;
+            texture.load(this.resourceContainer);
+            return texture;
         } catch (IOException iOException) {
-            if (identifier != MISSING_IDENTIFIER) {
-                LOGGER.warn("Failed to load texture: {}", (Object)identifier, (Object)iOException);
+            if (id != MISSING_IDENTIFIER) {
+                LOGGER.warn("Failed to load texture: {}", (Object)id, (Object)iOException);
             }
             return MissingSprite.getMissingSpriteTexture();
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Registering texture");
             CrashReportSection crashReportSection = crashReport.addElement("Resource location being registered");
-            crashReportSection.add("Resource location", identifier);
-            crashReportSection.add("Texture object class", () -> abstractTexture.getClass().getName());
+            crashReportSection.add("Resource location", id);
+            crashReportSection.add("Texture object class", () -> texture.getClass().getName());
             throw new CrashException(crashReport);
         }
     }
@@ -159,7 +159,7 @@ AutoCloseable {
 
     @Override
     public void close() {
-        this.textures.forEach(this::method_30299);
+        this.textures.forEach(this::closeTexture);
         this.textures.clear();
         this.tickListeners.clear();
         this.dynamicIdCounters.clear();

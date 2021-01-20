@@ -145,7 +145,7 @@ extends ScreenHandler {
         ItemStack itemStack2 = this.dyeSlot.getStack();
         ItemStack itemStack3 = this.patternSlot.getStack();
         ItemStack itemStack4 = this.outputSlot.getStack();
-        if (!itemStack4.isEmpty() && (itemStack.isEmpty() || itemStack2.isEmpty() || this.selectedPattern.get() <= 0 || this.selectedPattern.get() >= BannerPattern.COUNT - BannerPattern.field_24417 && itemStack3.isEmpty())) {
+        if (!itemStack4.isEmpty() && (itemStack.isEmpty() || itemStack2.isEmpty() || this.selectedPattern.get() <= 0 || this.selectedPattern.get() >= BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT && itemStack3.isEmpty())) {
             this.outputSlot.setStack(ItemStack.EMPTY);
             this.selectedPattern.set(0);
         } else if (!itemStack3.isEmpty() && itemStack3.getItem() instanceof BannerPatternItem) {

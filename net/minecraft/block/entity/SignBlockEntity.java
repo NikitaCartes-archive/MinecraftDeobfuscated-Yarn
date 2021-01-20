@@ -38,8 +38,8 @@ extends BlockEntity {
     private final OrderedText[] textBeingEdited = new OrderedText[4];
     private DyeColor textColor = DyeColor.BLACK;
 
-    public SignBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.SIGN, blockPos, blockState);
+    public SignBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.SIGN, pos, state);
     }
 
     @Override
@@ -60,7 +60,7 @@ extends BlockEntity {
         this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
         for (int i = 0; i < 4; ++i) {
             String string = tag.getString("Text" + (i + 1));
-            MutableText text = Text.Serializer.fromJson(string.isEmpty() ? "\"\"" : string);
+            Text text = this.method_33384(string);
             if (this.world instanceof ServerWorld) {
                 try {
                     this.text[i] = Texts.parse(this.getCommandSource(null), text, null, 0);
@@ -72,6 +72,18 @@ extends BlockEntity {
             }
             this.textBeingEdited[i] = null;
         }
+    }
+
+    private Text method_33384(String string) {
+        try {
+            MutableText text = Text.Serializer.fromJson(string);
+            if (text != null) {
+                return text;
+            }
+        } catch (Exception exception) {
+            // empty catch block
+        }
+        return LiteralText.EMPTY;
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -114,9 +126,9 @@ extends BlockEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void setEditable(boolean bl) {
-        this.editable = bl;
-        if (!bl) {
+    public void setEditable(boolean editable) {
+        this.editable = editable;
+        if (!editable) {
             this.editor = null;
         }
     }

@@ -31,7 +31,7 @@ import org.apache.logging.log4j.util.Supplier;
 @Environment(value=EnvType.CLIENT)
 public class ClientRecipeBook
 extends RecipeBook {
-    private static final Logger field_25622 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
     private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
@@ -42,7 +42,7 @@ extends RecipeBook {
         map.forEach((recipeBookGroup, list) -> {
             List cfr_ignored_0 = map2.put(recipeBookGroup, list.stream().map(RecipeResultCollection::new).peek(builder::add).collect(ImmutableList.toImmutableList()));
         });
-        RecipeBookGroup.field_25783.forEach((recipeBookGroup2, list) -> {
+        RecipeBookGroup.SEARCH_MAP.forEach((recipeBookGroup2, list) -> {
             List cfr_ignored_0 = map2.put(recipeBookGroup2, list.stream().flatMap(recipeBookGroup -> ((List)map2.getOrDefault(recipeBookGroup, ImmutableList.of())).stream()).collect(ImmutableList.toImmutableList()));
         });
         this.resultsByGroup = ImmutableMap.copyOf(map2);
@@ -53,7 +53,7 @@ extends RecipeBook {
         HashMap<RecipeBookGroup, List<List<Recipe<?>>>> map = Maps.newHashMap();
         HashBasedTable table = HashBasedTable.create();
         for (Recipe<?> recipe : iterable) {
-            if (recipe.isIgnoredInRecipeBook() || recipe.method_31584()) continue;
+            if (recipe.isIgnoredInRecipeBook() || recipe.isEmpty()) continue;
             RecipeBookGroup recipeBookGroup2 = ClientRecipeBook.getGroupForRecipe(recipe);
             String string = recipe.getGroup();
             if (string.isEmpty()) {
@@ -117,7 +117,7 @@ extends RecipeBook {
         Supplier[] supplierArray = new Supplier[2];
         supplierArray[0] = () -> Registry.RECIPE_TYPE.getId(recipe.getType());
         supplierArray[1] = recipe::getId;
-        field_25622.warn("Unknown recipe category: {}/{}", supplierArray);
+        LOGGER.warn("Unknown recipe category: {}/{}", supplierArray);
         return RecipeBookGroup.UNKNOWN;
     }
 

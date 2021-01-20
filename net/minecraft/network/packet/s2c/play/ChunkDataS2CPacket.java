@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.io.IOException;
+import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
@@ -28,7 +29,7 @@ public class ChunkDataS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private int chunkX;
     private int chunkZ;
-    private int verticalStripBitmask;
+    private BitSet verticalStripBitmask;
     private CompoundTag heightmaps;
     @Nullable
     private int[] biomeArray;
@@ -62,7 +63,7 @@ implements Packet<ClientPlayPacketListener> {
     public void read(PacketByteBuf buf) throws IOException {
         this.chunkX = buf.readInt();
         this.chunkZ = buf.readInt();
-        this.verticalStripBitmask = buf.readVarInt();
+        this.verticalStripBitmask = buf.method_33558();
         this.heightmaps = buf.readCompoundTag();
         this.biomeArray = buf.readIntArray(BiomeArray.DEFAULT_LENGTH);
         int i = buf.readVarInt();
@@ -82,7 +83,7 @@ implements Packet<ClientPlayPacketListener> {
     public void write(PacketByteBuf buf) throws IOException {
         buf.writeInt(this.chunkX);
         buf.writeInt(this.chunkZ);
-        buf.writeVarInt(this.verticalStripBitmask);
+        buf.method_33557(this.verticalStripBitmask);
         buf.writeCompoundTag(this.heightmaps);
         if (this.biomeArray != null) {
             buf.writeIntArray(this.biomeArray);
@@ -111,17 +112,17 @@ implements Packet<ClientPlayPacketListener> {
         return byteBuf;
     }
 
-    public int writeData(PacketByteBuf packetByteBuf, WorldChunk chunk) {
-        int i = 0;
+    public BitSet writeData(PacketByteBuf packetByteBuf, WorldChunk chunk) {
+        BitSet bitSet = new BitSet();
         ChunkSection[] chunkSections = chunk.getSectionArray();
-        int k = chunkSections.length;
-        for (int j = 0; j < k; ++j) {
-            ChunkSection chunkSection = chunkSections[j];
+        int j = chunkSections.length;
+        for (int i = 0; i < j; ++i) {
+            ChunkSection chunkSection = chunkSections[i];
             if (chunkSection == WorldChunk.EMPTY_SECTION || chunkSection.isEmpty()) continue;
-            i |= 1 << j;
+            bitSet.set(i);
             chunkSection.toPacket(packetByteBuf);
         }
-        return i;
+        return bitSet;
     }
 
     protected int getDataSize(WorldChunk chunk) {
@@ -144,7 +145,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public int getVerticalStripBitmask() {
+    public BitSet getVerticalStripBitmask() {
         return this.verticalStripBitmask;
     }
 

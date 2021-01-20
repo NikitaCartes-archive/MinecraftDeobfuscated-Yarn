@@ -53,7 +53,7 @@ extends AbstractPiglinEntity {
     @Override
     @Nullable
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
-        PiglinBruteBrain.method_30250(this);
+        PiglinBruteBrain.setCurrentPosAsHome(this);
         this.initEquipment(difficulty);
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
@@ -115,7 +115,7 @@ extends AbstractPiglinEntity {
             return false;
         }
         if (bl && source.getAttacker() instanceof LivingEntity) {
-            PiglinBruteBrain.method_30251(this, (LivingEntity)source.getAttacker());
+            PiglinBruteBrain.tryRevenge(this, (LivingEntity)source.getAttacker());
         }
         return bl;
     }

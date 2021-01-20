@@ -142,7 +142,7 @@ extends Block {
         if (oldState.isOf(state.getBlock())) {
             return;
         }
-        if (AbstractFireBlock.isOverworldOrNether(world) && (optional = AreaHelper.method_30485(world, pos, Direction.Axis.X)).isPresent()) {
+        if (AbstractFireBlock.isOverworldOrNether(world) && (optional = AreaHelper.getNewPortal(world, pos, Direction.Axis.X)).isPresent()) {
             optional.get().createPortal();
             return;
         }
@@ -162,26 +162,30 @@ extends Block {
         }
     }
 
-    public static boolean method_30032(World world, BlockPos blockPos, Direction direction) {
-        BlockState blockState = world.getBlockState(blockPos);
+    public static boolean canPlaceAt(World world, BlockPos pos, Direction direction) {
+        BlockState blockState = world.getBlockState(pos);
         if (!blockState.isAir()) {
             return false;
         }
-        return AbstractFireBlock.getState(world, blockPos).canPlaceAt(world, blockPos) || AbstractFireBlock.method_30033(world, blockPos, direction);
+        return AbstractFireBlock.getState(world, pos).canPlaceAt(world, pos) || AbstractFireBlock.shouldLightPortalAt(world, pos, direction);
     }
 
-    private static boolean method_30033(World world, BlockPos blockPos, Direction direction) {
+    private static boolean shouldLightPortalAt(World world, BlockPos pos, Direction direction) {
         if (!AbstractFireBlock.isOverworldOrNether(world)) {
             return false;
         }
-        BlockPos.Mutable mutable = blockPos.mutableCopy();
+        BlockPos.Mutable mutable = pos.mutableCopy();
         boolean bl = false;
         for (Direction direction2 : Direction.values()) {
-            if (!world.getBlockState(mutable.set(blockPos).move(direction2)).isOf(Blocks.OBSIDIAN)) continue;
+            if (!world.getBlockState(mutable.set(pos).move(direction2)).isOf(Blocks.OBSIDIAN)) continue;
             bl = true;
             break;
         }
-        return bl && AreaHelper.method_30485(world, blockPos, direction.rotateYCounterclockwise().getAxis()).isPresent();
+        if (!bl) {
+            return false;
+        }
+        Direction.Axis axis = direction.getAxis().isHorizontal() ? direction.rotateYCounterclockwise().getAxis() : Direction.Type.HORIZONTAL.randomAxis(world.random);
+        return AreaHelper.getNewPortal(world, pos, axis).isPresent();
     }
 }
 

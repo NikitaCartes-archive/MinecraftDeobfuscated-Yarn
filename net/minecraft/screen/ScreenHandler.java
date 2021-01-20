@@ -45,8 +45,8 @@ public abstract class ScreenHandler {
     public final int syncId;
     @Environment(value=EnvType.CLIENT)
     private short actionId;
-    private int quickCraftStage = -1;
-    private int quickCraftButton;
+    private int quickCraftButton = -1;
+    private int quickCraftStage;
     private final Set<Slot> quickCraftSlots = Sets.newHashSet();
     private final List<ScreenHandlerListener> listeners = Lists.newArrayList();
     private final Set<PlayerEntity> restrictedPlayers = Sets.newHashSet();
@@ -57,11 +57,11 @@ public abstract class ScreenHandler {
     }
 
     protected static boolean canUse(ScreenHandlerContext context, PlayerEntity player, Block block) {
-        return context.run((world, blockPos) -> {
-            if (!world.getBlockState((BlockPos)blockPos).isOf(block)) {
+        return context.run((world, pos) -> {
+            if (!world.getBlockState((BlockPos)pos).isOf(block)) {
                 return false;
             }
-            return player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0;
+            return player.squaredDistanceTo((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) <= 64.0;
         }, true);
     }
 
@@ -198,41 +198,41 @@ public abstract class ScreenHandler {
         ItemStack itemStack = ItemStack.EMPTY;
         PlayerInventory playerInventory = player.getInventory();
         if (actionType == SlotActionType.QUICK_CRAFT) {
-            int i = this.quickCraftButton;
-            this.quickCraftButton = ScreenHandler.unpackQuickCraftStage(clickData);
-            if ((i != 1 || this.quickCraftButton != 2) && i != this.quickCraftButton) {
+            int i = this.quickCraftStage;
+            this.quickCraftStage = ScreenHandler.unpackQuickCraftStage(clickData);
+            if ((i != 1 || this.quickCraftStage != 2) && i != this.quickCraftStage) {
                 this.endQuickCraft();
             } else if (playerInventory.getCursorStack().isEmpty()) {
                 this.endQuickCraft();
-            } else if (this.quickCraftButton == 0) {
-                this.quickCraftStage = ScreenHandler.unpackQuickCraftButton(clickData);
-                if (ScreenHandler.shouldQuickCraftContinue(this.quickCraftStage, player)) {
-                    this.quickCraftButton = 1;
+            } else if (this.quickCraftStage == 0) {
+                this.quickCraftButton = ScreenHandler.unpackQuickCraftButton(clickData);
+                if (ScreenHandler.shouldQuickCraftContinue(this.quickCraftButton, player)) {
+                    this.quickCraftStage = 1;
                     this.quickCraftSlots.clear();
                 } else {
                     this.endQuickCraft();
                 }
-            } else if (this.quickCraftButton == 1) {
+            } else if (this.quickCraftStage == 1) {
                 ItemStack itemStack2;
                 Slot slot = this.slots.get(slotIndex);
-                if (ScreenHandler.canInsertItemIntoSlot(slot, itemStack2 = playerInventory.getCursorStack(), true) && slot.canInsert(itemStack2) && (this.quickCraftStage == 2 || itemStack2.getCount() > this.quickCraftSlots.size()) && this.canInsertIntoSlot(slot)) {
+                if (ScreenHandler.canInsertItemIntoSlot(slot, itemStack2 = playerInventory.getCursorStack(), true) && slot.canInsert(itemStack2) && (this.quickCraftButton == 2 || itemStack2.getCount() > this.quickCraftSlots.size()) && this.canInsertIntoSlot(slot)) {
                     this.quickCraftSlots.add(slot);
                 }
-            } else if (this.quickCraftButton == 2) {
+            } else if (this.quickCraftStage == 2) {
                 if (!this.quickCraftSlots.isEmpty()) {
                     if (this.quickCraftSlots.size() == 1) {
                         int j = this.quickCraftSlots.iterator().next().id;
                         this.endQuickCraft();
-                        return this.removeStack(j, this.quickCraftStage, SlotActionType.PICKUP, player);
+                        return this.removeStack(j, this.quickCraftButton, SlotActionType.PICKUP, player);
                     }
                     ItemStack itemStack3 = playerInventory.getCursorStack().copy();
                     int k = playerInventory.getCursorStack().getCount();
                     for (Slot slot2 : this.quickCraftSlots) {
                         ItemStack itemStack4 = playerInventory.getCursorStack();
-                        if (slot2 == null || !ScreenHandler.canInsertItemIntoSlot(slot2, itemStack4, true) || !slot2.canInsert(itemStack4) || this.quickCraftStage != 2 && itemStack4.getCount() < this.quickCraftSlots.size() || !this.canInsertIntoSlot(slot2)) continue;
+                        if (slot2 == null || !ScreenHandler.canInsertItemIntoSlot(slot2, itemStack4, true) || !slot2.canInsert(itemStack4) || this.quickCraftButton != 2 && itemStack4.getCount() < this.quickCraftSlots.size() || !this.canInsertIntoSlot(slot2)) continue;
                         ItemStack itemStack5 = itemStack3.copy();
                         int l = slot2.hasStack() ? slot2.getStack().getCount() : 0;
-                        ScreenHandler.calculateStackSize(this.quickCraftSlots, this.quickCraftStage, itemStack5, l);
+                        ScreenHandler.calculateStackSize(this.quickCraftSlots, this.quickCraftButton, itemStack5, l);
                         int m = Math.min(itemStack5.getMaxCount(), slot2.getMaxItemCount(itemStack5));
                         if (itemStack5.getCount() > m) {
                             itemStack5.setCount(m);
@@ -247,7 +247,7 @@ public abstract class ScreenHandler {
             } else {
                 this.endQuickCraft();
             }
-        } else if (this.quickCraftButton != 0) {
+        } else if (this.quickCraftStage != 0) {
             this.endQuickCraft();
         } else if (!(actionType != SlotActionType.PICKUP && actionType != SlotActionType.QUICK_MOVE || clickData != 0 && clickData != 1)) {
             ClickType clickType;
@@ -528,7 +528,7 @@ public abstract class ScreenHandler {
     }
 
     protected void endQuickCraft() {
-        this.quickCraftButton = 0;
+        this.quickCraftStage = 0;
         this.quickCraftSlots.clear();
     }
 

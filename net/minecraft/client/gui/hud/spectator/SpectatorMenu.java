@@ -43,7 +43,7 @@ public class SpectatorMenu {
         }
 
         @Override
-        public void renderIcon(MatrixStack matrixStack, float f, int i) {
+        public void renderIcon(MatrixStack matrices, float f, int i) {
         }
 
         @Override
@@ -147,12 +147,12 @@ public class SpectatorMenu {
         }
 
         @Override
-        public void renderIcon(MatrixStack matrixStack, float f, int i) {
+        public void renderIcon(MatrixStack matrices, float f, int i) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
             if (this.direction < 0) {
-                DrawableHelper.drawTexture(matrixStack, 0, 0, 144.0f, 0.0f, 16, 16, 256, 256);
+                DrawableHelper.drawTexture(matrices, 0, 0, 144.0f, 0.0f, 16, 16, 256, 256);
             } else {
-                DrawableHelper.drawTexture(matrixStack, 0, 0, 160.0f, 0.0f, 16, 16, 256, 256);
+                DrawableHelper.drawTexture(matrices, 0, 0, 160.0f, 0.0f, 16, 16, 256, 256);
             }
         }
 
@@ -179,9 +179,9 @@ public class SpectatorMenu {
         }
 
         @Override
-        public void renderIcon(MatrixStack matrixStack, float f, int i) {
+        public void renderIcon(MatrixStack matrices, float f, int i) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
-            DrawableHelper.drawTexture(matrixStack, 0, 0, 128.0f, 0.0f, 16, 16, 256, 256);
+            DrawableHelper.drawTexture(matrices, 0, 0, 128.0f, 0.0f, 16, 16, 256, 256);
         }
 
         @Override

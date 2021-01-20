@@ -123,9 +123,9 @@ extends LlamaEntity {
         private LivingEntity offender;
         private int traderLastAttackedTime;
 
-        public DefendTraderGoal(LlamaEntity llamaEntity) {
-            super(llamaEntity, false);
-            this.llama = llamaEntity;
+        public DefendTraderGoal(LlamaEntity llama) {
+            super(llama, false);
+            this.llama = llama;
             this.setControls(EnumSet.of(Goal.Control.TARGET));
         }
 

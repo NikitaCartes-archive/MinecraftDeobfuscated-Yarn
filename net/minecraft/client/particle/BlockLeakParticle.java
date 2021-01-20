@@ -36,7 +36,7 @@ extends SpriteBillboardParticle {
         this.fluid = fluid;
     }
 
-    protected Fluid method_32791() {
+    protected Fluid getFluid() {
         return this.fluid;
     }
 
@@ -46,11 +46,11 @@ extends SpriteBillboardParticle {
     }
 
     @Override
-    public int getColorMultiplier(float tint) {
+    public int getBrightness(float tint) {
         if (this.obsidianTear) {
             return 240;
         }
-        return super.getColorMultiplier(tint);
+        return super.getBrightness(tint);
     }
 
     @Override
@@ -169,72 +169,72 @@ extends SpriteBillboardParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_5693
+    public static class LandingDripstoneLavaFactory
     implements ParticleFactory<DefaultParticleType> {
-        protected final SpriteProvider field_28071;
+        protected final SpriteProvider spriteProvider;
 
-        public class_5693(SpriteProvider spriteProvider) {
-            this.field_28071 = spriteProvider;
+        public LandingDripstoneLavaFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            class_5692 blockLeakParticle = new class_5692(clientWorld, d, e, f, Fluids.LAVA, ParticleTypes.LANDING_LAVA);
+            DripstoneLavaDrip blockLeakParticle = new DripstoneLavaDrip(clientWorld, d, e, f, Fluids.LAVA, ParticleTypes.LANDING_LAVA);
             blockLeakParticle.setColor(1.0f, 0.2857143f, 0.083333336f);
-            blockLeakParticle.setSprite(this.field_28071);
+            blockLeakParticle.setSprite(this.spriteProvider);
             return blockLeakParticle;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_5694
+    public static class FallingDripstoneLavaFactory
     implements ParticleFactory<DefaultParticleType> {
-        protected final SpriteProvider field_28072;
+        protected final SpriteProvider spriteProvider;
 
-        public class_5694(SpriteProvider spriteProvider) {
-            this.field_28072 = spriteProvider;
+        public FallingDripstoneLavaFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             DrippingLava blockLeakParticle = new DrippingLava(clientWorld, d, e, f, Fluids.LAVA, ParticleTypes.FALLING_DRIPSTONE_LAVA);
-            blockLeakParticle.setSprite(this.field_28072);
+            blockLeakParticle.setSprite(this.spriteProvider);
             return blockLeakParticle;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_5695
+    public static class DripstoneLavaSplashFactory
     implements ParticleFactory<DefaultParticleType> {
-        protected final SpriteProvider field_28073;
+        protected final SpriteProvider spriteProvider;
 
-        public class_5695(SpriteProvider spriteProvider) {
-            this.field_28073 = spriteProvider;
+        public DripstoneLavaSplashFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            class_5692 blockLeakParticle = new class_5692(clientWorld, d, e, f, Fluids.WATER, ParticleTypes.SPLASH);
+            DripstoneLavaDrip blockLeakParticle = new DripstoneLavaDrip(clientWorld, d, e, f, Fluids.WATER, ParticleTypes.SPLASH);
             blockLeakParticle.setColor(0.2f, 0.3f, 1.0f);
-            blockLeakParticle.setSprite(this.field_28073);
+            blockLeakParticle.setSprite(this.spriteProvider);
             return blockLeakParticle;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_5696
+    public static class FallingDripstoneWaterFactory
     implements ParticleFactory<DefaultParticleType> {
-        protected final SpriteProvider field_28074;
+        protected final SpriteProvider spriteProvider;
 
-        public class_5696(SpriteProvider spriteProvider) {
-            this.field_28074 = spriteProvider;
+        public FallingDripstoneWaterFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             Dripping blockLeakParticle = new Dripping(clientWorld, d, e, f, Fluids.WATER, ParticleTypes.FALLING_DRIPSTONE_WATER);
             blockLeakParticle.setColor(0.2f, 0.3f, 1.0f);
-            blockLeakParticle.setSprite(this.field_28074);
+            blockLeakParticle.setSprite(this.spriteProvider);
             return blockLeakParticle;
         }
     }
@@ -412,10 +412,10 @@ extends SpriteBillboardParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_5692
+    static class DripstoneLavaDrip
     extends ContinuousFalling {
-        private class_5692(ClientWorld clientWorld, double d, double e, double f, Fluid fluid, ParticleEffect particleEffect) {
-            super(clientWorld, d, e, f, fluid, particleEffect);
+        private DripstoneLavaDrip(ClientWorld world, double x, double y, double z, Fluid fluid, ParticleEffect particleEffect) {
+            super(world, x, y, z, fluid, particleEffect);
         }
 
         @Override
@@ -423,7 +423,7 @@ extends SpriteBillboardParticle {
             if (this.onGround) {
                 this.markDead();
                 this.world.addParticle(this.nextParticle, this.x, this.y, this.z, 0.0, 0.0, 0.0);
-                SoundEvent soundEvent = this.method_32791() == Fluids.LAVA ? SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_LAVA : SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_WATER;
+                SoundEvent soundEvent = this.getFluid() == Fluids.LAVA ? SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_LAVA : SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_WATER;
                 float f = MathHelper.nextBetween(this.random, 0.3f, 1.0f);
                 this.world.playSound(this.x, this.y, this.z, soundEvent, SoundCategory.BLOCKS, f, 1.0f, false);
             }
@@ -453,8 +453,8 @@ extends SpriteBillboardParticle {
     extends Falling {
         protected final ParticleEffect nextParticle;
 
-        private ContinuousFalling(ClientWorld clientWorld, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
-            super(clientWorld, x, y, z, fluid);
+        private ContinuousFalling(ClientWorld world, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
+            super(world, x, y, z, fluid);
             this.nextParticle = nextParticle;
         }
 
@@ -470,8 +470,8 @@ extends SpriteBillboardParticle {
     @Environment(value=EnvType.CLIENT)
     static class DrippingLava
     extends Dripping {
-        private DrippingLava(ClientWorld clientWorld, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
-            super(clientWorld, x, y, z, fluid, nextParticle);
+        private DrippingLava(ClientWorld world, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
+            super(world, x, y, z, fluid, nextParticle);
         }
 
         @Override
@@ -488,8 +488,8 @@ extends SpriteBillboardParticle {
     extends BlockLeakParticle {
         private final ParticleEffect nextParticle;
 
-        private Dripping(ClientWorld clientWorld, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
-            super(clientWorld, x, y, z, fluid);
+        private Dripping(ClientWorld world, double x, double y, double z, Fluid fluid, ParticleEffect nextParticle) {
+            super(world, x, y, z, fluid);
             this.nextParticle = nextParticle;
             this.gravityStrength *= 0.02f;
             this.maxAge = 40;

@@ -79,7 +79,7 @@ extends BlockWithEntity {
         if (blockEntity instanceof AbstractFurnaceBlockEntity) {
             if (world instanceof ServerWorld) {
                 ItemScatterer.spawn(world, pos, (Inventory)((AbstractFurnaceBlockEntity)blockEntity));
-                ((AbstractFurnaceBlockEntity)blockEntity).method_27354((ServerWorld)world, Vec3d.ofCenter(pos));
+                ((AbstractFurnaceBlockEntity)blockEntity).getRecipesUsedAndDropExperience((ServerWorld)world, Vec3d.ofCenter(pos));
             }
             world.updateComparators(pos, this);
         }

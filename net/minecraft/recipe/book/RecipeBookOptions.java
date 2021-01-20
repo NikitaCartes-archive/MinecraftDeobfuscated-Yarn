@@ -74,17 +74,17 @@ public final class RecipeBookOptions {
 
     public static RecipeBookOptions fromTag(CompoundTag tag) {
         EnumMap<RecipeBookCategory, CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
-        CATEGORY_OPTION_NAMES.forEach((recipeBookCategory, pair) -> {
+        CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
             boolean bl = tag.getBoolean((String)pair.getFirst());
             boolean bl2 = tag.getBoolean((String)pair.getSecond());
-            map.put((RecipeBookCategory)((Object)recipeBookCategory), new CategoryOption(bl, bl2));
+            map.put((RecipeBookCategory)((Object)category), new CategoryOption(bl, bl2));
         });
         return new RecipeBookOptions(map);
     }
 
     public void toTag(CompoundTag tag) {
-        CATEGORY_OPTION_NAMES.forEach((recipeBookCategory, pair) -> {
-            CategoryOption categoryOption = this.categoryOptions.get(recipeBookCategory);
+        CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
+            CategoryOption categoryOption = this.categoryOptions.get(category);
             tag.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);
             tag.putBoolean((String)pair.getSecond(), categoryOption.filteringCraftable);
         });

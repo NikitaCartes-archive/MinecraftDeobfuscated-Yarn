@@ -39,7 +39,7 @@ extends SkullBlock {
                     gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
                 }
             }
-            skullBlockEntity.setOwnerAndType(gameProfile);
+            skullBlockEntity.setOwner(gameProfile);
         }
     }
 }

@@ -3,6 +3,8 @@
  */
 package net.minecraft.entity.vehicle;
 
+import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -123,11 +125,11 @@ extends Entity {
 
     @Override
     public boolean collidesWith(Entity other) {
-        return BoatEntity.method_30959(this, other);
+        return BoatEntity.canCollide(this, other);
     }
 
-    public static boolean method_30959(Entity entity, Entity entity2) {
-        return (entity2.isCollidable() || entity2.isPushable()) && !entity.isConnectedThroughVehicle(entity2);
+    public static boolean canCollide(Entity entity, Entity other) {
+        return (other.isCollidable() || other.isPushable()) && !entity.isConnectedThroughVehicle(other);
     }
 
     @Override
@@ -618,18 +620,21 @@ extends Entity {
         BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e = this.getZ() + vec3d.z);
         BlockPos blockPos2 = blockPos.down();
         if (!this.world.isWater(blockPos2)) {
-            double f = (double)blockPos.getY() + this.world.getDismountHeight(blockPos);
-            double g = (double)blockPos.getY() + this.world.getDismountHeight(blockPos2);
+            double g;
+            ArrayList<Vec3d> list = Lists.newArrayList();
+            double f = this.world.getDismountHeight(blockPos);
+            if (Dismounting.canDismountInBlock(f)) {
+                list.add(new Vec3d(d, (double)blockPos.getY() + f, e));
+            }
+            if (Dismounting.canDismountInBlock(g = this.world.getDismountHeight(blockPos2))) {
+                list.add(new Vec3d(d, (double)blockPos2.getY() + g, e));
+            }
             for (EntityPose entityPose : passenger.getPoses()) {
-                Vec3d vec3d2 = Dismounting.findDismountPos(this.world, d, f, e, passenger, entityPose);
-                if (vec3d2 != null) {
+                for (Vec3d vec3d2 : list) {
+                    if (!Dismounting.canPlaceEntityAt(this.world, vec3d2, passenger, entityPose)) continue;
                     passenger.setPose(entityPose);
                     return vec3d2;
                 }
-                Vec3d vec3d3 = Dismounting.findDismountPos(this.world, d, g, e, passenger, entityPose);
-                if (vec3d3 == null) continue;
-                passenger.setPose(entityPose);
-                return vec3d3;
             }
         }
         return super.updatePassengerForDismount(passenger);
@@ -688,7 +693,7 @@ extends Entity {
                     this.fallDistance = 0.0f;
                     return;
                 }
-                this.handleFallDamage(this.fallDistance, 1.0f);
+                this.handleFallDamage(this.fallDistance, 1.0f, DamageSource.FALL);
                 if (!this.world.isClient && !this.isRemoved()) {
                     this.kill();
                     if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {

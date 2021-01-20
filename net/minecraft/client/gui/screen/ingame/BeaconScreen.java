@@ -213,8 +213,8 @@ extends HandledScreen<BeaconScreenHandler> {
         }
 
         @Override
-        protected void renderExtra(MatrixStack matrixStack) {
-            this.drawTexture(matrixStack, this.x + 2, this.y + 2, this.u, this.v, 18, 18);
+        protected void renderExtra(MatrixStack matrices) {
+            this.drawTexture(matrices, this.x + 2, this.y + 2, this.u, this.v, 18, 18);
         }
     }
 
@@ -224,19 +224,19 @@ extends HandledScreen<BeaconScreenHandler> {
         private final StatusEffect effect;
         private final Sprite sprite;
         private final boolean primary;
-        private final Text field_26562;
+        private final Text text;
 
         public EffectButtonWidget(int x, int y, StatusEffect statusEffect, boolean primary) {
             super(x, y);
             this.effect = statusEffect;
             this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect);
             this.primary = primary;
-            this.field_26562 = this.method_30902(statusEffect, primary);
+            this.text = this.getTextForEffect(statusEffect, primary);
         }
 
-        private Text method_30902(StatusEffect statusEffect, boolean bl) {
-            TranslatableText mutableText = new TranslatableText(statusEffect.getTranslationKey());
-            if (!bl && statusEffect != StatusEffects.REGENERATION) {
+        private Text getTextForEffect(StatusEffect effect, boolean primary) {
+            TranslatableText mutableText = new TranslatableText(effect.getTranslationKey());
+            if (!primary && effect != StatusEffects.REGENERATION) {
                 mutableText.append(" II");
             }
             return mutableText;
@@ -260,13 +260,13 @@ extends HandledScreen<BeaconScreenHandler> {
 
         @Override
         public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
-            BeaconScreen.this.renderTooltip(matrices, this.field_26562, mouseX, mouseY);
+            BeaconScreen.this.renderTooltip(matrices, this.text, mouseX, mouseY);
         }
 
         @Override
-        protected void renderExtra(MatrixStack matrixStack) {
+        protected void renderExtra(MatrixStack matrices) {
             MinecraftClient.getInstance().getTextureManager().bindTexture(this.sprite.getAtlas().getId());
-            EffectButtonWidget.drawSprite(matrixStack, this.x + 2, this.y + 2, this.getZOffset(), 18, 18, this.sprite);
+            EffectButtonWidget.drawSprite(matrices, this.x + 2, this.y + 2, this.getZOffset(), 18, 18, this.sprite);
         }
     }
 

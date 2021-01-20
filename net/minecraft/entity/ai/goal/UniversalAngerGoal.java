@@ -19,7 +19,7 @@ public class UniversalAngerGoal<T extends MobEntity>
 extends Goal {
     private final T mob;
     private final boolean triggerOthers;
-    private int field_25606;
+    private int lastAttackedTime;
 
     public UniversalAngerGoal(T mob, boolean triggerOthers) {
         this.mob = mob;
@@ -28,16 +28,16 @@ extends Goal {
 
     @Override
     public boolean canStart() {
-        return ((MobEntity)this.mob).world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.method_29932();
+        return ((MobEntity)this.mob).world.getGameRules().getBoolean(GameRules.UNIVERSAL_ANGER) && this.canStartUniversalAnger();
     }
 
-    private boolean method_29932() {
-        return ((LivingEntity)this.mob).getAttacker() != null && ((LivingEntity)this.mob).getAttacker().getType() == EntityType.PLAYER && ((LivingEntity)this.mob).getLastAttackedTime() > this.field_25606;
+    private boolean canStartUniversalAnger() {
+        return ((LivingEntity)this.mob).getAttacker() != null && ((LivingEntity)this.mob).getAttacker().getType() == EntityType.PLAYER && ((LivingEntity)this.mob).getLastAttackedTime() > this.lastAttackedTime;
     }
 
     @Override
     public void start() {
-        this.field_25606 = ((LivingEntity)this.mob).getLastAttackedTime();
+        this.lastAttackedTime = ((LivingEntity)this.mob).getLastAttackedTime();
         ((Angerable)this.mob).universallyAnger();
         if (this.triggerOthers) {
             this.getOthersInRange().stream().filter(entity -> entity != this.mob).map(entity -> (Angerable)((Object)entity)).forEach(Angerable::universallyAnger);
@@ -47,7 +47,7 @@ extends Goal {
 
     private List<? extends MobEntity> getOthersInRange() {
         double d = ((LivingEntity)this.mob).getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
-        Box box = Box.method_29968(((Entity)this.mob).getPos()).expand(d, 10.0, d);
+        Box box = Box.from(((Entity)this.mob).getPos()).expand(d, 10.0, d);
         return ((MobEntity)this.mob).world.getEntitiesByClass(this.mob.getClass(), box, EntityPredicates.EXCEPT_SPECTATOR);
     }
 }

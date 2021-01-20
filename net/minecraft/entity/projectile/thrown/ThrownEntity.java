@@ -50,7 +50,7 @@ extends ProjectileEntity {
     public void tick() {
         float h;
         super.tick();
-        HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
+        HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
         boolean bl = false;
         if (hitResult.getType() == HitResult.Type.BLOCK) {
             BlockPos blockPos = ((BlockHitResult)hitResult).getBlockPos();
@@ -60,7 +60,7 @@ extends ProjectileEntity {
                 bl = true;
             } else if (blockState.isOf(Blocks.END_GATEWAY)) {
                 BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-                if (blockEntity instanceof EndGatewayBlockEntity && EndGatewayBlockEntity.method_30276(this)) {
+                if (blockEntity instanceof EndGatewayBlockEntity && EndGatewayBlockEntity.canTeleport(this)) {
                     EndGatewayBlockEntity.tryTeleportingEntity(this.world, blockPos, blockState, this, (EndGatewayBlockEntity)blockEntity);
                 }
                 bl = true;
@@ -74,7 +74,7 @@ extends ProjectileEntity {
         double d = this.getX() + vec3d.x;
         double e = this.getY() + vec3d.y;
         double f = this.getZ() + vec3d.z;
-        this.method_26962();
+        this.updateRotation();
         if (this.isTouchingWater()) {
             for (int i = 0; i < 4; ++i) {
                 float g = 0.25f;

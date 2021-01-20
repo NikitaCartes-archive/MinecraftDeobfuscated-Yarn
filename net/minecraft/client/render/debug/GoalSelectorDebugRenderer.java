@@ -31,8 +31,8 @@ implements DebugRenderer.Renderer {
         this.goalSelectors.put(i, list);
     }
 
-    public GoalSelectorDebugRenderer(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public GoalSelectorDebugRenderer(MinecraftClient client) {
+        this.client = client;
     }
 
     @Override
@@ -66,10 +66,10 @@ implements DebugRenderer.Renderer {
         public final String name;
         public final boolean field_18785;
 
-        public GoalSelector(BlockPos blockPos, int i, String string, boolean bl) {
-            this.pos = blockPos;
+        public GoalSelector(BlockPos pos, int i, String name, boolean bl) {
+            this.pos = pos;
             this.field_18783 = i;
-            this.name = string;
+            this.name = name;
             this.field_18785 = bl;
         }
     }

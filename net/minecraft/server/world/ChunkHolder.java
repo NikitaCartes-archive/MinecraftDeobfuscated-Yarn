@@ -89,7 +89,7 @@ public class ChunkHolder {
         this.level = this.lastTickLevel = ThreadedAnvilChunkStorage.MAX_LEVEL + 1;
         this.completedLevel = this.lastTickLevel;
         this.setLevel(level);
-        this.blockUpdatesBySection = new ShortSet[heightLimitView.method_32890()];
+        this.blockUpdatesBySection = new ShortSet[heightLimitView.getSections()];
     }
 
     public CompletableFuture<Either<Chunk, Unloaded>> getFutureFor(ChunkStatus leastStatus) {

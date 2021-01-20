@@ -510,7 +510,7 @@ ServerPlayPacketListener {
             }
             commandBlockBlockEntity.setAuto(packet.isAlwaysActive());
             if (type != packet.getType()) {
-                commandBlockBlockEntity.method_23359();
+                commandBlockBlockEntity.updateCommandBlock();
             }
             commandBlockExecutor.markDirty();
             if (!ChatUtil.isEmpty(string)) {

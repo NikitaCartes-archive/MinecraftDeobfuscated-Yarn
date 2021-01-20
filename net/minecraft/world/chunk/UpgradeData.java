@@ -48,12 +48,12 @@ public class UpgradeData {
     private static final Map<Block, Logic> BLOCK_TO_LOGIC = new IdentityHashMap<Block, Logic>();
     private static final Set<Logic> CALLBACK_LOGICS = Sets.newHashSet();
 
-    private UpgradeData(HeightLimitView heightLimitView) {
-        this.centerIndicesToUpgrade = new int[heightLimitView.method_32890()][];
+    private UpgradeData(HeightLimitView world) {
+        this.centerIndicesToUpgrade = new int[world.getSections()][];
     }
 
-    public UpgradeData(CompoundTag tag, HeightLimitView heightLimitView) {
-        this(heightLimitView);
+    public UpgradeData(CompoundTag tag, HeightLimitView world) {
+        this(world);
         if (tag.contains("Indices", 10)) {
             CompoundTag compoundTag = tag.getCompound("Indices");
             for (int i = 0; i < this.centerIndicesToUpgrade.length; ++i) {
@@ -98,7 +98,7 @@ public class UpgradeData {
         int n = chunkPos.getStartZ() + (bl5 && (bl || bl2) ? 14 : (bl4 ? 0 : 15));
         Direction[] directions = Direction.values();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (BlockPos blockPos : BlockPos.iterate(k, world.getSectionCount(), m, l, world.getTopHeightLimit() - 1, n)) {
+        for (BlockPos blockPos : BlockPos.iterate(k, world.getBottomSectionLimit(), m, l, world.getTopHeightLimit() - 1, n)) {
             BlockState blockState;
             BlockState blockState2 = blockState = world.getBlockState(blockPos);
             for (Direction direction : directions) {
@@ -182,7 +182,7 @@ public class UpgradeData {
         BLACKLIST(new Block[]{Blocks.OBSERVER, Blocks.NETHER_PORTAL, Blocks.WHITE_CONCRETE_POWDER, Blocks.ORANGE_CONCRETE_POWDER, Blocks.MAGENTA_CONCRETE_POWDER, Blocks.LIGHT_BLUE_CONCRETE_POWDER, Blocks.YELLOW_CONCRETE_POWDER, Blocks.LIME_CONCRETE_POWDER, Blocks.PINK_CONCRETE_POWDER, Blocks.GRAY_CONCRETE_POWDER, Blocks.LIGHT_GRAY_CONCRETE_POWDER, Blocks.CYAN_CONCRETE_POWDER, Blocks.PURPLE_CONCRETE_POWDER, Blocks.BLUE_CONCRETE_POWDER, Blocks.BROWN_CONCRETE_POWDER, Blocks.GREEN_CONCRETE_POWDER, Blocks.RED_CONCRETE_POWDER, Blocks.BLACK_CONCRETE_POWDER, Blocks.ANVIL, Blocks.CHIPPED_ANVIL, Blocks.DAMAGED_ANVIL, Blocks.DRAGON_EGG, Blocks.GRAVEL, Blocks.SAND, Blocks.RED_SAND, Blocks.OAK_SIGN, Blocks.SPRUCE_SIGN, Blocks.BIRCH_SIGN, Blocks.ACACIA_SIGN, Blocks.JUNGLE_SIGN, Blocks.DARK_OAK_SIGN, Blocks.OAK_WALL_SIGN, Blocks.SPRUCE_WALL_SIGN, Blocks.BIRCH_WALL_SIGN, Blocks.ACACIA_WALL_SIGN, Blocks.JUNGLE_WALL_SIGN, Blocks.DARK_OAK_WALL_SIGN}){
 
             @Override
-            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, BlockPos blockPos2) {
+            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess world, BlockPos blockPos, BlockPos blockPos2) {
                 return blockState;
             }
         }
@@ -190,23 +190,23 @@ public class UpgradeData {
         DEFAULT(new Block[0]){
 
             @Override
-            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, BlockPos blockPos2) {
-                return blockState.getStateForNeighborUpdate(direction, worldAccess.getBlockState(blockPos2), worldAccess, blockPos, blockPos2);
+            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess world, BlockPos blockPos, BlockPos blockPos2) {
+                return blockState.getStateForNeighborUpdate(direction, world.getBlockState(blockPos2), world, blockPos, blockPos2);
             }
         }
         ,
         CHEST(new Block[]{Blocks.CHEST, Blocks.TRAPPED_CHEST}){
 
             @Override
-            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, BlockPos blockPos2) {
+            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess world, BlockPos blockPos, BlockPos blockPos2) {
                 if (blockState2.isOf(blockState.getBlock()) && direction.getAxis().isHorizontal() && blockState.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE && blockState2.get(ChestBlock.CHEST_TYPE) == ChestType.SINGLE) {
                     Direction direction2 = blockState.get(ChestBlock.FACING);
                     if (direction.getAxis() != direction2.getAxis() && direction2 == blockState2.get(ChestBlock.FACING)) {
                         ChestType chestType = direction == direction2.rotateYClockwise() ? ChestType.LEFT : ChestType.RIGHT;
-                        worldAccess.setBlockState(blockPos2, (BlockState)blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), 18);
+                        world.setBlockState(blockPos2, (BlockState)blockState2.with(ChestBlock.CHEST_TYPE, chestType.getOpposite()), 18);
                         if (direction2 == Direction.NORTH || direction2 == Direction.EAST) {
-                            BlockEntity blockEntity = worldAccess.getBlockEntity(blockPos);
-                            BlockEntity blockEntity2 = worldAccess.getBlockEntity(blockPos2);
+                            BlockEntity blockEntity = world.getBlockEntity(blockPos);
+                            BlockEntity blockEntity2 = world.getBlockEntity(blockPos2);
                             if (blockEntity instanceof ChestBlockEntity && blockEntity2 instanceof ChestBlockEntity) {
                                 ChestBlockEntity.copyInventory((ChestBlockEntity)blockEntity, (ChestBlockEntity)blockEntity2);
                             }
@@ -222,8 +222,8 @@ public class UpgradeData {
             private final ThreadLocal<List<ObjectSet<BlockPos>>> distanceToPositions = ThreadLocal.withInitial(() -> Lists.newArrayListWithCapacity(7));
 
             @Override
-            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, BlockPos blockPos2) {
-                BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, worldAccess.getBlockState(blockPos2), worldAccess, blockPos, blockPos2);
+            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess world, BlockPos blockPos, BlockPos blockPos2) {
+                BlockState blockState3 = blockState.getStateForNeighborUpdate(direction, world.getBlockState(blockPos2), world, blockPos, blockPos2);
                 if (blockState != blockState3) {
                     int i = blockState3.get(Properties.DISTANCE_1_7);
                     List<ObjectSet<BlockPos>> list = this.distanceToPositions.get();
@@ -265,7 +265,7 @@ public class UpgradeData {
         STEM_BLOCK(new Block[]{Blocks.MELON_STEM, Blocks.PUMPKIN_STEM}){
 
             @Override
-            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, BlockPos blockPos2) {
+            public BlockState getUpdatedState(BlockState blockState, Direction direction, BlockState blockState2, WorldAccess world, BlockPos blockPos, BlockPos blockPos2) {
                 GourdBlock gourdBlock;
                 if (blockState.get(StemBlock.AGE) == 7 && blockState2.isOf(gourdBlock = ((StemBlock)blockState.getBlock()).getGourdBlock())) {
                     return (BlockState)gourdBlock.getAttachedStem().getDefaultState().with(HorizontalFacingBlock.FACING, direction);

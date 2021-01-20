@@ -63,7 +63,7 @@ extends Feature<EndSpikeFeatureConfig> {
 
     private void generateSpike(ServerWorldAccess world, Random random, EndSpikeFeatureConfig config, Spike spike) {
         int i = spike.getRadius();
-        for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, world.getSectionCount(), spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
+        for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, world.getBottomSectionLimit(), spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ(), false) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {
                 this.setBlockState(world, blockPos, Blocks.OBSIDIAN.getDefaultState());
                 continue;

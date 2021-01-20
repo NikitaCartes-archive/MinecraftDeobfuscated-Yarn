@@ -76,7 +76,7 @@ extends Feature<DefaultFeatureConfig> {
                     blockPos2 = blockPos.add(s, t, u);
                     BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
                     if (s == k || t == -1 || u == p || s == l || t == 4 || u == q) {
-                        if (blockPos2.getY() >= structureWorldAccess.getSectionCount() && !structureWorldAccess.getBlockState(blockPos2.down()).getMaterial().isSolid()) {
+                        if (blockPos2.getY() >= structureWorldAccess.getBottomSectionLimit() && !structureWorldAccess.getBlockState(blockPos2.down()).getMaterial().isSolid()) {
                             structureWorldAccess.setBlockState(blockPos2, AIR, 2);
                             continue;
                         }

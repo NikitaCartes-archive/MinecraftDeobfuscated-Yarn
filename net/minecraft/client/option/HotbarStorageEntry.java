@@ -32,10 +32,10 @@ extends ForwardingList<ItemStack> {
         return listTag;
     }
 
-    public void fromListTag(ListTag listTag) {
+    public void fromListTag(ListTag tag) {
         Collection list = this.delegate();
         for (int i = 0; i < list.size(); ++i) {
-            list.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+            list.set(i, ItemStack.fromTag(tag.getCompound(i)));
         }
     }
 

@@ -294,7 +294,7 @@ public class Mouse {
         InputUtil.setCursorParameters(this.client.getWindow().getHandle(), 212993, this.x, this.y);
     }
 
-    public void method_30134() {
+    public void setResolutionChanged() {
         this.hasResolutionChanged = true;
     }
 }

@@ -148,7 +148,7 @@ extends AmbientEntity {
                 }
             }
         } else {
-            if (!(this.hangingPosition == null || this.world.isAir(this.hangingPosition) && this.hangingPosition.getY() > this.world.getSectionCount())) {
+            if (!(this.hangingPosition == null || this.world.isAir(this.hangingPosition) && this.hangingPosition.getY() > this.world.getBottomSectionLimit())) {
                 this.hangingPosition = null;
             }
             if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
@@ -176,7 +176,7 @@ extends AmbientEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 

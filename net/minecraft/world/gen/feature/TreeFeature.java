@@ -94,7 +94,7 @@ extends Feature<TreeFeatureConfig> {
         } else {
             blockPos = pos;
         }
-        if (blockPos.getY() < world.getSectionCount() + 1 || blockPos.getY() + i + 1 > world.getTopHeightLimit()) {
+        if (blockPos.getY() < world.getBottomSectionLimit() + 1 || blockPos.getY() + i + 1 > world.getTopHeightLimit()) {
             return false;
         }
         if (!TreeFeature.canPlaceTreeOn(world, blockPos.down())) {

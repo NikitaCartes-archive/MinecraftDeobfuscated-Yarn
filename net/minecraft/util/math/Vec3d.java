@@ -8,8 +8,8 @@ import java.util.EnumSet;
 import java.util.stream.DoubleStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5699;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Position;
@@ -22,7 +22,7 @@ import net.minecraft.util.math.Vec3i;
  */
 public class Vec3d
 implements Position {
-    public static final Codec<Vec3d> field_28243 = class_5699.field_28095.comapFlatMap(doubleStream -> Util.method_33141(doubleStream, 3).map(ds -> new Vec3d(ds[0], ds[1], ds[2])), vec3d -> DoubleStream.of(vec3d.x, vec3d.y, vec3d.z)).stable();
+    public static final Codec<Vec3d> CODEC = Codecs.DOUBLE_STREAM.comapFlatMap(doubleStream -> Util.toArray(doubleStream, 3).map(ds -> new Vec3d(ds[0], ds[1], ds[2])), vec3d -> DoubleStream.of(vec3d.x, vec3d.y, vec3d.z)).stable();
     public static final Vec3d ZERO = new Vec3d(0.0, 0.0, 0.0);
     public final double x;
     public final double y;
@@ -176,11 +176,6 @@ implements Position {
 
     public String toString() {
         return "(" + this.x + ", " + this.y + ", " + this.z + ")";
-    }
-
-    @Environment(value=EnvType.CLIENT)
-    public Vec3d method_33068(Vec3d vec3d, double d) {
-        return new Vec3d(MathHelper.lerp(d, this.x, vec3d.x), MathHelper.lerp(d, this.y, vec3d.y), MathHelper.lerp(d, this.z, vec3d.z));
     }
 
     public Vec3d rotateX(float angle) {

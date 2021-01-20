@@ -30,8 +30,8 @@ public class RealmsSlotOptionsScreen
 extends RealmsScreen {
     public static final List<Difficulty> DIFFICULTIES = ImmutableList.of(Difficulty.PEACEFUL, Difficulty.EASY, Difficulty.NORMAL, Difficulty.HARD);
     public static final List<GameMode> GAME_MODES = ImmutableList.of(GameMode.SURVIVAL, GameMode.CREATIVE, GameMode.ADVENTURE);
-    private static final Text field_26516 = new TranslatableText("mco.configure.world.edit.slot.name");
-    private static final Text field_27942 = new TranslatableText("mco.configure.world.spawnProtection");
+    private static final Text EDIT_SLOT_NAME = new TranslatableText("mco.configure.world.edit.slot.name");
+    private static final Text SPAWN_PROTECTION = new TranslatableText("mco.configure.world.spawnProtection");
     private TextFieldWidget nameEdit;
     protected final RealmsConfigureWorldScreen parent;
     private int column1_x;
@@ -138,7 +138,7 @@ extends RealmsScreen {
             if (this.worldType == RealmsServer.WorldType.NORMAL) {
                 boolean bl;
                 cyclingButtonWidget.active = bl = this.field_27943 != Difficulty.PEACEFUL;
-                cyclingButtonWidget32.method_32605(bl && this.spawnMonsters);
+                cyclingButtonWidget32.setValue(bl && this.spawnMonsters);
             }
         }));
         this.addButton(cyclingButtonWidget32);
@@ -177,7 +177,7 @@ extends RealmsScreen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        this.textRenderer.draw(matrices, field_26516, (float)(this.column1_x + this.column2_x / 2 - this.textRenderer.getWidth(field_26516) / 2), (float)(RealmsSlotOptionsScreen.row(0) - 5), 0xFFFFFF);
+        this.textRenderer.draw(matrices, EDIT_SLOT_NAME, (float)(this.column1_x + this.column2_x / 2 - this.textRenderer.getWidth(EDIT_SLOT_NAME) / 2), (float)(RealmsSlotOptionsScreen.row(0) - 5), 0xFFFFFF);
         this.titleLabel.render(this, matrices);
         if (this.toastMessage != null) {
             this.toastMessage.render(this, matrices);
@@ -227,7 +227,7 @@ extends RealmsScreen {
 
         @Override
         protected void updateMessage() {
-            this.setMessage(ScreenTexts.method_32700(field_27942, RealmsSlotOptionsScreen.this.difficultyIndex == 0 ? ScreenTexts.OFF : new LiteralText(String.valueOf(RealmsSlotOptionsScreen.this.difficultyIndex))));
+            this.setMessage(ScreenTexts.composeGenericOptionText(SPAWN_PROTECTION, RealmsSlotOptionsScreen.this.difficultyIndex == 0 ? ScreenTexts.OFF : new LiteralText(String.valueOf(RealmsSlotOptionsScreen.this.difficultyIndex))));
         }
 
         @Override

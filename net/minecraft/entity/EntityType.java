@@ -87,6 +87,7 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.DonkeyEntity;
 import net.minecraft.entity.passive.FoxEntity;
+import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.entity.passive.HorseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -194,6 +195,8 @@ implements class_5575<Entity, T> {
     public static final EntityType<FoxEntity> FOX = EntityType.register("fox", Builder.create(FoxEntity::new, SpawnGroup.CREATURE).setDimensions(0.6f, 0.7f).maxTrackingRange(8).allowSpawningInside(Blocks.SWEET_BERRY_BUSH));
     public static final EntityType<GhastEntity> GHAST = EntityType.register("ghast", Builder.create(GhastEntity::new, SpawnGroup.MONSTER).makeFireImmune().setDimensions(4.0f, 4.0f).maxTrackingRange(10));
     public static final EntityType<GiantEntity> GIANT = EntityType.register("giant", Builder.create(GiantEntity::new, SpawnGroup.MONSTER).setDimensions(3.6f, 12.0f).maxTrackingRange(10));
+    public static final EntityType<ItemFrameEntity> GLOW_ITEM_FRAME = EntityType.register("glow_item_frame", Builder.create(ItemFrameEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 0.5f).maxTrackingRange(10).trackingTickInterval(Integer.MAX_VALUE));
+    public static final EntityType<GlowSquidEntity> GLOW_SQUID = EntityType.register("glow_squid", Builder.create(GlowSquidEntity::new, SpawnGroup.WATER_CREATURE).setDimensions(0.8f, 0.8f).maxTrackingRange(10));
     public static final EntityType<GuardianEntity> GUARDIAN = EntityType.register("guardian", Builder.create(GuardianEntity::new, SpawnGroup.MONSTER).setDimensions(0.85f, 0.85f).maxTrackingRange(8));
     public static final EntityType<HoglinEntity> HOGLIN = EntityType.register("hoglin", Builder.create(HoglinEntity::new, SpawnGroup.MONSTER).setDimensions(1.3964844f, 1.4f).maxTrackingRange(8));
     public static final EntityType<HorseEntity> HORSE = EntityType.register("horse", Builder.create(HorseEntity::new, SpawnGroup.CREATURE).setDimensions(1.3964844f, 1.6f).maxTrackingRange(10));
@@ -300,58 +303,58 @@ implements class_5575<Entity, T> {
         return Registry.ENTITY_TYPE.getOrEmpty(Identifier.tryParse(id));
     }
 
-    public EntityType(EntityFactory<T> factory, SpawnGroup spawnGroup, boolean saveable, boolean summonable, boolean fireImmune, boolean spawnableFarFromPlayer, ImmutableSet<Block> immutableSet, EntityDimensions entityDimensions, int i, int j) {
+    public EntityType(EntityFactory<T> factory, SpawnGroup spawnGroup, boolean saveable, boolean summonable, boolean fireImmune, boolean spawnableFarFromPlayer, ImmutableSet<Block> canSpawnInside, EntityDimensions dimensions, int maxTrackDistance, int trackTickInterval) {
         this.factory = factory;
         this.spawnGroup = spawnGroup;
         this.spawnableFarFromPlayer = spawnableFarFromPlayer;
         this.saveable = saveable;
         this.summonable = summonable;
         this.fireImmune = fireImmune;
-        this.canSpawnInside = immutableSet;
-        this.dimensions = entityDimensions;
-        this.maxTrackDistance = i;
-        this.trackTickInterval = j;
+        this.canSpawnInside = canSpawnInside;
+        this.dimensions = dimensions;
+        this.maxTrackDistance = maxTrackDistance;
+        this.trackTickInterval = trackTickInterval;
     }
 
     @Nullable
-    public Entity spawnFromItemStack(ServerWorld serverWorld, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-        return this.spawn(serverWorld, stack == null ? null : stack.getTag(), stack != null && stack.hasCustomName() ? stack.getName() : null, player, pos, spawnReason, alignPosition, invertY);
+    public Entity spawnFromItemStack(ServerWorld world, @Nullable ItemStack stack, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+        return this.spawn(world, stack == null ? null : stack.getTag(), stack != null && stack.hasCustomName() ? stack.getName() : null, player, pos, spawnReason, alignPosition, invertY);
     }
 
     @Nullable
-    public T spawn(ServerWorld serverWorld, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
-        T entity = this.create(serverWorld, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
+    public T spawn(ServerWorld world, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+        T entity = this.create(world, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
         if (entity != null) {
-            serverWorld.spawnEntityAndPassengers((Entity)entity);
+            world.spawnEntityAndPassengers((Entity)entity);
         }
         return entity;
     }
 
     @Nullable
-    public T create(ServerWorld serverWorld, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+    public T create(ServerWorld world, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
         double d;
-        T entity = this.create(serverWorld);
+        T entity = this.create(world);
         if (entity == null) {
             return null;
         }
         if (alignPosition) {
             ((Entity)entity).setPosition((double)pos.getX() + 0.5, pos.getY() + 1, (double)pos.getZ() + 0.5);
-            d = EntityType.getOriginY(serverWorld, pos, invertY, ((Entity)entity).getBoundingBox());
+            d = EntityType.getOriginY(world, pos, invertY, ((Entity)entity).getBoundingBox());
         } else {
             d = 0.0;
         }
-        ((Entity)entity).refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(serverWorld.random.nextFloat() * 360.0f), 0.0f);
+        ((Entity)entity).refreshPositionAndAngles((double)pos.getX() + 0.5, (double)pos.getY() + d, (double)pos.getZ() + 0.5, MathHelper.wrapDegrees(world.random.nextFloat() * 360.0f), 0.0f);
         if (entity instanceof MobEntity) {
             MobEntity mobEntity = (MobEntity)entity;
             mobEntity.headYaw = mobEntity.yaw;
             mobEntity.bodyYaw = mobEntity.yaw;
-            mobEntity.initialize(serverWorld, serverWorld.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
+            mobEntity.initialize(world, world.getLocalDifficulty(mobEntity.getBlockPos()), spawnReason, null, itemTag);
             mobEntity.playAmbientSound();
         }
         if (name != null && entity instanceof LivingEntity) {
             ((Entity)entity).setCustomName(name);
         }
-        EntityType.loadFromEntityTag(serverWorld, player, entity, itemTag);
+        EntityType.loadFromEntityTag(world, player, entity, itemTag);
         return entity;
     }
 
@@ -555,7 +558,7 @@ implements class_5575<Entity, T> {
     }
 
     public boolean alwaysUpdateVelocity() {
-        return this != PLAYER && this != LLAMA_SPIT && this != WITHER && this != BAT && this != ITEM_FRAME && this != LEASH_KNOT && this != PAINTING && this != END_CRYSTAL && this != EVOKER_FANGS;
+        return this != PLAYER && this != LLAMA_SPIT && this != WITHER && this != BAT && this != ITEM_FRAME && this != GLOW_ITEM_FRAME && this != LEASH_KNOT && this != PAINTING && this != END_CRYSTAL && this != EVOKER_FANGS;
     }
 
     public boolean isIn(net.minecraft.tag.Tag<EntityType<?>> tag) {

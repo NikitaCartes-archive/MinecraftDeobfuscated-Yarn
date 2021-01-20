@@ -33,9 +33,9 @@ public class LanServerQueryManager {
         private final InetAddress multicastAddress;
         private final MulticastSocket socket;
 
-        public LanServerDetector(LanServerEntryList lanServerEntryList) throws IOException {
+        public LanServerDetector(LanServerEntryList entryList) throws IOException {
             super("LanServerDetector #" + THREAD_ID.incrementAndGet());
-            this.entryList = lanServerEntryList;
+            this.entryList = entryList;
             this.setDaemon(true);
             this.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
             this.socket = new MulticastSocket(4445);

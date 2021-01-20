@@ -21,9 +21,9 @@ public class HungerManager {
     private int foodStarvationTimer;
     private int prevFoodLevel = 20;
 
-    public void add(int food, float f) {
+    public void add(int food, float saturationModifier) {
         this.foodLevel = Math.min(food + this.foodLevel, 20);
-        this.foodSaturationLevel = Math.min(this.foodSaturationLevel + (float)food * f * 2.0f, (float)this.foodLevel);
+        this.foodSaturationLevel = Math.min(this.foodSaturationLevel + (float)food * saturationModifier * 2.0f, (float)this.foodLevel);
     }
 
     public void eat(Item item, ItemStack stack) {

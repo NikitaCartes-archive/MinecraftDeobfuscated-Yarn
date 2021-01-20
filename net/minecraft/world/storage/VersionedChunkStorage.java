@@ -56,8 +56,8 @@ implements AutoCloseable {
         return this.worker.getNbt(chunkPos);
     }
 
-    public void setTagAt(ChunkPos chunkPos, CompoundTag compoundTag) {
-        this.worker.setResult(chunkPos, compoundTag);
+    public void setTagAt(ChunkPos chunkPos, CompoundTag tag) {
+        this.worker.setResult(chunkPos, tag);
         if (this.featureUpdater != null) {
             this.featureUpdater.markResolved(chunkPos.toLong());
         }

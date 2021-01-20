@@ -44,8 +44,8 @@ implements DebugRenderer.Renderer {
     @Nullable
     private UUID targetedEntity;
 
-    public VillageDebugRenderer(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public VillageDebugRenderer(MinecraftClient client) {
+        this.client = client;
     }
 
     @Override
@@ -55,12 +55,12 @@ implements DebugRenderer.Renderer {
         this.targetedEntity = null;
     }
 
-    public void addPointOfInterest(PointOfInterest pointOfInterest) {
-        this.pointsOfInterest.put(pointOfInterest.pos, pointOfInterest);
+    public void addPointOfInterest(PointOfInterest poi) {
+        this.pointsOfInterest.put(poi.pos, poi);
     }
 
-    public void removePointOfInterest(BlockPos blockPos) {
-        this.pointsOfInterest.remove(blockPos);
+    public void removePointOfInterest(BlockPos pos) {
+        this.pointsOfInterest.remove(pos);
     }
 
     public void setFreeTicketCount(BlockPos pos, int freeTicketCount) {
@@ -307,22 +307,22 @@ implements DebugRenderer.Renderer {
         public final Set<BlockPos> pointsOfInterest = Sets.newHashSet();
         public final Set<BlockPos> field_25287 = Sets.newHashSet();
 
-        public Brain(UUID uUID, int i, String string, String profession, int xp, float f, float g, Position position, String string2, @Nullable Path path, boolean bl) {
-            this.uuid = uUID;
+        public Brain(UUID uuid, int i, String string, String profession, int xp, float f, float g, Position pos, String string2, @Nullable Path path, boolean wantsGolem) {
+            this.uuid = uuid;
             this.field_18924 = i;
             this.field_19328 = string;
             this.profession = profession;
             this.xp = xp;
             this.field_22406 = f;
             this.field_22407 = g;
-            this.pos = position;
+            this.pos = pos;
             this.field_19372 = string2;
             this.path = path;
-            this.wantsGolem = bl;
+            this.wantsGolem = wantsGolem;
         }
 
-        private boolean isPointOfInterest(BlockPos blockPos) {
-            return this.pointsOfInterest.stream().anyMatch(blockPos::equals);
+        private boolean isPointOfInterest(BlockPos pos) {
+            return this.pointsOfInterest.stream().anyMatch(pos::equals);
         }
 
         private boolean method_29388(BlockPos blockPos) {
@@ -340,10 +340,10 @@ implements DebugRenderer.Renderer {
         public String field_18932;
         public int freeTicketCount;
 
-        public PointOfInterest(BlockPos blockPos, String string, int i) {
-            this.pos = blockPos;
+        public PointOfInterest(BlockPos pos, String string, int freeTicketCount) {
+            this.pos = pos;
             this.field_18932 = string;
-            this.freeTicketCount = i;
+            this.freeTicketCount = freeTicketCount;
         }
     }
 }

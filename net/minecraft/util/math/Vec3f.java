@@ -3,9 +3,13 @@
  */
 package net.minecraft.util.math;
 
+import com.mojang.serialization.Codec;
 import it.unimi.dsi.fastutil.floats.Float2FloatFunction;
+import java.util.stream.DoubleStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Quaternion;
@@ -15,6 +19,7 @@ import net.minecraft.util.math.Vec3d;
  * A mutable vector composed of 3 floats.
  */
 public final class Vec3f {
+    public static final Codec<Vec3f> CODEC = Codecs.DOUBLE_STREAM.comapFlatMap(doubleStream -> Util.toArray(doubleStream, 3).map(ds -> new Vec3f((float)ds[0], (float)ds[1], (float)ds[2])), vec3f -> DoubleStream.of(vec3f.x, vec3f.y, vec3f.z)).stable();
     public static Vec3f NEGATIVE_X = new Vec3f(-1.0f, 0.0f, 0.0f);
     public static Vec3f POSITIVE_X = new Vec3f(1.0f, 0.0f, 0.0f);
     public static Vec3f NEGATIVE_Y = new Vec3f(0.0f, -1.0f, 0.0f);

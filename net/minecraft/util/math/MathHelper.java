@@ -25,58 +25,58 @@ public class MathHelper {
     private static final double[] ARCSINE_TABLE = new double[257];
     private static final double[] COSINE_TABLE = new double[257];
 
-    public static float sin(float f) {
-        return SINE_TABLE[(int)(f * 10430.378f) & 0xFFFF];
+    public static float sin(float value) {
+        return SINE_TABLE[(int)(value * 10430.378f) & 0xFFFF];
     }
 
-    public static float cos(float f) {
-        return SINE_TABLE[(int)(f * 10430.378f + 16384.0f) & 0xFFFF];
+    public static float cos(float value) {
+        return SINE_TABLE[(int)(value * 10430.378f + 16384.0f) & 0xFFFF];
     }
 
-    public static float sqrt(float f) {
-        return (float)Math.sqrt(f);
+    public static float sqrt(float value) {
+        return (float)Math.sqrt(value);
     }
 
-    public static float sqrt(double d) {
-        return (float)Math.sqrt(d);
+    public static float sqrt(double value) {
+        return (float)Math.sqrt(value);
     }
 
-    public static int floor(float f) {
-        int i = (int)f;
-        return f < (float)i ? i - 1 : i;
+    public static int floor(float value) {
+        int i = (int)value;
+        return value < (float)i ? i - 1 : i;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static int fastFloor(double d) {
-        return (int)(d + 1024.0) - 1024;
+    public static int fastFloor(double value) {
+        return (int)(value + 1024.0) - 1024;
     }
 
-    public static int floor(double d) {
-        int i = (int)d;
-        return d < (double)i ? i - 1 : i;
+    public static int floor(double value) {
+        int i = (int)value;
+        return value < (double)i ? i - 1 : i;
     }
 
-    public static long lfloor(double d) {
-        long l = (long)d;
-        return d < (double)l ? l - 1L : l;
+    public static long lfloor(double value) {
+        long l = (long)value;
+        return value < (double)l ? l - 1L : l;
     }
 
-    public static float abs(float f) {
-        return Math.abs(f);
+    public static float abs(float value) {
+        return Math.abs(value);
     }
 
-    public static int abs(int i) {
-        return Math.abs(i);
+    public static int abs(int value) {
+        return Math.abs(value);
     }
 
-    public static int ceil(float f) {
-        int i = (int)f;
-        return f > (float)i ? i + 1 : i;
+    public static int ceil(float value) {
+        int i = (int)value;
+        return value > (float)i ? i + 1 : i;
     }
 
-    public static int ceil(double d) {
-        int i = (int)d;
-        return d > (double)i ? i + 1 : i;
+    public static int ceil(double value) {
+        int i = (int)value;
+        return value > (double)i ? i + 1 : i;
     }
 
     public static int clamp(int value, int min, int max) {
@@ -283,17 +283,17 @@ public class MathHelper {
         return i + 1;
     }
 
-    public static boolean isPowerOfTwo(int i) {
-        return i != 0 && (i & i - 1) == 0;
+    public static boolean isPowerOfTwo(int value) {
+        return value != 0 && (value & value - 1) == 0;
     }
 
-    public static int log2DeBruijn(int i) {
-        i = MathHelper.isPowerOfTwo(i) ? i : MathHelper.smallestEncompassingPowerOfTwo(i);
-        return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int)((long)i * 125613361L >> 27) & 0x1F];
+    public static int log2DeBruijn(int value) {
+        value = MathHelper.isPowerOfTwo(value) ? value : MathHelper.smallestEncompassingPowerOfTwo(value);
+        return MULTIPLY_DE_BRUIJN_BIT_POSITION[(int)((long)value * 125613361L >> 27) & 0x1F];
     }
 
-    public static int log2(int i) {
-        return MathHelper.log2DeBruijn(i) - (MathHelper.isPowerOfTwo(i) ? 0 : 1);
+    public static int log2(int value) {
+        return MathHelper.log2DeBruijn(value) - (MathHelper.isPowerOfTwo(value) ? 0 : 1);
     }
 
     public static int packRgb(float r, float g, float b) {

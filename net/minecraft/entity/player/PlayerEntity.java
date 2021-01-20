@@ -405,7 +405,7 @@ extends LivingEntity {
 
     @Override
     public void tickRiding() {
-        if (this.shouldDismount() && this.hasVehicle()) {
+        if (!this.world.isClient && this.shouldDismount() && this.hasVehicle()) {
             this.stopRiding();
             this.setSneaking(false);
             return;
@@ -482,9 +482,9 @@ extends LivingEntity {
         }
     }
 
-    private void updateShoulderEntity(@Nullable CompoundTag compoundTag) {
-        if (!(compoundTag == null || compoundTag.contains("Silent") && compoundTag.getBoolean("Silent") || this.world.random.nextInt(200) != 0)) {
-            String string = compoundTag.getString("id");
+    private void updateShoulderEntity(@Nullable CompoundTag tag) {
+        if (!(tag == null || tag.contains("Silent") && tag.getBoolean("Silent") || this.world.random.nextInt(200) != 0)) {
+            String string = tag.getString("id");
             EntityType.get(string).filter(entityType -> entityType == EntityType.PARROT).ifPresent(entityType -> {
                 if (!ParrotEntity.imitateNearbyMob(this.world, this)) {
                     this.world.playSound(null, this.getX(), this.getY(), this.getZ(), ParrotEntity.getRandomSound(this.world, this.world.random), this.getSoundCategory(), 1.0f, ParrotEntity.getSoundPitch(this.world.random));
@@ -726,7 +726,7 @@ extends LivingEntity {
         if (damageSource == DamageSource.DROWN) {
             return !this.world.getGameRules().getBoolean(GameRules.DROWNING_DAMAGE);
         }
-        if (damageSource == DamageSource.FALL) {
+        if (damageSource.isFromFalling()) {
             return !this.world.getGameRules().getBoolean(GameRules.FALL_DAMAGE);
         }
         if (damageSource.isFire()) {
@@ -1381,14 +1381,14 @@ extends LivingEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         if (this.abilities.allowFlying) {
             return false;
         }
         if (fallDistance >= 2.0f) {
             this.increaseStat(Stats.FALL_ONE_CM, (int)Math.round((double)fallDistance * 100.0));
         }
-        return super.handleFallDamage(fallDistance, damageMultiplier);
+        return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
     }
 
     public boolean checkFallFlying() {

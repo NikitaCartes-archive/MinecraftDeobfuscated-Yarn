@@ -53,10 +53,10 @@ extends Feature<HugeFungusFeatureConfig> {
         return true;
     }
 
-    private static boolean method_24866(WorldAccess worldAccess, BlockPos blockPos, boolean bl) {
-        return worldAccess.testBlockState(blockPos, blockState -> {
-            Material material = blockState.getMaterial();
-            return blockState.getMaterial().isReplaceable() || bl && material == Material.PLANT;
+    private static boolean isReplaceable(WorldAccess world, BlockPos pos, boolean replacePlants) {
+        return world.testBlockState(pos, state -> {
+            Material material = state.getMaterial();
+            return state.getMaterial().isReplaceable() || replacePlants && material == Material.PLANT;
         });
     }
 
@@ -69,7 +69,7 @@ extends Feature<HugeFungusFeatureConfig> {
                 boolean bl = thickStem && MathHelper.abs(j) == i && MathHelper.abs(k) == i;
                 for (int l = 0; l < stemHeight; ++l) {
                     mutable.set(pos, j, l, k);
-                    if (!HugeFungusFeature.method_24866(world, mutable, true)) continue;
+                    if (!HugeFungusFeature.isReplaceable(world, mutable, true)) continue;
                     if (config.planted) {
                         if (!world.getBlockState((BlockPos)mutable.down()).isAir()) {
                             world.breakBlock(mutable, true);
@@ -110,7 +110,7 @@ extends Feature<HugeFungusFeatureConfig> {
                     boolean bl5 = bl2 && bl3;
                     boolean bl6 = k < j + 3;
                     mutable.set(pos, m, k, n2);
-                    if (!HugeFungusFeature.method_24866(world, mutable, false)) continue;
+                    if (!HugeFungusFeature.isReplaceable(world, mutable, false)) continue;
                     if (config.planted && !world.getBlockState((BlockPos)mutable.down()).isAir()) {
                         world.breakBlock(mutable, true);
                     }

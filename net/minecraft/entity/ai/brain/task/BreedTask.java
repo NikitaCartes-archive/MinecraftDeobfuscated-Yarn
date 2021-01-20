@@ -19,13 +19,13 @@ import net.minecraft.server.world.ServerWorld;
 public class BreedTask
 extends Task<AnimalEntity> {
     private final EntityType<? extends AnimalEntity> targetType;
-    private final float field_23129;
+    private final float speed;
     private long breedTime;
 
-    public BreedTask(EntityType<? extends AnimalEntity> targetType, float f) {
+    public BreedTask(EntityType<? extends AnimalEntity> targetType, float speed) {
         super(ImmutableMap.of(MemoryModuleType.VISIBLE_MOBS, MemoryModuleState.VALUE_PRESENT, MemoryModuleType.BREED_TARGET, MemoryModuleState.VALUE_ABSENT, MemoryModuleType.WALK_TARGET, MemoryModuleState.REGISTERED, MemoryModuleType.LOOK_TARGET, MemoryModuleState.REGISTERED), 325);
         this.targetType = targetType;
-        this.field_23129 = f;
+        this.speed = speed;
     }
 
     @Override
@@ -38,7 +38,7 @@ extends Task<AnimalEntity> {
         AnimalEntity animalEntity2 = this.findBreedTarget(animalEntity).get();
         animalEntity.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity2);
         animalEntity2.getBrain().remember(MemoryModuleType.BREED_TARGET, animalEntity);
-        LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.field_23129);
+        LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed);
         int i = 275 + animalEntity.getRandom().nextInt(50);
         this.breedTime = l + (long)i;
     }
@@ -55,7 +55,7 @@ extends Task<AnimalEntity> {
     @Override
     protected void keepRunning(ServerWorld serverWorld, AnimalEntity animalEntity, long l) {
         AnimalEntity animalEntity2 = this.getBreedTarget(animalEntity);
-        LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.field_23129);
+        LookTargetUtil.lookAtAndWalkTowardsEachOther(animalEntity, animalEntity2, this.speed);
         if (!animalEntity.isInRange(animalEntity2, 3.0)) {
             return;
         }

@@ -22,11 +22,11 @@ implements ResourcePackProvider {
         return bl || bl2;
     };
     private final File packsFolder;
-    private final ResourcePackSource field_25345;
+    private final ResourcePackSource source;
 
-    public FileResourcePackProvider(File packsFolder, ResourcePackSource resourcePackSource) {
+    public FileResourcePackProvider(File packsFolder, ResourcePackSource source) {
         this.packsFolder = packsFolder;
-        this.field_25345 = resourcePackSource;
+        this.source = source;
     }
 
     @Override
@@ -40,7 +40,7 @@ implements ResourcePackProvider {
         }
         for (File file : files) {
             String string = "file/" + file.getName();
-            ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.field_25345);
+            ResourcePackProfile resourcePackProfile = ResourcePackProfile.of(string, false, this.createResourcePack(file), factory, ResourcePackProfile.InsertionPosition.TOP, this.source);
             if (resourcePackProfile == null) continue;
             consumer.accept(resourcePackProfile);
         }

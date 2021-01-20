@@ -51,19 +51,19 @@ public class PortalForcer {
         double e = -1.0;
         BlockPos blockPos3 = null;
         WorldBorder worldBorder = this.world.getWorldBorder();
-        int i = this.world.getSectionCount() + this.world.getHeightLimit() - 1;
+        int i = this.world.getBottomSectionLimit() + this.world.getHeightLimit() - 1;
         BlockPos.Mutable mutable = blockPos.mutableCopy();
         for (BlockPos.Mutable mutable2 : BlockPos.method_30512(blockPos, 16, Direction.EAST, Direction.SOUTH)) {
             j = Math.min(i, this.world.getTopY(Heightmap.Type.MOTION_BLOCKING, mutable2.getX(), mutable2.getZ()));
             k = 1;
             if (!worldBorder.contains(mutable2) || !worldBorder.contains(mutable2.move(direction, 1))) continue;
             mutable2.move(direction.getOpposite(), 1);
-            for (int l = j; l >= this.world.getSectionCount(); --l) {
+            for (int l = j; l >= this.world.getBottomSectionLimit(); --l) {
                 int n;
                 mutable2.setY(l);
                 if (!this.world.isAir(mutable2)) continue;
                 int m = l;
-                while (l > this.world.getSectionCount() && this.world.isAir(mutable2.move(Direction.DOWN))) {
+                while (l > this.world.getBottomSectionLimit() && this.world.isAir(mutable2.move(Direction.DOWN))) {
                     --l;
                 }
                 if (l + 4 > i || (n = m - l) > 0 && n < 3) continue;
@@ -84,7 +84,7 @@ public class PortalForcer {
             d = e;
         }
         if (d == -1.0) {
-            blockPos2 = new BlockPos(blockPos.getX(), MathHelper.clamp(blockPos.getY(), 70, this.world.getSectionCount() + this.world.getHeightLimit() - 10), blockPos.getZ()).toImmutable();
+            blockPos2 = new BlockPos(blockPos.getX(), MathHelper.clamp(blockPos.getY(), 70, this.world.getBottomSectionLimit() + this.world.getHeightLimit() - 10), blockPos.getZ()).toImmutable();
             Direction direction2 = direction.rotateYClockwise();
             if (!worldBorder.contains(blockPos2)) {
                 return Optional.empty();

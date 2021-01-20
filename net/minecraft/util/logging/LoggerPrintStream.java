@@ -20,8 +20,8 @@ extends PrintStream {
     }
 
     @Override
-    public void println(@Nullable String string) {
-        this.log(string);
+    public void println(@Nullable String message) {
+        this.log(message);
     }
 
     @Override

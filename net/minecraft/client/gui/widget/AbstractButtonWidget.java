@@ -98,11 +98,11 @@ Element {
     }
 
     protected MutableText getNarrationMessage() {
-        return AbstractButtonWidget.method_32602(this.getMessage());
+        return AbstractButtonWidget.getNarrationMessage(this.getMessage());
     }
 
-    public static MutableText method_32602(Text text) {
-        return new TranslatableText("gui.narrate.button", text);
+    public static MutableText getNarrationMessage(Text message) {
+        return new TranslatableText("gui.narrate.button", message);
     }
 
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -214,11 +214,11 @@ Element {
         this.alpha = value;
     }
 
-    public void setMessage(Text text) {
-        if (!Objects.equals(text.getString(), this.message.getString())) {
+    public void setMessage(Text message) {
+        if (!Objects.equals(message.getString(), this.message.getString())) {
             this.queueNarration(250);
         }
-        this.message = text;
+        this.message = message;
     }
 
     public void queueNarration(int delay) {

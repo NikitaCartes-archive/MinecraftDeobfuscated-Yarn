@@ -65,7 +65,7 @@ implements DebugRenderer.Renderer {
         RenderSystem.defaultBlendFunc();
         VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
         for (class_5741 lv : this.field_28257) {
-            lv.method_33094(world).ifPresent(blockPos -> {
+            lv.getPos(world).ifPresent(blockPos -> {
                 int i = blockPos.getX() - lv.getRange();
                 int j = blockPos.getY() - lv.getRange();
                 int k = blockPos.getZ() - lv.getRange();
@@ -80,7 +80,7 @@ implements DebugRenderer.Renderer {
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
         for (class_5741 lv2 : this.field_28257) {
-            lv2.method_33094(world).ifPresent(blockPos -> {
+            lv2.getPos(world).ifPresent(blockPos -> {
                 Vec3f vec3f = new Vec3f(1.0f, 1.0f, 0.0f);
                 WorldRenderer.drawBox(bufferBuilder, (double)((float)blockPos.getX() - 0.25f) - cameraX, (double)blockPos.getY() - cameraY, (double)((float)blockPos.getZ() - 0.25f) - cameraZ, (double)((float)blockPos.getX() + 0.25f) - cameraX, (double)blockPos.getY() - cameraY + 1.0, (double)((float)blockPos.getZ() + 0.25f) - cameraZ, vec3f.getX(), vec3f.getY(), vec3f.getZ(), 0.35f);
             });
@@ -91,7 +91,7 @@ implements DebugRenderer.Renderer {
         RenderSystem.lineWidth(2.0f);
         RenderSystem.depthMask(false);
         for (class_5741 lv2 : this.field_28257) {
-            lv2.method_33094(world).ifPresent(blockPos -> {
+            lv2.getPos(world).ifPresent(blockPos -> {
                 DebugRenderer.drawString("Listener Origin", blockPos.getX(), (float)blockPos.getY() + 1.8f, blockPos.getZ(), -1, 0.025f);
                 DebugRenderer.drawString(new BlockPos((Vec3i)blockPos).toString(), blockPos.getX(), (float)blockPos.getY() + 1.5f, blockPos.getZ(), -6959665, 0.025f);
             });
@@ -153,31 +153,31 @@ implements DebugRenderer.Renderer {
     @Environment(value=EnvType.CLIENT)
     static class class_5741
     implements GameEventListener {
-        public final PositionSource event;
-        public final int field_28262;
+        public final PositionSource positionSource;
+        public final int range;
 
-        public class_5741(PositionSource positionSource, int i) {
-            this.event = positionSource;
-            this.field_28262 = i;
+        public class_5741(PositionSource positionSource, int range) {
+            this.positionSource = positionSource;
+            this.range = range;
         }
 
         public boolean method_33095(World world, BlockPos blockPos) {
-            Optional<BlockPos> optional = this.event.getPos(world);
+            Optional<BlockPos> optional = this.positionSource.getPos(world);
             return !optional.isPresent() || optional.get().getSquaredDistance(blockPos) <= 1024.0;
         }
 
-        public Optional<BlockPos> method_33094(World world) {
-            return this.event.getPos(world);
+        public Optional<BlockPos> getPos(World world) {
+            return this.positionSource.getPos(world);
         }
 
         @Override
         public PositionSource getPositionSource() {
-            return this.event;
+            return this.positionSource;
         }
 
         @Override
         public int getRange() {
-            return this.field_28262;
+            return this.range;
         }
 
         @Override

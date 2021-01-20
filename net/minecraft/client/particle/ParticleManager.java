@@ -55,6 +55,7 @@ import net.minecraft.client.particle.FireSmokeParticle;
 import net.minecraft.client.particle.FireworksSparkParticle;
 import net.minecraft.client.particle.FishingParticle;
 import net.minecraft.client.particle.FlameParticle;
+import net.minecraft.client.particle.GlowParticle;
 import net.minecraft.client.particle.LargeFireSmokeParticle;
 import net.minecraft.client.particle.LavaEmberParticle;
 import net.minecraft.client.particle.NoteParticle;
@@ -209,11 +210,13 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.REVERSE_PORTAL, ReversePortalParticle.Factory::new);
         this.registerFactory(ParticleTypes.WHITE_ASH, WhiteAshParticle.Factory::new);
         this.registerFactory(ParticleTypes.SMALL_FLAME, FlameParticle.SmallFactory::new);
-        this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_WATER, BlockLeakParticle.class_5696::new);
-        this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_WATER, BlockLeakParticle.class_5695::new);
-        this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_LAVA, BlockLeakParticle.class_5694::new);
-        this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_LAVA, BlockLeakParticle.class_5693::new);
+        this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_WATER, BlockLeakParticle.FallingDripstoneWaterFactory::new);
+        this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_WATER, BlockLeakParticle.DripstoneLavaSplashFactory::new);
+        this.registerFactory(ParticleTypes.DRIPPING_DRIPSTONE_LAVA, BlockLeakParticle.FallingDripstoneLavaFactory::new);
+        this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_LAVA, BlockLeakParticle.LandingDripstoneLavaFactory::new);
         this.registerFactory(ParticleTypes.VIBRATION, VibrationParticle.Factory::new);
+        this.registerFactory(ParticleTypes.GLOW_SQUID_INK, SquidInkParticle.GlowSquidInkFactory::new);
+        this.registerFactory(ParticleTypes.GLOW, GlowParticle.Factory::new);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {

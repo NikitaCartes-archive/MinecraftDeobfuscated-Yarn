@@ -69,7 +69,7 @@ extends AbstractPhase {
                 d = blockPos.getSquaredDistance(playerEntity.getPos(), true) / 512.0;
             }
             if (!(playerEntity == null || playerEntity.getAbilities().invulnerable || this.dragon.getRandom().nextInt(MathHelper.abs((int)d) + 2) != 0 && this.dragon.getRandom().nextInt(i + 2) != 0)) {
-                this.method_6843(playerEntity);
+                this.strafePlayer(playerEntity);
                 return;
             }
         }
@@ -96,9 +96,9 @@ extends AbstractPhase {
         this.method_6842();
     }
 
-    private void method_6843(PlayerEntity playerEntity) {
+    private void strafePlayer(PlayerEntity player) {
         this.dragon.getPhaseManager().setPhase(PhaseType.STRAFE_PLAYER);
-        this.dragon.getPhaseManager().create(PhaseType.STRAFE_PLAYER).method_6862(playerEntity);
+        this.dragon.getPhaseManager().create(PhaseType.STRAFE_PLAYER).method_6862(player);
     }
 
     private void method_6842() {
@@ -117,7 +117,7 @@ extends AbstractPhase {
     @Override
     public void crystalDestroyed(EndCrystalEntity crystal, BlockPos pos, DamageSource source, @Nullable PlayerEntity player) {
         if (player != null && !player.getAbilities().invulnerable) {
-            this.method_6843(player);
+            this.strafePlayer(player);
         }
     }
 }

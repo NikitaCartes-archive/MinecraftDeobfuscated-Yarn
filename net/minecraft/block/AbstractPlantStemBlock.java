@@ -34,8 +34,8 @@ implements Fertilizable {
     }
 
     @Override
-    public BlockState getRandomGrowthState(WorldAccess worldAccess) {
-        return (BlockState)this.getDefaultState().with(AGE, worldAccess.getRandom().nextInt(25));
+    public BlockState getRandomGrowthState(WorldAccess world) {
+        return (BlockState)this.getDefaultState().with(AGE, world.getRandom().nextInt(25));
     }
 
     @Override
@@ -84,7 +84,7 @@ implements Fertilizable {
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.offset(this.growthDirection);
         int i = Math.min(state.get(AGE) + 1, 25);
-        int j = this.method_26376(random);
+        int j = this.getGrowthLength(random);
         for (int k = 0; k < j && this.chooseStemState(world.getBlockState(blockPos)); ++k) {
             world.setBlockState(blockPos, (BlockState)state.with(AGE, i));
             blockPos = blockPos.offset(this.growthDirection);
@@ -92,7 +92,7 @@ implements Fertilizable {
         }
     }
 
-    protected abstract int method_26376(Random var1);
+    protected abstract int getGrowthLength(Random var1);
 
     protected abstract boolean chooseStemState(BlockState var1);
 

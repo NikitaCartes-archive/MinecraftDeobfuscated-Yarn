@@ -39,26 +39,35 @@ public class JsonSerializing {
         private final String idFieldName;
         private final Function<E, T> typeIdentification;
         @Nullable
+        private final T field_28445;
+        @Nullable
         private final Pair<T, CustomSerializer<? extends E>> elementSerializer;
 
-        private GsonSerializer(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification, @Nullable Pair<T, CustomSerializer<? extends E>> pair) {
+        private GsonSerializer(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification, @Nullable T jsonSerializableType, @Nullable Pair<T, CustomSerializer<? extends E>> elementSerializer) {
             this.registry = registry;
             this.rootFieldName = rootFieldName;
             this.idFieldName = idFieldName;
             this.typeIdentification = typeIdentification;
-            this.elementSerializer = pair;
+            this.field_28445 = jsonSerializableType;
+            this.elementSerializer = elementSerializer;
         }
 
         @Override
         public E deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             if (jsonElement.isJsonObject()) {
+                Object jsonSerializableType;
                 JsonObject jsonObject = JsonHelper.asObject(jsonElement, this.rootFieldName);
-                Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, this.idFieldName));
-                JsonSerializableType jsonSerializableType = (JsonSerializableType)this.registry.get(identifier);
-                if (jsonSerializableType == null) {
-                    throw new JsonSyntaxException("Unknown type '" + identifier + "'");
+                String string = JsonHelper.getString(jsonObject, this.idFieldName, "");
+                if (string.isEmpty()) {
+                    jsonSerializableType = this.field_28445;
+                } else {
+                    Identifier identifier = new Identifier(string);
+                    jsonSerializableType = (JsonSerializableType)this.registry.get(identifier);
                 }
-                return (E)jsonSerializableType.getJsonSerializer().fromJson(jsonObject, jsonDeserializationContext);
+                if (jsonSerializableType == null) {
+                    throw new JsonSyntaxException("Unknown type '" + string + "'");
+                }
+                return (E)((JsonSerializableType)jsonSerializableType).getJsonSerializer().fromJson(jsonObject, jsonDeserializationContext);
             }
             if (this.elementSerializer == null) {
                 throw new UnsupportedOperationException("Object " + jsonElement + " can't be deserialized");
@@ -80,6 +89,10 @@ public class JsonSerializing {
             jsonSerializableType.getJsonSerializer().toJson(jsonObject, object, jsonSerializationContext);
             return jsonObject;
         }
+
+        /* synthetic */ GsonSerializer(Registry registry, String string, String string2, Function function, JsonSerializableType jsonSerializableType, Pair pair, _1 arg) {
+            this(registry, string, string2, function, jsonSerializableType, pair);
+        }
     }
 
     public static class TypeHandler<E, T extends JsonSerializableType<E>> {
@@ -89,6 +102,8 @@ public class JsonSerializing {
         private final Function<E, T> typeIdentification;
         @Nullable
         private Pair<T, CustomSerializer<? extends E>> customSerializer;
+        @Nullable
+        private T field_28444;
 
         private TypeHandler(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification) {
             this.registry = registry;
@@ -102,8 +117,13 @@ public class JsonSerializing {
             return this;
         }
 
+        public TypeHandler<E, T> method_33409(T jsonSerializableType) {
+            this.field_28444 = jsonSerializableType;
+            return this;
+        }
+
         public Object createGsonSerializer() {
-            return new GsonSerializer(this.registry, this.rootFieldName, this.idFieldName, this.typeIdentification, this.customSerializer);
+            return new GsonSerializer(this.registry, this.rootFieldName, this.idFieldName, this.typeIdentification, (JsonSerializableType)this.field_28444, this.customSerializer, null);
         }
     }
 }

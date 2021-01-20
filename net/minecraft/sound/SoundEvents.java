@@ -273,6 +273,7 @@ public class SoundEvents {
     public static final SoundEvent ENTITY_DROWNED_SHOOT = SoundEvents.register("entity.drowned.shoot");
     public static final SoundEvent ENTITY_DROWNED_STEP = SoundEvents.register("entity.drowned.step");
     public static final SoundEvent ENTITY_DROWNED_SWIM = SoundEvents.register("entity.drowned.swim");
+    public static final SoundEvent ITEM_DYE_USE = SoundEvents.register("item.dye.use");
     public static final SoundEvent ENTITY_EGG_THROW = SoundEvents.register("entity.egg.throw");
     public static final SoundEvent ENTITY_ELDER_GUARDIAN_AMBIENT = SoundEvents.register("entity.elder_guardian.ambient");
     public static final SoundEvent ENTITY_ELDER_GUARDIAN_AMBIENT_LAND = SoundEvents.register("entity.elder_guardian.ambient_land");
@@ -382,6 +383,11 @@ public class SoundEvents {
     public static final SoundEvent BLOCK_GLASS_HIT = SoundEvents.register("block.glass.hit");
     public static final SoundEvent BLOCK_GLASS_PLACE = SoundEvents.register("block.glass.place");
     public static final SoundEvent BLOCK_GLASS_STEP = SoundEvents.register("block.glass.step");
+    public static final SoundEvent ITEM_GLOW_INK_SAC_USE = SoundEvents.register("item.glow_ink_sac.use");
+    public static final SoundEvent ENTITY_GLOW_SQUID_AMBIENT = SoundEvents.register("entity.glow_squid.ambient");
+    public static final SoundEvent ENTITY_GLOW_SQUID_DEATH = SoundEvents.register("entity.glow_squid.death");
+    public static final SoundEvent ENTITY_GLOW_SQUID_HURT = SoundEvents.register("entity.glow_squid.hurt");
+    public static final SoundEvent ENTITY_GLOW_SQUID_SQUIRT = SoundEvents.register("entity.glow_squid.squirt");
     public static final SoundEvent BLOCK_GRASS_BREAK = SoundEvents.register("block.grass.break");
     public static final SoundEvent BLOCK_GRASS_FALL = SoundEvents.register("block.grass.fall");
     public static final SoundEvent BLOCK_GRASS_HIT = SoundEvents.register("block.grass.hit");
@@ -448,6 +454,7 @@ public class SoundEvents {
     public static final SoundEvent ENTITY_ILLUSIONER_MIRROR_MOVE = SoundEvents.register("entity.illusioner.mirror_move");
     public static final SoundEvent ENTITY_ILLUSIONER_PREPARE_BLINDNESS = SoundEvents.register("entity.illusioner.prepare_blindness");
     public static final SoundEvent ENTITY_ILLUSIONER_PREPARE_MIRROR = SoundEvents.register("entity.illusioner.prepare_mirror");
+    public static final SoundEvent ITEM_INK_SAC_USE = SoundEvents.register("item.ink_sac.use");
     public static final SoundEvent BLOCK_IRON_DOOR_CLOSE = SoundEvents.register("block.iron_door.close");
     public static final SoundEvent BLOCK_IRON_DOOR_OPEN = SoundEvents.register("block.iron_door.open");
     public static final SoundEvent ENTITY_IRON_GOLEM_ATTACK = SoundEvents.register("entity.iron_golem.attack");

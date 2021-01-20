@@ -43,7 +43,7 @@ extends Screen {
     private int ticksSinceOpened;
     private int currentRow;
     private SelectionManager selectionManager;
-    private SignType field_27390;
+    private SignType signType;
     private SignBlockEntityRenderer.SignModel model;
     private final String[] text = (String[])IntStream.range(0, 4).mapToObj(sign::getTextOnRow).map(Text::getString).toArray(String[]::new);
 
@@ -62,8 +62,8 @@ extends Screen {
             this.sign.setTextOnRow(this.currentRow, new LiteralText((String)string));
         }, SelectionManager.makeClipboardGetter(this.client), SelectionManager.makeClipboardSetter(this.client), string -> this.client.textRenderer.getWidth((String)string) <= 90);
         BlockState blockState = this.sign.getCachedState();
-        this.field_27390 = SignBlockEntityRenderer.method_32155(blockState.getBlock());
-        this.model = SignBlockEntityRenderer.createSignModel(this.client.getEntityModelLoader(), this.field_27390);
+        this.signType = SignBlockEntityRenderer.getSignType(blockState.getBlock());
+        this.model = SignBlockEntityRenderer.createSignModel(this.client.getEntityModelLoader(), this.signType);
     }
 
     @Override
@@ -90,7 +90,7 @@ extends Screen {
     }
 
     @Override
-    public boolean charTyped(char chr, int keyCode) {
+    public boolean charTyped(char chr, int modifiers) {
         this.selectionManager.insert(chr);
         return true;
     }
@@ -142,7 +142,7 @@ extends Screen {
         matrices.push();
         matrices.scale(0.6666667f, -0.6666667f, -0.6666667f);
         VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.method_33082(this.field_27390);
+        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.signType);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
         this.model.stick.visible = bl;
         this.model.root.render(matrices, vertexConsumer, 0xF000F0, OverlayTexture.DEFAULT_UV);

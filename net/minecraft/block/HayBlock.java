@@ -7,6 +7,7 @@ import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
@@ -20,7 +21,7 @@ extends PillarBlock {
 
     @Override
     public void onLandedUpon(World world, BlockPos pos, Entity entity, float distance) {
-        entity.handleFallDamage(distance, 0.2f);
+        entity.handleFallDamage(distance, 0.2f, DamageSource.FALL);
     }
 }
 

@@ -162,7 +162,7 @@ extends LandPathNodeMaker {
                 return pathNode;
             }
             int i = 0;
-            while (y > this.cachedWorld.getSectionCount() && pathNodeType == PathNodeType.OPEN) {
+            while (y > this.cachedWorld.getBottomSectionLimit() && pathNodeType == PathNodeType.OPEN) {
                 --y;
                 if (i++ >= this.entity.getSafeFallDistance()) {
                     return null;

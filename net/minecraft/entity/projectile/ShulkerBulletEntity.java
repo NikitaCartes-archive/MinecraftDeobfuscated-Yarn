@@ -201,7 +201,7 @@ extends ProjectileEntity {
             } else if (!this.hasNoGravity()) {
                 this.setVelocity(this.getVelocity().add(0.0, -0.04, 0.0));
             }
-            HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
+            HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
             if (hitResult.getType() != HitResult.Type.MISS) {
                 this.onCollision(hitResult);
             }
@@ -235,8 +235,8 @@ extends ProjectileEntity {
     }
 
     @Override
-    protected boolean method_26958(Entity entity) {
-        return super.method_26958(entity) && !entity.noClip;
+    protected boolean canHit(Entity entity) {
+        return super.canHit(entity) && !entity.noClip;
     }
 
     @Override

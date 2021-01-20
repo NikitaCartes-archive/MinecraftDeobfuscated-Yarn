@@ -349,8 +349,8 @@ extends ChunkGenerator {
         int k = chunkGeneratorSettings.getBedrockFloorY();
         int l = this.worldHeight - 1 - chunkGeneratorSettings.getBedrockCeilingY();
         int m = 5;
-        boolean bl = l + 5 - 1 >= chunk.getSectionCount() && l < chunk.getTopHeightLimit();
-        boolean bl3 = bl2 = k + 5 - 1 >= chunk.getSectionCount() && k < chunk.getTopHeightLimit();
+        boolean bl = l + 5 - 1 >= chunk.getBottomSectionLimit() && l < chunk.getTopHeightLimit();
+        boolean bl3 = bl2 = k + 5 - 1 >= chunk.getBottomSectionLimit() && k < chunk.getTopHeightLimit();
         if (!bl && !bl2) {
             return;
         }
@@ -419,7 +419,7 @@ extends ChunkGenerator {
                 this.sampleNoiseColumn(ds[1][o], i * this.noiseSizeX + n + 1, j * this.noiseSizeZ + o);
             }
             for (o = 0; o < this.noiseSizeZ; ++o) {
-                ChunkSection chunkSection = protoChunk.getSection(protoChunk.method_32890() - 1);
+                ChunkSection chunkSection = protoChunk.getSection(protoChunk.getSections() - 1);
                 chunkSection.lock();
                 for (int p = this.noiseSizeY - 1; p >= 0; --p) {
                     double d = ds[0][o][p];

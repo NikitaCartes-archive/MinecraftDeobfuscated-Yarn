@@ -75,7 +75,7 @@ public class PlayerPredicate {
         if (!this.experienceLevel.test(serverPlayerEntity.experienceLevel)) {
             return false;
         }
-        if (this.gamemode != serverPlayerEntity.interactionManager.getGameMode()) {
+        if (this.gamemode != null && this.gamemode != serverPlayerEntity.interactionManager.getGameMode()) {
             return false;
         }
         ServerStatHandler statHandler = serverPlayerEntity.getStatHandler();

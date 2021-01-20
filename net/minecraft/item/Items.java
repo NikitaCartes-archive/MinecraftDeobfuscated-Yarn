@@ -890,6 +890,7 @@ public class Items {
     public static final Item EVOKER_SPAWN_EGG = Items.register("evoker_spawn_egg", (Item)new SpawnEggItem(EntityType.EVOKER, 0x959B9B, 1973274, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item FOX_SPAWN_EGG = Items.register("fox_spawn_egg", (Item)new SpawnEggItem(EntityType.FOX, 14005919, 13396256, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GHAST_SPAWN_EGG = Items.register("ghast_spawn_egg", (Item)new SpawnEggItem(EntityType.GHAST, 0xF9F9F9, 0xBCBCBC, new Item.Settings().group(ItemGroup.MISC)));
+    public static final Item GLOW_SQUID_SPAWN_EGG = Items.register("glow_squid_spawn_egg", (Item)new SpawnEggItem(EntityType.GLOW_SQUID, 611926, 8778172, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item GUARDIAN_SPAWN_EGG = Items.register("guardian_spawn_egg", (Item)new SpawnEggItem(EntityType.GUARDIAN, 5931634, 15826224, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item HOGLIN_SPAWN_EGG = Items.register("hoglin_spawn_egg", (Item)new SpawnEggItem(EntityType.HOGLIN, 13004373, 6251620, new Item.Settings().group(ItemGroup.MISC)));
     public static final Item HORSE_SPAWN_EGG = Items.register("horse_spawn_egg", (Item)new SpawnEggItem(EntityType.HORSE, 12623485, 0xEEE500, new Item.Settings().group(ItemGroup.MISC)));
@@ -941,7 +942,8 @@ public class Items {
     public static final Item WRITABLE_BOOK = Items.register("writable_book", (Item)new WritableBookItem(new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
     public static final Item WRITTEN_BOOK = Items.register("written_book", (Item)new WrittenBookItem(new Item.Settings().maxCount(16)));
     public static final Item EMERALD = Items.register("emerald", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-    public static final Item ITEM_FRAME = Items.register("item_frame", (Item)new ItemFrameItem(new Item.Settings().group(ItemGroup.DECORATIONS)));
+    public static final Item ITEM_FRAME = Items.register("item_frame", (Item)new ItemFrameItem(EntityType.ITEM_FRAME, new Item.Settings().group(ItemGroup.DECORATIONS)));
+    public static final Item GLOW_ITEM_FRAME = Items.register("glow_item_frame", (Item)new ItemFrameItem(EntityType.GLOW_ITEM_FRAME, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item FLOWER_POT = Items.register(Blocks.FLOWER_POT, ItemGroup.DECORATIONS);
     public static final Item CARROT = Items.register("carrot", (Item)new AliasedBlockItem(Blocks.CARROTS, new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.CARROT)));
     public static final Item POTATO = Items.register("potato", (Item)new AliasedBlockItem(Blocks.POTATOES, new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.POTATO)));
@@ -1147,6 +1149,8 @@ public class Items {
     public static final Item POINTED_DRIPSTONE = Items.register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
     public static final Item DRIPSTONE_BLOCK = Items.register(Blocks.DRIPSTONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item SCULK_SENSOR = Items.register(Blocks.SCULK_SENSOR, ItemGroup.REDSTONE);
+    public static final Item GLOW_LICHEN = Items.register(Blocks.GLOW_LICHEN, ItemGroup.DECORATIONS);
+    public static final Item GLOW_INK_SAC = Items.register("glow_ink_sac", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

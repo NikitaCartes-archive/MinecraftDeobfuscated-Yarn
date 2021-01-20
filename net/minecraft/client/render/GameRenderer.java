@@ -15,7 +15,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
-import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
@@ -24,6 +23,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.render.DiffuseLighting;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.MapRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -71,7 +71,7 @@ import org.jetbrains.annotations.Nullable;
 public class GameRenderer
 implements SynchronousResourceReloadListener,
 AutoCloseable {
-    private static final Identifier field_26730 = new Identifier("textures/misc/nausea.png");
+    private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
     private static final Logger LOGGER = LogManager.getLogger();
     private final MinecraftClient client;
     private final ResourceManager resourceContainer;
@@ -152,20 +152,20 @@ AutoCloseable {
         }
     }
 
-    private void loadShader(Identifier identifier) {
+    private void loadShader(Identifier id) {
         if (this.shader != null) {
             this.shader.close();
         }
         try {
-            this.shader = new ShaderEffect(this.client.getTextureManager(), this.resourceContainer, this.client.getFramebuffer(), identifier);
+            this.shader = new ShaderEffect(this.client.getTextureManager(), this.resourceContainer, this.client.getFramebuffer(), id);
             this.shader.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
             this.shadersEnabled = true;
         } catch (IOException iOException) {
-            LOGGER.warn("Failed to load shader: {}", (Object)identifier, (Object)iOException);
+            LOGGER.warn("Failed to load shader: {}", (Object)id, (Object)iOException);
             this.forcedShaderIndex = SHADER_COUNT;
             this.shadersEnabled = false;
         } catch (JsonSyntaxException jsonSyntaxException) {
-            LOGGER.warn("Failed to parse shader: {}", (Object)identifier, (Object)jsonSyntaxException);
+            LOGGER.warn("Failed to parse shader: {}", (Object)id, (Object)jsonSyntaxException);
             this.forcedShaderIndex = SHADER_COUNT;
             this.shadersEnabled = false;
         }
@@ -308,14 +308,14 @@ AutoCloseable {
         return d;
     }
 
-    private void bobViewWhenHurt(MatrixStack matrixStack, float f) {
+    private void bobViewWhenHurt(MatrixStack matrices, float f) {
         if (this.client.getCameraEntity() instanceof LivingEntity) {
             float h;
             LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
             float g = (float)livingEntity.hurtTime - f;
             if (livingEntity.isDead()) {
                 h = Math.min((float)livingEntity.deathTime + f, 20.0f);
-                matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(40.0f - 8000.0f / (h + 200.0f)));
+                matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(40.0f - 8000.0f / (h + 200.0f)));
             }
             if (g < 0.0f) {
                 return;
@@ -323,13 +323,13 @@ AutoCloseable {
             g /= (float)livingEntity.maxHurtTime;
             g = MathHelper.sin(g * g * g * g * (float)Math.PI);
             h = livingEntity.knockbackVelocity;
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-h));
-            matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-g * 14.0f));
-            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-h));
+            matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-g * 14.0f));
+            matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
         }
     }
 
-    private void bobView(MatrixStack matrixStack, float f) {
+    private void bobView(MatrixStack matrices, float f) {
         if (!(this.client.getCameraEntity() instanceof PlayerEntity)) {
             return;
         }
@@ -337,9 +337,9 @@ AutoCloseable {
         float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
         float h = -(playerEntity.horizontalSpeed + g * f);
         float i = MathHelper.lerp(f, playerEntity.prevStrideDistance, playerEntity.strideDistance);
-        matrixStack.translate(MathHelper.sin(h * (float)Math.PI) * i * 0.5f, -Math.abs(MathHelper.cos(h * (float)Math.PI) * i), 0.0);
-        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float)Math.PI) * i * 3.0f));
-        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float)Math.PI - 0.2f) * i) * 5.0f));
+        matrices.translate(MathHelper.sin(h * (float)Math.PI) * i * 0.5f, -Math.abs(MathHelper.cos(h * (float)Math.PI) * i), 0.0);
+        matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float)Math.PI) * i * 3.0f));
+        matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float)Math.PI - 0.2f) * i) * 5.0f));
     }
 
     private void renderHand(MatrixStack matrices, Camera camera, float tickDelta) {
@@ -394,8 +394,8 @@ AutoCloseable {
         return this.viewDistance * 4.0f;
     }
 
-    public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
-        int i = livingEntity.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration();
+    public static float getNightVisionStrength(LivingEntity entity, float f) {
+        int i = entity.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration();
         if (i > 200) {
             return 1.0f;
         }
@@ -648,7 +648,7 @@ AutoCloseable {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
         RenderSystem.color4f(g, h, k, 1.0f);
-        this.client.getTextureManager().bindTexture(field_26730);
+        this.client.getTextureManager().bindTexture(NAUSEA_OVERLAY);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);

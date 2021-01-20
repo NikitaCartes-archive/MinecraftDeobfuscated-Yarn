@@ -45,7 +45,7 @@ extends Task<VillagerEntity> {
     protected void run(ServerWorld serverWorld, VillagerEntity villagerEntity, long l) {
         Brain<VillagerEntity> brain = villagerEntity.getBrain();
         brain.getOptionalMemory(this.destination).ifPresent(globalPos -> {
-            if (this.method_30952(serverWorld, (GlobalPos)globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
+            if (this.dimensionMismatches(serverWorld, (GlobalPos)globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
                 this.giveUp(villagerEntity, l);
             } else if (this.exceedsMaxRange(villagerEntity, (GlobalPos)globalPos)) {
                 int i;
@@ -73,12 +73,12 @@ extends Task<VillagerEntity> {
         return false;
     }
 
-    private boolean exceedsMaxRange(VillagerEntity villagerEntity, GlobalPos globalPos) {
-        return globalPos.getPos().getManhattanDistance(villagerEntity.getBlockPos()) > this.maxRange;
+    private boolean exceedsMaxRange(VillagerEntity villager, GlobalPos pos) {
+        return pos.getPos().getManhattanDistance(villager.getBlockPos()) > this.maxRange;
     }
 
-    private boolean method_30952(ServerWorld serverWorld, GlobalPos globalPos) {
-        return globalPos.getDimension() != serverWorld.getRegistryKey();
+    private boolean dimensionMismatches(ServerWorld world, GlobalPos pos) {
+        return pos.getDimension() != world.getRegistryKey();
     }
 
     private boolean reachedDestination(ServerWorld world, VillagerEntity villager, GlobalPos pos) {

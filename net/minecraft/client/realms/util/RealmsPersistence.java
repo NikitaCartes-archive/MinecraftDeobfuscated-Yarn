@@ -18,10 +18,20 @@ import org.apache.commons.io.FileUtils;
 public class RealmsPersistence {
     private static final CheckedGson CHECKED_GSON = new CheckedGson();
 
+    public RealmsPersistenceData load() {
+        return RealmsPersistence.readFile();
+    }
+
+    public void save(RealmsPersistenceData data) {
+        RealmsPersistence.writeFile(data);
+    }
+
     public static RealmsPersistenceData readFile() {
         File file = RealmsPersistence.getFile();
         try {
-            return CHECKED_GSON.fromJson(FileUtils.readFileToString(file, StandardCharsets.UTF_8), RealmsPersistenceData.class);
+            String string = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+            RealmsPersistenceData realmsPersistenceData = CHECKED_GSON.fromJson(string, RealmsPersistenceData.class);
+            return realmsPersistenceData != null ? realmsPersistenceData : new RealmsPersistenceData();
         } catch (IOException iOException) {
             return new RealmsPersistenceData();
         }

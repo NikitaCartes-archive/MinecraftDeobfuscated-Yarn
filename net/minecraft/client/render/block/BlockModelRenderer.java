@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BlockModelRenderer {
-    private static final Direction[] field_27743 = Direction.values();
+    private static final Direction[] DIRECTIONS = Direction.values();
     private final BlockColors colorMap;
     private static final ThreadLocal<BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BrightnessCache());
 
@@ -60,11 +60,11 @@ public class BlockModelRenderer {
 
     public boolean renderSmooth(BlockRenderView world, BakedModel model, BlockState state, BlockPos pos, MatrixStack buffer, VertexConsumer vertexConsumer, boolean cull, Random random, long seed, int overlay) {
         boolean bl = false;
-        float[] fs = new float[field_27743.length * 2];
+        float[] fs = new float[DIRECTIONS.length * 2];
         BitSet bitSet = new BitSet(3);
         AmbientOcclusionCalculator ambientOcclusionCalculator = new AmbientOcclusionCalculator();
         BlockPos.Mutable mutable = pos.mutableCopy();
-        for (Direction direction : field_27743) {
+        for (Direction direction : DIRECTIONS) {
             random.setSeed(seed);
             List<BakedQuad> list = model.getQuads(state, direction, random);
             if (list.isEmpty()) continue;
@@ -86,7 +86,7 @@ public class BlockModelRenderer {
         boolean bl = false;
         BitSet bitSet = new BitSet(3);
         BlockPos.Mutable mutable = pos.mutableCopy();
-        for (Direction direction : field_27743) {
+        for (Direction direction : DIRECTIONS) {
             random.setSeed(l);
             List<BakedQuad> list = model.getQuads(state, direction, random);
             if (list.isEmpty()) continue;
@@ -157,7 +157,7 @@ public class BlockModelRenderer {
             box[Direction.UP.getId()] = j;
             box[Direction.NORTH.getId()] = h;
             box[Direction.SOUTH.getId()] = k;
-            l = field_27743.length;
+            l = DIRECTIONS.length;
             box[Direction.WEST.getId() + l] = 1.0f - f;
             box[Direction.EAST.getId() + l] = 1.0f - i;
             box[Direction.DOWN.getId() + l] = 1.0f - g;
@@ -215,7 +215,7 @@ public class BlockModelRenderer {
     public void render(MatrixStack.Entry entry, VertexConsumer vertexConsumer, @Nullable BlockState blockState, BakedModel bakedModel, float f, float g, float h, int i, int j) {
         Random random = new Random();
         long l = 42L;
-        for (Direction direction : field_27743) {
+        for (Direction direction : DIRECTIONS) {
             random.setSeed(42L);
             BlockModelRenderer.renderQuad(entry, vertexConsumer, f, g, h, bakedModel.getQuads(blockState, direction, random), i, j);
         }
@@ -266,9 +266,9 @@ public class BlockModelRenderer {
         private final NeighborOrientation[] field_4188;
         private static final NeighborData[] field_4190;
 
-        private NeighborData(Direction[] directions, float f, boolean bl, NeighborOrientation[] neighborOrientations, NeighborOrientation[] neighborOrientations2, NeighborOrientation[] neighborOrientations3, NeighborOrientation[] neighborOrientations4) {
-            this.faces = directions;
-            this.nonCubicWeight = bl;
+        private NeighborData(Direction[] faces, float f, boolean nonCubicWeight, NeighborOrientation[] neighborOrientations, NeighborOrientation[] neighborOrientations2, NeighborOrientation[] neighborOrientations3, NeighborOrientation[] neighborOrientations4) {
+            this.faces = faces;
+            this.nonCubicWeight = nonCubicWeight;
             this.field_4192 = neighborOrientations;
             this.field_4185 = neighborOrientations2;
             this.field_4180 = neighborOrientations3;
@@ -309,7 +309,7 @@ public class BlockModelRenderer {
         private final int shape;
 
         private NeighborOrientation(Direction direction, boolean bl) {
-            this.shape = direction.getId() + (bl ? field_27743.length : 0);
+            this.shape = direction.getId() + (bl ? DIRECTIONS.length : 0);
         }
     }
 

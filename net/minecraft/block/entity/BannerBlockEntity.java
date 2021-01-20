@@ -38,14 +38,14 @@ implements Nameable {
     @Nullable
     private List<Pair<BannerPattern, DyeColor>> patterns;
 
-    public BannerBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.BANNER, blockPos, blockState);
-        this.baseColor = ((AbstractBannerBlock)blockState.getBlock()).getColor();
+    public BannerBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.BANNER, pos, state);
+        this.baseColor = ((AbstractBannerBlock)state.getBlock()).getColor();
     }
 
-    public BannerBlockEntity(BlockPos blockPos, BlockState blockState, DyeColor dyeColor) {
-        this(blockPos, blockState);
-        this.baseColor = dyeColor;
+    public BannerBlockEntity(BlockPos pos, BlockState state, DyeColor baseColor) {
+        this(pos, state);
+        this.baseColor = baseColor;
     }
 
     @Nullable
@@ -131,18 +131,18 @@ implements Nameable {
     @Environment(value=EnvType.CLIENT)
     public List<Pair<BannerPattern, DyeColor>> getPatterns() {
         if (this.patterns == null && this.patternListTagRead) {
-            this.patterns = BannerBlockEntity.method_24280(this.baseColor, this.patternListTag);
+            this.patterns = BannerBlockEntity.getPatternsFromTag(this.baseColor, this.patternListTag);
         }
         return this.patterns;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static List<Pair<BannerPattern, DyeColor>> method_24280(DyeColor dyeColor, @Nullable ListTag listTag) {
+    public static List<Pair<BannerPattern, DyeColor>> getPatternsFromTag(DyeColor baseColor, @Nullable ListTag patternListTag) {
         ArrayList<Pair<BannerPattern, DyeColor>> list = Lists.newArrayList();
-        list.add(Pair.of(BannerPattern.BASE, dyeColor));
-        if (listTag != null) {
-            for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag = listTag.getCompound(i);
+        list.add(Pair.of(BannerPattern.BASE, baseColor));
+        if (patternListTag != null) {
+            for (int i = 0; i < patternListTag.size(); ++i) {
+                CompoundTag compoundTag = patternListTag.getCompound(i);
                 BannerPattern bannerPattern = BannerPattern.byId(compoundTag.getString("Pattern"));
                 if (bannerPattern == null) continue;
                 int j = compoundTag.getInt("Color");

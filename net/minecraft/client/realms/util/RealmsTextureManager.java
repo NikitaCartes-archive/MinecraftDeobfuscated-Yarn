@@ -41,11 +41,11 @@ public class RealmsTextureManager {
     private static final Map<String, Boolean> skinFetchStatus = Maps.newHashMap();
     private static final Map<String, String> fetchedSkins = Maps.newHashMap();
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Identifier field_22730 = new Identifier("textures/gui/presets/isles.png");
+    private static final Identifier ISLES = new Identifier("textures/gui/presets/isles.png");
 
     public static void bindWorldTemplate(String id, @Nullable String image) {
         if (image == null) {
-            MinecraftClient.getInstance().getTextureManager().bindTexture(field_22730);
+            MinecraftClient.getInstance().getTextureManager().bindTexture(ISLES);
             return;
         }
         int i = RealmsTextureManager.getTextureId(id, image);

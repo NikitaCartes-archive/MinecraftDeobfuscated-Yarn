@@ -58,6 +58,8 @@ import net.minecraft.world.gen.feature.FossilFeature;
 import net.minecraft.world.gen.feature.FreezeTopLayerFeature;
 import net.minecraft.world.gen.feature.GeodeFeature;
 import net.minecraft.world.gen.feature.GeodeFeatureConfig;
+import net.minecraft.world.gen.feature.GlowLichenFeature;
+import net.minecraft.world.gen.feature.GlowLichenFeatureConfig;
 import net.minecraft.world.gen.feature.GlowstoneBlobFeature;
 import net.minecraft.world.gen.feature.HugeBrownMushroomFeature;
 import net.minecraft.world.gen.feature.HugeFungusFeature;
@@ -122,6 +124,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DefaultFeatureConfig> GLOWSTONE_BLOB = Feature.register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> FREEZE_TOP_LAYER = Feature.register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> VINES = Feature.register("vines", new VinesFeature(DefaultFeatureConfig.CODEC));
+    public static final Feature<GlowLichenFeatureConfig> GLOW_LICHEN = Feature.register("glow_lichen", new GlowLichenFeature(GlowLichenFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = Feature.register("monster_room", new DungeonFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> BLUE_ICE = Feature.register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<SingleStateFeatureConfig> ICEBERG = Feature.register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));

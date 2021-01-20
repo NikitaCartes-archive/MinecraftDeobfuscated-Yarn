@@ -48,8 +48,8 @@ FluidFillable {
     }
 
     @Override
-    default public Optional<SoundEvent> getDrainSound() {
-        return Fluids.WATER.getFillSound();
+    default public Optional<SoundEvent> getBucketFillSound() {
+        return Fluids.WATER.getBucketFillSound();
     }
 }
 

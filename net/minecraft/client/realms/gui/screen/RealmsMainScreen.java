@@ -105,7 +105,7 @@ extends RealmsScreen {
     private static final Text INFO_TEXT = new TranslatableText("mco.selectServer.info");
     private static final Text NEWS_TEXT = new TranslatableText("mco.news");
     private static List<Identifier> IMAGES = ImmutableList.of();
-    private static final RealmsDataFetcher realmsDataFetcher = new RealmsDataFetcher();
+    private static final RealmsDataFetcher realmsDataFetcher = new RealmsDataFetcher(MinecraftClient.getInstance(), RealmsClient.createRealmsClient());
     private static boolean overrideConfigure;
     private static int lastScrollYPosition;
     private static volatile boolean hasParentalConsent;
@@ -626,7 +626,7 @@ extends RealmsScreen {
     }
 
     @Override
-    public boolean charTyped(char chr, int keyCode) {
+    public boolean charTyped(char chr, int modifiers) {
         this.keyCombos.forEach(keyCombo -> keyCombo.keyPressed(chr));
         return true;
     }

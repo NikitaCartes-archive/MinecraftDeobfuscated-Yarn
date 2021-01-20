@@ -49,12 +49,12 @@ implements ResourcePack {
     private static final Logger LOGGER;
     public static Class<?> resourceClass;
     private static final Map<ResourceType, FileSystem> typeToFileSystem;
-    public final PackResourceMetadata field_26938;
+    public final PackResourceMetadata metadata;
     public final Set<String> namespaces;
 
-    public DefaultResourcePack(PackResourceMetadata packResourceMetadata, String ... strings) {
-        this.field_26938 = packResourceMetadata;
-        this.namespaces = ImmutableSet.copyOf(strings);
+    public DefaultResourcePack(PackResourceMetadata metadata, String ... namespaces) {
+        this.metadata = metadata;
+        this.namespaces = ImmutableSet.copyOf(namespaces);
     }
 
     @Override
@@ -208,7 +208,7 @@ implements ResourcePack {
             // empty catch block
         }
         if (metaReader != PackResourceMetadata.READER) return null;
-        return (T)this.field_26938;
+        return (T)this.metadata;
     }
 
     @Override

@@ -42,8 +42,8 @@ import org.jetbrains.annotations.Nullable;
 public class RealmsBackupScreen
 extends RealmsScreen {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Identifier field_22686 = new Identifier("realms", "textures/gui/realms/plus_icon.png");
-    private static final Identifier field_22687 = new Identifier("realms", "textures/gui/realms/restore_icon.png");
+    private static final Identifier PLUS_ICON = new Identifier("realms", "textures/gui/realms/plus_icon.png");
+    private static final Identifier RESTORE_ICON = new Identifier("realms", "textures/gui/realms/restore_icon.png");
     private static final Text RESTORE_TEXT = new TranslatableText("mco.backup.button.restore");
     private static final Text CHANGES_TOOLTIP = new TranslatableText("mco.backup.changes.tooltip");
     private static final Text BACKUPS_TEXT = new TranslatableText("mco.configure.world.backup");
@@ -226,15 +226,15 @@ extends RealmsScreen {
         }
     }
 
-    protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
+    protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
         if (text == null) {
             return;
         }
         int k = i + 12;
         int l = j - 12;
         int m = this.textRenderer.getWidth(text);
-        this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-        this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 0xFFFFFF);
+        this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
+        this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 0xFFFFFF);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -251,19 +251,19 @@ extends RealmsScreen {
             this.renderBackupItem(matrices, this.mBackup, x - 40, y, mouseX, mouseY);
         }
 
-        private void renderBackupItem(MatrixStack matrixStack, Backup backup, int i, int j, int k, int l) {
+        private void renderBackupItem(MatrixStack matrices, Backup backup, int i, int j, int k, int l) {
             int m = backup.isUploadedVersion() ? -8388737 : 0xFFFFFF;
-            RealmsBackupScreen.this.textRenderer.draw(matrixStack, "Backup (" + RealmsUtil.method_25282(backup.lastModifiedDate) + ")", (float)(i + 40), (float)(j + 1), m);
-            RealmsBackupScreen.this.textRenderer.draw(matrixStack, this.getMediumDatePresentation(backup.lastModifiedDate), (float)(i + 40), (float)(j + 12), 0x4C4C4C);
+            RealmsBackupScreen.this.textRenderer.draw(matrices, "Backup (" + RealmsUtil.method_25282(backup.lastModifiedDate) + ")", (float)(i + 40), (float)(j + 1), m);
+            RealmsBackupScreen.this.textRenderer.draw(matrices, this.getMediumDatePresentation(backup.lastModifiedDate), (float)(i + 40), (float)(j + 12), 0x4C4C4C);
             int n = RealmsBackupScreen.this.width - 175;
             int o = -3;
             int p = n - 10;
             boolean q = false;
             if (!((RealmsBackupScreen)RealmsBackupScreen.this).serverData.expired) {
-                this.drawRestore(matrixStack, n, j + -3, k, l);
+                this.drawRestore(matrices, n, j + -3, k, l);
             }
             if (!backup.changeList.isEmpty()) {
-                this.drawInfo(matrixStack, p, j + 0, k, l);
+                this.drawInfo(matrices, p, j + 0, k, l);
             }
         }
 
@@ -271,28 +271,28 @@ extends RealmsScreen {
             return DateFormat.getDateTimeInstance(3, 3).format(lastModifiedDate);
         }
 
-        private void drawRestore(MatrixStack matrixStack, int i, int j, int k, int l) {
+        private void drawRestore(MatrixStack matrices, int i, int j, int k, int l) {
             boolean bl = k >= i && k <= i + 12 && l >= j && l <= j + 14 && l < RealmsBackupScreen.this.height - 15 && l > 32;
-            RealmsBackupScreen.this.client.getTextureManager().bindTexture(field_22687);
+            RealmsBackupScreen.this.client.getTextureManager().bindTexture(RESTORE_ICON);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.pushMatrix();
             RenderSystem.scalef(0.5f, 0.5f, 0.5f);
             float f = bl ? 28.0f : 0.0f;
-            DrawableHelper.drawTexture(matrixStack, i * 2, j * 2, 0.0f, f, 23, 28, 23, 56);
+            DrawableHelper.drawTexture(matrices, i * 2, j * 2, 0.0f, f, 23, 28, 23, 56);
             RenderSystem.popMatrix();
             if (bl) {
                 RealmsBackupScreen.this.toolTip = RESTORE_TEXT;
             }
         }
 
-        private void drawInfo(MatrixStack matrixStack, int i, int j, int k, int l) {
+        private void drawInfo(MatrixStack matrices, int i, int j, int k, int l) {
             boolean bl = k >= i && k <= i + 8 && l >= j && l <= j + 8 && l < RealmsBackupScreen.this.height - 15 && l > 32;
-            RealmsBackupScreen.this.client.getTextureManager().bindTexture(field_22686);
+            RealmsBackupScreen.this.client.getTextureManager().bindTexture(PLUS_ICON);
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.pushMatrix();
             RenderSystem.scalef(0.5f, 0.5f, 0.5f);
             float f = bl ? 15.0f : 0.0f;
-            DrawableHelper.drawTexture(matrixStack, i * 2, j * 2, 0.0f, f, 15, 15, 15, 30);
+            DrawableHelper.drawTexture(matrices, i * 2, j * 2, 0.0f, f, 15, 15, 15, 30);
             RenderSystem.popMatrix();
             if (bl) {
                 RealmsBackupScreen.this.toolTip = CHANGES_TOOLTIP;

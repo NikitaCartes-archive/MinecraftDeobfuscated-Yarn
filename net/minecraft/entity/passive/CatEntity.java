@@ -254,7 +254,7 @@ extends TameableEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 
@@ -580,7 +580,7 @@ extends TameableEntity {
         private final CatEntity cat;
 
         public TemptGoal(CatEntity cat, double speed, Ingredient food, boolean canBeScared) {
-            super((PathAwareEntity)cat, speed, food, canBeScared);
+            super(cat, speed, food, canBeScared);
             this.cat = cat;
         }
 

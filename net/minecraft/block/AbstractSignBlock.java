@@ -18,6 +18,9 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
@@ -35,6 +38,7 @@ public abstract class AbstractSignBlock
 extends BlockWithEntity
 implements Waterloggable {
     public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+    public static final BooleanProperty LIT = Properties.LIT;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
     private final SignType type;
 
@@ -68,18 +72,38 @@ implements Waterloggable {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        boolean bl;
         ItemStack itemStack = player.getStackInHand(hand);
-        boolean bl2 = bl = itemStack.getItem() instanceof DyeItem && player.getAbilities().allowModifyWorld;
+        boolean bl = itemStack.getItem() instanceof DyeItem;
+        boolean bl2 = itemStack.isOf(Items.GLOW_INK_SAC);
+        boolean bl3 = itemStack.isOf(Items.INK_SAC);
+        boolean bl4 = (bl2 || bl || bl3) && player.getAbilities().allowModifyWorld;
+        boolean bl5 = state.get(LIT);
+        if (bl2 && bl5 || bl3 && !bl5) {
+            return ActionResult.PASS;
+        }
         if (world.isClient) {
-            return bl ? ActionResult.SUCCESS : ActionResult.CONSUME;
+            return bl4 ? ActionResult.SUCCESS : ActionResult.CONSUME;
         }
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof SignBlockEntity) {
-            boolean bl22;
             SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
-            if (bl && (bl22 = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor())) && !player.isCreative()) {
-                itemStack.decrement(1);
+            if (bl4) {
+                boolean bl6;
+                if (bl2) {
+                    world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                    world.setBlockState(pos, (BlockState)state.with(LIT, true));
+                    bl6 = true;
+                } else if (bl3) {
+                    world.playSound(null, pos, SoundEvents.ITEM_INK_SAC_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                    world.setBlockState(pos, (BlockState)state.with(LIT, false));
+                    bl6 = true;
+                } else {
+                    world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                    bl6 = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
+                }
+                if (bl6 && !player.isCreative()) {
+                    itemStack.decrement(1);
+                }
             }
             return signBlockEntity.onActivate(player) ? ActionResult.SUCCESS : ActionResult.PASS;
         }

@@ -69,7 +69,7 @@ implements FluidModificationItem {
                 BlockState blockState = world.getBlockState(blockPos);
                 if (blockState.getBlock() instanceof FluidDrainable && !(itemStack2 = (fluidDrainable = (FluidDrainable)((Object)blockState.getBlock())).tryDrainFluid(world, blockPos, blockState)).isEmpty()) {
                     user.incrementStat(Stats.USED.getOrCreateStat(this));
-                    fluidDrainable.getDrainSound().ifPresent(sound -> user.playSound((SoundEvent)sound, 1.0f, 1.0f));
+                    fluidDrainable.getBucketFillSound().ifPresent(sound -> user.playSound((SoundEvent)sound, 1.0f, 1.0f));
                     world.emitGameEvent((Entity)user, GameEvent.FLUID_PICKUP, blockPos);
                     ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, user, itemStack2);
                     if (!world.isClient) {
@@ -94,11 +94,11 @@ implements FluidModificationItem {
         return TypedActionResult.pass(itemStack);
     }
 
-    public static ItemStack getEmptiedStack(ItemStack itemStack, PlayerEntity playerEntity) {
-        if (!playerEntity.getAbilities().creativeMode) {
+    public static ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
+        if (!player.getAbilities().creativeMode) {
             return new ItemStack(Items.BUCKET);
         }
-        return itemStack;
+        return stack;
     }
 
     @Override

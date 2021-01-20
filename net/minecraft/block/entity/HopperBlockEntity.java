@@ -46,8 +46,8 @@ implements Hopper {
     private int transferCooldown = -1;
     private long lastTickTime;
 
-    public HopperBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.HOPPER, blockPos, blockState);
+    public HopperBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.HOPPER, pos, state);
     }
 
     @Override
@@ -95,30 +95,30 @@ implements Hopper {
         return new TranslatableText("container.hopper");
     }
 
-    public static void serverTick(World world, BlockPos blockPos, BlockState blockState, HopperBlockEntity hopperBlockEntity) {
-        --hopperBlockEntity.transferCooldown;
-        hopperBlockEntity.lastTickTime = world.getTime();
-        if (!hopperBlockEntity.needsCooldown()) {
-            hopperBlockEntity.setCooldown(0);
-            HopperBlockEntity.insertAndExtract(world, blockPos, blockState, hopperBlockEntity, () -> HopperBlockEntity.extract(world, hopperBlockEntity));
+    public static void serverTick(World world, BlockPos pos, BlockState state, HopperBlockEntity blockEntity) {
+        --blockEntity.transferCooldown;
+        blockEntity.lastTickTime = world.getTime();
+        if (!blockEntity.needsCooldown()) {
+            blockEntity.setCooldown(0);
+            HopperBlockEntity.insertAndExtract(world, pos, state, blockEntity, () -> HopperBlockEntity.extract(world, blockEntity));
         }
     }
 
-    private static boolean insertAndExtract(World world, BlockPos blockPos, BlockState blockState, HopperBlockEntity hopperBlockEntity, BooleanSupplier booleanSupplier) {
+    private static boolean insertAndExtract(World world, BlockPos pos, BlockState state, HopperBlockEntity blockEntity, BooleanSupplier booleanSupplier) {
         if (world.isClient) {
             return false;
         }
-        if (!hopperBlockEntity.needsCooldown() && blockState.get(HopperBlock.ENABLED).booleanValue()) {
+        if (!blockEntity.needsCooldown() && state.get(HopperBlock.ENABLED).booleanValue()) {
             boolean bl = false;
-            if (!hopperBlockEntity.isEmpty()) {
-                bl = HopperBlockEntity.insert(world, blockPos, blockState, hopperBlockEntity);
+            if (!blockEntity.isEmpty()) {
+                bl = HopperBlockEntity.insert(world, pos, state, blockEntity);
             }
-            if (!hopperBlockEntity.isFull()) {
+            if (!blockEntity.isFull()) {
                 bl |= booleanSupplier.getAsBoolean();
             }
             if (bl) {
-                hopperBlockEntity.setCooldown(8);
-                HopperBlockEntity.markDirty(world, blockPos, blockState);
+                blockEntity.setCooldown(8);
+                HopperBlockEntity.markDirty(world, pos, state);
                 return true;
             }
         }
@@ -133,12 +133,12 @@ implements Hopper {
         return true;
     }
 
-    private static boolean insert(World world, BlockPos blockPos, BlockState blockState, Inventory inventory) {
-        Inventory inventory2 = HopperBlockEntity.getOutputInventory(world, blockPos, blockState);
+    private static boolean insert(World world, BlockPos pos, BlockState state, Inventory inventory) {
+        Inventory inventory2 = HopperBlockEntity.getOutputInventory(world, pos, state);
         if (inventory2 == null) {
             return false;
         }
-        Direction direction = blockState.get(HopperBlock.FACING).getOpposite();
+        Direction direction = state.get(HopperBlock.FACING).getOpposite();
         if (HopperBlockEntity.isInventoryFull(inventory2, direction)) {
             return false;
         }
@@ -279,9 +279,9 @@ implements Hopper {
     }
 
     @Nullable
-    private static Inventory getOutputInventory(World world, BlockPos blockPos, BlockState blockState) {
-        Direction direction = blockState.get(HopperBlock.FACING);
-        return HopperBlockEntity.getInventoryAt(world, blockPos.offset(direction));
+    private static Inventory getOutputInventory(World world, BlockPos pos, BlockState state) {
+        Direction direction = state.get(HopperBlock.FACING);
+        return HopperBlockEntity.getInventoryAt(world, pos.offset(direction));
     }
 
     @Nullable
@@ -294,8 +294,8 @@ implements Hopper {
     }
 
     @Nullable
-    public static Inventory getInventoryAt(World world, BlockPos blockPos) {
-        return HopperBlockEntity.getInventoryAt(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+    public static Inventory getInventoryAt(World world, BlockPos pos) {
+        return HopperBlockEntity.getInventoryAt(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
     }
 
     @Nullable
@@ -367,9 +367,9 @@ implements Hopper {
         this.inventory = list;
     }
 
-    public static void onEntityCollided(World world, BlockPos blockPos, BlockState blockState, Entity entity, HopperBlockEntity hopperBlockEntity) {
-        if (entity instanceof ItemEntity && VoxelShapes.matchesAnywhere(VoxelShapes.cuboid(entity.getBoundingBox().offset(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ())), hopperBlockEntity.getInputAreaShape(), BooleanBiFunction.AND)) {
-            HopperBlockEntity.insertAndExtract(world, blockPos, blockState, hopperBlockEntity, () -> HopperBlockEntity.extract(hopperBlockEntity, (ItemEntity)entity));
+    public static void onEntityCollided(World world, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
+        if (entity instanceof ItemEntity && VoxelShapes.matchesAnywhere(VoxelShapes.cuboid(entity.getBoundingBox().offset(-pos.getX(), -pos.getY(), -pos.getZ())), blockEntity.getInputAreaShape(), BooleanBiFunction.AND)) {
+            HopperBlockEntity.insertAndExtract(world, pos, state, blockEntity, () -> HopperBlockEntity.extract(blockEntity, (ItemEntity)entity));
         }
     }
 

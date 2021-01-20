@@ -22,7 +22,7 @@ extends AbstractPlantStemBlock {
     }
 
     @Override
-    protected int method_26376(Random random) {
+    protected int getGrowthLength(Random random) {
         return VineLogic.method_26381(random);
     }
 

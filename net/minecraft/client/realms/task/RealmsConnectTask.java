@@ -18,18 +18,18 @@ public class RealmsConnectTask
 extends LongRunningTask {
     private final RealmsConnection realmsConnect;
     private final RealmsServer field_26922;
-    private final net.minecraft.client.realms.dto.RealmsServerAddress a;
+    private final net.minecraft.client.realms.dto.RealmsServerAddress field_20223;
 
     public RealmsConnectTask(Screen lastScreen, RealmsServer realmsServer, net.minecraft.client.realms.dto.RealmsServerAddress realmsServerAddress) {
         this.field_26922 = realmsServer;
-        this.a = realmsServerAddress;
+        this.field_20223 = realmsServerAddress;
         this.realmsConnect = new RealmsConnection(lastScreen);
     }
 
     @Override
     public void run() {
         this.setTitle(new TranslatableText("mco.connect.connecting"));
-        RealmsServerAddress realmsServerAddress = RealmsServerAddress.parseString(this.a.address);
+        RealmsServerAddress realmsServerAddress = RealmsServerAddress.parseString(this.field_20223.address);
         this.realmsConnect.connect(this.field_26922, realmsServerAddress.getHost(), realmsServerAddress.getPort());
     }
 

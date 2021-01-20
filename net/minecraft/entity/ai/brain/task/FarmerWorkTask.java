@@ -61,15 +61,15 @@ extends VillagerWorkTask {
             i -= p;
             for (int q = 0; q < p; ++q) {
                 if ((blockState = ComposterBlock.compost(blockState, world, itemStack, blockPos)).get(ComposterBlock.LEVEL) != 7) continue;
-                this.method_30232(world, composterState, blockPos, blockState);
+                this.syncComposterEvent(world, composterState, blockPos, blockState);
                 return;
             }
         }
-        this.method_30232(world, composterState, blockPos, blockState);
+        this.syncComposterEvent(world, composterState, blockPos, blockState);
     }
 
-    private void method_30232(ServerWorld serverWorld, BlockState blockState, BlockPos blockPos, BlockState blockState2) {
-        serverWorld.syncWorldEvent(1500, blockPos, blockState2 != blockState ? 1 : 0);
+    private void syncComposterEvent(ServerWorld world, BlockState oldState, BlockPos pos, BlockState newState) {
+        world.syncWorldEvent(1500, pos, newState != oldState ? 1 : 0);
     }
 
     private void craftAndDropBread(VillagerEntity entity) {

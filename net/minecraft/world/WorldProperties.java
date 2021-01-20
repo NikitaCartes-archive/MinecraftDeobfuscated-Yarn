@@ -35,8 +35,8 @@ public interface WorldProperties {
 
     public boolean isDifficultyLocked();
 
-    default public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
-        reportSection.add("Level spawn location", () -> CrashReportSection.createPositionString(heightLimitView, this.getSpawnX(), this.getSpawnY(), this.getSpawnZ()));
+    default public void populateCrashReport(CrashReportSection reportSection, HeightLimitView world) {
+        reportSection.add("Level spawn location", () -> CrashReportSection.createPositionString(world, this.getSpawnX(), this.getSpawnY(), this.getSpawnZ()));
         reportSection.add("Level time", () -> String.format("%d game time, %d day time", this.getTime(), this.getTimeOfDay()));
     }
 }

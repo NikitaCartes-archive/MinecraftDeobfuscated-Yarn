@@ -157,8 +157,8 @@ extends Screen {
         this.children.add(this.levelNameField);
         int i = this.width / 2 - 155;
         int j = this.width / 2 + 5;
-        this.gameModeSwitchButton = this.addButton(CyclingButtonWidget.method_32606(Mode::method_32673).method_32624((Mode[])new Mode[]{Mode.SURVIVAL, Mode.CREATIVE, Mode.HARDCORE}).value(this.currentMode).method_32623(cyclingButtonWidget -> AbstractButtonWidget.method_32602(cyclingButtonWidget.getMessage()).append(". ").append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
-        this.difficultyButton = this.addButton(CyclingButtonWidget.method_32606(Difficulty::getTranslatableName).method_32624((Difficulty[])Difficulty.values()).value(this.method_32672()).build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> {
+        this.gameModeSwitchButton = this.addButton(CyclingButtonWidget.method_32606(Mode::asText).method_32624((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).value(this.currentMode).method_32623(cyclingButtonWidget -> AbstractButtonWidget.getNarrationMessage(cyclingButtonWidget.getMessage()).append(". ").append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
+        this.difficultyButton = this.addButton(CyclingButtonWidget.method_32606(Difficulty::getTranslatableName).method_32624((Difficulty[])Difficulty.values()).value(this.getDifficulty()).build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> {
             this.currentDifficulty = difficulty;
         }));
         this.enableCheatsButton = this.addButton(CyclingButtonWidget.method_32613(this.cheatsEnabled && !this.hardcore).method_32623(cyclingButtonWidget -> cyclingButtonWidget.method_32611().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"))).build(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), (cyclingButtonWidget, boolean_) -> {
@@ -183,7 +183,7 @@ extends Screen {
         this.updateSaveFolderName();
     }
 
-    private Difficulty method_32672() {
+    private Difficulty getDifficulty() {
         return this.currentMode == Mode.HARDCORE ? Difficulty.HARD : this.currentDifficulty;
     }
 
@@ -227,7 +227,7 @@ extends Screen {
             gameRules.get(GameRules.DO_DAYLIGHT_CYCLE).set(false, null);
             levelInfo = new LevelInfo(this.levelNameField.getText().trim(), GameMode.SPECTATOR, false, Difficulty.PEACEFUL, true, gameRules, DataPackSettings.SAFE_MODE);
         } else {
-            levelInfo = new LevelInfo(this.levelNameField.getText().trim(), this.currentMode.defaultGameMode, this.hardcore, this.method_32672(), this.cheatsEnabled && !this.hardcore, this.gameRules, this.dataPackSettings);
+            levelInfo = new LevelInfo(this.levelNameField.getText().trim(), this.currentMode.defaultGameMode, this.hardcore, this.getDifficulty(), this.cheatsEnabled && !this.hardcore, this.gameRules, this.dataPackSettings);
         }
         this.client.method_29607(this.saveDirectoryName, levelInfo, this.moreOptionsDialog.getRegistryManager(), generatorOptions);
     }
@@ -239,21 +239,21 @@ extends Screen {
     private void tweakDefaultsTo(Mode mode) {
         if (!this.tweakedCheats) {
             this.cheatsEnabled = mode == Mode.CREATIVE;
-            this.enableCheatsButton.method_32605(this.cheatsEnabled);
+            this.enableCheatsButton.setValue(this.cheatsEnabled);
         }
         if (mode == Mode.HARDCORE) {
             this.hardcore = true;
             this.enableCheatsButton.active = false;
-            this.enableCheatsButton.method_32605(false);
+            this.enableCheatsButton.setValue(false);
             this.moreOptionsDialog.disableBonusItems();
-            this.difficultyButton.method_32605(Difficulty.HARD);
+            this.difficultyButton.setValue(Difficulty.HARD);
             this.difficultyButton.active = false;
         } else {
             this.hardcore = false;
             this.enableCheatsButton.active = true;
-            this.enableCheatsButton.method_32605(this.cheatsEnabled);
+            this.enableCheatsButton.setValue(this.cheatsEnabled);
             this.moreOptionsDialog.enableBonusItems();
-            this.difficultyButton.method_32605(this.currentDifficulty);
+            this.difficultyButton.setValue(this.currentDifficulty);
             this.difficultyButton.active = true;
         }
         this.currentMode = mode;
@@ -511,16 +511,16 @@ extends Screen {
 
         private final String translationSuffix;
         private final GameMode defaultGameMode;
-        private final Text field_27999;
+        private final Text text;
 
         private Mode(String translationSuffix, GameMode defaultGameMode) {
             this.translationSuffix = translationSuffix;
             this.defaultGameMode = defaultGameMode;
-            this.field_27999 = new TranslatableText("selectWorld.gameMode." + translationSuffix);
+            this.text = new TranslatableText("selectWorld.gameMode." + translationSuffix);
         }
 
-        public Text method_32673() {
-            return this.field_27999;
+        public Text asText() {
+            return this.text;
         }
     }
 }

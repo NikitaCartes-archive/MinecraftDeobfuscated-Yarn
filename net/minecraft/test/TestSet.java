@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 public class TestSet {
     private final Collection<GameTest> tests = Lists.newArrayList();
     @Nullable
-    private final Collection<TestListener> field_25303 = Lists.newArrayList();
+    private final Collection<TestListener> listeners = Lists.newArrayList();
 
     public TestSet() {
     }
@@ -24,15 +24,15 @@ public class TestSet {
 
     public void add(GameTest test) {
         this.tests.add(test);
-        this.field_25303.forEach(test::addListener);
+        this.listeners.forEach(test::addListener);
     }
 
     public void addListener(TestListener listener) {
-        this.field_25303.add(listener);
-        this.tests.forEach(gameTest -> gameTest.addListener(listener));
+        this.listeners.add(listener);
+        this.tests.forEach(test -> test.addListener(listener));
     }
 
-    public void method_29407(final Consumer<GameTest> consumer) {
+    public void addListener(final Consumer<GameTest> onFailed) {
         this.addListener(new TestListener(){
 
             @Override
@@ -40,12 +40,12 @@ public class TestSet {
             }
 
             @Override
-            public void method_33317(GameTest gameTest) {
+            public void onPassed(GameTest test) {
             }
 
             @Override
             public void onFailed(GameTest test) {
-                consumer.accept(test);
+                onFailed.accept(test);
             }
         });
     }
@@ -81,13 +81,13 @@ public class TestSet {
     public String getResultString() {
         StringBuffer stringBuffer = new StringBuffer();
         stringBuffer.append('[');
-        this.tests.forEach(gameTest -> {
-            if (!gameTest.isStarted()) {
+        this.tests.forEach(test -> {
+            if (!test.isStarted()) {
                 stringBuffer.append(' ');
-            } else if (gameTest.isPassed()) {
+            } else if (test.isPassed()) {
                 stringBuffer.append('+');
-            } else if (gameTest.isFailed()) {
-                stringBuffer.append(gameTest.isRequired() ? (char)'X' : (char)'x');
+            } else if (test.isFailed()) {
+                stringBuffer.append(test.isRequired() ? (char)'X' : (char)'x');
             } else {
                 stringBuffer.append('_');
             }

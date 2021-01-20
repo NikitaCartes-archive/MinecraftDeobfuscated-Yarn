@@ -77,7 +77,7 @@ extends ForgingScreenHandler {
 
     @Override
     protected boolean method_30025(ItemStack itemStack) {
-        return this.field_25668.stream().anyMatch(smithingRecipe -> smithingRecipe.method_30029(itemStack));
+        return this.field_25668.stream().anyMatch(smithingRecipe -> smithingRecipe.testAddition(itemStack));
     }
 
     @Override

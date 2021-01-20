@@ -13,6 +13,7 @@ import net.minecraft.advancement.AdvancementRewards;
 import net.minecraft.advancement.CriterionMerger;
 import net.minecraft.advancement.criterion.CriterionConditions;
 import net.minecraft.advancement.criterion.RecipeUnlockedCriterion;
+import net.minecraft.data.server.recipe.CraftingRecipeJsonFactory;
 import net.minecraft.data.server.recipe.RecipeJsonProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -25,7 +26,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
-public class ShapelessRecipeJsonFactory {
+public class ShapelessRecipeJsonFactory
+implements CraftingRecipeJsonFactory {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Item output;
     private final int outputCount;
@@ -72,16 +74,19 @@ public class ShapelessRecipeJsonFactory {
         return this;
     }
 
-    public ShapelessRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
-        this.builder.criterion(criterionName, conditions);
+    @Override
+    public ShapelessRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
+        this.builder.criterion(string, criterionConditions);
         return this;
     }
 
-    public ShapelessRecipeJsonFactory group(String group) {
-        this.group = group;
+    @Override
+    public ShapelessRecipeJsonFactory group(String string) {
+        this.group = string;
         return this;
     }
 
+    @Override
     public void offerTo(Consumer<RecipeJsonProvider> exporter) {
         this.offerTo(exporter, Registry.ITEM.getId(this.output));
     }
@@ -104,6 +109,16 @@ public class ShapelessRecipeJsonFactory {
         if (this.builder.getCriteria().isEmpty()) {
             throw new IllegalStateException("No way of obtaining recipe " + recipeId);
         }
+    }
+
+    @Override
+    public /* synthetic */ CraftingRecipeJsonFactory group(String group) {
+        return this.group(group);
+    }
+
+    @Override
+    public /* synthetic */ CraftingRecipeJsonFactory criterion(String name, CriterionConditions conditions) {
+        return this.criterion(name, conditions);
     }
 
     public static class ShapelessRecipeJsonProvider

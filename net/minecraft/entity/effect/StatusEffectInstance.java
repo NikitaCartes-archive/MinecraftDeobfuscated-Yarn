@@ -34,8 +34,8 @@ implements Comparable<StatusEffectInstance> {
     @Nullable
     private StatusEffectInstance hiddenEffect;
 
-    public StatusEffectInstance(StatusEffect statusEffect) {
-        this(statusEffect, 0, 0);
+    public StatusEffectInstance(StatusEffect type) {
+        this(type, 0, 0);
     }
 
     public StatusEffectInstance(StatusEffect type, int duration) {
@@ -64,9 +64,9 @@ implements Comparable<StatusEffectInstance> {
         this.hiddenEffect = hiddenEffect;
     }
 
-    public StatusEffectInstance(StatusEffectInstance statusEffectInstance) {
-        this.type = statusEffectInstance.type;
-        this.copyFrom(statusEffectInstance);
+    public StatusEffectInstance(StatusEffectInstance that) {
+        this.type = that.type;
+        this.copyFrom(that);
     }
 
     void copyFrom(StatusEffectInstance that) {

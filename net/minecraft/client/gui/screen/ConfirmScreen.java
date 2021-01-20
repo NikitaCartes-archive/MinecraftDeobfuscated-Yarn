@@ -58,8 +58,8 @@ extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    public void disableButtons(int i) {
-        this.buttonEnableTimer = i;
+    public void disableButtons(int ticks) {
+        this.buttonEnableTimer = ticks;
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
             abstractButtonWidget.active = false;
         }

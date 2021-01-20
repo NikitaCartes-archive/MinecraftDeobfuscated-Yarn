@@ -12,7 +12,7 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
 
 public class PillagerOutpostGenerator {
-    public static final StructurePool field_26252 = StructurePools.register(new StructurePool(new Identifier("pillager_outpost/base_plates"), new Identifier("empty"), ImmutableList.of(Pair.of(StructurePoolElement.method_30425("pillager_outpost/base_plate"), 1)), StructurePool.Projection.RIGID));
+    public static final StructurePool STRUCTURE_POOLS = StructurePools.register(new StructurePool(new Identifier("pillager_outpost/base_plates"), new Identifier("empty"), ImmutableList.of(Pair.of(StructurePoolElement.method_30425("pillager_outpost/base_plate"), 1)), StructurePool.Projection.RIGID));
 
     public static void init() {
     }

@@ -29,10 +29,10 @@ extends Goal {
         this(mob, speed, chance, true);
     }
 
-    public WanderAroundGoal(PathAwareEntity pathAwareEntity, double d, int i, boolean bl) {
-        this.mob = pathAwareEntity;
-        this.speed = d;
-        this.chance = i;
+    public WanderAroundGoal(PathAwareEntity entity, double speed, int chance, boolean bl) {
+        this.mob = entity;
+        this.speed = speed;
+        this.chance = chance;
         this.field_24463 = bl;
         this.setControls(EnumSet.of(Goal.Control.MOVE));
     }

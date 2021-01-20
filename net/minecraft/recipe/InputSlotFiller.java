@@ -29,8 +29,8 @@ implements RecipeGridAligner<Integer> {
     protected PlayerInventory inventory;
     protected AbstractRecipeScreenHandler<C> craftingScreenHandler;
 
-    public InputSlotFiller(AbstractRecipeScreenHandler<C> abstractRecipeScreenHandler) {
-        this.craftingScreenHandler = abstractRecipeScreenHandler;
+    public InputSlotFiller(AbstractRecipeScreenHandler<C> craftingScreenHandler) {
+        this.craftingScreenHandler = craftingScreenHandler;
     }
 
     public void fillInputSlots(ServerPlayerEntity entity, @Nullable Recipe<C> recipe, boolean craftAll) {
@@ -121,23 +121,23 @@ implements RecipeGridAligner<Integer> {
         return i;
     }
 
-    protected void fillInputSlot(Slot slot, ItemStack itemStack) {
-        int i = this.inventory.indexOf(itemStack);
+    protected void fillInputSlot(Slot slot, ItemStack stack) {
+        int i = this.inventory.indexOf(stack);
         if (i == -1) {
             return;
         }
-        ItemStack itemStack2 = this.inventory.getStack(i).copy();
-        if (itemStack2.isEmpty()) {
+        ItemStack itemStack = this.inventory.getStack(i).copy();
+        if (itemStack.isEmpty()) {
             return;
         }
-        if (itemStack2.getCount() > 1) {
+        if (itemStack.getCount() > 1) {
             this.inventory.removeStack(i, 1);
         } else {
             this.inventory.removeStack(i);
         }
-        itemStack2.setCount(1);
+        itemStack.setCount(1);
         if (slot.getStack().isEmpty()) {
-            slot.setStack(itemStack2);
+            slot.setStack(itemStack);
         } else {
             slot.getStack().increment(1);
         }

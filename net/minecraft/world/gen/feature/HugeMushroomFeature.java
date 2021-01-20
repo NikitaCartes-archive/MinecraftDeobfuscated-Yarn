@@ -39,7 +39,7 @@ extends Feature<HugeMushroomFeatureConfig> {
 
     protected boolean canGenerate(WorldAccess world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
         int i = pos.getY();
-        if (i < world.getSectionCount() + 1 || i + height + 1 >= world.getTopHeightLimit()) {
+        if (i < world.getBottomSectionLimit() + 1 || i + height + 1 >= world.getTopHeightLimit()) {
             return false;
         }
         BlockState blockState = world.getBlockState(pos.down());

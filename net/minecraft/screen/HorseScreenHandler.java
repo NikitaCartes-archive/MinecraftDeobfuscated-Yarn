@@ -60,7 +60,7 @@ extends ScreenHandler {
                 return 1;
             }
         });
-        if (entity instanceof AbstractDonkeyEntity && ((AbstractDonkeyEntity)entity).hasChest()) {
+        if (this.method_33354(entity)) {
             for (k = 0; k < 3; ++k) {
                 for (l = 0; l < ((AbstractDonkeyEntity)entity).getInventoryColumns(); ++l) {
                     this.addSlot(new Slot(inventory, 2 + l + k * ((AbstractDonkeyEntity)entity).getInventoryColumns(), 80 + l * 18, 18 + k * 18));
@@ -79,7 +79,11 @@ extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
+        return !this.entity.method_33338(this.inventory) && this.inventory.canPlayerUse(player) && this.entity.isAlive() && this.entity.distanceTo(player) < 8.0f;
+    }
+
+    private boolean method_33354(HorseBaseEntity horseBaseEntity) {
+        return horseBaseEntity instanceof AbstractDonkeyEntity && ((AbstractDonkeyEntity)horseBaseEntity).hasChest();
     }
 
     @Override

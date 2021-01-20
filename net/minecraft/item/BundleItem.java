@@ -22,6 +22,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ClickType;
@@ -52,7 +53,7 @@ extends Item {
         }
         ItemStack itemStack = slot.getStack();
         if (itemStack.isEmpty()) {
-            BundleItem.method_32759(stack).ifPresent(itemStack2 -> BundleItem.addToBundle(stack, slot.method_32756((ItemStack)itemStack2)));
+            BundleItem.removeFirstStack(stack).ifPresent(itemStack2 -> BundleItem.addToBundle(stack, slot.method_32756((ItemStack)itemStack2)));
         } else if (itemStack.getItem().hasStoredInventory()) {
             int i = (64 - BundleItem.getBundleOccupancy(stack)) / BundleItem.getItemOccupancy(itemStack);
             BundleItem.addToBundle(stack, slot.method_32753(itemStack.getCount(), i, playerInventory.player));
@@ -66,7 +67,7 @@ extends Item {
             return false;
         }
         if (otherStack.isEmpty()) {
-            BundleItem.method_32759(stack).ifPresent(playerInventory::setCursorStack);
+            BundleItem.removeFirstStack(stack).ifPresent(playerInventory::setCursorStack);
         } else {
             otherStack.decrement(BundleItem.addToBundle(stack, otherStack));
         }
@@ -77,6 +78,7 @@ extends Item {
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         if (BundleItem.dropAllBundledItems(itemStack, user)) {
+            user.incrementStat(Stats.USED.getOrCreateStat(this));
             return TypedActionResult.success(itemStack, world.isClient());
         }
         return TypedActionResult.fail(itemStack);
@@ -151,8 +153,8 @@ extends Item {
         return BundleItem.getBundledStacks(stack).mapToInt(itemStack -> BundleItem.getItemOccupancy(itemStack) * itemStack.getCount()).sum();
     }
 
-    private static Optional<ItemStack> method_32759(ItemStack itemStack) {
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
+    private static Optional<ItemStack> removeFirstStack(ItemStack stack) {
+        CompoundTag compoundTag = stack.getOrCreateTag();
         if (!compoundTag.contains("Items")) {
             return Optional.empty();
         }
@@ -162,9 +164,12 @@ extends Item {
         }
         boolean i = false;
         CompoundTag compoundTag2 = listTag.getCompound(0);
-        ItemStack itemStack2 = ItemStack.fromTag(compoundTag2);
+        ItemStack itemStack = ItemStack.fromTag(compoundTag2);
         listTag.remove(0);
-        return Optional.of(itemStack2);
+        if (listTag.isEmpty()) {
+            stack.removeSubTag("Items");
+        }
+        return Optional.of(itemStack);
     }
 
     private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {

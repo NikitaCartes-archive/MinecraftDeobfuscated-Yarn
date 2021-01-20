@@ -67,13 +67,13 @@ public class BlockPredicate {
         NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
         Block block = null;
         if (jsonObject.has("block")) {
-            Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "block"));
-            block = Registry.BLOCK.get(identifier2);
+            Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
+            block = Registry.BLOCK.get(identifier);
         }
         Tag<Block> tag = null;
         if (jsonObject.has("tag")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-            tag = ServerTagManagerHolder.getTagManager().getTag(Registry.BLOCK_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown block tag '" + identifier + "'"));
+            tag = ServerTagManagerHolder.getTagManager().getTag(Registry.BLOCK_KEY, identifier2, id -> new JsonSyntaxException("Unknown block tag '" + id + "'"));
         }
         StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
         return new BlockPredicate(tag, block, statePredicate, nbtPredicate);
@@ -115,7 +115,7 @@ public class BlockPredicate {
             return this;
         }
 
-        public Builder method_29233(Tag<Block> tag) {
+        public Builder tag(Tag<Block> tag) {
             this.tag = tag;
             return this;
         }

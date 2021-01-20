@@ -54,7 +54,7 @@ implements BlockEntityRenderer<SignBlockEntity> {
         BlockState blockState = signBlockEntity.getCachedState();
         matrixStack.push();
         float g = 0.6666667f;
-        SignType signType = SignBlockEntityRenderer.method_32155(blockState.getBlock());
+        SignType signType = SignBlockEntityRenderer.getSignType(blockState.getBlock());
         SignModel signModel = this.typeToModel.get(signType);
         if (blockState.getBlock() instanceof SignBlock) {
             matrixStack.translate(0.5, 0.5, 0.5);
@@ -70,7 +70,7 @@ implements BlockEntityRenderer<SignBlockEntity> {
         }
         matrixStack.push();
         matrixStack.scale(0.6666667f, -0.6666667f, -0.6666667f);
-        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.method_33082(signType);
+        SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(signType);
         VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(vertexConsumerProvider, signModel::getLayer);
         signModel.root.render(matrixStack, vertexConsumer, i, j);
         matrixStack.pop();
@@ -91,12 +91,13 @@ implements BlockEntityRenderer<SignBlockEntity> {
             });
             if (orderedText == null) continue;
             float s = -this.textRenderer.getWidth(orderedText) / 2;
-            this.textRenderer.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, i);
+            int t = blockState.get(AbstractSignBlock.LIT) != false ? 0xF000F0 : i;
+            this.textRenderer.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, t);
         }
         matrixStack.pop();
     }
 
-    public static SignType method_32155(Block block) {
+    public static SignType getSignType(Block block) {
         SignType signType = block instanceof AbstractSignBlock ? ((AbstractSignBlock)block).getSignType() : SignType.OAK;
         return signType;
     }

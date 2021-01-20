@@ -25,9 +25,9 @@ extends RealmsScreen {
     private final Screen parent;
     private int textHeight;
 
-    public DisconnectedRealmsScreen(Screen parent, Text text, Text reason) {
+    public DisconnectedRealmsScreen(Screen parent, Text title, Text reason) {
         this.parent = parent;
-        this.title = text;
+        this.title = title;
         this.reason = reason;
     }
 

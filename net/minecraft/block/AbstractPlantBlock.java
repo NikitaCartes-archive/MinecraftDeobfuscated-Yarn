@@ -54,7 +54,7 @@ implements Fertilizable {
 
     @Override
     public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-        Optional<BlockPos> optional = this.method_25960(world, pos, state);
+        Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state);
         return optional.isPresent() && this.getStem().chooseStemState(world.getBlockState(optional.get().offset(this.growthDirection)));
     }
 
@@ -65,20 +65,20 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        Optional<BlockPos> optional = this.method_25960(world, pos, state);
+        Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state);
         if (optional.isPresent()) {
             BlockState blockState = world.getBlockState(optional.get());
             ((AbstractPlantStemBlock)blockState.getBlock()).grow(world, random, optional.get(), blockState);
         }
     }
 
-    private Optional<BlockPos> method_25960(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-        BlockState blockState2;
-        BlockPos blockPos2 = blockPos;
-        while ((blockState2 = blockView.getBlockState(blockPos2 = blockPos2.offset(this.growthDirection))).isOf(blockState.getBlock())) {
+    private Optional<BlockPos> getStemHeadPos(BlockView world, BlockPos pos, BlockState state) {
+        BlockState blockState;
+        BlockPos blockPos = pos;
+        while ((blockState = world.getBlockState(blockPos = blockPos.offset(this.growthDirection))).isOf(state.getBlock())) {
         }
-        if (blockState2.isOf(this.getStem())) {
-            return Optional.of(blockPos2);
+        if (blockState.isOf(this.getStem())) {
+            return Optional.of(blockPos);
         }
         return Optional.empty();
     }

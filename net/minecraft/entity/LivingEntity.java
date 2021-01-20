@@ -1275,13 +1275,13 @@ extends Entity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
-        boolean bl = super.handleFallDamage(fallDistance, damageMultiplier);
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+        boolean bl = super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
         int i = this.computeFallDamage(fallDistance, damageMultiplier);
         if (i > 0) {
             this.playSound(this.getFallSound(i), 1.0f, 1.0f);
             this.playBlockFallSound();
-            this.damage(DamageSource.FALL, i);
+            this.damage(damageSource, i);
             return true;
         }
         return bl;
@@ -1553,7 +1553,7 @@ extends Entity {
     }
 
     @Override
-    protected void destroy() {
+    protected void tickInVoid() {
         this.damage(DamageSource.OUT_OF_WORLD, 4.0f);
     }
 
@@ -1852,7 +1852,7 @@ extends Entity {
                         q -= d;
                     }
                 } else {
-                    q = this.getY() > (double)this.world.getSectionCount() ? -0.1 : 0.0;
+                    q = this.getY() > (double)this.world.getBottomSectionLimit() ? -0.1 : 0.0;
                 }
                 this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
             }
@@ -2675,7 +2675,7 @@ extends Entity {
         BlockPos blockPos = new BlockPos(x, g, z);
         if (world.isChunkLoaded(blockPos)) {
             boolean bl2 = false;
-            while (!bl2 && blockPos.getY() > world.getSectionCount()) {
+            while (!bl2 && blockPos.getY() > world.getBottomSectionLimit()) {
                 BlockPos blockPos2 = blockPos.down();
                 BlockState blockState = world.getBlockState(blockPos2);
                 if (blockState.getMaterial().blocksMovement()) {

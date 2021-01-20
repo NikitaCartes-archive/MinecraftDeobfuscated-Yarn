@@ -57,16 +57,16 @@ implements Predicate<ItemStack> {
     }
 
     @Override
-    public boolean test(@Nullable ItemStack itemStack) {
-        if (itemStack == null) {
+    public boolean test(@Nullable ItemStack stack) {
+        if (stack == null) {
             return false;
         }
         this.cacheMatchingStacks();
         if (this.matchingStacks.length == 0) {
-            return itemStack.isEmpty();
+            return stack.isEmpty();
         }
-        for (ItemStack itemStack2 : this.matchingStacks) {
-            if (!itemStack2.isOf(itemStack.getItem())) continue;
+        for (ItemStack itemStack : this.matchingStacks) {
+            if (!itemStack.isOf(stack.getItem())) continue;
             return true;
         }
         return false;
@@ -122,7 +122,7 @@ implements Predicate<ItemStack> {
     }
 
     public static Ingredient ofStacks(Stream<ItemStack> stacks) {
-        return Ingredient.ofEntries(stacks.filter(itemStack -> !itemStack.isEmpty()).map(stack -> new StackEntry((ItemStack)stack)));
+        return Ingredient.ofEntries(stacks.filter(stack -> !stack.isEmpty()).map(stack -> new StackEntry((ItemStack)stack)));
     }
 
     public static Ingredient fromTag(Tag<Item> tag) {
@@ -156,13 +156,13 @@ implements Predicate<ItemStack> {
             throw new JsonParseException("An ingredient entry is either a tag or an item, not both");
         }
         if (json.has("item")) {
-            Identifier identifier2 = new Identifier(JsonHelper.getString(json, "item"));
-            Item item = Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier2 + "'"));
+            Identifier identifier = new Identifier(JsonHelper.getString(json, "item"));
+            Item item = Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item '" + identifier + "'"));
             return new StackEntry(new ItemStack(item));
         }
         if (json.has("tag")) {
-            Identifier identifier3 = new Identifier(JsonHelper.getString(json, "tag"));
-            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier3, identifier -> new JsonSyntaxException("Unknown item tag '" + identifier + "'"));
+            Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
+            Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
             return new TagEntry(tag);
         }
         throw new JsonParseException("An ingredient entry needs either a tag or an item");

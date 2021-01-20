@@ -63,6 +63,7 @@ import net.minecraft.block.DeadCoralBlock;
 import net.minecraft.block.DeadCoralFanBlock;
 import net.minecraft.block.DeadCoralWallFanBlock;
 import net.minecraft.block.DetectorRailBlock;
+import net.minecraft.block.DirtPathBlock;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.DragonEggBlock;
@@ -87,9 +88,9 @@ import net.minecraft.block.FungusBlock;
 import net.minecraft.block.FurnaceBlock;
 import net.minecraft.block.GlassBlock;
 import net.minecraft.block.GlazedTerracottaBlock;
+import net.minecraft.block.GlowLichenBlock;
 import net.minecraft.block.GourdBlock;
 import net.minecraft.block.GrassBlock;
-import net.minecraft.block.GrassPathBlock;
 import net.minecraft.block.GravelBlock;
 import net.minecraft.block.GrindstoneBlock;
 import net.minecraft.block.HayBlock;
@@ -737,7 +738,7 @@ public class Blocks {
     public static final Block PURPUR_STAIRS = Blocks.register("purpur_stairs", new StairsBlock(PURPUR_BLOCK.getDefaultState(), AbstractBlock.Settings.copy(PURPUR_BLOCK)));
     public static final Block END_STONE_BRICKS = Blocks.register("end_stone_bricks", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.PALE_YELLOW).requiresTool().strength(3.0f, 9.0f)));
     public static final Block BEETROOTS = Blocks.register("beetroots", new BeetrootsBlock(AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.CROP)));
-    public static final Block DIRT_PATH = Blocks.register("dirt_path", new GrassPathBlock(AbstractBlock.Settings.of(Material.SOIL).strength(0.65f).sounds(BlockSoundGroup.GRASS).blockVision(Blocks::always).suffocates(Blocks::always)));
+    public static final Block DIRT_PATH = Blocks.register("dirt_path", new DirtPathBlock(AbstractBlock.Settings.of(Material.SOIL).strength(0.65f).sounds(BlockSoundGroup.GRASS).blockVision(Blocks::always).suffocates(Blocks::always)));
     public static final Block END_GATEWAY = Blocks.register("end_gateway", new EndGatewayBlock(AbstractBlock.Settings.of(Material.PORTAL, MapColor.BLACK).noCollision().luminance(state -> 15).strength(-1.0f, 3600000.0f).dropsNothing()));
     public static final Block REPEATING_COMMAND_BLOCK = Blocks.register("repeating_command_block", new CommandBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.PURPLE).requiresTool().strength(-1.0f, 3600000.0f).dropsNothing(), false));
     public static final Block CHAIN_COMMAND_BLOCK = Blocks.register("chain_command_block", new CommandBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.GREEN).requiresTool().strength(-1.0f, 3600000.0f).dropsNothing(), true));
@@ -1079,6 +1080,7 @@ public class Blocks {
     public static final Block LIGHTNING_ROD = Blocks.register("lightning_rod", new LightningRodBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER).nonOpaque()));
     public static final Block POINTED_DRIPSTONE = Blocks.register("pointed_dripstone", new PointedDripstoneBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).nonOpaque().sounds(BlockSoundGroup.POINTED_DRIPSTONE).ticksRandomly().strength(1.5f, 3.0f)));
     public static final Block DRIPSTONE_BLOCK = Blocks.register("dripstone_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5f, 1.0f)));
+    public static final Block GLOW_LICHEN = Blocks.register("glow_lichen", new GlowLichenBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().strength(0.2f).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(blockState -> 7)));
 
     private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
         return state -> state.get(Properties.LIT) != false ? litLevel : 0;
@@ -1167,8 +1169,8 @@ public class Blocks {
 
     static {
         for (Block block : Registry.BLOCK) {
-            for (BlockState blockState : block.getStateManager().getStates()) {
-                Block.STATE_IDS.add(blockState);
+            for (BlockState blockState2 : block.getStateManager().getStates()) {
+                Block.STATE_IDS.add(blockState2);
             }
             block.getLootTableId();
         }

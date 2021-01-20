@@ -27,8 +27,8 @@ extends MutableWorldProperties {
     public int getThunderTime();
 
     @Override
-    default public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
-        MutableWorldProperties.super.populateCrashReport(reportSection, heightLimitView);
+    default public void populateCrashReport(CrashReportSection reportSection, HeightLimitView world) {
+        MutableWorldProperties.super.populateCrashReport(reportSection, world);
         reportSection.add("Level name", this::getLevelName);
         reportSection.add("Level game mode", () -> String.format("Game mode: %s (ID %d). Hardcore: %b. Cheats: %b", this.getGameMode().getName(), this.getGameMode().getId(), this.isHardcore(), this.areCommandsAllowed()));
         reportSection.add("Level weather", () -> String.format("Rain time: %d (now: %b), thunder time: %d (now: %b)", this.getRainTime(), this.isRaining(), this.getThunderTime(), this.isThundering()));

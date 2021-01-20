@@ -100,9 +100,9 @@ extends HorseBaseEntity {
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         this.setHasChest(tag.getBoolean("ChestedHorse"));
+        this.onChestedStatusChanged();
         if (this.hasChest()) {
             ListTag listTag = tag.getList("Items", 10);
-            this.onChestedStatusChanged();
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag = listTag.getCompound(i);
                 int j = compoundTag.getByte("Slot") & 0xFF;

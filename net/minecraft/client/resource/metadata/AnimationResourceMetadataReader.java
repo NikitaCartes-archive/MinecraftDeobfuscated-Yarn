@@ -3,12 +3,12 @@
  */
 package net.minecraft.client.resource.metadata;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import java.util.ArrayList;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.resource.metadata.AnimationFrameResourceMetadata;
@@ -24,7 +24,7 @@ implements ResourceMetadataReader<AnimationResourceMetadata> {
     @Override
     public AnimationResourceMetadata fromJson(JsonObject jsonObject) {
         int j;
-        ArrayList<AnimationFrameResourceMetadata> list = Lists.newArrayList();
+        ImmutableList.Builder builder = ImmutableList.builder();
         int i = JsonHelper.getInt(jsonObject, "frametime", 1);
         if (i != 1) {
             Validate.inclusiveBetween(1L, Integer.MAX_VALUE, i, "Invalid default frame time");
@@ -36,7 +36,7 @@ implements ResourceMetadataReader<AnimationResourceMetadata> {
                     JsonElement jsonElement = jsonArray.get(j);
                     AnimationFrameResourceMetadata animationFrameResourceMetadata = this.readFrameMetadata(j, jsonElement);
                     if (animationFrameResourceMetadata == null) continue;
-                    list.add(animationFrameResourceMetadata);
+                    builder.add(animationFrameResourceMetadata);
                 }
             } catch (ClassCastException classCastException) {
                 throw new JsonParseException("Invalid animation->frames: expected array, was " + jsonObject.get("frames"), classCastException);
@@ -51,7 +51,7 @@ implements ResourceMetadataReader<AnimationResourceMetadata> {
             Validate.inclusiveBetween(1L, Integer.MAX_VALUE, j, "Invalid height");
         }
         boolean bl = JsonHelper.getBoolean(jsonObject, "interpolate", false);
-        return new AnimationResourceMetadata(list, k, j, i, bl);
+        return new AnimationResourceMetadata((List<AnimationFrameResourceMetadata>)((Object)builder.build()), k, j, i, bl);
     }
 
     @Nullable

@@ -40,7 +40,7 @@ implements Wearable {
     @Nullable
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
         if (world.isClient && (state.isOf(Blocks.DRAGON_HEAD) || state.isOf(Blocks.DRAGON_WALL_HEAD))) {
-            return AbstractSkullBlock.checkType(type, BlockEntityType.SKULL, SkullBlockEntity::method_31695);
+            return AbstractSkullBlock.checkType(type, BlockEntityType.SKULL, SkullBlockEntity::tick);
         }
         return null;
     }

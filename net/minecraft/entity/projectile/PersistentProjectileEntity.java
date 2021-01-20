@@ -153,8 +153,8 @@ extends ProjectileEntity {
             this.extinguish();
         }
         if (this.inGround && !bl) {
-            if (this.inBlockState != blockState && this.method_26351()) {
-                this.method_26352();
+            if (this.inBlockState != blockState && this.shouldFall()) {
+                this.fall();
             } else if (!this.world.isClient) {
                 this.age();
             }
@@ -222,11 +222,11 @@ extends ProjectileEntity {
         this.checkBlockCollision();
     }
 
-    private boolean method_26351() {
+    private boolean shouldFall() {
         return this.inGround && this.world.isSpaceEmpty(new Box(this.getPos(), this.getPos()).expand(0.06));
     }
 
-    private void method_26352() {
+    private void fall() {
         this.inGround = false;
         Vec3d vec3d = this.getVelocity();
         this.setVelocity(vec3d.multiply(this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f, this.random.nextFloat() * 0.2f));
@@ -236,8 +236,8 @@ extends ProjectileEntity {
     @Override
     public void move(MovementType type, Vec3d movement) {
         super.move(type, movement);
-        if (type != MovementType.SELF && this.method_26351()) {
-            this.method_26352();
+        if (type != MovementType.SELF && this.shouldFall()) {
+            this.fall();
         }
     }
 
@@ -378,12 +378,12 @@ extends ProjectileEntity {
 
     @Nullable
     protected EntityHitResult getEntityCollision(Vec3d currentPosition, Vec3d nextPosition) {
-        return ProjectileUtil.getEntityCollision(this.world, this, currentPosition, nextPosition, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), this::method_26958);
+        return ProjectileUtil.getEntityCollision(this.world, this, currentPosition, nextPosition, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), this::canHit);
     }
 
     @Override
-    protected boolean method_26958(Entity entity) {
-        return super.method_26958(entity) && (this.piercedEntities == null || !this.piercedEntities.contains(entity.getId()));
+    protected boolean canHit(Entity entity) {
+        return super.canHit(entity) && (this.piercedEntities == null || !this.piercedEntities.contains(entity.getId()));
     }
 
     @Override

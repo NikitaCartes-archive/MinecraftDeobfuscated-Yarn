@@ -35,8 +35,8 @@ implements DebugRenderer.Renderer {
     @Nullable
     private ChunkLoadingStatus loadingData;
 
-    public ChunkLoadingDebugRenderer(MinecraftClient minecraftClient) {
-        this.client = minecraftClient;
+    public ChunkLoadingDebugRenderer(MinecraftClient client) {
+        this.client = client;
     }
 
     @Override
@@ -82,8 +82,8 @@ implements DebugRenderer.Renderer {
         private ChunkLoadingStatus(IntegratedServer integratedServer, double d, double e) {
             ClientWorld clientWorld = ((ChunkLoadingDebugRenderer)ChunkLoadingDebugRenderer.this).client.world;
             RegistryKey<World> registryKey = clientWorld.getRegistryKey();
-            int i = ChunkSectionPos.method_32204(d);
-            int j = ChunkSectionPos.method_32204(e);
+            int i = ChunkSectionPos.getSectionCoord(d);
+            int j = ChunkSectionPos.getSectionCoord(e);
             ImmutableMap.Builder<ChunkPos, String> builder = ImmutableMap.builder();
             ClientChunkManager clientChunkManager = clientWorld.getChunkManager();
             for (int k = i - 12; k <= i + 12; ++k) {

@@ -87,7 +87,7 @@ extends FlowableFluid {
 
     @Override
     public BlockState toBlockState(FluidState state) {
-        return (BlockState)Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, WaterFluid.method_15741(state));
+        return (BlockState)Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, WaterFluid.getBlockStateLevel(state));
     }
 
     @Override
@@ -116,7 +116,7 @@ extends FlowableFluid {
     }
 
     @Override
-    public Optional<SoundEvent> getFillSound() {
+    public Optional<SoundEvent> getBucketFillSound() {
         return Optional.of(SoundEvents.ITEM_BUCKET_FILL);
     }
 

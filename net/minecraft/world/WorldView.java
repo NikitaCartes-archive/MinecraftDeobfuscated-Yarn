@@ -92,12 +92,12 @@ BiomeAccess.Storage {
     public DimensionType getDimension();
 
     @Override
-    default public int getSectionCount() {
+    default public int getBottomSectionLimit() {
         return this.getDimension().getMinimumY();
     }
 
     @Override
-    default public int getBottomSectionLimit() {
+    default public int getSectionCount() {
         return this.getDimension().getHeight();
     }
 
@@ -151,7 +151,7 @@ BiomeAccess.Storage {
 
     @Override
     @Nullable
-    default public BlockView getExistingChunk(int chunkX, int chunkZ) {
+    default public BlockView getChunkAsView(int chunkX, int chunkZ) {
         return this.getChunk(chunkX, chunkZ, ChunkStatus.EMPTY, false);
     }
 
@@ -202,7 +202,7 @@ BiomeAccess.Storage {
 
     @Deprecated
     default public boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-        if (maxY < this.getSectionCount() || minY >= this.getTopHeightLimit()) {
+        if (maxY < this.getBottomSectionLimit() || minY >= this.getTopHeightLimit()) {
             return false;
         }
         minZ >>= 4;

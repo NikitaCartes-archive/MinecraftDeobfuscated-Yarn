@@ -21,8 +21,8 @@ implements Merchant {
     private TradeOfferList recipeList = new TradeOfferList();
     private int experience;
 
-    public SimpleMerchant(PlayerEntity playerEntity) {
-        this.player = playerEntity;
+    public SimpleMerchant(PlayerEntity player) {
+        this.player = player;
     }
 
     @Override

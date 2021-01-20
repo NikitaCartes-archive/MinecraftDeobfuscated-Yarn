@@ -35,14 +35,14 @@ public class BlockRenderManager
 implements SynchronousResourceReloadListener {
     private final BlockModels models;
     private final BlockModelRenderer blockModelRenderer;
-    private final BuiltinModelItemRenderer field_27742;
+    private final BuiltinModelItemRenderer builtinModelItemRenderer;
     private final FluidRenderer fluidRenderer;
     private final Random random = new Random();
     private final BlockColors blockColors;
 
     public BlockRenderManager(BlockModels models, BuiltinModelItemRenderer builtinModelItemRenderer, BlockColors blockColors) {
         this.models = models;
-        this.field_27742 = builtinModelItemRenderer;
+        this.builtinModelItemRenderer = builtinModelItemRenderer;
         this.blockColors = blockColors;
         this.blockModelRenderer = new BlockModelRenderer(this.blockColors);
         this.fluidRenderer = new FluidRenderer();
@@ -76,13 +76,13 @@ implements SynchronousResourceReloadListener {
         }
     }
 
-    public boolean renderFluid(BlockPos pos, BlockRenderView blockRenderView, VertexConsumer vertexConsumer, FluidState fluidState) {
+    public boolean renderFluid(BlockPos pos, BlockRenderView world, VertexConsumer vertexConsumer, FluidState state) {
         try {
-            return this.fluidRenderer.render(blockRenderView, pos, vertexConsumer, fluidState);
+            return this.fluidRenderer.render(world, pos, vertexConsumer, state);
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Tesselating liquid in world");
             CrashReportSection crashReportSection = crashReport.addElement("Block being tesselated");
-            CrashReportSection.addBlockInfo(crashReportSection, blockRenderView, pos, null);
+            CrashReportSection.addBlockInfo(crashReportSection, world, pos, null);
             throw new CrashException(crashReport);
         }
     }
@@ -111,7 +111,7 @@ implements SynchronousResourceReloadListener {
                 break;
             }
             case ENTITYBLOCK_ANIMATED: {
-                this.field_27742.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.NONE, matrices, vertexConsumer, light, overlay);
+                this.builtinModelItemRenderer.render(new ItemStack(state.getBlock()), ModelTransformation.Mode.NONE, matrices, vertexConsumer, light, overlay);
             }
         }
     }

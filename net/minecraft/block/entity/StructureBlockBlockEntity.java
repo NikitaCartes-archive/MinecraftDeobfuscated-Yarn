@@ -55,9 +55,9 @@ extends BlockEntity {
     private float integrity = 1.0f;
     private long seed;
 
-    public StructureBlockBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.STRUCTURE_BLOCK, blockPos, blockState);
-        this.mode = blockState.get(StructureBlock.MODE);
+    public StructureBlockBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.STRUCTURE_BLOCK, pos, state);
+        this.mode = state.get(StructureBlock.MODE);
     }
 
     @Override
@@ -176,8 +176,8 @@ extends BlockEntity {
         this.setStructureName(ChatUtil.isEmpty(name) ? null : Identifier.tryParse(name));
     }
 
-    public void setStructureName(@Nullable Identifier identifier) {
-        this.structureName = identifier;
+    public void setStructureName(@Nullable Identifier structureName) {
+        this.structureName = structureName;
     }
 
     public void setAuthor(LivingEntity entity) {
@@ -366,8 +366,8 @@ extends BlockEntity {
         return true;
     }
 
-    public boolean loadStructure(ServerWorld serverWorld) {
-        return this.loadStructure(serverWorld, true);
+    public boolean loadStructure(ServerWorld world) {
+        return this.loadStructure(world, true);
     }
 
     private static Random createRandom(long seed) {
@@ -377,12 +377,12 @@ extends BlockEntity {
         return new Random(seed);
     }
 
-    public boolean loadStructure(ServerWorld serverWorld, boolean bl) {
+    public boolean loadStructure(ServerWorld world, boolean bl) {
         Structure structure;
         if (this.mode != StructureBlockMode.LOAD || this.structureName == null) {
             return false;
         }
-        StructureManager structureManager = serverWorld.getStructureManager();
+        StructureManager structureManager = world.getStructureManager();
         try {
             structure = structureManager.getStructure(this.structureName);
         } catch (InvalidIdentifierException invalidIdentifierException) {
@@ -391,10 +391,10 @@ extends BlockEntity {
         if (structure == null) {
             return false;
         }
-        return this.place(serverWorld, bl, structure);
+        return this.place(world, bl, structure);
     }
 
-    public boolean place(ServerWorld serverWorld, boolean bl, Structure structure) {
+    public boolean place(ServerWorld world, boolean bl, Structure structure) {
         BlockPos blockPos2;
         boolean bl2;
         BlockPos blockPos = this.getPos();
@@ -404,8 +404,8 @@ extends BlockEntity {
         if (!(bl2 = this.size.equals(blockPos2 = structure.getSize()))) {
             this.size = blockPos2;
             this.markDirty();
-            BlockState blockState = serverWorld.getBlockState(blockPos);
-            serverWorld.updateListeners(blockPos, blockState, blockState, 3);
+            BlockState blockState = world.getBlockState(blockPos);
+            world.updateListeners(blockPos, blockState, blockState, 3);
         }
         if (!bl || bl2) {
             StructurePlacementData structurePlacementData = new StructurePlacementData().setMirror(this.mirror).setRotation(this.rotation).setIgnoreEntities(this.ignoreEntities);
@@ -413,7 +413,7 @@ extends BlockEntity {
                 structurePlacementData.clearProcessors().addProcessor(new BlockRotStructureProcessor(MathHelper.clamp(this.integrity, 0.0f, 1.0f))).setRandom(StructureBlockBlockEntity.createRandom(this.seed));
             }
             BlockPos blockPos3 = blockPos.add(this.offset);
-            structure.place(serverWorld, blockPos3, blockPos3, structurePlacementData, StructureBlockBlockEntity.createRandom(this.seed), 2);
+            structure.place(world, blockPos3, blockPos3, structurePlacementData, StructureBlockBlockEntity.createRandom(this.seed), 2);
             return true;
         }
         return false;

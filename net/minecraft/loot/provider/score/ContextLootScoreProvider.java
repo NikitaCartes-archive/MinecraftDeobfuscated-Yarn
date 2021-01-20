@@ -23,10 +23,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class ContextLootScoreProvider
 implements LootScoreProvider {
-    private final LootContext.EntityTarget field_27930;
+    private final LootContext.EntityTarget target;
 
-    private ContextLootScoreProvider(LootContext.EntityTarget entityTarget) {
-        this.field_27930 = entityTarget;
+    private ContextLootScoreProvider(LootContext.EntityTarget target) {
+        this.target = target;
     }
 
     @Override
@@ -37,20 +37,20 @@ implements LootScoreProvider {
     @Override
     @Nullable
     public String getName(LootContext context) {
-        Entity entity = context.get(this.field_27930.getParameter());
+        Entity entity = context.get(this.target.getParameter());
         return entity != null ? entity.getEntityName() : null;
     }
 
     @Override
-    public Set<LootContextParameter<?>> method_32477() {
-        return ImmutableSet.of(this.field_27930.getParameter());
+    public Set<LootContextParameter<?>> getRequiredParameters() {
+        return ImmutableSet.of(this.target.getParameter());
     }
 
-    public static class class_5665
+    public static class CustomSerializer
     implements JsonSerializing.CustomSerializer<ContextLootScoreProvider> {
         @Override
         public JsonElement toJson(ContextLootScoreProvider contextLootScoreProvider, JsonSerializationContext jsonSerializationContext) {
-            return jsonSerializationContext.serialize((Object)contextLootScoreProvider.field_27930);
+            return jsonSerializationContext.serialize((Object)contextLootScoreProvider.target);
         }
 
         @Override
@@ -65,11 +65,11 @@ implements LootScoreProvider {
         }
     }
 
-    public static class class_5666
+    public static class Serializer
     implements JsonSerializer<ContextLootScoreProvider> {
         @Override
         public void toJson(JsonObject jsonObject, ContextLootScoreProvider contextLootScoreProvider, JsonSerializationContext jsonSerializationContext) {
-            jsonObject.addProperty("target", contextLootScoreProvider.field_27930.name());
+            jsonObject.addProperty("target", contextLootScoreProvider.target.name());
         }
 
         @Override

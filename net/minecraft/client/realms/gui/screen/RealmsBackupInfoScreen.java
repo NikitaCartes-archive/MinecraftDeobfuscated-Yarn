@@ -23,7 +23,7 @@ import net.minecraft.text.Text;
 @Environment(value=EnvType.CLIENT)
 public class RealmsBackupInfoScreen
 extends RealmsScreen {
-    private static final Text field_27937 = new LiteralText("UNKNOWN");
+    private static final Text UNKNOWN = new LiteralText("UNKNOWN");
     private final Screen parent;
     private final Backup backup;
     private BackupInfoList backupInfoList;
@@ -83,7 +83,7 @@ extends RealmsScreen {
         try {
             return RealmsSlotOptionsScreen.DIFFICULTIES.get(Integer.parseInt(value)).getTranslatableName();
         } catch (Exception exception) {
-            return field_27937;
+            return UNKNOWN;
         }
     }
 
@@ -91,15 +91,15 @@ extends RealmsScreen {
         try {
             return RealmsSlotOptionsScreen.GAME_MODES.get(Integer.parseInt(value)).getSimpleTranslatableName();
         } catch (Exception exception) {
-            return field_27937;
+            return UNKNOWN;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
     class BackupInfoList
     extends AlwaysSelectedEntryListWidget<BackupInfoListEntry> {
-        public BackupInfoList(MinecraftClient minecraftClient) {
-            super(minecraftClient, RealmsBackupInfoScreen.this.width, RealmsBackupInfoScreen.this.height, 32, RealmsBackupInfoScreen.this.height - 64, 36);
+        public BackupInfoList(MinecraftClient client) {
+            super(client, RealmsBackupInfoScreen.this.width, RealmsBackupInfoScreen.this.height, 32, RealmsBackupInfoScreen.this.height - 64, 36);
             this.setRenderSelection(false);
             if (((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).backup.changeList != null) {
                 ((RealmsBackupInfoScreen)RealmsBackupInfoScreen.this).backup.changeList.forEach((key, value) -> this.addEntry(new BackupInfoListEntry((String)key, (String)value)));

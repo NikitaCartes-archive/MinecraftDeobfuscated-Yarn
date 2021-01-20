@@ -243,7 +243,7 @@ RangedAttackMob {
                     double d = MathHelper.nextDouble(this.random, this.getX() - 10.0, this.getX() + 10.0);
                     double e = MathHelper.nextDouble(this.random, this.getY() - 5.0, this.getY() + 5.0);
                     double h = MathHelper.nextDouble(this.random, this.getZ() - 10.0, this.getZ() + 10.0);
-                    this.method_6877(i + 1, d, e, h, true);
+                    this.shootSkullAt(i + 1, d, e, h, true);
                     this.field_7092[i - 1] = 0;
                 }
             }
@@ -257,7 +257,7 @@ RangedAttackMob {
                     this.setTrackedEntityId(i, 0);
                     continue;
                 }
-                this.method_6878(i + 1, (LivingEntity)entity);
+                this.shootSkullAt(i + 1, (LivingEntity)entity);
                 this.field_7091[i - 1] = this.age + 40 + this.random.nextInt(20);
                 this.field_7092[i - 1] = 0;
                 continue;
@@ -375,32 +375,32 @@ RangedAttackMob {
         return prevAngle + f;
     }
 
-    private void method_6878(int i, LivingEntity livingEntity) {
-        this.method_6877(i, livingEntity.getX(), livingEntity.getY() + (double)livingEntity.getStandingEyeHeight() * 0.5, livingEntity.getZ(), i == 0 && this.random.nextFloat() < 0.001f);
+    private void shootSkullAt(int headIndex, LivingEntity target) {
+        this.shootSkullAt(headIndex, target.getX(), target.getY() + (double)target.getStandingEyeHeight() * 0.5, target.getZ(), headIndex == 0 && this.random.nextFloat() < 0.001f);
     }
 
-    private void method_6877(int headIndex, double d, double e, double f, boolean bl) {
+    private void shootSkullAt(int headIndex, double targetX, double targetY, double targetZ, boolean charged) {
         if (!this.isSilent()) {
             this.world.syncWorldEvent(null, 1024, this.getBlockPos(), 0);
         }
-        double g = this.getHeadX(headIndex);
-        double h = this.getHeadY(headIndex);
-        double i = this.getHeadZ(headIndex);
-        double j = d - g;
-        double k = e - h;
-        double l = f - i;
-        WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, j, k, l);
+        double d = this.getHeadX(headIndex);
+        double e = this.getHeadY(headIndex);
+        double f = this.getHeadZ(headIndex);
+        double g = targetX - d;
+        double h = targetY - e;
+        double i = targetZ - f;
+        WitherSkullEntity witherSkullEntity = new WitherSkullEntity(this.world, this, g, h, i);
         witherSkullEntity.setOwner(this);
-        if (bl) {
+        if (charged) {
             witherSkullEntity.setCharged(true);
         }
-        witherSkullEntity.setPos(g, h, i);
+        witherSkullEntity.setPos(d, e, f);
         this.world.spawnEntity(witherSkullEntity);
     }
 
     @Override
     public void attack(LivingEntity target, float pullProgress) {
-        this.method_6878(0, target);
+        this.shootSkullAt(0, target);
     }
 
     @Override
@@ -452,7 +452,7 @@ RangedAttackMob {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 

@@ -347,14 +347,14 @@ implements AutoCloseable {
     extends ByteArrayOutputStream {
         private final ChunkPos pos;
 
-        public ChunkBuffer(ChunkPos chunkPos) {
+        public ChunkBuffer(ChunkPos pos) {
             super(8096);
             super.write(0);
             super.write(0);
             super.write(0);
             super.write(0);
             super.write(RegionFile.this.outputChunkStreamVersion.getId());
-            this.pos = chunkPos;
+            this.pos = pos;
         }
 
         @Override

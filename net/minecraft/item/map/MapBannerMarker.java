@@ -16,6 +16,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Represents a banner marker in world.
+ * <p>
+ * Used to track banners in a map state.
+ */
 public class MapBannerMarker {
     private final BlockPos pos;
     private final DyeColor color;

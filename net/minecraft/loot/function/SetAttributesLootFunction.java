@@ -77,9 +77,9 @@ extends ConditionalLootFunction {
         private final UUID id;
         private final EquipmentSlot[] slots;
 
-        private Attribute(String name, EntityAttribute entityAttribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange, EquipmentSlot[] slots, @Nullable UUID id) {
+        private Attribute(String name, EntityAttribute attribute, EntityAttributeModifier.Operation operation, LootNumberProvider amountRange, EquipmentSlot[] slots, @Nullable UUID id) {
             this.name = name;
-            this.attribute = entityAttribute;
+            this.attribute = attribute;
             this.operation = operation;
             this.amountRange = amountRange;
             this.id = id;

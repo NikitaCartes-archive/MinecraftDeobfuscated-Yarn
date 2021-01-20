@@ -11,7 +11,6 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
-import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.AnimalModel;
 import net.minecraft.client.util.math.Dilation;
@@ -47,7 +46,7 @@ extends AnimalModel<T> {
         this.rightGills = this.head.getChild("right_gills");
     }
 
-    public static TexturedModelData method_33296() {
+    public static TexturedModelData getTexturedModelData() {
         ModelData modelData = new ModelData();
         ModelPartData modelPartData = modelData.getRoot();
         ModelPartData modelPartData2 = modelPartData.addChild("body", ModelPartBuilder.create().uv(0, 11).cuboid(-4.0f, -2.0f, -9.0f, 8.0f, 4.0f, 10.0f).uv(2, 17).cuboid(0.0f, -3.0f, -8.0f, 0.0f, 5.0f, 9.0f), ModelTransform.pivot(0.0f, 20.0f, 5.0f));
@@ -109,16 +108,16 @@ extends AnimalModel<T> {
         this.body.pivotX = 0.0f;
         this.head.pivotY = 0.0f;
         this.body.pivotY = 20.0f;
-        ModelUtil.method_33300(this.body, g * ((float)Math.PI / 180), f * ((float)Math.PI / 180), 0.0f);
-        ModelUtil.method_33300(this.head, 0.0f, 0.0f, 0.0f);
-        ModelUtil.method_33300(this.leftHindLeg, 0.0f, 0.0f, 0.0f);
-        ModelUtil.method_33300(this.rightHindLeg, 0.0f, 0.0f, 0.0f);
-        ModelUtil.method_33300(this.leftFrontLeg, 0.0f, 0.0f, 0.0f);
-        ModelUtil.method_33300(this.rightFrontLeg, 0.0f, 0.0f, 0.0f);
-        ModelUtil.method_33300(this.leftGills, 0.0f, 0.0f, 0.0f);
-        ModelUtil.method_33300(this.rightGills, 0.0f, 0.0f, 0.0f);
-        ModelUtil.method_33300(this.topGills, 0.0f, 0.0f, 0.0f);
-        ModelUtil.method_33300(this.tail, 0.0f, 0.0f, 0.0f);
+        this.body.method_33425(g * ((float)Math.PI / 180), f * ((float)Math.PI / 180), 0.0f);
+        this.head.method_33425(0.0f, 0.0f, 0.0f);
+        this.leftHindLeg.method_33425(0.0f, 0.0f, 0.0f);
+        this.rightHindLeg.method_33425(0.0f, 0.0f, 0.0f);
+        this.leftFrontLeg.method_33425(0.0f, 0.0f, 0.0f);
+        this.rightFrontLeg.method_33425(0.0f, 0.0f, 0.0f);
+        this.leftGills.method_33425(0.0f, 0.0f, 0.0f);
+        this.rightGills.method_33425(0.0f, 0.0f, 0.0f);
+        this.topGills.method_33425(0.0f, 0.0f, 0.0f);
+        this.tail.method_33425(0.0f, 0.0f, 0.0f);
     }
 
     private void method_33291(float f) {
@@ -133,8 +132,8 @@ extends AnimalModel<T> {
         this.topGills.pitch = 0.6f + 0.05f * k;
         this.leftGills.yaw = -this.topGills.pitch;
         this.rightGills.yaw = -this.leftGills.yaw;
-        ModelUtil.method_33300(this.leftHindLeg, 1.1f, 1.0f, 0.0f);
-        ModelUtil.method_33300(this.leftFrontLeg, 0.8f, 2.3f, -0.5f);
+        this.leftHindLeg.method_33425(1.1f, 1.0f, 0.0f);
+        this.leftFrontLeg.method_33425(0.8f, 2.3f, -0.5f);
         this.method_33299();
     }
 
@@ -147,11 +146,10 @@ extends AnimalModel<T> {
         this.topGills.pitch = 0.6f - 0.08f * (h * h + 2.0f * MathHelper.sin(g));
         this.leftGills.yaw = -this.topGills.pitch;
         this.rightGills.yaw = -this.leftGills.yaw;
-        ModelUtil.method_33300(this.leftHindLeg, 0.9424779f, 1.5f - i, -0.1f);
-        this.leftFrontLeg.pitch = 1.0995574f;
-        ModelUtil.method_33300(this.leftFrontLeg, 1.0995574f, 1.5707964f - j, 0.0f);
-        ModelUtil.method_33300(this.rightHindLeg, this.leftHindLeg.pitch, -1.0f - i, 0.0f);
-        ModelUtil.method_33300(this.rightFrontLeg, this.leftFrontLeg.pitch, -1.5707964f - j, 0.0f);
+        this.leftHindLeg.method_33425(0.9424779f, 1.5f - i, -0.1f);
+        this.leftFrontLeg.method_33425(1.0995574f, 1.5707964f - j, 0.0f);
+        this.rightHindLeg.method_33425(this.leftHindLeg.pitch, -1.0f - i, 0.0f);
+        this.rightFrontLeg.method_33425(this.leftFrontLeg.pitch, -1.5707964f - j, 0.0f);
     }
 
     private void method_33297(float f) {
@@ -164,8 +162,8 @@ extends AnimalModel<T> {
         this.topGills.pitch = 0.2f * h;
         this.leftGills.yaw = -0.3f * h - 0.19f;
         this.rightGills.yaw = -this.leftGills.yaw;
-        ModelUtil.method_33300(this.leftHindLeg, 2.3561945f - h * 0.11f, 0.47123894f, 1.7278761f);
-        ModelUtil.method_33300(this.leftFrontLeg, 0.7853982f - h * 0.2f, 2.042035f, 0.0f);
+        this.leftHindLeg.method_33425(2.3561945f - h * 0.11f, 0.47123894f, 1.7278761f);
+        this.leftFrontLeg.method_33425(0.7853982f - h * 0.2f, 2.042035f, 0.0f);
         this.method_33299();
         this.tail.yaw = 0.5f * h;
     }
@@ -182,22 +180,22 @@ extends AnimalModel<T> {
         this.leftGills.yaw = 0.3f * i + 0.9f;
         this.rightGills.yaw = -this.leftGills.yaw;
         this.tail.yaw = 0.3f * MathHelper.cos(h * 0.9f);
-        ModelUtil.method_33300(this.leftHindLeg, 1.8849558f, -0.4f * i, 1.5707964f);
-        ModelUtil.method_33300(this.leftFrontLeg, 1.8849558f, -0.2f * j - 0.1f, 1.5707964f);
+        this.leftHindLeg.method_33425(1.8849558f, -0.4f * i, 1.5707964f);
+        this.leftFrontLeg.method_33425(1.8849558f, -0.2f * j - 0.1f, 1.5707964f);
         this.method_33299();
     }
 
     private void method_33298() {
-        ModelUtil.method_33300(this.leftHindLeg, 1.4137167f, 1.0995574f, 0.7853982f);
-        ModelUtil.method_33300(this.leftFrontLeg, 0.7853982f, 2.042035f, 0.0f);
+        this.leftHindLeg.method_33425(1.4137167f, 1.0995574f, 0.7853982f);
+        this.leftFrontLeg.method_33425(0.7853982f, 2.042035f, 0.0f);
         this.body.pitch = -0.15f;
         this.body.roll = 0.35f;
         this.method_33299();
     }
 
     private void method_33299() {
-        ModelUtil.method_33300(this.rightHindLeg, this.leftHindLeg.pitch, -this.leftHindLeg.yaw, -this.leftHindLeg.roll);
-        ModelUtil.method_33300(this.rightFrontLeg, this.leftFrontLeg.pitch, -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
+        this.rightHindLeg.method_33425(this.leftHindLeg.pitch, -this.leftHindLeg.yaw, -this.leftHindLeg.roll);
+        this.rightFrontLeg.method_33425(this.leftFrontLeg.pitch, -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
     }
 }
 

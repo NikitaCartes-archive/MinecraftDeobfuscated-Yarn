@@ -27,10 +27,10 @@ public abstract class BlockEntity {
     protected boolean removed;
     private BlockState cachedState;
 
-    public BlockEntity(BlockEntityType<?> blockEntityType, BlockPos blockPos, BlockState blockState) {
-        this.type = blockEntityType;
-        this.pos = blockPos.toImmutable();
-        this.cachedState = blockState;
+    public BlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
+        this.type = type;
+        this.pos = pos.toImmutable();
+        this.cachedState = state;
     }
 
     @Nullable
@@ -66,18 +66,18 @@ public abstract class BlockEntity {
     }
 
     @Nullable
-    public static BlockEntity createFromTag(BlockPos blockPos, BlockState blockState, CompoundTag compoundTag) {
-        String string = compoundTag.getString("id");
+    public static BlockEntity createFromTag(BlockPos pos, BlockState state, CompoundTag tag) {
+        String string = tag.getString("id");
         return Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
             try {
-                return blockEntityType.instantiate(blockPos, blockState);
+                return blockEntityType.instantiate(pos, state);
             } catch (Throwable throwable) {
                 LOGGER.error("Failed to create block entity {}", (Object)string, (Object)throwable);
                 return null;
             }
         }).map(blockEntity -> {
             try {
-                blockEntity.fromTag(compoundTag);
+                blockEntity.fromTag(tag);
                 return blockEntity;
             } catch (Throwable throwable) {
                 LOGGER.error("Failed to load data for block entity {}", (Object)string, (Object)throwable);
@@ -95,10 +95,10 @@ public abstract class BlockEntity {
         }
     }
 
-    protected static void markDirty(World world, BlockPos blockPos, BlockState blockState) {
-        world.markDirty(blockPos);
-        if (!blockState.isAir()) {
-            world.updateComparators(blockPos, blockState.getBlock());
+    protected static void markDirty(World world, BlockPos pos, BlockState state) {
+        world.markDirty(pos);
+        if (!state.isAir()) {
+            world.updateComparators(pos, state.getBlock());
         }
     }
 
@@ -158,8 +158,8 @@ public abstract class BlockEntity {
     }
 
     @Deprecated
-    public void setCachedState(BlockState blockState) {
-        this.cachedState = blockState;
+    public void setCachedState(BlockState state) {
+        this.cachedState = state;
     }
 }
 

@@ -99,12 +99,12 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         if (fallDistance >= 3.0f) {
             float f = fallDistance / 10.0f;
             this.explode(f * f);
         }
-        return super.handleFallDamage(fallDistance, damageMultiplier);
+        return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
     }
 
     @Override

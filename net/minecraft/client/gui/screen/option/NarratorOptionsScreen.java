@@ -62,7 +62,7 @@ extends GameOptionsScreen {
 
     public void updateNarratorButtonText() {
         if (this.narratorButton instanceof CyclingButtonWidget) {
-            ((CyclingButtonWidget)this.narratorButton).method_32605(this.gameOptions.narrator);
+            ((CyclingButtonWidget)this.narratorButton).setValue(this.gameOptions.narrator);
         }
     }
 }

@@ -53,14 +53,14 @@ implements TextureTickListener {
     public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
     @Deprecated
     public static final Identifier PARTICLE_ATLAS_TEXTURE = new Identifier("textures/atlas/particles.png");
-    private final List<Sprite> animatedSprites = Lists.newArrayList();
+    private final List<TextureTickListener> animatedSprites = Lists.newArrayList();
     private final Set<Identifier> spritesToLoad = Sets.newHashSet();
     private final Map<Identifier, Sprite> sprites = Maps.newHashMap();
     private final Identifier id;
     private final int maxTextureSize;
 
-    public SpriteAtlasTexture(Identifier identifier) {
-        this.id = identifier;
+    public SpriteAtlasTexture(Identifier id) {
+        this.id = id;
         this.maxTextureSize = RenderSystem.maxSupportedTextureSize();
     }
 
@@ -85,8 +85,9 @@ implements TextureTickListener {
                 crashReportSection.add("Sprite", sprite);
                 throw new CrashException(crashReport);
             }
-            if (!sprite.isAnimated()) continue;
-            this.animatedSprites.add(sprite);
+            TextureTickListener textureTickListener = sprite.method_33443();
+            if (textureTickListener == null) continue;
+            this.animatedSprites.add(textureTickListener);
         }
     }
 
@@ -209,14 +210,14 @@ implements TextureTickListener {
         }
     }
 
-    private Identifier getTexturePath(Identifier identifier) {
-        return new Identifier(identifier.getNamespace(), String.format("textures/%s%s", identifier.getPath(), ".png"));
+    private Identifier getTexturePath(Identifier id) {
+        return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), ".png"));
     }
 
     public void tickAnimatedSprites() {
         this.bindTexture();
-        for (Sprite sprite : this.animatedSprites) {
-            sprite.tickAnimation();
+        for (TextureTickListener textureTickListener : this.animatedSprites) {
+            textureTickListener.tick();
         }
     }
 

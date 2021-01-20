@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.SharedConstants;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -69,6 +68,7 @@ import net.minecraft.structure.processor.StructureProcessorType;
 import net.minecraft.structure.rule.PosRuleTestType;
 import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
 import net.minecraft.util.registry.BuiltinRegistries;
 import net.minecraft.util.registry.DefaultedRegistry;
@@ -243,10 +243,7 @@ IndexedIterable<T> {
     public static <T extends MutableRegistry<?>> void validate(MutableRegistry<T> registry) {
         registry.forEach(mutableRegistry2 -> {
             if (mutableRegistry2.getIds().isEmpty()) {
-                LOGGER.error("Registry '{}' was empty after loading", (Object)registry.getId((MutableRegistry)mutableRegistry2));
-                if (SharedConstants.isDevelopment) {
-                    throw new IllegalStateException("Registry: '" + registry.getId((MutableRegistry)mutableRegistry2) + "' is empty, not allowed, fix me!");
-                }
+                Util.method_33559("Registry '" + registry.getId((MutableRegistry)mutableRegistry2) + "' was empty after loading");
             }
             if (mutableRegistry2 instanceof DefaultedRegistry) {
                 Identifier identifier = ((DefaultedRegistry)mutableRegistry2).getDefaultId();

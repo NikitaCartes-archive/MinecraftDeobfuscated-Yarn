@@ -36,6 +36,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
@@ -55,8 +56,8 @@ extends Block {
     private static final VoxelShape DOT_SHAPE = Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0);
     private static final Map<Direction, VoxelShape> field_24414 = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, Block.createCuboidShape(3.0, 0.0, 0.0, 13.0, 1.0, 13.0), Direction.SOUTH, Block.createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 16.0), Direction.EAST, Block.createCuboidShape(3.0, 0.0, 3.0, 16.0, 1.0, 13.0), Direction.WEST, Block.createCuboidShape(0.0, 0.0, 3.0, 13.0, 1.0, 13.0)));
     private static final Map<Direction, VoxelShape> field_24415 = Maps.newEnumMap(ImmutableMap.of(Direction.NORTH, VoxelShapes.union(field_24414.get(Direction.NORTH), Block.createCuboidShape(3.0, 0.0, 0.0, 13.0, 16.0, 1.0)), Direction.SOUTH, VoxelShapes.union(field_24414.get(Direction.SOUTH), Block.createCuboidShape(3.0, 0.0, 15.0, 13.0, 16.0, 16.0)), Direction.EAST, VoxelShapes.union(field_24414.get(Direction.EAST), Block.createCuboidShape(15.0, 0.0, 3.0, 16.0, 16.0, 13.0)), Direction.WEST, VoxelShapes.union(field_24414.get(Direction.WEST), Block.createCuboidShape(0.0, 0.0, 3.0, 1.0, 16.0, 13.0))));
-    private static final Map<BlockState, VoxelShape> field_24416 = Maps.newHashMap();
-    private static final Vec3d[] field_24466 = Util.make(new Vec3d[16], vec3ds -> {
+    private static final Map<BlockState, VoxelShape> SHAPES = Maps.newHashMap();
+    private static final Vec3d[] COLORS = Util.make(new Vec3d[16], vec3ds -> {
         for (int i = 0; i <= 15; ++i) {
             float f;
             float g = f * 0.6f + ((f = (float)i / 15.0f) > 0.0f ? 0.4f : 0.3f);
@@ -74,11 +75,11 @@ extends Block {
         this.dotState = (BlockState)((BlockState)((BlockState)((BlockState)this.getDefaultState().with(WIRE_CONNECTION_NORTH, WireConnection.SIDE)).with(WIRE_CONNECTION_EAST, WireConnection.SIDE)).with(WIRE_CONNECTION_SOUTH, WireConnection.SIDE)).with(WIRE_CONNECTION_WEST, WireConnection.SIDE);
         for (BlockState blockState : this.getStateManager().getStates()) {
             if (blockState.get(POWER) != 0) continue;
-            field_24416.put(blockState, this.method_27845(blockState));
+            SHAPES.put(blockState, this.getShapeForState(blockState));
         }
     }
 
-    private VoxelShape method_27845(BlockState state) {
+    private VoxelShape getShapeForState(BlockState state) {
         VoxelShape voxelShape = DOT_SHAPE;
         for (Direction direction : Direction.Type.HORIZONTAL) {
             WireConnection wireConnection = (WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
@@ -94,7 +95,7 @@ extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return field_24416.get(state.with(POWER, 0));
+        return SHAPES.get(state.with(POWER, 0));
     }
 
     @Override
@@ -278,7 +279,7 @@ extends Block {
         for (Direction direction : Direction.Type.VERTICAL) {
             world.updateNeighborsAlways(pos.offset(direction), this);
         }
-        this.method_27844(world, pos);
+        this.updateOffsetNeighbors(world, pos);
     }
 
     @Override
@@ -294,10 +295,10 @@ extends Block {
             world.updateNeighborsAlways(pos.offset(direction), this);
         }
         this.update(world, pos, state);
-        this.method_27844(world, pos);
+        this.updateOffsetNeighbors(world, pos);
     }
 
-    private void method_27844(World world, BlockPos pos) {
+    private void updateOffsetNeighbors(World world, BlockPos pos) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             this.updateNeighbors(world, pos.offset(direction));
         }
@@ -372,12 +373,12 @@ extends Block {
 
     @Environment(value=EnvType.CLIENT)
     public static int getWireColor(int powerLevel) {
-        Vec3d vec3d = field_24466[powerLevel];
+        Vec3d vec3d = COLORS[powerLevel];
         return MathHelper.packRgb((float)vec3d.getX(), (float)vec3d.getY(), (float)vec3d.getZ());
     }
 
     @Environment(value=EnvType.CLIENT)
-    private void method_27936(World world, Random random, BlockPos pos, Vec3d vec3d, Direction direction, Direction direction2, float f, float g) {
+    private void addPoweredParticles(World world, Random random, BlockPos pos, Vec3d color, Direction direction, Direction direction2, float f, float g) {
         float h = g - f;
         if (random.nextFloat() >= 0.2f * h) {
             return;
@@ -387,7 +388,7 @@ extends Block {
         double d = 0.5 + (double)(0.4375f * (float)direction.getOffsetX()) + (double)(j * (float)direction2.getOffsetX());
         double e = 0.5 + (double)(0.4375f * (float)direction.getOffsetY()) + (double)(j * (float)direction2.getOffsetY());
         double k = 0.5 + (double)(0.4375f * (float)direction.getOffsetZ()) + (double)(j * (float)direction2.getOffsetZ());
-        world.addParticle(new DustParticleEffect(vec3d, 1.0f), (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + k, 0.0, 0.0, 0.0);
+        world.addParticle(new DustParticleEffect(new Vec3f(color), 1.0f), (double)pos.getX() + d, (double)pos.getY() + e, (double)pos.getZ() + k, 0.0, 0.0, 0.0);
     }
 
     @Override
@@ -401,14 +402,14 @@ extends Block {
             WireConnection wireConnection = (WireConnection)state.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction));
             switch (wireConnection) {
                 case UP: {
-                    this.method_27936(world, random, pos, field_24466[i], direction, Direction.UP, -0.5f, 0.5f);
+                    this.addPoweredParticles(world, random, pos, COLORS[i], direction, Direction.UP, -0.5f, 0.5f);
                 }
                 case SIDE: {
-                    this.method_27936(world, random, pos, field_24466[i], Direction.DOWN, direction, 0.0f, 0.5f);
+                    this.addPoweredParticles(world, random, pos, COLORS[i], Direction.DOWN, direction, 0.0f, 0.5f);
                     continue block4;
                 }
             }
-            this.method_27936(world, random, pos, field_24466[i], Direction.DOWN, direction, 0.0f, 0.3f);
+            this.addPoweredParticles(world, random, pos, COLORS[i], Direction.DOWN, direction, 0.0f, 0.3f);
         }
     }
 
@@ -456,18 +457,18 @@ extends Block {
             blockState = (BlockState)blockState.with(POWER, state.get(POWER));
             if ((blockState = this.getPlacementState(world, blockState, pos)) != state) {
                 world.setBlockState(pos, blockState, 3);
-                this.method_28482(world, pos, state, blockState);
+                this.updateForNewState(world, pos, state, blockState);
                 return ActionResult.SUCCESS;
             }
         }
         return ActionResult.PASS;
     }
 
-    private void method_28482(World world, BlockPos pos, BlockState blockState, BlockState blockState2) {
+    private void updateForNewState(World world, BlockPos pos, BlockState oldState, BlockState newState) {
         for (Direction direction : Direction.Type.HORIZONTAL) {
             BlockPos blockPos = pos.offset(direction);
-            if (((WireConnection)blockState.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() == ((WireConnection)blockState2.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() || !world.getBlockState(blockPos).isSolidBlock(world, blockPos)) continue;
-            world.updateNeighborsExcept(blockPos, blockState2.getBlock(), direction.getOpposite());
+            if (((WireConnection)oldState.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() == ((WireConnection)newState.get(DIRECTION_TO_WIRE_CONNECTION_PROPERTY.get(direction))).isConnected() || !world.getBlockState(blockPos).isSolidBlock(world, blockPos)) continue;
+            world.updateNeighborsExcept(blockPos, newState.getBlock(), direction.getOpposite());
         }
     }
 }

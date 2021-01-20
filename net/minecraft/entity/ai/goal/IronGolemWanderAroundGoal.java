@@ -54,7 +54,7 @@ extends WanderAroundGoal {
     @Nullable
     private Vec3d method_27926() {
         ServerWorld serverWorld = (ServerWorld)this.mob.world;
-        List<VillagerEntity> list = serverWorld.getEntitiesByType(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0), this::method_27922);
+        List<VillagerEntity> list = serverWorld.getEntitiesByType(EntityType.VILLAGER, this.mob.getBoundingBox().expand(32.0), this::canVillagerSummonGolem);
         if (list.isEmpty()) {
             return null;
         }
@@ -97,8 +97,8 @@ extends WanderAroundGoal {
         return (BlockPos)list.get(serverWorld.random.nextInt(list.size()));
     }
 
-    private boolean method_27922(VillagerEntity villagerEntity) {
-        return villagerEntity.canSummonGolem(this.mob.world.getTime());
+    private boolean canVillagerSummonGolem(VillagerEntity villager) {
+        return villager.canSummonGolem(this.mob.world.getTime());
     }
 }
 

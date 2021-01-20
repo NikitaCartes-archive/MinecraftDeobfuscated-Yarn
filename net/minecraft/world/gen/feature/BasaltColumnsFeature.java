@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BasaltColumnsFeature
 extends Feature<BasaltColumnsFeatureConfig> {
-    private static final ImmutableList<Block> field_24132 = ImmutableList.of(Blocks.LAVA, Blocks.BEDROCK, Blocks.MAGMA_BLOCK, Blocks.SOUL_SAND, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER);
+    private static final ImmutableList<Block> BLOCKS = ImmutableList.of(Blocks.LAVA, Blocks.BEDROCK, Blocks.MAGMA_BLOCK, Blocks.SOUL_SAND, Blocks.NETHER_BRICKS, Blocks.NETHER_BRICK_FENCE, Blocks.NETHER_BRICK_STAIRS, Blocks.NETHER_WART, Blocks.CHEST, Blocks.SPAWNER);
 
     public BasaltColumnsFeature(Codec<BasaltColumnsFeatureConfig> codec) {
         super(codec);
@@ -69,7 +69,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
 
     @Nullable
     private static BlockPos method_27094(WorldAccess worldAccess, int i, BlockPos.Mutable mutable, int j) {
-        while (mutable.getY() > worldAccess.getSectionCount() + 1 && j > 0) {
+        while (mutable.getY() > worldAccess.getBottomSectionLimit() + 1 && j > 0) {
             --j;
             if (BasaltColumnsFeature.method_30379(worldAccess, i, mutable)) {
                 return mutable;
@@ -83,7 +83,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
         if (BasaltColumnsFeature.method_27095(worldAccess, i, mutable)) {
             BlockState blockState = worldAccess.getBlockState(mutable.move(Direction.DOWN));
             mutable.move(Direction.UP);
-            return !blockState.isAir() && !field_24132.contains(blockState.getBlock());
+            return !blockState.isAir() && !BLOCKS.contains(blockState.getBlock());
         }
         return false;
     }
@@ -93,7 +93,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
         while (mutable.getY() < worldAccess.getTopHeightLimit() && i > 0) {
             --i;
             BlockState blockState = worldAccess.getBlockState(mutable);
-            if (field_24132.contains(blockState.getBlock())) {
+            if (BLOCKS.contains(blockState.getBlock())) {
                 return null;
             }
             if (blockState.isAir()) {

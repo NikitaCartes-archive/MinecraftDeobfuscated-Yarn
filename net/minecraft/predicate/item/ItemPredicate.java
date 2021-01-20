@@ -121,13 +121,13 @@ public class ItemPredicate {
         NbtPredicate nbtPredicate = NbtPredicate.fromJson(jsonObject.get("nbt"));
         Item item = null;
         if (jsonObject.has("item")) {
-            Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "item"));
-            item = Registry.ITEM.getOrEmpty(identifier2).orElseThrow(() -> new JsonSyntaxException("Unknown item id '" + identifier2 + "'"));
+            Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "item"));
+            item = Registry.ITEM.getOrEmpty(identifier).orElseThrow(() -> new JsonSyntaxException("Unknown item id '" + identifier + "'"));
         }
         Tag<Item> tag = null;
         if (jsonObject.has("tag")) {
             Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-            tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown item tag '" + identifier + "'"));
+            tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier2, id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
         }
         Potion potion = null;
         if (jsonObject.has("potion")) {

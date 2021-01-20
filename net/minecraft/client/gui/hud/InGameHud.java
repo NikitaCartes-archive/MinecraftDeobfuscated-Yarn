@@ -517,7 +517,7 @@ extends DrawableHelper {
     public void renderMountJumpBar(MatrixStack matrices, int x) {
         this.client.getProfiler().push("jumpBar");
         this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
-        float f = this.client.player.method_3151();
+        float f = this.client.player.getMountJumpStrength();
         int i = 182;
         int j = (int)(f * 183.0f);
         int k = this.scaledHeight - 32 + 3;

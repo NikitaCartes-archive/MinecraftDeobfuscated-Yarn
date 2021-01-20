@@ -3,7 +3,7 @@
  */
 package net.minecraft.client.texture;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -74,7 +74,7 @@ extends Sprite {
             nativeImage.untrack();
             return nativeImage;
         });
-        INFO = new Sprite.Info(MISSINGNO, 16, 16, new AnimationResourceMetadata(Lists.newArrayList(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false));
+        INFO = new Sprite.Info(MISSINGNO, 16, 16, new AnimationResourceMetadata(ImmutableList.of(new AnimationFrameResourceMetadata(0, -1)), 16, 16, 1, false));
     }
 }
 

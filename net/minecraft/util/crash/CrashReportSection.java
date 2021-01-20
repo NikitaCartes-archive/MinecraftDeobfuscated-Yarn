@@ -28,18 +28,15 @@ public class CrashReportSection {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static String createPositionString(HeightLimitView heightLimitView, double d, double e, double f) {
-        return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", d, e, f, CrashReportSection.createPositionString(heightLimitView, new BlockPos(d, e, f)));
+    public static String createPositionString(HeightLimitView world, double x, double y, double z) {
+        return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", x, y, z, CrashReportSection.createPositionString(world, new BlockPos(x, y, z)));
     }
 
-    public static String createPositionString(HeightLimitView heightLimitView, BlockPos blockPos) {
-        return CrashReportSection.createPositionString(heightLimitView, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+    public static String createPositionString(HeightLimitView world, BlockPos pos) {
+        return CrashReportSection.createPositionString(world, pos.getX(), pos.getY(), pos.getZ());
     }
 
-    public static String createPositionString(HeightLimitView heightLimitView, int i, int j, int k) {
-        int w;
-        int v;
-        int u;
+    public static String createPositionString(HeightLimitView world, int x, int y, int z) {
         int t;
         int s;
         int r;
@@ -48,45 +45,48 @@ public class CrashReportSection {
         int o;
         int n;
         int m;
+        int l;
+        int k;
+        int j;
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            stringBuilder.append(String.format("World: (%d,%d,%d)", i, j, k));
+            stringBuilder.append(String.format("World: (%d,%d,%d)", x, y, z));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding world loc)");
         }
         stringBuilder.append(", ");
         try {
-            int l = ChunkSectionPos.getSectionCoord(i);
-            m = ChunkSectionPos.getSectionCoord(j);
-            n = ChunkSectionPos.getSectionCoord(k);
-            o = i & 0xF;
-            p = j & 0xF;
-            q = k & 0xF;
-            r = ChunkSectionPos.getBlockCoord(l);
-            s = heightLimitView.getSectionCount();
-            t = ChunkSectionPos.getBlockCoord(n);
-            u = ChunkSectionPos.getBlockCoord(l + 1) - 1;
-            v = heightLimitView.getTopHeightLimit() - 1;
-            w = ChunkSectionPos.getBlockCoord(n + 1) - 1;
-            stringBuilder.append(String.format("Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", o, p, q, l, m, n, r, s, t, u, v, w));
+            int i = ChunkSectionPos.getSectionCoord(x);
+            j = ChunkSectionPos.getSectionCoord(y);
+            k = ChunkSectionPos.getSectionCoord(z);
+            l = x & 0xF;
+            m = y & 0xF;
+            n = z & 0xF;
+            o = ChunkSectionPos.getBlockCoord(i);
+            p = world.getBottomSectionLimit();
+            q = ChunkSectionPos.getBlockCoord(k);
+            r = ChunkSectionPos.getBlockCoord(i + 1) - 1;
+            s = world.getTopHeightLimit() - 1;
+            t = ChunkSectionPos.getBlockCoord(k + 1) - 1;
+            stringBuilder.append(String.format("Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", l, m, n, i, j, k, o, p, q, r, s, t));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding chunk loc)");
         }
         stringBuilder.append(", ");
         try {
-            int l = i >> 9;
-            m = k >> 9;
-            n = l << 5;
-            o = m << 5;
-            p = (l + 1 << 5) - 1;
-            q = (m + 1 << 5) - 1;
-            r = l << 9;
-            s = heightLimitView.getSectionCount();
-            t = m << 9;
-            u = (l + 1 << 9) - 1;
-            v = heightLimitView.getTopHeightLimit() - 1;
-            w = (m + 1 << 9) - 1;
-            stringBuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", l, m, n, o, p, q, r, s, t, u, v, w));
+            int i = x >> 9;
+            j = z >> 9;
+            k = i << 5;
+            l = j << 5;
+            m = (i + 1 << 5) - 1;
+            n = (j + 1 << 5) - 1;
+            o = i << 9;
+            p = world.getBottomSectionLimit();
+            q = j << 9;
+            r = (i + 1 << 9) - 1;
+            s = world.getTopHeightLimit() - 1;
+            t = (j + 1 << 9) - 1;
+            stringBuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", i, j, k, l, m, n, o, p, q, r, s, t));
         } catch (Throwable throwable) {
             stringBuilder.append("(Error finding world loc)");
         }
@@ -167,11 +167,11 @@ public class CrashReportSection {
         return this.stackTrace;
     }
 
-    public static void addBlockInfo(CrashReportSection element, HeightLimitView heightLimitView, BlockPos blockPos, @Nullable BlockState blockState) {
-        if (blockState != null) {
-            element.add("Block", blockState::toString);
+    public static void addBlockInfo(CrashReportSection element, HeightLimitView world, BlockPos pos, @Nullable BlockState state) {
+        if (state != null) {
+            element.add("Block", state::toString);
         }
-        element.add("Block location", () -> CrashReportSection.createPositionString(heightLimitView, blockPos));
+        element.add("Block location", () -> CrashReportSection.createPositionString(world, pos));
     }
 
     static class Element {

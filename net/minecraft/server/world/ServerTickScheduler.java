@@ -102,7 +102,7 @@ implements TickScheduler<T> {
         int j = i + 16 + 2;
         int k = ChunkSectionPos.getBlockCoord(chunkPos.z) - 2;
         int l = k + 16 + 2;
-        return this.getScheduledTicks(new BlockBox(i, this.world.getSectionCount(), k, j, this.world.getTopHeightLimit(), l), updateState, getStaleTicks);
+        return this.getScheduledTicks(new BlockBox(i, this.world.getBottomSectionLimit(), k, j, this.world.getTopHeightLimit(), l), updateState, getStaleTicks);
     }
 
     public List<ScheduledTick<T>> getScheduledTicks(BlockBox bounds, boolean updateState, boolean getStaleTicks) {

@@ -32,15 +32,15 @@ implements BakedModel {
     protected final ModelTransformation transformation;
     protected final ModelOverrideList itemPropertyOverrides;
 
-    public BasicBakedModel(List<BakedQuad> quads, Map<Direction, List<BakedQuad>> faceQuads, boolean usesAo, boolean isSideLit, boolean hasDepth, Sprite sprite, ModelTransformation modelTransformation, ModelOverrideList modelOverrideList) {
+    public BasicBakedModel(List<BakedQuad> quads, Map<Direction, List<BakedQuad>> faceQuads, boolean usesAo, boolean isSideLit, boolean hasDepth, Sprite sprite, ModelTransformation transformation, ModelOverrideList itemPropertyOverrides) {
         this.quads = quads;
         this.faceQuads = faceQuads;
         this.usesAo = usesAo;
         this.hasDepth = hasDepth;
         this.isSideLit = isSideLit;
         this.sprite = sprite;
-        this.transformation = modelTransformation;
-        this.itemPropertyOverrides = modelOverrideList;
+        this.transformation = transformation;
+        this.itemPropertyOverrides = itemPropertyOverrides;
     }
 
     @Override
@@ -98,15 +98,15 @@ implements BakedModel {
             this(unbakedModel.useAmbientOcclusion(), unbakedModel.getGuiLight().isSide(), hasDepth, unbakedModel.getTransformations(), itemPropertyOverrides);
         }
 
-        private Builder(boolean usesAo, boolean isSideLit, boolean hasDepth, ModelTransformation modelTransformation, ModelOverrideList modelOverrideList) {
+        private Builder(boolean usesAo, boolean isSideLit, boolean hasDepth, ModelTransformation transformation, ModelOverrideList itemPropertyOverrides) {
             for (Direction direction : Direction.values()) {
                 this.faceQuads.put(direction, Lists.newArrayList());
             }
-            this.itemPropertyOverrides = modelOverrideList;
+            this.itemPropertyOverrides = itemPropertyOverrides;
             this.usesAo = usesAo;
             this.isSideLit = isSideLit;
             this.hasDepth = hasDepth;
-            this.transformation = modelTransformation;
+            this.transformation = transformation;
         }
 
         public Builder addQuad(Direction side, BakedQuad quad) {

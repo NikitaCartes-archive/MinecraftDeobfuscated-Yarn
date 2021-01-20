@@ -212,7 +212,7 @@ extends FacingBlock {
     }
 
     public static boolean isMovable(BlockState state, World world, BlockPos pos, Direction direction, boolean canBreak, Direction pistonDir) {
-        if (pos.getY() < world.getSectionCount() || pos.getY() > world.getTopHeightLimit() - 1 || !world.getWorldBorder().contains(pos)) {
+        if (pos.getY() < world.getBottomSectionLimit() || pos.getY() > world.getTopHeightLimit() - 1 || !world.getWorldBorder().contains(pos)) {
             return false;
         }
         if (state.isAir()) {
@@ -221,7 +221,7 @@ extends FacingBlock {
         if (state.isOf(Blocks.OBSIDIAN) || state.isOf(Blocks.CRYING_OBSIDIAN) || state.isOf(Blocks.RESPAWN_ANCHOR)) {
             return false;
         }
-        if (direction == Direction.DOWN && pos.getY() == world.getSectionCount()) {
+        if (direction == Direction.DOWN && pos.getY() == world.getBottomSectionLimit()) {
             return false;
         }
         if (direction == Direction.UP && pos.getY() == world.getTopHeightLimit() - 1) {

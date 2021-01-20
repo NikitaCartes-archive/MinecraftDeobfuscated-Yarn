@@ -16,8 +16,8 @@ import net.minecraft.util.math.BlockPos;
 
 public class FurnaceBlockEntity
 extends AbstractFurnaceBlockEntity {
-    public FurnaceBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.FURNACE, blockPos, blockState, RecipeType.SMELTING);
+    public FurnaceBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.FURNACE, pos, state, RecipeType.SMELTING);
     }
 
     @Override

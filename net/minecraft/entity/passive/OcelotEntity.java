@@ -141,7 +141,7 @@ extends AnimalEntity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 
@@ -284,7 +284,7 @@ extends AnimalEntity {
         private final OcelotEntity ocelot;
 
         public OcelotTemptGoal(OcelotEntity ocelot, double speed, Ingredient food, boolean canBeScared) {
-            super((PathAwareEntity)ocelot, speed, food, canBeScared);
+            super(ocelot, speed, food, canBeScared);
             this.ocelot = ocelot;
         }
 

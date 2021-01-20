@@ -229,36 +229,36 @@ extends RealmsScreen {
         this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, 0xFFFFFF);
     }
 
-    private void drawRemoveIcon(MatrixStack matrixStack, int i, int j, int k, int l) {
+    private void drawRemoveIcon(MatrixStack matrices, int i, int j, int k, int l) {
         boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < RealmsPlayerScreen.row(12) + 20 && l > RealmsPlayerScreen.row(1);
         this.client.getTextureManager().bindTexture(CROSS_PLAYER_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 7.0f : 0.0f;
-        DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 7, 8, 14);
+        DrawableHelper.drawTexture(matrices, i, j, 0.0f, f, 8, 7, 8, 14);
         if (bl) {
             this.tooltipText = REMOVE_TOOLTIP;
             this.operation = PlayerOperation.REMOVE;
         }
     }
 
-    private void drawOpped(MatrixStack matrixStack, int i, int j, int k, int l) {
+    private void drawOpped(MatrixStack matrices, int i, int j, int k, int l) {
         boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < RealmsPlayerScreen.row(12) + 20 && l > RealmsPlayerScreen.row(1);
         this.client.getTextureManager().bindTexture(OP_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 8.0f : 0.0f;
-        DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 8, 8, 16);
+        DrawableHelper.drawTexture(matrices, i, j, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
             this.tooltipText = OPERATOR_TOOLTIP;
             this.operation = PlayerOperation.TOGGLE_OP;
         }
     }
 
-    private void drawNormal(MatrixStack matrixStack, int i, int j, int k, int l) {
+    private void drawNormal(MatrixStack matrices, int i, int j, int k, int l) {
         boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < RealmsPlayerScreen.row(12) + 20 && l > RealmsPlayerScreen.row(1);
         this.client.getTextureManager().bindTexture(USER_ICON);
         RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 8.0f : 0.0f;
-        DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, f, 8, 8, 8, 16);
+        DrawableHelper.drawTexture(matrices, i, j, 0.0f, f, 8, 8, 8, 16);
         if (bl) {
             this.tooltipText = NORMAL_TOOLTIP;
             this.operation = PlayerOperation.TOGGLE_OP;

@@ -27,7 +27,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class LocationPredicate {
-    private static final Logger field_24732 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     public static final LocationPredicate ANY = new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, null, null, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
     private final NumberRange.FloatRange x;
     private final NumberRange.FloatRange y;
@@ -44,11 +44,11 @@ public class LocationPredicate {
     private final BlockPredicate block;
     private final FluidPredicate fluid;
 
-    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable RegistryKey<Biome> registryKey, @Nullable StructureFeature<?> feature, @Nullable RegistryKey<World> dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
+    public LocationPredicate(NumberRange.FloatRange x, NumberRange.FloatRange y, NumberRange.FloatRange z, @Nullable RegistryKey<Biome> biome, @Nullable StructureFeature<?> feature, @Nullable RegistryKey<World> dimension, @Nullable Boolean smokey, LightPredicate light, BlockPredicate block, FluidPredicate fluid) {
         this.x = x;
         this.y = y;
         this.z = z;
-        this.biome = registryKey;
+        this.biome = biome;
         this.feature = feature;
         this.dimension = dimension;
         this.smokey = smokey;
@@ -57,8 +57,8 @@ public class LocationPredicate {
         this.fluid = fluid;
     }
 
-    public static LocationPredicate biome(RegistryKey<Biome> registryKey) {
-        return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, registryKey, null, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
+    public static LocationPredicate biome(RegistryKey<Biome> biome) {
+        return new LocationPredicate(NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, NumberRange.FloatRange.ANY, biome, null, null, null, LightPredicate.ANY, BlockPredicate.ANY, FluidPredicate.ANY);
     }
 
     public static LocationPredicate dimension(RegistryKey<World> dimension) {
@@ -123,7 +123,7 @@ public class LocationPredicate {
             jsonObject.add("position", jsonObject2);
         }
         if (this.dimension != null) {
-            World.CODEC.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(field_24732::error).ifPresent(jsonElement -> jsonObject.add("dimension", (JsonElement)jsonElement));
+            World.CODEC.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(LOGGER::error).ifPresent(jsonElement -> jsonObject.add("dimension", (JsonElement)jsonElement));
         }
         if (this.feature != null) {
             jsonObject.addProperty("feature", this.feature.getName());
@@ -149,7 +149,7 @@ public class LocationPredicate {
         NumberRange.FloatRange floatRange = NumberRange.FloatRange.fromJson(jsonObject2.get("x"));
         NumberRange.FloatRange floatRange2 = NumberRange.FloatRange.fromJson(jsonObject2.get("y"));
         NumberRange.FloatRange floatRange3 = NumberRange.FloatRange.fromJson(jsonObject2.get("z"));
-        RegistryKey registryKey = jsonObject.has("dimension") ? (RegistryKey)Identifier.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("dimension")).resultOrPartial(field_24732::error).map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier)).orElse(null) : null;
+        RegistryKey registryKey = jsonObject.has("dimension") ? (RegistryKey)Identifier.CODEC.parse(JsonOps.INSTANCE, jsonObject.get("dimension")).resultOrPartial(LOGGER::error).map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier)).orElse(null) : null;
         StructureFeature structureFeature = jsonObject.has("feature") ? (StructureFeature)StructureFeature.STRUCTURES.get(JsonHelper.getString(jsonObject, "feature")) : null;
         RegistryKey<Biome> registryKey2 = null;
         if (jsonObject.has("biome")) {
@@ -183,8 +183,8 @@ public class LocationPredicate {
             return new Builder();
         }
 
-        public Builder biome(@Nullable RegistryKey<Biome> registryKey) {
-            this.biome = registryKey;
+        public Builder biome(@Nullable RegistryKey<Biome> biome) {
+            this.biome = biome;
             return this;
         }
 

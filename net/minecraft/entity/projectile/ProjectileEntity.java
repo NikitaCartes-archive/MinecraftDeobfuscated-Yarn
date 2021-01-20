@@ -71,12 +71,12 @@ extends Entity {
     @Override
     public void tick() {
         if (!this.leftOwner) {
-            this.leftOwner = this.method_26961();
+            this.leftOwner = this.shouldLeaveOwner();
         }
         super.tick();
     }
 
-    private boolean method_26961() {
+    private boolean shouldLeaveOwner() {
         Entity entity2 = this.getOwner();
         if (entity2 != null) {
             for (Entity entity22 : this.world.getOtherEntities(this, this.getBoundingBox().stretch(this.getVelocity()).expand(1.0), entity -> !entity.isSpectator() && entity.collides())) {
@@ -142,7 +142,7 @@ extends Entity {
         }
     }
 
-    protected boolean method_26958(Entity entity) {
+    protected boolean canHit(Entity entity) {
         if (entity.isSpectator() || !entity.isAlive() || !entity.collides()) {
             return false;
         }
@@ -150,21 +150,21 @@ extends Entity {
         return entity2 == null || this.leftOwner || !entity2.isConnectedThroughVehicle(entity);
     }
 
-    protected void method_26962() {
+    protected void updateRotation() {
         Vec3d vec3d = this.getVelocity();
         float f = MathHelper.sqrt(ProjectileEntity.squaredHorizontalLength(vec3d));
         this.pitch = ProjectileEntity.updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, f) * 57.2957763671875));
         this.yaw = ProjectileEntity.updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 57.2957763671875));
     }
 
-    protected static float updateRotation(float f, float g) {
-        while (g - f < -180.0f) {
-            f -= 360.0f;
+    protected static float updateRotation(float prevRot, float newRot) {
+        while (newRot - prevRot < -180.0f) {
+            prevRot -= 360.0f;
         }
-        while (g - f >= 180.0f) {
-            f += 360.0f;
+        while (newRot - prevRot >= 180.0f) {
+            prevRot += 360.0f;
         }
-        return MathHelper.lerp(0.2f, f, g);
+        return MathHelper.lerp(0.2f, prevRot, newRot);
     }
 
     @Override

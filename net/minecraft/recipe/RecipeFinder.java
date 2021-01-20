@@ -30,24 +30,24 @@ public class RecipeFinder {
         }
     }
 
-    public void addItem(ItemStack itemStack) {
-        this.method_20478(itemStack, 64);
+    public void addItem(ItemStack stack) {
+        this.addItem(stack, 64);
     }
 
-    public void method_20478(ItemStack itemStack, int i) {
-        if (!itemStack.isEmpty()) {
-            int j = RecipeFinder.getItemId(itemStack);
-            int k = Math.min(i, itemStack.getCount());
-            this.addItem(j, k);
+    public void addItem(ItemStack stack, int count) {
+        if (!stack.isEmpty()) {
+            int i = RecipeFinder.getItemId(stack);
+            int j = Math.min(count, stack.getCount());
+            this.addItem(i, j);
         }
     }
 
-    public static int getItemId(ItemStack itemStack) {
-        return Registry.ITEM.getRawId(itemStack.getItem());
+    public static int getItemId(ItemStack stack) {
+        return Registry.ITEM.getRawId(stack.getItem());
     }
 
-    private boolean contains(int i) {
-        return this.idToAmountMap.get(i) > 0;
+    private boolean contains(int id) {
+        return this.idToAmountMap.get(id) > 0;
     }
 
     private int take(int id, int amount) {
@@ -79,11 +79,11 @@ public class RecipeFinder {
         return new Filter(recipe).countCrafts(limit, outMatchingInputIds);
     }
 
-    public static ItemStack getStackFromId(int i) {
-        if (i == 0) {
+    public static ItemStack getStackFromId(int id) {
+        if (id == 0) {
             return ItemStack.EMPTY;
         }
-        return new ItemStack(Item.byRawId(i));
+        return new ItemStack(Item.byRawId(id));
     }
 
     public void clear() {
@@ -99,9 +99,9 @@ public class RecipeFinder {
         private final BitSet field_7558;
         private final IntList field_7557 = new IntArrayList();
 
-        public Filter(Recipe<?> recipe2) {
-            this.recipe = recipe2;
-            this.ingredients.addAll(recipe2.getPreviewInputs());
+        public Filter(Recipe<?> recipe) {
+            this.recipe = recipe;
+            this.ingredients.addAll(recipe.getPreviewInputs());
             this.ingredients.removeIf(Ingredient::isEmpty);
             this.ingredientCount = this.ingredients.size();
             this.field_7551 = this.method_7422();

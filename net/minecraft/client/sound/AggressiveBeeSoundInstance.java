@@ -15,8 +15,8 @@ import net.minecraft.sound.SoundEvents;
 @Environment(value=EnvType.CLIENT)
 public class AggressiveBeeSoundInstance
 extends AbstractBeeSoundInstance {
-    public AggressiveBeeSoundInstance(BeeEntity beeEntity) {
-        super(beeEntity, SoundEvents.ENTITY_BEE_LOOP_AGGRESSIVE, SoundCategory.NEUTRAL);
+    public AggressiveBeeSoundInstance(BeeEntity entity) {
+        super(entity, SoundEvents.ENTITY_BEE_LOOP_AGGRESSIVE, SoundCategory.NEUTRAL);
         this.repeatDelay = 0;
     }
 

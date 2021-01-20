@@ -82,8 +82,8 @@ implements Flutterer {
         }
 
         @Override
-        public /* synthetic */ boolean test(@Nullable Object object) {
-            return this.test((MobEntity)object);
+        public /* synthetic */ boolean test(@Nullable Object entity) {
+            return this.test((MobEntity)entity);
         }
     };
     private static final Item COOKIE = Items.COOKIE;
@@ -289,7 +289,7 @@ implements Flutterer {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         return false;
     }
 

@@ -119,11 +119,11 @@ implements RecipeBookProvider {
     }
 
     @Override
-    public boolean charTyped(char chr, int keyCode) {
-        if (this.recipeBook.charTyped(chr, keyCode)) {
+    public boolean charTyped(char chr, int modifiers) {
+        if (this.recipeBook.charTyped(chr, modifiers)) {
             return true;
         }
-        return super.charTyped(chr, keyCode);
+        return super.charTyped(chr, modifiers);
     }
 
     @Override

@@ -49,14 +49,14 @@ extends AbstractCriterion<Conditions> {
         private final LocationPredicate location;
         private final ItemPredicate item;
 
-        public Conditions(EntityPredicate.Extended extended, LocationPredicate location, ItemPredicate item) {
-            super(ID, extended);
+        public Conditions(EntityPredicate.Extended player, LocationPredicate location, ItemPredicate item) {
+            super(ID, player);
             this.location = location;
             this.item = item;
         }
 
-        public static Conditions create(LocationPredicate.Builder builder, ItemPredicate.Builder builder2) {
-            return new Conditions(EntityPredicate.Extended.EMPTY, builder.build(), builder2.build());
+        public static Conditions create(LocationPredicate.Builder location, ItemPredicate.Builder item) {
+            return new Conditions(EntityPredicate.Extended.EMPTY, location.build(), item.build());
         }
 
         public boolean test(BlockState state, ServerWorld world, BlockPos pos, ItemStack stack) {

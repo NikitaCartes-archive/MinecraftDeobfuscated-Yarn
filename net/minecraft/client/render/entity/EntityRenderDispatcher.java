@@ -146,7 +146,7 @@ implements SynchronousResourceReloadListener {
                 EntityRenderDispatcher.renderShadow(matrices, vertexConsumers, entity, h, tickDelta, this.world, entityRenderer.shadowRadius);
             }
             if (this.renderHitboxes && !entity.isInvisible() && !MinecraftClient.getInstance().hasReducedDebugInfo()) {
-                this.renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity, tickDelta);
+                EntityRenderDispatcher.renderHitbox(matrices, vertexConsumers.getBuffer(RenderLayer.getLines()), entity, tickDelta);
             }
             matrices.pop();
         } catch (Throwable throwable) {
@@ -162,36 +162,31 @@ implements SynchronousResourceReloadListener {
         }
     }
 
-    private void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta) {
-        float f = entity.getWidth() / 2.0f;
-        this.drawBox(matrices, vertices, entity, 1.0f, 1.0f, 1.0f);
+    private static void renderHitbox(MatrixStack matrices, VertexConsumer vertices, Entity entity, float tickDelta) {
+        Box box = entity.getBoundingBox().offset(-entity.getX(), -entity.getY(), -entity.getZ());
+        WorldRenderer.drawBox(matrices, vertices, box, 1.0f, 1.0f, 1.0f, 1.0f);
         if (entity instanceof EnderDragonEntity) {
             double d = -MathHelper.lerp((double)tickDelta, entity.lastRenderX, entity.getX());
             double e = -MathHelper.lerp((double)tickDelta, entity.lastRenderY, entity.getY());
-            double g = -MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
+            double f = -MathHelper.lerp((double)tickDelta, entity.lastRenderZ, entity.getZ());
             for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
                 matrices.push();
-                double h = d + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderX, enderDragonPart.getX());
-                double i = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
-                double j = g + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
-                matrices.translate(h, i, j);
-                this.drawBox(matrices, vertices, enderDragonPart, 0.25f, 1.0f, 0.0f);
+                double g = d + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderX, enderDragonPart.getX());
+                double h = e + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderY, enderDragonPart.getY());
+                double i = f + MathHelper.lerp((double)tickDelta, enderDragonPart.lastRenderZ, enderDragonPart.getZ());
+                matrices.translate(g, h, i);
+                WorldRenderer.drawBox(matrices, vertices, enderDragonPart.getBoundingBox().offset(-enderDragonPart.getX(), -enderDragonPart.getY(), -enderDragonPart.getZ()), 0.25f, 1.0f, 0.0f, 1.0f);
                 matrices.pop();
             }
         }
         if (entity instanceof LivingEntity) {
-            float k = 0.01f;
-            WorldRenderer.drawBox(matrices, vertices, -f, entity.getStandingEyeHeight() - 0.01f, -f, f, entity.getStandingEyeHeight() + 0.01f, f, 1.0f, 0.0f, 0.0f, 1.0f);
+            float j = 0.01f;
+            WorldRenderer.drawBox(matrices, vertices, box.minX, entity.getStandingEyeHeight() - 0.01f, box.minZ, box.maxX, entity.getStandingEyeHeight() + 0.01f, box.maxZ, 1.0f, 0.0f, 0.0f, 1.0f);
         }
         Vec3d vec3d = entity.getRotationVec(tickDelta);
         Matrix4f matrix4f = matrices.peek().getModel();
         vertices.vertex(matrix4f, 0.0f, entity.getStandingEyeHeight(), 0.0f).color(0, 0, 255, 255).next();
         vertices.vertex(matrix4f, (float)(vec3d.x * 2.0), (float)((double)entity.getStandingEyeHeight() + vec3d.y * 2.0), (float)(vec3d.z * 2.0)).color(0, 0, 255, 255).next();
-    }
-
-    private void drawBox(MatrixStack matrix, VertexConsumer vertices, Entity entity, float red, float green, float blue) {
-        Box box = entity.getBoundingBox().offset(-entity.getX(), -entity.getY(), -entity.getZ());
-        WorldRenderer.drawBox(matrix, vertices, box, red, green, blue, 1.0f);
     }
 
     private void renderFire(MatrixStack matrices, VertexConsumerProvider vertexConsumers, Entity entity) {

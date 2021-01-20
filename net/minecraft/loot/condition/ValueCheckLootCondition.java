@@ -35,17 +35,17 @@ implements LootCondition {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return Sets.union(this.value.getRequiredParameters(), this.range.method_32386());
+        return Sets.union(this.value.getRequiredParameters(), this.range.getRequiredParameters());
     }
 
     @Override
     public boolean test(LootContext lootContext) {
-        return this.range.method_32393(lootContext, this.value.nextInt(lootContext));
+        return this.range.test(lootContext, this.value.nextInt(lootContext));
     }
 
     @Override
-    public /* synthetic */ boolean test(Object object) {
-        return this.test((LootContext)object);
+    public /* synthetic */ boolean test(Object context) {
+        return this.test((LootContext)context);
     }
 
     public static class Serializer

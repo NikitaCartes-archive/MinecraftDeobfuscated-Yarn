@@ -401,16 +401,16 @@ implements RangedAttackMob {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
         int i = this.computeFallDamage(fallDistance, damageMultiplier);
         if (i <= 0) {
             return false;
         }
         if (fallDistance >= 6.0f) {
-            this.damage(DamageSource.FALL, i);
+            this.damage(damageSource, i);
             if (this.hasPassengers()) {
                 for (Entity entity : this.getPassengersDeep()) {
-                    entity.damage(DamageSource.FALL, i);
+                    entity.damage(damageSource, i);
                 }
             }
         }

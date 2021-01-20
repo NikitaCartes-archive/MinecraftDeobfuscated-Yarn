@@ -13,8 +13,8 @@ public class ComparatorBlockEntity
 extends BlockEntity {
     private int outputSignal;
 
-    public ComparatorBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.COMPARATOR, blockPos, blockState);
+    public ComparatorBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.COMPARATOR, pos, state);
     }
 
     @Override

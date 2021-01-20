@@ -64,10 +64,10 @@ extends Screen {
     private int currentPage;
     private final List<String> pages = Lists.newArrayList();
     private String title = "";
-    private final SelectionManager field_24269 = new SelectionManager(this::getCurrentPageContent, this::setPageContent, this::method_27595, this::method_27584, string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight((String)string, 114) <= 128);
+    private final SelectionManager field_24269 = new SelectionManager(this::getCurrentPageContent, this::setPageContent, this::getClipboard, this::setClipboard, string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight((String)string, 114) <= 128);
     private final SelectionManager field_24270 = new SelectionManager(() -> this.title, string -> {
         this.title = string;
-    }, this::method_27595, this::method_27584, string -> string.length() < 16);
+    }, this::getClipboard, this::setClipboard, string -> string.length() < 16);
     private long lastClickTime;
     private int lastClickIndex = -1;
     private PageTurnWidget nextPageButton;
@@ -82,9 +82,9 @@ extends Screen {
     private Text field_25891 = LiteralText.EMPTY;
     private final Text field_25892;
 
-    public BookEditScreen(PlayerEntity playerEntity, ItemStack itemStack, Hand hand) {
+    public BookEditScreen(PlayerEntity player, ItemStack itemStack, Hand hand) {
         super(NarratorManager.EMPTY);
-        this.player = playerEntity;
+        this.player = player;
         this.itemStack = itemStack;
         this.hand = hand;
         CompoundTag compoundTag = itemStack.getTag();
@@ -97,16 +97,16 @@ extends Screen {
         if (this.pages.isEmpty()) {
             this.pages.add("");
         }
-        this.field_25892 = new TranslatableText("book.byAuthor", playerEntity.getName()).formatted(Formatting.DARK_GRAY);
+        this.field_25892 = new TranslatableText("book.byAuthor", player.getName()).formatted(Formatting.DARK_GRAY);
     }
 
-    private void method_27584(String string) {
+    private void setClipboard(String clipboard) {
         if (this.client != null) {
-            SelectionManager.setClipboard(this.client, string);
+            SelectionManager.setClipboard(this.client, clipboard);
         }
     }
 
-    private String method_27595() {
+    private String getClipboard() {
         return this.client != null ? SelectionManager.getClipboard(this.client) : "";
     }
 
@@ -237,8 +237,8 @@ extends Screen {
     }
 
     @Override
-    public boolean charTyped(char chr, int keyCode) {
-        if (super.charTyped(chr, keyCode)) {
+    public boolean charTyped(char chr, int modifiers) {
+        if (super.charTyped(chr, modifiers)) {
             return true;
         }
         if (this.signing) {

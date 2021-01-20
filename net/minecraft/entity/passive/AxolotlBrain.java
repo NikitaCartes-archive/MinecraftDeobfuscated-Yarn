@@ -44,7 +44,7 @@ import net.minecraft.tag.ItemTags;
 import net.minecraft.util.math.IntRange;
 
 public class AxolotlBrain {
-    private static final IntRange field_28351 = IntRange.between(5, 16);
+    private static final IntRange WALK_TOWARD_ADULT_RANGE = IntRange.between(5, 16);
 
     protected static Brain<?> create(Brain<AxolotlEntity> brain) {
         AxolotlBrain.addCoreActivities(brain);
@@ -70,7 +70,7 @@ public class AxolotlBrain {
     }
 
     private static void addIdleActivities(Brain<AxolotlEntity> brain) {
-        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0f), IntRange.between(30, 60))), Pair.of(1, new RandomTask(ImmutableList.of(Pair.of(new BreedTask(EntityType.AXOLOTL, 0.2f), 1), Pair.of(new TemptTask(AxolotlBrain::method_33248), 1), Pair.of(new WalkTowardClosestAdultTask(field_28351, AxolotlBrain::method_33245), 1)))), Pair.of(2, new UpdateAttackTargetTask<AxolotlEntity>(AxolotlBrain::getAttackTarget)), Pair.of(2, new SeekWaterTask(6, 0.15f)), Pair.of(3, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(Pair.of(new AquaticStrollTask(0.5f), 2), Pair.of(new StrollTask(0.15f), 2), Pair.of(new GoTowardsLookTarget(AxolotlBrain::method_33248, 3), 3), Pair.of(new ConditionalTask<LivingEntity>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5), Pair.of(new ConditionalTask<LivingEntity>(Entity::isOnGround, new WaitTask(200, 400)), 5))))));
+        brain.setTaskList(Activity.IDLE, ImmutableList.of(Pair.of(0, new TimeLimitedTask<LivingEntity>(new FollowMobTask(EntityType.PLAYER, 6.0f), IntRange.between(30, 60))), Pair.of(1, new RandomTask(ImmutableList.of(Pair.of(new BreedTask(EntityType.AXOLOTL, 0.2f), 1), Pair.of(new TemptTask(AxolotlBrain::method_33248), 1), Pair.of(new WalkTowardClosestAdultTask(WALK_TOWARD_ADULT_RANGE, AxolotlBrain::method_33245), 1)))), Pair.of(2, new UpdateAttackTargetTask<AxolotlEntity>(AxolotlBrain::getAttackTarget)), Pair.of(2, new SeekWaterTask(6, 0.15f)), Pair.of(3, new CompositeTask(ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT), ImmutableSet.of(), CompositeTask.Order.ORDERED, CompositeTask.RunMode.TRY_ALL, ImmutableList.of(Pair.of(new AquaticStrollTask(0.5f), 2), Pair.of(new StrollTask(0.15f), 2), Pair.of(new GoTowardsLookTarget(AxolotlBrain::method_33248, 3), 3), Pair.of(new ConditionalTask<LivingEntity>(Entity::isInsideWaterOrBubbleColumn, new WaitTask(30, 60)), 5), Pair.of(new ConditionalTask<LivingEntity>(Entity::isOnGround, new WaitTask(200, 400)), 5))))));
     }
 
     public static void method_33244(AxolotlEntity axolotl) {

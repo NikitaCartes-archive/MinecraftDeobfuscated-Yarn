@@ -67,6 +67,7 @@ public class EntityModelLayers {
     public static final EntityModelLayer GIANT = EntityModelLayers.registerMain("giant");
     public static final EntityModelLayer GIANT_INNER_ARMOR = EntityModelLayers.createInnerArmor("giant");
     public static final EntityModelLayer GIANT_OUTER_ARMOR = EntityModelLayers.createOuterArmor("giant");
+    public static final EntityModelLayer GLOW_SQUID = EntityModelLayers.registerMain("glow_squid");
     public static final EntityModelLayer GUARDIAN = EntityModelLayers.registerMain("guardian");
     public static final EntityModelLayer HOGLIN = EntityModelLayers.registerMain("hoglin");
     public static final EntityModelLayer HOPPER_MINECART = EntityModelLayers.registerMain("hopper_minecart");

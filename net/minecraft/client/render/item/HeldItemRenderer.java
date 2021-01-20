@@ -211,17 +211,17 @@ public class HeldItemRenderer {
         float f = player.getHandSwingProgress(tickDelta);
         Hand hand = MoreObjects.firstNonNull(player.preferredHand, Hand.MAIN_HAND);
         float g = MathHelper.lerp(tickDelta, player.prevPitch, player.pitch);
-        class_5773 lv = HeldItemRenderer.method_33303(player);
+        HandRenderType handRenderType = HeldItemRenderer.method_33303(player);
         float h = MathHelper.lerp(tickDelta, player.lastRenderPitch, player.renderPitch);
         float i = MathHelper.lerp(tickDelta, player.lastRenderYaw, player.renderYaw);
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion((player.getPitch(tickDelta) - h) * 0.1f));
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion((player.getYaw(tickDelta) - i) * 0.1f));
-        if (lv.field_28387) {
+        if (handRenderType.renderMainHand) {
             j = hand == Hand.MAIN_HAND ? f : 0.0f;
             k = 1.0f - MathHelper.lerp(tickDelta, this.prevEquipProgressMainHand, this.equipProgressMainHand);
             this.renderFirstPersonItem(player, tickDelta, g, Hand.MAIN_HAND, j, this.mainHand, k, matrices, vertexConsumers, light);
         }
-        if (lv.field_28388) {
+        if (handRenderType.renderOffHand) {
             j = hand == Hand.OFF_HAND ? f : 0.0f;
             k = 1.0f - MathHelper.lerp(tickDelta, this.prevEquipProgressOffHand, this.equipProgressOffHand);
             this.renderFirstPersonItem(player, tickDelta, g, Hand.OFF_HAND, j, this.offHand, k, matrices, vertexConsumers, light);
@@ -230,38 +230,38 @@ public class HeldItemRenderer {
     }
 
     @VisibleForTesting
-    static class_5773 method_33303(ClientPlayerEntity clientPlayerEntity) {
+    static HandRenderType method_33303(ClientPlayerEntity clientPlayerEntity) {
         boolean bl2;
         ItemStack itemStack = clientPlayerEntity.getMainHandStack();
         ItemStack itemStack2 = clientPlayerEntity.getOffHandStack();
         boolean bl = itemStack.isOf(Items.BOW) || itemStack2.isOf(Items.BOW);
         boolean bl3 = bl2 = itemStack.isOf(Items.CROSSBOW) || itemStack2.isOf(Items.CROSSBOW);
         if (!bl && !bl2) {
-            return class_5773.field_28384;
+            return HandRenderType.RENDER_BOTH_HANDS;
         }
         if (clientPlayerEntity.isUsingItem()) {
             return HeldItemRenderer.method_33304(clientPlayerEntity);
         }
-        if (HeldItemRenderer.method_33302(itemStack)) {
-            return class_5773.field_28385;
+        if (HeldItemRenderer.isChargedCrossbow(itemStack)) {
+            return HandRenderType.RENDER_MAIN_HAND_ONLY;
         }
-        if (HeldItemRenderer.method_33302(itemStack2)) {
-            return itemStack.isEmpty() ? class_5773.field_28386 : class_5773.field_28384;
+        if (HeldItemRenderer.isChargedCrossbow(itemStack2)) {
+            return itemStack.isEmpty() ? HandRenderType.RENDER_OFF_HAND_ONLY : HandRenderType.RENDER_BOTH_HANDS;
         }
-        return class_5773.field_28384;
+        return HandRenderType.RENDER_BOTH_HANDS;
     }
 
-    private static class_5773 method_33304(ClientPlayerEntity clientPlayerEntity) {
+    private static HandRenderType method_33304(ClientPlayerEntity clientPlayerEntity) {
         ItemStack itemStack = clientPlayerEntity.getActiveItem();
         Hand hand = clientPlayerEntity.getActiveHand();
         if (itemStack.isOf(Items.BOW) || itemStack.isOf(Items.CROSSBOW)) {
-            return class_5773.method_33305(hand);
+            return HandRenderType.shouldOnlyRender(hand);
         }
-        return hand == Hand.MAIN_HAND && HeldItemRenderer.method_33302(clientPlayerEntity.getOffHandStack()) ? class_5773.field_28385 : class_5773.field_28384;
+        return hand == Hand.MAIN_HAND && HeldItemRenderer.isChargedCrossbow(clientPlayerEntity.getOffHandStack()) ? HandRenderType.RENDER_MAIN_HAND_ONLY : HandRenderType.RENDER_BOTH_HANDS;
     }
 
-    private static boolean method_33302(ItemStack itemStack) {
-        return itemStack.isOf(Items.CROSSBOW) && CrossbowItem.isCharged(itemStack);
+    private static boolean isChargedCrossbow(ItemStack stack) {
+        return stack.isOf(Items.CROSSBOW) && CrossbowItem.isCharged(stack);
     }
 
     private void renderFirstPersonItem(AbstractClientPlayerEntity player, float tickDelta, float pitch, Hand hand, float swingProgress, ItemStack item, float equipProgress, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
@@ -443,21 +443,21 @@ public class HeldItemRenderer {
 
     @Environment(value=EnvType.CLIENT)
     @VisibleForTesting
-    static enum class_5773 {
-        field_28384(true, true),
-        field_28385(true, false),
-        field_28386(false, true);
+    static enum HandRenderType {
+        RENDER_BOTH_HANDS(true, true),
+        RENDER_MAIN_HAND_ONLY(true, false),
+        RENDER_OFF_HAND_ONLY(false, true);
 
-        final boolean field_28387;
-        final boolean field_28388;
+        final boolean renderMainHand;
+        final boolean renderOffHand;
 
-        private class_5773(boolean bl, boolean bl2) {
-            this.field_28387 = bl;
-            this.field_28388 = bl2;
+        private HandRenderType(boolean renderMainHand, boolean renderOffHand) {
+            this.renderMainHand = renderMainHand;
+            this.renderOffHand = renderOffHand;
         }
 
-        public static class_5773 method_33305(Hand hand) {
-            return hand == Hand.MAIN_HAND ? field_28385 : field_28386;
+        public static HandRenderType shouldOnlyRender(Hand hand) {
+            return hand == Hand.MAIN_HAND ? RENDER_MAIN_HAND_ONLY : RENDER_OFF_HAND_ONLY;
         }
     }
 }

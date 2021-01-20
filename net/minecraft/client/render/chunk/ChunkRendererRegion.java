@@ -124,10 +124,10 @@ implements BlockRenderView {
     }
 
     @Nullable
-    public BlockEntity getBlockEntity(BlockPos blockPos, WorldChunk.CreationType creationType) {
-        int i = ChunkSectionPos.getSectionCoord(blockPos.getX()) - this.chunkXOffset;
-        int j = ChunkSectionPos.getSectionCoord(blockPos.getZ()) - this.chunkZOffset;
-        return this.chunks[i][j].getBlockEntity(blockPos, creationType);
+    public BlockEntity getBlockEntity(BlockPos pos, WorldChunk.CreationType creationType) {
+        int i = ChunkSectionPos.getSectionCoord(pos.getX()) - this.chunkXOffset;
+        int j = ChunkSectionPos.getSectionCoord(pos.getZ()) - this.chunkZOffset;
+        return this.chunks[i][j].getBlockEntity(pos, creationType);
     }
 
     @Override
@@ -136,13 +136,13 @@ implements BlockRenderView {
     }
 
     @Override
-    public int getSectionCount() {
-        return this.world.getSectionCount();
+    public int getBottomSectionLimit() {
+        return this.world.getBottomSectionLimit();
     }
 
     @Override
-    public int getBottomSectionLimit() {
-        return this.world.getBottomSectionLimit();
+    public int getSectionCount() {
+        return this.world.getSectionCount();
     }
 }
 

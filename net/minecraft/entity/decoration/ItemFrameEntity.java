@@ -53,9 +53,13 @@ extends AbstractDecorationEntity {
         super((EntityType<? extends AbstractDecorationEntity>)entityType, world);
     }
 
-    public ItemFrameEntity(World world, BlockPos pos, Direction direction) {
-        super(EntityType.ITEM_FRAME, world, pos);
-        this.setFacing(direction);
+    public ItemFrameEntity(World world, BlockPos pos, Direction facing) {
+        this(EntityType.ITEM_FRAME, world, pos, facing);
+    }
+
+    public ItemFrameEntity(EntityType<? extends ItemFrameEntity> type, World world, BlockPos pos, Direction facing) {
+        super(type, world, pos);
+        this.setFacing(facing);
     }
 
     @Override
@@ -224,7 +228,7 @@ extends AbstractDecorationEntity {
             }
         }
         if (alwaysDrop) {
-            this.dropItem(Items.ITEM_FRAME);
+            this.dropStack(this.getAsItemStack());
         }
         if (!itemStack.isEmpty()) {
             itemStack = itemStack.copy();
@@ -303,9 +307,9 @@ extends AbstractDecorationEntity {
         this.setRotation(value, true);
     }
 
-    private void setRotation(int value, boolean bl) {
+    private void setRotation(int value, boolean updateComparators) {
         this.getDataTracker().set(ROTATION, value % 8);
-        if (bl && this.attachmentPos != null) {
+        if (updateComparators && this.attachmentPos != null) {
             this.world.updateComparators(this.attachmentPos, Blocks.AIR);
         }
     }
@@ -397,9 +401,17 @@ extends AbstractDecorationEntity {
     public ItemStack getPickBlockStack() {
         ItemStack itemStack = this.getHeldItemStack();
         if (itemStack.isEmpty()) {
-            return new ItemStack(Items.ITEM_FRAME);
+            return this.getAsItemStack();
         }
         return itemStack.copy();
+    }
+
+    private ItemStack getAsItemStack() {
+        return this.isGlowItemFrame() ? new ItemStack(Items.GLOW_ITEM_FRAME) : new ItemStack(Items.ITEM_FRAME);
+    }
+
+    public boolean isGlowItemFrame() {
+        return this.getType() == EntityType.GLOW_ITEM_FRAME;
     }
 }
 

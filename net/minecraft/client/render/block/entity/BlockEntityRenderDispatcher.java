@@ -55,12 +55,12 @@ implements SynchronousResourceReloadListener {
         return this.renderers.get(blockEntity.getType());
     }
 
-    public void configure(World world, Camera camera, HitResult hitResult) {
+    public void configure(World world, Camera camera, HitResult crosshairTarget) {
         if (this.world != world) {
             this.setWorld(world);
         }
         this.camera = camera;
-        this.crosshairTarget = hitResult;
+        this.crosshairTarget = crosshairTarget;
     }
 
     public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {

@@ -45,9 +45,9 @@ public class PointOfInterestSet {
         this(updateListener, true, ImmutableList.of());
     }
 
-    private PointOfInterestSet(Runnable updateListener, boolean bl, List<PointOfInterest> list) {
+    private PointOfInterestSet(Runnable updateListener, boolean valid, List<PointOfInterest> list) {
         this.updateListener = updateListener;
-        this.valid = bl;
+        this.valid = valid;
         list.forEach(this::add);
     }
 
@@ -71,7 +71,7 @@ public class PointOfInterestSet {
             if (pointOfInterestType2.equals(pointOfInterest.getType())) {
                 return false;
             }
-            throw Util.throwOrPause(new IllegalStateException("POI data mismatch: already registered at " + blockPos));
+            Util.method_33559("POI data mismatch: already registered at " + blockPos);
         }
         this.pointsOfInterestByPos.put(s, poi);
         this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType2, pointOfInterestType -> Sets.newHashSet()).add(poi);

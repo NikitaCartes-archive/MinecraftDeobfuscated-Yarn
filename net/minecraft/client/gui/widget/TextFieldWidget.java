@@ -318,7 +318,7 @@ Element {
     }
 
     @Override
-    public boolean charTyped(char chr, int keyCode) {
+    public boolean charTyped(char chr, int modifiers) {
         if (!this.isActive()) {
             return false;
         }

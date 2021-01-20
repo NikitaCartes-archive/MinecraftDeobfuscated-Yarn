@@ -173,7 +173,7 @@ extends Entity {
                         this.onDestroyedOnLanding(block, blockPos);
                     }
                 }
-            } else if (!(this.world.isClient || (this.timeFalling <= 100 || blockPos.getY() > this.world.getSectionCount() && blockPos.getY() <= this.world.getTopHeightLimit()) && this.timeFalling <= 600)) {
+            } else if (!(this.world.isClient || (this.timeFalling <= 100 || blockPos.getY() > this.world.getBottomSectionLimit() && blockPos.getY() <= this.world.getTopHeightLimit()) && this.timeFalling <= 600)) {
                 if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                     this.dropItem(block);
                 }
@@ -190,8 +190,8 @@ extends Entity {
     }
 
     @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
-        DamageSource damageSource;
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+        DamageSource damageSource2;
         Predicate<Entity> predicate;
         if (!this.hurtEntities) {
             return false;
@@ -203,13 +203,13 @@ extends Entity {
         if (this.block.getBlock() instanceof LandingBlock) {
             LandingBlock landingBlock = (LandingBlock)((Object)this.block.getBlock());
             predicate = landingBlock.getEntityPredicate();
-            damageSource = landingBlock.getDamageSource();
+            damageSource2 = landingBlock.getDamageSource();
         } else {
             predicate = EntityPredicates.EXCEPT_SPECTATOR;
-            damageSource = DamageSource.FALLING_BLOCK;
+            damageSource2 = DamageSource.FALLING_BLOCK;
         }
         float f = Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);
-        this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource, f));
+        this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource2, f));
         boolean bl = this.block.isIn(BlockTags.ANVIL);
         if (bl && (double)this.random.nextFloat() < (double)0.05f + (double)i * 0.05) {
             BlockState blockState = AnvilBlock.getLandingState(this.block);

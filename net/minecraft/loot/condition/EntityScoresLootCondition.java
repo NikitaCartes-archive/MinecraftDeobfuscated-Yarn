@@ -43,7 +43,7 @@ implements LootCondition {
 
     @Override
     public Set<LootContextParameter<?>> getRequiredParameters() {
-        return Stream.concat(Stream.of(this.target.getParameter()), this.scores.values().stream().flatMap(boundedIntUnaryOperator -> boundedIntUnaryOperator.method_32386().stream())).collect(ImmutableSet.toImmutableSet());
+        return Stream.concat(Stream.of(this.target.getParameter()), this.scores.values().stream().flatMap(boundedIntUnaryOperator -> boundedIntUnaryOperator.getRequiredParameters().stream())).collect(ImmutableSet.toImmutableSet());
     }
 
     @Override
@@ -60,16 +60,16 @@ implements LootCondition {
         return true;
     }
 
-    protected boolean entityScoreIsInRange(LootContext lootContext, Entity entity, Scoreboard scoreboard, String string, BoundedIntUnaryOperator boundedIntUnaryOperator) {
-        ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(string);
+    protected boolean entityScoreIsInRange(LootContext context, Entity entity, Scoreboard scoreboard, String objectiveName, BoundedIntUnaryOperator range) {
+        ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(objectiveName);
         if (scoreboardObjective == null) {
             return false;
         }
-        String string2 = entity.getEntityName();
-        if (!scoreboard.playerHasObjective(string2, scoreboardObjective)) {
+        String string = entity.getEntityName();
+        if (!scoreboard.playerHasObjective(string, scoreboardObjective)) {
             return false;
         }
-        return boundedIntUnaryOperator.method_32393(lootContext, scoreboard.getPlayerScore(string2, scoreboardObjective).getScore());
+        return range.test(context, scoreboard.getPlayerScore(string, scoreboardObjective).getScore());
     }
 
     @Override

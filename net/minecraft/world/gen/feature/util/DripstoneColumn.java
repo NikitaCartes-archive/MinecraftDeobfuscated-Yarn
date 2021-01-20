@@ -45,6 +45,8 @@ public abstract class DripstoneColumn {
 
     public abstract OptionalInt getFloorHeight();
 
+    public abstract OptionalInt getOptionalHeight();
+
     public DripstoneColumn withFloor(OptionalInt floor) {
         return DripstoneColumn.create(floor, this.getCeilingHeight());
     }
@@ -88,6 +90,11 @@ public abstract class DripstoneColumn {
             return this.floor ? OptionalInt.of(this.height) : OptionalInt.empty();
         }
 
+        @Override
+        public OptionalInt getOptionalHeight() {
+            return OptionalInt.empty();
+        }
+
         public String toString() {
             return this.floor ? "C(" + this.height + "-)" : "C(-" + this.height + ")";
         }
@@ -107,6 +114,11 @@ public abstract class DripstoneColumn {
 
         @Override
         public OptionalInt getFloorHeight() {
+            return OptionalInt.empty();
+        }
+
+        @Override
+        public OptionalInt getOptionalHeight() {
             return OptionalInt.empty();
         }
 
@@ -136,6 +148,11 @@ public abstract class DripstoneColumn {
         @Override
         public OptionalInt getFloorHeight() {
             return OptionalInt.of(this.floor);
+        }
+
+        @Override
+        public OptionalInt getOptionalHeight() {
+            return OptionalInt.of(this.getHeight());
         }
 
         public int getCeiling() {

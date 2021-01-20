@@ -74,8 +74,8 @@ implements SidedInventory {
         }
     };
 
-    public BrewingStandBlockEntity(BlockPos blockPos, BlockState blockState) {
-        super(BlockEntityType.BREWING_STAND, blockPos, blockState);
+    public BrewingStandBlockEntity(BlockPos pos, BlockState state) {
+        super(BlockEntityType.BREWING_STAND, pos, state);
     }
 
     @Override
@@ -97,44 +97,44 @@ implements SidedInventory {
         return true;
     }
 
-    public static void tick(World world, BlockPos blockPos, BlockState blockState, BrewingStandBlockEntity brewingStandBlockEntity) {
-        ItemStack itemStack = brewingStandBlockEntity.inventory.get(4);
-        if (brewingStandBlockEntity.fuel <= 0 && itemStack.isOf(Items.BLAZE_POWDER)) {
-            brewingStandBlockEntity.fuel = 20;
+    public static void tick(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity) {
+        ItemStack itemStack = blockEntity.inventory.get(4);
+        if (blockEntity.fuel <= 0 && itemStack.isOf(Items.BLAZE_POWDER)) {
+            blockEntity.fuel = 20;
             itemStack.decrement(1);
-            BrewingStandBlockEntity.markDirty(world, blockPos, blockState);
+            BrewingStandBlockEntity.markDirty(world, pos, state);
         }
-        boolean bl = BrewingStandBlockEntity.canCraft(brewingStandBlockEntity.inventory);
-        boolean bl2 = brewingStandBlockEntity.brewTime > 0;
-        ItemStack itemStack2 = brewingStandBlockEntity.inventory.get(3);
+        boolean bl = BrewingStandBlockEntity.canCraft(blockEntity.inventory);
+        boolean bl2 = blockEntity.brewTime > 0;
+        ItemStack itemStack2 = blockEntity.inventory.get(3);
         if (bl2) {
             boolean bl3;
-            --brewingStandBlockEntity.brewTime;
-            boolean bl4 = bl3 = brewingStandBlockEntity.brewTime == 0;
+            --blockEntity.brewTime;
+            boolean bl4 = bl3 = blockEntity.brewTime == 0;
             if (bl3 && bl) {
-                BrewingStandBlockEntity.craft(world, blockPos, brewingStandBlockEntity.inventory);
-                BrewingStandBlockEntity.markDirty(world, blockPos, blockState);
-            } else if (!bl || !itemStack2.isOf(brewingStandBlockEntity.itemBrewing)) {
-                brewingStandBlockEntity.brewTime = 0;
-                BrewingStandBlockEntity.markDirty(world, blockPos, blockState);
+                BrewingStandBlockEntity.craft(world, pos, blockEntity.inventory);
+                BrewingStandBlockEntity.markDirty(world, pos, state);
+            } else if (!bl || !itemStack2.isOf(blockEntity.itemBrewing)) {
+                blockEntity.brewTime = 0;
+                BrewingStandBlockEntity.markDirty(world, pos, state);
             }
-        } else if (bl && brewingStandBlockEntity.fuel > 0) {
-            --brewingStandBlockEntity.fuel;
-            brewingStandBlockEntity.brewTime = 400;
-            brewingStandBlockEntity.itemBrewing = itemStack2.getItem();
-            BrewingStandBlockEntity.markDirty(world, blockPos, blockState);
+        } else if (bl && blockEntity.fuel > 0) {
+            --blockEntity.fuel;
+            blockEntity.brewTime = 400;
+            blockEntity.itemBrewing = itemStack2.getItem();
+            BrewingStandBlockEntity.markDirty(world, pos, state);
         }
-        boolean[] bls = brewingStandBlockEntity.getSlotsEmpty();
-        if (!Arrays.equals(bls, brewingStandBlockEntity.slotsEmptyLastTick)) {
-            brewingStandBlockEntity.slotsEmptyLastTick = bls;
-            BlockState blockState2 = blockState;
-            if (!(blockState2.getBlock() instanceof BrewingStandBlock)) {
+        boolean[] bls = blockEntity.getSlotsEmpty();
+        if (!Arrays.equals(bls, blockEntity.slotsEmptyLastTick)) {
+            blockEntity.slotsEmptyLastTick = bls;
+            BlockState blockState = state;
+            if (!(blockState.getBlock() instanceof BrewingStandBlock)) {
                 return;
             }
             for (int i = 0; i < BrewingStandBlock.BOTTLE_PROPERTIES.length; ++i) {
-                blockState2 = (BlockState)blockState2.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], bls[i]);
+                blockState = (BlockState)blockState.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], bls[i]);
             }
-            world.setBlockState(blockPos, blockState2, 2);
+            world.setBlockState(pos, blockState, 2);
         }
     }
 
@@ -147,8 +147,8 @@ implements SidedInventory {
         return bls;
     }
 
-    private static boolean canCraft(DefaultedList<ItemStack> defaultedList) {
-        ItemStack itemStack = defaultedList.get(3);
+    private static boolean canCraft(DefaultedList<ItemStack> slots) {
+        ItemStack itemStack = slots.get(3);
         if (itemStack.isEmpty()) {
             return false;
         }
@@ -156,17 +156,17 @@ implements SidedInventory {
             return false;
         }
         for (int i = 0; i < 3; ++i) {
-            ItemStack itemStack2 = defaultedList.get(i);
+            ItemStack itemStack2 = slots.get(i);
             if (itemStack2.isEmpty() || !BrewingRecipeRegistry.hasRecipe(itemStack2, itemStack)) continue;
             return true;
         }
         return false;
     }
 
-    private static void craft(World world, BlockPos blockPos, DefaultedList<ItemStack> defaultedList) {
-        ItemStack itemStack = defaultedList.get(3);
+    private static void craft(World world, BlockPos pos, DefaultedList<ItemStack> slots) {
+        ItemStack itemStack = slots.get(3);
         for (int i = 0; i < 3; ++i) {
-            defaultedList.set(i, BrewingRecipeRegistry.craft(itemStack, defaultedList.get(i)));
+            slots.set(i, BrewingRecipeRegistry.craft(itemStack, slots.get(i)));
         }
         itemStack.decrement(1);
         if (itemStack.getItem().hasRecipeRemainder()) {
@@ -174,11 +174,11 @@ implements SidedInventory {
             if (itemStack.isEmpty()) {
                 itemStack = itemStack2;
             } else {
-                ItemScatterer.spawn(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
+                ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
             }
         }
-        defaultedList.set(3, itemStack);
-        world.syncWorldEvent(1035, blockPos, 0);
+        slots.set(3, itemStack);
+        world.syncWorldEvent(1035, pos, 0);
     }
 
     @Override

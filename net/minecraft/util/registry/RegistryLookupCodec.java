@@ -48,8 +48,8 @@ extends MapCodec<Registry<E>> {
     }
 
     @Override
-    public /* synthetic */ RecordBuilder encode(Object object, DynamicOps dynamicOps, RecordBuilder recordBuilder) {
-        return this.encode((Registry)object, dynamicOps, recordBuilder);
+    public /* synthetic */ RecordBuilder encode(Object registry, DynamicOps dynamicOps, RecordBuilder recordBuilder) {
+        return this.encode((Registry)registry, dynamicOps, recordBuilder);
     }
 }
 

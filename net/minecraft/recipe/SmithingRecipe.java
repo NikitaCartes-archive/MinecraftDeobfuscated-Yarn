@@ -61,8 +61,8 @@ implements Recipe<Inventory> {
         return this.result;
     }
 
-    public boolean method_30029(ItemStack itemStack) {
-        return this.addition.test(itemStack);
+    public boolean testAddition(ItemStack stack) {
+        return this.addition.test(stack);
     }
 
     @Override
@@ -88,7 +88,7 @@ implements Recipe<Inventory> {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public boolean method_31584() {
+    public boolean isEmpty() {
         return Stream.of(this.base, this.addition).anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
     }
 

@@ -254,8 +254,8 @@ extends ValueObject {
         return this.name + " (" + this.slots.get(slotId).getSlotName(slotId) + ")";
     }
 
-    public ServerInfo method_31403(String string) {
-        return new ServerInfo(this.name, string, false);
+    public ServerInfo createServerInfo(String address) {
+        return new ServerInfo(this.name, address, false);
     }
 
     public /* synthetic */ Object clone() throws CloneNotSupportedException {

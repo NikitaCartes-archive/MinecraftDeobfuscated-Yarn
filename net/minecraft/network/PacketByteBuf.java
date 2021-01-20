@@ -23,6 +23,7 @@ import java.nio.channels.GatheringByteChannel;
 import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
@@ -376,6 +377,14 @@ extends ByteBuf {
         this.writeFloat((float)(vec3d.y - (double)blockPos.getY()));
         this.writeFloat((float)(vec3d.z - (double)blockPos.getZ()));
         this.writeBoolean(blockHitResult.isInsideBlock());
+    }
+
+    public BitSet method_33558() {
+        return BitSet.valueOf(this.method_33134());
+    }
+
+    public void method_33557(BitSet bitSet) {
+        this.writeLongArray(bitSet.toLongArray());
     }
 
     @Override

@@ -50,27 +50,27 @@ extends JsonDataLoader {
     @Override
     protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
         ImmutableMap.Builder builder = ImmutableMap.builder();
-        map.forEach((identifier, jsonElement) -> {
+        map.forEach((id, json) -> {
             try {
-                if (jsonElement.isJsonArray()) {
-                    LootFunction[] lootFunctions = GSON.fromJson((JsonElement)jsonElement, LootFunction[].class);
-                    builder.put(identifier, new AndFunction(lootFunctions));
+                if (json.isJsonArray()) {
+                    LootFunction[] lootFunctions = GSON.fromJson((JsonElement)json, LootFunction[].class);
+                    builder.put(id, new AndFunction(lootFunctions));
                 } else {
-                    LootFunction lootFunction = GSON.fromJson((JsonElement)jsonElement, LootFunction.class);
-                    builder.put(identifier, lootFunction);
+                    LootFunction lootFunction = GSON.fromJson((JsonElement)json, LootFunction.class);
+                    builder.put(id, lootFunction);
                 }
             } catch (Exception exception) {
-                LOGGER.error("Couldn't parse item modifier {}", identifier, (Object)exception);
+                LOGGER.error("Couldn't parse item modifier {}", id, (Object)exception);
             }
         });
         ImmutableMap<Identifier, LootFunction> map2 = builder.build();
         LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.lootConditionManager::get, this.lootManager::getTable);
-        map2.forEach((identifier, lootFunction) -> lootFunction.validate(lootTableReporter));
+        map2.forEach((id, lootFunction) -> lootFunction.validate(lootTableReporter));
         lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found item modifier validation problem in {}: {}", string, string2));
         this.functions = map2;
     }
 
-    public Set<Identifier> method_32399() {
+    public Set<Identifier> getFunctionIds() {
         return Collections.unmodifiableSet(this.functions.keySet());
     }
 
@@ -95,8 +95,8 @@ extends JsonDataLoader {
         }
 
         @Override
-        public /* synthetic */ Object apply(Object object, Object object2) {
-            return this.apply((ItemStack)object, (LootContext)object2);
+        public /* synthetic */ Object apply(Object stack, Object context) {
+            return this.apply((ItemStack)stack, (LootContext)context);
         }
     }
 }

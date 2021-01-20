@@ -61,7 +61,7 @@ StructureHolder {
 
     default public int getHighestNonEmptySectionYOffset() {
         ChunkSection chunkSection = this.getHighestNonEmptySection();
-        return chunkSection == null ? this.getSectionCount() : chunkSection.getYOffset();
+        return chunkSection == null ? this.getBottomSectionLimit() : chunkSection.getYOffset();
     }
 
     public Set<BlockPos> getBlockEntityPositions();
@@ -83,8 +83,8 @@ StructureHolder {
     public void setStructureStarts(Map<StructureFeature<?>, StructureStart<?>> var1);
 
     default public boolean areSectionsEmptyBetween(int lowerHeight, int upperHeight) {
-        if (lowerHeight < this.getSectionCount()) {
-            lowerHeight = this.getSectionCount();
+        if (lowerHeight < this.getBottomSectionLimit()) {
+            lowerHeight = this.getBottomSectionLimit();
         }
         if (upperHeight >= this.getTopHeightLimit()) {
             upperHeight = this.getTopHeightLimit() - 1;

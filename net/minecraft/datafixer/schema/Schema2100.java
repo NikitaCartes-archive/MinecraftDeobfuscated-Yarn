@@ -18,15 +18,15 @@ extends IdentifierNormalizingSchema {
         super(i, schema);
     }
 
-    protected static void method_21746(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-        schema.register(map, string, () -> Schema100.targetItems(schema));
+    protected static void registerEntity(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, String name) {
+        schema.register(entityTypes, name, () -> Schema100.targetItems(schema));
     }
 
     @Override
     public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
         Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-        Schema2100.method_21746(schema, map, "minecraft:bee");
-        Schema2100.method_21746(schema, map, "minecraft:bee_stinger");
+        Schema2100.registerEntity(schema, map, "minecraft:bee");
+        Schema2100.registerEntity(schema, map, "minecraft:bee_stinger");
         return map;
     }
 

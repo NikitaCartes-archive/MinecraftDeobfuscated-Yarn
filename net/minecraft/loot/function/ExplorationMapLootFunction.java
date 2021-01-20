@@ -34,7 +34,7 @@ import org.apache.logging.log4j.Logger;
 public class ExplorationMapLootFunction
 extends ConditionalLootFunction {
     private static final Logger LOGGER = LogManager.getLogger();
-    public static final StructureFeature<?> field_25032 = StructureFeature.BURIED_TREASURE;
+    public static final StructureFeature<?> DEFAULT_DESTINATION = StructureFeature.BURIED_TREASURE;
     public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
     private final StructureFeature<?> destination;
     private final MapIcon.Type decoration;
@@ -42,9 +42,9 @@ extends ConditionalLootFunction {
     private final int searchRadius;
     private final boolean skipExistingChunks;
 
-    private ExplorationMapLootFunction(LootCondition[] conditions, StructureFeature<?> structureFeature, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks) {
+    private ExplorationMapLootFunction(LootCondition[] conditions, StructureFeature<?> destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks) {
         super(conditions);
-        this.destination = structureFeature;
+        this.destination = destination;
         this.decoration = decoration;
         this.zoom = zoom;
         this.searchRadius = searchRadius;
@@ -88,7 +88,7 @@ extends ConditionalLootFunction {
         @Override
         public void toJson(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
             super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);
-            if (!explorationMapLootFunction.destination.equals(field_25032)) {
+            if (!explorationMapLootFunction.destination.equals(DEFAULT_DESTINATION)) {
                 jsonObject.add("destination", jsonSerializationContext.serialize(explorationMapLootFunction.destination.getName()));
             }
             if (explorationMapLootFunction.decoration != DEFAULT_DECORATION) {
@@ -107,7 +107,7 @@ extends ConditionalLootFunction {
 
         @Override
         public ExplorationMapLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-            StructureFeature<?> structureFeature = Serializer.method_29039(jsonObject);
+            StructureFeature<?> structureFeature = Serializer.getDestination(jsonObject);
             String string = jsonObject.has("decoration") ? JsonHelper.getString(jsonObject, "decoration") : "mansion";
             MapIcon.Type type = DEFAULT_DECORATION;
             try {
@@ -121,13 +121,13 @@ extends ConditionalLootFunction {
             return new ExplorationMapLootFunction(lootConditions, structureFeature, type, b, i, bl);
         }
 
-        private static StructureFeature<?> method_29039(JsonObject jsonObject) {
+        private static StructureFeature<?> getDestination(JsonObject json) {
             String string;
             StructureFeature structureFeature;
-            if (jsonObject.has("destination") && (structureFeature = (StructureFeature)StructureFeature.STRUCTURES.get((string = JsonHelper.getString(jsonObject, "destination")).toLowerCase(Locale.ROOT))) != null) {
+            if (json.has("destination") && (structureFeature = (StructureFeature)StructureFeature.STRUCTURES.get((string = JsonHelper.getString(json, "destination")).toLowerCase(Locale.ROOT))) != null) {
                 return structureFeature;
             }
-            return field_25032;
+            return DEFAULT_DESTINATION;
         }
 
         @Override
@@ -138,7 +138,7 @@ extends ConditionalLootFunction {
 
     public static class Builder
     extends ConditionalLootFunction.Builder<Builder> {
-        private StructureFeature<?> destination = field_25032;
+        private StructureFeature<?> destination = DEFAULT_DESTINATION;
         private MapIcon.Type decoration = DEFAULT_DECORATION;
         private byte zoom = (byte)2;
         private int searchRadius = 50;
@@ -149,8 +149,8 @@ extends ConditionalLootFunction {
             return this;
         }
 
-        public Builder withDestination(StructureFeature<?> structureFeature) {
-            this.destination = structureFeature;
+        public Builder withDestination(StructureFeature<?> destination) {
+            this.destination = destination;
             return this;
         }
 
