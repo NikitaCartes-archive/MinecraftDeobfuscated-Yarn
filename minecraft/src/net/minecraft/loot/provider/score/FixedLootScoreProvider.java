@@ -30,7 +30,7 @@ public class FixedLootScoreProvider implements LootScoreProvider {
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> method_32477() {
+	public Set<LootContextParameter<?>> getRequiredParameters() {
 		return ImmutableSet.of();
 	}
 

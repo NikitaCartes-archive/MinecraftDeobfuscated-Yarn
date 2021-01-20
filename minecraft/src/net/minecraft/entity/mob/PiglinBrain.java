@@ -324,22 +324,22 @@ public class PiglinBrain {
 		return itemStack2;
 	}
 
-	public static void consumeOffHandItem(PiglinEntity piglin, boolean bl) {
+	public static void consumeOffHandItem(PiglinEntity piglin, boolean barter) {
 		ItemStack itemStack = piglin.getStackInHand(Hand.OFF_HAND);
 		piglin.setStackInHand(Hand.OFF_HAND, ItemStack.EMPTY);
 		if (piglin.isAdult()) {
-			boolean bl2 = acceptsForBarter(itemStack);
-			if (bl && bl2) {
+			boolean bl = acceptsForBarter(itemStack);
+			if (barter && bl) {
 				doBarter(piglin, getBarteredItem(piglin));
-			} else if (!bl2) {
-				boolean bl3 = piglin.tryEquip(itemStack);
-				if (!bl3) {
+			} else if (!bl) {
+				boolean bl2 = piglin.tryEquip(itemStack);
+				if (!bl2) {
 					barterItem(piglin, itemStack);
 				}
 			}
 		} else {
-			boolean bl2 = piglin.tryEquip(itemStack);
-			if (!bl2) {
+			boolean bl = piglin.tryEquip(itemStack);
+			if (!bl) {
 				ItemStack itemStack2 = piglin.getMainHandStack();
 				if (isGoldenItem(itemStack2)) {
 					barterItem(piglin, itemStack2);

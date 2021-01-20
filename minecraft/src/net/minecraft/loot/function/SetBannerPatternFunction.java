@@ -72,7 +72,7 @@ public class SetBannerPatternFunction extends ConditionalLootFunction {
 			for (int i = 0; i < jsonArray.size(); i++) {
 				JsonObject jsonObject2 = JsonHelper.asObject(jsonArray.get(i), "pattern[" + i + "]");
 				String string = JsonHelper.getString(jsonObject2, "pattern");
-				BannerPattern bannerPattern = BannerPattern.method_31652(string);
+				BannerPattern bannerPattern = BannerPattern.byName(string);
 				if (bannerPattern == null) {
 					throw new JsonSyntaxException("Unknown pattern: " + string);
 				}

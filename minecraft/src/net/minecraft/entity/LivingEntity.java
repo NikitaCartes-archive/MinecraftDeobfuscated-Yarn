@@ -1432,13 +1432,13 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
-		boolean bl = super.handleFallDamage(fallDistance, damageMultiplier);
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
+		boolean bl = super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 		int i = this.computeFallDamage(fallDistance, damageMultiplier);
 		if (i > 0) {
 			this.playSound(this.getFallSound(i), 1.0F, 1.0F);
 			this.playBlockFallSound();
-			this.damage(DamageSource.FALL, (float)i);
+			this.damage(damageSource, (float)i);
 			return true;
 		} else {
 			return bl;
@@ -1755,7 +1755,7 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	protected void destroy() {
+	protected void tickInVoid() {
 		this.damage(DamageSource.OUT_OF_WORLD, 4.0F);
 	}
 
@@ -2075,7 +2075,7 @@ public abstract class LivingEntity extends Entity {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
 					this.fallDistance = 0.0F;
 				} else if (this.world.isClient && !this.world.isChunkLoaded(blockPos)) {
-					if (this.getY() > (double)this.world.getSectionCount()) {
+					if (this.getY() > (double)this.world.getBottomSectionLimit()) {
 						q = -0.1;
 					} else {
 						q = 0.0;
@@ -2991,7 +2991,7 @@ public abstract class LivingEntity extends Entity {
 		if (world.isChunkLoaded(blockPos)) {
 			boolean bl2 = false;
 
-			while (!bl2 && blockPos.getY() > world.getSectionCount()) {
+			while (!bl2 && blockPos.getY() > world.getBottomSectionLimit()) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = world.getBlockState(blockPos2);
 				if (blockState.getMaterial().blocksMovement()) {

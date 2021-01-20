@@ -42,6 +42,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DataPackSettings;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
@@ -274,23 +275,30 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 
 		public void play() {
 			if (!this.level.isLocked()) {
-				if (this.level.isOutdatedLevel()) {
-					Text text = new TranslatableText("selectWorld.backupQuestion");
-					Text text2 = new TranslatableText("selectWorld.backupWarning", this.level.getVersion(), SharedConstants.getGameVersion().getName());
+				LevelSummary.class_5781 lv = this.level.method_33405();
+				if (lv.method_33406()) {
+					String string = "selectWorld.backupQuestion." + lv.method_33408();
+					String string2 = "selectWorld.backupWarning." + lv.method_33408();
+					MutableText mutableText = new TranslatableText(string);
+					if (lv.method_33407()) {
+						mutableText.formatted(Formatting.BOLD, Formatting.RED);
+					}
+
+					Text text = new TranslatableText(string2, this.level.getVersion(), SharedConstants.getGameVersion().getName());
 					this.client.openScreen(new BackupPromptScreen(this.screen, (bl, bl2) -> {
 						if (bl) {
-							String string = this.level.getName();
+							String stringx = this.level.getName();
 
-							try (LevelStorage.Session session = this.client.getLevelStorage().createSession(string)) {
+							try (LevelStorage.Session session = this.client.getLevelStorage().createSession(stringx)) {
 								EditWorldScreen.backupLevel(session);
 							} catch (IOException var17) {
-								SystemToast.addWorldAccessFailureToast(this.client, string);
-								WorldListWidget.LOGGER.error("Failed to backup level {}", string, var17);
+								SystemToast.addWorldAccessFailureToast(this.client, stringx);
+								WorldListWidget.LOGGER.error("Failed to backup level {}", stringx, var17);
 							}
 						}
 
 						this.start();
-					}, text, text2, false));
+					}, mutableText, text, false));
 				} else if (this.level.isFutureLevel()) {
 					this.client
 						.openScreen(
@@ -299,8 +307,8 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 									if (bl) {
 										try {
 											this.start();
-										} catch (Exception var3) {
-											WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3);
+										} catch (Exception var3x) {
+											WorldListWidget.LOGGER.error("Failure to open 'future world'", (Throwable)var3x);
 											this.client
 												.openScreen(
 													new NoticeScreen(

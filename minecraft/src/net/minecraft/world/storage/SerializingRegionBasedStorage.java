@@ -38,8 +38,8 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private final Function<Runnable, Codec<R>> codecFactory;
 	private final Function<Runnable, R> factory;
 	private final DataFixer dataFixer;
-	private final DataFixTypes dataFixType;
-	protected final HeightLimitView field_27240;
+	private final DataFixTypes dataFixTypes;
+	protected final HeightLimitView world;
 
 	public SerializingRegionBasedStorage(
 		File directory,
@@ -48,13 +48,13 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		DataFixer dataFixer,
 		DataFixTypes dataFixTypes,
 		boolean dsync,
-		HeightLimitView heightLimitView
+		HeightLimitView world
 	) {
 		this.codecFactory = codecFactory;
 		this.factory = factory;
 		this.dataFixer = dataFixer;
-		this.dataFixType = dataFixTypes;
-		this.field_27240 = heightLimitView;
+		this.dataFixTypes = dataFixTypes;
+		this.world = world;
 		this.worker = new StorageIoWorker(directory, dsync, directory.getName());
 	}
 
@@ -92,7 +92,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	protected boolean isPosInvalid(ChunkSectionPos pos) {
 		int i = ChunkSectionPos.getBlockCoord(pos.getSectionY());
-		return this.field_27240.isOutOfHeightLimit(i);
+		return this.world.isOutOfHeightLimit(i);
 	}
 
 	protected R getOrCreate(long pos) {
@@ -122,7 +122,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
 		if (data == null) {
-			for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); i++) {
+			for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
 				this.loadedElements.put(ChunkSectionPos.from(pos, i).asLong(), Optional.empty());
 			}
 		} else {
@@ -130,10 +130,10 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			int j = getDataVersion(dynamic);
 			int k = SharedConstants.getGameVersion().getWorldVersion();
 			boolean bl = j != k;
-			Dynamic<T> dynamic2 = this.dataFixer.update(this.dataFixType.getTypeReference(), dynamic, j, k);
+			Dynamic<T> dynamic2 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic, j, k);
 			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
 
-			for (int l = this.field_27240.method_32891(); l < this.field_27240.getTopSectionLimit(); l++) {
+			for (int l = this.world.getMinimumSection(); l < this.world.getTopSectionLimit(); l++) {
 				long m = ChunkSectionPos.from(pos, l).asLong();
 				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
 					.result()
@@ -162,7 +162,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 
-		for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); i++) {
+		for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
 			long l = ChunkSectionPos.from(chunkPos, i).asLong();
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
@@ -204,7 +204,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	public void saveChunk(ChunkPos pos) {
 		if (!this.unsavedElements.isEmpty()) {
-			for (int i = this.field_27240.method_32891(); i < this.field_27240.getTopSectionLimit(); i++) {
+			for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
 				long l = ChunkSectionPos.from(pos, i).asLong();
 				if (this.unsavedElements.contains(l)) {
 					this.save(pos);

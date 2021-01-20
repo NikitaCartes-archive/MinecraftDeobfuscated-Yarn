@@ -164,7 +164,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected void renderBackground(MatrixStack matrices) {
 	}
 
-	protected void renderDecorations(MatrixStack matrixStack, int i, int j) {
+	protected void renderDecorations(MatrixStack matrices, int i, int j) {
 	}
 
 	@Override

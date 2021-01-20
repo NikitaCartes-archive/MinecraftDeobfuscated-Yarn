@@ -3,7 +3,7 @@ package net.minecraft.test;
 public interface TestListener {
 	void onStarted(GameTest test);
 
-	void method_33317(GameTest gameTest);
+	void onPassed(GameTest test);
 
 	void onFailed(GameTest test);
 }

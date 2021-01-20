@@ -111,8 +111,8 @@ public abstract class AbstractFurnaceScreen<T extends AbstractFurnaceScreenHandl
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
-		return this.recipeBook.charTyped(chr, keyCode) ? true : super.charTyped(chr, keyCode);
+	public boolean charTyped(char chr, int modifiers) {
+		return this.recipeBook.charTyped(chr, modifiers) ? true : super.charTyped(chr, modifiers);
 	}
 
 	@Override

@@ -24,7 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class LocationPredicate {
-	private static final Logger field_24732 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	public static final LocationPredicate ANY = new LocationPredicate(
 		NumberRange.FloatRange.ANY,
 		NumberRange.FloatRange.ANY,
@@ -56,7 +56,7 @@ public class LocationPredicate {
 		NumberRange.FloatRange x,
 		NumberRange.FloatRange y,
 		NumberRange.FloatRange z,
-		@Nullable RegistryKey<Biome> registryKey,
+		@Nullable RegistryKey<Biome> biome,
 		@Nullable StructureFeature<?> feature,
 		@Nullable RegistryKey<World> dimension,
 		@Nullable Boolean smokey,
@@ -67,7 +67,7 @@ public class LocationPredicate {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.biome = registryKey;
+		this.biome = biome;
 		this.feature = feature;
 		this.dimension = dimension;
 		this.smokey = smokey;
@@ -76,12 +76,12 @@ public class LocationPredicate {
 		this.fluid = fluid;
 	}
 
-	public static LocationPredicate biome(RegistryKey<Biome> registryKey) {
+	public static LocationPredicate biome(RegistryKey<Biome> biome) {
 		return new LocationPredicate(
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
 			NumberRange.FloatRange.ANY,
-			registryKey,
+			biome,
 			null,
 			null,
 			null,
@@ -174,10 +174,7 @@ public class LocationPredicate {
 			}
 
 			if (this.dimension != null) {
-				World.CODEC
-					.encodeStart(JsonOps.INSTANCE, this.dimension)
-					.resultOrPartial(field_24732::error)
-					.ifPresent(jsonElement -> jsonObject.add("dimension", jsonElement));
+				World.CODEC.encodeStart(JsonOps.INSTANCE, this.dimension).resultOrPartial(LOGGER::error).ifPresent(jsonElement -> jsonObject.add("dimension", jsonElement));
 			}
 
 			if (this.feature != null) {
@@ -209,7 +206,7 @@ public class LocationPredicate {
 			RegistryKey<World> registryKey = jsonObject.has("dimension")
 				? (RegistryKey)Identifier.CODEC
 					.parse(JsonOps.INSTANCE, jsonObject.get("dimension"))
-					.resultOrPartial(field_24732::error)
+					.resultOrPartial(LOGGER::error)
 					.map(identifier -> RegistryKey.of(Registry.DIMENSION, identifier))
 					.orElse(null)
 				: null;
@@ -254,8 +251,8 @@ public class LocationPredicate {
 			return new LocationPredicate.Builder();
 		}
 
-		public LocationPredicate.Builder biome(@Nullable RegistryKey<Biome> registryKey) {
-			this.biome = registryKey;
+		public LocationPredicate.Builder biome(@Nullable RegistryKey<Biome> biome) {
+			this.biome = biome;
 			return this;
 		}
 

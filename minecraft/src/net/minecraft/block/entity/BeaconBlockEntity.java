@@ -94,36 +94,36 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		}
 	};
 
-	public BeaconBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.BEACON, blockPos, blockState);
+	public BeaconBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.BEACON, pos, state);
 	}
 
-	public static void tick(World world, BlockPos blockPos, BlockState blockState, BeaconBlockEntity beaconBlockEntity) {
-		int i = blockPos.getX();
-		int j = blockPos.getY();
-		int k = blockPos.getZ();
-		BlockPos blockPos2;
-		if (beaconBlockEntity.field_19179 < j) {
-			blockPos2 = blockPos;
-			beaconBlockEntity.field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
-			beaconBlockEntity.field_19179 = blockPos.getY() - 1;
+	public static void tick(World world, BlockPos pos, BlockState state, BeaconBlockEntity blockEntity) {
+		int i = pos.getX();
+		int j = pos.getY();
+		int k = pos.getZ();
+		BlockPos blockPos;
+		if (blockEntity.field_19179 < j) {
+			blockPos = pos;
+			blockEntity.field_19178 = Lists.<BeaconBlockEntity.BeamSegment>newArrayList();
+			blockEntity.field_19179 = pos.getY() - 1;
 		} else {
-			blockPos2 = new BlockPos(i, beaconBlockEntity.field_19179 + 1, k);
+			blockPos = new BlockPos(i, blockEntity.field_19179 + 1, k);
 		}
 
-		BeaconBlockEntity.BeamSegment beamSegment = beaconBlockEntity.field_19178.isEmpty()
+		BeaconBlockEntity.BeamSegment beamSegment = blockEntity.field_19178.isEmpty()
 			? null
-			: (BeaconBlockEntity.BeamSegment)beaconBlockEntity.field_19178.get(beaconBlockEntity.field_19178.size() - 1);
+			: (BeaconBlockEntity.BeamSegment)blockEntity.field_19178.get(blockEntity.field_19178.size() - 1);
 		int l = world.getTopY(Heightmap.Type.WORLD_SURFACE, i, k);
 
-		for (int m = 0; m < 10 && blockPos2.getY() <= l; m++) {
-			BlockState blockState2 = world.getBlockState(blockPos2);
-			Block block = blockState2.getBlock();
+		for (int m = 0; m < 10 && blockPos.getY() <= l; m++) {
+			BlockState blockState = world.getBlockState(blockPos);
+			Block block = blockState.getBlock();
 			if (block instanceof Stainable) {
 				float[] fs = ((Stainable)block).getColor().getColorComponents();
-				if (beaconBlockEntity.field_19178.size() <= 1) {
+				if (blockEntity.field_19178.size() <= 1) {
 					beamSegment = new BeaconBlockEntity.BeamSegment(fs);
-					beaconBlockEntity.field_19178.add(beamSegment);
+					blockEntity.field_19178.add(beamSegment);
 				} else if (beamSegment != null) {
 					if (Arrays.equals(fs, beamSegment.color)) {
 						beamSegment.increaseHeight();
@@ -131,51 +131,51 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 						beamSegment = new BeaconBlockEntity.BeamSegment(
 							new float[]{(beamSegment.color[0] + fs[0]) / 2.0F, (beamSegment.color[1] + fs[1]) / 2.0F, (beamSegment.color[2] + fs[2]) / 2.0F}
 						);
-						beaconBlockEntity.field_19178.add(beamSegment);
+						blockEntity.field_19178.add(beamSegment);
 					}
 				}
 			} else {
-				if (beamSegment == null || blockState2.getOpacity(world, blockPos2) >= 15 && !blockState2.isOf(Blocks.BEDROCK)) {
-					beaconBlockEntity.field_19178.clear();
-					beaconBlockEntity.field_19179 = l;
+				if (beamSegment == null || blockState.getOpacity(world, blockPos) >= 15 && !blockState.isOf(Blocks.BEDROCK)) {
+					blockEntity.field_19178.clear();
+					blockEntity.field_19179 = l;
 					break;
 				}
 
 				beamSegment.increaseHeight();
 			}
 
-			blockPos2 = blockPos2.up();
-			beaconBlockEntity.field_19179++;
+			blockPos = blockPos.up();
+			blockEntity.field_19179++;
 		}
 
-		int m = beaconBlockEntity.level;
+		int m = blockEntity.level;
 		if (world.getTime() % 80L == 0L) {
-			if (!beaconBlockEntity.beamSegments.isEmpty()) {
-				beaconBlockEntity.level = updateLevel(world, i, j, k);
+			if (!blockEntity.beamSegments.isEmpty()) {
+				blockEntity.level = updateLevel(world, i, j, k);
 			}
 
-			if (beaconBlockEntity.level > 0 && !beaconBlockEntity.beamSegments.isEmpty()) {
-				applyPlayerEffects(world, blockPos, beaconBlockEntity.level, beaconBlockEntity.primary, beaconBlockEntity.secondary);
-				playSound(world, blockPos, SoundEvents.BLOCK_BEACON_AMBIENT);
+			if (blockEntity.level > 0 && !blockEntity.beamSegments.isEmpty()) {
+				applyPlayerEffects(world, pos, blockEntity.level, blockEntity.primary, blockEntity.secondary);
+				playSound(world, pos, SoundEvents.BLOCK_BEACON_AMBIENT);
 			}
 		}
 
-		if (beaconBlockEntity.field_19179 >= l) {
-			beaconBlockEntity.field_19179 = world.getSectionCount() - 1;
+		if (blockEntity.field_19179 >= l) {
+			blockEntity.field_19179 = world.getBottomSectionLimit() - 1;
 			boolean bl = m > 0;
-			beaconBlockEntity.beamSegments = beaconBlockEntity.field_19178;
+			blockEntity.beamSegments = blockEntity.field_19178;
 			if (!world.isClient) {
-				boolean bl2 = beaconBlockEntity.level > 0;
+				boolean bl2 = blockEntity.level > 0;
 				if (!bl && bl2) {
-					playSound(world, blockPos, SoundEvents.BLOCK_BEACON_ACTIVATE);
+					playSound(world, pos, SoundEvents.BLOCK_BEACON_ACTIVATE);
 
 					for (ServerPlayerEntity serverPlayerEntity : world.getNonSpectatingEntities(
 						ServerPlayerEntity.class, new Box((double)i, (double)j, (double)k, (double)i, (double)(j - 4), (double)k).expand(10.0, 5.0, 10.0)
 					)) {
-						Criteria.CONSTRUCT_BEACON.trigger(serverPlayerEntity, beaconBlockEntity.level);
+						Criteria.CONSTRUCT_BEACON.trigger(serverPlayerEntity, blockEntity.level);
 					}
 				} else if (bl && !bl2) {
-					playSound(world, blockPos, SoundEvents.BLOCK_BEACON_DEACTIVATE);
+					playSound(world, pos, SoundEvents.BLOCK_BEACON_DEACTIVATE);
 				}
 			}
 		}
@@ -186,7 +186,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 
 		for (int j = 1; j <= 4; i = j++) {
 			int k = y - j;
-			if (k < world.getSectionCount()) {
+			if (k < world.getBottomSectionLimit()) {
 				break;
 			}
 
@@ -215,32 +215,34 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		super.markRemoved();
 	}
 
-	private static void applyPlayerEffects(World world, BlockPos blockPos, int i, @Nullable StatusEffect statusEffect, @Nullable StatusEffect statusEffect2) {
-		if (!world.isClient && statusEffect != null) {
-			double d = (double)(i * 10 + 10);
-			int j = 0;
-			if (i >= 4 && statusEffect == statusEffect2) {
-				j = 1;
+	private static void applyPlayerEffects(
+		World world, BlockPos pos, int beaconLevel, @Nullable StatusEffect primaryEffect, @Nullable StatusEffect secondaryEffect
+	) {
+		if (!world.isClient && primaryEffect != null) {
+			double d = (double)(beaconLevel * 10 + 10);
+			int i = 0;
+			if (beaconLevel >= 4 && primaryEffect == secondaryEffect) {
+				i = 1;
 			}
 
-			int k = (9 + i * 2) * 20;
-			Box box = new Box(blockPos).expand(d).stretch(0.0, (double)world.getBottomSectionLimit(), 0.0);
+			int j = (9 + beaconLevel * 2) * 20;
+			Box box = new Box(pos).expand(d).stretch(0.0, (double)world.getSectionCount(), 0.0);
 			List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
 
 			for (PlayerEntity playerEntity : list) {
-				playerEntity.addStatusEffect(new StatusEffectInstance(statusEffect, k, j, true, true));
+				playerEntity.addStatusEffect(new StatusEffectInstance(primaryEffect, j, i, true, true));
 			}
 
-			if (i >= 4 && statusEffect != statusEffect2 && statusEffect2 != null) {
+			if (beaconLevel >= 4 && primaryEffect != secondaryEffect && secondaryEffect != null) {
 				for (PlayerEntity playerEntity : list) {
-					playerEntity.addStatusEffect(new StatusEffectInstance(statusEffect2, k, 0, true, true));
+					playerEntity.addStatusEffect(new StatusEffectInstance(secondaryEffect, j, 0, true, true));
 				}
 			}
 		}
 	}
 
-	public static void playSound(World world, BlockPos blockPos, SoundEvent soundEvent) {
-		world.playSound(null, blockPos, soundEvent, SoundCategory.BLOCKS, 1.0F, 1.0F);
+	public static void playSound(World world, BlockPos pos, SoundEvent sound) {
+		world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, 1.0F);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -297,8 +299,8 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		return tag;
 	}
 
-	public void setCustomName(@Nullable Text text) {
-		this.customName = text;
+	public void setCustomName(@Nullable Text customName) {
+		this.customName = customName;
 	}
 
 	@Nullable
@@ -317,7 +319,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	public void setWorld(World world) {
 		super.setWorld(world);
-		this.field_19179 = world.getSectionCount() - 1;
+		this.field_19179 = world.getBottomSectionLimit() - 1;
 	}
 
 	public static class BeamSegment {

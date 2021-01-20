@@ -101,7 +101,10 @@ public abstract class Fluid {
 
 	public abstract VoxelShape getShape(FluidState state, BlockView world, BlockPos pos);
 
-	public Optional<SoundEvent> getFillSound() {
+	/**
+	 * Returns the sound played when filling a bucket with this fluid.
+	 */
+	public Optional<SoundEvent> getBucketFillSound() {
 		return Optional.empty();
 	}
 }

@@ -46,7 +46,7 @@ public class CountMultilayerDecorator extends Decorator<CountConfig> {
 		int i = 0;
 		BlockState blockState = context.getBlockState(mutable);
 
-		for (int j = y; j >= context.getSectionCount() + 1; j--) {
+		for (int j = y; j >= context.getBottomSectionLimit() + 1; j--) {
 			mutable.setY(j - 1);
 			BlockState blockState2 = context.getBlockState(mutable);
 			if (!blocksSpawn(blockState2) && blocksSpawn(blockState) && !blockState2.isOf(Blocks.BEDROCK)) {

@@ -110,8 +110,8 @@ public class MapIcon {
 		private final boolean alwaysRender;
 		private final int tintColor;
 
-		private Type(boolean renderNotHeld) {
-			this(renderNotHeld, -1);
+		private Type(boolean alwaysRender) {
+			this(alwaysRender, -1);
 		}
 
 		private Type(boolean alwaysRender, int tintColor) {

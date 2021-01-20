@@ -27,8 +27,8 @@ public class BellBlockEntity extends BlockEntity {
 	private boolean resonating;
 	private int resonateTime;
 
-	public BellBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.BELL, blockPos, blockState);
+	public BellBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.BELL, pos, state);
 	}
 
 	@Override
@@ -45,37 +45,37 @@ public class BellBlockEntity extends BlockEntity {
 		}
 	}
 
-	private static void method_31658(World world, BlockPos blockPos, BlockState blockState, BellBlockEntity bellBlockEntity, BellBlockEntity.class_5557 arg) {
-		if (bellBlockEntity.ringing) {
-			bellBlockEntity.ringTicks++;
+	private static void tick(World world, BlockPos pos, BlockState state, BellBlockEntity blockEntity, BellBlockEntity.Effect bellEffect) {
+		if (blockEntity.ringing) {
+			blockEntity.ringTicks++;
 		}
 
-		if (bellBlockEntity.ringTicks >= 50) {
-			bellBlockEntity.ringing = false;
-			bellBlockEntity.ringTicks = 0;
+		if (blockEntity.ringTicks >= 50) {
+			blockEntity.ringing = false;
+			blockEntity.ringTicks = 0;
 		}
 
-		if (bellBlockEntity.ringTicks >= 5 && bellBlockEntity.resonateTime == 0 && raidersHearBell(blockPos, bellBlockEntity.hearingEntities)) {
-			bellBlockEntity.resonating = true;
-			world.playSound(null, blockPos, SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		if (blockEntity.ringTicks >= 5 && blockEntity.resonateTime == 0 && raidersHearBell(pos, blockEntity.hearingEntities)) {
+			blockEntity.resonating = true;
+			world.playSound(null, pos, SoundEvents.BLOCK_BELL_RESONATE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 		}
 
-		if (bellBlockEntity.resonating) {
-			if (bellBlockEntity.resonateTime < 40) {
-				bellBlockEntity.resonateTime++;
+		if (blockEntity.resonating) {
+			if (blockEntity.resonateTime < 40) {
+				blockEntity.resonateTime++;
 			} else {
-				arg.run(world, blockPos, bellBlockEntity.hearingEntities);
-				bellBlockEntity.resonating = false;
+				bellEffect.run(world, pos, blockEntity.hearingEntities);
+				blockEntity.resonating = false;
 			}
 		}
 	}
 
-	public static void clientTick(World world, BlockPos blockPos, BlockState blockState, BellBlockEntity bellBlockEntity) {
-		method_31658(world, blockPos, blockState, bellBlockEntity, BellBlockEntity::applyParticlesToRaiders);
+	public static void clientTick(World world, BlockPos pos, BlockState state, BellBlockEntity blockEntity) {
+		tick(world, pos, state, blockEntity, BellBlockEntity::applyParticlesToRaiders);
 	}
 
-	public static void serverTick(World world, BlockPos blockPos, BlockState blockState, BellBlockEntity bellBlockEntity) {
-		method_31658(world, blockPos, blockState, bellBlockEntity, BellBlockEntity::applyGlowToRaiders);
+	public static void serverTick(World world, BlockPos pos, BlockState state, BellBlockEntity blockEntity) {
+		tick(world, pos, state, blockEntity, BellBlockEntity::applyGlowToRaiders);
 	}
 
 	public void activate(Direction direction) {
@@ -107,11 +107,11 @@ public class BellBlockEntity extends BlockEntity {
 		}
 	}
 
-	private static boolean raidersHearBell(BlockPos blockPos, List<LivingEntity> list) {
-		for (LivingEntity livingEntity : list) {
+	private static boolean raidersHearBell(BlockPos pos, List<LivingEntity> hearingEntities) {
+		for (LivingEntity livingEntity : hearingEntities) {
 			if (livingEntity.isAlive()
 				&& !livingEntity.isRemoved()
-				&& blockPos.isWithinDistance(livingEntity.getPos(), 32.0)
+				&& pos.isWithinDistance(livingEntity.getPos(), 32.0)
 				&& livingEntity.getType().isIn(EntityTypeTags.RAIDERS)) {
 				return true;
 			}
@@ -120,24 +120,24 @@ public class BellBlockEntity extends BlockEntity {
 		return false;
 	}
 
-	private static void applyGlowToRaiders(World world, BlockPos blockPos, List<LivingEntity> list) {
-		list.stream().filter(livingEntity -> isRaiderEntity(blockPos, livingEntity)).forEach(BellBlockEntity::applyGlowToEntity);
+	private static void applyGlowToRaiders(World world, BlockPos pos, List<LivingEntity> hearingEntities) {
+		hearingEntities.stream().filter(livingEntity -> isRaiderEntity(pos, livingEntity)).forEach(BellBlockEntity::applyGlowToEntity);
 	}
 
-	private static void applyParticlesToRaiders(World world, BlockPos blockPos, List<LivingEntity> list) {
+	private static void applyParticlesToRaiders(World world, BlockPos pos, List<LivingEntity> hearingEntities) {
 		MutableInt mutableInt = new MutableInt(16700985);
-		int i = (int)list.stream().filter(livingEntity -> blockPos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
-		list.stream()
-			.filter(livingEntity -> isRaiderEntity(blockPos, livingEntity))
+		int i = (int)hearingEntities.stream().filter(livingEntity -> pos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
+		hearingEntities.stream()
+			.filter(livingEntity -> isRaiderEntity(pos, livingEntity))
 			.forEach(
 				livingEntity -> {
 					float f = 1.0F;
 					float g = MathHelper.sqrt(
-						(livingEntity.getX() - (double)blockPos.getX()) * (livingEntity.getX() - (double)blockPos.getX())
-							+ (livingEntity.getZ() - (double)blockPos.getZ()) * (livingEntity.getZ() - (double)blockPos.getZ())
+						(livingEntity.getX() - (double)pos.getX()) * (livingEntity.getX() - (double)pos.getX())
+							+ (livingEntity.getZ() - (double)pos.getZ()) * (livingEntity.getZ() - (double)pos.getZ())
 					);
-					double d = (double)((float)blockPos.getX() + 0.5F) + (double)(1.0F / g) * (livingEntity.getX() - (double)blockPos.getX());
-					double e = (double)((float)blockPos.getZ() + 0.5F) + (double)(1.0F / g) * (livingEntity.getZ() - (double)blockPos.getZ());
+					double d = (double)((float)pos.getX() + 0.5F) + (double)(1.0F / g) * (livingEntity.getX() - (double)pos.getX());
+					double e = (double)((float)pos.getZ() + 0.5F) + (double)(1.0F / g) * (livingEntity.getZ() - (double)pos.getZ());
 					int j = MathHelper.clamp((i - 21) / -2, 3, 15);
 
 					for (int k = 0; k < j; k++) {
@@ -145,22 +145,22 @@ public class BellBlockEntity extends BlockEntity {
 						double h = (double)BackgroundHelper.ColorMixer.getRed(l) / 255.0;
 						double m = (double)BackgroundHelper.ColorMixer.getGreen(l) / 255.0;
 						double n = (double)BackgroundHelper.ColorMixer.getBlue(l) / 255.0;
-						world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)blockPos.getY() + 0.5F), e, h, m, n);
+						world.addParticle(ParticleTypes.ENTITY_EFFECT, d, (double)((float)pos.getY() + 0.5F), e, h, m, n);
 					}
 				}
 			);
 	}
 
-	private static boolean isRaiderEntity(BlockPos blockPos, LivingEntity entity) {
-		return entity.isAlive() && !entity.isRemoved() && blockPos.isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
+	private static boolean isRaiderEntity(BlockPos pos, LivingEntity entity) {
+		return entity.isAlive() && !entity.isRemoved() && pos.isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
 	}
 
-	private static void applyGlowToEntity(LivingEntity livingEntity) {
-		livingEntity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
+	private static void applyGlowToEntity(LivingEntity entity) {
+		entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
 	}
 
 	@FunctionalInterface
-	interface class_5557 {
-		void run(World world, BlockPos blockPos, List<LivingEntity> list);
+	interface Effect {
+		void run(World world, BlockPos pos, List<LivingEntity> hearingEntities);
 	}
 }

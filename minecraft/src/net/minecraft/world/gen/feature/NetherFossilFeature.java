@@ -48,9 +48,9 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 			VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(k, l);
 
 			for (BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l); n > m; n--) {
-				BlockState blockState = verticalBlockSample.method_32892(mutable);
+				BlockState blockState = verticalBlockSample.getState(mutable);
 				mutable.move(Direction.DOWN);
-				BlockState blockState2 = verticalBlockSample.method_32892(mutable);
+				BlockState blockState2 = verticalBlockSample.getState(mutable);
 				if (blockState.isAir() && (blockState2.isOf(Blocks.SOUL_SAND) || blockState2.isSideSolidFullSquare(EmptyBlockView.INSTANCE, mutable, Direction.UP))) {
 					break;
 				}

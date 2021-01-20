@@ -36,7 +36,7 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(
 			player, (Entity)(bobber.getHookedEntity() != null ? bobber.getHookedEntity() : bobber)
 		);
-		this.test(player, conditions -> conditions.test(rod, lootContext, fishingLoots));
+		this.test(player, conditions -> conditions.matches(rod, lootContext, fishingLoots));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -55,7 +55,7 @@ public class FishingRodHookedCriterion extends AbstractCriterion<FishingRodHooke
 			return new FishingRodHookedCriterion.Conditions(EntityPredicate.Extended.EMPTY, rod, EntityPredicate.Extended.ofLegacy(bobber), item);
 		}
 
-		public boolean test(ItemStack rod, LootContext hookedEntityContext, Collection<ItemStack> fishingLoots) {
+		public boolean matches(ItemStack rod, LootContext hookedEntityContext, Collection<ItemStack> fishingLoots) {
 			if (!this.rod.test(rod)) {
 				return false;
 			} else if (!this.hookedEntity.test(hookedEntityContext)) {

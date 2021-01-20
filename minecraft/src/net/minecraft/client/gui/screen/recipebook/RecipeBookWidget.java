@@ -95,7 +95,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		this.setBookButtonTexture();
 		this.tabButtons.clear();
 
-		for (RecipeBookGroup recipeBookGroup : RecipeBookGroup.method_30285(this.craftingScreenHandler.getCategory())) {
+		for (RecipeBookGroup recipeBookGroup : RecipeBookGroup.getGroups(this.craftingScreenHandler.getCategory())) {
 			this.tabButtons.add(new RecipeGroupButtonWidget(recipeBookGroup));
 		}
 
@@ -255,17 +255,17 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 	}
 
-	public void drawTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {
+	public void drawTooltip(MatrixStack matrices, int i, int j, int k, int l) {
 		if (this.isOpen()) {
-			this.recipesArea.drawTooltip(matrixStack, k, l);
+			this.recipesArea.drawTooltip(matrices, k, l);
 			if (this.toggleCraftableButton.isHovered()) {
 				Text text = this.getCraftableButtonText();
 				if (this.client.currentScreen != null) {
-					this.client.currentScreen.renderTooltip(matrixStack, text, k, l);
+					this.client.currentScreen.renderTooltip(matrices, text, k, l);
 				}
 			}
 
-			this.drawGhostSlotTooltip(matrixStack, i, j, k, l);
+			this.drawGhostSlotTooltip(matrices, i, j, k, l);
 		}
 	}
 
@@ -277,7 +277,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		return TOGGLE_CRAFTABLE_RECIPES_TEXT;
 	}
 
-	private void drawGhostSlotTooltip(MatrixStack matrixStack, int i, int j, int k, int l) {
+	private void drawGhostSlotTooltip(MatrixStack matrices, int i, int j, int k, int l) {
 		ItemStack itemStack = null;
 
 		for (int m = 0; m < this.ghostSlots.getSlotCount(); m++) {
@@ -290,12 +290,12 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		}
 
 		if (itemStack != null && this.client.currentScreen != null) {
-			this.client.currentScreen.renderTooltip(matrixStack, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
+			this.client.currentScreen.renderTooltip(matrices, this.client.currentScreen.getTooltipFromItem(itemStack), k, l);
 		}
 	}
 
-	public void drawGhostSlots(MatrixStack matrixStack, int i, int j, boolean bl, float f) {
-		this.ghostSlots.draw(matrixStack, this.client, i, j, bl, f);
+	public void drawGhostSlots(MatrixStack matrices, int i, int j, boolean bl, float f) {
+		this.ghostSlots.draw(matrices, this.client, i, j, bl, f);
 	}
 
 	@Override
@@ -392,16 +392,16 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
+	public boolean charTyped(char chr, int modifiers) {
 		if (this.searching) {
 			return false;
 		} else if (!this.isOpen() || this.client.player.isSpectator()) {
 			return false;
-		} else if (this.searchField.charTyped(chr, keyCode)) {
+		} else if (this.searchField.charTyped(chr, modifiers)) {
 			this.refreshSearchResults();
 			return true;
 		} else {
-			return Element.super.charTyped(chr, keyCode);
+			return Element.super.charTyped(chr, modifiers);
 		}
 	}
 

@@ -20,19 +20,19 @@ import net.minecraft.world.dimension.DimensionType;
 
 @Environment(EnvType.CLIENT)
 public class StructureDebugRenderer implements DebugRenderer.Renderer {
-	private final MinecraftClient field_4624;
+	private final MinecraftClient client;
 	private final Map<DimensionType, Map<String, BlockBox>> field_4626 = Maps.<DimensionType, Map<String, BlockBox>>newIdentityHashMap();
 	private final Map<DimensionType, Map<String, BlockBox>> field_4627 = Maps.<DimensionType, Map<String, BlockBox>>newIdentityHashMap();
 	private final Map<DimensionType, Map<String, Boolean>> field_4625 = Maps.<DimensionType, Map<String, Boolean>>newIdentityHashMap();
 
-	public StructureDebugRenderer(MinecraftClient minecraftClient) {
-		this.field_4624 = minecraftClient;
+	public StructureDebugRenderer(MinecraftClient client) {
+		this.client = client;
 	}
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-		Camera camera = this.field_4624.gameRenderer.getCamera();
-		WorldAccess worldAccess = this.field_4624.world;
+		Camera camera = this.client.gameRenderer.getCamera();
+		WorldAccess worldAccess = this.client.world;
 		DimensionType dimensionType = worldAccess.getDimension();
 		BlockPos blockPos = new BlockPos(camera.getPos().x, 0.0, camera.getPos().z);
 		VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());

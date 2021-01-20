@@ -61,8 +61,8 @@ public class FishingBobberEntity extends ProjectileEntity {
 	private final int luckOfTheSeaLevel;
 	private final int lureLevel;
 
-	private FishingBobberEntity(EntityType<? extends FishingBobberEntity> entityType, World world, int lureLevel, int luckOfTheSeaLevel) {
-		super(entityType, world);
+	private FishingBobberEntity(EntityType<? extends FishingBobberEntity> type, World world, int lureLevel, int luckOfTheSeaLevel) {
+		super(type, world);
 		this.ignoreCameraFrustum = true;
 		this.luckOfTheSeaLevel = Math.max(0, lureLevel);
 		this.lureLevel = Math.max(0, luckOfTheSeaLevel);
@@ -222,7 +222,7 @@ public class FishingBobberEntity extends ProjectileEntity {
 			}
 
 			this.move(MovementType.SELF, this.getVelocity());
-			this.method_26962();
+			this.updateRotation();
 			if (this.state == FishingBobberEntity.State.FLYING && (this.onGround || this.horizontalCollision)) {
 				this.setVelocity(Vec3d.ZERO);
 			}
@@ -233,12 +233,12 @@ public class FishingBobberEntity extends ProjectileEntity {
 		}
 	}
 
-	private boolean removeIfInvalid(PlayerEntity playerEntity) {
-		ItemStack itemStack = playerEntity.getMainHandStack();
-		ItemStack itemStack2 = playerEntity.getOffHandStack();
+	private boolean removeIfInvalid(PlayerEntity player) {
+		ItemStack itemStack = player.getMainHandStack();
+		ItemStack itemStack2 = player.getOffHandStack();
 		boolean bl = itemStack.isOf(Items.FISHING_ROD);
 		boolean bl2 = itemStack2.isOf(Items.FISHING_ROD);
-		if (!playerEntity.isRemoved() && playerEntity.isAlive() && (bl || bl2) && !(this.squaredDistanceTo(playerEntity) > 1024.0)) {
+		if (!player.isRemoved() && player.isAlive() && (bl || bl2) && !(this.squaredDistanceTo(player) > 1024.0)) {
 			return false;
 		} else {
 			this.discard();
@@ -247,13 +247,13 @@ public class FishingBobberEntity extends ProjectileEntity {
 	}
 
 	private void checkForCollision() {
-		HitResult hitResult = ProjectileUtil.getCollision(this, this::method_26958);
+		HitResult hitResult = ProjectileUtil.getCollision(this, this::canHit);
 		this.onCollision(hitResult);
 	}
 
 	@Override
-	protected boolean method_26958(Entity entity) {
-		return super.method_26958(entity) || entity.isAlive() && entity instanceof ItemEntity;
+	protected boolean canHit(Entity entity) {
+		return super.canHit(entity) || entity.isAlive() && entity instanceof ItemEntity;
 	}
 
 	@Override

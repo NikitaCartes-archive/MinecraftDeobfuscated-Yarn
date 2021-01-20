@@ -33,7 +33,17 @@ import org.apache.logging.log4j.Logger;
 
 public class MapState extends PersistentState {
 	private static final Logger field_25019 = LogManager.getLogger();
+	/**
+	 * The scaled center coordinate of the map state on the X axis.
+	 * <p>
+	 * Always {@code 0} for the client.
+	 */
 	public final int xCenter;
+	/**
+	 * The scaled center coordinate of the map state on the Z axis.
+	 * <p>
+	 * Always {@code 0} for the client.
+	 */
 	public final int zCenter;
 	public final RegistryKey<World> dimension;
 	private final boolean showIcons;
@@ -43,6 +53,11 @@ public class MapState extends PersistentState {
 	public final boolean locked;
 	private final List<MapState.PlayerUpdateTracker> updateTrackers = Lists.<MapState.PlayerUpdateTracker>newArrayList();
 	private final Map<PlayerEntity, MapState.PlayerUpdateTracker> updateTrackersByPlayer = Maps.<PlayerEntity, MapState.PlayerUpdateTracker>newHashMap();
+	/**
+	 * The banner markers to track in world.
+	 * <p>
+	 * Empty for the client.
+	 */
 	private final Map<String, MapBannerMarker> banners = Maps.<String, MapBannerMarker>newHashMap();
 	private final Map<String, MapIcon> icons = Maps.<String, MapIcon>newLinkedHashMap();
 	private final Map<String, MapFrameMarker> frames = Maps.<String, MapFrameMarker>newHashMap();
@@ -58,37 +73,48 @@ public class MapState extends PersistentState {
 		this.markDirty();
 	}
 
-	public static MapState method_32363(double d, double e, byte b, boolean bl, boolean bl2, RegistryKey<World> registryKey) {
-		int i = 128 * (1 << b);
-		int j = MathHelper.floor((d + 64.0) / (double)i);
-		int k = MathHelper.floor((e + 64.0) / (double)i);
+	/**
+	 * Creates a new map state instance.
+	 * 
+	 * @param xCenter the absolute center X-coordinate
+	 * @param zCenter the absolute center Z-coordinate
+	 */
+	public static MapState of(double xCenter, double zCenter, byte scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
+		int i = 128 * (1 << scale);
+		int j = MathHelper.floor((xCenter + 64.0) / (double)i);
+		int k = MathHelper.floor((zCenter + 64.0) / (double)i);
 		int l = j * i + i / 2 - 64;
 		int m = k * i + i / 2 - 64;
-		return new MapState(l, m, b, bl, bl2, false, registryKey);
+		return new MapState(l, m, scale, showIcons, unlimitedTracking, false, dimension);
 	}
 
+	/**
+	 * Creates a new map state instance for the client.
+	 * <p>
+	 * The client is not aware of the coordinates of the map state so its center coordinates will always be {@code (0, 0)}.
+	 */
 	@Environment(EnvType.CLIENT)
-	public static MapState method_32362(byte b, boolean bl, RegistryKey<World> registryKey) {
-		return new MapState(0, 0, b, false, false, bl, registryKey);
+	public static MapState of(byte scale, boolean showIcons, RegistryKey<World> dimension) {
+		return new MapState(0, 0, scale, false, false, showIcons, dimension);
 	}
 
-	public static MapState method_32371(CompoundTag compoundTag) {
-		RegistryKey<World> registryKey = (RegistryKey<World>)DimensionType.worldFromDimensionTag(new Dynamic<>(NbtOps.INSTANCE, compoundTag.get("dimension")))
+	public static MapState fromNbt(CompoundTag tag) {
+		RegistryKey<World> registryKey = (RegistryKey<World>)DimensionType.worldFromDimensionTag(new Dynamic<>(NbtOps.INSTANCE, tag.get("dimension")))
 			.resultOrPartial(field_25019::error)
-			.orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + compoundTag.get("dimension")));
-		int i = compoundTag.getInt("xCenter");
-		int j = compoundTag.getInt("zCenter");
-		byte b = (byte)MathHelper.clamp(compoundTag.getByte("scale"), 0, 4);
-		boolean bl = !compoundTag.contains("trackingPosition", 1) || compoundTag.getBoolean("trackingPosition");
-		boolean bl2 = compoundTag.getBoolean("unlimitedTracking");
-		boolean bl3 = compoundTag.getBoolean("locked");
+			.orElseThrow(() -> new IllegalArgumentException("Invalid map dimension: " + tag.get("dimension")));
+		int i = tag.getInt("xCenter");
+		int j = tag.getInt("zCenter");
+		byte b = (byte)MathHelper.clamp(tag.getByte("scale"), 0, 4);
+		boolean bl = !tag.contains("trackingPosition", 1) || tag.getBoolean("trackingPosition");
+		boolean bl2 = tag.getBoolean("unlimitedTracking");
+		boolean bl3 = tag.getBoolean("locked");
 		MapState mapState = new MapState(i, j, b, bl, bl2, bl3, registryKey);
-		byte[] bs = compoundTag.getByteArray("colors");
+		byte[] bs = tag.getByteArray("colors");
 		if (bs.length == 16384) {
 			mapState.colors = bs;
 		}
 
-		ListTag listTag = compoundTag.getList("banners", 10);
+		ListTag listTag = tag.getList("banners", 10);
 
 		for (int k = 0; k < listTag.size(); k++) {
 			MapBannerMarker mapBannerMarker = MapBannerMarker.fromNbt(listTag.getCompound(k));
@@ -104,7 +130,7 @@ public class MapState extends PersistentState {
 			);
 		}
 
-		ListTag listTag2 = compoundTag.getList("frames", 10);
+		ListTag listTag2 = tag.getList("frames", 10);
 
 		for (int l = 0; l < listTag2.size(); l++) {
 			MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompound(l));
@@ -124,7 +150,7 @@ public class MapState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag toNbt(CompoundTag tag) {
 		Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(tagx -> tag.put("dimension", tagx));
 		tag.putInt("xCenter", this.xCenter);
 		tag.putInt("zCenter", this.zCenter);
@@ -150,7 +176,7 @@ public class MapState extends PersistentState {
 		return tag;
 	}
 
-	public MapState method_32361() {
+	public MapState copy() {
 		MapState mapState = new MapState(this.xCenter, this.zCenter, this.scale, this.showIcons, this.unlimitedTracking, true, this.dimension);
 		mapState.banners.putAll(this.banners);
 		mapState.icons.putAll(this.icons);
@@ -159,9 +185,18 @@ public class MapState extends PersistentState {
 		return mapState;
 	}
 
-	public MapState method_32364(int i) {
-		return method_32363(
-			(double)this.xCenter, (double)this.zCenter, (byte)MathHelper.clamp(this.scale + i, 0, 4), this.showIcons, this.unlimitedTracking, this.dimension
+	/**
+	 * Creates a new map state which is a zoomed out version of the current one.
+	 * <p>
+	 * The scale of the new map state is {@code currentScale + zoomOutScale} and clamped between {@code 0} and {@code 4}.
+	 * <p>
+	 * The colors are not copied, neither are the icons.
+	 * 
+	 * @param zoomOutScale the amount to add to the scale of the map
+	 */
+	public MapState zoomOut(int zoomOutScale) {
+		return of(
+			(double)this.xCenter, (double)this.zCenter, (byte)MathHelper.clamp(this.scale + zoomOutScale, 0, 4), this.showIcons, this.unlimitedTracking, this.dimension
 		);
 	}
 
@@ -194,7 +229,7 @@ public class MapState extends PersistentState {
 			} else {
 				this.updateTrackersByPlayer.remove(playerUpdateTracker2.player);
 				this.updateTrackers.remove(playerUpdateTracker2);
-				this.method_32368(string);
+				this.removeIcon(string);
 			}
 		}
 
@@ -203,7 +238,7 @@ public class MapState extends PersistentState {
 			BlockPos blockPos = itemFrameEntity.getDecorationBlockPos();
 			MapFrameMarker mapFrameMarker = (MapFrameMarker)this.frames.get(MapFrameMarker.getKey(blockPos));
 			if (mapFrameMarker != null && itemFrameEntity.getId() != mapFrameMarker.getEntityId() && this.frames.containsKey(mapFrameMarker.getKey())) {
-				this.method_32368("frame-" + mapFrameMarker.getEntityId());
+				this.removeIcon("frame-" + mapFrameMarker.getEntityId());
 			}
 
 			MapFrameMarker mapFrameMarker2 = new MapFrameMarker(blockPos, itemFrameEntity.getHorizontalFacing().getHorizontal() * 90, itemFrameEntity.getId());
@@ -240,9 +275,9 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	private void method_32368(String string) {
-		this.icons.remove(string);
-		this.method_32374();
+	private void removeIcon(String id) {
+		this.icons.remove(id);
+		this.markIconsDirty();
 	}
 
 	public static void addDecorationsTag(ItemStack stack, BlockPos pos, String id, MapIcon.Type type) {
@@ -284,7 +319,7 @@ public class MapState extends PersistentState {
 			}
 		} else {
 			if (type != MapIcon.Type.PLAYER) {
-				this.method_32368(key);
+				this.removeIcon(key);
 				return;
 			}
 
@@ -293,7 +328,7 @@ public class MapState extends PersistentState {
 				type = MapIcon.Type.PLAYER_OFF_MAP;
 			} else {
 				if (!this.unlimitedTracking) {
-					this.method_32368(key);
+					this.removeIcon(key);
 					return;
 				}
 
@@ -321,14 +356,14 @@ public class MapState extends PersistentState {
 		MapIcon mapIcon = new MapIcon(type, b, c, d, text);
 		MapIcon mapIcon2 = (MapIcon)this.icons.put(key, mapIcon);
 		if (!mapIcon.equals(mapIcon2)) {
-			this.method_32374();
+			this.markIconsDirty();
 		}
 	}
 
 	@Nullable
-	public Packet<?> getPlayerMarkerPacket(int i, PlayerEntity playerEntity) {
-		MapState.PlayerUpdateTracker playerUpdateTracker = (MapState.PlayerUpdateTracker)this.updateTrackersByPlayer.get(playerEntity);
-		return playerUpdateTracker == null ? null : playerUpdateTracker.getPacket(i);
+	public Packet<?> getPlayerMarkerPacket(int id, PlayerEntity player) {
+		MapState.PlayerUpdateTracker playerUpdateTracker = (MapState.PlayerUpdateTracker)this.updateTrackersByPlayer.get(player);
+		return playerUpdateTracker == null ? null : playerUpdateTracker.getPacket(id);
 	}
 
 	private void markDirty(int x, int z) {
@@ -339,9 +374,9 @@ public class MapState extends PersistentState {
 		}
 	}
 
-	private void method_32374() {
+	private void markIconsDirty() {
 		this.markDirty();
-		this.updateTrackers.forEach(object -> ((MapState.PlayerUpdateTracker)object).method_32379());
+		this.updateTrackers.forEach(object -> ((MapState.PlayerUpdateTracker)object).markIconsDirty());
 	}
 
 	public MapState.PlayerUpdateTracker getPlayerSyncData(PlayerEntity player) {
@@ -369,7 +404,7 @@ public class MapState extends PersistentState {
 			}
 
 			if (this.banners.remove(mapBannerMarker.getKey(), mapBannerMarker)) {
-				this.method_32368(mapBannerMarker.getKey());
+				this.removeIcon(mapBannerMarker.getKey());
 			} else {
 				this.banners.put(mapBannerMarker.getKey(), mapBannerMarker);
 				this.addIcon(mapBannerMarker.getIconType(), world, mapBannerMarker.getKey(), d, e, 180.0, mapBannerMarker.getName());
@@ -386,33 +421,38 @@ public class MapState extends PersistentState {
 				MapBannerMarker mapBannerMarker2 = MapBannerMarker.fromWorldBlock(world, mapBannerMarker.getPos());
 				if (!mapBannerMarker.equals(mapBannerMarker2)) {
 					iterator.remove();
-					this.method_32368(mapBannerMarker.getKey());
+					this.removeIcon(mapBannerMarker.getKey());
 				}
 			}
 		}
 	}
 
 	public void removeFrame(BlockPos pos, int id) {
-		this.method_32368("frame-" + id);
+		this.removeIcon("frame-" + id);
 		this.frames.remove(MapFrameMarker.getKey(pos));
 	}
 
-	public boolean method_32365(int i, int j, byte b) {
-		byte c = this.colors[i + j * 128];
-		if (c != b) {
-			this.method_32370(i, j, b);
+	/**
+	 * Sets the color at the specified coordinates if the current color is different.
+	 * 
+	 * @return {@code true} if the color has been updated, else {@code false}
+	 */
+	public boolean putColor(int x, int z, byte color) {
+		byte b = this.colors[x + z * 128];
+		if (b != color) {
+			this.setColor(x, z, color);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	public void method_32370(int i, int j, byte b) {
-		this.colors[i + j * 128] = b;
-		this.markDirty(i, j);
+	public void setColor(int x, int z, byte color) {
+		this.colors[x + z * 128] = color;
+		this.markDirty(x, z);
 	}
 
-	public boolean method_32372() {
+	public boolean hasMonumentIcon() {
 		for (MapIcon mapIcon : this.icons.values()) {
 			if (mapIcon.getType() == MapIcon.Type.MANSION || mapIcon.getType() == MapIcon.Type.MONUMENT) {
 				return true;
@@ -423,17 +463,17 @@ public class MapState extends PersistentState {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void method_32369(MapIcon[] mapIcons) {
+	public void replaceIcons(MapIcon[] icons) {
 		this.icons.clear();
 
-		for (int i = 0; i < mapIcons.length; i++) {
-			MapIcon mapIcon = mapIcons[i];
+		for (int i = 0; i < icons.length; i++) {
+			MapIcon mapIcon = icons[i];
 			this.icons.put("icon-" + i, mapIcon);
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Iterable<MapIcon> method_32373() {
+	public Iterable<MapIcon> getIcons() {
 		return this.icons.values();
 	}
 
@@ -444,15 +484,15 @@ public class MapState extends PersistentState {
 		private int startZ;
 		private int endX = 127;
 		private int endZ = 127;
-		private boolean field_27891 = true;
+		private boolean iconsDirty = true;
 		private int emptyPacketsRequested;
 		public int field_131;
 
-		private PlayerUpdateTracker(PlayerEntity playerEntity) {
-			this.player = playerEntity;
+		private PlayerUpdateTracker(PlayerEntity player) {
+			this.player = player;
 		}
 
-		private MapState.class_5637 method_32375() {
+		private MapState.UpdateData getMapUpdateData() {
 			int i = this.startX;
 			int j = this.startZ;
 			int k = this.endX + 1 - this.startX;
@@ -465,70 +505,70 @@ public class MapState extends PersistentState {
 				}
 			}
 
-			return new MapState.class_5637(i, j, k, l, bs);
+			return new MapState.UpdateData(i, j, k, l, bs);
 		}
 
 		@Nullable
-		private Packet<?> getPacket(int i) {
-			MapState.class_5637 lv;
+		private Packet<?> getPacket(int mapId) {
+			MapState.UpdateData updateData;
 			if (this.dirty) {
 				this.dirty = false;
-				lv = this.method_32375();
+				updateData = this.getMapUpdateData();
 			} else {
-				lv = null;
+				updateData = null;
 			}
 
 			Collection<MapIcon> collection;
-			if (this.field_27891 && this.emptyPacketsRequested++ % 5 == 0) {
-				this.field_27891 = false;
+			if (this.iconsDirty && this.emptyPacketsRequested++ % 5 == 0) {
+				this.iconsDirty = false;
 				collection = MapState.this.icons.values();
 			} else {
 				collection = null;
 			}
 
-			return collection == null && lv == null ? null : new MapUpdateS2CPacket(i, MapState.this.scale, MapState.this.locked, collection, lv);
+			return collection == null && updateData == null ? null : new MapUpdateS2CPacket(mapId, MapState.this.scale, MapState.this.locked, collection, updateData);
 		}
 
-		private void markDirty(int x, int z) {
+		private void markDirty(int startX, int startZ) {
 			if (this.dirty) {
-				this.startX = Math.min(this.startX, x);
-				this.startZ = Math.min(this.startZ, z);
-				this.endX = Math.max(this.endX, x);
-				this.endZ = Math.max(this.endZ, z);
+				this.startX = Math.min(this.startX, startX);
+				this.startZ = Math.min(this.startZ, startZ);
+				this.endX = Math.max(this.endX, startX);
+				this.endZ = Math.max(this.endZ, startZ);
 			} else {
 				this.dirty = true;
-				this.startX = x;
-				this.startZ = z;
-				this.endX = x;
-				this.endZ = z;
+				this.startX = startX;
+				this.startZ = startZ;
+				this.endX = startX;
+				this.endZ = startZ;
 			}
 		}
 
-		private void method_32379() {
-			this.field_27891 = true;
+		private void markIconsDirty() {
+			this.iconsDirty = true;
 		}
 	}
 
-	public static class class_5637 {
-		public final int field_27892;
-		public final int field_27893;
-		public final int field_27894;
-		public final int field_27895;
-		public final byte[] field_27896;
+	public static class UpdateData {
+		public final int startX;
+		public final int startZ;
+		public final int width;
+		public final int height;
+		public final byte[] colors;
 
-		public class_5637(int i, int j, int k, int l, byte[] bs) {
-			this.field_27892 = i;
-			this.field_27893 = j;
-			this.field_27894 = k;
-			this.field_27895 = l;
-			this.field_27896 = bs;
+		public UpdateData(int startX, int startZ, int width, int height, byte[] colors) {
+			this.startX = startX;
+			this.startZ = startZ;
+			this.width = width;
+			this.height = height;
+			this.colors = colors;
 		}
 
 		@Environment(EnvType.CLIENT)
-		public void method_32380(MapState mapState) {
-			for (int i = 0; i < this.field_27894; i++) {
-				for (int j = 0; j < this.field_27895; j++) {
-					mapState.method_32370(this.field_27892 + i, this.field_27893 + j, this.field_27896[i + j * this.field_27894]);
+		public void setColorsTo(MapState mapState) {
+			for (int i = 0; i < this.width; i++) {
+				for (int j = 0; j < this.height; j++) {
+					mapState.setColor(this.startX + i, this.startZ + j, this.colors[i + j * this.width]);
 				}
 			}
 		}

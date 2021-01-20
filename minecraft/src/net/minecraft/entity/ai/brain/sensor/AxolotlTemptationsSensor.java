@@ -16,7 +16,7 @@ import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 
 public class AxolotlTemptationsSensor extends Sensor<PathAwareEntity> {
-	private static final TargetPredicate field_28330 = new TargetPredicate()
+	private static final TargetPredicate TEMPTER_PREDICATE = new TargetPredicate()
 		.setBaseMaxDistance(10.0)
 		.includeInvulnerable()
 		.includeTeammates()
@@ -33,7 +33,7 @@ public class AxolotlTemptationsSensor extends Sensor<PathAwareEntity> {
 		List<PlayerEntity> list = (List<PlayerEntity>)serverWorld.getPlayers()
 			.stream()
 			.filter(EntityPredicates.EXCEPT_SPECTATOR)
-			.filter(player -> field_28330.test(pathAwareEntity, player))
+			.filter(player -> TEMPTER_PREDICATE.test(pathAwareEntity, player))
 			.filter(serverPlayerEntity -> pathAwareEntity.isInRange(serverPlayerEntity, 10.0))
 			.filter(this::test)
 			.sorted(Comparator.comparingDouble(pathAwareEntity::squaredDistanceTo))

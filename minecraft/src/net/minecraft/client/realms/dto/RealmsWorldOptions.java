@@ -27,16 +27,27 @@ public class RealmsWorldOptions extends ValueObject {
 	public boolean empty;
 	private static final String DEFAULT_WORLD_TEMPLATE_IMAGE = null;
 
-	public RealmsWorldOptions(boolean bl, boolean bl2, boolean bl3, boolean bl4, int i, boolean bl5, int j, int k, boolean bl6, @Nullable String slotName) {
-		this.pvp = bl;
-		this.spawnAnimals = bl2;
-		this.spawnMonsters = bl3;
-		this.spawnNPCs = bl4;
-		this.spawnProtection = i;
-		this.commandBlocks = bl5;
-		this.difficulty = j;
-		this.gameMode = k;
-		this.forceGameMode = bl6;
+	public RealmsWorldOptions(
+		boolean pvp,
+		boolean spawnAnimals,
+		boolean spawnMonsters,
+		boolean spawnNPCs,
+		int spawnProtection,
+		boolean commandBlocks,
+		int difficulty,
+		int gameMode,
+		boolean forceGameMode,
+		@Nullable String slotName
+	) {
+		this.pvp = pvp;
+		this.spawnAnimals = spawnAnimals;
+		this.spawnMonsters = spawnMonsters;
+		this.spawnNPCs = spawnNPCs;
+		this.spawnProtection = spawnProtection;
+		this.commandBlocks = commandBlocks;
+		this.difficulty = difficulty;
+		this.gameMode = gameMode;
+		this.forceGameMode = forceGameMode;
 		this.slotName = slotName;
 	}
 

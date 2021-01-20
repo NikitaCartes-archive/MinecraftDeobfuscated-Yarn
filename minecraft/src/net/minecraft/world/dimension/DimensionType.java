@@ -388,9 +388,9 @@ public class DimensionType {
 		return simpleRegistry;
 	}
 
-	public static double getCoordinateScaleFactor(DimensionType dimensionType, DimensionType dimensionType2) {
-		double d = dimensionType.getCoordinateScale();
-		double e = dimensionType2.getCoordinateScale();
+	public static double getCoordinateScaleFactor(DimensionType fromDimension, DimensionType toDimension) {
+		double d = fromDimension.getCoordinateScale();
+		double e = toDimension.getCoordinateScale();
 		return d / e;
 	}
 

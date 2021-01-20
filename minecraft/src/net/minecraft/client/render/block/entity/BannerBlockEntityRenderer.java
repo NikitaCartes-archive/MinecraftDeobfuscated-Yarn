@@ -124,7 +124,9 @@ public class BannerBlockEntityRenderer implements BlockEntityRenderer<BannerBloc
 			Pair<BannerPattern, DyeColor> pair = (Pair<BannerPattern, DyeColor>)patterns.get(i);
 			float[] fs = pair.getSecond().getColorComponents();
 			BannerPattern bannerPattern = pair.getFirst();
-			SpriteIdentifier spriteIdentifier = isBanner ? TexturedRenderLayers.method_33081(bannerPattern) : TexturedRenderLayers.method_33083(bannerPattern);
+			SpriteIdentifier spriteIdentifier = isBanner
+				? TexturedRenderLayers.getBannerPatternTextureId(bannerPattern)
+				: TexturedRenderLayers.getShieldPatternTextureId(bannerPattern);
 			canvas.render(matrices, spriteIdentifier.getVertexConsumer(vertexConsumers, RenderLayer::getEntityNoOutline), light, overlay, fs[0], fs[1], fs[2], 1.0F);
 		}
 	}

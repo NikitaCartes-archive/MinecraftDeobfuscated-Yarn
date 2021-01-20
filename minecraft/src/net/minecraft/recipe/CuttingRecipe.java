@@ -108,7 +108,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 		}
 
 		interface RecipeFactory<T extends CuttingRecipe> {
-			T create(Identifier identifier, String string, Ingredient ingredient, ItemStack itemStack);
+			T create(Identifier id, String group, Ingredient input, ItemStack output);
 		}
 	}
 }

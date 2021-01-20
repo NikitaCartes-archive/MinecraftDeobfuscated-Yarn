@@ -30,60 +30,60 @@ public class AreaHelper {
 	private int height;
 	private final int width;
 
-	public static Optional<AreaHelper> method_30485(WorldAccess worldAccess, BlockPos blockPos, Direction.Axis axis) {
-		return method_30486(worldAccess, blockPos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis);
+	public static Optional<AreaHelper> getNewPortal(WorldAccess world, BlockPos pos, Direction.Axis axis) {
+		return getOrEmpty(world, pos, areaHelper -> areaHelper.isValid() && areaHelper.foundPortalBlocks == 0, axis);
 	}
 
-	public static Optional<AreaHelper> method_30486(WorldAccess worldAccess, BlockPos blockPos, Predicate<AreaHelper> predicate, Direction.Axis axis) {
-		Optional<AreaHelper> optional = Optional.of(new AreaHelper(worldAccess, blockPos, axis)).filter(predicate);
+	public static Optional<AreaHelper> getOrEmpty(WorldAccess world, BlockPos pos, Predicate<AreaHelper> predicate, Direction.Axis axis) {
+		Optional<AreaHelper> optional = Optional.of(new AreaHelper(world, pos, axis)).filter(predicate);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
 			Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-			return Optional.of(new AreaHelper(worldAccess, blockPos, axis2)).filter(predicate);
+			return Optional.of(new AreaHelper(world, pos, axis2)).filter(predicate);
 		}
 	}
 
-	public AreaHelper(WorldAccess world, BlockPos blockPos, Direction.Axis axis) {
+	public AreaHelper(WorldAccess world, BlockPos pos, Direction.Axis axis) {
 		this.world = world;
 		this.axis = axis;
 		this.negativeDir = axis == Direction.Axis.X ? Direction.WEST : Direction.SOUTH;
-		this.lowerCorner = this.method_30492(blockPos);
+		this.lowerCorner = this.getLowerCorner(pos);
 		if (this.lowerCorner == null) {
-			this.lowerCorner = blockPos;
+			this.lowerCorner = pos;
 			this.width = 1;
 			this.height = 1;
 		} else {
-			this.width = this.method_30495();
+			this.width = this.getWidth();
 			if (this.width > 0) {
-				this.height = this.method_30496();
+				this.height = this.getHeight();
 			}
 		}
 	}
 
 	@Nullable
-	private BlockPos method_30492(BlockPos blockPos) {
-		int i = Math.max(this.world.getSectionCount(), blockPos.getY() - 21);
+	private BlockPos getLowerCorner(BlockPos pos) {
+		int i = Math.max(this.world.getBottomSectionLimit(), pos.getY() - 21);
 
-		while (blockPos.getY() > i && validStateInsidePortal(this.world.getBlockState(blockPos.down()))) {
-			blockPos = blockPos.down();
+		while (pos.getY() > i && validStateInsidePortal(this.world.getBlockState(pos.down()))) {
+			pos = pos.down();
 		}
 
 		Direction direction = this.negativeDir.getOpposite();
-		int j = this.method_30493(blockPos, direction) - 1;
-		return j < 0 ? null : blockPos.offset(direction, j);
+		int j = this.getWidth(pos, direction) - 1;
+		return j < 0 ? null : pos.offset(direction, j);
 	}
 
-	private int method_30495() {
-		int i = this.method_30493(this.lowerCorner, this.negativeDir);
+	private int getWidth() {
+		int i = this.getWidth(this.lowerCorner, this.negativeDir);
 		return i >= 2 && i <= 21 ? i : 0;
 	}
 
-	private int method_30493(BlockPos blockPos, Direction direction) {
+	private int getWidth(BlockPos pos, Direction direction) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int i = 0; i <= 21; i++) {
-			mutable.set(blockPos).move(direction, i);
+			mutable.set(pos).move(direction, i);
 			BlockState blockState = this.world.getBlockState(mutable);
 			if (!validStateInsidePortal(blockState)) {
 				if (IS_VALID_FRAME_BLOCK.test(blockState, this.world, mutable)) {
@@ -101,7 +101,7 @@ public class AreaHelper {
 		return 0;
 	}
 
-	private int method_30496() {
+	private int getHeight() {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		int i = this.method_30490(mutable);
 		return i >= 3 && i <= 21 && this.method_30491(mutable, i) ? i : 0;
@@ -146,8 +146,8 @@ public class AreaHelper {
 		return 21;
 	}
 
-	private static boolean validStateInsidePortal(BlockState blockState) {
-		return blockState.isAir() || blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.NETHER_PORTAL);
+	private static boolean validStateInsidePortal(BlockState state) {
+		return state.isAir() || state.isIn(BlockTags.FIRE) || state.isOf(Blocks.NETHER_PORTAL);
 	}
 
 	public boolean isValid() {

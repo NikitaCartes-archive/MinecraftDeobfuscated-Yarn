@@ -17,7 +17,7 @@ import net.minecraft.world.biome.source.BiomeArray;
 
 public class EmptyChunk extends WorldChunk {
 	public EmptyChunk(World world, ChunkPos pos) {
-		super(world, pos, new EmptyChunk.class_5706(world));
+		super(world, pos, new EmptyChunk.EmptyBiomeArray(world));
 	}
 
 	@Override
@@ -78,11 +78,11 @@ public class EmptyChunk extends WorldChunk {
 		return ChunkHolder.LevelType.BORDER;
 	}
 
-	static class class_5706 extends BiomeArray {
-		private static final Biome[] field_28128 = new Biome[0];
+	static class EmptyBiomeArray extends BiomeArray {
+		private static final Biome[] EMPTY_ARRAY = new Biome[0];
 
-		public class_5706(World world) {
-			super(world.getRegistryManager().get(Registry.BIOME_KEY), world, field_28128);
+		public EmptyBiomeArray(World world) {
+			super(world.getRegistryManager().get(Registry.BIOME_KEY), world, EMPTY_ARRAY);
 		}
 
 		@Override

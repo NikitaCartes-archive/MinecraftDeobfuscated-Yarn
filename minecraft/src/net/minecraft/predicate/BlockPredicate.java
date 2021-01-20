@@ -72,8 +72,7 @@ public class BlockPredicate {
 			Tag<Block> tag = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tag = ServerTagManagerHolder.getTagManager()
-					.getTag(Registry.BLOCK_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown block tag '" + identifier + "'"));
+				tag = ServerTagManagerHolder.getTagManager().getTag(Registry.BLOCK_KEY, identifier2, id -> new JsonSyntaxException("Unknown block tag '" + id + "'"));
 			}
 
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));
@@ -124,7 +123,7 @@ public class BlockPredicate {
 			return this;
 		}
 
-		public BlockPredicate.Builder method_29233(Tag<Block> tag) {
+		public BlockPredicate.Builder tag(Tag<Block> tag) {
 			this.tag = tag;
 			return this;
 		}

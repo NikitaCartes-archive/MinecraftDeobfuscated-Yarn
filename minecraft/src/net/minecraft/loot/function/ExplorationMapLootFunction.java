@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
-	public static final StructureFeature<?> field_25032 = StructureFeature.BURIED_TREASURE;
+	public static final StructureFeature<?> DEFAULT_DESTINATION = StructureFeature.BURIED_TREASURE;
 	public static final MapIcon.Type DEFAULT_DECORATION = MapIcon.Type.MANSION;
 	private final StructureFeature<?> destination;
 	private final MapIcon.Type decoration;
@@ -35,10 +35,10 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	private final boolean skipExistingChunks;
 
 	private ExplorationMapLootFunction(
-		LootCondition[] conditions, StructureFeature<?> structureFeature, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks
+		LootCondition[] conditions, StructureFeature<?> destination, MapIcon.Type decoration, byte zoom, int searchRadius, boolean skipExistingChunks
 	) {
 		super(conditions);
-		this.destination = structureFeature;
+		this.destination = destination;
 		this.decoration = decoration;
 		this.zoom = zoom;
 		this.searchRadius = searchRadius;
@@ -82,7 +82,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	}
 
 	public static class Builder extends ConditionalLootFunction.Builder<ExplorationMapLootFunction.Builder> {
-		private StructureFeature<?> destination = ExplorationMapLootFunction.field_25032;
+		private StructureFeature<?> destination = ExplorationMapLootFunction.DEFAULT_DESTINATION;
 		private MapIcon.Type decoration = ExplorationMapLootFunction.DEFAULT_DECORATION;
 		private byte zoom = 2;
 		private int searchRadius = 50;
@@ -92,8 +92,8 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			return this;
 		}
 
-		public ExplorationMapLootFunction.Builder withDestination(StructureFeature<?> structureFeature) {
-			this.destination = structureFeature;
+		public ExplorationMapLootFunction.Builder withDestination(StructureFeature<?> destination) {
+			this.destination = destination;
 			return this;
 		}
 
@@ -121,7 +121,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 	public static class Serializer extends ConditionalLootFunction.Serializer<ExplorationMapLootFunction> {
 		public void toJson(JsonObject jsonObject, ExplorationMapLootFunction explorationMapLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, explorationMapLootFunction, jsonSerializationContext);
-			if (!explorationMapLootFunction.destination.equals(ExplorationMapLootFunction.field_25032)) {
+			if (!explorationMapLootFunction.destination.equals(ExplorationMapLootFunction.DEFAULT_DESTINATION)) {
 				jsonObject.add("destination", jsonSerializationContext.serialize(explorationMapLootFunction.destination.getName()));
 			}
 
@@ -143,7 +143,7 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 		}
 
 		public ExplorationMapLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
-			StructureFeature<?> structureFeature = method_29039(jsonObject);
+			StructureFeature<?> structureFeature = getDestination(jsonObject);
 			String string = jsonObject.has("decoration") ? JsonHelper.getString(jsonObject, "decoration") : "mansion";
 			MapIcon.Type type = ExplorationMapLootFunction.DEFAULT_DECORATION;
 
@@ -160,16 +160,16 @@ public class ExplorationMapLootFunction extends ConditionalLootFunction {
 			return new ExplorationMapLootFunction(lootConditions, structureFeature, type, b, i, bl);
 		}
 
-		private static StructureFeature<?> method_29039(JsonObject jsonObject) {
-			if (jsonObject.has("destination")) {
-				String string = JsonHelper.getString(jsonObject, "destination");
+		private static StructureFeature<?> getDestination(JsonObject json) {
+			if (json.has("destination")) {
+				String string = JsonHelper.getString(json, "destination");
 				StructureFeature<?> structureFeature = (StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT));
 				if (structureFeature != null) {
 					return structureFeature;
 				}
 			}
 
-			return ExplorationMapLootFunction.field_25032;
+			return ExplorationMapLootFunction.DEFAULT_DESTINATION;
 		}
 	}
 }

@@ -142,7 +142,7 @@ public class BatEntity extends AmbientEntity {
 				}
 			}
 		} else {
-			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() <= this.world.getSectionCount())) {
+			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() <= this.world.getBottomSectionLimit())) {
 				this.hangingPosition = null;
 			}
 
@@ -176,7 +176,7 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		return false;
 	}
 

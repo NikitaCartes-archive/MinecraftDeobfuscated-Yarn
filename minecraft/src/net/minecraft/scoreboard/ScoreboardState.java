@@ -126,7 +126,7 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag toNbt(CompoundTag tag) {
 		tag.put("Objectives", this.objectivesToTag());
 		tag.put("PlayerScores", this.scoreboard.toTag());
 		tag.put("Teams", this.teamsToTag());

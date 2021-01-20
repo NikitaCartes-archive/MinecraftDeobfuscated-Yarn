@@ -149,7 +149,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		this.escapeDangerGoal = new EscapeDangerGoal(this, 1.65);
 		this.goalSelector.add(1, this.escapeDangerGoal);
 		this.goalSelector.add(2, new AnimalMateGoal(this, 1.0));
-		this.temptGoal = new TemptGoal(this, 1.4, false, ATTRACTING_INGREDIENT);
+		this.temptGoal = new TemptGoal(this, 1.4, ATTRACTING_INGREDIENT, false);
 		this.goalSelector.add(3, this.temptGoal);
 		this.goalSelector.add(4, new StriderEntity.GoBackToLavaGoal(this, 1.5));
 		this.goalSelector.add(5, new FollowParentGoal(this, 1.1));
@@ -291,9 +291,9 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	public void tick() {
-		if (this.method_30079() && this.random.nextInt(140) == 0) {
+		if (this.isBeingTempted() && this.random.nextInt(140) == 0) {
 			this.playSound(SoundEvents.ENTITY_STRIDER_HAPPY, 1.0F, this.getSoundPitch());
-		} else if (this.method_30078() && this.random.nextInt(60) == 0) {
+		} else if (this.isEscapingDanger() && this.random.nextInt(60) == 0) {
 			this.playSound(SoundEvents.ENTITY_STRIDER_RETREAT, 1.0F, this.getSoundPitch());
 		}
 
@@ -306,11 +306,11 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 		this.checkBlockCollision();
 	}
 
-	private boolean method_30078() {
+	private boolean isEscapingDanger() {
 		return this.escapeDangerGoal != null && this.escapeDangerGoal.isActive();
 	}
 
-	private boolean method_30079() {
+	private boolean isBeingTempted() {
 		return this.temptGoal != null && this.temptGoal.isActive();
 	}
 
@@ -336,7 +336,7 @@ public class StriderEntity extends AnimalEntity implements ItemSteerable, Saddle
 
 	@Override
 	protected SoundEvent getAmbientSound() {
-		return !this.method_30078() && !this.method_30079() ? SoundEvents.ENTITY_STRIDER_AMBIENT : null;
+		return !this.isEscapingDanger() && !this.isBeingTempted() ? SoundEvents.ENTITY_STRIDER_AMBIENT : null;
 	}
 
 	@Override

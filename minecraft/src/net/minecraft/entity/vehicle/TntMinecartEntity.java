@@ -101,13 +101,13 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		if (fallDistance >= 3.0F) {
 			float f = fallDistance / 10.0F;
 			this.explode((double)(f * f));
 		}
 
-		return super.handleFallDamage(fallDistance, damageMultiplier);
+		return super.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 	}
 
 	@Override

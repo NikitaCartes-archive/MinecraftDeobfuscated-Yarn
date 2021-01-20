@@ -34,25 +34,25 @@ public abstract class ChestStateManager {
 	 */
 	protected abstract boolean isPlayerViewing(PlayerEntity player);
 
-	public void openChest(PlayerEntity playerEntity, World world, BlockPos blockPos, BlockState blockState) {
+	public void openChest(PlayerEntity player, World world, BlockPos pos, BlockState state) {
 		int i = this.viewerCount++;
 		if (i == 0) {
-			this.onChestOpened(world, blockPos, blockState);
-			world.emitGameEvent(playerEntity, GameEvent.CONTAINER_OPEN, blockPos);
-			scheduleBlockTick(world, blockPos, blockState);
+			this.onChestOpened(world, pos, state);
+			world.emitGameEvent(player, GameEvent.CONTAINER_OPEN, pos);
+			scheduleBlockTick(world, pos, state);
 		}
 
-		this.onInteracted(world, blockPos, blockState, i, this.viewerCount);
+		this.onInteracted(world, pos, state, i, this.viewerCount);
 	}
 
-	public void closeChest(PlayerEntity playerEntity, World world, BlockPos blockPos, BlockState blockState) {
+	public void closeChest(PlayerEntity player, World world, BlockPos pos, BlockState state) {
 		int i = this.viewerCount--;
 		if (this.viewerCount == 0) {
-			this.onChestClosed(world, blockPos, blockState);
-			world.emitGameEvent(playerEntity, GameEvent.CONTAINER_CLOSE, blockPos);
+			this.onChestClosed(world, pos, state);
+			world.emitGameEvent(player, GameEvent.CONTAINER_CLOSE, pos);
 		}
 
-		this.onInteracted(world, blockPos, blockState, i, this.viewerCount);
+		this.onInteracted(world, pos, state, i, this.viewerCount);
 	}
 
 	private int getInRangeViewerCount(World world, BlockPos pos) {

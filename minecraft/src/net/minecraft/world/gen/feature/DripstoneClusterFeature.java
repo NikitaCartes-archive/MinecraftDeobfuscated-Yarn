@@ -13,6 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.util.DripstoneColumn;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
@@ -69,7 +70,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		DripstoneClusterFeatureConfig config
 	) {
 		Optional<DripstoneColumn> optional = DripstoneColumn.create(
-			world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplace
+			world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava
 		);
 		if (optional.isPresent()) {
 			OptionalInt optionalInt = ((DripstoneColumn)optional.get()).getCeilingHeight();
@@ -88,7 +89,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 				OptionalInt optionalInt3 = dripstoneColumn.getFloorHeight();
 				boolean bl2 = random.nextDouble() < dripstoneChance;
 				int l;
-				if (optionalInt.isPresent() && bl2) {
+				if (optionalInt.isPresent() && bl2 && !this.isLava(world, pos.withY(optionalInt.getAsInt()))) {
 					int j = config.dripstoneBlockLayerThickness.getValue(random);
 					this.placeDripstoneBlocks(world, pos.withY(optionalInt.getAsInt()), j, Direction.UP);
 					int k;
@@ -105,7 +106,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 
 				boolean bl3 = random.nextDouble() < dripstoneChance;
 				int j;
-				if (optionalInt3.isPresent() && bl3) {
+				if (optionalInt3.isPresent() && bl3 && !this.isLava(world, pos.withY(optionalInt3.getAsInt()))) {
 					int m = config.dripstoneBlockLayerThickness.getValue(random);
 					this.placeDripstoneBlocks(world, pos.withY(optionalInt3.getAsInt()), m, Direction.DOWN);
 					j = Math.max(0, l + MathHelper.nextBetween(random, -config.maxStalagmiteStalactiteHeightDiff, config.maxStalagmiteStalactiteHeightDiff));
@@ -129,7 +130,11 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 					t = j;
 				}
 
-				boolean bl4 = random.nextBoolean();
+				boolean bl4 = random.nextBoolean()
+					&& m > 0
+					&& t > 0
+					&& dripstoneColumn.getOptionalHeight().isPresent()
+					&& m + t == dripstoneColumn.getOptionalHeight().getAsInt();
 				if (optionalInt.isPresent()) {
 					DripstoneHelper.generatePointedDripstone(world, pos.withY(optionalInt.getAsInt() - 1), Direction.DOWN, m, bl4);
 				}
@@ -139,6 +144,10 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 				}
 			}
 		}
+	}
+
+	private boolean isLava(WorldView world, BlockPos pos) {
+		return world.getBlockState(pos).isOf(Blocks.LAVA);
 	}
 
 	private int getHeight(Random random, int localX, int localZ, float density, int height, DripstoneClusterFeatureConfig config) {

@@ -107,14 +107,14 @@ public class ArrowEntity extends PersistentProjectileEntity {
 		}
 	}
 
-	private void spawnParticles(int i) {
-		int j = this.getColor();
-		if (j != -1 && i > 0) {
-			double d = (double)(j >> 16 & 0xFF) / 255.0;
-			double e = (double)(j >> 8 & 0xFF) / 255.0;
-			double f = (double)(j >> 0 & 0xFF) / 255.0;
+	private void spawnParticles(int amount) {
+		int i = this.getColor();
+		if (i != -1 && amount > 0) {
+			double d = (double)(i >> 16 & 0xFF) / 255.0;
+			double e = (double)(i >> 8 & 0xFF) / 255.0;
+			double f = (double)(i >> 0 & 0xFF) / 255.0;
 
-			for (int k = 0; k < i; k++) {
+			for (int j = 0; j < amount; j++) {
 				this.world.addParticle(ParticleTypes.ENTITY_EFFECT, this.getParticleX(0.5), this.getRandomBodyY(), this.getParticleZ(0.5), d, e, f);
 			}
 		}

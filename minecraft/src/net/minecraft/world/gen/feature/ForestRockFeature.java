@@ -15,7 +15,7 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
 	) {
-		while (blockPos.getY() > structureWorldAccess.getSectionCount() + 3) {
+		while (blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 3) {
 			if (!structureWorldAccess.isAir(blockPos.down())) {
 				BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());
 				if (isSoil(blockState) || isStone(blockState)) {
@@ -26,7 +26,7 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 			blockPos = blockPos.down();
 		}
 
-		if (blockPos.getY() <= structureWorldAccess.getSectionCount() + 3) {
+		if (blockPos.getY() <= structureWorldAccess.getBottomSectionLimit() + 3) {
 			return false;
 		} else {
 			for (int i = 0; i < 3; i++) {

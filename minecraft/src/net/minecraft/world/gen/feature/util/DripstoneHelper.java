@@ -29,7 +29,7 @@ public class DripstoneHelper {
 	}
 
 	public static boolean canGenerateBase(StructureWorldAccess world, BlockPos pos, int height) {
-		if (canGenerate(world, pos)) {
+		if (canGenerateOrLava(world, pos)) {
 			return false;
 		} else {
 			float f = 6.0F;
@@ -38,7 +38,7 @@ public class DripstoneHelper {
 			for (float h = 0.0F; h < (float) (Math.PI * 2); h += g) {
 				int i = (int)(MathHelper.cos(h) * (float)height);
 				int j = (int)(MathHelper.sin(h) * (float)height);
-				if (canGenerate(world, pos.add(i, 0, j))) {
+				if (canGenerateOrLava(world, pos.add(i, 0, j))) {
 					return false;
 				}
 			}
@@ -49,6 +49,10 @@ public class DripstoneHelper {
 
 	public static boolean canGenerate(WorldAccess world, BlockPos pos) {
 		return world.testBlockState(pos, DripstoneHelper::canGenerate);
+	}
+
+	public static boolean canGenerateOrLava(WorldAccess world, BlockPos pos) {
+		return world.testBlockState(pos, DripstoneHelper::canGenerateOrLava);
 	}
 
 	protected static void getDripstoneThickness(Direction direction, int height, boolean merge, Consumer<BlockState> callback) {
@@ -95,11 +99,19 @@ public class DripstoneHelper {
 		return Blocks.POINTED_DRIPSTONE.getDefaultState().with(PointedDripstoneBlock.VERTICAL_DIRECTION, direction).with(PointedDripstoneBlock.THICKNESS, thickness);
 	}
 
+	public static boolean canReplaceOrLava(BlockState state) {
+		return canReplace(state) || state.isOf(Blocks.LAVA);
+	}
+
 	public static boolean canReplace(BlockState state) {
 		return state.isOf(Blocks.DRIPSTONE_BLOCK) || state.isIn(BlockTags.DRIPSTONE_REPLACEABLE_BLOCKS);
 	}
 
 	public static boolean canGenerate(BlockState state) {
 		return state.isAir() || state.isOf(Blocks.WATER);
+	}
+
+	public static boolean canGenerateOrLava(BlockState state) {
+		return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.LAVA);
 	}
 }

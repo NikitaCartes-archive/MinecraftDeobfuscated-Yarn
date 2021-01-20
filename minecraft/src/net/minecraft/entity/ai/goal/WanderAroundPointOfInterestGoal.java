@@ -10,8 +10,8 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3d;
 
 public class WanderAroundPointOfInterestGoal extends WanderAroundGoal {
-	public WanderAroundPointOfInterestGoal(PathAwareEntity pathAwareEntity, double d, boolean bl) {
-		super(pathAwareEntity, d, 10, bl);
+	public WanderAroundPointOfInterestGoal(PathAwareEntity entity, double speed, boolean bl) {
+		super(entity, speed, 10, bl);
 	}
 
 	@Override

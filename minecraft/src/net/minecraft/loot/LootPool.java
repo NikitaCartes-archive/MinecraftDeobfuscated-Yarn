@@ -93,21 +93,21 @@ public class LootPool {
 		}
 	}
 
-	public void validate(LootTableReporter lootTableReporter) {
+	public void validate(LootTableReporter reporter) {
 		for (int i = 0; i < this.conditions.length; i++) {
-			this.conditions[i].validate(lootTableReporter.makeChild(".condition[" + i + "]"));
+			this.conditions[i].validate(reporter.makeChild(".condition[" + i + "]"));
 		}
 
 		for (int i = 0; i < this.functions.length; i++) {
-			this.functions[i].validate(lootTableReporter.makeChild(".functions[" + i + "]"));
+			this.functions[i].validate(reporter.makeChild(".functions[" + i + "]"));
 		}
 
 		for (int i = 0; i < this.entries.length; i++) {
-			this.entries[i].validate(lootTableReporter.makeChild(".entries[" + i + "]"));
+			this.entries[i].validate(reporter.makeChild(".entries[" + i + "]"));
 		}
 
-		this.rolls.validate(lootTableReporter.makeChild(".rolls"));
-		this.bonusRolls.validate(lootTableReporter.makeChild(".bonusRolls"));
+		this.rolls.validate(reporter.makeChild(".rolls"));
+		this.bonusRolls.validate(reporter.makeChild(".bonusRolls"));
 	}
 
 	public static LootPool.Builder builder() {

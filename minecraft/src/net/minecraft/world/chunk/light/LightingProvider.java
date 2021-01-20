@@ -12,14 +12,14 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 import net.minecraft.world.chunk.ChunkProvider;
 
 public class LightingProvider implements LightingView {
-	protected final HeightLimitView field_27339;
+	protected final HeightLimitView world;
 	@Nullable
 	private final ChunkLightProvider<?, ?> blockLightProvider;
 	@Nullable
 	private final ChunkLightProvider<?, ?> skyLightProvider;
 
 	public LightingProvider(ChunkProvider chunkProvider, boolean hasBlockLight, boolean hasSkyLight) {
-		this.field_27339 = chunkProvider.getWorld();
+		this.world = chunkProvider.getWorld();
 		this.blockLightProvider = hasBlockLight ? new ChunkBlockLightProvider(chunkProvider) : null;
 		this.skyLightProvider = hasSkyLight ? new ChunkSkyLightProvider(chunkProvider) : null;
 	}
@@ -127,11 +127,11 @@ public class LightingProvider implements LightingView {
 	}
 
 	public int method_31928() {
-		return this.field_27339.method_32890() + 2;
+		return this.world.getSections() + 2;
 	}
 
 	public int method_31929() {
-		return this.field_27339.method_32891() - 1;
+		return this.world.getMinimumSection() - 1;
 	}
 
 	public int method_31930() {

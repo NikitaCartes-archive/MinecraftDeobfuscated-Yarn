@@ -548,7 +548,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			if (!list.isEmpty()) {
 				return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
 			} else {
-				if (blockPos.getY() == this.getSectionCount() - 1) {
+				if (blockPos.getY() == this.getBottomSectionLimit() - 1) {
 					blockPos = blockPos.up(2);
 				}
 
@@ -650,9 +650,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void tickEntity(Entity entity) {
-		entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
-		entity.prevYaw = entity.yaw;
-		entity.prevPitch = entity.pitch;
+		entity.resetPosition();
 		Profiler profiler = this.getProfiler();
 		entity.age++;
 		this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
@@ -669,9 +667,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (passenger.isRemoved() || passenger.getVehicle() != vehicle) {
 			passenger.stopRiding();
 		} else if (passenger instanceof PlayerEntity || this.entityList.hasEntity(passenger)) {
-			passenger.resetPosition(passenger.getX(), passenger.getY(), passenger.getZ());
-			passenger.prevYaw = passenger.yaw;
-			passenger.prevPitch = passenger.pitch;
+			passenger.resetPosition();
 			passenger.age++;
 			Profiler profiler = this.getProfiler();
 			profiler.push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(passenger.getType()).toString()));
@@ -722,7 +718,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	/**
 	 * Computes a list of entities of the given type.
 	 * 
-	 * <strong>Warning:<strong> If {@code null} is passed as the entity type filter, care should be
+	 * <strong>Warning:</strong> If {@code null} is passed as the entity type filter, care should be
 	 * taken that the type argument {@code T} is set to {@link Entity}, otherwise heap pollution
 	 * in the returned list or {@link ClassCastException} can occur.
 	 * 
@@ -1097,7 +1093,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Nullable
 	@Override
 	public MapState getMapState(String id) {
-		return this.getServer().getOverworld().getPersistentStateManager().get(MapState::method_32371, id);
+		return this.getServer().getOverworld().getPersistentStateManager().get(MapState::fromNbt, id);
 	}
 
 	@Override
@@ -1110,7 +1106,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return this.getServer()
 			.getOverworld()
 			.getPersistentStateManager()
-			.<IdCountsState>getOrCreate(IdCountsState::method_32360, IdCountsState::new, "idcounts")
+			.<IdCountsState>getOrCreate(IdCountsState::fromNbt, IdCountsState::new, "idcounts")
 			.getNextMapId();
 	}
 
@@ -1136,12 +1132,12 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public LongSet getForcedChunks() {
-		ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::method_32350, "chunks");
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().get(ForcedChunkState::fromNbt, "chunks");
 		return (LongSet)(forcedChunkState != null ? LongSets.unmodifiable(forcedChunkState.getChunks()) : LongSets.EMPTY_SET);
 	}
 
 	public boolean setChunkForced(int x, int z, boolean forced) {
-		ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::method_32350, ForcedChunkState::new, "chunks");
+		ForcedChunkState forcedChunkState = this.getPersistentStateManager().getOrCreate(ForcedChunkState::fromNbt, ForcedChunkState::new, "chunks");
 		ChunkPos chunkPos = new ChunkPos(x, z);
 		long l = chunkPos.toLong();
 		boolean bl;

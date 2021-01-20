@@ -60,7 +60,7 @@ public class BucketItem extends Item implements FluidModificationItem {
 					ItemStack itemStack2 = fluidDrainable.tryDrainFluid(world, blockPos, blockState);
 					if (!itemStack2.isEmpty()) {
 						user.incrementStat(Stats.USED.getOrCreateStat(this));
-						fluidDrainable.getDrainSound().ifPresent(sound -> user.playSound(sound, 1.0F, 1.0F));
+						fluidDrainable.getBucketFillSound().ifPresent(sound -> user.playSound(sound, 1.0F, 1.0F));
 						world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
 						ItemStack itemStack3 = ItemUsage.exchangeStack(itemStack, user, itemStack2);
 						if (!world.isClient) {
@@ -90,8 +90,8 @@ public class BucketItem extends Item implements FluidModificationItem {
 		}
 	}
 
-	public static ItemStack getEmptiedStack(ItemStack itemStack, PlayerEntity playerEntity) {
-		return !playerEntity.getAbilities().creativeMode ? new ItemStack(Items.BUCKET) : itemStack;
+	public static ItemStack getEmptiedStack(ItemStack stack, PlayerEntity player) {
+		return !player.getAbilities().creativeMode ? new ItemStack(Items.BUCKET) : stack;
 	}
 
 	@Override

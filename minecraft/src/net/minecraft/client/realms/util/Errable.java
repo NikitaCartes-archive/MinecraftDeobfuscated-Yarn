@@ -7,7 +7,7 @@ import net.minecraft.text.Text;
 
 @Environment(EnvType.CLIENT)
 public interface Errable {
-	void error(Text text);
+	void error(Text errorMessage);
 
 	default void error(String string) {
 		this.error(new LiteralText(string));

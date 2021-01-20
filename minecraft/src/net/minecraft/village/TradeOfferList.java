@@ -11,8 +11,8 @@ public class TradeOfferList extends ArrayList<TradeOffer> {
 	public TradeOfferList() {
 	}
 
-	public TradeOfferList(CompoundTag compoundTag) {
-		ListTag listTag = compoundTag.getList("Recipes", 10);
+	public TradeOfferList(CompoundTag nbt) {
+		ListTag listTag = nbt.getList("Recipes", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			this.add(new TradeOffer(listTag.getCompound(i)));

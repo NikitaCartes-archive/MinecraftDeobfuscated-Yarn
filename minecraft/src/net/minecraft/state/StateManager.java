@@ -153,6 +153,6 @@ public class StateManager<O, S extends State<O, S>> {
 	}
 
 	public interface Factory<O, S> {
-		S create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> mapCodec);
+		S create(O owner, ImmutableMap<Property<?>, Comparable<?>> entries, MapCodec<S> codec);
 	}
 }

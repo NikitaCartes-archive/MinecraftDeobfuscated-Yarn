@@ -102,9 +102,9 @@ public class PlayerInventory implements Inventory, Nameable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int getSlotWithStack(ItemStack itemStack) {
+	public int getSlotWithStack(ItemStack stack) {
 		for (int i = 0; i < this.main.size(); i++) {
-			if (!this.main.get(i).isEmpty() && ItemStack.canCombine(itemStack, this.main.get(i))) {
+			if (!this.main.get(i).isEmpty() && ItemStack.canCombine(stack, this.main.get(i))) {
 				return i;
 			}
 		}
@@ -300,8 +300,8 @@ public class PlayerInventory implements Inventory, Nameable {
 		}
 	}
 
-	public void offerOrDrop(ItemStack itemStack) {
-		this.method_32338(itemStack, true);
+	public void offerOrDrop(ItemStack stack) {
+		this.method_32338(stack, true);
 	}
 
 	public void method_32338(ItemStack itemStack, boolean bl) {

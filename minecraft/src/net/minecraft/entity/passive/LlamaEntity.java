@@ -419,16 +419,16 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		int i = this.computeFallDamage(fallDistance, damageMultiplier);
 		if (i <= 0) {
 			return false;
 		} else {
 			if (fallDistance >= 6.0F) {
-				this.damage(DamageSource.FALL, (float)i);
+				this.damage(damageSource, (float)i);
 				if (this.hasPassengers()) {
 					for (Entity entity : this.getPassengersDeep()) {
-						entity.damage(DamageSource.FALL, (float)i);
+						entity.damage(damageSource, (float)i);
 					}
 				}
 			}

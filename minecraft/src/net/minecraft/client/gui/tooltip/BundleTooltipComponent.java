@@ -16,13 +16,13 @@ import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class BundleTooltipComponent implements TooltipComponent {
-	public static final Identifier field_28359 = new Identifier("textures/gui/container/bundle.png");
+	public static final Identifier TEXTURE = new Identifier("textures/gui/container/bundle.png");
 	private final DefaultedList<ItemStack> inventory;
 	private final int field_28360;
 
 	public BundleTooltipComponent(BundleTooltipData bundleTooltipData) {
 		this.inventory = bundleTooltipData.getInventory();
-		this.field_28360 = bundleTooltipData.hasSpace();
+		this.field_28360 = bundleTooltipData.getBundleOccupancy();
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 		} else {
 			ItemStack itemStack = this.inventory.get(k);
 			this.method_33288(matrixStack, i, j, l, textureManager, BundleTooltipComponent.class_5771.field_28361);
-			itemRenderer.method_32797(itemStack, i + 1, j + 1, k);
+			itemRenderer.renderInGuiWithOverrides(itemStack, i + 1, j + 1, k);
 			itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, i + 1, j + 1);
 			if (k == 0) {
 				HandledScreen.method_33285(matrixStack, i + 1, j + 1, l);
@@ -89,7 +89,7 @@ public class BundleTooltipComponent implements TooltipComponent {
 
 	private void method_33288(MatrixStack matrixStack, int i, int j, int k, TextureManager textureManager, BundleTooltipComponent.class_5771 arg) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		textureManager.bindTexture(field_28359);
+		textureManager.bindTexture(TEXTURE);
 		DrawableHelper.drawTexture(matrixStack, i, j, k, (float)arg.field_28368, (float)arg.field_28369, arg.field_28370, arg.field_28371, 128, 128);
 	}
 

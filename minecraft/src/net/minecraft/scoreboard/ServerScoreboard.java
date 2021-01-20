@@ -224,14 +224,14 @@ public class ServerScoreboard extends Scoreboard {
 		return i;
 	}
 
-	public ScoreboardState method_32705() {
+	public ScoreboardState createState() {
 		ScoreboardState scoreboardState = new ScoreboardState(this);
 		this.addUpdateListener(scoreboardState::markDirty);
 		return scoreboardState;
 	}
 
-	public ScoreboardState method_32704(CompoundTag compoundTag) {
-		return this.method_32705().fromTag(compoundTag);
+	public ScoreboardState stateFromNbt(CompoundTag nbt) {
+		return this.createState().fromTag(nbt);
 	}
 
 	public static enum UpdateMode {

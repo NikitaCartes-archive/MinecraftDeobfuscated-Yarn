@@ -15,6 +15,18 @@ public class TargetPredicate {
 	private boolean useDistanceScalingFactor = true;
 	private Predicate<LivingEntity> predicate;
 
+	public TargetPredicate copy() {
+		TargetPredicate targetPredicate = new TargetPredicate();
+		targetPredicate.baseMaxDistance = this.baseMaxDistance;
+		targetPredicate.includeInvulnerable = this.includeInvulnerable;
+		targetPredicate.includeTeammates = this.includeTeammates;
+		targetPredicate.includeHidden = this.includeHidden;
+		targetPredicate.ignoreEntityTargetRules = this.ignoreEntityTargetRules;
+		targetPredicate.useDistanceScalingFactor = this.useDistanceScalingFactor;
+		targetPredicate.predicate = this.predicate;
+		return targetPredicate;
+	}
+
 	public TargetPredicate setBaseMaxDistance(double baseMaxDistance) {
 		this.baseMaxDistance = baseMaxDistance;
 		return this;

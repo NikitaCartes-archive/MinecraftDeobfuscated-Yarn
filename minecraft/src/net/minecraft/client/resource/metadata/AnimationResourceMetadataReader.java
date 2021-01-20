@@ -1,11 +1,11 @@
 package net.minecraft.client.resource.metadata;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -16,7 +16,7 @@ import org.apache.commons.lang3.Validate;
 @Environment(EnvType.CLIENT)
 public class AnimationResourceMetadataReader implements ResourceMetadataReader<AnimationResourceMetadata> {
 	public AnimationResourceMetadata fromJson(JsonObject jsonObject) {
-		List<AnimationFrameResourceMetadata> list = Lists.<AnimationFrameResourceMetadata>newArrayList();
+		Builder<AnimationFrameResourceMetadata> builder = ImmutableList.builder();
 		int i = JsonHelper.getInt(jsonObject, "frametime", 1);
 		if (i != 1) {
 			Validate.inclusiveBetween(1L, 2147483647L, (long)i, "Invalid default frame time");
@@ -30,7 +30,7 @@ public class AnimationResourceMetadataReader implements ResourceMetadataReader<A
 					JsonElement jsonElement = jsonArray.get(j);
 					AnimationFrameResourceMetadata animationFrameResourceMetadata = this.readFrameMetadata(j, jsonElement);
 					if (animationFrameResourceMetadata != null) {
-						list.add(animationFrameResourceMetadata);
+						builder.add(animationFrameResourceMetadata);
 					}
 				}
 			} catch (ClassCastException var8) {
@@ -49,7 +49,7 @@ public class AnimationResourceMetadataReader implements ResourceMetadataReader<A
 		}
 
 		boolean bl = JsonHelper.getBoolean(jsonObject, "interpolate", false);
-		return new AnimationResourceMetadata(list, k, jx, i, bl);
+		return new AnimationResourceMetadata(builder.build(), k, jx, i, bl);
 	}
 
 	@Nullable

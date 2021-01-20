@@ -46,8 +46,8 @@ public class FilledMapItem extends NetworkSyncedItem {
 	}
 
 	@Nullable
-	public static MapState getMapState(@Nullable Integer integer, World world) {
-		return integer == null ? null : world.getMapState(getMapName(integer));
+	public static MapState getMapState(@Nullable Integer id, World world) {
+		return id == null ? null : world.getMapState(getMapName(id));
 	}
 
 	@Nullable
@@ -62,11 +62,11 @@ public class FilledMapItem extends NetworkSyncedItem {
 		return compoundTag != null && compoundTag.contains("map", 99) ? compoundTag.getInt("map") : null;
 	}
 
-	private static int method_32349(World world, int i, int j, int k, boolean bl, boolean bl2, RegistryKey<World> registryKey) {
-		MapState mapState = MapState.method_32363((double)i, (double)j, (byte)k, bl, bl2, registryKey);
-		int l = world.getNextMapId();
-		world.putMapState(getMapName(l), mapState);
-		return l;
+	private static int allocateMapId(World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
+		MapState mapState = MapState.of((double)x, (double)z, (byte)scale, showIcons, unlimitedTracking, dimension);
+		int i = world.getNextMapId();
+		world.putMapState(getMapName(i), mapState);
+		return i;
 	}
 
 	private static void setMapId(ItemStack stack, int id) {
@@ -76,7 +76,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 	private static void createMapState(
 		ItemStack stack, World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension
 	) {
-		int i = method_32349(world, x, z, scale, showIcons, unlimitedTracking, dimension);
+		int i = allocateMapId(world, x, z, scale, showIcons, unlimitedTracking, dimension);
 		setMapId(stack, i);
 	}
 
@@ -138,15 +138,15 @@ public class FilledMapItem extends NetworkSyncedItem {
 										for (int z = 0; z < i; z++) {
 											int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
 											BlockState blockState;
-											if (aa <= world.getSectionCount() + 1) {
+											if (aa <= world.getBottomSectionLimit() + 1) {
 												blockState = Blocks.BEDROCK.getDefaultState();
 											} else {
 												do {
 													mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
 													blockState = worldChunk.getBlockState(mutable);
-												} while (blockState.getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getSectionCount());
+												} while (blockState.getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getBottomSectionLimit());
 
-												if (aa > world.getSectionCount() && !blockState.getFluidState().isEmpty()) {
+												if (aa > world.getBottomSectionLimit() && !blockState.getFluidState().isEmpty()) {
 													int ab = aa - 1;
 													mutable2.set(mutable);
 
@@ -155,7 +155,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 														mutable2.setY(ab--);
 														blockState2 = worldChunk.getBlockState(mutable2);
 														w++;
-													} while (ab > world.getSectionCount() && !blockState2.getFluidState().isEmpty());
+													} while (ab > world.getBottomSectionLimit() && !blockState2.getFluidState().isEmpty());
 
 													blockState = this.getFluidStateIfVisible(world, blockState, mutable);
 												}
@@ -194,7 +194,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 
 								d = e;
 								if (p >= 0 && q * q + r * r < n * n && (!bl2 || (o + p & 1) != 0)) {
-									bl |= state.method_32365(o, p, (byte)(mapColor.id * 4 + y));
+									bl |= state.putColor(o, p, (byte)(mapColor.id * 4 + y));
 								}
 							}
 						}
@@ -295,7 +295,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 							}
 
 							if (mapColor != MapColor.CLEAR) {
-								mapState.method_32370(l, m, (byte)(mapColor.id * 4 + o));
+								mapState.setColor(l, m, (byte)(mapColor.id * 4 + o));
 							}
 						}
 					}
@@ -345,7 +345,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 		MapState mapState = getOrCreateMapState(map, world);
 		if (mapState != null) {
 			int i = world.getNextMapId();
-			world.putMapState(getMapName(i), mapState.method_32364(amount));
+			world.putMapState(getMapName(i), mapState.zoomOut(amount));
 			setMapId(map, i);
 		}
 	}
@@ -355,7 +355,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 		if (mapState != null) {
 			int i = world.getNextMapId();
 			String string = getMapName(i);
-			MapState mapState2 = mapState.method_32361();
+			MapState mapState2 = mapState.copy();
 			world.putMapState(string, mapState2);
 			setMapId(stack, i);
 		}

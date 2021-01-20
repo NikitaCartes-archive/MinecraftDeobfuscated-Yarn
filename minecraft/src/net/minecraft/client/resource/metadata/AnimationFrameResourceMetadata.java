@@ -17,12 +17,8 @@ public class AnimationFrameResourceMetadata {
 		this.time = time;
 	}
 
-	public boolean usesDefaultFrameTime() {
-		return this.time == -1;
-	}
-
-	public int getTime() {
-		return this.time;
+	public int getTime(int defaultTime) {
+		return this.time == -1 ? defaultTime : this.time;
 	}
 
 	public int getIndex() {

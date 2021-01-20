@@ -1734,7 +1734,7 @@ public class Blocks {
 	);
 	public static final Block DIRT_PATH = register(
 		"dirt_path",
-		new GrassPathBlock(
+		new DirtPathBlock(
 			AbstractBlock.Settings.of(Material.SOIL).strength(0.65F).sounds(BlockSoundGroup.GRASS).blockVision(Blocks::always).suffocates(Blocks::always)
 		)
 	);
@@ -3081,6 +3081,12 @@ public class Blocks {
 	public static final Block DRIPSTONE_BLOCK = register(
 		"dripstone_block",
 		new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5F, 1.0F))
+	);
+	public static final Block GLOW_LICHEN = register(
+		"glow_lichen",
+		new GlowLichenBlock(
+			AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().strength(0.2F).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(blockStatex -> 7)
+		)
 	);
 
 	private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {

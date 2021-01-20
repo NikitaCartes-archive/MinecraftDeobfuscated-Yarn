@@ -96,7 +96,7 @@ public abstract class WaterFluid extends FlowableFluid {
 
 	@Override
 	public BlockState toBlockState(FluidState state) {
-		return Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(method_15741(state)));
+		return Blocks.WATER.getDefaultState().with(FluidBlock.LEVEL, Integer.valueOf(getBlockStateLevel(state)));
 	}
 
 	@Override
@@ -125,7 +125,7 @@ public abstract class WaterFluid extends FlowableFluid {
 	}
 
 	@Override
-	public Optional<SoundEvent> getFillSound() {
+	public Optional<SoundEvent> getBucketFillSound() {
 		return Optional.of(SoundEvents.ITEM_BUCKET_FILL);
 	}
 

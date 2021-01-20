@@ -146,7 +146,7 @@ public class InputUtil {
 			return this.localizedText.get();
 		}
 
-		public OptionalInt method_30103() {
+		public OptionalInt toInt() {
 			if (this.code >= 48 && this.code <= 57) {
 				return OptionalInt.of(this.code - 48);
 			} else {

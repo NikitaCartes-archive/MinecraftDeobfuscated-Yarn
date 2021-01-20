@@ -275,14 +275,14 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
+	public boolean charTyped(char chr, int modifiers) {
 		if (this.ignoreTypedCharacter) {
 			return false;
 		} else if (selectedTab != ItemGroup.SEARCH.getIndex()) {
 			return false;
 		} else {
 			String string = this.searchBox.getText();
-			if (this.searchBox.charTyped(chr, keyCode)) {
+			if (this.searchBox.charTyped(chr, modifiers)) {
 				if (!Objects.equals(string, this.searchBox.getText())) {
 					this.search();
 				}
@@ -307,7 +307,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			}
 		} else {
 			boolean bl = !this.isCreativeInventorySlot(this.focusedSlot) || this.focusedSlot.hasStack();
-			boolean bl2 = InputUtil.fromKeyCode(keyCode, scanCode).method_30103().isPresent();
+			boolean bl2 = InputUtil.fromKeyCode(keyCode, scanCode).toInt().isPresent();
 			if (bl && bl2 && this.handleHotbarKeyPressed(keyCode, scanCode)) {
 				this.ignoreTypedCharacter = true;
 				return true;
@@ -681,34 +681,34 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 		return mouseX >= (double)j && mouseX <= (double)(j + 28) && mouseY >= (double)k && mouseY <= (double)(k + 32);
 	}
 
-	protected boolean renderTabTooltipIfHovered(MatrixStack matrixStack, ItemGroup itemGroup, int i, int j) {
-		int k = itemGroup.getColumn();
+	protected boolean renderTabTooltipIfHovered(MatrixStack matrices, ItemGroup group, int i, int j) {
+		int k = group.getColumn();
 		int l = 28 * k;
 		int m = 0;
-		if (itemGroup.isSpecial()) {
+		if (group.isSpecial()) {
 			l = this.backgroundWidth - 28 * (6 - k) + 2;
 		} else if (k > 0) {
 			l += k;
 		}
 
-		if (itemGroup.isTopRow()) {
+		if (group.isTopRow()) {
 			m -= 32;
 		} else {
 			m += this.backgroundHeight;
 		}
 
 		if (this.isPointWithinBounds(l + 3, m + 3, 23, 27, (double)i, (double)j)) {
-			this.renderTooltip(matrixStack, itemGroup.getTranslationKey(), i, j);
+			this.renderTooltip(matrices, group.getTranslationKey(), i, j);
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected void renderTabIcon(MatrixStack matrixStack, ItemGroup itemGroup) {
-		boolean bl = itemGroup.getIndex() == selectedTab;
-		boolean bl2 = itemGroup.isTopRow();
-		int i = itemGroup.getColumn();
+	protected void renderTabIcon(MatrixStack matrices, ItemGroup group) {
+		boolean bl = group.getIndex() == selectedTab;
+		boolean bl2 = group.isTopRow();
+		int i = group.getColumn();
 		int j = i * 28;
 		int k = 0;
 		int l = this.x + 28 * i;
@@ -718,7 +718,7 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			k += 32;
 		}
 
-		if (itemGroup.isSpecial()) {
+		if (group.isSpecial()) {
 			l = this.x + this.backgroundWidth - 28 * (6 - i);
 		} else if (i > 0) {
 			l += i;
@@ -731,12 +731,12 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 			m += this.backgroundHeight - 4;
 		}
 
-		this.drawTexture(matrixStack, l, m, j, k, 28, 32);
+		this.drawTexture(matrices, l, m, j, k, 28, 32);
 		this.itemRenderer.zOffset = 100.0F;
 		l += 6;
 		m += 8 + (bl2 ? 1 : -1);
 		RenderSystem.enableRescaleNormal();
-		ItemStack itemStack = itemGroup.getIcon();
+		ItemStack itemStack = group.getIcon();
 		this.itemRenderer.renderInGuiWithOverrides(itemStack, l, m);
 		this.itemRenderer.renderGuiItemOverlay(this.textRenderer, itemStack, l, m);
 		this.itemRenderer.zOffset = 0.0F;
@@ -774,9 +774,9 @@ public class CreativeInventoryScreen extends AbstractInventoryScreen<CreativeInv
 	public static class CreativeScreenHandler extends ScreenHandler {
 		public final DefaultedList<ItemStack> itemList = DefaultedList.of();
 
-		public CreativeScreenHandler(PlayerEntity playerEntity) {
+		public CreativeScreenHandler(PlayerEntity player) {
 			super(null, 0);
-			PlayerInventory playerInventory = playerEntity.getInventory();
+			PlayerInventory playerInventory = player.getInventory();
 
 			for (int i = 0; i < 5; i++) {
 				for (int j = 0; j < 9; j++) {

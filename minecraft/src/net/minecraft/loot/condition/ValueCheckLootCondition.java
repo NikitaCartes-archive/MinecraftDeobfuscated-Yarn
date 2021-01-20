@@ -28,11 +28,11 @@ public class ValueCheckLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return Sets.<LootContextParameter<?>>union(this.value.getRequiredParameters(), this.range.method_32386());
+		return Sets.<LootContextParameter<?>>union(this.value.getRequiredParameters(), this.range.getRequiredParameters());
 	}
 
 	public boolean test(LootContext lootContext) {
-		return this.range.method_32393(lootContext, this.value.nextInt(lootContext));
+		return this.range.test(lootContext, this.value.nextInt(lootContext));
 	}
 
 	public static class Serializer implements JsonSerializer<ValueCheckLootCondition> {

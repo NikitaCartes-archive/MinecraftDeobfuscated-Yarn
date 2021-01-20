@@ -17,12 +17,12 @@ import org.apache.logging.log4j.Logger;
 public class SetDamageLootFunction extends ConditionalLootFunction {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final LootNumberProvider durabilityRange;
-	private final boolean field_27910;
+	private final boolean add;
 
-	private SetDamageLootFunction(LootCondition[] contents, LootNumberProvider durabilityRange, boolean bl) {
+	private SetDamageLootFunction(LootCondition[] contents, LootNumberProvider durabilityRange, boolean add) {
 		super(contents);
 		this.durabilityRange = durabilityRange;
-		this.field_27910 = bl;
+		this.add = add;
 	}
 
 	@Override
@@ -39,7 +39,7 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 	public ItemStack process(ItemStack stack, LootContext context) {
 		if (stack.isDamageable()) {
 			int i = stack.getMaxDamage();
-			float f = this.field_27910 ? 1.0F - (float)stack.getDamage() / (float)i : 0.0F;
+			float f = this.add ? 1.0F - (float)stack.getDamage() / (float)i : 0.0F;
 			float g = 1.0F - MathHelper.clamp(this.durabilityRange.nextFloat(context) + f, 0.0F, 1.0F);
 			stack.setDamage(MathHelper.floor(g * (float)i));
 		} else {
@@ -57,7 +57,7 @@ public class SetDamageLootFunction extends ConditionalLootFunction {
 		public void toJson(JsonObject jsonObject, SetDamageLootFunction setDamageLootFunction, JsonSerializationContext jsonSerializationContext) {
 			super.toJson(jsonObject, setDamageLootFunction, jsonSerializationContext);
 			jsonObject.add("damage", jsonSerializationContext.serialize(setDamageLootFunction.durabilityRange));
-			jsonObject.addProperty("add", setDamageLootFunction.field_27910);
+			jsonObject.addProperty("add", setDamageLootFunction.add);
 		}
 
 		public SetDamageLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {

@@ -61,19 +61,19 @@ public class ProtoChunk implements Chunk {
 	private final UpgradeData upgradeData;
 	private final ChunkTickScheduler<Block> blockTickScheduler;
 	private final ChunkTickScheduler<Fluid> fluidTickScheduler;
-	private final HeightLimitView field_27229;
+	private final HeightLimitView world;
 	private long inhabitedTime;
 	private final Map<GenerationStep.Carver, BitSet> carvingMasks = new Object2ObjectArrayMap<>();
 	private volatile boolean lightOn;
 
-	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView heightLimitView) {
+	public ProtoChunk(ChunkPos pos, UpgradeData upgradeData, HeightLimitView world) {
 		this(
 			pos,
 			upgradeData,
 			null,
-			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), pos, heightLimitView),
-			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, heightLimitView),
-			heightLimitView
+			new ChunkTickScheduler<>(block -> block == null || block.getDefaultState().isAir(), pos, world),
+			new ChunkTickScheduler<>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, world),
+			world
 		);
 	}
 
@@ -83,14 +83,14 @@ public class ProtoChunk implements Chunk {
 		@Nullable ChunkSection[] chunkSections,
 		ChunkTickScheduler<Block> blockTickScheduler,
 		ChunkTickScheduler<Fluid> fluidTickScheduler,
-		HeightLimitView heightLimitView
+		HeightLimitView world
 	) {
 		this.pos = pos;
 		this.upgradeData = upgradeData;
 		this.blockTickScheduler = blockTickScheduler;
 		this.fluidTickScheduler = fluidTickScheduler;
-		this.field_27229 = heightLimitView;
-		this.sections = new ChunkSection[heightLimitView.method_32890()];
+		this.world = world;
+		this.sections = new ChunkSection[world.getSections()];
 		if (chunkSections != null) {
 			if (this.sections.length == chunkSections.length) {
 				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -99,7 +99,7 @@ public class ProtoChunk implements Chunk {
 			}
 		}
 
-		this.postProcessingLists = new ShortList[heightLimitView.method_32890()];
+		this.postProcessingLists = new ShortList[world.getSections()];
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public class ProtoChunk implements Chunk {
 	}
 
 	public ShortList[] getLightSourcesBySection() {
-		ShortList[] shortLists = new ShortList[this.method_32890()];
+		ShortList[] shortLists = new ShortList[this.getSections()];
 
 		for (BlockPos blockPos : this.lightSources) {
 			Chunk.getList(shortLists, this.getSectionIndex(blockPos.getY())).add(getPackedSectionRelative(blockPos));
@@ -153,7 +153,7 @@ public class ProtoChunk implements Chunk {
 		int i = pos.getX();
 		int j = pos.getY();
 		int k = pos.getZ();
-		if (j >= this.getSectionCount() && j < this.getTopHeightLimit()) {
+		if (j >= this.getBottomSectionLimit() && j < this.getTopHeightLimit()) {
 			int l = this.getSectionIndex(j);
 			if (this.sections[l] == WorldChunk.EMPTY_SECTION && state.isOf(Blocks.AIR)) {
 				return state;
@@ -477,12 +477,12 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public int getSectionCount() {
-		return this.field_27229.getSectionCount();
+	public int getBottomSectionLimit() {
+		return this.world.getBottomSectionLimit();
 	}
 
 	@Override
-	public int getBottomSectionLimit() {
-		return this.field_27229.getBottomSectionLimit();
+	public int getSectionCount() {
+		return this.world.getSectionCount();
 	}
 }

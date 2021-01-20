@@ -8,9 +8,9 @@ import net.minecraft.nbt.Tag;
 
 public interface LootNbtProvider {
 	@Nullable
-	Tag method_32440(LootContext lootContext);
+	Tag getNbtTag(LootContext context);
 
-	Set<LootContextParameter<?>> method_32441();
+	Set<LootContextParameter<?>> getRequiredParameters();
 
 	LootNbtProviderType getType();
 }

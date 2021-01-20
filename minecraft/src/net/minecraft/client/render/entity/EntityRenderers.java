@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.SquidEntityModel;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
@@ -105,6 +106,8 @@ public class EntityRenderers {
 		register(EntityType.FURNACE_MINECART, context -> new MinecartEntityRenderer<>(context, EntityModelLayers.FURNACE_MINECART));
 		register(EntityType.GHAST, GhastEntityRenderer::new);
 		register(EntityType.GIANT, context -> new GiantEntityRenderer(context, 6.0F));
+		register(EntityType.GLOW_ITEM_FRAME, ItemFrameEntityRenderer::new);
+		register(EntityType.GLOW_SQUID, context -> new GlowSquidEntityRenderer(context, new SquidEntityModel<>(context.getPart(EntityModelLayers.GLOW_SQUID))));
 		register(EntityType.GUARDIAN, GuardianEntityRenderer::new);
 		register(EntityType.HOGLIN, HoglinEntityRenderer::new);
 		register(EntityType.HOPPER_MINECART, context -> new MinecartEntityRenderer<>(context, EntityModelLayers.HOPPER_MINECART));
@@ -158,7 +161,7 @@ public class EntityRenderers {
 		register(EntityType.SPAWNER_MINECART, context -> new MinecartEntityRenderer<>(context, EntityModelLayers.SPAWNER_MINECART));
 		register(EntityType.SPECTRAL_ARROW, SpectralArrowEntityRenderer::new);
 		register(EntityType.SPIDER, SpiderEntityRenderer::new);
-		register(EntityType.SQUID, SquidEntityRenderer::new);
+		register(EntityType.SQUID, context -> new SquidEntityRenderer<>(context, new SquidEntityModel<>(context.getPart(EntityModelLayers.SQUID))));
 		register(EntityType.STRAY, StrayEntityRenderer::new);
 		register(EntityType.STRIDER, StriderEntityRenderer::new);
 		register(EntityType.TNT, TntEntityRenderer::new);

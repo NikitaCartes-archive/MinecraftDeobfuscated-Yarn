@@ -11,13 +11,13 @@ import net.minecraft.server.world.ServerWorld;
 public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity> extends Task<E> {
 	private final Predicate<E> startCondition;
 	private final int radius;
-	private final float field_23131;
+	private final float speed;
 
-	public WalkToNearestVisibleWantedItemTask(float f, boolean bl, int i) {
-		this(livingEntity -> true, f, bl, i);
+	public WalkToNearestVisibleWantedItemTask(float speed, boolean requiresWalkTarget, int radius) {
+		this(livingEntity -> true, speed, requiresWalkTarget, radius);
 	}
 
-	public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float f, boolean requiresWalkTarget, int i) {
+	public WalkToNearestVisibleWantedItemTask(Predicate<E> startCondition, float speed, boolean requiresWalkTarget, int radius) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.LOOK_TARGET,
@@ -29,8 +29,8 @@ public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity> extends 
 			)
 		);
 		this.startCondition = startCondition;
-		this.radius = i;
-		this.field_23131 = f;
+		this.radius = radius;
+		this.speed = speed;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class WalkToNearestVisibleWantedItemTask<E extends LivingEntity> extends 
 
 	@Override
 	protected void run(ServerWorld world, E entity, long time) {
-		LookTargetUtil.walkTowards(entity, this.getNearestVisibleWantedItem(entity), this.field_23131, 0);
+		LookTargetUtil.walkTowards(entity, this.getNearestVisibleWantedItem(entity), this.speed, 0);
 	}
 
 	private ItemEntity getNearestVisibleWantedItem(E entity) {

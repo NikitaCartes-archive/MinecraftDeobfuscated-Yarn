@@ -33,7 +33,7 @@ public class SpawnSettings {
 	);
 	public static final MapCodec<SpawnSettings> CODEC = RecordCodecBuilder.mapCodec(
 		instance -> instance.group(
-					Codec.FLOAT.optionalFieldOf("creature_spawn_probability", Float.valueOf(0.1F)).forGetter(spawnSettings -> spawnSettings.creatureSpawnProbability),
+					Codec.floatRange(0.0F, 0.9999999F).optionalFieldOf("creature_spawn_probability", 0.1F).forGetter(spawnSettings -> spawnSettings.creatureSpawnProbability),
 					Codec.simpleMap(
 							SpawnGroup.CODEC,
 							SpawnSettings.SpawnEntry.CODEC.listOf().promotePartial(Util.addPrefix("Spawn data: ", LOGGER::error)),

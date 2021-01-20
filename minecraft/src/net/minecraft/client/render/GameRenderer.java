@@ -13,7 +13,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
-import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.hud.InGameOverlayRenderer;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.item.HeldItemRenderer;
@@ -56,7 +55,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class GameRenderer implements SynchronousResourceReloadListener, AutoCloseable {
-	private static final Identifier field_26730 = new Identifier("textures/misc/nausea.png");
+	private static final Identifier NAUSEA_OVERLAY = new Identifier("textures/misc/nausea.png");
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final MinecraftClient client;
 	private final ResourceManager resourceContainer;
@@ -163,21 +162,21 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		}
 	}
 
-	private void loadShader(Identifier identifier) {
+	private void loadShader(Identifier id) {
 		if (this.shader != null) {
 			this.shader.close();
 		}
 
 		try {
-			this.shader = new ShaderEffect(this.client.getTextureManager(), this.resourceContainer, this.client.getFramebuffer(), identifier);
+			this.shader = new ShaderEffect(this.client.getTextureManager(), this.resourceContainer, this.client.getFramebuffer(), id);
 			this.shader.setupDimensions(this.client.getWindow().getFramebufferWidth(), this.client.getWindow().getFramebufferHeight());
 			this.shadersEnabled = true;
 		} catch (IOException var3) {
-			LOGGER.warn("Failed to load shader: {}", identifier, var3);
+			LOGGER.warn("Failed to load shader: {}", id, var3);
 			this.forcedShaderIndex = SHADER_COUNT;
 			this.shadersEnabled = false;
 		} catch (JsonSyntaxException var4) {
-			LOGGER.warn("Failed to parse shader: {}", identifier, var4);
+			LOGGER.warn("Failed to parse shader: {}", id, var4);
 			this.forcedShaderIndex = SHADER_COUNT;
 			this.shadersEnabled = false;
 		}
@@ -333,13 +332,13 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		}
 	}
 
-	private void bobViewWhenHurt(MatrixStack matrixStack, float f) {
+	private void bobViewWhenHurt(MatrixStack matrices, float f) {
 		if (this.client.getCameraEntity() instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity)this.client.getCameraEntity();
 			float g = (float)livingEntity.hurtTime - f;
 			if (livingEntity.isDead()) {
 				float h = Math.min((float)livingEntity.deathTime + f, 20.0F);
-				matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (h + 200.0F)));
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(40.0F - 8000.0F / (h + 200.0F)));
 			}
 
 			if (g < 0.0F) {
@@ -349,21 +348,21 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			g /= (float)livingEntity.maxHurtTime;
 			g = MathHelper.sin(g * g * g * g * (float) Math.PI);
 			float h = livingEntity.knockbackVelocity;
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-h));
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-g * 14.0F));
-			matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
+			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-h));
+			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-g * 14.0F));
+			matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(h));
 		}
 	}
 
-	private void bobView(MatrixStack matrixStack, float f) {
+	private void bobView(MatrixStack matrices, float f) {
 		if (this.client.getCameraEntity() instanceof PlayerEntity) {
 			PlayerEntity playerEntity = (PlayerEntity)this.client.getCameraEntity();
 			float g = playerEntity.horizontalSpeed - playerEntity.prevHorizontalSpeed;
 			float h = -(playerEntity.horizontalSpeed + g * f);
 			float i = MathHelper.lerp(f, playerEntity.prevStrideDistance, playerEntity.strideDistance);
-			matrixStack.translate((double)(MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double)(-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
-			matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
-			matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));
+			matrices.translate((double)(MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double)(-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
+			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(MathHelper.sin(h * (float) Math.PI) * i * 3.0F));
+			matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(Math.abs(MathHelper.cos(h * (float) Math.PI - 0.2F) * i) * 5.0F));
 		}
 	}
 
@@ -437,8 +436,8 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		return this.viewDistance * 4.0F;
 	}
 
-	public static float getNightVisionStrength(LivingEntity livingEntity, float f) {
-		int i = livingEntity.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration();
+	public static float getNightVisionStrength(LivingEntity entity, float f) {
+		int i = entity.getStatusEffect(StatusEffects.NIGHT_VISION).getDuration();
 		return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float)i - f) * (float) Math.PI * 0.2F) * 0.3F;
 	}
 
@@ -738,7 +737,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
 		RenderSystem.color4f(g, h, k, 1.0F);
-		this.client.getTextureManager().bindTexture(field_26730);
+		this.client.getTextureManager().bindTexture(NAUSEA_OVERLAY);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);

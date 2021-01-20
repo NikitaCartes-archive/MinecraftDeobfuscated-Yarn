@@ -51,10 +51,10 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 		}
 	}
 
-	private static boolean method_24866(WorldAccess worldAccess, BlockPos blockPos, boolean bl) {
-		return worldAccess.testBlockState(blockPos, blockState -> {
-			Material material = blockState.getMaterial();
-			return blockState.getMaterial().isReplaceable() || bl && material == Material.PLANT;
+	private static boolean isReplaceable(WorldAccess world, BlockPos pos, boolean replacePlants) {
+		return world.testBlockState(pos, state -> {
+			Material material = state.getMaterial();
+			return state.getMaterial().isReplaceable() || replacePlants && material == Material.PLANT;
 		});
 	}
 
@@ -69,7 +69,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 
 				for (int l = 0; l < stemHeight; l++) {
 					mutable.set(pos, j, l, k);
-					if (method_24866(world, mutable, true)) {
+					if (isReplaceable(world, mutable, true)) {
 						if (config.planted) {
 							if (!world.getBlockState(mutable.down()).isAir()) {
 								world.breakBlock(mutable, true);
@@ -113,7 +113,7 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 					boolean bl5 = bl2 && bl3;
 					boolean bl6 = k < j + 3;
 					mutable.set(pos, m, k, n);
-					if (method_24866(world, mutable, false)) {
+					if (isReplaceable(world, mutable, false)) {
 						if (config.planted && !world.getBlockState(mutable.down()).isAir()) {
 							world.breakBlock(mutable, true);
 						}

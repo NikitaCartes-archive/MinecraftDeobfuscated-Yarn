@@ -13,11 +13,11 @@ public enum StructureBlockMode implements StringIdentifiable {
 	DATA("data");
 
 	private final String name;
-	private final Text field_26444;
+	private final Text text;
 
 	private StructureBlockMode(String name) {
 		this.name = name;
-		this.field_26444 = new TranslatableText("structure_block.mode_info." + name);
+		this.text = new TranslatableText("structure_block.mode_info." + name);
 	}
 
 	@Override
@@ -26,7 +26,7 @@ public enum StructureBlockMode implements StringIdentifiable {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text method_30844() {
-		return this.field_26444;
+	public Text asText() {
+		return this.text;
 	}
 }

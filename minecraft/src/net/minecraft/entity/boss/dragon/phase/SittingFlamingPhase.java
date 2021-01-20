@@ -12,7 +12,7 @@ import net.minecraft.util.math.Vec3d;
 public class SittingFlamingPhase extends AbstractSittingPhase {
 	private int ticks;
 	private int field_7052;
-	private AreaEffectCloudEntity field_7051;
+	private AreaEffectCloudEntity dragonBreathEntity;
 
 	public SittingFlamingPhase(EnderDragonEntity enderDragonEntity) {
 		super(enderDragonEntity);
@@ -70,13 +70,13 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 			}
 
 			h = (double)(MathHelper.floor(h) + 1);
-			this.field_7051 = new AreaEffectCloudEntity(this.dragon.world, d, h, e);
-			this.field_7051.setOwner(this.dragon);
-			this.field_7051.setRadius(5.0F);
-			this.field_7051.setDuration(200);
-			this.field_7051.setParticleType(ParticleTypes.DRAGON_BREATH);
-			this.field_7051.addEffect(new StatusEffectInstance(StatusEffects.INSTANT_DAMAGE));
-			this.dragon.world.spawnEntity(this.field_7051);
+			this.dragonBreathEntity = new AreaEffectCloudEntity(this.dragon.world, d, h, e);
+			this.dragonBreathEntity.setOwner(this.dragon);
+			this.dragonBreathEntity.setRadius(5.0F);
+			this.dragonBreathEntity.setDuration(200);
+			this.dragonBreathEntity.setParticleType(ParticleTypes.DRAGON_BREATH);
+			this.dragonBreathEntity.addEffect(new StatusEffectInstance(StatusEffects.INSTANT_DAMAGE));
+			this.dragon.world.spawnEntity(this.dragonBreathEntity);
 		}
 	}
 
@@ -88,9 +88,9 @@ public class SittingFlamingPhase extends AbstractSittingPhase {
 
 	@Override
 	public void endPhase() {
-		if (this.field_7051 != null) {
-			this.field_7051.discard();
-			this.field_7051 = null;
+		if (this.dragonBreathEntity != null) {
+			this.dragonBreathEntity.discard();
+			this.dragonBreathEntity = null;
 		}
 	}
 

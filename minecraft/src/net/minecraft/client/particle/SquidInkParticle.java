@@ -2,17 +2,22 @@ package net.minecraft.client.particle;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class SquidInkParticle extends AnimatedParticle {
-	private SquidInkParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
+	private SquidInkParticle(
+		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, int color, SpriteProvider spriteProvider
+	) {
 		super(world, x, y, z, spriteProvider, 0.0F);
 		this.scale = 0.5F;
 		this.setColorAlpha(1.0F);
-		this.setColor(0.0F, 0.0F, 0.0F);
+		this.setColor(
+			(float)BackgroundHelper.ColorMixer.getRed(color), (float)BackgroundHelper.ColorMixer.getGreen(color), (float)BackgroundHelper.ColorMixer.getBlue(color)
+		);
 		this.maxAge = (int)((double)(this.scale * 12.0F) / (Math.random() * 0.8F + 0.2F));
 		this.setSpriteForAge(spriteProvider);
 		this.collidesWithWorld = false;
@@ -59,7 +64,20 @@ public class SquidInkParticle extends AnimatedParticle {
 		}
 
 		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			return new SquidInkParticle(clientWorld, d, e, f, g, h, i, this.spriteProvider);
+			return new SquidInkParticle(clientWorld, d, e, f, g, h, i, BackgroundHelper.ColorMixer.getArgb(255, 255, 255, 255), this.spriteProvider);
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class GlowSquidInkFactory implements ParticleFactory<DefaultParticleType> {
+		private final SpriteProvider spriteProvider;
+
+		public GlowSquidInkFactory(SpriteProvider spriteProvider) {
+			this.spriteProvider = spriteProvider;
+		}
+
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			return new SquidInkParticle(clientWorld, d, e, f, g, h, i, BackgroundHelper.ColorMixer.getArgb(255, 204, 31, 102), this.spriteProvider);
 		}
 	}
 }

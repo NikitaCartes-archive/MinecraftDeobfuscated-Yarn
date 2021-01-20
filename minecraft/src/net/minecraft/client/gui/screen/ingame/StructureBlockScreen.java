@@ -35,8 +35,8 @@ public class StructureBlockScreen extends Screen {
 	private static final Text DETECT_SIZE_TEXT = new TranslatableText("structure_block.detect_size");
 	private static final Text SHOW_AIR_TEXT = new TranslatableText("structure_block.show_air");
 	private static final Text SHOW_BOUNDING_BOX_TEXT = new TranslatableText("structure_block.show_boundingbox");
-	private static final ImmutableList<StructureBlockMode> field_27993 = ImmutableList.copyOf(StructureBlockMode.values());
-	private static final ImmutableList<StructureBlockMode> field_27994 = (ImmutableList<StructureBlockMode>)field_27993.stream()
+	private static final ImmutableList<StructureBlockMode> MODES = ImmutableList.copyOf(StructureBlockMode.values());
+	private static final ImmutableList<StructureBlockMode> MODES_EXCEPT_DATA = (ImmutableList<StructureBlockMode>)MODES.stream()
 		.filter(structureBlockMode -> structureBlockMode != StructureBlockMode.DATA)
 		.collect(ImmutableList.toImmutableList());
 	private final StructureBlockBlockEntity structureBlock;
@@ -134,7 +134,7 @@ public class StructureBlockScreen extends Screen {
 		);
 		this.addButton(
 			CyclingButtonWidget.<StructureBlockMode>method_32606(structureBlockMode -> new TranslatableText("structure_block.mode." + structureBlockMode.asString()))
-				.method_32621(field_27994, field_27993)
+				.method_32621(MODES_EXCEPT_DATA, MODES)
 				.method_32616()
 				.value(this.mode)
 				.build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (cyclingButtonWidget, structureBlockMode) -> {
@@ -156,7 +156,7 @@ public class StructureBlockScreen extends Screen {
 				.build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setIgnoreEntities(!boolean_))
 		);
 		this.buttonMirror = this.addButton(
-			CyclingButtonWidget.<BlockMirror>method_32606(BlockMirror::method_32354)
+			CyclingButtonWidget.<BlockMirror>method_32606(BlockMirror::getName)
 				.method_32624(BlockMirror.values())
 				.method_32616()
 				.value(this.mirror)
@@ -190,8 +190,8 @@ public class StructureBlockScreen extends Screen {
 		}));
 		this.inputName = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 40, 300, 20, new TranslatableText("structure_block.structure_name")) {
 			@Override
-			public boolean charTyped(char chr, int keyCode) {
-				return !StructureBlockScreen.this.isValidCharacterForName(this.getText(), chr, this.getCursor()) ? false : super.charTyped(chr, keyCode);
+			public boolean charTyped(char chr, int modifiers) {
+				return !StructureBlockScreen.this.isValidCharacterForName(this.getText(), chr, this.getCursor()) ? false : super.charTyped(chr, modifiers);
 			}
 		};
 		this.inputName.setMaxLength(64);
@@ -465,7 +465,7 @@ public class StructureBlockScreen extends Screen {
 			this.inputMetadata.render(matrices, mouseX, mouseY, delta);
 		}
 
-		drawTextWithShadow(matrices, this.textRenderer, structureBlockMode.method_30844(), this.width / 2 - 153, 174, 10526880);
+		drawTextWithShadow(matrices, this.textRenderer, structureBlockMode.asText(), this.width / 2 - 153, 174, 10526880);
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 

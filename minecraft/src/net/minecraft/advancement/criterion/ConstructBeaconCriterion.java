@@ -23,8 +23,8 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 		return new ConstructBeaconCriterion.Conditions(extended, intRange);
 	}
 
-	public void trigger(ServerPlayerEntity player, int i) {
-		this.test(player, conditions -> conditions.matches(i));
+	public void trigger(ServerPlayerEntity player, int level) {
+		this.test(player, conditions -> conditions.matches(level));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -39,8 +39,8 @@ public class ConstructBeaconCriterion extends AbstractCriterion<ConstructBeaconC
 			return new ConstructBeaconCriterion.Conditions(EntityPredicate.Extended.EMPTY, level);
 		}
 
-		public boolean matches(int i) {
-			return this.level.test(i);
+		public boolean matches(int level) {
+			return this.level.test(level);
 		}
 
 		@Override

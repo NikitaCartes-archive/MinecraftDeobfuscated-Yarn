@@ -12,7 +12,7 @@ public abstract class PersistentState {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private boolean dirty;
 
-	public abstract CompoundTag toTag(CompoundTag tag);
+	public abstract CompoundTag toNbt(CompoundTag tag);
 
 	public void markDirty() {
 		this.setDirty(true);
@@ -29,7 +29,7 @@ public abstract class PersistentState {
 	public void save(File file) {
 		if (this.isDirty()) {
 			CompoundTag compoundTag = new CompoundTag();
-			compoundTag.put("data", this.toTag(new CompoundTag()));
+			compoundTag.put("data", this.toNbt(new CompoundTag()));
 			compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 
 			try {

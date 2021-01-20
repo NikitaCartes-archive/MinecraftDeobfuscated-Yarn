@@ -48,7 +48,7 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 	@Override
 	protected void sense(ServerWorld world, LivingEntity entity) {
 		Brain<?> brain = entity.getBrain();
-		brain.remember(MemoryModuleType.NEAREST_REPELLENT, findSoulFire(world, entity));
+		brain.remember(MemoryModuleType.NEAREST_REPELLENT, findPiglinRepellent(world, entity));
 		Optional<MobEntity> optional = Optional.empty();
 		Optional<HoglinEntity> optional2 = Optional.empty();
 		Optional<HoglinEntity> optional3 = Optional.empty();
@@ -116,12 +116,12 @@ public class PiglinSpecificSensor extends Sensor<LivingEntity> {
 		brain.remember(MemoryModuleType.VISIBLE_ADULT_HOGLIN_COUNT, i);
 	}
 
-	private static Optional<BlockPos> findSoulFire(ServerWorld world, LivingEntity entity) {
-		return BlockPos.findClosest(entity.getBlockPos(), 8, 4, blockPos -> method_24648(world, blockPos));
+	private static Optional<BlockPos> findPiglinRepellent(ServerWorld world, LivingEntity entity) {
+		return BlockPos.findClosest(entity.getBlockPos(), 8, 4, pos -> isPiglinRepellent(world, pos));
 	}
 
-	private static boolean method_24648(ServerWorld serverWorld, BlockPos blockPos) {
-		BlockState blockState = serverWorld.getBlockState(blockPos);
+	private static boolean isPiglinRepellent(ServerWorld world, BlockPos pos) {
+		BlockState blockState = world.getBlockState(pos);
 		boolean bl = blockState.isIn(BlockTags.PIGLIN_REPELLENTS);
 		return bl && blockState.isOf(Blocks.SOUL_CAMPFIRE) ? CampfireBlock.isLitCampfire(blockState) : bl;
 	}

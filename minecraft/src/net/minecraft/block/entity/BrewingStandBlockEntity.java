@@ -63,8 +63,8 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 	};
 
-	public BrewingStandBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.BREWING_STAND, blockPos, blockState);
+	public BrewingStandBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.BREWING_STAND, pos, state);
 	}
 
 	@Override
@@ -88,47 +88,47 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		return true;
 	}
 
-	public static void tick(World world, BlockPos blockPos, BlockState blockState, BrewingStandBlockEntity brewingStandBlockEntity) {
-		ItemStack itemStack = brewingStandBlockEntity.inventory.get(4);
-		if (brewingStandBlockEntity.fuel <= 0 && itemStack.isOf(Items.BLAZE_POWDER)) {
-			brewingStandBlockEntity.fuel = 20;
+	public static void tick(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity) {
+		ItemStack itemStack = blockEntity.inventory.get(4);
+		if (blockEntity.fuel <= 0 && itemStack.isOf(Items.BLAZE_POWDER)) {
+			blockEntity.fuel = 20;
 			itemStack.decrement(1);
-			markDirty(world, blockPos, blockState);
+			markDirty(world, pos, state);
 		}
 
-		boolean bl = canCraft(brewingStandBlockEntity.inventory);
-		boolean bl2 = brewingStandBlockEntity.brewTime > 0;
-		ItemStack itemStack2 = brewingStandBlockEntity.inventory.get(3);
+		boolean bl = canCraft(blockEntity.inventory);
+		boolean bl2 = blockEntity.brewTime > 0;
+		ItemStack itemStack2 = blockEntity.inventory.get(3);
 		if (bl2) {
-			brewingStandBlockEntity.brewTime--;
-			boolean bl3 = brewingStandBlockEntity.brewTime == 0;
+			blockEntity.brewTime--;
+			boolean bl3 = blockEntity.brewTime == 0;
 			if (bl3 && bl) {
-				craft(world, blockPos, brewingStandBlockEntity.inventory);
-				markDirty(world, blockPos, blockState);
-			} else if (!bl || !itemStack2.isOf(brewingStandBlockEntity.itemBrewing)) {
-				brewingStandBlockEntity.brewTime = 0;
-				markDirty(world, blockPos, blockState);
+				craft(world, pos, blockEntity.inventory);
+				markDirty(world, pos, state);
+			} else if (!bl || !itemStack2.isOf(blockEntity.itemBrewing)) {
+				blockEntity.brewTime = 0;
+				markDirty(world, pos, state);
 			}
-		} else if (bl && brewingStandBlockEntity.fuel > 0) {
-			brewingStandBlockEntity.fuel--;
-			brewingStandBlockEntity.brewTime = 400;
-			brewingStandBlockEntity.itemBrewing = itemStack2.getItem();
-			markDirty(world, blockPos, blockState);
+		} else if (bl && blockEntity.fuel > 0) {
+			blockEntity.fuel--;
+			blockEntity.brewTime = 400;
+			blockEntity.itemBrewing = itemStack2.getItem();
+			markDirty(world, pos, state);
 		}
 
-		boolean[] bls = brewingStandBlockEntity.getSlotsEmpty();
-		if (!Arrays.equals(bls, brewingStandBlockEntity.slotsEmptyLastTick)) {
-			brewingStandBlockEntity.slotsEmptyLastTick = bls;
-			BlockState blockState2 = blockState;
-			if (!(blockState.getBlock() instanceof BrewingStandBlock)) {
+		boolean[] bls = blockEntity.getSlotsEmpty();
+		if (!Arrays.equals(bls, blockEntity.slotsEmptyLastTick)) {
+			blockEntity.slotsEmptyLastTick = bls;
+			BlockState blockState = state;
+			if (!(state.getBlock() instanceof BrewingStandBlock)) {
 				return;
 			}
 
 			for (int i = 0; i < BrewingStandBlock.BOTTLE_PROPERTIES.length; i++) {
-				blockState2 = blockState2.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], Boolean.valueOf(bls[i]));
+				blockState = blockState.with(BrewingStandBlock.BOTTLE_PROPERTIES[i], Boolean.valueOf(bls[i]));
 			}
 
-			world.setBlockState(blockPos, blockState2, 2);
+			world.setBlockState(pos, blockState, 2);
 		}
 	}
 
@@ -144,15 +144,15 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		return bls;
 	}
 
-	private static boolean canCraft(DefaultedList<ItemStack> defaultedList) {
-		ItemStack itemStack = defaultedList.get(3);
+	private static boolean canCraft(DefaultedList<ItemStack> slots) {
+		ItemStack itemStack = slots.get(3);
 		if (itemStack.isEmpty()) {
 			return false;
 		} else if (!BrewingRecipeRegistry.isValidIngredient(itemStack)) {
 			return false;
 		} else {
 			for (int i = 0; i < 3; i++) {
-				ItemStack itemStack2 = defaultedList.get(i);
+				ItemStack itemStack2 = slots.get(i);
 				if (!itemStack2.isEmpty() && BrewingRecipeRegistry.hasRecipe(itemStack2, itemStack)) {
 					return true;
 				}
@@ -162,11 +162,11 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 		}
 	}
 
-	private static void craft(World world, BlockPos blockPos, DefaultedList<ItemStack> defaultedList) {
-		ItemStack itemStack = defaultedList.get(3);
+	private static void craft(World world, BlockPos pos, DefaultedList<ItemStack> slots) {
+		ItemStack itemStack = slots.get(3);
 
 		for (int i = 0; i < 3; i++) {
-			defaultedList.set(i, BrewingRecipeRegistry.craft(itemStack, defaultedList.get(i)));
+			slots.set(i, BrewingRecipeRegistry.craft(itemStack, slots.get(i)));
 		}
 
 		itemStack.decrement(1);
@@ -175,12 +175,12 @@ public class BrewingStandBlockEntity extends LockableContainerBlockEntity implem
 			if (itemStack.isEmpty()) {
 				itemStack = itemStack2;
 			} else {
-				ItemScatterer.spawn(world, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), itemStack2);
+				ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
 			}
 		}
 
-		defaultedList.set(3, itemStack);
-		world.syncWorldEvent(1035, blockPos, 0);
+		slots.set(3, itemStack);
+		world.syncWorldEvent(1035, pos, 0);
 	}
 
 	@Override

@@ -325,20 +325,30 @@ public class Util {
 		return runnable;
 	}
 
+	public static final void method_33559(String string) {
+		LOGGER.error(string);
+		if (SharedConstants.isDevelopment) {
+			method_33560();
+		}
+	}
+
 	public static <T extends Throwable> T throwOrPause(T t) {
 		if (SharedConstants.isDevelopment) {
 			LOGGER.error("Trying to throw a fatal exception, pausing in IDE", t);
+			method_33560();
+		}
 
-			while (true) {
-				try {
-					Thread.sleep(1000L);
-					LOGGER.error("paused");
-				} catch (InterruptedException var2) {
-					return t;
-				}
+		return t;
+	}
+
+	private static void method_33560() {
+		while (true) {
+			try {
+				Thread.sleep(1000L);
+				LOGGER.error("paused");
+			} catch (InterruptedException var1) {
+				return;
 			}
-		} else {
-			return t;
 		}
 	}
 
@@ -494,8 +504,8 @@ public class Util {
 		return string2 -> consumer.accept(prefix + string2);
 	}
 
-	public static DataResult<int[]> toIntArray(IntStream intStream, int length) {
-		int[] is = intStream.limit((long)(length + 1)).toArray();
+	public static DataResult<int[]> toArray(IntStream stream, int length) {
+		int[] is = stream.limit((long)(length + 1)).toArray();
 		if (is.length != length) {
 			String string = "Input is not a list of " + length + " ints";
 			return is.length >= length ? DataResult.error(string, Arrays.copyOf(is, length)) : DataResult.error(string);
@@ -504,11 +514,11 @@ public class Util {
 		}
 	}
 
-	public static DataResult<double[]> method_33141(DoubleStream doubleStream, int i) {
-		double[] ds = doubleStream.limit((long)(i + 1)).toArray();
-		if (ds.length != i) {
-			String string = "Input is not a list of " + i + " doubles";
-			return ds.length >= i ? DataResult.error(string, Arrays.copyOf(ds, i)) : DataResult.error(string);
+	public static DataResult<double[]> toArray(DoubleStream stream, int length) {
+		double[] ds = stream.limit((long)(length + 1)).toArray();
+		if (ds.length != length) {
+			String string = "Input is not a list of " + length + " doubles";
+			return ds.length >= length ? DataResult.error(string, Arrays.copyOf(ds, length)) : DataResult.error(string);
 		} else {
 			return DataResult.success(ds);
 		}

@@ -58,15 +58,15 @@ public class PistonHandler {
 		}
 	}
 
-	private static boolean isBlockSticky(BlockState blockState) {
-		return blockState.isOf(Blocks.SLIME_BLOCK) || blockState.isOf(Blocks.HONEY_BLOCK);
+	private static boolean isBlockSticky(BlockState state) {
+		return state.isOf(Blocks.SLIME_BLOCK) || state.isOf(Blocks.HONEY_BLOCK);
 	}
 
-	private static boolean isAdjacentBlockStuck(BlockState blockState, BlockState blockState2) {
-		if (blockState.isOf(Blocks.HONEY_BLOCK) && blockState2.isOf(Blocks.SLIME_BLOCK)) {
+	private static boolean isAdjacentBlockStuck(BlockState state, BlockState adjacentState) {
+		if (state.isOf(Blocks.HONEY_BLOCK) && adjacentState.isOf(Blocks.SLIME_BLOCK)) {
 			return false;
 		} else {
-			return blockState.isOf(Blocks.SLIME_BLOCK) && blockState2.isOf(Blocks.HONEY_BLOCK) ? false : isBlockSticky(blockState) || isBlockSticky(blockState2);
+			return state.isOf(Blocks.SLIME_BLOCK) && adjacentState.isOf(Blocks.HONEY_BLOCK) ? false : isBlockSticky(state) || isBlockSticky(adjacentState);
 		}
 	}
 

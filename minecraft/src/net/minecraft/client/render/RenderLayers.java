@@ -113,6 +113,7 @@ public class RenderLayers {
 		hashMap.put(Blocks.PUMPKIN_STEM, renderLayer3);
 		hashMap.put(Blocks.MELON_STEM, renderLayer3);
 		hashMap.put(Blocks.VINE, renderLayer3);
+		hashMap.put(Blocks.GLOW_LICHEN, renderLayer3);
 		hashMap.put(Blocks.LILY_PAD, renderLayer3);
 		hashMap.put(Blocks.NETHER_WART, renderLayer3);
 		hashMap.put(Blocks.BREWING_STAND, renderLayer3);
@@ -288,8 +289,8 @@ public class RenderLayers {
 		}
 	}
 
-	public static RenderLayer getMovingBlockLayer(BlockState blockState) {
-		Block block = blockState.getBlock();
+	public static RenderLayer getMovingBlockLayer(BlockState state) {
+		Block block = state.getBlock();
 		if (block instanceof LeavesBlock) {
 			return fancyGraphicsOrBetter ? RenderLayer.getCutoutMipped() : RenderLayer.getSolid();
 		} else {

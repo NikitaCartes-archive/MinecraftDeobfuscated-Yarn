@@ -169,13 +169,13 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	protected void renderMousehoverTooltip(MatrixStack matrixStack, @Nullable Text text, int i, int j) {
+	protected void renderMousehoverTooltip(MatrixStack matrices, @Nullable Text text, int i, int j) {
 		if (text != null) {
 			int k = i + 12;
 			int l = j - 12;
 			int m = this.textRenderer.getWidth(text);
-			this.fillGradient(matrixStack, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
-			this.textRenderer.drawWithShadow(matrixStack, text, (float)k, (float)l, 16777215);
+			this.fillGradient(matrices, k - 3, l - 3, k + m + 3, l + 8 + 3, -1073741824, -1073741824);
+			this.textRenderer.drawWithShadow(matrices, text, (float)k, (float)l, 16777215);
 		}
 	}
 
@@ -270,15 +270,15 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			return true;
 		}
 
-		private void renderPendingInvitationItem(MatrixStack matrixStack, PendingInvite pendingInvite, int i, int j, int k, int l) {
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrixStack, pendingInvite.worldName, (float)(i + 38), (float)(j + 1), 16777215);
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrixStack, pendingInvite.worldOwnerName, (float)(i + 38), (float)(j + 12), 7105644);
-			RealmsPendingInvitesScreen.this.textRenderer.draw(matrixStack, RealmsUtil.method_25282(pendingInvite.date), (float)(i + 38), (float)(j + 24), 7105644);
-			RealmsAcceptRejectButton.render(matrixStack, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, i, j, k, l);
+		private void renderPendingInvitationItem(MatrixStack matrices, PendingInvite pendingInvite, int i, int j, int k, int l) {
+			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, pendingInvite.worldName, (float)(i + 38), (float)(j + 1), 16777215);
+			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, pendingInvite.worldOwnerName, (float)(i + 38), (float)(j + 12), 7105644);
+			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, RealmsUtil.method_25282(pendingInvite.date), (float)(i + 38), (float)(j + 24), 7105644);
+			RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, i, j, k, l);
 			RealmsTextureManager.withBoundFace(pendingInvite.worldOwnerUuid, () -> {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				DrawableHelper.drawTexture(matrixStack, i, j, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
-				DrawableHelper.drawTexture(matrixStack, i, j, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
+				DrawableHelper.drawTexture(matrices, i, j, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
+				DrawableHelper.drawTexture(matrices, i, j, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
 			});
 		}
 
@@ -289,11 +289,11 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			}
 
 			@Override
-			protected void render(MatrixStack matrixStack, int y, int i, boolean bl) {
+			protected void render(MatrixStack matrices, int x, int y, boolean bl) {
 				RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(RealmsPendingInvitesScreen.ACCEPT_ICON);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				float f = bl ? 19.0F : 0.0F;
-				DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0F, 18, 18, 37, 18);
+				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
 				if (bl) {
 					RealmsPendingInvitesScreen.this.toolTip = RealmsPendingInvitesScreen.ACCEPT_TEXT;
 				}
@@ -312,11 +312,11 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			}
 
 			@Override
-			protected void render(MatrixStack matrixStack, int y, int i, boolean bl) {
+			protected void render(MatrixStack matrices, int x, int y, boolean bl) {
 				RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(RealmsPendingInvitesScreen.REJECT_ICON);
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				float f = bl ? 19.0F : 0.0F;
-				DrawableHelper.drawTexture(matrixStack, y, i, f, 0.0F, 18, 18, 37, 18);
+				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
 				if (bl) {
 					RealmsPendingInvitesScreen.this.toolTip = RealmsPendingInvitesScreen.REJECT_TEXT;
 				}

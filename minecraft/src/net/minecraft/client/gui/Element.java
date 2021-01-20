@@ -147,9 +147,9 @@ public interface Element {
 	 * @see org.lwjgl.glfw.GLFWKeyCallbackI#invoke(long, int, int, int, int)
 	 * 
 	 * @param chr the captured character
-	 * @param keyCode the associated key code
+	 * @param modifiers a GLFW bitfield describing the modifier keys that are held down (see <a href="https://www.glfw.org/docs/3.3/group__mods.html">GLFW Modifier key flags</a>)
 	 */
-	default boolean charTyped(char chr, int keyCode) {
+	default boolean charTyped(char chr, int modifiers) {
 		return false;
 	}
 

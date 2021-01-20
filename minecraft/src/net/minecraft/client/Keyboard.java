@@ -429,8 +429,8 @@ public class Keyboard {
 		});
 	}
 
-	public void setClipboard(String string) {
-		this.clipboard.setClipboard(this.client.getWindow().getHandle(), string);
+	public void setClipboard(String clipboard) {
+		this.clipboard.setClipboard(this.client.getWindow().getHandle(), clipboard);
 	}
 
 	public void pollDebugCrash() {

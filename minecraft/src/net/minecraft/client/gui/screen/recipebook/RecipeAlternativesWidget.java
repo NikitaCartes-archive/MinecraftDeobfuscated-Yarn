@@ -152,34 +152,34 @@ public class RecipeAlternativesWidget extends DrawableHelper implements Drawable
 		}
 	}
 
-	private void renderGrid(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n) {
-		this.drawTexture(matrixStack, this.buttonX, this.buttonY, m, n, l, l);
-		this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY, m + k + l, n, l, l);
-		this.drawTexture(matrixStack, this.buttonX, this.buttonY + l * 2 + j * k, m, n + k + l, l, l);
-		this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l * 2 + j * k, m + k + l, n + k + l, l, l);
+	private void renderGrid(MatrixStack matrices, int i, int j, int k, int l, int m, int n) {
+		this.drawTexture(matrices, this.buttonX, this.buttonY, m, n, l, l);
+		this.drawTexture(matrices, this.buttonX + l * 2 + i * k, this.buttonY, m + k + l, n, l, l);
+		this.drawTexture(matrices, this.buttonX, this.buttonY + l * 2 + j * k, m, n + k + l, l, l);
+		this.drawTexture(matrices, this.buttonX + l * 2 + i * k, this.buttonY + l * 2 + j * k, m + k + l, n + k + l, l, l);
 
 		for (int o = 0; o < i; o++) {
-			this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY, m + l, n, k, l);
-			this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY, m + l, n, l, l);
+			this.drawTexture(matrices, this.buttonX + l + o * k, this.buttonY, m + l, n, k, l);
+			this.drawTexture(matrices, this.buttonX + l + (o + 1) * k, this.buttonY, m + l, n, l, l);
 
 			for (int p = 0; p < j; p++) {
 				if (o == 0) {
-					this.drawTexture(matrixStack, this.buttonX, this.buttonY + l + p * k, m, n + l, l, k);
-					this.drawTexture(matrixStack, this.buttonX, this.buttonY + l + (p + 1) * k, m, n + l, l, l);
+					this.drawTexture(matrices, this.buttonX, this.buttonY + l + p * k, m, n + l, l, k);
+					this.drawTexture(matrices, this.buttonX, this.buttonY + l + (p + 1) * k, m, n + l, l, l);
 				}
 
-				this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l + p * k, m + l, n + l, k, k);
-				this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY + l + p * k, m + l, n + l, l, k);
-				this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l + (p + 1) * k, m + l, n + l, k, l);
-				this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k - 1, this.buttonY + l + (p + 1) * k - 1, m + l, n + l, l + 1, l + 1);
+				this.drawTexture(matrices, this.buttonX + l + o * k, this.buttonY + l + p * k, m + l, n + l, k, k);
+				this.drawTexture(matrices, this.buttonX + l + (o + 1) * k, this.buttonY + l + p * k, m + l, n + l, l, k);
+				this.drawTexture(matrices, this.buttonX + l + o * k, this.buttonY + l + (p + 1) * k, m + l, n + l, k, l);
+				this.drawTexture(matrices, this.buttonX + l + (o + 1) * k - 1, this.buttonY + l + (p + 1) * k - 1, m + l, n + l, l + 1, l + 1);
 				if (o == i - 1) {
-					this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l + p * k, m + k + l, n + l, l, k);
-					this.drawTexture(matrixStack, this.buttonX + l * 2 + i * k, this.buttonY + l + (p + 1) * k, m + k + l, n + l, l, l);
+					this.drawTexture(matrices, this.buttonX + l * 2 + i * k, this.buttonY + l + p * k, m + k + l, n + l, l, k);
+					this.drawTexture(matrices, this.buttonX + l * 2 + i * k, this.buttonY + l + (p + 1) * k, m + k + l, n + l, l, l);
 				}
 			}
 
-			this.drawTexture(matrixStack, this.buttonX + l + o * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, k, l);
-			this.drawTexture(matrixStack, this.buttonX + l + (o + 1) * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, l, l);
+			this.drawTexture(matrices, this.buttonX + l + o * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, k, l);
+			this.drawTexture(matrices, this.buttonX + l + (o + 1) * k, this.buttonY + l * 2 + j * k, m + l, n + k + l, l, l);
 		}
 	}
 

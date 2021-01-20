@@ -145,8 +145,8 @@ public class BlockPattern {
 			return this.up;
 		}
 
-		public CachedBlockPosition translate(int i, int j, int k) {
-			return this.cache.getUnchecked(BlockPattern.translate(this.frontTopLeft, this.getForwards(), this.getUp(), i, j, k));
+		public CachedBlockPosition translate(int offsetLeft, int offsetDown, int offsetForwards) {
+			return this.cache.getUnchecked(BlockPattern.translate(this.frontTopLeft, this.getForwards(), this.getUp(), offsetLeft, offsetDown, offsetForwards));
 		}
 
 		public String toString() {

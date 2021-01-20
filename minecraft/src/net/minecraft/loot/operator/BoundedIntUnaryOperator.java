@@ -24,10 +24,10 @@ public class BoundedIntUnaryOperator {
 	private final LootNumberProvider min;
 	@Nullable
 	private final LootNumberProvider max;
-	private final BoundedIntUnaryOperator.class_5639 field_27897;
-	private final BoundedIntUnaryOperator.class_5638 field_27898;
+	private final BoundedIntUnaryOperator.Applier applier;
+	private final BoundedIntUnaryOperator.Tester tester;
 
-	public Set<LootContextParameter<?>> method_32386() {
+	public Set<LootContextParameter<?>> getRequiredParameters() {
 		Builder<LootContextParameter<?>> builder = ImmutableSet.builder();
 		if (this.min != null) {
 			builder.addAll(this.min.getRequiredParameters());
@@ -40,28 +40,28 @@ public class BoundedIntUnaryOperator {
 		return builder.build();
 	}
 
-	private BoundedIntUnaryOperator(@Nullable LootNumberProvider lootNumberProvider, @Nullable LootNumberProvider lootNumberProvider2) {
-		this.min = lootNumberProvider;
-		this.max = lootNumberProvider2;
-		if (lootNumberProvider == null) {
-			if (lootNumberProvider2 == null) {
-				this.field_27897 = (lootContext, i) -> i;
-				this.field_27898 = (lootContext, i) -> true;
+	private BoundedIntUnaryOperator(@Nullable LootNumberProvider min, @Nullable LootNumberProvider max) {
+		this.min = min;
+		this.max = max;
+		if (min == null) {
+			if (max == null) {
+				this.applier = (context, value) -> value;
+				this.tester = (context, value) -> true;
 			} else {
-				this.field_27897 = (lootContext, i) -> Math.min(lootNumberProvider2.nextInt(lootContext), i);
-				this.field_27898 = (lootContext, i) -> i <= lootNumberProvider2.nextInt(lootContext);
+				this.applier = (context, value) -> Math.min(max.nextInt(context), value);
+				this.tester = (context, value) -> value <= max.nextInt(context);
 			}
-		} else if (lootNumberProvider2 == null) {
-			this.field_27897 = (lootContext, i) -> Math.max(lootNumberProvider.nextInt(lootContext), i);
-			this.field_27898 = (lootContext, i) -> i >= lootNumberProvider.nextInt(lootContext);
+		} else if (max == null) {
+			this.applier = (context, value) -> Math.max(min.nextInt(context), value);
+			this.tester = (context, value) -> value >= min.nextInt(context);
 		} else {
-			this.field_27897 = (lootContext, i) -> MathHelper.clamp(i, lootNumberProvider.nextInt(lootContext), lootNumberProvider2.nextInt(lootContext));
-			this.field_27898 = (lootContext, i) -> i >= lootNumberProvider.nextInt(lootContext) && i <= lootNumberProvider2.nextInt(lootContext);
+			this.applier = (context, value) -> MathHelper.clamp(value, min.nextInt(context), max.nextInt(context));
+			this.tester = (context, value) -> value >= min.nextInt(context) && value <= max.nextInt(context);
 		}
 	}
 
-	public static BoundedIntUnaryOperator method_32387(int i) {
-		ConstantLootNumberProvider constantLootNumberProvider = ConstantLootNumberProvider.create((float)i);
+	public static BoundedIntUnaryOperator create(int value) {
+		ConstantLootNumberProvider constantLootNumberProvider = ConstantLootNumberProvider.create((float)value);
 		return new BoundedIntUnaryOperator(constantLootNumberProvider, constantLootNumberProvider);
 	}
 
@@ -77,18 +77,23 @@ public class BoundedIntUnaryOperator {
 		return new BoundedIntUnaryOperator(null, ConstantLootNumberProvider.create((float)max));
 	}
 
-	public int method_32389(LootContext lootContext, int i) {
-		return this.field_27897.apply(lootContext, i);
+	public int apply(LootContext context, int value) {
+		return this.applier.apply(context, value);
 	}
 
-	public boolean method_32393(LootContext lootContext, int i) {
-		return this.field_27898.test(lootContext, i);
+	public boolean test(LootContext context, int value) {
+		return this.tester.test(context, value);
+	}
+
+	@FunctionalInterface
+	interface Applier {
+		int apply(LootContext context, int value);
 	}
 
 	public static class Serializer implements JsonDeserializer<BoundedIntUnaryOperator>, JsonSerializer<BoundedIntUnaryOperator> {
 		public BoundedIntUnaryOperator deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) {
 			if (jsonElement.isJsonPrimitive()) {
-				return BoundedIntUnaryOperator.method_32387(jsonElement.getAsInt());
+				return BoundedIntUnaryOperator.create(jsonElement.getAsInt());
 			} else {
 				JsonObject jsonObject = JsonHelper.asObject(jsonElement, "value");
 				LootNumberProvider lootNumberProvider = jsonObject.has("min")
@@ -120,12 +125,7 @@ public class BoundedIntUnaryOperator {
 	}
 
 	@FunctionalInterface
-	interface class_5638 {
-		boolean test(LootContext lootContext, int i);
-	}
-
-	@FunctionalInterface
-	interface class_5639 {
-		int apply(LootContext lootContext, int i);
+	interface Tester {
+		boolean test(LootContext context, int value);
 	}
 }

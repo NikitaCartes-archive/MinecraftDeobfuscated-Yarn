@@ -123,10 +123,10 @@ public class VillagerGossips {
 		public final VillageGossipType type;
 		public final int value;
 
-		public GossipEntry(UUID uUID, VillageGossipType villageGossipType, int i) {
-			this.target = uUID;
-			this.type = villageGossipType;
-			this.value = i;
+		public GossipEntry(UUID target, VillageGossipType type, int value) {
+			this.target = target;
+			this.type = type;
+			this.value = value;
 		}
 
 		public int getValue() {

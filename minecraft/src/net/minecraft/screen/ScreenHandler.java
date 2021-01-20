@@ -37,8 +37,8 @@ public abstract class ScreenHandler {
 	public final int syncId;
 	@Environment(EnvType.CLIENT)
 	private short actionId;
-	private int quickCraftStage = -1;
-	private int quickCraftButton;
+	private int quickCraftButton = -1;
+	private int quickCraftStage;
 	private final Set<Slot> quickCraftSlots = Sets.<Slot>newHashSet();
 	private final List<ScreenHandlerListener> listeners = Lists.<ScreenHandlerListener>newArrayList();
 	private final Set<PlayerEntity> restrictedPlayers = Sets.<PlayerEntity>newHashSet();
@@ -50,9 +50,9 @@ public abstract class ScreenHandler {
 
 	protected static boolean canUse(ScreenHandlerContext context, PlayerEntity player, Block block) {
 		return context.run(
-			(world, blockPos) -> !world.getBlockState(blockPos).isOf(block)
+			(world, pos) -> !world.getBlockState(pos).isOf(block)
 					? false
-					: player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,
+					: player.squaredDistanceTo((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5) <= 64.0,
 			true
 		);
 	}
@@ -195,35 +195,35 @@ public abstract class ScreenHandler {
 		ItemStack itemStack = ItemStack.EMPTY;
 		PlayerInventory playerInventory = player.getInventory();
 		if (actionType == SlotActionType.QUICK_CRAFT) {
-			int i = this.quickCraftButton;
-			this.quickCraftButton = unpackQuickCraftStage(clickData);
-			if ((i != 1 || this.quickCraftButton != 2) && i != this.quickCraftButton) {
+			int i = this.quickCraftStage;
+			this.quickCraftStage = unpackQuickCraftStage(clickData);
+			if ((i != 1 || this.quickCraftStage != 2) && i != this.quickCraftStage) {
 				this.endQuickCraft();
 			} else if (playerInventory.getCursorStack().isEmpty()) {
 				this.endQuickCraft();
-			} else if (this.quickCraftButton == 0) {
-				this.quickCraftStage = unpackQuickCraftButton(clickData);
-				if (shouldQuickCraftContinue(this.quickCraftStage, player)) {
-					this.quickCraftButton = 1;
+			} else if (this.quickCraftStage == 0) {
+				this.quickCraftButton = unpackQuickCraftButton(clickData);
+				if (shouldQuickCraftContinue(this.quickCraftButton, player)) {
+					this.quickCraftStage = 1;
 					this.quickCraftSlots.clear();
 				} else {
 					this.endQuickCraft();
 				}
-			} else if (this.quickCraftButton == 1) {
+			} else if (this.quickCraftStage == 1) {
 				Slot slot = this.slots.get(slotIndex);
 				ItemStack itemStack2 = playerInventory.getCursorStack();
 				if (canInsertItemIntoSlot(slot, itemStack2, true)
 					&& slot.canInsert(itemStack2)
-					&& (this.quickCraftStage == 2 || itemStack2.getCount() > this.quickCraftSlots.size())
+					&& (this.quickCraftButton == 2 || itemStack2.getCount() > this.quickCraftSlots.size())
 					&& this.canInsertIntoSlot(slot)) {
 					this.quickCraftSlots.add(slot);
 				}
-			} else if (this.quickCraftButton == 2) {
+			} else if (this.quickCraftStage == 2) {
 				if (!this.quickCraftSlots.isEmpty()) {
 					if (this.quickCraftSlots.size() == 1) {
 						int j = ((Slot)this.quickCraftSlots.iterator().next()).id;
 						this.endQuickCraft();
-						return this.removeStack(j, this.quickCraftStage, SlotActionType.PICKUP, player);
+						return this.removeStack(j, this.quickCraftButton, SlotActionType.PICKUP, player);
 					}
 
 					ItemStack itemStack3 = playerInventory.getCursorStack().copy();
@@ -234,11 +234,11 @@ public abstract class ScreenHandler {
 						if (slot2 != null
 							&& canInsertItemIntoSlot(slot2, itemStack4, true)
 							&& slot2.canInsert(itemStack4)
-							&& (this.quickCraftStage == 2 || itemStack4.getCount() >= this.quickCraftSlots.size())
+							&& (this.quickCraftButton == 2 || itemStack4.getCount() >= this.quickCraftSlots.size())
 							&& this.canInsertIntoSlot(slot2)) {
 							ItemStack itemStack5 = itemStack3.copy();
 							int l = slot2.hasStack() ? slot2.getStack().getCount() : 0;
-							calculateStackSize(this.quickCraftSlots, this.quickCraftStage, itemStack5, l);
+							calculateStackSize(this.quickCraftSlots, this.quickCraftButton, itemStack5, l);
 							int m = Math.min(itemStack5.getMaxCount(), slot2.getMaxItemCount(itemStack5));
 							if (itemStack5.getCount() > m) {
 								itemStack5.setCount(m);
@@ -257,7 +257,7 @@ public abstract class ScreenHandler {
 			} else {
 				this.endQuickCraft();
 			}
-		} else if (this.quickCraftButton != 0) {
+		} else if (this.quickCraftStage != 0) {
 			this.endQuickCraft();
 		} else if ((actionType == SlotActionType.PICKUP || actionType == SlotActionType.QUICK_MOVE) && (clickData == 0 || clickData == 1)) {
 			ClickType clickType = clickData == 0 ? ClickType.LEFT : ClickType.RIGHT;
@@ -556,7 +556,7 @@ public abstract class ScreenHandler {
 	}
 
 	protected void endQuickCraft() {
-		this.quickCraftButton = 0;
+		this.quickCraftStage = 0;
 		this.quickCraftSlots.clear();
 	}
 

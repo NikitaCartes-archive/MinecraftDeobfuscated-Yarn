@@ -26,8 +26,8 @@ public class SkullBlockEntity extends BlockEntity {
 	private int ticksPowered;
 	private boolean powered;
 
-	public SkullBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.SKULL, blockPos, blockState);
+	public SkullBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.SKULL, pos, state);
 	}
 
 	public static void setUserCache(UserCache value) {
@@ -54,21 +54,21 @@ public class SkullBlockEntity extends BlockEntity {
 	public void fromTag(CompoundTag tag) {
 		super.fromTag(tag);
 		if (tag.contains("SkullOwner", 10)) {
-			this.setOwnerAndType(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
+			this.setOwner(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
 		} else if (tag.contains("ExtraType", 8)) {
 			String string = tag.getString("ExtraType");
 			if (!ChatUtil.isEmpty(string)) {
-				this.setOwnerAndType(new GameProfile(null, string));
+				this.setOwner(new GameProfile(null, string));
 			}
 		}
 	}
 
-	public static void method_31695(World world, BlockPos blockPos, BlockState blockState, SkullBlockEntity skullBlockEntity) {
-		if (world.isReceivingRedstonePower(blockPos)) {
-			skullBlockEntity.powered = true;
-			skullBlockEntity.ticksPowered++;
+	public static void tick(World world, BlockPos pos, BlockState state, SkullBlockEntity blockEntity) {
+		if (world.isReceivingRedstonePower(pos)) {
+			blockEntity.powered = true;
+			blockEntity.ticksPowered++;
 		} else {
-			skullBlockEntity.powered = false;
+			blockEntity.powered = false;
 		}
 	}
 
@@ -94,8 +94,8 @@ public class SkullBlockEntity extends BlockEntity {
 		return this.toTag(new CompoundTag());
 	}
 
-	public void setOwnerAndType(@Nullable GameProfile gameProfile) {
-		this.owner = gameProfile;
+	public void setOwner(@Nullable GameProfile owner) {
+		this.owner = owner;
 		this.loadOwnerProperties();
 	}
 

@@ -46,37 +46,40 @@ public final class VoxelShapes {
 
 	public static VoxelShape cuboid(double xMin, double yMin, double zMin, double xMax, double yMax, double zMax) {
 		if (!(xMin > xMax) && !(yMin > yMax) && !(zMin > zMax)) {
-			return method_31943(xMin, yMin, zMin, xMax, yMax, zMax);
+			return cuboidUnchecked(xMin, yMin, zMin, xMax, yMax, zMax);
 		} else {
 			throw new IllegalArgumentException("The min values need to be smaller or equals to the max values");
 		}
 	}
 
-	public static VoxelShape method_31943(double d, double e, double f, double g, double h, double i) {
-		if (!(g - d < 1.0E-7) && !(h - e < 1.0E-7) && !(i - f < 1.0E-7)) {
-			int j = findRequiredBitResolution(d, g);
-			int k = findRequiredBitResolution(e, h);
-			int l = findRequiredBitResolution(f, i);
-			if (j < 0 || k < 0 || l < 0) {
+	public static VoxelShape cuboidUnchecked(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
+		if (!(maxX - minX < 1.0E-7) && !(maxY - minY < 1.0E-7) && !(maxZ - minZ < 1.0E-7)) {
+			int i = findRequiredBitResolution(minX, maxX);
+			int j = findRequiredBitResolution(minY, maxY);
+			int k = findRequiredBitResolution(minZ, maxZ);
+			if (i < 0 || j < 0 || k < 0) {
 				return new ArrayVoxelShape(
-					FULL_CUBE.voxels, DoubleArrayList.wrap(new double[]{d, g}), DoubleArrayList.wrap(new double[]{e, h}), DoubleArrayList.wrap(new double[]{f, i})
+					FULL_CUBE.voxels,
+					DoubleArrayList.wrap(new double[]{minX, maxX}),
+					DoubleArrayList.wrap(new double[]{minY, maxY}),
+					DoubleArrayList.wrap(new double[]{minZ, maxZ})
 				);
-			} else if (j == 0 && k == 0 && l == 0) {
+			} else if (i == 0 && j == 0 && k == 0) {
 				return fullCube();
 			} else {
+				int l = 1 << i;
 				int m = 1 << j;
 				int n = 1 << k;
-				int o = 1 << l;
 				BitSetVoxelSet bitSetVoxelSet = BitSetVoxelSet.method_31939(
+					l,
 					m,
 					n,
-					o,
-					(int)Math.round(d * (double)m),
-					(int)Math.round(e * (double)n),
-					(int)Math.round(f * (double)o),
-					(int)Math.round(g * (double)m),
-					(int)Math.round(h * (double)n),
-					(int)Math.round(i * (double)o)
+					(int)Math.round(minX * (double)l),
+					(int)Math.round(minY * (double)m),
+					(int)Math.round(minZ * (double)n),
+					(int)Math.round(maxX * (double)l),
+					(int)Math.round(maxY * (double)m),
+					(int)Math.round(maxZ * (double)n)
 				);
 				return new SimpleVoxelShape(bitSetVoxelSet);
 			}
@@ -86,7 +89,7 @@ public final class VoxelShapes {
 	}
 
 	public static VoxelShape cuboid(Box box) {
-		return method_31943(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+		return cuboidUnchecked(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
 	}
 
 	@VisibleForTesting

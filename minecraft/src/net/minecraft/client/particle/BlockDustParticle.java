@@ -84,8 +84,8 @@ public class BlockDustParticle extends SpriteBillboardParticle {
 	}
 
 	@Override
-	public int getColorMultiplier(float tint) {
-		int i = super.getColorMultiplier(tint);
+	public int getBrightness(float tint) {
+		int i = super.getBrightness(tint);
 		int j = 0;
 		if (this.world.isChunkLoaded(this.blockPos)) {
 			j = WorldRenderer.getLightmapCoordinates(this.world, this.blockPos);

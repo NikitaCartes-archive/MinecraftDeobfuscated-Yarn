@@ -11,5 +11,5 @@ public interface LootScoreProvider {
 
 	LootScoreProviderType getType();
 
-	Set<LootContextParameter<?>> method_32477();
+	Set<LootContextParameter<?>> getRequiredParameters();
 }

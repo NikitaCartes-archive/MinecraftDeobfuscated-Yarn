@@ -33,8 +33,8 @@ public class BasicBakedModel implements BakedModel {
 		boolean isSideLit,
 		boolean hasDepth,
 		Sprite sprite,
-		ModelTransformation modelTransformation,
-		ModelOverrideList modelOverrideList
+		ModelTransformation transformation,
+		ModelOverrideList itemPropertyOverrides
 	) {
 		this.quads = quads;
 		this.faceQuads = faceQuads;
@@ -42,8 +42,8 @@ public class BasicBakedModel implements BakedModel {
 		this.hasDepth = hasDepth;
 		this.isSideLit = isSideLit;
 		this.sprite = sprite;
-		this.transformation = modelTransformation;
-		this.itemPropertyOverrides = modelOverrideList;
+		this.transformation = transformation;
+		this.itemPropertyOverrides = itemPropertyOverrides;
 	}
 
 	@Override
@@ -101,16 +101,16 @@ public class BasicBakedModel implements BakedModel {
 			this(unbakedModel.useAmbientOcclusion(), unbakedModel.getGuiLight().isSide(), hasDepth, unbakedModel.getTransformations(), itemPropertyOverrides);
 		}
 
-		private Builder(boolean usesAo, boolean isSideLit, boolean hasDepth, ModelTransformation modelTransformation, ModelOverrideList modelOverrideList) {
+		private Builder(boolean usesAo, boolean isSideLit, boolean hasDepth, ModelTransformation transformation, ModelOverrideList itemPropertyOverrides) {
 			for (Direction direction : Direction.values()) {
 				this.faceQuads.put(direction, Lists.newArrayList());
 			}
 
-			this.itemPropertyOverrides = modelOverrideList;
+			this.itemPropertyOverrides = itemPropertyOverrides;
 			this.usesAo = usesAo;
 			this.isSideLit = isSideLit;
 			this.hasDepth = hasDepth;
-			this.transformation = modelTransformation;
+			this.transformation = transformation;
 		}
 
 		public BasicBakedModel.Builder addQuad(Direction side, BakedQuad quad) {

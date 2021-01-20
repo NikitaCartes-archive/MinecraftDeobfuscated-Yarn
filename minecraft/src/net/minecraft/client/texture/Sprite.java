@@ -1,103 +1,63 @@
 package net.minecraft.client.texture;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.SpriteTexturedVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.resource.metadata.AnimationFrameResourceMetadata;
 import net.minecraft.client.resource.metadata.AnimationResourceMetadata;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class Sprite implements AutoCloseable {
+	private static final Logger LOGGER = LogManager.getLogger();
 	private final SpriteAtlasTexture atlas;
-	private final Sprite.Info info;
-	private final AnimationResourceMetadata animationMetadata;
+	private final Identifier id;
+	private final int width;
+	private final int height;
 	protected final NativeImage[] images;
-	private final int[] frameXs;
-	private final int[] frameYs;
 	@Nullable
-	private final Sprite.Interpolation interpolation;
+	private final Sprite.class_5790 field_28468;
 	private final int x;
 	private final int y;
 	private final float uMin;
 	private final float uMax;
 	private final float vMin;
 	private final float vMax;
-	private int frameIndex;
-	/**
-	 * The tick position within the current frame.
-	 * Resets to 0 on every frame advance.
-	 */
-	private int frameTicks;
 
 	protected Sprite(SpriteAtlasTexture spriteAtlasTexture, Sprite.Info info, int maxLevel, int atlasWidth, int atlasHeight, int x, int y, NativeImage nativeImage) {
 		this.atlas = spriteAtlasTexture;
-		AnimationResourceMetadata animationResourceMetadata = info.animationData;
-		int i = info.width;
-		int j = info.height;
+		this.width = info.width;
+		this.height = info.height;
+		this.id = info.id;
 		this.x = x;
 		this.y = y;
 		this.uMin = (float)x / (float)atlasWidth;
-		this.uMax = (float)(x + i) / (float)atlasWidth;
+		this.uMax = (float)(x + this.width) / (float)atlasWidth;
 		this.vMin = (float)y / (float)atlasHeight;
-		this.vMax = (float)(y + j) / (float)atlasHeight;
-		int k = nativeImage.getWidth() / animationResourceMetadata.getWidth(i);
-		int l = nativeImage.getHeight() / animationResourceMetadata.getHeight(j);
-		if (animationResourceMetadata.getFrameCount() > 0) {
-			int m = (Integer)animationResourceMetadata.getFrameIndexSet().stream().max(Integer::compareTo).get() + 1;
-			this.frameXs = new int[m];
-			this.frameYs = new int[m];
-			Arrays.fill(this.frameXs, -1);
-			Arrays.fill(this.frameYs, -1);
-
-			for (int n : animationResourceMetadata.getFrameIndexSet()) {
-				if (n >= k * l) {
-					throw new RuntimeException("invalid frameindex " + n);
-				}
-
-				int o = n / k;
-				int p = n % k;
-				this.frameXs[n] = p;
-				this.frameYs[n] = o;
-			}
-		} else {
-			List<AnimationFrameResourceMetadata> list = Lists.<AnimationFrameResourceMetadata>newArrayList();
-			int q = k * l;
-			this.frameXs = new int[q];
-			this.frameYs = new int[q];
-
-			for (int n = 0; n < l; n++) {
-				for (int o = 0; o < k; o++) {
-					int p = n * k + o;
-					this.frameXs[p] = o;
-					this.frameYs[p] = n;
-					list.add(new AnimationFrameResourceMetadata(p, -1));
-				}
-			}
-
-			animationResourceMetadata = new AnimationResourceMetadata(
-				list, i, j, animationResourceMetadata.getDefaultFrameTime(), animationResourceMetadata.shouldInterpolate()
-			);
-		}
-
-		this.info = new Sprite.Info(info.id, i, j, animationResourceMetadata);
-		this.animationMetadata = animationResourceMetadata;
+		this.vMax = (float)(y + this.height) / (float)atlasHeight;
+		this.field_28468 = this.method_33437(info, nativeImage.getWidth(), nativeImage.getHeight(), maxLevel);
 
 		try {
 			try {
 				this.images = MipmapHelper.getMipmapLevelsImages(nativeImage, maxLevel);
-			} catch (Throwable var19) {
-				CrashReport crashReport = CrashReport.create(var19, "Generating mipmaps for frame");
+			} catch (Throwable var12) {
+				CrashReport crashReport = CrashReport.create(var12, "Generating mipmaps for frame");
 				CrashReportSection crashReportSection = crashReport.addElement("Frame being iterated");
 				crashReportSection.add("First frame", (CrashCallable<String>)(() -> {
 					StringBuilder stringBuilder = new StringBuilder();
@@ -110,41 +70,83 @@ public class Sprite implements AutoCloseable {
 				}));
 				throw new CrashException(crashReport);
 			}
-		} catch (Throwable var20) {
-			CrashReport crashReport = CrashReport.create(var20, "Applying mipmap");
+		} catch (Throwable var13) {
+			CrashReport crashReport = CrashReport.create(var13, "Applying mipmap");
 			CrashReportSection crashReportSection = crashReport.addElement("Sprite being mipmapped");
-			crashReportSection.add("Sprite name", (CrashCallable<String>)(() -> this.getId().toString()));
-			crashReportSection.add("Sprite size", (CrashCallable<String>)(() -> this.getWidth() + " x " + this.getHeight()));
+			crashReportSection.add("Sprite name", this.id::toString);
+			crashReportSection.add("Sprite size", (CrashCallable<String>)(() -> this.width + " x " + this.height));
 			crashReportSection.add("Sprite frames", (CrashCallable<String>)(() -> this.getFrameCount() + " frames"));
 			crashReportSection.add("Mipmap levels", maxLevel);
 			throw new CrashException(crashReport);
 		}
-
-		if (animationResourceMetadata.shouldInterpolate()) {
-			this.interpolation = new Sprite.Interpolation(info, maxLevel);
-		} else {
-			this.interpolation = null;
-		}
 	}
 
-	private void upload(int frame) {
-		int i = this.frameXs[frame] * this.info.width;
-		int j = this.frameYs[frame] * this.info.height;
-		this.upload(i, j, this.images);
+	private int getFrameCount() {
+		return this.field_28468 != null ? this.field_28468.field_28472.size() : 1;
+	}
+
+	@Nullable
+	private Sprite.class_5790 method_33437(Sprite.Info info, int i, int j, int k) {
+		AnimationResourceMetadata animationResourceMetadata = info.animationData;
+		int l = i / animationResourceMetadata.getWidth(info.width);
+		int m = j / animationResourceMetadata.getHeight(info.height);
+		int n = l * m;
+		List<Sprite.class_5791> list = Lists.<Sprite.class_5791>newArrayList();
+		animationResourceMetadata.method_33460((ix, jx) -> list.add(new Sprite.class_5791(ix, jx)));
+		if (list.isEmpty()) {
+			for (int o = 0; o < n; o++) {
+				list.add(new Sprite.class_5791(o, animationResourceMetadata.getDefaultFrameTime()));
+			}
+		} else {
+			int o = 0;
+			IntSet intSet = new IntOpenHashSet();
+
+			for (Iterator<Sprite.class_5791> iterator = list.iterator(); iterator.hasNext(); o++) {
+				Sprite.class_5791 lv = (Sprite.class_5791)iterator.next();
+				boolean bl = true;
+				if (lv.field_28476 <= 0) {
+					LOGGER.warn("Invalid frame duration on sprite {} frame {}: {}", this.id, o, lv.field_28476);
+					bl = false;
+				}
+
+				if (lv.field_28475 < 0 || lv.field_28475 >= n) {
+					LOGGER.warn("Invalid frame index on sprite {} frame {}: {}", this.id, o, lv.field_28475);
+					bl = false;
+				}
+
+				if (bl) {
+					intSet.add(lv.field_28475);
+				} else {
+					iterator.remove();
+				}
+			}
+
+			int[] is = IntStream.range(0, n).filter(ix -> !intSet.contains(ix)).toArray();
+			if (is.length > 0) {
+				LOGGER.warn("Unused frames in sprite {}: {}", this.id, Arrays.toString(is));
+			}
+		}
+
+		if (list.size() <= 1) {
+			return null;
+		} else {
+			Sprite.Interpolation interpolation = animationResourceMetadata.shouldInterpolate() ? new Sprite.Interpolation(info, k) : null;
+			return new Sprite.class_5790(ImmutableList.copyOf(list), l, interpolation);
+		}
 	}
 
 	private void upload(int frameX, int frameY, NativeImage[] output) {
 		for (int i = 0; i < this.images.length; i++) {
-			output[i].upload(i, this.x >> i, this.y >> i, frameX >> i, frameY >> i, this.info.width >> i, this.info.height >> i, this.images.length > 1, false);
+			output[i].upload(i, this.x >> i, this.y >> i, frameX >> i, frameY >> i, this.width >> i, this.height >> i, this.images.length > 1, false);
 		}
 	}
 
 	public int getWidth() {
-		return this.info.width;
+		return this.width;
 	}
 
 	public int getHeight() {
-		return this.info.height;
+		return this.height;
 	}
 
 	public float getMinU() {
@@ -174,15 +176,15 @@ public class Sprite implements AutoCloseable {
 	}
 
 	public Identifier getId() {
-		return this.info.id;
+		return this.id;
 	}
 
 	public SpriteAtlasTexture getAtlas() {
 		return this.atlas;
 	}
 
-	public int getFrameCount() {
-		return this.frameXs.length;
+	public IntStream method_33442() {
+		return this.field_28468 != null ? this.field_28468.method_33450() : IntStream.of(1);
 	}
 
 	public void close() {
@@ -192,26 +194,25 @@ public class Sprite implements AutoCloseable {
 			}
 		}
 
-		if (this.interpolation != null) {
-			this.interpolation.close();
+		if (this.field_28468 != null) {
+			this.field_28468.close();
 		}
 	}
 
 	public String toString() {
-		int i = this.frameXs.length;
 		return "TextureAtlasSprite{name='"
-			+ this.info.id
+			+ this.id
 			+ '\''
 			+ ", frameCount="
-			+ i
+			+ this.getFrameCount()
 			+ ", x="
 			+ this.x
 			+ ", y="
 			+ this.y
 			+ ", height="
-			+ this.info.height
+			+ this.height
 			+ ", width="
-			+ this.info.width
+			+ this.width
 			+ ", u0="
 			+ this.uMin
 			+ ", u1="
@@ -224,16 +225,27 @@ public class Sprite implements AutoCloseable {
 	}
 
 	public boolean isPixelTransparent(int frame, int x, int y) {
-		return (this.images[0].getPixelColor(x + this.frameXs[frame] * this.info.width, y + this.frameYs[frame] * this.info.height) >> 24 & 0xFF) == 0;
+		int i = x;
+		int j = y;
+		if (this.field_28468 != null) {
+			i = x + this.field_28468.method_33446(frame) * this.width;
+			j = y + this.field_28468.method_33451(frame) * this.height;
+		}
+
+		return (this.images[0].getPixelColor(i, j) >> 24 & 0xFF) == 0;
 	}
 
 	public void upload() {
-		this.upload(0);
+		if (this.field_28468 != null) {
+			this.field_28468.method_33445();
+		} else {
+			this.upload(0, 0, this.images);
+		}
 	}
 
 	private float getFrameDeltaFactor() {
-		float f = (float)this.info.width / (this.uMax - this.uMin);
-		float g = (float)this.info.height / (this.vMax - this.vMin);
+		float f = (float)this.width / (this.uMax - this.uMin);
+		float g = (float)this.height / (this.vMax - this.vMin);
 		return Math.max(g, f);
 	}
 
@@ -241,28 +253,9 @@ public class Sprite implements AutoCloseable {
 		return 4.0F / this.getFrameDeltaFactor();
 	}
 
-	public void tickAnimation() {
-		this.frameTicks++;
-		if (this.frameTicks >= this.animationMetadata.getFrameTime(this.frameIndex)) {
-			int i = this.animationMetadata.getFrameIndex(this.frameIndex);
-			int j = this.animationMetadata.getFrameCount() == 0 ? this.getFrameCount() : this.animationMetadata.getFrameCount();
-			this.frameIndex = (this.frameIndex + 1) % j;
-			this.frameTicks = 0;
-			int k = this.animationMetadata.getFrameIndex(this.frameIndex);
-			if (i != k && k >= 0 && k < this.getFrameCount()) {
-				this.upload(k);
-			}
-		} else if (this.interpolation != null) {
-			if (!RenderSystem.isOnRenderThread()) {
-				RenderSystem.recordRenderCall(() -> interpolation.apply());
-			} else {
-				this.interpolation.apply();
-			}
-		}
-	}
-
-	public boolean isAnimated() {
-		return this.animationMetadata.getFrameCount() > 1;
+	@Nullable
+	public TextureTickListener method_33443() {
+		return this.field_28468;
 	}
 
 	public VertexConsumer getTextureSpecificVertexConsumer(VertexConsumer vertexConsumer) {
@@ -317,24 +310,24 @@ public class Sprite implements AutoCloseable {
 		 * based on the tick position within the current frame,
 		 * and upload the results to the currently bound texture to the frame slot at position (0,0).
 		 */
-		private void apply() {
-			double d = 1.0 - (double)Sprite.this.frameTicks / (double)Sprite.this.animationMetadata.getFrameTime(Sprite.this.frameIndex);
-			int i = Sprite.this.animationMetadata.getFrameIndex(Sprite.this.frameIndex);
-			int j = Sprite.this.animationMetadata.getFrameCount() == 0 ? Sprite.this.getFrameCount() : Sprite.this.animationMetadata.getFrameCount();
-			int k = Sprite.this.animationMetadata.getFrameIndex((Sprite.this.frameIndex + 1) % j);
-			if (i != k && k >= 0 && k < Sprite.this.getFrameCount()) {
-				for (int l = 0; l < this.images.length; l++) {
-					int m = Sprite.this.info.width >> l;
-					int n = Sprite.this.info.height >> l;
+		private void apply(Sprite.class_5790 arg) {
+			Sprite.class_5791 lv = (Sprite.class_5791)arg.field_28472.get(arg.field_28470);
+			double d = 1.0 - (double)arg.field_28471 / (double)lv.field_28476;
+			int i = lv.field_28475;
+			int j = ((Sprite.class_5791)arg.field_28472.get((arg.field_28470 + 1) % arg.field_28472.size())).field_28475;
+			if (i != j) {
+				for (int k = 0; k < this.images.length; k++) {
+					int l = Sprite.this.width >> k;
+					int m = Sprite.this.height >> k;
 
-					for (int o = 0; o < n; o++) {
-						for (int p = 0; p < m; p++) {
-							int q = this.getPixelColor(i, l, p, o);
-							int r = this.getPixelColor(k, l, p, o);
-							int s = this.lerp(d, q >> 16 & 0xFF, r >> 16 & 0xFF);
-							int t = this.lerp(d, q >> 8 & 0xFF, r >> 8 & 0xFF);
-							int u = this.lerp(d, q & 0xFF, r & 0xFF);
-							this.images[l].setPixelColor(p, o, q & 0xFF000000 | s << 16 | t << 8 | u);
+					for (int n = 0; n < m; n++) {
+						for (int o = 0; o < l; o++) {
+							int p = this.getPixelColor(arg, i, k, o, n);
+							int q = this.getPixelColor(arg, j, k, o, n);
+							int r = this.lerp(d, p >> 16 & 0xFF, q >> 16 & 0xFF);
+							int s = this.lerp(d, p >> 8 & 0xFF, q >> 8 & 0xFF);
+							int t = this.lerp(d, p & 0xFF, q & 0xFF);
+							this.images[k].setPixelColor(o, n, p & 0xFF000000 | r << 16 | s << 8 | t);
 						}
 					}
 				}
@@ -346,11 +339,8 @@ public class Sprite implements AutoCloseable {
 		/**
 		 * Returns the pixel color at frame {@code frameIndex} within mipmap {@code layer} at sprite relative coordinates.
 		 */
-		private int getPixelColor(int frameIndex, int layer, int x, int y) {
-			return Sprite.this.images[layer]
-				.getPixelColor(
-					x + (Sprite.this.frameXs[frameIndex] * Sprite.this.info.width >> layer), y + (Sprite.this.frameYs[frameIndex] * Sprite.this.info.height >> layer)
-				);
+		private int getPixelColor(Sprite.class_5790 arg, int i, int j, int k, int l) {
+			return Sprite.this.images[j].getPixelColor(k + (arg.method_33446(i) * Sprite.this.width >> j), l + (arg.method_33451(i) * Sprite.this.height >> j));
 		}
 
 		/**
@@ -367,6 +357,82 @@ public class Sprite implements AutoCloseable {
 					nativeImage.close();
 				}
 			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	class class_5790 implements TextureTickListener, AutoCloseable {
+		private int field_28470;
+		private int field_28471;
+		private final List<Sprite.class_5791> field_28472;
+		private final int field_28473;
+		@Nullable
+		private final Sprite.Interpolation field_28474;
+
+		private class_5790(List<Sprite.class_5791> list, int i, @Nullable Sprite.Interpolation interpolation) {
+			this.field_28472 = list;
+			this.field_28473 = i;
+			this.field_28474 = interpolation;
+		}
+
+		private int method_33446(int i) {
+			return i % this.field_28473;
+		}
+
+		private int method_33451(int i) {
+			return i / this.field_28473;
+		}
+
+		private void method_33455(int i) {
+			int j = this.method_33446(i) * Sprite.this.width;
+			int k = this.method_33451(i) * Sprite.this.height;
+			Sprite.this.upload(j, k, Sprite.this.images);
+		}
+
+		public void close() {
+			if (this.field_28474 != null) {
+				this.field_28474.close();
+			}
+		}
+
+		@Override
+		public void tick() {
+			this.field_28471++;
+			Sprite.class_5791 lv = (Sprite.class_5791)this.field_28472.get(this.field_28470);
+			if (this.field_28471 >= lv.field_28476) {
+				int i = lv.field_28475;
+				this.field_28470 = (this.field_28470 + 1) % this.field_28472.size();
+				this.field_28471 = 0;
+				int j = ((Sprite.class_5791)this.field_28472.get(this.field_28470)).field_28475;
+				if (i != j) {
+					this.method_33455(j);
+				}
+			} else if (this.field_28474 != null) {
+				if (!RenderSystem.isOnRenderThread()) {
+					RenderSystem.recordRenderCall(() -> this.field_28474.apply(this));
+				} else {
+					this.field_28474.apply(this);
+				}
+			}
+		}
+
+		public void method_33445() {
+			this.method_33455(((Sprite.class_5791)this.field_28472.get(0)).field_28475);
+		}
+
+		public IntStream method_33450() {
+			return this.field_28472.stream().mapToInt(arg -> arg.field_28475).distinct();
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class class_5791 {
+		private final int field_28475;
+		private final int field_28476;
+
+		private class_5791(int i, int j) {
+			this.field_28475 = i;
+			this.field_28476 = j;
 		}
 	}
 }

@@ -10,9 +10,9 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.world.World;
 
 public class MapExtendingRecipe extends ShapedRecipe {
-	public MapExtendingRecipe(Identifier identifier) {
+	public MapExtendingRecipe(Identifier id) {
 		super(
-			identifier,
+			id,
 			"",
 			3,
 			3,
@@ -53,7 +53,7 @@ public class MapExtendingRecipe extends ShapedRecipe {
 				if (mapState == null) {
 					return false;
 				} else {
-					return mapState.method_32372() ? false : mapState.scale < 4;
+					return mapState.hasMonumentIcon() ? false : mapState.scale < 4;
 				}
 			}
 		}

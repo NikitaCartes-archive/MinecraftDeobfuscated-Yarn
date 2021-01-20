@@ -38,23 +38,23 @@ public abstract class LootableContainerBlockEntity extends LockableContainerBloc
 		}
 	}
 
-	protected boolean deserializeLootTable(CompoundTag compoundTag) {
-		if (compoundTag.contains("LootTable", 8)) {
-			this.lootTableId = new Identifier(compoundTag.getString("LootTable"));
-			this.lootTableSeed = compoundTag.getLong("LootTableSeed");
+	protected boolean deserializeLootTable(CompoundTag tag) {
+		if (tag.contains("LootTable", 8)) {
+			this.lootTableId = new Identifier(tag.getString("LootTable"));
+			this.lootTableSeed = tag.getLong("LootTableSeed");
 			return true;
 		} else {
 			return false;
 		}
 	}
 
-	protected boolean serializeLootTable(CompoundTag compoundTag) {
+	protected boolean serializeLootTable(CompoundTag tag) {
 		if (this.lootTableId == null) {
 			return false;
 		} else {
-			compoundTag.putString("LootTable", this.lootTableId.toString());
+			tag.putString("LootTable", this.lootTableId.toString());
 			if (this.lootTableSeed != 0L) {
-				compoundTag.putLong("LootTableSeed", this.lootTableSeed);
+				tag.putLong("LootTableSeed", this.lootTableSeed);
 			}
 
 			return true;

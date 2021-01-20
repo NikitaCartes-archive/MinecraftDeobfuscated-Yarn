@@ -22,11 +22,11 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
 	) {
-		while (blockPos.getY() > structureWorldAccess.getSectionCount() + 5 && structureWorldAccess.isAir(blockPos)) {
+		while (blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 5 && structureWorldAccess.isAir(blockPos)) {
 			blockPos = blockPos.down();
 		}
 
-		if (blockPos.getY() <= structureWorldAccess.getSectionCount() + 4) {
+		if (blockPos.getY() <= structureWorldAccess.getBottomSectionLimit() + 4) {
 			return false;
 		} else {
 			blockPos = blockPos.down(4);

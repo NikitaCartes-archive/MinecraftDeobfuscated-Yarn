@@ -87,7 +87,7 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 				GlobalPos globalPos = (GlobalPos)iterator.next();
 				BlockPos blockPos = globalPos.getPos();
 				if ((pathNode == null || !pathNode.getPos().equals(blockPos)) && (pathNode2 == null || !pathNode2.getPos().equals(blockPos))) {
-					if (method_30762(serverWorld, livingEntity, globalPos)) {
+					if (cannotReachDoor(serverWorld, livingEntity, globalPos)) {
 						iterator.remove();
 					} else {
 						BlockState blockState = serverWorld.getBlockState(blockPos);
@@ -140,8 +140,8 @@ public class OpenDoorsTask extends Task<LivingEntity> {
 		}
 	}
 
-	private static boolean method_30762(ServerWorld serverWorld, LivingEntity livingEntity, GlobalPos globalPos) {
-		return globalPos.getDimension() != serverWorld.getRegistryKey() || !globalPos.getPos().isWithinDistance(livingEntity.getPos(), 2.0);
+	private static boolean cannotReachDoor(ServerWorld world, LivingEntity entity, GlobalPos doorPos) {
+		return doorPos.getDimension() != world.getRegistryKey() || !doorPos.getPos().isWithinDistance(entity.getPos(), 2.0);
 	}
 
 	private void method_30767(ServerWorld serverWorld, LivingEntity livingEntity, BlockPos blockPos) {

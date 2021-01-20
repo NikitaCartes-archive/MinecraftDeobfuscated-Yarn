@@ -169,9 +169,7 @@ public class ClientWorld extends World {
 	}
 
 	public void tickEntity(Entity entity) {
-		entity.resetPosition(entity.getX(), entity.getY(), entity.getZ());
-		entity.prevYaw = entity.yaw;
-		entity.prevPitch = entity.pitch;
+		entity.resetPosition();
 		entity.age++;
 		this.getProfiler().push((Supplier<String>)(() -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()));
 		entity.tick();
@@ -186,9 +184,7 @@ public class ClientWorld extends World {
 		if (passenger.isRemoved() || passenger.getVehicle() != entity) {
 			passenger.stopRiding();
 		} else if (passenger instanceof PlayerEntity || this.entityList.hasEntity(passenger)) {
-			passenger.resetPosition(passenger.getX(), passenger.getY(), passenger.getZ());
-			passenger.prevYaw = passenger.yaw;
-			passenger.prevPitch = passenger.pitch;
+			passenger.resetPosition();
 			passenger.age++;
 			passenger.tickRiding();
 
@@ -889,8 +885,8 @@ public class ClientWorld extends World {
 		}
 
 		@Override
-		public void populateCrashReport(CrashReportSection reportSection, HeightLimitView heightLimitView) {
-			MutableWorldProperties.super.populateCrashReport(reportSection, heightLimitView);
+		public void populateCrashReport(CrashReportSection reportSection, HeightLimitView world) {
+			MutableWorldProperties.super.populateCrashReport(reportSection, world);
 		}
 
 		public void setDifficulty(Difficulty difficulty) {

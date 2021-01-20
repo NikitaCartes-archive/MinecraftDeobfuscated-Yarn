@@ -340,9 +340,9 @@ public abstract class ChunkGenerator {
 		return this.getHeight(x, z, heightmapType) - 1;
 	}
 
-	public boolean isStrongholdStartingChunk(ChunkPos chunkPos) {
+	public boolean isStrongholdStartingChunk(ChunkPos pos) {
 		this.generateStrongholdPositions();
-		return this.strongholds.contains(chunkPos);
+		return this.strongholds.contains(pos);
 	}
 
 	static {

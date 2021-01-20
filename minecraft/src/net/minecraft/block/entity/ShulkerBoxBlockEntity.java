@@ -11,6 +11,7 @@ import net.minecraft.block.ShulkerBoxBlock;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.MovementType;
+import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
@@ -30,7 +31,6 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -44,49 +44,46 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	@Nullable
 	private final DyeColor cachedColor;
 
-	public ShulkerBoxBlockEntity(@Nullable DyeColor color, BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.SHULKER_BOX, blockPos, blockState);
+	public ShulkerBoxBlockEntity(@Nullable DyeColor color, BlockPos pos, BlockState state) {
+		super(BlockEntityType.SHULKER_BOX, pos, state);
 		this.cachedColor = color;
 	}
 
-	public ShulkerBoxBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.SHULKER_BOX, blockPos, blockState);
-		this.cachedColor = ShulkerBoxBlock.getColor(blockState.getBlock());
+	public ShulkerBoxBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.SHULKER_BOX, pos, state);
+		this.cachedColor = ShulkerBoxBlock.getColor(state.getBlock());
 	}
 
-	public static void tick(World world, BlockPos blockPos, BlockState blockState, ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
-		updateAnimation(world, blockPos, blockState, shulkerBoxBlockEntity);
-		if (shulkerBoxBlockEntity.animationStage == ShulkerBoxBlockEntity.AnimationStage.OPENING
-			|| shulkerBoxBlockEntity.animationStage == ShulkerBoxBlockEntity.AnimationStage.CLOSING) {
-			pushEntities(world, blockPos, blockState, shulkerBoxBlockEntity.getAnimationProgress(1.0F));
-		}
+	public static void tick(World world, BlockPos pos, BlockState state, ShulkerBoxBlockEntity blockEntity) {
+		blockEntity.updateAnimation(world, pos, state);
 	}
 
-	private static void updateAnimation(World world, BlockPos blockPos, BlockState blockState, ShulkerBoxBlockEntity shulkerBoxBlockEntity) {
-		shulkerBoxBlockEntity.prevAnimationProgress = shulkerBoxBlockEntity.animationProgress;
-		switch (shulkerBoxBlockEntity.animationStage) {
+	private void updateAnimation(World world, BlockPos pos, BlockState state) {
+		this.prevAnimationProgress = this.animationProgress;
+		switch (this.animationStage) {
 			case CLOSED:
-				shulkerBoxBlockEntity.animationProgress = 0.0F;
+				this.animationProgress = 0.0F;
 				break;
 			case OPENING:
-				shulkerBoxBlockEntity.animationProgress += 0.1F;
-				if (shulkerBoxBlockEntity.animationProgress >= 1.0F) {
-					pushEntities(world, blockPos, blockState, shulkerBoxBlockEntity.getAnimationProgress(1.0F));
-					shulkerBoxBlockEntity.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
-					shulkerBoxBlockEntity.animationProgress = 1.0F;
-					updateNeighborStates(world, blockPos, blockState);
+				this.animationProgress += 0.1F;
+				if (this.animationProgress >= 1.0F) {
+					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.OPENED;
+					this.animationProgress = 1.0F;
+					updateNeighborStates(world, pos, state);
 				}
+
+				this.pushEntities(world, pos, state);
 				break;
 			case CLOSING:
-				shulkerBoxBlockEntity.animationProgress -= 0.1F;
-				if (shulkerBoxBlockEntity.animationProgress <= 0.0F) {
-					shulkerBoxBlockEntity.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
-					shulkerBoxBlockEntity.animationProgress = 0.0F;
-					updateNeighborStates(world, blockPos, blockState);
+				this.animationProgress -= 0.1F;
+				if (this.animationProgress <= 0.0F) {
+					this.animationStage = ShulkerBoxBlockEntity.AnimationStage.CLOSED;
+					this.animationProgress = 0.0F;
+					updateNeighborStates(world, pos, state);
 				}
 				break;
 			case OPENED:
-				shulkerBoxBlockEntity.animationProgress = 1.0F;
+				this.animationProgress = 1.0F;
 		}
 	}
 
@@ -95,26 +92,13 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	public Box getBoundingBox(BlockState state) {
-		return getBoundingBox(state.get(ShulkerBoxBlock.FACING), this.getAnimationProgress(1.0F));
+		return ShulkerEntity.method_33346(state.get(ShulkerBoxBlock.FACING), 0.5F * this.getAnimationProgress(1.0F));
 	}
 
-	public static Box getBoundingBox(Direction direction, float f) {
-		return VoxelShapes.fullCube()
-			.getBoundingBox()
-			.stretch(
-				(double)(0.5F * f * (float)direction.getOffsetX()), (double)(0.5F * f * (float)direction.getOffsetY()), (double)(0.5F * f * (float)direction.getOffsetZ())
-			);
-	}
-
-	private static Box getCollisionBox(Direction direction, float f) {
-		Direction direction2 = direction.getOpposite();
-		return getBoundingBox(direction, f).shrink((double)direction2.getOffsetX(), (double)direction2.getOffsetY(), (double)direction2.getOffsetZ());
-	}
-
-	private static void pushEntities(World world, BlockPos blockPos, BlockState blockState, float f) {
-		if (blockState.getBlock() instanceof ShulkerBoxBlock) {
-			Direction direction = blockState.get(ShulkerBoxBlock.FACING);
-			Box box = getCollisionBox(direction, f).offset(blockPos);
+	private void pushEntities(World world, BlockPos pos, BlockState state) {
+		if (state.getBlock() instanceof ShulkerBoxBlock) {
+			Direction direction = state.get(ShulkerBoxBlock.FACING);
+			Box box = ShulkerEntity.method_33347(direction, this.prevAnimationProgress, this.animationProgress).offset(pos);
 			List<Entity> list = world.getOtherEntities(null, box);
 			if (!list.isEmpty()) {
 				for (int i = 0; i < list.size(); i++) {
@@ -122,7 +106,7 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 					if (entity.getPistonBehavior() != PistonBehavior.IGNORE) {
 						double d = 0.0;
 						double e = 0.0;
-						double g = 0.0;
+						double f = 0.0;
 						Box box2 = entity.getBoundingBox();
 						switch (direction.getAxis()) {
 							case X:
@@ -145,16 +129,16 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 								break;
 							case Z:
 								if (direction.getDirection() == Direction.AxisDirection.POSITIVE) {
-									g = box.maxZ - box2.minZ;
+									f = box.maxZ - box2.minZ;
 								} else {
-									g = box2.maxZ - box.minZ;
+									f = box2.maxZ - box.minZ;
 								}
 
-								g += 0.01;
+								f += 0.01;
 						}
 
 						entity.move(
-							MovementType.SHULKER_BOX, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), g * (double)direction.getOffsetZ())
+							MovementType.SHULKER_BOX, new Vec3d(d * (double)direction.getOffsetX(), e * (double)direction.getOffsetY(), f * (double)direction.getOffsetZ())
 						);
 					}
 				}
@@ -187,8 +171,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		}
 	}
 
-	private static void updateNeighborStates(World world, BlockPos blockPos, BlockState blockState) {
-		blockState.updateNeighbors(world, blockPos, 3);
+	private static void updateNeighborStates(World world, BlockPos pos, BlockState state) {
+		state.updateNeighbors(world, pos, 3);
 	}
 
 	@Override

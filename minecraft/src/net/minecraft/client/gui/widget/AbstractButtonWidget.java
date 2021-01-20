@@ -96,11 +96,11 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 	}
 
 	protected MutableText getNarrationMessage() {
-		return method_32602(this.getMessage());
+		return getNarrationMessage(this.getMessage());
 	}
 
-	public static MutableText method_32602(Text text) {
-		return new TranslatableText("gui.narrate.button", text);
+	public static MutableText getNarrationMessage(Text message) {
+		return new TranslatableText("gui.narrate.button", message);
 	}
 
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
@@ -231,12 +231,12 @@ public abstract class AbstractButtonWidget extends DrawableHelper implements Dra
 		this.alpha = value;
 	}
 
-	public void setMessage(Text text) {
-		if (!Objects.equals(text.getString(), this.message.getString())) {
+	public void setMessage(Text message) {
+		if (!Objects.equals(message.getString(), this.message.getString())) {
 			this.queueNarration(250);
 		}
 
-		this.message = text;
+		this.message = message;
 	}
 
 	public void queueNarration(int delay) {

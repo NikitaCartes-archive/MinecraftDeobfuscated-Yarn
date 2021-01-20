@@ -983,6 +983,9 @@ public class Items {
 	public static final Item GHAST_SPAWN_EGG = register(
 		"ghast_spawn_egg", new SpawnEggItem(EntityType.GHAST, 16382457, 12369084, new Item.Settings().group(ItemGroup.MISC))
 	);
+	public static final Item GLOW_SQUID_SPAWN_EGG = register(
+		"glow_squid_spawn_egg", new SpawnEggItem(EntityType.GLOW_SQUID, 611926, 8778172, new Item.Settings().group(ItemGroup.MISC))
+	);
 	public static final Item GUARDIAN_SPAWN_EGG = register(
 		"guardian_spawn_egg", new SpawnEggItem(EntityType.GUARDIAN, 5931634, 15826224, new Item.Settings().group(ItemGroup.MISC))
 	);
@@ -1128,7 +1131,10 @@ public class Items {
 	public static final Item WRITABLE_BOOK = register("writable_book", new WritableBookItem(new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
 	public static final Item WRITTEN_BOOK = register("written_book", new WrittenBookItem(new Item.Settings().maxCount(16)));
 	public static final Item EMERALD = register("emerald", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
-	public static final Item ITEM_FRAME = register("item_frame", new ItemFrameItem(new Item.Settings().group(ItemGroup.DECORATIONS)));
+	public static final Item ITEM_FRAME = register("item_frame", new ItemFrameItem(EntityType.ITEM_FRAME, new Item.Settings().group(ItemGroup.DECORATIONS)));
+	public static final Item GLOW_ITEM_FRAME = register(
+		"glow_item_frame", new ItemFrameItem(EntityType.GLOW_ITEM_FRAME, new Item.Settings().group(ItemGroup.DECORATIONS))
+	);
 	public static final Item FLOWER_POT = register(Blocks.FLOWER_POT, ItemGroup.DECORATIONS);
 	public static final Item CARROT = register(
 		"carrot", new AliasedBlockItem(Blocks.CARROTS, new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.CARROT))
@@ -1471,6 +1477,8 @@ public class Items {
 	public static final Item POINTED_DRIPSTONE = register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
 	public static final Item DRIPSTONE_BLOCK = register(Blocks.DRIPSTONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SCULK_SENSOR = register(Blocks.SCULK_SENSOR, ItemGroup.REDSTONE);
+	public static final Item GLOW_LICHEN = register(Blocks.GLOW_LICHEN, ItemGroup.DECORATIONS);
+	public static final Item GLOW_INK_SAC = register("glow_ink_sac", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 
 	private static Item register(Block block) {
 		return register(new BlockItem(block, new Item.Settings()));

@@ -57,31 +57,31 @@ public class EntityPredicate {
 	private final Identifier catType;
 
 	private EntityPredicate(
-		EntityTypePredicate entityTypePredicate,
-		DistancePredicate distancePredicate,
-		LocationPredicate locationPredicate,
-		EntityEffectPredicate entityEffectPredicate,
-		NbtPredicate nbtPredicate,
-		EntityFlagsPredicate entityFlagsPredicate,
-		EntityEquipmentPredicate entityEquipmentPredicate,
-		PlayerPredicate playerPredicate,
-		FishingHookPredicate fishingHookPredicate,
-		@Nullable String string,
-		@Nullable Identifier identifier
+		EntityTypePredicate type,
+		DistancePredicate distance,
+		LocationPredicate location,
+		EntityEffectPredicate effects,
+		NbtPredicate nbt,
+		EntityFlagsPredicate flags,
+		EntityEquipmentPredicate equipment,
+		PlayerPredicate player,
+		FishingHookPredicate fishingHook,
+		@Nullable String team,
+		@Nullable Identifier catType
 	) {
-		this.type = entityTypePredicate;
-		this.distance = distancePredicate;
-		this.location = locationPredicate;
-		this.effects = entityEffectPredicate;
-		this.nbt = nbtPredicate;
-		this.flags = entityFlagsPredicate;
-		this.equipment = entityEquipmentPredicate;
-		this.player = playerPredicate;
-		this.fishingHook = fishingHookPredicate;
+		this.type = type;
+		this.distance = distance;
+		this.location = location;
+		this.effects = effects;
+		this.nbt = nbt;
+		this.flags = flags;
+		this.equipment = equipment;
+		this.player = player;
+		this.fishingHook = fishingHook;
 		this.vehicle = this;
 		this.targetedEntity = this;
-		this.team = string;
-		this.catType = identifier;
+		this.team = team;
+		this.catType = catType;
 	}
 
 	private EntityPredicate(

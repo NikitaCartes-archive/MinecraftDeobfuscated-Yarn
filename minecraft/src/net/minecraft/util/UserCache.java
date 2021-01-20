@@ -39,7 +39,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class UserCache {
-	private static final Logger field_25805 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static boolean useRemote;
 	private final Map<String, UserCache.Entry> byName = Maps.<String, UserCache.Entry>newConcurrentMap();
 	private final Map<UUID, UserCache.Entry> byUuid = Maps.<UUID, UserCache.Entry>newConcurrentMap();
@@ -115,9 +115,9 @@ public class UserCache {
 	}
 
 	@Nullable
-	public GameProfile findByName(String string) {
-		String string2 = string.toLowerCase(Locale.ROOT);
-		UserCache.Entry entry = (UserCache.Entry)this.byName.get(string2);
+	public GameProfile findByName(String name) {
+		String string = name.toLowerCase(Locale.ROOT);
+		UserCache.Entry entry = (UserCache.Entry)this.byName.get(string);
 		boolean bl = false;
 		if (entry != null && new Date().getTime() >= entry.expirationDate.getTime()) {
 			this.byUuid.remove(entry.getProfile().getId());
@@ -131,7 +131,7 @@ public class UserCache {
 			entry.method_30171(this.method_30169());
 			gameProfile = entry.getProfile();
 		} else {
-			gameProfile = findProfileByName(this.profileRepository, string2);
+			gameProfile = findProfileByName(this.profileRepository, string);
 			if (gameProfile != null) {
 				this.add(gameProfile);
 				bl = false;
@@ -146,8 +146,8 @@ public class UserCache {
 	}
 
 	@Nullable
-	public GameProfile getByUuid(UUID uUID) {
-		UserCache.Entry entry = (UserCache.Entry)this.byUuid.get(uUID);
+	public GameProfile getByUuid(UUID uuid) {
+		UserCache.Entry entry = (UserCache.Entry)this.byUuid.get(uuid);
 		if (entry == null) {
 			return null;
 		} else {
@@ -156,7 +156,7 @@ public class UserCache {
 		}
 	}
 
-	private static DateFormat method_30170() {
+	private static DateFormat getDateFormat() {
 		return new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
 	}
 
@@ -171,7 +171,7 @@ public class UserCache {
 			try {
 				JsonArray jsonArray = this.gson.fromJson(reader, JsonArray.class);
 				if (jsonArray != null) {
-					DateFormat dateFormatx = method_30170();
+					DateFormat dateFormatx = getDateFormat();
 					jsonArray.forEach(jsonElement -> {
 						UserCache.Entry entry = method_30167(jsonElement, dateFormat);
 						if (entry != null) {
@@ -202,7 +202,7 @@ public class UserCache {
 			return (List<UserCache.Entry>)dateFormat;
 		} catch (FileNotFoundException var19) {
 		} catch (JsonParseException | IOException var20) {
-			field_25805.warn("Failed to load profile cache {}", this.cacheFile, var20);
+			LOGGER.warn("Failed to load profile cache {}", this.cacheFile, var20);
 		}
 
 		return list;
@@ -210,7 +210,7 @@ public class UserCache {
 
 	public void save() {
 		JsonArray jsonArray = new JsonArray();
-		DateFormat dateFormat = method_30170();
+		DateFormat dateFormat = getDateFormat();
 		this.getLastAccessedEntries(1000).forEach(entry -> jsonArray.add(method_30165(entry, dateFormat)));
 		String string = this.gson.toJson((JsonElement)jsonArray);
 
@@ -296,9 +296,9 @@ public class UserCache {
 		private final Date expirationDate;
 		private volatile long field_25726;
 
-		private Entry(GameProfile gameProfile, Date date) {
-			this.profile = gameProfile;
-			this.expirationDate = date;
+		private Entry(GameProfile profile, Date expirationDate) {
+			this.profile = profile;
+			this.expirationDate = expirationDate;
 		}
 
 		public GameProfile getProfile() {

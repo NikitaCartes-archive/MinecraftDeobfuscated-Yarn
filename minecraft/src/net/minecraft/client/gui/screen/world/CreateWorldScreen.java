@@ -174,11 +174,11 @@ public class CreateWorldScreen extends Screen {
 		int i = this.width / 2 - 155;
 		int j = this.width / 2 + 5;
 		this.gameModeSwitchButton = this.addButton(
-			CyclingButtonWidget.<CreateWorldScreen.Mode>method_32606(CreateWorldScreen.Mode::method_32673)
-				.method_32624(CreateWorldScreen.Mode.SURVIVAL, CreateWorldScreen.Mode.CREATIVE, CreateWorldScreen.Mode.HARDCORE)
+			CyclingButtonWidget.<CreateWorldScreen.Mode>method_32606(CreateWorldScreen.Mode::asText)
+				.method_32624(CreateWorldScreen.Mode.SURVIVAL, CreateWorldScreen.Mode.HARDCORE, CreateWorldScreen.Mode.CREATIVE)
 				.value(this.currentMode)
 				.method_32623(
-					cyclingButtonWidget -> AbstractButtonWidget.method_32602(cyclingButtonWidget.getMessage())
+					cyclingButtonWidget -> AbstractButtonWidget.getNarrationMessage(cyclingButtonWidget.getMessage())
 							.append(". ")
 							.append(this.firstGameModeDescriptionLine)
 							.append(" ")
@@ -189,7 +189,7 @@ public class CreateWorldScreen extends Screen {
 		this.difficultyButton = this.addButton(
 			CyclingButtonWidget.<Difficulty>method_32606(Difficulty::getTranslatableName)
 				.method_32624(Difficulty.values())
-				.value(this.method_32672())
+				.value(this.getDifficulty())
 				.build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> this.currentDifficulty = difficulty)
 		);
 		this.enableCheatsButton = this.addButton(
@@ -229,7 +229,7 @@ public class CreateWorldScreen extends Screen {
 		this.updateSaveFolderName();
 	}
 
-	private Difficulty method_32672() {
+	private Difficulty getDifficulty() {
 		return this.currentMode == CreateWorldScreen.Mode.HARDCORE ? Difficulty.HARD : this.currentDifficulty;
 	}
 
@@ -277,7 +277,7 @@ public class CreateWorldScreen extends Screen {
 					this.levelNameField.getText().trim(),
 					this.currentMode.defaultGameMode,
 					this.hardcore,
-					this.method_32672(),
+					this.getDifficulty(),
 					this.cheatsEnabled && !this.hardcore,
 					this.gameRules,
 					this.dataPackSettings
@@ -295,22 +295,22 @@ public class CreateWorldScreen extends Screen {
 	private void tweakDefaultsTo(CreateWorldScreen.Mode mode) {
 		if (!this.tweakedCheats) {
 			this.cheatsEnabled = mode == CreateWorldScreen.Mode.CREATIVE;
-			this.enableCheatsButton.method_32605(this.cheatsEnabled);
+			this.enableCheatsButton.setValue(this.cheatsEnabled);
 		}
 
 		if (mode == CreateWorldScreen.Mode.HARDCORE) {
 			this.hardcore = true;
 			this.enableCheatsButton.active = false;
-			this.enableCheatsButton.method_32605(false);
+			this.enableCheatsButton.setValue(false);
 			this.moreOptionsDialog.disableBonusItems();
-			this.difficultyButton.method_32605(Difficulty.HARD);
+			this.difficultyButton.setValue(Difficulty.HARD);
 			this.difficultyButton.active = false;
 		} else {
 			this.hardcore = false;
 			this.enableCheatsButton.active = true;
-			this.enableCheatsButton.method_32605(this.cheatsEnabled);
+			this.enableCheatsButton.setValue(this.cheatsEnabled);
 			this.moreOptionsDialog.enableBonusItems();
-			this.difficultyButton.method_32605(this.currentDifficulty);
+			this.difficultyButton.setValue(this.currentDifficulty);
 			this.difficultyButton.active = true;
 		}
 
@@ -662,16 +662,16 @@ public class CreateWorldScreen extends Screen {
 
 		private final String translationSuffix;
 		private final GameMode defaultGameMode;
-		private final Text field_27999;
+		private final Text text;
 
 		private Mode(String translationSuffix, GameMode defaultGameMode) {
 			this.translationSuffix = translationSuffix;
 			this.defaultGameMode = defaultGameMode;
-			this.field_27999 = new TranslatableText("selectWorld.gameMode." + translationSuffix);
+			this.text = new TranslatableText("selectWorld.gameMode." + translationSuffix);
 		}
 
-		public Text method_32673() {
-			return this.field_27999;
+		public Text asText() {
+			return this.text;
 		}
 	}
 

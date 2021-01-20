@@ -13,17 +13,17 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 	protected final Predicate<T> shouldExclude;
 	private final ChunkPos pos;
 	private final ShortList[] scheduledPositions;
-	private HeightLimitView field_27230;
+	private HeightLimitView world;
 
-	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, HeightLimitView heightLimitView) {
-		this(shouldExclude, pos, new ListTag(), heightLimitView);
+	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, HeightLimitView world) {
+		this(shouldExclude, pos, new ListTag(), world);
 	}
 
-	public ChunkTickScheduler(Predicate<T> predicate, ChunkPos chunkPos, ListTag tag, HeightLimitView heightLimitView) {
-		this.shouldExclude = predicate;
-		this.pos = chunkPos;
-		this.field_27230 = heightLimitView;
-		this.scheduledPositions = new ShortList[heightLimitView.method_32890()];
+	public ChunkTickScheduler(Predicate<T> shouldExclude, ChunkPos pos, ListTag tag, HeightLimitView world) {
+		this.shouldExclude = shouldExclude;
+		this.pos = pos;
+		this.world = world;
+		this.scheduledPositions = new ShortList[world.getSections()];
 
 		for (int i = 0; i < tag.size(); i++) {
 			ListTag listTag = tag.getList(i);
@@ -42,7 +42,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 		for (int i = 0; i < this.scheduledPositions.length; i++) {
 			if (this.scheduledPositions[i] != null) {
 				for (Short short_ : this.scheduledPositions[i]) {
-					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.field_27230.getSection(i), this.pos);
+					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.world.getSection(i), this.pos);
 					scheduler.schedule(blockPos, (T)dataMapper.apply(blockPos), 0);
 				}
 
@@ -58,7 +58,7 @@ public class ChunkTickScheduler<T> implements TickScheduler<T> {
 
 	@Override
 	public void schedule(BlockPos pos, T object, int delay, TickPriority priority) {
-		Chunk.getList(this.scheduledPositions, this.field_27230.getSectionIndex(pos.getY())).add(ProtoChunk.getPackedSectionRelative(pos));
+		Chunk.getList(this.scheduledPositions, this.world.getSectionIndex(pos.getY())).add(ProtoChunk.getPackedSectionRelative(pos));
 	}
 
 	@Override

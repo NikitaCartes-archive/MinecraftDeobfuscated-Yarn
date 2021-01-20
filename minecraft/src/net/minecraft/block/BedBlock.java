@@ -228,50 +228,48 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 		Direction direction2 = direction.rotateYClockwise();
 		Direction direction3 = direction2.method_30928(f) ? direction2.getOpposite() : direction2;
 		if (isBed(world, pos)) {
-			return method_30835(type, world, pos, direction, direction3);
+			return findWakeUpPosition(type, world, pos, direction, direction3);
 		} else {
 			int[][] is = method_30838(direction, direction3);
-			Optional<Vec3d> optional = method_30836(type, world, pos, is, true);
-			return optional.isPresent() ? optional : method_30836(type, world, pos, is, false);
+			Optional<Vec3d> optional = findWakeUpPosition(type, world, pos, is, true);
+			return optional.isPresent() ? optional : findWakeUpPosition(type, world, pos, is, false);
 		}
 	}
 
-	private static Optional<Vec3d> method_30835(
-		EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, Direction direction, Direction direction2
-	) {
+	private static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, Direction direction, Direction direction2) {
 		int[][] is = method_30840(direction, direction2);
-		Optional<Vec3d> optional = method_30836(entityType, collisionView, blockPos, is, true);
+		Optional<Vec3d> optional = findWakeUpPosition(type, world, pos, is, true);
 		if (optional.isPresent()) {
 			return optional;
 		} else {
-			BlockPos blockPos2 = blockPos.down();
-			Optional<Vec3d> optional2 = method_30836(entityType, collisionView, blockPos2, is, true);
+			BlockPos blockPos = pos.down();
+			Optional<Vec3d> optional2 = findWakeUpPosition(type, world, blockPos, is, true);
 			if (optional2.isPresent()) {
 				return optional2;
 			} else {
 				int[][] js = method_30837(direction);
-				Optional<Vec3d> optional3 = method_30836(entityType, collisionView, blockPos, js, true);
+				Optional<Vec3d> optional3 = findWakeUpPosition(type, world, pos, js, true);
 				if (optional3.isPresent()) {
 					return optional3;
 				} else {
-					Optional<Vec3d> optional4 = method_30836(entityType, collisionView, blockPos, is, false);
+					Optional<Vec3d> optional4 = findWakeUpPosition(type, world, pos, is, false);
 					if (optional4.isPresent()) {
 						return optional4;
 					} else {
-						Optional<Vec3d> optional5 = method_30836(entityType, collisionView, blockPos2, is, false);
-						return optional5.isPresent() ? optional5 : method_30836(entityType, collisionView, blockPos, js, false);
+						Optional<Vec3d> optional5 = findWakeUpPosition(type, world, blockPos, is, false);
+						return optional5.isPresent() ? optional5 : findWakeUpPosition(type, world, pos, js, false);
 					}
 				}
 			}
 		}
 	}
 
-	private static Optional<Vec3d> method_30836(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, int[][] is, boolean bl) {
+	private static Optional<Vec3d> findWakeUpPosition(EntityType<?> type, CollisionView world, BlockPos pos, int[][] is, boolean bl) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int[] js : is) {
-			mutable.set(blockPos.getX() + js[0], blockPos.getY(), blockPos.getZ() + js[1]);
-			Vec3d vec3d = Dismounting.method_30769(entityType, collisionView, mutable, bl);
+			mutable.set(pos.getX() + js[0], pos.getY(), pos.getZ() + js[1]);
+			Vec3d vec3d = Dismounting.findRespawnPos(type, world, mutable, bl);
 			if (vec3d != null) {
 				return Optional.of(vec3d);
 			}

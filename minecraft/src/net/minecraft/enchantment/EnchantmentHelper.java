@@ -377,15 +377,18 @@ public class EnchantmentHelper {
 			level = MathHelper.clamp(Math.round((float)level + (float)level * f), 1, Integer.MAX_VALUE);
 			List<EnchantmentLevelEntry> list2 = getPossibleEntries(level, stack, treasureAllowed);
 			if (!list2.isEmpty()) {
-				list.add(WeightedPicker.getRandom(random, list2));
+				WeightedPicker.getRandom(random, list2).ifPresent(list::add);
 
 				while (random.nextInt(50) <= level) {
-					removeConflicts(list2, Util.getLast(list));
+					if (!list.isEmpty()) {
+						removeConflicts(list2, Util.getLast(list));
+					}
+
 					if (list2.isEmpty()) {
 						break;
 					}
 
-					list.add(WeightedPicker.getRandom(random, list2));
+					WeightedPicker.getRandom(random, list2).ifPresent(list::add);
 					level /= 2;
 				}
 			}

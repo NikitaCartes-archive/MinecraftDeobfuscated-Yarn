@@ -67,13 +67,13 @@ public abstract class ProjectileEntity extends Entity {
 	@Override
 	public void tick() {
 		if (!this.leftOwner) {
-			this.leftOwner = this.method_26961();
+			this.leftOwner = this.shouldLeaveOwner();
 		}
 
 		super.tick();
 	}
 
-	private boolean method_26961() {
+	private boolean shouldLeaveOwner() {
 		Entity entity = this.getOwner();
 		if (entity != null) {
 			for (Entity entity2 : this.world
@@ -149,7 +149,7 @@ public abstract class ProjectileEntity extends Entity {
 		}
 	}
 
-	protected boolean method_26958(Entity entity) {
+	protected boolean canHit(Entity entity) {
 		if (!entity.isSpectator() && entity.isAlive() && entity.collides()) {
 			Entity entity2 = this.getOwner();
 			return entity2 == null || this.leftOwner || !entity2.isConnectedThroughVehicle(entity);
@@ -158,23 +158,23 @@ public abstract class ProjectileEntity extends Entity {
 		}
 	}
 
-	protected void method_26962() {
+	protected void updateRotation() {
 		Vec3d vec3d = this.getVelocity();
 		float f = MathHelper.sqrt(squaredHorizontalLength(vec3d));
 		this.pitch = updateRotation(this.prevPitch, (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI));
 		this.yaw = updateRotation(this.prevYaw, (float)(MathHelper.atan2(vec3d.x, vec3d.z) * 180.0F / (float)Math.PI));
 	}
 
-	public static float updateRotation(float f, float g) {
-		while (g - f < -180.0F) {
-			f -= 360.0F;
+	public static float updateRotation(float prevRot, float newRot) {
+		while (newRot - prevRot < -180.0F) {
+			prevRot -= 360.0F;
 		}
 
-		while (g - f >= 180.0F) {
-			f += 360.0F;
+		while (newRot - prevRot >= 180.0F) {
+			prevRot += 360.0F;
 		}
 
-		return MathHelper.lerp(0.2F, f, g);
+		return MathHelper.lerp(0.2F, prevRot, newRot);
 	}
 
 	@Override

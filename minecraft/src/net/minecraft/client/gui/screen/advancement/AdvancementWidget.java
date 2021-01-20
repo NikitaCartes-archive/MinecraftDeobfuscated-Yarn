@@ -95,7 +95,7 @@ public class AdvancementWidget extends DrawableHelper {
 		return advancement != null && advancement.getDisplay() != null ? this.tab.getWidget(advancement) : null;
 	}
 
-	public void renderLines(MatrixStack matrixStack, int i, int j, boolean bl) {
+	public void renderLines(MatrixStack matrices, int i, int j, boolean bl) {
 		if (this.parent != null) {
 			int k = i + this.parent.xPos + 13;
 			int l = i + this.parent.xPos + 26 + 4;
@@ -104,27 +104,27 @@ public class AdvancementWidget extends DrawableHelper {
 			int o = j + this.yPos + 13;
 			int p = bl ? -16777216 : -1;
 			if (bl) {
-				this.drawHorizontalLine(matrixStack, l, k, m - 1, p);
-				this.drawHorizontalLine(matrixStack, l + 1, k, m, p);
-				this.drawHorizontalLine(matrixStack, l, k, m + 1, p);
-				this.drawHorizontalLine(matrixStack, n, l - 1, o - 1, p);
-				this.drawHorizontalLine(matrixStack, n, l - 1, o, p);
-				this.drawHorizontalLine(matrixStack, n, l - 1, o + 1, p);
-				this.drawVerticalLine(matrixStack, l - 1, o, m, p);
-				this.drawVerticalLine(matrixStack, l + 1, o, m, p);
+				this.drawHorizontalLine(matrices, l, k, m - 1, p);
+				this.drawHorizontalLine(matrices, l + 1, k, m, p);
+				this.drawHorizontalLine(matrices, l, k, m + 1, p);
+				this.drawHorizontalLine(matrices, n, l - 1, o - 1, p);
+				this.drawHorizontalLine(matrices, n, l - 1, o, p);
+				this.drawHorizontalLine(matrices, n, l - 1, o + 1, p);
+				this.drawVerticalLine(matrices, l - 1, o, m, p);
+				this.drawVerticalLine(matrices, l + 1, o, m, p);
 			} else {
-				this.drawHorizontalLine(matrixStack, l, k, m, p);
-				this.drawHorizontalLine(matrixStack, n, l, o, p);
-				this.drawVerticalLine(matrixStack, l, o, m, p);
+				this.drawHorizontalLine(matrices, l, k, m, p);
+				this.drawHorizontalLine(matrices, n, l, o, p);
+				this.drawVerticalLine(matrices, l, o, m, p);
 			}
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
-			advancementWidget.renderLines(matrixStack, i, j, bl);
+			advancementWidget.renderLines(matrices, i, j, bl);
 		}
 	}
 
-	public void renderWidgets(MatrixStack matrixStack, int i, int j) {
+	public void renderWidgets(MatrixStack matrices, int i, int j) {
 		if (!this.display.isHidden() || this.progress != null && this.progress.isDone()) {
 			float f = this.progress == null ? 0.0F : this.progress.getProgressBarPercentage();
 			AdvancementObtainedStatus advancementObtainedStatus;
@@ -136,13 +136,13 @@ public class AdvancementWidget extends DrawableHelper {
 
 			this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
 			this.drawTexture(
-				matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
+				matrices, i + this.xPos + 3, j + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
 			);
 			this.client.getItemRenderer().renderInGui(this.display.getIcon(), i + this.xPos + 8, j + this.yPos + 5);
 		}
 
 		for (AdvancementWidget advancementWidget : this.children) {
-			advancementWidget.renderWidgets(matrixStack, i, j);
+			advancementWidget.renderWidgets(matrices, i, j);
 		}
 	}
 
@@ -154,7 +154,7 @@ public class AdvancementWidget extends DrawableHelper {
 		this.children.add(widget);
 	}
 
-	public void drawTooltip(MatrixStack matrixStack, int i, int j, float f, int y, int k) {
+	public void drawTooltip(MatrixStack matrices, int i, int j, float f, int y, int k) {
 		boolean bl = y + i + this.xPos + this.width + 26 >= this.tab.getScreen().width;
 		String string = this.progress == null ? null : this.progress.getProgressBarFraction();
 		int l = string == null ? 0 : this.client.textRenderer.getWidth(string);
@@ -200,36 +200,36 @@ public class AdvancementWidget extends DrawableHelper {
 		int q = 32 + this.description.size() * 9;
 		if (!this.description.isEmpty()) {
 			if (bl2) {
-				this.method_2324(matrixStack, p, o + 26 - q, this.width, q, 10, 200, 26, 0, 52);
+				this.method_2324(matrices, p, o + 26 - q, this.width, q, 10, 200, 26, 0, 52);
 			} else {
-				this.method_2324(matrixStack, p, o, this.width, q, 10, 200, 26, 0, 52);
+				this.method_2324(matrices, p, o, this.width, q, 10, 200, 26, 0, 52);
 			}
 		}
 
-		this.drawTexture(matrixStack, p, o, 0, advancementObtainedStatus.getSpriteIndex() * 26, m, 26);
-		this.drawTexture(matrixStack, p + m, o, 200 - n, advancementObtainedStatus2.getSpriteIndex() * 26, n, 26);
+		this.drawTexture(matrices, p, o, 0, advancementObtainedStatus.getSpriteIndex() * 26, m, 26);
+		this.drawTexture(matrices, p + m, o, 200 - n, advancementObtainedStatus2.getSpriteIndex() * 26, n, 26);
 		this.drawTexture(
-			matrixStack, i + this.xPos + 3, j + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26
+			matrices, i + this.xPos + 3, j + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus3.getSpriteIndex() * 26, 26, 26
 		);
 		if (bl) {
-			this.client.textRenderer.drawWithShadow(matrixStack, this.title, (float)(p + 5), (float)(j + this.yPos + 9), -1);
+			this.client.textRenderer.drawWithShadow(matrices, this.title, (float)(p + 5), (float)(j + this.yPos + 9), -1);
 			if (string != null) {
-				this.client.textRenderer.drawWithShadow(matrixStack, string, (float)(i + this.xPos - l), (float)(j + this.yPos + 9), -1);
+				this.client.textRenderer.drawWithShadow(matrices, string, (float)(i + this.xPos - l), (float)(j + this.yPos + 9), -1);
 			}
 		} else {
-			this.client.textRenderer.drawWithShadow(matrixStack, this.title, (float)(i + this.xPos + 32), (float)(j + this.yPos + 9), -1);
+			this.client.textRenderer.drawWithShadow(matrices, this.title, (float)(i + this.xPos + 32), (float)(j + this.yPos + 9), -1);
 			if (string != null) {
-				this.client.textRenderer.drawWithShadow(matrixStack, string, (float)(i + this.xPos + this.width - l - 5), (float)(j + this.yPos + 9), -1);
+				this.client.textRenderer.drawWithShadow(matrices, string, (float)(i + this.xPos + this.width - l - 5), (float)(j + this.yPos + 9), -1);
 			}
 		}
 
 		if (bl2) {
 			for (int r = 0; r < this.description.size(); r++) {
-				this.client.textRenderer.draw(matrixStack, (OrderedText)this.description.get(r), (float)(p + 5), (float)(o + 26 - q + 7 + r * 9), -5592406);
+				this.client.textRenderer.draw(matrices, (OrderedText)this.description.get(r), (float)(p + 5), (float)(o + 26 - q + 7 + r * 9), -5592406);
 			}
 		} else {
 			for (int r = 0; r < this.description.size(); r++) {
-				this.client.textRenderer.draw(matrixStack, (OrderedText)this.description.get(r), (float)(p + 5), (float)(j + this.yPos + 9 + 17 + r * 9), -5592406);
+				this.client.textRenderer.draw(matrices, (OrderedText)this.description.get(r), (float)(p + 5), (float)(j + this.yPos + 9 + 17 + r * 9), -5592406);
 			}
 		}
 

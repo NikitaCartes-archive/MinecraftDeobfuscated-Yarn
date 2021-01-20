@@ -122,28 +122,28 @@ public class FeatureUpdater {
 		}
 	}
 
-	private CompoundTag getUpdatedStarts(CompoundTag compoundTag, ChunkPos chunkPos) {
-		CompoundTag compoundTag2 = compoundTag.getCompound("Level");
-		CompoundTag compoundTag3 = compoundTag2.getCompound("Structures");
-		CompoundTag compoundTag4 = compoundTag3.getCompound("Starts");
+	private CompoundTag getUpdatedStarts(CompoundTag tag, ChunkPos pos) {
+		CompoundTag compoundTag = tag.getCompound("Level");
+		CompoundTag compoundTag2 = compoundTag.getCompound("Structures");
+		CompoundTag compoundTag3 = compoundTag2.getCompound("Starts");
 
 		for (String string : this.field_17659) {
 			Long2ObjectMap<CompoundTag> long2ObjectMap = (Long2ObjectMap<CompoundTag>)this.featureIdToChunkTag.get(string);
 			if (long2ObjectMap != null) {
-				long l = chunkPos.toLong();
+				long l = pos.toLong();
 				if (((ChunkUpdateState)this.updateStates.get(OLD_TO_NEW.get(string))).isRemaining(l)) {
-					CompoundTag compoundTag5 = long2ObjectMap.get(l);
-					if (compoundTag5 != null) {
-						compoundTag4.put(string, compoundTag5);
+					CompoundTag compoundTag4 = long2ObjectMap.get(l);
+					if (compoundTag4 != null) {
+						compoundTag3.put(string, compoundTag4);
 					}
 				}
 			}
 		}
 
-		compoundTag3.put("Starts", compoundTag4);
-		compoundTag2.put("Structures", compoundTag3);
-		compoundTag.put("Level", compoundTag2);
-		return compoundTag;
+		compoundTag2.put("Starts", compoundTag3);
+		compoundTag.put("Structures", compoundTag2);
+		tag.put("Level", compoundTag);
+		return tag;
 	}
 
 	private void init(@Nullable PersistentStateManager persistentStateManager) {
@@ -176,7 +176,7 @@ public class FeatureUpdater {
 				}
 
 				String string5 = string + "_index";
-				ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState::method_32358, ChunkUpdateState::new, string5);
+				ChunkUpdateState chunkUpdateState = persistentStateManager.getOrCreate(ChunkUpdateState::fromNbt, ChunkUpdateState::new, string5);
 				if (!chunkUpdateState.getAll().isEmpty()) {
 					this.updateStates.put(string, chunkUpdateState);
 				} else {

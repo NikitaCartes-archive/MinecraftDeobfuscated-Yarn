@@ -25,7 +25,7 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-		BlockPos blockPos = this.method_23125().getBlockPos();
+		BlockPos blockPos = this.getCamera().getBlockPos();
 
 		for (BlockPos blockPos2 : this.raidCenters) {
 			if (blockPos.isWithinDistance(blockPos2, 160.0)) {
@@ -47,7 +47,7 @@ public class RaidCenterDebugRenderer implements DebugRenderer.Renderer {
 		DebugRenderer.drawString(string, d, e, f, i, 0.04F, true, 0.0F, true);
 	}
 
-	private Camera method_23125() {
+	private Camera getCamera() {
 		return this.client.gameRenderer.getCamera();
 	}
 }

@@ -62,7 +62,7 @@ public class PlayerListHud extends DrawableHelper {
 		this.visible = visible;
 	}
 
-	public void render(MatrixStack matrixStack, int i, Scoreboard scoreboard, @Nullable ScoreboardObjective scoreboardObjective) {
+	public void render(MatrixStack matrices, int i, Scoreboard scoreboard, @Nullable ScoreboardObjective objective) {
 		ClientPlayNetworkHandler clientPlayNetworkHandler = this.client.player.networkHandler;
 		List<PlayerListEntry> list = ENTRY_ORDERING.sortedCopy(clientPlayNetworkHandler.getPlayerList());
 		int j = 0;
@@ -71,8 +71,8 @@ public class PlayerListHud extends DrawableHelper {
 		for (PlayerListEntry playerListEntry : list) {
 			int l = this.client.textRenderer.getWidth(this.getPlayerName(playerListEntry));
 			j = Math.max(j, l);
-			if (scoreboardObjective != null && scoreboardObjective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
-				l = this.client.textRenderer.getWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), scoreboardObjective).getScore());
+			if (objective != null && objective.getRenderType() != ScoreboardCriterion.RenderType.HEARTS) {
+				l = this.client.textRenderer.getWidth(" " + scoreboard.getPlayerScore(playerListEntry.getProfile().getName(), objective).getScore());
 				k = Math.max(k, l);
 			}
 		}
@@ -88,8 +88,8 @@ public class PlayerListHud extends DrawableHelper {
 
 		boolean bl = this.client.isInSingleplayer() || this.client.getNetworkHandler().getConnection().isEncrypted();
 		int o;
-		if (scoreboardObjective != null) {
-			if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
+		if (objective != null) {
+			if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
 				o = 90;
 			} else {
 				o = k;
@@ -121,18 +121,18 @@ public class PlayerListHud extends DrawableHelper {
 		}
 
 		if (list2 != null) {
-			fill(matrixStack, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list2.size() * 9, Integer.MIN_VALUE);
+			fill(matrices, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list2.size() * 9, Integer.MIN_VALUE);
 
 			for (OrderedText orderedText2 : list2) {
 				int t = this.client.textRenderer.getWidth(orderedText2);
-				this.client.textRenderer.drawWithShadow(matrixStack, orderedText2, (float)(i / 2 - t / 2), (float)r, -1);
+				this.client.textRenderer.drawWithShadow(matrices, orderedText2, (float)(i / 2 - t / 2), (float)r, -1);
 				r += 9;
 			}
 
 			r++;
 		}
 
-		fill(matrixStack, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + n * 9, Integer.MIN_VALUE);
+		fill(matrices, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + n * 9, Integer.MIN_VALUE);
 		int u = this.client.options.getTextBackgroundColor(553648127);
 
 		for (int v = 0; v < m; v++) {
@@ -140,7 +140,7 @@ public class PlayerListHud extends DrawableHelper {
 			int w = v % n;
 			int x = q + t * p + t * 5;
 			int y = r + w * 9;
-			fill(matrixStack, x, y, x + p, y + 8, u);
+			fill(matrices, x, y, x + p, y + 8, u);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableAlphaTest();
 			RenderSystem.enableBlend();
@@ -156,11 +156,11 @@ public class PlayerListHud extends DrawableHelper {
 					this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
 					int z = 8 + (bl2 ? 8 : 0);
 					int aa = 8 * (bl2 ? -1 : 1);
-					DrawableHelper.drawTexture(matrixStack, x, y, 8, 8, 8.0F, (float)z, 8, aa, 64, 64);
+					DrawableHelper.drawTexture(matrices, x, y, 8, 8, 8.0F, (float)z, 8, aa, 64, 64);
 					if (playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.HAT)) {
 						int ab = 8 + (bl2 ? 8 : 0);
 						int ac = 8 * (bl2 ? -1 : 1);
-						DrawableHelper.drawTexture(matrixStack, x, y, 8, 8, 40.0F, (float)ab, 8, ac, 64, 64);
+						DrawableHelper.drawTexture(matrices, x, y, 8, 8, 40.0F, (float)ab, 8, ac, 64, 64);
 					}
 
 					x += 9;
@@ -169,33 +169,33 @@ public class PlayerListHud extends DrawableHelper {
 				this.client
 					.textRenderer
 					.drawWithShadow(
-						matrixStack, this.getPlayerName(playerListEntry2), (float)x, (float)y, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1
+						matrices, this.getPlayerName(playerListEntry2), (float)x, (float)y, playerListEntry2.getGameMode() == GameMode.SPECTATOR ? -1862270977 : -1
 					);
-				if (scoreboardObjective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR) {
+				if (objective != null && playerListEntry2.getGameMode() != GameMode.SPECTATOR) {
 					int ad = x + j + 1;
 					int ae = ad + o;
 					if (ae - ad > 5) {
-						this.renderScoreboardObjective(scoreboardObjective, y, gameProfile.getName(), ad, ae, playerListEntry2, matrixStack);
+						this.renderScoreboardObjective(objective, y, gameProfile.getName(), ad, ae, playerListEntry2, matrices);
 					}
 				}
 
-				this.renderLatencyIcon(matrixStack, p, x - (bl ? 9 : 0), y, playerListEntry2);
+				this.renderLatencyIcon(matrices, p, x - (bl ? 9 : 0), y, playerListEntry2);
 			}
 		}
 
 		if (list3 != null) {
 			r += n * 9 + 1;
-			fill(matrixStack, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list3.size() * 9, Integer.MIN_VALUE);
+			fill(matrices, i / 2 - s / 2 - 1, r - 1, i / 2 + s / 2 + 1, r + list3.size() * 9, Integer.MIN_VALUE);
 
 			for (OrderedText orderedText3 : list3) {
 				int w = this.client.textRenderer.getWidth(orderedText3);
-				this.client.textRenderer.drawWithShadow(matrixStack, orderedText3, (float)(i / 2 - w / 2), (float)r, -1);
+				this.client.textRenderer.drawWithShadow(matrices, orderedText3, (float)(i / 2 - w / 2), (float)r, -1);
 				r += 9;
 			}
 		}
 	}
 
-	protected void renderLatencyIcon(MatrixStack matrixStack, int i, int j, int k, PlayerListEntry playerListEntry) {
+	protected void renderLatencyIcon(MatrixStack matrices, int i, int j, int k, PlayerListEntry playerListEntry) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
 		int l = 0;
@@ -215,15 +215,15 @@ public class PlayerListHud extends DrawableHelper {
 		}
 
 		this.setZOffset(this.getZOffset() + 100);
-		this.drawTexture(matrixStack, j + i - 11, k, 0, 176 + m * 8, 10, 8);
+		this.drawTexture(matrices, j + i - 11, k, 0, 176 + m * 8, 10, 8);
 		this.setZOffset(this.getZOffset() - 100);
 	}
 
 	private void renderScoreboardObjective(
-		ScoreboardObjective scoreboardObjective, int i, String string, int j, int k, PlayerListEntry playerListEntry, MatrixStack matrixStack
+		ScoreboardObjective objective, int i, String string, int j, int k, PlayerListEntry playerListEntry, MatrixStack matrixStack
 	) {
-		int l = scoreboardObjective.getScoreboard().getPlayerScore(string, scoreboardObjective).getScore();
-		if (scoreboardObjective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
+		int l = objective.getScoreboard().getPlayerScore(string, objective).getScore();
+		if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
 			this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
 			long m = Util.getMeasuringTimeMs();
 			if (this.showTime == playerListEntry.method_2976()) {

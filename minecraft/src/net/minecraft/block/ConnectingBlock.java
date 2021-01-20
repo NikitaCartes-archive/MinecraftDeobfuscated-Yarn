@@ -1,5 +1,6 @@
 package net.minecraft.block;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import java.util.Map;
 import net.minecraft.state.property.BooleanProperty;
@@ -20,14 +21,14 @@ public class ConnectingBlock extends Block {
 	public static final BooleanProperty WEST = Properties.WEST;
 	public static final BooleanProperty UP = Properties.UP;
 	public static final BooleanProperty DOWN = Properties.DOWN;
-	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
+	public static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ImmutableMap.copyOf(Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
 		enumMap.put(Direction.NORTH, NORTH);
 		enumMap.put(Direction.EAST, EAST);
 		enumMap.put(Direction.SOUTH, SOUTH);
 		enumMap.put(Direction.WEST, WEST);
 		enumMap.put(Direction.UP, UP);
 		enumMap.put(Direction.DOWN, DOWN);
-	});
+	}));
 	protected final VoxelShape[] CONNECTIONS_TO_SHAPE;
 
 	protected ConnectingBlock(float radius, AbstractBlock.Settings settings) {

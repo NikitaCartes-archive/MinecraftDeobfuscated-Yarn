@@ -39,7 +39,7 @@ public class SignEditScreen extends Screen {
 	private int ticksSinceOpened;
 	private int currentRow;
 	private SelectionManager selectionManager;
-	private SignType field_27390;
+	private SignType signType;
 	private SignBlockEntityRenderer.SignModel model;
 	private final String[] text;
 
@@ -65,8 +65,8 @@ public class SignEditScreen extends Screen {
 			string -> this.client.textRenderer.getWidth(string) <= 90
 		);
 		BlockState blockState = this.sign.getCachedState();
-		this.field_27390 = SignBlockEntityRenderer.method_32155(blockState.getBlock());
-		this.model = SignBlockEntityRenderer.createSignModel(this.client.getEntityModelLoader(), this.field_27390);
+		this.signType = SignBlockEntityRenderer.getSignType(blockState.getBlock());
+		this.model = SignBlockEntityRenderer.createSignModel(this.client.getEntityModelLoader(), this.signType);
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class SignEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
+	public boolean charTyped(char chr, int modifiers) {
 		this.selectionManager.insert(chr);
 		return true;
 	}
@@ -140,7 +140,7 @@ public class SignEditScreen extends Screen {
 		matrices.push();
 		matrices.scale(0.6666667F, -0.6666667F, -0.6666667F);
 		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
-		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.method_33082(this.field_27390);
+		SpriteIdentifier spriteIdentifier = TexturedRenderLayers.getSignTextureId(this.signType);
 		VertexConsumer vertexConsumer = spriteIdentifier.getVertexConsumer(immediate, this.model::getLayer);
 		this.model.stick.visible = bl;
 		this.model.root.render(matrices, vertexConsumer, 15728880, OverlayTexture.DEFAULT_UV);

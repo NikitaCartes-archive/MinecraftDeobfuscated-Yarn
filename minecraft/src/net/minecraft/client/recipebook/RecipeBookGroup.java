@@ -38,7 +38,7 @@ public enum RecipeBookGroup {
 	public static final List<RecipeBookGroup> CRAFTING = ImmutableList.of(
 		CRAFTING_SEARCH, CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE
 	);
-	public static final Map<RecipeBookGroup, List<RecipeBookGroup>> field_25783 = ImmutableMap.of(
+	public static final Map<RecipeBookGroup, List<RecipeBookGroup>> SEARCH_MAP = ImmutableMap.of(
 		CRAFTING_SEARCH,
 		ImmutableList.of(CRAFTING_EQUIPMENT, CRAFTING_BUILDING_BLOCKS, CRAFTING_MISC, CRAFTING_REDSTONE),
 		FURNACE_SEARCH,
@@ -54,8 +54,8 @@ public enum RecipeBookGroup {
 		this.icons = ImmutableList.copyOf(entries);
 	}
 
-	public static List<RecipeBookGroup> method_30285(RecipeBookCategory recipeBookCategory) {
-		switch (recipeBookCategory) {
+	public static List<RecipeBookGroup> getGroups(RecipeBookCategory category) {
+		switch (category) {
 			case CRAFTING:
 				return CRAFTING;
 			case FURNACE:

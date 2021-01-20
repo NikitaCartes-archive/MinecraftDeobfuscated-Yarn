@@ -1,9 +1,6 @@
 package net.minecraft.entity.passive;
 
-import com.google.common.collect.Sets;
-import java.util.EnumSet;
 import java.util.Random;
-import java.util.Set;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.class_5532;
@@ -20,13 +17,13 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.EscapeDangerGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MoveToTargetPosGoal;
+import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.ai.pathing.AmphibiousPathNodeMaker;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -41,10 +38,10 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -69,6 +66,7 @@ public class TurtleEntity extends AnimalEntity {
 	private static final TrackedData<BlockPos> TRAVEL_POS = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 	private static final TrackedData<Boolean> LAND_BOUND = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 	private static final TrackedData<Boolean> ACTIVELY_TRAVELLING = DataTracker.registerData(TurtleEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+	public static final Ingredient BREEDING_ITEM = Ingredient.ofItems(Blocks.SEAGRASS.asItem());
 	private int sandDiggingCounter;
 	public static final Predicate<LivingEntity> BABY_TURTLE_ON_LAND_FILTER = livingEntity -> livingEntity.isBaby() && !livingEntity.isTouchingWater();
 
@@ -184,7 +182,7 @@ public class TurtleEntity extends AnimalEntity {
 		this.goalSelector.add(0, new TurtleEntity.TurtleEscapeDangerGoal(this, 1.2));
 		this.goalSelector.add(1, new TurtleEntity.MateGoal(this, 1.0));
 		this.goalSelector.add(1, new TurtleEntity.LayEggGoal(this, 1.0));
-		this.goalSelector.add(2, new TurtleEntity.ApproachFoodHoldingPlayerGoal(this, 1.1, Blocks.SEAGRASS.asItem()));
+		this.goalSelector.add(2, new TemptGoal(this, 1.1, BREEDING_ITEM, false));
 		this.goalSelector.add(3, new TurtleEntity.WanderInWaterGoal(this, 1.0));
 		this.goalSelector.add(4, new TurtleEntity.GoHomeGoal(this, 1.0));
 		this.goalSelector.add(7, new TurtleEntity.TravelGoal(this, 1.0));
@@ -331,61 +329,6 @@ public class TurtleEntity extends AnimalEntity {
 	@Override
 	public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
 		this.damage(DamageSource.LIGHTNING_BOLT, Float.MAX_VALUE);
-	}
-
-	static class ApproachFoodHoldingPlayerGoal extends Goal {
-		private static final TargetPredicate CLOSE_ENTITY_PREDICATE = new TargetPredicate().setBaseMaxDistance(10.0).includeTeammates().includeInvulnerable();
-		private final TurtleEntity turtle;
-		private final double speed;
-		private PlayerEntity targetPlayer;
-		private int cooldown;
-		private final Set<Item> attractiveItems;
-
-		ApproachFoodHoldingPlayerGoal(TurtleEntity turtle, double speed, Item attractiveItem) {
-			this.turtle = turtle;
-			this.speed = speed;
-			this.attractiveItems = Sets.<Item>newHashSet(attractiveItem);
-			this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-		}
-
-		@Override
-		public boolean canStart() {
-			if (this.cooldown > 0) {
-				this.cooldown--;
-				return false;
-			} else {
-				this.targetPlayer = this.turtle.world.getClosestPlayer(CLOSE_ENTITY_PREDICATE, this.turtle);
-				return this.targetPlayer == null
-					? false
-					: this.isAttractive(this.targetPlayer.getMainHandStack()) || this.isAttractive(this.targetPlayer.getOffHandStack());
-			}
-		}
-
-		private boolean isAttractive(ItemStack stack) {
-			return this.attractiveItems.contains(stack.getItem());
-		}
-
-		@Override
-		public boolean shouldContinue() {
-			return this.canStart();
-		}
-
-		@Override
-		public void stop() {
-			this.targetPlayer = null;
-			this.turtle.getNavigation().stop();
-			this.cooldown = 100;
-		}
-
-		@Override
-		public void tick() {
-			this.turtle.getLookControl().lookAt(this.targetPlayer, (float)(this.turtle.getBodyYawSpeed() + 20), (float)this.turtle.getLookPitchSpeed());
-			if (this.turtle.squaredDistanceTo(this.targetPlayer) < 6.25) {
-				this.turtle.getNavigation().stop();
-			} else {
-				this.turtle.getNavigation().startMovingTo(this.targetPlayer, this.speed);
-			}
-		}
 	}
 
 	static class GoHomeGoal extends Goal {

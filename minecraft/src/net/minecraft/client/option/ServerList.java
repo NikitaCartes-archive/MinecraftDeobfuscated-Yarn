@@ -79,10 +79,10 @@ public class ServerList {
 		return this.servers.size();
 	}
 
-	public void swapEntries(int index1, int i) {
+	public void swapEntries(int index1, int index2) {
 		ServerInfo serverInfo = this.get(index1);
-		this.servers.set(index1, this.get(i));
-		this.servers.set(i, serverInfo);
+		this.servers.set(index1, this.get(index2));
+		this.servers.set(index2, serverInfo);
 		this.saveFile();
 	}
 

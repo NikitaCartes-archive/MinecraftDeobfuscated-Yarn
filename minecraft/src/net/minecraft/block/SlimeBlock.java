@@ -2,6 +2,7 @@ package net.minecraft.block;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.BlockView;
@@ -17,7 +18,7 @@ public class SlimeBlock extends TransparentBlock {
 		if (entity.bypassesLandingEffects()) {
 			super.onLandedUpon(world, pos, entity, distance);
 		} else {
-			entity.handleFallDamage(distance, 0.0F);
+			entity.handleFallDamage(distance, 0.0F, DamageSource.FALL);
 		}
 	}
 

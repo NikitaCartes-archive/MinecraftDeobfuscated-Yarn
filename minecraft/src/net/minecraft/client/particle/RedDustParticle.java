@@ -8,9 +8,17 @@ import net.minecraft.particle.DustParticleEffect;
 @Environment(EnvType.CLIENT)
 public class RedDustParticle extends AbstractDustParticle<DustParticleEffect> {
 	protected RedDustParticle(
-		ClientWorld world, double d, double e, double f, double g, double h, double i, DustParticleEffect dustParticleEffect, SpriteProvider spriteProvider
+		ClientWorld world,
+		double x,
+		double y,
+		double z,
+		double velocityX,
+		double velocityY,
+		double velocityZ,
+		DustParticleEffect dustParticleEffect,
+		SpriteProvider spriteProvider
 	) {
-		super(world, d, e, f, g, h, i, dustParticleEffect, spriteProvider);
+		super(world, x, y, z, velocityX, velocityY, velocityZ, dustParticleEffect, spriteProvider);
 	}
 
 	@Environment(EnvType.CLIENT)

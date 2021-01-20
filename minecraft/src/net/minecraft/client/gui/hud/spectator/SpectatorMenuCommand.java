@@ -11,7 +11,7 @@ public interface SpectatorMenuCommand {
 
 	Text getName();
 
-	void renderIcon(MatrixStack matrixStack, float f, int i);
+	void renderIcon(MatrixStack matrices, float f, int i);
 
 	boolean isEnabled();
 }

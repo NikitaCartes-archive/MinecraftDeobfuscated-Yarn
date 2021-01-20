@@ -21,31 +21,31 @@ public class GameTest {
 	private final ServerWorld world;
 	private final Collection<TestListener> listeners = Lists.<TestListener>newArrayList();
 	private final int ticksLeft;
-	private final Collection<TimedTaskRunner> field_21452 = Lists.<TimedTaskRunner>newCopyOnWriteArrayList();
+	private final Collection<TimedTaskRunner> timedTaskRunners = Lists.<TimedTaskRunner>newCopyOnWriteArrayList();
 	private final Object2LongMap<Runnable> field_21453 = new Object2LongOpenHashMap<>();
 	private long expectedStopTime;
-	private long field_21455;
+	private long tick;
 	private boolean started;
 	private final Stopwatch stopwatch = Stopwatch.createUnstarted();
 	private boolean completed;
-	private final BlockRotation field_25301;
+	private final BlockRotation rotation;
 	@Nullable
 	private Throwable throwable;
 	@Nullable
-	private StructureBlockBlockEntity field_27805;
+	private StructureBlockBlockEntity structureBlockEntity;
 
-	public GameTest(TestFunction testFunction, BlockRotation blockRotation, ServerWorld serverWorld) {
+	public GameTest(TestFunction testFunction, BlockRotation rotation, ServerWorld world) {
 		this.testFunction = testFunction;
-		this.world = serverWorld;
+		this.world = world;
 		this.ticksLeft = testFunction.getTickLimit();
-		this.field_25301 = testFunction.method_29424().rotate(blockRotation);
+		this.rotation = testFunction.getRotation().rotate(rotation);
 	}
 
 	void setPos(BlockPos pos) {
 		this.pos = pos;
 	}
 
-	public void startCountdown() {
+	void startCountdown() {
 		this.expectedStopTime = this.world.getTime() + 1L + this.testFunction.getDuration();
 		this.stopwatch.start();
 	}
@@ -57,16 +57,16 @@ public class GameTest {
 				if (this.throwable != null) {
 					this.listeners.forEach(testListener -> testListener.onFailed(this));
 				} else {
-					this.listeners.forEach(testListener -> testListener.method_33317(this));
+					this.listeners.forEach(testListener -> testListener.onPassed(this));
 				}
 			}
 		}
 	}
 
 	private void method_33315() {
-		this.field_21455 = this.world.getTime() - this.expectedStopTime;
-		if (this.field_21455 >= 0L) {
-			if (this.field_21455 == 0L) {
+		this.tick = this.world.getTime() - this.expectedStopTime;
+		if (this.tick >= 0L) {
+			if (this.tick == 0L) {
 				this.start();
 			}
 
@@ -74,7 +74,7 @@ public class GameTest {
 
 			while (objectIterator.hasNext()) {
 				Entry<Runnable> entry = (Entry<Runnable>)objectIterator.next();
-				if (entry.getLongValue() <= this.field_21455) {
+				if (entry.getLongValue() <= this.tick) {
 					try {
 						((Runnable)entry.getKey()).run();
 					} catch (Exception var4) {
@@ -85,17 +85,17 @@ public class GameTest {
 				}
 			}
 
-			if (this.field_21455 > (long)this.ticksLeft) {
-				if (this.field_21452.isEmpty()) {
+			if (this.tick > (long)this.ticksLeft) {
+				if (this.timedTaskRunners.isEmpty()) {
 					this.fail(new TickLimitExceededException("Didn't succeed or fail within " + this.testFunction.getTickLimit() + " ticks"));
 				} else {
-					this.field_21452.forEach(timedTaskRunner -> timedTaskRunner.runReported(this.field_21455));
+					this.timedTaskRunners.forEach(timedTaskRunner -> timedTaskRunner.runReported(this.tick));
 					if (this.throwable == null) {
 						this.fail(new TickLimitExceededException("No sequences finished"));
 					}
 				}
 			} else {
-				this.field_21452.forEach(timedTaskRunner -> timedTaskRunner.runSilently(this.field_21455));
+				this.timedTaskRunners.forEach(timedTaskRunner -> timedTaskRunner.runSilently(this.tick));
 			}
 		}
 	}
@@ -167,19 +167,19 @@ public class GameTest {
 		this.listeners.add(listener);
 	}
 
-	public void init(BlockPos blockPos, int i) {
-		this.field_27805 = StructureTestUtil.method_22250(this.getStructureName(), blockPos, this.method_29402(), i, this.world, false);
-		this.pos = this.field_27805.getPos();
-		this.field_27805.setStructureName(this.getStructurePath());
-		StructureTestUtil.placeStartButton(this.pos, new BlockPos(1, 0, -1), this.method_29402(), this.world);
-		this.listeners.forEach(testListener -> testListener.onStarted(this));
+	public void init(BlockPos pos, int i) {
+		this.structureBlockEntity = StructureTestUtil.createStructure(this.getStructureName(), pos, this.getRotation(), i, this.world, false);
+		this.pos = this.structureBlockEntity.getPos();
+		this.structureBlockEntity.setStructureName(this.getStructurePath());
+		StructureTestUtil.placeStartButton(this.pos, new BlockPos(1, 0, -1), this.getRotation(), this.world);
+		this.listeners.forEach(listener -> listener.onStarted(this));
 	}
 
-	public void method_32240() {
-		if (this.field_27805 == null) {
+	public void clearArea() {
+		if (this.structureBlockEntity == null) {
 			throw new IllegalStateException("Expected structure to be initialized, but it was null");
 		} else {
-			BlockBox blockBox = StructureTestUtil.method_29410(this.field_27805);
+			BlockBox blockBox = StructureTestUtil.getStructureBlockBox(this.structureBlockEntity);
 			StructureTestUtil.clearArea(blockBox, this.pos.getY(), this.world);
 		}
 	}
@@ -196,23 +196,23 @@ public class GameTest {
 		return this.testFunction.getStructureName();
 	}
 
-	public BlockRotation method_29402() {
-		return this.field_25301;
+	public BlockRotation getRotation() {
+		return this.rotation;
 	}
 
-	public TestFunction method_29403() {
+	public TestFunction getTestFunction() {
 		return this.testFunction;
 	}
 
-	public boolean method_32241() {
-		return this.testFunction.method_32257();
+	public boolean isFlaky() {
+		return this.testFunction.isFlaky();
 	}
 
-	public int method_32242() {
-		return this.testFunction.method_32258();
+	public int getMaxAttempts() {
+		return this.testFunction.getMaxAttempts();
 	}
 
-	public int method_32243() {
-		return this.testFunction.method_32259();
+	public int getRequiredSuccesses() {
+		return this.testFunction.getRequiredSuccesses();
 	}
 }

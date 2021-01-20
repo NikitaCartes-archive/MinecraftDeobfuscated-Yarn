@@ -10,14 +10,14 @@ public class Schema2522 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static void updateZoglinItems(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, String name) {
+	protected static void registerEntity(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, String name) {
 		schema.register(entityTypes, name, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		updateZoglinItems(schema, map, "minecraft:zoglin");
+		registerEntity(schema, map, "minecraft:zoglin");
 		return map;
 	}
 }

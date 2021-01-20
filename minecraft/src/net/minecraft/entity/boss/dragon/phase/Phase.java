@@ -29,5 +29,5 @@ public interface Phase {
 	@Nullable
 	Vec3d getTarget();
 
-	float modifyDamageTaken(DamageSource damageSource, float f);
+	float modifyDamageTaken(DamageSource damageSource, float damage);
 }

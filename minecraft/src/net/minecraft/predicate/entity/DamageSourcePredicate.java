@@ -150,8 +150,8 @@ public class DamageSourcePredicate {
 			return this;
 		}
 
-		public DamageSourcePredicate.Builder directEntity(EntityPredicate.Builder builder) {
-			this.directEntity = builder.build();
+		public DamageSourcePredicate.Builder directEntity(EntityPredicate.Builder entity) {
+			this.directEntity = entity.build();
 			return this;
 		}
 

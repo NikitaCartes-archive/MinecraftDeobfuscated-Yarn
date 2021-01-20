@@ -170,7 +170,7 @@ public class VineBlock extends Block {
 
 	@Override
 	public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		if (world.random.nextInt(4) == 0) {
+		if (random.nextInt(4) == 0) {
 			Direction direction = Direction.random(random);
 			BlockPos blockPos = pos.up();
 			if (direction.getAxis().isHorizontal() && !(Boolean)state.get(getFacingProperty(direction))) {
@@ -194,7 +194,7 @@ public class VineBlock extends Block {
 								world.setBlockState(blockPos3, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), 2);
 							} else if (bl2 && world.isAir(blockPos4) && shouldConnectTo(world, pos.offset(direction3), direction4)) {
 								world.setBlockState(blockPos4, this.getDefaultState().with(getFacingProperty(direction4), Boolean.valueOf(true)), 2);
-							} else if ((double)world.random.nextFloat() < 0.05 && shouldConnectTo(world, blockPos2.up(), Direction.UP)) {
+							} else if ((double)random.nextFloat() < 0.05 && shouldConnectTo(world, blockPos2.up(), Direction.UP)) {
 								world.setBlockState(blockPos2, this.getDefaultState().with(UP, Boolean.valueOf(true)), 2);
 							}
 						}
@@ -230,7 +230,7 @@ public class VineBlock extends Block {
 					}
 				}
 
-				if (pos.getY() > world.getSectionCount()) {
+				if (pos.getY() > world.getBottomSectionLimit()) {
 					BlockPos blockPos2 = pos.down();
 					BlockState blockState = world.getBlockState(blockPos2);
 					if (blockState.isAir() || blockState.isOf(this)) {

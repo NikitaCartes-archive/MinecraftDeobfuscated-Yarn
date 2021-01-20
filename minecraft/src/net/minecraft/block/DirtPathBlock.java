@@ -11,10 +11,10 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
-public class GrassPathBlock extends Block {
+public class DirtPathBlock extends Block {
 	protected static final VoxelShape SHAPE = FarmlandBlock.SHAPE;
 
-	protected GrassPathBlock(AbstractBlock.Settings settings) {
+	protected DirtPathBlock(AbstractBlock.Settings settings) {
 		super(settings);
 	}
 

@@ -2,7 +2,6 @@ package net.minecraft.entity.attribute;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
-import net.minecraft.SharedConstants;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnGroup;
@@ -49,6 +48,7 @@ import net.minecraft.entity.passive.CowEntity;
 import net.minecraft.entity.passive.DolphinEntity;
 import net.minecraft.entity.passive.FishEntity;
 import net.minecraft.entity.passive.FoxEntity;
+import net.minecraft.entity.passive.GlowSquidEntity;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.passive.LlamaEntity;
@@ -66,6 +66,7 @@ import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.Util;
 import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -95,6 +96,7 @@ public class DefaultAttributeRegistry {
 		.put(EntityType.FOX, FoxEntity.createFoxAttributes().build())
 		.put(EntityType.GHAST, GhastEntity.createGhastAttributes().build())
 		.put(EntityType.GIANT, GiantEntity.createGiantAttributes().build())
+		.put(EntityType.GLOW_SQUID, GlowSquidEntity.createSquidAttributes().build())
 		.put(EntityType.GUARDIAN, GuardianEntity.createGuardianAttributes().build())
 		.put(EntityType.HOGLIN, HoglinEntity.createHoglinAttributes().build())
 		.put(EntityType.HORSE, HorseBaseEntity.createBaseHorseAttributes().build())
@@ -162,12 +164,6 @@ public class DefaultAttributeRegistry {
 			.filter(entityType -> entityType.getSpawnGroup() != SpawnGroup.MISC)
 			.filter(entityType -> !hasDefinitionFor(entityType))
 			.map(Registry.ENTITY_TYPE::getId)
-			.forEach(identifier -> {
-				if (SharedConstants.isDevelopment) {
-					throw new IllegalStateException("Entity " + identifier + " has no attributes");
-				} else {
-					LOGGER.error("Entity {} has no attributes", identifier);
-				}
-			});
+			.forEach(identifier -> Util.method_33559("Entity " + identifier + " has no attributes"));
 	}
 }

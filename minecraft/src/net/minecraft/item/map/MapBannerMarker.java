@@ -11,6 +11,11 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
+/**
+ * Represents a banner marker in world.
+ * <p>
+ * Used to track banners in a map state.
+ */
 public class MapBannerMarker {
 	private final BlockPos pos;
 	private final DyeColor color;

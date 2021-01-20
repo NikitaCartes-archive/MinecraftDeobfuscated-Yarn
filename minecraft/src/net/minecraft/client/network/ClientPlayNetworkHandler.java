@@ -45,7 +45,6 @@ import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.MapRenderer;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.CreditsScreen;
 import net.minecraft.client.gui.screen.DeathScreen;
@@ -72,6 +71,7 @@ import net.minecraft.client.particle.ItemPickupParticle;
 import net.minecraft.client.realms.gui.screen.DisconnectedRealmsScreen;
 import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.recipebook.ClientRecipeBook;
+import net.minecraft.client.render.MapRenderer;
 import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.GoalSelectorDebugRenderer;
 import net.minecraft.client.render.debug.NeighborUpdateDebugRenderer;
@@ -448,9 +448,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		int i = packet.getId();
 		OtherClientPlayerEntity otherClientPlayerEntity = new OtherClientPlayerEntity(this.client.world, this.getPlayerListEntry(packet.getPlayerUuid()).getProfile());
 		otherClientPlayerEntity.setEntityId(i);
-		otherClientPlayerEntity.resetPosition(d, e, f);
 		otherClientPlayerEntity.updateTrackedPosition(d, e, f);
 		otherClientPlayerEntity.updatePositionAndAngles(d, e, f, g, h);
+		otherClientPlayerEntity.resetPosition();
 		this.world.addPlayer(i, otherClientPlayerEntity);
 	}
 
@@ -615,7 +615,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			.getChunkManager()
 			.loadChunkFromPacket(i, j, biomeArray, packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
 
-		for (int k = this.world.method_32891(); k < this.world.getTopSectionLimit(); k++) {
+		for (int k = this.world.getMinimumSection(); k < this.world.getTopSectionLimit(); k++) {
 			this.world.scheduleBlockRenders(i, k, j);
 		}
 
@@ -639,7 +639,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		clientChunkManager.unload(i, j);
 		LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
 
-		for (int k = this.world.method_32891(); k < this.world.getTopSectionLimit(); k++) {
+		for (int k = this.world.getMinimumSection(); k < this.world.getTopSectionLimit(); k++) {
 			this.world.scheduleBlockRenders(i, k, j);
 			lightingProvider.setSectionStatus(ChunkSectionPos.from(i, k, j), true);
 		}
@@ -1210,9 +1210,9 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		String string = FilledMapItem.getMapName(i);
 		MapState mapState = this.client.world.getMapState(string);
 		if (mapState == null) {
-			mapState = mapRenderer.method_32599(i);
+			mapState = mapRenderer.getMapTextureFromId(i);
 			if (mapState == null) {
-				mapState = MapState.method_32362(packet.method_32701(), packet.method_32702(), this.client.world.getRegistryKey());
+				mapState = MapState.of(packet.method_32701(), packet.method_32702(), this.client.world.getRegistryKey());
 			}
 
 			this.client.world.putMapState(string, mapState);
@@ -1924,18 +1924,18 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				String string11 = packetByteBuf.readString();
 				int ab = packetByteBuf.readInt();
 				this.client.debugRenderer.gameTestDebugRenderer.addMarker(blockPos2, j, string11, ab);
-			} else if (CustomPayloadS2CPacket.field_28284.equals(identifier)) {
+			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT.equals(identifier)) {
 				GameEvent gameEvent = Registry.GAME_EVENT.get(new Identifier(packetByteBuf.readString()));
 				BlockPos blockPos8 = packetByteBuf.readBlockPos();
-				this.client.debugRenderer.field_28254.method_33087(gameEvent, blockPos8);
-			} else if (CustomPayloadS2CPacket.field_28285.equals(identifier)) {
+				this.client.debugRenderer.gameEventDebugRenderer.method_33087(gameEvent, blockPos8);
+			} else if (CustomPayloadS2CPacket.DEBUG_GAME_EVENT_LISTENERS.equals(identifier)) {
 				Identifier identifier2 = packetByteBuf.readIdentifier();
 				PositionSource positionSource = ((PositionSourceType)Registry.POSITION_SOURCE_TYPE
 						.getOrEmpty(identifier2)
 						.orElseThrow(() -> new IllegalArgumentException("Unknown position source type " + identifier2)))
 					.readFromBuf(packetByteBuf);
 				int m = packetByteBuf.readVarInt();
-				this.client.debugRenderer.field_28254.method_33088(positionSource, m);
+				this.client.debugRenderer.gameEventDebugRenderer.method_33088(positionSource, m);
 			} else {
 				LOGGER.warn("Unknown custom packed identifier: {}", identifier);
 			}

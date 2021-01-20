@@ -58,9 +58,9 @@ public class TeleportSpectatorMenu implements SpectatorMenuCommandGroup, Spectat
 	}
 
 	@Override
-	public void renderIcon(MatrixStack matrixStack, float f, int i) {
+	public void renderIcon(MatrixStack matrices, float f, int i) {
 		MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
-		DrawableHelper.drawTexture(matrixStack, 0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
+		DrawableHelper.drawTexture(matrices, 0, 0, 0.0F, 0.0F, 16, 16, 256, 256);
 	}
 
 	@Override

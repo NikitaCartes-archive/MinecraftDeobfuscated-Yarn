@@ -322,7 +322,7 @@ public class TextFieldWidget extends AbstractButtonWidget implements Drawable, E
 	}
 
 	@Override
-	public boolean charTyped(char chr, int keyCode) {
+	public boolean charTyped(char chr, int modifiers) {
 		if (!this.isActive()) {
 			return false;
 		} else if (SharedConstants.isValidChar(chr)) {

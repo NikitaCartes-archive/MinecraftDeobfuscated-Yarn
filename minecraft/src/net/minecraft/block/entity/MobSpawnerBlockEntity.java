@@ -14,22 +14,22 @@ import net.minecraft.world.World;
 public class MobSpawnerBlockEntity extends BlockEntity {
 	private final MobSpawnerLogic logic = new MobSpawnerLogic() {
 		@Override
-		public void sendStatus(World world, BlockPos blockPos, int i) {
-			world.addSyncedBlockEvent(blockPos, Blocks.SPAWNER, i, 0);
+		public void sendStatus(World world, BlockPos pos, int i) {
+			world.addSyncedBlockEvent(pos, Blocks.SPAWNER, i, 0);
 		}
 
 		@Override
-		public void setSpawnEntry(@Nullable World world, BlockPos blockPos, MobSpawnerEntry mobSpawnerEntry) {
-			super.setSpawnEntry(world, blockPos, mobSpawnerEntry);
+		public void setSpawnEntry(@Nullable World world, BlockPos pos, MobSpawnerEntry spawnEntry) {
+			super.setSpawnEntry(world, pos, spawnEntry);
 			if (world != null) {
-				BlockState blockState = world.getBlockState(blockPos);
-				world.updateListeners(blockPos, blockState, blockState, 4);
+				BlockState blockState = world.getBlockState(pos);
+				world.updateListeners(pos, blockState, blockState, 4);
 			}
 		}
 	};
 
-	public MobSpawnerBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.MOB_SPAWNER, blockPos, blockState);
+	public MobSpawnerBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.MOB_SPAWNER, pos, state);
 	}
 
 	@Override
@@ -45,12 +45,12 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 		return tag;
 	}
 
-	public static void clientTick(World world, BlockPos blockPos, BlockState blockState, MobSpawnerBlockEntity mobSpawnerBlockEntity) {
-		mobSpawnerBlockEntity.logic.method_31589(world, blockPos);
+	public static void clientTick(World world, BlockPos pos, BlockState state, MobSpawnerBlockEntity blockEntity) {
+		blockEntity.logic.clientTick(world, pos);
 	}
 
-	public static void serverTick(World world, BlockPos blockPos, BlockState blockState, MobSpawnerBlockEntity mobSpawnerBlockEntity) {
-		mobSpawnerBlockEntity.logic.method_31588((ServerWorld)world, blockPos);
+	public static void serverTick(World world, BlockPos pos, BlockState state, MobSpawnerBlockEntity blockEntity) {
+		blockEntity.logic.serverTick((ServerWorld)world, pos);
 	}
 
 	@Nullable

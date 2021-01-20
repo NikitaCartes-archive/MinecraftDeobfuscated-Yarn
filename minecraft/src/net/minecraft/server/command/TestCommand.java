@@ -352,7 +352,7 @@ public class TestCommand {
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ() + 3);
 		TestUtil.clearDebugMarkers(serverWorld);
 		setWorld(testFunction, serverWorld);
-		BlockRotation blockRotation = StructureTestUtil.method_29408(i);
+		BlockRotation blockRotation = StructureTestUtil.getRotation(i);
 		GameTest gameTest = new GameTest(testFunction, blockRotation, serverWorld);
 		TestUtil.startTest(gameTest, blockPos2, TestManager.INSTANCE);
 		return 1;
@@ -369,7 +369,7 @@ public class TestCommand {
 		TestUtil.clearDebugMarkers(source.getWorld());
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions();
 		sendMessage(source, "Running all " + collection.size() + " tests...");
-		TestFunctions.method_29406();
+		TestFunctions.clearFailedTestFunctions();
 		run(source, collection, i, j);
 		return 1;
 	}
@@ -378,7 +378,7 @@ public class TestCommand {
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions(testClass);
 		TestUtil.clearDebugMarkers(source.getWorld());
 		sendMessage(source, "Running " + collection.size() + " tests from " + testClass + "...");
-		TestFunctions.method_29406();
+		TestFunctions.clearFailedTestFunctions();
 		run(source, collection, i, j);
 		return 1;
 	}
@@ -386,9 +386,9 @@ public class TestCommand {
 	private static int method_29411(ServerCommandSource serverCommandSource, boolean bl, int i, int j) {
 		Collection<TestFunction> collection;
 		if (bl) {
-			collection = (Collection<TestFunction>)TestFunctions.method_29405().stream().filter(TestFunction::isRequired).collect(Collectors.toList());
+			collection = (Collection<TestFunction>)TestFunctions.getFailedTestFunctions().stream().filter(TestFunction::isRequired).collect(Collectors.toList());
 		} else {
-			collection = TestFunctions.method_29405();
+			collection = TestFunctions.getFailedTestFunctions();
 		}
 
 		if (collection.isEmpty()) {
@@ -406,11 +406,11 @@ public class TestCommand {
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
 		ServerWorld serverWorld = source.getWorld();
-		BlockRotation blockRotation = StructureTestUtil.method_29408(i);
+		BlockRotation blockRotation = StructureTestUtil.getRotation(i);
 		Collection<GameTest> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, j);
 		TestSet testSet = new TestSet(collection);
 		testSet.addListener(new TestCommand.Listener(serverWorld, testSet));
-		testSet.method_29407(gameTest -> TestFunctions.method_29404(gameTest.method_29403()));
+		testSet.addListener(gameTest -> TestFunctions.addFailedTestFunction(gameTest.getTestFunction()));
 	}
 
 	private static void sendMessage(ServerCommandSource source, String message) {
@@ -512,7 +512,7 @@ public class TestCommand {
 		}
 
 		@Override
-		public void method_33317(GameTest gameTest) {
+		public void onPassed(GameTest test) {
 			TestCommand.onCompletion(this.world, this.tests);
 		}
 

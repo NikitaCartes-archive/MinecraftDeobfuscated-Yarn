@@ -26,8 +26,8 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 	private static final Random RANDOM = new Random();
 	private Text customName;
 
-	public EnchantingTableBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.ENCHANTING_TABLE, blockPos, blockState);
+	public EnchantingTableBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.ENCHANTING_TABLE, pos, state);
 	}
 
 	@Override
@@ -48,44 +48,44 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 		}
 	}
 
-	public static void tick(World world, BlockPos blockPos, BlockState blockState, EnchantingTableBlockEntity enchantingTableBlockEntity) {
-		enchantingTableBlockEntity.pageTurningSpeed = enchantingTableBlockEntity.nextPageTurningSpeed;
-		enchantingTableBlockEntity.field_11963 = enchantingTableBlockEntity.field_11964;
-		PlayerEntity playerEntity = world.getClosestPlayer((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5, 3.0, false);
+	public static void tick(World world, BlockPos pos, BlockState state, EnchantingTableBlockEntity blockEntity) {
+		blockEntity.pageTurningSpeed = blockEntity.nextPageTurningSpeed;
+		blockEntity.field_11963 = blockEntity.field_11964;
+		PlayerEntity playerEntity = world.getClosestPlayer((double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, 3.0, false);
 		if (playerEntity != null) {
-			double d = playerEntity.getX() - ((double)blockPos.getX() + 0.5);
-			double e = playerEntity.getZ() - ((double)blockPos.getZ() + 0.5);
-			enchantingTableBlockEntity.field_11962 = (float)MathHelper.atan2(e, d);
-			enchantingTableBlockEntity.nextPageTurningSpeed += 0.1F;
-			if (enchantingTableBlockEntity.nextPageTurningSpeed < 0.5F || RANDOM.nextInt(40) == 0) {
-				float f = enchantingTableBlockEntity.field_11969;
+			double d = playerEntity.getX() - ((double)pos.getX() + 0.5);
+			double e = playerEntity.getZ() - ((double)pos.getZ() + 0.5);
+			blockEntity.field_11962 = (float)MathHelper.atan2(e, d);
+			blockEntity.nextPageTurningSpeed += 0.1F;
+			if (blockEntity.nextPageTurningSpeed < 0.5F || RANDOM.nextInt(40) == 0) {
+				float f = blockEntity.field_11969;
 
 				do {
-					enchantingTableBlockEntity.field_11969 = enchantingTableBlockEntity.field_11969 + (float)(RANDOM.nextInt(4) - RANDOM.nextInt(4));
-				} while (f == enchantingTableBlockEntity.field_11969);
+					blockEntity.field_11969 = blockEntity.field_11969 + (float)(RANDOM.nextInt(4) - RANDOM.nextInt(4));
+				} while (f == blockEntity.field_11969);
 			}
 		} else {
-			enchantingTableBlockEntity.field_11962 += 0.02F;
-			enchantingTableBlockEntity.nextPageTurningSpeed -= 0.1F;
+			blockEntity.field_11962 += 0.02F;
+			blockEntity.nextPageTurningSpeed -= 0.1F;
 		}
 
-		while (enchantingTableBlockEntity.field_11964 >= (float) Math.PI) {
-			enchantingTableBlockEntity.field_11964 -= (float) (Math.PI * 2);
+		while (blockEntity.field_11964 >= (float) Math.PI) {
+			blockEntity.field_11964 -= (float) (Math.PI * 2);
 		}
 
-		while (enchantingTableBlockEntity.field_11964 < (float) -Math.PI) {
-			enchantingTableBlockEntity.field_11964 += (float) (Math.PI * 2);
+		while (blockEntity.field_11964 < (float) -Math.PI) {
+			blockEntity.field_11964 += (float) (Math.PI * 2);
 		}
 
-		while (enchantingTableBlockEntity.field_11962 >= (float) Math.PI) {
-			enchantingTableBlockEntity.field_11962 -= (float) (Math.PI * 2);
+		while (blockEntity.field_11962 >= (float) Math.PI) {
+			blockEntity.field_11962 -= (float) (Math.PI * 2);
 		}
 
-		while (enchantingTableBlockEntity.field_11962 < (float) -Math.PI) {
-			enchantingTableBlockEntity.field_11962 += (float) (Math.PI * 2);
+		while (blockEntity.field_11962 < (float) -Math.PI) {
+			blockEntity.field_11962 += (float) (Math.PI * 2);
 		}
 
-		float g = enchantingTableBlockEntity.field_11962 - enchantingTableBlockEntity.field_11964;
+		float g = blockEntity.field_11962 - blockEntity.field_11964;
 
 		while (g >= (float) Math.PI) {
 			g -= (float) (Math.PI * 2);
@@ -95,15 +95,15 @@ public class EnchantingTableBlockEntity extends BlockEntity implements Nameable 
 			g += (float) (Math.PI * 2);
 		}
 
-		enchantingTableBlockEntity.field_11964 += g * 0.4F;
-		enchantingTableBlockEntity.nextPageTurningSpeed = MathHelper.clamp(enchantingTableBlockEntity.nextPageTurningSpeed, 0.0F, 1.0F);
-		enchantingTableBlockEntity.ticks++;
-		enchantingTableBlockEntity.pageAngle = enchantingTableBlockEntity.nextPageAngle;
-		float h = (enchantingTableBlockEntity.field_11969 - enchantingTableBlockEntity.nextPageAngle) * 0.4F;
+		blockEntity.field_11964 += g * 0.4F;
+		blockEntity.nextPageTurningSpeed = MathHelper.clamp(blockEntity.nextPageTurningSpeed, 0.0F, 1.0F);
+		blockEntity.ticks++;
+		blockEntity.pageAngle = blockEntity.nextPageAngle;
+		float h = (blockEntity.field_11969 - blockEntity.nextPageAngle) * 0.4F;
 		float i = 0.2F;
 		h = MathHelper.clamp(h, -0.2F, 0.2F);
-		enchantingTableBlockEntity.field_11967 = enchantingTableBlockEntity.field_11967 + (h - enchantingTableBlockEntity.field_11967) * 0.9F;
-		enchantingTableBlockEntity.nextPageAngle = enchantingTableBlockEntity.nextPageAngle + enchantingTableBlockEntity.field_11967;
+		blockEntity.field_11967 = blockEntity.field_11967 + (h - blockEntity.field_11967) * 0.9F;
+		blockEntity.nextPageAngle = blockEntity.nextPageAngle + blockEntity.field_11967;
 	}
 
 	@Override

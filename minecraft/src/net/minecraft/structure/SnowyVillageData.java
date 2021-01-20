@@ -10,7 +10,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.feature.ConfiguredFeatures;
 
 public class SnowyVillageData {
-	public static final StructurePool field_26286 = StructurePools.register(
+	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
 		new StructurePool(
 			new Identifier("village/snowy/town_centers"),
 			new Identifier("empty"),

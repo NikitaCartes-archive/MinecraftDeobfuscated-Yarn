@@ -33,21 +33,19 @@ public class CustomizeFlatLevelScreen extends Screen {
 	private CustomizeFlatLevelScreen.SuperflatLayersListWidget layers;
 	private ButtonWidget widgetButtonRemoveLayer;
 
-	public CustomizeFlatLevelScreen(
-		CreateWorldScreen createWorldScreen, Consumer<FlatChunkGeneratorConfig> consumer, FlatChunkGeneratorConfig flatChunkGeneratorConfig
-	) {
+	public CustomizeFlatLevelScreen(CreateWorldScreen parent, Consumer<FlatChunkGeneratorConfig> consumer, FlatChunkGeneratorConfig config) {
 		super(new TranslatableText("createWorld.customize.flat.title"));
-		this.parent = createWorldScreen;
+		this.parent = parent;
 		this.field_24565 = consumer;
-		this.config = flatChunkGeneratorConfig;
+		this.config = config;
 	}
 
-	public FlatChunkGeneratorConfig method_29055() {
+	public FlatChunkGeneratorConfig getConfig() {
 		return this.config;
 	}
 
-	public void method_29054(FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
-		this.config = flatChunkGeneratorConfig;
+	public void setConfig(FlatChunkGeneratorConfig config) {
+		this.config = config;
 	}
 
 	@Override
@@ -64,7 +62,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				20,
 				new TranslatableText("createWorld.customize.flat.removeLayer"),
 				buttonWidget -> {
-					if (this.method_2147()) {
+					if (this.hasLayerSelected()) {
 						List<FlatChunkGeneratorLayer> list = this.config.getLayers();
 						int i = this.layers.children().indexOf(this.layers.getSelected());
 						int j = list.size() - i - 1;
@@ -75,7 +73,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 							);
 						this.config.updateLayerBlocks();
 						this.layers.method_19372();
-						this.method_2145();
+						this.updateRemoveLayerButton();
 					}
 				}
 			)
@@ -83,7 +81,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 52, 150, 20, new TranslatableText("createWorld.customize.presets"), buttonWidget -> {
 			this.client.openScreen(new PresetsScreen(this));
 			this.config.updateLayerBlocks();
-			this.method_2145();
+			this.updateRemoveLayerButton();
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
 			this.field_24565.accept(this.config);
@@ -95,14 +93,14 @@ public class CustomizeFlatLevelScreen extends Screen {
 			this.config.updateLayerBlocks();
 		}));
 		this.config.updateLayerBlocks();
-		this.method_2145();
+		this.updateRemoveLayerButton();
 	}
 
-	private void method_2145() {
-		this.widgetButtonRemoveLayer.active = this.method_2147();
+	private void updateRemoveLayerButton() {
+		this.widgetButtonRemoveLayer.active = this.hasLayerSelected();
 	}
 
-	private boolean method_2147() {
+	private boolean hasLayerSelected() {
 		return this.layers.getSelected() != null;
 	}
 
@@ -151,7 +149,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			}
 
-			CustomizeFlatLevelScreen.this.method_2145();
+			CustomizeFlatLevelScreen.this.updateRemoveLayerButton();
 		}
 
 		@Override
@@ -199,7 +197,7 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 
 				ItemStack itemStack = new ItemStack(item);
-				this.method_19375(matrices, x, y, itemStack);
+				this.renderItemStack(matrices, x, y, itemStack);
 				CustomizeFlatLevelScreen.this.textRenderer.draw(matrices, item.getName(itemStack), (float)(x + 18 + 5), (float)(y + 3), 16777215);
 				String string;
 				if (index == 0) {
@@ -224,20 +222,20 @@ public class CustomizeFlatLevelScreen extends Screen {
 				}
 			}
 
-			private void method_19375(MatrixStack matrixStack, int i, int j, ItemStack itemStack) {
-				this.method_19373(matrixStack, i + 1, j + 1);
+			private void renderItemStack(MatrixStack matrices, int x, int y, ItemStack stack) {
+				this.method_19373(matrices, x + 1, y + 1);
 				RenderSystem.enableRescaleNormal();
-				if (!itemStack.isEmpty()) {
-					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(itemStack, i + 2, j + 2);
+				if (!stack.isEmpty()) {
+					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(stack, x + 2, y + 2);
 				}
 
 				RenderSystem.disableRescaleNormal();
 			}
 
-			private void method_19373(MatrixStack matrixStack, int i, int j) {
+			private void method_19373(MatrixStack matrices, int x, int y) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				SuperflatLayersListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_TEXTURE);
-				DrawableHelper.drawTexture(matrixStack, i, j, CustomizeFlatLevelScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+				DrawableHelper.drawTexture(matrices, x, y, CustomizeFlatLevelScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

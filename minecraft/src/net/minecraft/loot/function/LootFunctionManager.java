@@ -43,27 +43,27 @@ public class LootFunctionManager extends JsonDataLoader {
 
 	protected void apply(Map<Identifier, JsonElement> map, ResourceManager resourceManager, Profiler profiler) {
 		Builder<Identifier, LootFunction> builder = ImmutableMap.builder();
-		map.forEach((identifier, jsonElement) -> {
+		map.forEach((id, json) -> {
 			try {
-				if (jsonElement.isJsonArray()) {
-					LootFunction[] lootFunctions = GSON.fromJson(jsonElement, LootFunction[].class);
-					builder.put(identifier, new LootFunctionManager.AndFunction(lootFunctions));
+				if (json.isJsonArray()) {
+					LootFunction[] lootFunctions = GSON.fromJson(json, LootFunction[].class);
+					builder.put(id, new LootFunctionManager.AndFunction(lootFunctions));
 				} else {
-					LootFunction lootFunction = GSON.fromJson(jsonElement, LootFunction.class);
-					builder.put(identifier, lootFunction);
+					LootFunction lootFunction = GSON.fromJson(json, LootFunction.class);
+					builder.put(id, lootFunction);
 				}
 			} catch (Exception var4x) {
-				LOGGER.error("Couldn't parse item modifier {}", identifier, var4x);
+				LOGGER.error("Couldn't parse item modifier {}", id, var4x);
 			}
 		});
 		Map<Identifier, LootFunction> map2 = builder.build();
 		LootTableReporter lootTableReporter = new LootTableReporter(LootContextTypes.GENERIC, this.lootConditionManager::get, this.lootManager::getTable);
-		map2.forEach((identifier, lootFunction) -> lootFunction.validate(lootTableReporter));
+		map2.forEach((id, lootFunction) -> lootFunction.validate(lootTableReporter));
 		lootTableReporter.getMessages().forEach((string, string2) -> LOGGER.warn("Found item modifier validation problem in {}: {}", string, string2));
 		this.functions = map2;
 	}
 
-	public Set<Identifier> method_32399() {
+	public Set<Identifier> getFunctionIds() {
 		return Collections.unmodifiableSet(this.functions.keySet());
 	}
 

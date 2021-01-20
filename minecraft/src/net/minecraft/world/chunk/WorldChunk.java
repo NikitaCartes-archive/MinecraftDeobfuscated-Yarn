@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.shorts.ShortList;
+import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -139,7 +140,7 @@ public class WorldChunk implements Chunk {
 		this.fluidTickScheduler = fluidTickScheduler;
 		this.inhabitedTime = inhabitedTime;
 		this.loadToWorldConsumer = loadToWorldConsumer;
-		this.sections = new ChunkSection[world.method_32890()];
+		this.sections = new ChunkSection[world.getSections()];
 		if (sections != null) {
 			if (this.sections.length == sections.length) {
 				System.arraycopy(sections, 0, this.sections, 0, this.sections.length);
@@ -148,7 +149,7 @@ public class WorldChunk implements Chunk {
 			}
 		}
 
-		this.postProcessingLists = new ShortList[world.method_32890()];
+		this.postProcessingLists = new ShortList[world.getSections()];
 	}
 
 	public WorldChunk(ServerWorld serverWorld, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> consumer) {
@@ -501,14 +502,15 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, int verticalStripBitmask) {
+	public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, BitSet bitSet) {
 		boolean bl = biomes != null;
 		if (bl) {
 			this.blockEntities.values().forEach(this::removeBlockEntity);
 			this.blockEntities.clear();
 		} else {
 			this.blockEntities.values().removeIf(blockEntity -> {
-				if (this.method_31717(verticalStripBitmask, blockEntity.getPos())) {
+				int ix = this.getSectionIndex(blockEntity.getPos().getY());
+				if (bitSet.get(ix)) {
 					blockEntity.markRemoved();
 					return true;
 				} else {
@@ -519,7 +521,7 @@ public class WorldChunk implements Chunk {
 
 		for (int i = 0; i < this.sections.length; i++) {
 			ChunkSection chunkSection = this.sections[i];
-			if ((verticalStripBitmask & 1 << i) == 0) {
+			if (!bitSet.get(i)) {
 				if (bl && chunkSection != EMPTY_SECTION) {
 					this.sections[i] = EMPTY_SECTION;
 				}
@@ -548,11 +550,6 @@ public class WorldChunk implements Chunk {
 	private void removeBlockEntity(BlockEntity blockEntity) {
 		blockEntity.markRemoved();
 		this.blockEntityTickers.remove(blockEntity.getPos());
-	}
-
-	@Environment(EnvType.CLIENT)
-	private boolean method_31717(int i, BlockPos blockPos) {
-		return (i & 1 << this.getSectionIndex(blockPos.getY())) != 0;
 	}
 
 	@Override
@@ -585,7 +582,9 @@ public class WorldChunk implements Chunk {
 	@Override
 	public Stream<BlockPos> getLightSourcesStream() {
 		return StreamSupport.stream(
-				BlockPos.iterate(this.pos.getStartX(), this.getSectionCount(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopHeightLimit() - 1, this.pos.getEndZ())
+				BlockPos.iterate(
+						this.pos.getStartX(), this.getBottomSectionLimit(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopHeightLimit() - 1, this.pos.getEndZ()
+					)
 					.spliterator(),
 				false
 			)
@@ -761,13 +760,13 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public int getSectionCount() {
-		return this.world.getSectionCount();
+	public int getBottomSectionLimit() {
+		return this.world.getBottomSectionLimit();
 	}
 
 	@Override
-	public int getBottomSectionLimit() {
-		return this.world.getBottomSectionLimit();
+	public int getSectionCount() {
+		return this.world.getSectionCount();
 	}
 
 	@Override

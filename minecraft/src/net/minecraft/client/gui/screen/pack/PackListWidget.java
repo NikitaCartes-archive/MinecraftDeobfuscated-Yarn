@@ -64,15 +64,15 @@ public class PackListWidget extends AlwaysSelectedEntryListWidget<PackListWidget
 		private final OrderedText field_26784;
 		private final MultilineText field_26785;
 
-		public ResourcePackEntry(MinecraftClient minecraftClient, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
-			this.client = minecraftClient;
+		public ResourcePackEntry(MinecraftClient client, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
+			this.client = client;
 			this.screen = screen;
 			this.pack = pack;
 			this.widget = widget;
-			this.field_26590 = method_31229(minecraftClient, pack.getDisplayName());
-			this.field_26591 = method_31230(minecraftClient, pack.getDecoratedDescription());
-			this.field_26784 = method_31229(minecraftClient, PackListWidget.INCOMPATIBLE);
-			this.field_26785 = method_31230(minecraftClient, pack.getCompatibility().getNotification());
+			this.field_26590 = method_31229(client, pack.getDisplayName());
+			this.field_26591 = method_31230(client, pack.getDecoratedDescription());
+			this.field_26784 = method_31229(client, PackListWidget.INCOMPATIBLE);
+			this.field_26785 = method_31230(client, pack.getCompatibility().getNotification());
 		}
 
 		private static OrderedText method_31229(MinecraftClient minecraftClient, Text text) {

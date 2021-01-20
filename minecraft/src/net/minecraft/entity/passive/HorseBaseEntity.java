@@ -240,7 +240,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		if (fallDistance > 1.0F) {
 			this.playSound(SoundEvents.ENTITY_HORSE_LAND, 0.4F, 1.0F);
 		}
@@ -249,10 +249,10 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		if (i <= 0) {
 			return false;
 		} else {
-			this.damage(DamageSource.FALL, (float)i);
+			this.damage(damageSource, (float)i);
 			if (this.hasPassengers()) {
 				for (Entity entity : this.getPassengersDeep()) {
-					entity.damage(DamageSource.FALL, (float)i);
+					entity.damage(damageSource, (float)i);
 				}
 			}
 
@@ -1092,5 +1092,9 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 		this.initAttributes();
 		return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
+	}
+
+	public boolean method_33338(Inventory inventory) {
+		return this.items != inventory;
 	}
 }

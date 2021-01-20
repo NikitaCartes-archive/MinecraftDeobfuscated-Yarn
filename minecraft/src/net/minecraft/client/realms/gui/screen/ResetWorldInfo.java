@@ -9,21 +9,21 @@ public class ResetWorldInfo {
 	private final RealmsWorldGeneratorType levelType;
 	private final boolean generateStructures;
 
-	public ResetWorldInfo(String seed, RealmsWorldGeneratorType realmsWorldGeneratorType, boolean generateStructures) {
+	public ResetWorldInfo(String seed, RealmsWorldGeneratorType levelType, boolean generateStructures) {
 		this.seed = seed;
-		this.levelType = realmsWorldGeneratorType;
+		this.levelType = levelType;
 		this.generateStructures = generateStructures;
 	}
 
-	public String method_32508() {
+	public String getSeed() {
 		return this.seed;
 	}
 
-	public RealmsWorldGeneratorType method_32509() {
+	public RealmsWorldGeneratorType getLevelType() {
 		return this.levelType;
 	}
 
-	public boolean method_32510() {
+	public boolean shouldGenerateStructures() {
 		return this.generateStructures;
 	}
 }

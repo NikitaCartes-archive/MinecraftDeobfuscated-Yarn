@@ -36,13 +36,13 @@ public class ResourcePackProfile implements AutoCloseable {
 		Supplier<ResourcePack> packFactory,
 		ResourcePackProfile.Factory containerFactory,
 		ResourcePackProfile.InsertionPosition insertionPosition,
-		ResourcePackSource resourcePackSource
+		ResourcePackSource packSource
 	) {
 		try (ResourcePack resourcePack = (ResourcePack)packFactory.get()) {
 			PackResourceMetadata packResourceMetadata = resourcePack.parseMetadata(PackResourceMetadata.READER);
 			if (packResourceMetadata != null) {
 				return containerFactory.create(
-					name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, resourcePackSource
+					name, new LiteralText(resourcePack.getName()), alwaysEnabled, packFactory, packResourceMetadata, insertionPosition, packSource
 				);
 			}
 

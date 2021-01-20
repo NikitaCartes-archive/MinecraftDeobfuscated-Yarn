@@ -58,8 +58,8 @@ public class ChunkSectionPos extends Vec3i {
 		return asLong(unpackX(packed) + x, unpackY(packed) + y, unpackZ(packed) + z);
 	}
 
-	public static int method_32204(double d) {
-		return getSectionCoord(MathHelper.floor(d));
+	public static int getSectionCoord(double coord) {
+		return getSectionCoord(MathHelper.floor(coord));
 	}
 
 	/**
@@ -270,10 +270,10 @@ public class ChunkSectionPos extends Vec3i {
 		return stream(i - radius, j - radius, k - radius, i + radius, j + radius, k + radius);
 	}
 
-	public static Stream<ChunkSectionPos> stream(ChunkPos center, int radius, int i, int j) {
-		int k = center.x;
-		int l = center.z;
-		return stream(k - radius, i, l - radius, k + radius, j - 1, l + radius);
+	public static Stream<ChunkSectionPos> stream(ChunkPos center, int radius, int minY, int maxY) {
+		int i = center.x;
+		int j = center.z;
+		return stream(i - radius, minY, j - radius, i + radius, maxY - 1, j + radius);
 	}
 
 	public static Stream<ChunkSectionPos> stream(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {

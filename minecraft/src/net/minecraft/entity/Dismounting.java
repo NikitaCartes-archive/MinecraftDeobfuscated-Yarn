@@ -39,16 +39,8 @@ public class Dismounting {
 		return world.getBlockCollisions(entity, targetBox).allMatch(VoxelShape::isEmpty);
 	}
 
-	@Nullable
-	public static Vec3d findDismountPos(CollisionView world, double x, double height, double z, LivingEntity entity, EntityPose pose) {
-		if (canDismountInBlock(height)) {
-			Vec3d vec3d = new Vec3d(x, height, z);
-			if (canPlaceEntityAt(world, entity, entity.getBoundingBox(pose).offset(vec3d))) {
-				return vec3d;
-			}
-		}
-
-		return null;
+	public static boolean canPlaceEntityAt(CollisionView world, Vec3d offset, LivingEntity entity, EntityPose pose) {
+		return canPlaceEntityAt(world, entity, entity.getBoundingBox(pose).offset(offset));
 	}
 
 	public static VoxelShape getCollisionShape(BlockView world, BlockPos pos) {
@@ -76,18 +68,18 @@ public class Dismounting {
 	}
 
 	@Nullable
-	public static Vec3d method_30769(EntityType<?> entityType, CollisionView collisionView, BlockPos blockPos, boolean bl) {
-		if (bl && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos))) {
+	public static Vec3d findRespawnPos(EntityType<?> entityType, CollisionView world, BlockPos pos, boolean bl) {
+		if (bl && entityType.isInvalidSpawn(world.getBlockState(pos))) {
 			return null;
 		} else {
-			double d = collisionView.getDismountHeight(getCollisionShape(collisionView, blockPos), () -> getCollisionShape(collisionView, blockPos.down()));
+			double d = world.getDismountHeight(getCollisionShape(world, pos), () -> getCollisionShape(world, pos.down()));
 			if (!canDismountInBlock(d)) {
 				return null;
-			} else if (bl && d <= 0.0 && entityType.isInvalidSpawn(collisionView.getBlockState(blockPos.down()))) {
+			} else if (bl && d <= 0.0 && entityType.isInvalidSpawn(world.getBlockState(pos.down()))) {
 				return null;
 			} else {
-				Vec3d vec3d = Vec3d.ofCenter(blockPos, d);
-				return collisionView.getBlockCollisions(null, entityType.getDimensions().getBoxAt(vec3d)).allMatch(VoxelShape::isEmpty) ? vec3d : null;
+				Vec3d vec3d = Vec3d.ofCenter(pos, d);
+				return world.getBlockCollisions(null, entityType.getDimensions().getBoxAt(vec3d)).allMatch(VoxelShape::isEmpty) ? vec3d : null;
 			}
 		}
 	}

@@ -19,9 +19,9 @@ public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends 
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
 		float j = this.random.nextFloat() * 0.4F + 0.6F;
-		this.colorRed = this.method_33076((float)abstractDustParticleEffect.getColor().x, j);
-		this.colorGreen = this.method_33076((float)abstractDustParticleEffect.getColor().y, j);
-		this.colorBlue = this.method_33076((float)abstractDustParticleEffect.getColor().z, j);
+		this.colorRed = this.method_33076(abstractDustParticleEffect.getColor().getX(), j);
+		this.colorGreen = this.method_33076(abstractDustParticleEffect.getColor().getY(), j);
+		this.colorBlue = this.method_33076(abstractDustParticleEffect.getColor().getZ(), j);
 		this.scale = this.scale * 0.75F * abstractDustParticleEffect.getScale();
 		int k = (int)(8.0 / (this.random.nextDouble() * 0.8 + 0.2));
 		this.maxAge = (int)Math.max((float)k * abstractDustParticleEffect.getScale(), 1.0F);

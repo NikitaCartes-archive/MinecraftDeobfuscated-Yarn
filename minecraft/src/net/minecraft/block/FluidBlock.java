@@ -169,7 +169,7 @@ public class FluidBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public Optional<SoundEvent> getDrainSound() {
-		return this.fluid.getFillSound();
+	public Optional<SoundEvent> getBucketFillSound() {
+		return this.fluid.getBucketFillSound();
 	}
 }

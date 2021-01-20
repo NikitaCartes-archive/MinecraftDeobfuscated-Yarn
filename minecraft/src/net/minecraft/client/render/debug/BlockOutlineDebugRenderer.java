@@ -22,8 +22,8 @@ import net.minecraft.world.BlockView;
 public class BlockOutlineDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
 
-	public BlockOutlineDebugRenderer(MinecraftClient minecraftClient) {
-		this.client = minecraftClient;
+	public BlockOutlineDebugRenderer(MinecraftClient client) {
+		this.client = client;
 	}
 
 	@Override

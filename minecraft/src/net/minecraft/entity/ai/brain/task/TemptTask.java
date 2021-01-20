@@ -14,9 +14,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 public class TemptTask extends Task<PathAwareEntity> {
-	private final Function<LivingEntity, Float> field_28316;
+	private final Function<LivingEntity, Float> speed;
 
-	public TemptTask(Function<LivingEntity, Float> function) {
+	public TemptTask(Function<LivingEntity, Float> speed) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.LOOK_TARGET,
@@ -31,11 +31,11 @@ public class TemptTask extends Task<PathAwareEntity> {
 				MemoryModuleState.VALUE_PRESENT
 			)
 		);
-		this.field_28316 = function;
+		this.speed = speed;
 	}
 
-	protected float method_33196(PathAwareEntity entity) {
-		return (Float)this.field_28316.apply(entity);
+	protected float getSpeed(PathAwareEntity entity) {
+		return (Float)this.speed.apply(entity);
 	}
 
 	private Optional<PlayerEntity> getTemptingPlayer(PathAwareEntity entity) {
@@ -70,7 +70,7 @@ public class TemptTask extends Task<PathAwareEntity> {
 		if (pathAwareEntity.squaredDistanceTo(playerEntity) < 6.25) {
 			brain.forget(MemoryModuleType.WALK_TARGET);
 		} else {
-			brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(playerEntity, false), this.method_33196(pathAwareEntity), 2));
+			brain.remember(MemoryModuleType.WALK_TARGET, new WalkTarget(new EntityLookTarget(playerEntity, false), this.getSpeed(pathAwareEntity), 2));
 		}
 	}
 }

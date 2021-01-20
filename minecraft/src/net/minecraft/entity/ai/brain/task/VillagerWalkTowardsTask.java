@@ -50,7 +50,7 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 		brain.getOptionalMemory(this.destination)
 			.ifPresent(
 				globalPos -> {
-					if (this.method_30952(serverWorld, globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
+					if (this.dimensionMismatches(serverWorld, globalPos) || this.shouldGiveUp(serverWorld, villagerEntity)) {
 						this.giveUp(villagerEntity, l);
 					} else if (this.exceedsMaxRange(villagerEntity, globalPos)) {
 						Vec3d vec3d = null;
@@ -81,12 +81,12 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 		return optional.isPresent() ? world.getTime() - (Long)optional.get() > (long)this.maxRunTime : false;
 	}
 
-	private boolean exceedsMaxRange(VillagerEntity villagerEntity, GlobalPos globalPos) {
-		return globalPos.getPos().getManhattanDistance(villagerEntity.getBlockPos()) > this.maxRange;
+	private boolean exceedsMaxRange(VillagerEntity villager, GlobalPos pos) {
+		return pos.getPos().getManhattanDistance(villager.getBlockPos()) > this.maxRange;
 	}
 
-	private boolean method_30952(ServerWorld serverWorld, GlobalPos globalPos) {
-		return globalPos.getDimension() != serverWorld.getRegistryKey();
+	private boolean dimensionMismatches(ServerWorld world, GlobalPos pos) {
+		return pos.getDimension() != world.getRegistryKey();
 	}
 
 	private boolean reachedDestination(ServerWorld world, VillagerEntity villager, GlobalPos pos) {

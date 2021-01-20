@@ -41,12 +41,12 @@ public class class_5573<T extends EntityLike> {
 	}
 
 	public void method_31777(Box box, Consumer<class_5572<T>> consumer) {
-		int i = ChunkSectionPos.method_32204(box.minX - 2.0);
-		int j = ChunkSectionPos.method_32204(box.minY - 2.0);
-		int k = ChunkSectionPos.method_32204(box.minZ - 2.0);
-		int l = ChunkSectionPos.method_32204(box.maxX + 2.0);
-		int m = ChunkSectionPos.method_32204(box.maxY + 2.0);
-		int n = ChunkSectionPos.method_32204(box.maxZ + 2.0);
+		int i = ChunkSectionPos.getSectionCoord(box.minX - 2.0);
+		int j = ChunkSectionPos.getSectionCoord(box.minY - 2.0);
+		int k = ChunkSectionPos.getSectionCoord(box.minZ - 2.0);
+		int l = ChunkSectionPos.getSectionCoord(box.maxX + 2.0);
+		int m = ChunkSectionPos.getSectionCoord(box.maxY + 2.0);
+		int n = ChunkSectionPos.getSectionCoord(box.maxZ + 2.0);
 
 		for (int o = i; o <= l; o++) {
 			long p = ChunkSectionPos.asLong(o, 0, 0);

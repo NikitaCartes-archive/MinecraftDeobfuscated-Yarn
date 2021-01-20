@@ -915,9 +915,9 @@ public class ConfiguredFeatures {
 					0.33F,
 					UniformFloatDistribution.of(0.3F, 0.6F),
 					UniformFloatDistribution.of(0.4F, 0.6F),
-					UniformFloatDistribution.of(0.0F, 0.2F),
-					5,
-					0.7F
+					UniformFloatDistribution.of(0.0F, 0.3F),
+					4,
+					0.6F
 				)
 			)
 			.rangeOf(60)
@@ -927,6 +927,31 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> SMALL_DRIPSTONE = register(
 		"small_dripstone",
 		Feature.SMALL_DRIPSTONE.configure(new SmallDripstoneFeatureConfig(5, 10, 2, 0.2F)).rangeOf(60).spreadHorizontally().repeat(UniformIntDistribution.of(20, 40))
+	);
+	public static final ConfiguredFeature<?, ?> GLOW_LICHEN = register(
+		"glow_lichen",
+		Feature.GLOW_LICHEN
+			.configure(
+				new GlowLichenFeatureConfig(
+					10,
+					false,
+					true,
+					true,
+					0.5F,
+					ImmutableList.of(
+						Blocks.STONE.getDefaultState(),
+						Blocks.ANDESITE.getDefaultState(),
+						Blocks.DIORITE.getDefaultState(),
+						Blocks.GRANITE.getDefaultState(),
+						Blocks.DRIPSTONE_BLOCK.getDefaultState(),
+						Blocks.CALCITE.getDefaultState(),
+						Blocks.TUFF.getDefaultState()
+					)
+				)
+			)
+			.spreadHorizontally()
+			.rangeOf(55)
+			.repeat(UniformIntDistribution.of(5, 5))
 	);
 	public static final ConfiguredFeature<?, ?> CRIMSON_FUNGI = register(
 		"crimson_fungi",

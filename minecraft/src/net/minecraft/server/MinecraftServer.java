@@ -265,7 +265,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	private void initScoreboard(PersistentStateManager persistentStateManager) {
-		persistentStateManager.getOrCreate(this.getScoreboard()::method_32704, this.getScoreboard()::method_32705, "scoreboard");
+		persistentStateManager.getOrCreate(this.getScoreboard()::stateFromNbt, this.getScoreboard()::createState, "scoreboard");
 	}
 
 	protected abstract boolean setupServer() throws IOException;
@@ -502,7 +502,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.method_16208();
 
 		for (ServerWorld serverWorld2 : this.worlds.values()) {
-			ForcedChunkState forcedChunkState = serverWorld2.getPersistentStateManager().get(ForcedChunkState::method_32350, "chunks");
+			ForcedChunkState forcedChunkState = serverWorld2.getPersistentStateManager().get(ForcedChunkState::fromNbt, "chunks");
 			if (forcedChunkState != null) {
 				LongIterator longIterator = forcedChunkState.getChunks().iterator();
 
@@ -554,8 +554,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	 * To store the player data in addition to server data, call {@link PlayerManager#saveAllPlayerData()}.
 	 * 
 	 * @return whether saving was successful
-	 * if it should immediately write all data to storage device
-	 * when set to true, all the {@link ServerWorld}s will be saved even if {@link ServerWorld#savingDisabled} is set to true
+	 * 
+	 * @param flush if it should immediately write all data to storage device
+	 * @param force when set to true, all the {@link ServerWorld}s will be saved even if {@link ServerWorld#savingDisabled} is set to true
 	 */
 	public boolean save(boolean suppressLogs, boolean flush, boolean force) {
 		boolean bl = false;

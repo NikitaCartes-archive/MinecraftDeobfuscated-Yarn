@@ -225,7 +225,7 @@ public class RespawnAnchorBlock extends Block {
 
 		for (Vec3i vec3i : VALID_SPAWN_OFFSETS) {
 			mutable.set(pos).move(vec3i);
-			Vec3d vec3d = Dismounting.method_30769(entity, world, mutable, bl);
+			Vec3d vec3d = Dismounting.findRespawnPos(entity, world, mutable, bl);
 			if (vec3d != null) {
 				return Optional.of(vec3d);
 			}

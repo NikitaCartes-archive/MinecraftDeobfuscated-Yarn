@@ -348,7 +348,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			if (this.isChunkLoaded(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z))) {
 				i = this.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z)).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
 			} else {
-				i = this.getSectionCount();
+				i = this.getBottomSectionLimit();
 			}
 		} else {
 			i = this.getSeaLevel() + 1;
@@ -425,8 +425,8 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return f * (float) (Math.PI * 2);
 	}
 
-	public void addBlockEntityTicker(BlockEntityTickInvoker blockEntityTickInvoker) {
-		(this.iteratingTickingBlockEntities ? this.pendingBlockEntityTickers : this.blockEntityTickers).add(blockEntityTickInvoker);
+	public void addBlockEntityTicker(BlockEntityTickInvoker ticker) {
+		(this.iteratingTickingBlockEntities ? this.pendingBlockEntityTickers : this.blockEntityTickers).add(ticker);
 	}
 
 	protected void tickBlockEntities() {
@@ -559,7 +559,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	@Nullable
 	@Override
-	public BlockView getExistingChunk(int chunkX, int chunkZ) {
+	public BlockView getChunkAsView(int chunkX, int chunkZ) {
 		return this.getChunk(chunkX, chunkZ, ChunkStatus.FULL, false);
 	}
 
@@ -906,20 +906,20 @@ public abstract class World implements WorldAccess, AutoCloseable {
 
 	protected abstract class_5577<Entity> getEntityIdMap();
 
-	protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos blockPos, int i) {
-		int j = ChunkSectionPos.getSectionCoord(blockPos.getX() - i);
-		int k = ChunkSectionPos.getSectionCoord(blockPos.getZ() - i);
-		int l = ChunkSectionPos.getSectionCoord(blockPos.getX() + i);
-		int m = ChunkSectionPos.getSectionCoord(blockPos.getZ() + i);
-		int n = ChunkSectionPos.getSectionCoord(blockPos.getY() - i);
-		int o = ChunkSectionPos.getSectionCoord(blockPos.getY() + i);
+	protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos pos, int range) {
+		int i = ChunkSectionPos.getSectionCoord(pos.getX() - range);
+		int j = ChunkSectionPos.getSectionCoord(pos.getZ() - range);
+		int k = ChunkSectionPos.getSectionCoord(pos.getX() + range);
+		int l = ChunkSectionPos.getSectionCoord(pos.getZ() + range);
+		int m = ChunkSectionPos.getSectionCoord(pos.getY() - range);
+		int n = ChunkSectionPos.getSectionCoord(pos.getY() + range);
 
-		for (int p = j; p <= l; p++) {
-			for (int q = k; q <= m; q++) {
-				Chunk chunk = this.getChunkManager().getWorldChunk(p, q);
+		for (int o = i; o <= k; o++) {
+			for (int p = j; p <= l; p++) {
+				Chunk chunk = this.getChunkManager().getWorldChunk(o, p);
 				if (chunk != null) {
-					for (int r = n; r <= o; r++) {
-						chunk.method_32914(r).listen(gameEvent, entity, blockPos);
+					for (int q = m; q <= n; q++) {
+						chunk.method_32914(q).listen(gameEvent, entity, pos);
 					}
 				}
 			}

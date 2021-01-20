@@ -11,8 +11,8 @@ public class EndPortalBlockEntity extends BlockEntity {
 		super(blockEntityType, blockPos, blockState);
 	}
 
-	public EndPortalBlockEntity(BlockPos blockPos, BlockState blockState) {
-		this(BlockEntityType.END_PORTAL, blockPos, blockState);
+	public EndPortalBlockEntity(BlockPos pos, BlockState state) {
+		this(BlockEntityType.END_PORTAL, pos, state);
 	}
 
 	@Environment(EnvType.CLIENT)

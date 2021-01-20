@@ -28,26 +28,28 @@ public class MeleeAttackTask extends Task<MobEntity> {
 	}
 
 	protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-		LivingEntity livingEntity = this.method_25944(mobEntity);
-		return !this.method_25942(mobEntity) && LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity) && LookTargetUtil.method_25941(mobEntity, livingEntity);
+		LivingEntity livingEntity = this.getAttackTarget(mobEntity);
+		return !this.isHoldingUsableRangedWeapon(mobEntity)
+			&& LookTargetUtil.isVisibleInMemory(mobEntity, livingEntity)
+			&& LookTargetUtil.method_25941(mobEntity, livingEntity);
 	}
 
-	private boolean method_25942(MobEntity mobEntity) {
-		return mobEntity.isHolding(itemStack -> {
-			Item item = itemStack.getItem();
-			return item instanceof RangedWeaponItem && mobEntity.canUseRangedWeapon((RangedWeaponItem)item);
+	private boolean isHoldingUsableRangedWeapon(MobEntity entity) {
+		return entity.isHolding(stack -> {
+			Item item = stack.getItem();
+			return item instanceof RangedWeaponItem && entity.canUseRangedWeapon((RangedWeaponItem)item);
 		});
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
-		LivingEntity livingEntity = this.method_25944(mobEntity);
+		LivingEntity livingEntity = this.getAttackTarget(mobEntity);
 		LookTargetUtil.lookAt(mobEntity, livingEntity);
 		mobEntity.swingHand(Hand.MAIN_HAND);
 		mobEntity.tryAttack(livingEntity);
 		mobEntity.getBrain().remember(MemoryModuleType.ATTACK_COOLING_DOWN, true, (long)this.interval);
 	}
 
-	private LivingEntity method_25944(MobEntity mobEntity) {
-		return (LivingEntity)mobEntity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
+	private LivingEntity getAttackTarget(MobEntity entity) {
+		return (LivingEntity)entity.getBrain().getOptionalMemory(MemoryModuleType.ATTACK_TARGET).get();
 	}
 }

@@ -33,7 +33,7 @@ public class PlayerSkullBlock extends SkullBlock {
 				}
 			}
 
-			skullBlockEntity.setOwnerAndType(gameProfile);
+			skullBlockEntity.setOwner(gameProfile);
 		}
 	}
 }

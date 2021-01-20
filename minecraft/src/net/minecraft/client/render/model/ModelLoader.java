@@ -141,7 +141,7 @@ public class ModelLoader {
 		.build(Block::getDefaultState, BlockState::new);
 	private static final ItemModelGenerator ITEM_MODEL_GENERATOR = new ItemModelGenerator();
 	private static final Map<Identifier, StateManager<Block, BlockState>> STATIC_DEFINITIONS = ImmutableMap.of(
-		new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY
+		new Identifier("item_frame"), ITEM_FRAME_STATE_FACTORY, new Identifier("glow_item_frame"), ITEM_FRAME_STATE_FACTORY
 	);
 	private final ResourceManager resourceManager;
 	@Nullable
@@ -512,23 +512,23 @@ public class ModelLoader {
 	}
 
 	@Nullable
-	public BakedModel bake(Identifier identifier, ModelBakeSettings settings) {
-		Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(identifier, settings.getRotation(), settings.isUvLocked());
+	public BakedModel bake(Identifier id, ModelBakeSettings settings) {
+		Triple<Identifier, AffineTransformation, Boolean> triple = Triple.of(id, settings.getRotation(), settings.isUvLocked());
 		if (this.bakedModelCache.containsKey(triple)) {
 			return (BakedModel)this.bakedModelCache.get(triple);
 		} else if (this.spriteAtlasManager == null) {
 			throw new IllegalStateException("bake called too early");
 		} else {
-			UnbakedModel unbakedModel = this.getOrLoadModel(identifier);
+			UnbakedModel unbakedModel = this.getOrLoadModel(id);
 			if (unbakedModel instanceof JsonUnbakedModel) {
 				JsonUnbakedModel jsonUnbakedModel = (JsonUnbakedModel)unbakedModel;
 				if (jsonUnbakedModel.getRootModel() == GENERATION_MARKER) {
 					return ITEM_MODEL_GENERATOR.create(this.spriteAtlasManager::getSprite, jsonUnbakedModel)
-						.bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, identifier, false);
+						.bake(this, jsonUnbakedModel, this.spriteAtlasManager::getSprite, settings, id, false);
 				}
 			}
 
-			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, identifier);
+			BakedModel bakedModel = unbakedModel.bake(this, this.spriteAtlasManager::getSprite, settings, id);
 			this.bakedModelCache.put(triple, bakedModel);
 			return bakedModel;
 		}

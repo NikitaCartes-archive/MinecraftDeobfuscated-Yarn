@@ -15,7 +15,7 @@ import net.minecraft.util.Util;
 public class Vec3i implements Comparable<Vec3i> {
 	public static final Codec<Vec3i> CODEC = Codec.INT_STREAM
 		.comapFlatMap(
-			intStream -> Util.toIntArray(intStream, 3).map(is -> new Vec3i(is[0], is[1], is[2])),
+			intStream -> Util.toArray(intStream, 3).map(is -> new Vec3i(is[0], is[1], is[2])),
 			vec3i -> IntStream.of(new int[]{vec3i.getX(), vec3i.getY(), vec3i.getZ()})
 		);
 	public static final Vec3i ZERO = new Vec3i(0, 0, 0);

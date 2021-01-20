@@ -307,7 +307,7 @@ public class Mouse {
 		}
 	}
 
-	public void method_30134() {
+	public void setResolutionChanged() {
 		this.hasResolutionChanged = true;
 	}
 }

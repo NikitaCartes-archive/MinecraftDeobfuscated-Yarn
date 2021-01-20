@@ -30,7 +30,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		double d = (double)this.client.world.getSectionCount() - cameraY;
+		double d = (double)this.client.world.getBottomSectionLimit() - cameraY;
 		double e = (double)this.client.world.getTopHeightLimit() - cameraY;
 		RenderSystem.disableTexture();
 		RenderSystem.disableBlend();
@@ -71,7 +71,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 			bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 		}
 
-		for (int i = this.client.world.getSectionCount(); i <= this.client.world.getTopHeightLimit(); i += 2) {
+		for (int i = this.client.world.getBottomSectionLimit(); i <= this.client.world.getTopHeightLimit(); i += 2) {
 			double h = (double)i - cameraY;
 			bufferBuilder.vertex(f, h, g).color(1.0F, 1.0F, 0.0F, 0.0F).next();
 			bufferBuilder.vertex(f, h, g).color(1.0F, 1.0F, 0.0F, 1.0F).next();
@@ -95,7 +95,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 			}
 		}
 
-		for (int i = this.client.world.getSectionCount(); i <= this.client.world.getTopHeightLimit(); i += 16) {
+		for (int i = this.client.world.getBottomSectionLimit(); i <= this.client.world.getTopHeightLimit(); i += 16) {
 			double h = (double)i - cameraY;
 			bufferBuilder.vertex(f, h, g).color(0.25F, 0.25F, 1.0F, 0.0F).next();
 			bufferBuilder.vertex(f, h, g).color(0.25F, 0.25F, 1.0F, 1.0F).next();

@@ -53,8 +53,8 @@ public class SmithingRecipe implements Recipe<Inventory> {
 		return this.result;
 	}
 
-	public boolean method_30029(ItemStack itemStack) {
-		return this.addition.test(itemStack);
+	public boolean testAddition(ItemStack stack) {
+		return this.addition.test(stack);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -80,7 +80,7 @@ public class SmithingRecipe implements Recipe<Inventory> {
 
 	@Environment(EnvType.CLIENT)
 	@Override
-	public boolean method_31584() {
+	public boolean isEmpty() {
 		return Stream.of(this.base, this.addition).anyMatch(ingredient -> ingredient.getMatchingStacksClient().length == 0);
 	}
 

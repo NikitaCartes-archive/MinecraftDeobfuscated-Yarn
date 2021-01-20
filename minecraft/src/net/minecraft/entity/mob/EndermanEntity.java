@@ -283,7 +283,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	private boolean teleportTo(double x, double y, double z) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable(x, y, z);
 
-		while (mutable.getY() > this.world.getSectionCount() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
+		while (mutable.getY() > this.world.getBottomSectionLimit() && !this.world.getBlockState(mutable).getMaterial().blocksMovement()) {
 			mutable.move(Direction.DOWN);
 		}
 
@@ -487,7 +487,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 				&& !state.isOf(Blocks.BEDROCK)
 				&& state.isFullCube(world, pos)
 				&& carriedState.canPlaceAt(world, posAbove)
-				&& world.getOtherEntities(this.enderman, Box.method_29968(Vec3d.of(posAbove))).isEmpty();
+				&& world.getOtherEntities(this.enderman, Box.from(Vec3d.of(posAbove))).isEmpty();
 		}
 	}
 

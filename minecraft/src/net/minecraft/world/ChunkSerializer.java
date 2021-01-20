@@ -75,7 +75,7 @@ public class ChunkSerializer {
 		);
 		boolean bl = compoundTag.getBoolean("isLightOn");
 		ListTag listTag = compoundTag.getList("Sections", 10);
-		int i = world.method_32890();
+		int i = world.getSections();
 		ChunkSection[] chunkSections = new ChunkSection[i];
 		boolean bl2 = world.getDimension().hasSkyLight();
 		ChunkManager chunkManager = world.getChunkManager();
@@ -150,7 +150,7 @@ public class ChunkSerializer {
 
 			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
 				for (BlockPos blockPos : BlockPos.iterate(
-					pos.getStartX(), world.getSectionCount(), pos.getStartZ(), pos.getEndX(), world.getTopHeightLimit() - 1, pos.getEndZ()
+					pos.getStartX(), world.getBottomSectionLimit(), pos.getStartZ(), pos.getEndX(), world.getTopHeightLimit() - 1, pos.getEndZ()
 				)) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);

@@ -97,7 +97,7 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 			blockPos = pos;
 		}
 
-		if (blockPos.getY() < world.getSectionCount() + 1 || blockPos.getY() + i + 1 > world.getTopHeightLimit()) {
+		if (blockPos.getY() < world.getBottomSectionLimit() + 1 || blockPos.getY() + i + 1 > world.getTopHeightLimit()) {
 			return false;
 		} else if (!canPlaceTreeOn(world, blockPos.down())) {
 			return false;

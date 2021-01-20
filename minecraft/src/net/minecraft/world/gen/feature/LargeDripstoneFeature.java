@@ -33,7 +33,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 			return false;
 		} else {
 			Optional<DripstoneColumn> optional = DripstoneColumn.create(
-				structureWorldAccess, blockPos, largeDripstoneFeatureConfig.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplace
+				structureWorldAccess, blockPos, largeDripstoneFeatureConfig.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava
 			);
 			if (optional.isPresent() && optional.get() instanceof DripstoneColumn.Bounded) {
 				DripstoneColumn.Bounded bounded = (DripstoneColumn.Bounded)optional.get();
@@ -113,6 +113,10 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 				int i = Math.min(10, this.getBaseScale());
 
 				for (int j = 0; j < i; j++) {
+					if (world.getBlockState(mutable).isOf(Blocks.LAVA)) {
+						return false;
+					}
+
 					if (DripstoneHelper.canGenerateBase(world, wind.modify(mutable), this.scale)) {
 						this.pos = mutable;
 						return true;
@@ -147,7 +151,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 
 							for (int l = 0; l < k; l++) {
 								BlockPos blockPos = wind.modify(mutable);
-								if (DripstoneHelper.canGenerate(world, blockPos)) {
+								if (DripstoneHelper.canGenerateOrLava(world, blockPos)) {
 									bl = true;
 									Block block = Blocks.DRIPSTONE_BLOCK;
 									world.setBlockState(blockPos, block.getDefaultState(), 2);
@@ -175,7 +179,9 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 
 		private WindModifier(int y, Random random, UniformFloatDistribution wind) {
 			this.y = y;
-			this.wind = new Vec3d((double)wind.getValue(random), 0.0, (double)wind.getValue(random));
+			float f = wind.getValue(random);
+			float g = MathHelper.nextBetween(random, 0.0F, (float) Math.PI);
+			this.wind = new Vec3d((double)(MathHelper.cos(g) * f), 0.0, (double)(MathHelper.sin(g) * f));
 		}
 
 		private WindModifier() {

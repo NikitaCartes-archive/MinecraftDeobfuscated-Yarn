@@ -9,7 +9,7 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
 
 public class BastionRemnantGenerator {
-	public static final StructurePool field_25941 = StructurePools.register(
+	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
 		new StructurePool(
 			new Identifier("bastion/starts"),
 			new Identifier("empty"),

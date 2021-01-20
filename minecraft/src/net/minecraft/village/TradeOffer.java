@@ -193,13 +193,13 @@ public class TradeOffer {
 		}
 	}
 
-	public boolean depleteBuyItems(ItemStack itemStack, ItemStack itemStack2) {
-		if (!this.matchesBuyItems(itemStack, itemStack2)) {
+	public boolean depleteBuyItems(ItemStack firstBuyStack, ItemStack secondBuyStack) {
+		if (!this.matchesBuyItems(firstBuyStack, secondBuyStack)) {
 			return false;
 		} else {
-			itemStack.decrement(this.getAdjustedFirstBuyItem().getCount());
+			firstBuyStack.decrement(this.getAdjustedFirstBuyItem().getCount());
 			if (!this.getSecondBuyItem().isEmpty()) {
-				itemStack2.decrement(this.getSecondBuyItem().getCount());
+				secondBuyStack.decrement(this.getSecondBuyItem().getCount());
 			}
 
 			return true;

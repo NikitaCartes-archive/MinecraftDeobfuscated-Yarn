@@ -13,9 +13,9 @@ public abstract class ResettingWorldTask extends LongRunningTask {
 	private final Text title;
 	private final Runnable callback;
 
-	public ResettingWorldTask(long l, Text text, Runnable runnable) {
+	public ResettingWorldTask(long l, Text title, Runnable runnable) {
 		this.serverId = l;
-		this.title = text;
+		this.title = title;
 		this.callback = runnable;
 	}
 

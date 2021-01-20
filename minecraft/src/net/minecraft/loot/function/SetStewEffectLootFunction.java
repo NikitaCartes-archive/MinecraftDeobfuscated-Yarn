@@ -45,7 +45,7 @@ public class SetStewEffectLootFunction extends ConditionalLootFunction {
 		return (Set<LootContextParameter<?>>)this.effects
 			.values()
 			.stream()
-			.flatMap(lootNumberProvider -> lootNumberProvider.getRequiredParameters().stream())
+			.flatMap(numberProvider -> numberProvider.getRequiredParameters().stream())
 			.collect(ImmutableSet.toImmutableSet());
 	}
 

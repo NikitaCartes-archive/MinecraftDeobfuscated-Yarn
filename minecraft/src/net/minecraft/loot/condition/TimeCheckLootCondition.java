@@ -29,7 +29,7 @@ public class TimeCheckLootCondition implements LootCondition {
 
 	@Override
 	public Set<LootContextParameter<?>> getRequiredParameters() {
-		return this.value.method_32386();
+		return this.value.getRequiredParameters();
 	}
 
 	public boolean test(LootContext lootContext) {
@@ -39,7 +39,7 @@ public class TimeCheckLootCondition implements LootCondition {
 			l %= this.period;
 		}
 
-		return this.value.method_32393(lootContext, (int)l);
+		return this.value.test(lootContext, (int)l);
 	}
 
 	public static class Serializer implements JsonSerializer<TimeCheckLootCondition> {

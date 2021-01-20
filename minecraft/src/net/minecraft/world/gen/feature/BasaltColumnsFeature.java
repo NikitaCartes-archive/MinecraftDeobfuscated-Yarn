@@ -14,7 +14,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
-	private static final ImmutableList<Block> field_24132 = ImmutableList.of(
+	private static final ImmutableList<Block> BLOCKS = ImmutableList.of(
 		Blocks.LAVA,
 		Blocks.BEDROCK,
 		Blocks.MAGMA_BLOCK,
@@ -95,7 +95,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 
 	@Nullable
 	private static BlockPos method_27094(WorldAccess worldAccess, int i, BlockPos.Mutable mutable, int j) {
-		while (mutable.getY() > worldAccess.getSectionCount() + 1 && j > 0) {
+		while (mutable.getY() > worldAccess.getBottomSectionLimit() + 1 && j > 0) {
 			j--;
 			if (method_30379(worldAccess, i, mutable)) {
 				return mutable;
@@ -113,7 +113,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		} else {
 			BlockState blockState = worldAccess.getBlockState(mutable.move(Direction.DOWN));
 			mutable.move(Direction.UP);
-			return !blockState.isAir() && !field_24132.contains(blockState.getBlock());
+			return !blockState.isAir() && !BLOCKS.contains(blockState.getBlock());
 		}
 	}
 
@@ -122,7 +122,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		while (mutable.getY() < worldAccess.getTopHeightLimit() && i > 0) {
 			i--;
 			BlockState blockState = worldAccess.getBlockState(mutable);
-			if (field_24132.contains(blockState.getBlock())) {
+			if (BLOCKS.contains(blockState.getBlock())) {
 				return null;
 			}
 

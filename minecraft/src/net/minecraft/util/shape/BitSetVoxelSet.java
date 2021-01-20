@@ -21,19 +21,19 @@ public final class BitSetVoxelSet extends VoxelSet {
 		this.zMin = k;
 	}
 
-	public static BitSetVoxelSet method_31939(int i, int j, int k, int l, int m, int n, int o, int p, int q) {
-		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(i, j, k);
-		bitSetVoxelSet.xMin = l;
-		bitSetVoxelSet.yMin = m;
-		bitSetVoxelSet.zMin = n;
-		bitSetVoxelSet.xMax = o;
-		bitSetVoxelSet.yMax = p;
-		bitSetVoxelSet.zMax = q;
+	public static BitSetVoxelSet method_31939(int xSize, int ySize, int zSize, int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+		BitSetVoxelSet bitSetVoxelSet = new BitSetVoxelSet(xSize, ySize, zSize);
+		bitSetVoxelSet.xMin = xMin;
+		bitSetVoxelSet.yMin = yMin;
+		bitSetVoxelSet.zMin = zMin;
+		bitSetVoxelSet.xMax = xMax;
+		bitSetVoxelSet.yMax = yMax;
+		bitSetVoxelSet.zMax = zMax;
 
-		for (int r = l; r < o; r++) {
-			for (int s = m; s < p; s++) {
-				for (int t = n; t < q; t++) {
-					bitSetVoxelSet.method_31940(r, s, t, false);
+		for (int i = xMin; i < xMax; i++) {
+			for (int j = yMin; j < yMax; j++) {
+				for (int k = zMin; k < zMax; k++) {
+					bitSetVoxelSet.method_31940(i, j, k, false);
 				}
 			}
 		}
@@ -76,15 +76,15 @@ public final class BitSetVoxelSet extends VoxelSet {
 		return this.storage.get(this.getIndex(x, y, z));
 	}
 
-	private void method_31940(int i, int j, int k, boolean bl) {
-		this.storage.set(this.getIndex(i, j, k));
+	private void method_31940(int x, int y, int z, boolean bl) {
+		this.storage.set(this.getIndex(x, y, z));
 		if (bl) {
-			this.xMin = Math.min(this.xMin, i);
-			this.yMin = Math.min(this.yMin, j);
-			this.zMin = Math.min(this.zMin, k);
-			this.xMax = Math.max(this.xMax, i + 1);
-			this.yMax = Math.max(this.yMax, j + 1);
-			this.zMax = Math.max(this.zMax, k + 1);
+			this.xMin = Math.min(this.xMin, x);
+			this.yMin = Math.min(this.yMin, y);
+			this.zMin = Math.min(this.zMin, z);
+			this.xMax = Math.max(this.xMax, x + 1);
+			this.yMax = Math.max(this.yMax, y + 1);
+			this.zMax = Math.max(this.zMax, z + 1);
 		}
 	}
 

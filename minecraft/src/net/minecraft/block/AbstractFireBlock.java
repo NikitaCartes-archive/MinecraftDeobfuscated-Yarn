@@ -136,7 +136,7 @@ public abstract class AbstractFireBlock extends Block {
 	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
 		if (!oldState.isOf(state.getBlock())) {
 			if (isOverworldOrNether(world)) {
-				Optional<AreaHelper> optional = AreaHelper.method_30485(world, pos, Direction.Axis.X);
+				Optional<AreaHelper> optional = AreaHelper.getNewPortal(world, pos, Direction.Axis.X);
 				if (optional.isPresent()) {
 					((AreaHelper)optional.get()).createPortal();
 					return;
@@ -160,26 +160,33 @@ public abstract class AbstractFireBlock extends Block {
 		}
 	}
 
-	public static boolean method_30032(World world, BlockPos blockPos, Direction direction) {
-		BlockState blockState = world.getBlockState(blockPos);
-		return !blockState.isAir() ? false : getState(world, blockPos).canPlaceAt(world, blockPos) || method_30033(world, blockPos, direction);
+	public static boolean canPlaceAt(World world, BlockPos pos, Direction direction) {
+		BlockState blockState = world.getBlockState(pos);
+		return !blockState.isAir() ? false : getState(world, pos).canPlaceAt(world, pos) || shouldLightPortalAt(world, pos, direction);
 	}
 
-	private static boolean method_30033(World world, BlockPos blockPos, Direction direction) {
+	private static boolean shouldLightPortalAt(World world, BlockPos pos, Direction direction) {
 		if (!isOverworldOrNether(world)) {
 			return false;
 		} else {
-			BlockPos.Mutable mutable = blockPos.mutableCopy();
+			BlockPos.Mutable mutable = pos.mutableCopy();
 			boolean bl = false;
 
 			for (Direction direction2 : Direction.values()) {
-				if (world.getBlockState(mutable.set(blockPos).move(direction2)).isOf(Blocks.OBSIDIAN)) {
+				if (world.getBlockState(mutable.set(pos).move(direction2)).isOf(Blocks.OBSIDIAN)) {
 					bl = true;
 					break;
 				}
 			}
 
-			return bl && AreaHelper.method_30485(world, blockPos, direction.rotateYCounterclockwise().getAxis()).isPresent();
+			if (!bl) {
+				return false;
+			} else {
+				Direction.Axis axis = direction.getAxis().isHorizontal()
+					? direction.rotateYCounterclockwise().getAxis()
+					: Direction.Type.HORIZONTAL.randomAxis(world.random);
+				return AreaHelper.getNewPortal(world, pos, axis).isPresent();
+			}
 		}
 	}
 }

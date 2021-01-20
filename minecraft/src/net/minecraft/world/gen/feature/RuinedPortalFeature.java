@@ -54,8 +54,8 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 		return RuinedPortalFeature.Start::new;
 	}
 
-	private static boolean method_27209(BlockPos blockPos, Biome biome) {
-		return biome.getTemperature(blockPos) < 0.15F;
+	private static boolean isColdAt(BlockPos pos, Biome biome) {
+		return biome.getTemperature(pos) < 0.15F;
 	}
 
 	private static int method_27211(
@@ -102,7 +102,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			mutable.set(0, m, 0);
 
 			for (VerticalBlockSample verticalBlockSample : list2) {
-				BlockState blockState = verticalBlockSample.method_32892(mutable);
+				BlockState blockState = verticalBlockSample.getState(mutable);
 				if (blockState != null && type.getBlockPredicate().test(blockState)) {
 					if (++n == 3) {
 						return m;
@@ -190,7 +190,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			if (ruinedPortalFeatureConfig.portalType == RuinedPortalFeature.Type.MOUNTAIN
 				|| ruinedPortalFeatureConfig.portalType == RuinedPortalFeature.Type.OCEAN
 				|| ruinedPortalFeatureConfig.portalType == RuinedPortalFeature.Type.STANDARD) {
-				properties.cold = RuinedPortalFeature.method_27209(blockPos3, biome);
+				properties.cold = RuinedPortalFeature.isColdAt(blockPos3, biome);
 			}
 
 			this.children.add(new RuinedPortalStructurePiece(blockPos3, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));

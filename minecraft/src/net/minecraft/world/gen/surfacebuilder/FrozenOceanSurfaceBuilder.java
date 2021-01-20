@@ -19,8 +19,8 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 	private static final BlockState AIR = Blocks.AIR.getDefaultState();
 	private static final BlockState GRAVEL = Blocks.GRAVEL.getDefaultState();
 	private static final BlockState ICE = Blocks.ICE.getDefaultState();
-	private OctaveSimplexNoiseSampler field_15644;
-	private OctaveSimplexNoiseSampler field_15642;
+	private OctaveSimplexNoiseSampler icebergNoise;
+	private OctaveSimplexNoiseSampler icebergCutoffNoise;
 	private long seed;
 
 	public FrozenOceanSurfaceBuilder(Codec<TernarySurfaceConfig> codec) {
@@ -45,10 +45,10 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 		double f = 0.0;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		float g = biome.getTemperature(mutable.set(i, 63, j));
-		double h = Math.min(Math.abs(d), this.field_15644.sample((double)i * 0.1, (double)j * 0.1, false) * 15.0);
+		double h = Math.min(Math.abs(d), this.icebergNoise.sample((double)i * 0.1, (double)j * 0.1, false) * 15.0);
 		if (h > 1.8) {
 			double n = 0.09765625;
-			double o = Math.abs(this.field_15642.sample((double)i * 0.09765625, (double)j * 0.09765625, false));
+			double o = Math.abs(this.icebergCutoffNoise.sample((double)i * 0.09765625, (double)j * 0.09765625, false));
 			e = h * h * 1.2;
 			double p = Math.ceil(o * 40.0) + 14.0;
 			if (e > p) {
@@ -136,10 +136,10 @@ public class FrozenOceanSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConf
 
 	@Override
 	public void initSeed(long seed) {
-		if (this.seed != seed || this.field_15644 == null || this.field_15642 == null) {
+		if (this.seed != seed || this.icebergNoise == null || this.icebergCutoffNoise == null) {
 			ChunkRandom chunkRandom = new ChunkRandom(seed);
-			this.field_15644 = new OctaveSimplexNoiseSampler(chunkRandom, IntStream.rangeClosed(-3, 0));
-			this.field_15642 = new OctaveSimplexNoiseSampler(chunkRandom, ImmutableList.of(0));
+			this.icebergNoise = new OctaveSimplexNoiseSampler(chunkRandom, IntStream.rangeClosed(-3, 0));
+			this.icebergCutoffNoise = new OctaveSimplexNoiseSampler(chunkRandom, ImmutableList.of(0));
 		}
 
 		this.seed = seed;

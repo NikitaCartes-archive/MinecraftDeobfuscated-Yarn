@@ -18,15 +18,15 @@ public abstract class AbstractCriterion<T extends AbstractCriterionConditions> i
 	private final Map<PlayerAdvancementTracker, Set<Criterion.ConditionsContainer<T>>> progressions = Maps.<PlayerAdvancementTracker, Set<Criterion.ConditionsContainer<T>>>newIdentityHashMap();
 
 	@Override
-	public final void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditionsContainer) {
-		((Set)this.progressions.computeIfAbsent(manager, playerAdvancementTracker -> Sets.newHashSet())).add(conditionsContainer);
+	public final void beginTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditions) {
+		((Set)this.progressions.computeIfAbsent(manager, playerAdvancementTracker -> Sets.newHashSet())).add(conditions);
 	}
 
 	@Override
-	public final void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditionsContainer) {
+	public final void endTrackingCondition(PlayerAdvancementTracker manager, Criterion.ConditionsContainer<T> conditions) {
 		Set<Criterion.ConditionsContainer<T>> set = (Set<Criterion.ConditionsContainer<T>>)this.progressions.get(manager);
 		if (set != null) {
-			set.remove(conditionsContainer);
+			set.remove(conditions);
 			if (set.isEmpty()) {
 				this.progressions.remove(manager);
 			}

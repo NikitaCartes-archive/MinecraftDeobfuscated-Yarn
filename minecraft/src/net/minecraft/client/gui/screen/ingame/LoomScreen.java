@@ -34,7 +34,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(EnvType.CLIENT)
 public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/loom.png");
-	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - BannerPattern.field_24417 - 1 + 4 - 1) / 4;
+	private static final int PATTERN_BUTTON_ROW_COUNT = (BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT - 1 + 4 - 1) / 4;
 	private ModelPart bannerField;
 	@Nullable
 	private List<Pair<BannerPattern, DyeColor>> field_21841;
@@ -48,9 +48,9 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	private boolean scrollbarClicked;
 	private int firstPatternButtonId = 1;
 
-	public LoomScreen(LoomScreenHandler loomScreenHandler, PlayerInventory inventory, Text title) {
-		super(loomScreenHandler, inventory, title);
-		loomScreenHandler.setInventoryChangeListener(this::onInventoryChanged);
+	public LoomScreen(LoomScreenHandler handler, PlayerInventory inventory, Text title) {
+		super(handler, inventory, title);
+		handler.setInventoryChangeListener(this::onInventoryChanged);
 		this.titleY -= 2;
 	}
 
@@ -116,7 +116,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 			int m = j + 13;
 			int n = this.firstPatternButtonId + 16;
 
-			for (int o = this.firstPatternButtonId; o < n && o < BannerPattern.COUNT - BannerPattern.field_24417; o++) {
+			for (int o = this.firstPatternButtonId; o < n && o < BannerPattern.COUNT - BannerPattern.HAS_PATTERN_ITEM_COUNT; o++) {
 				int p = o - this.firstPatternButtonId;
 				int q = l + p % 4 * 14;
 				int r = m + p / 4 * 14;
@@ -159,7 +159,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		VertexConsumerProvider.Immediate immediate = this.client.getBufferBuilders().getEntityVertexConsumers();
 		this.bannerField.pitch = 0.0F;
 		this.bannerField.pivotY = -32.0F;
-		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(DyeColor.GRAY, BannerBlockEntity.getPatternListTag(itemStack));
+		List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.getPatternsFromTag(DyeColor.GRAY, BannerBlockEntity.getPatternListTag(itemStack));
 		BannerBlockEntityRenderer.renderCanvas(matrixStack, immediate, 15728880, OverlayTexture.DEFAULT_UV, this.bannerField, ModelLoader.BANNER_BASE, true, list);
 		matrixStack.pop();
 		immediate.draw();
@@ -236,7 +236,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		if (itemStack.isEmpty()) {
 			this.field_21841 = null;
 		} else {
-			this.field_21841 = BannerBlockEntity.method_24280(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListTag(itemStack));
+			this.field_21841 = BannerBlockEntity.getPatternsFromTag(((BannerItem)itemStack.getItem()).getColor(), BannerBlockEntity.getPatternListTag(itemStack));
 		}
 
 		ItemStack itemStack2 = this.handler.getBannerSlot().getStack();

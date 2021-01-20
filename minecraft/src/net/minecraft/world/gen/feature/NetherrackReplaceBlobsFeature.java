@@ -26,7 +26,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 		Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
 		BlockPos blockPos2 = method_27107(
 			structureWorldAccess,
-			blockPos.mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getSectionCount() + 1, structureWorldAccess.getTopHeightLimit() - 1),
+			blockPos.mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomSectionLimit() + 1, structureWorldAccess.getTopHeightLimit() - 1),
 			block
 		);
 		if (blockPos2 == null) {
@@ -56,7 +56,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 
 	@Nullable
 	private static BlockPos method_27107(WorldAccess worldAccess, BlockPos.Mutable mutable, Block block) {
-		while (mutable.getY() > worldAccess.getSectionCount() + 1) {
+		while (mutable.getY() > worldAccess.getBottomSectionLimit() + 1) {
 			BlockState blockState = worldAccess.getBlockState(mutable);
 			if (blockState.isOf(block)) {
 				return mutable;

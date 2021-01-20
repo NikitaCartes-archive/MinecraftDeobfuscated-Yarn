@@ -10,9 +10,9 @@ import net.minecraft.util.math.BlockPos;
 
 public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 	private final int completionRange;
-	private final float field_23130;
+	private final float speed;
 
-	public GoToCelebrateTask(int completionRange, float f) {
+	public GoToCelebrateTask(int completionRange, float speed) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.CELEBRATE_LOCATION,
@@ -26,14 +26,14 @@ public class GoToCelebrateTask<E extends MobEntity> extends Task<E> {
 			)
 		);
 		this.completionRange = completionRange;
-		this.field_23130 = f;
+		this.speed = speed;
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {
 		BlockPos blockPos = getCelebrateLocation(mobEntity);
 		boolean bl = blockPos.isWithinDistance(mobEntity.getBlockPos(), (double)this.completionRange);
 		if (!bl) {
-			LookTargetUtil.walkTowards(mobEntity, fuzz(mobEntity, blockPos), this.field_23130, this.completionRange);
+			LookTargetUtil.walkTowards(mobEntity, fuzz(mobEntity, blockPos), this.speed, this.completionRange);
 		}
 	}
 

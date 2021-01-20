@@ -18,7 +18,7 @@ public class RangedApproachTask extends Task<MobEntity> {
 		this(livingEntity -> speed);
 	}
 
-	public RangedApproachTask(Function<LivingEntity, Float> function) {
+	public RangedApproachTask(Function<LivingEntity, Float> speed) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.WALK_TARGET,
@@ -31,7 +31,7 @@ public class RangedApproachTask extends Task<MobEntity> {
 				MemoryModuleState.REGISTERED
 			)
 		);
-		this.speed = function;
+		this.speed = speed;
 	}
 
 	protected void run(ServerWorld serverWorld, MobEntity mobEntity, long l) {

@@ -4,7 +4,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 /**
- * Represents the surface color of a block when rendered from the {@link net.minecraft.client.gui.MapRenderer}.
+ * Represents the surface color of a block when rendered from the {@link net.minecraft.client.render.MapRenderer}.
  * Color names refer to a material or an object which refers to their vanilla Minecraft textures, not their real-world counterparts, eg. "emerald green".
  * Names are in the form of either <i>blockReference_baseColor</i> or <i>color</i>.
  */

@@ -58,7 +58,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 
 			for (GameEventDebugRenderer.class_5741 lv : this.field_28257) {
-				lv.method_33094(world)
+				lv.getPos(world)
 					.ifPresent(
 						blockPosx -> {
 							int ix = blockPosx.getX() - lv.getRange();
@@ -89,7 +89,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
 
 			for (GameEventDebugRenderer.class_5741 lv2 : this.field_28257) {
-				lv2.method_33094(world)
+				lv2.getPos(world)
 					.ifPresent(
 						blockPosx -> {
 							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
@@ -117,7 +117,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.depthMask(false);
 
 			for (GameEventDebugRenderer.class_5741 lv2 : this.field_28257) {
-				lv2.method_33094(world)
+				lv2.getPos(world)
 					.ifPresent(
 						blockPosx -> {
 							DebugRenderer.drawString("Listener Origin", (double)blockPosx.getX(), (double)((float)blockPosx.getY() + 1.8F), (double)blockPosx.getZ(), -1, 0.025F);
@@ -185,31 +185,31 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 
 	@Environment(EnvType.CLIENT)
 	static class class_5741 implements GameEventListener {
-		public final PositionSource event;
-		public final int field_28262;
+		public final PositionSource positionSource;
+		public final int range;
 
-		public class_5741(PositionSource positionSource, int i) {
-			this.event = positionSource;
-			this.field_28262 = i;
+		public class_5741(PositionSource positionSource, int range) {
+			this.positionSource = positionSource;
+			this.range = range;
 		}
 
 		public boolean method_33095(World world, BlockPos blockPos) {
-			Optional<BlockPos> optional = this.event.getPos(world);
+			Optional<BlockPos> optional = this.positionSource.getPos(world);
 			return !optional.isPresent() || ((BlockPos)optional.get()).getSquaredDistance(blockPos) <= 1024.0;
 		}
 
-		public Optional<BlockPos> method_33094(World world) {
-			return this.event.getPos(world);
+		public Optional<BlockPos> getPos(World world) {
+			return this.positionSource.getPos(world);
 		}
 
 		@Override
 		public PositionSource getPositionSource() {
-			return this.event;
+			return this.positionSource;
 		}
 
 		@Override
 		public int getRange() {
-			return this.field_28262;
+			return this.range;
 		}
 
 		@Override

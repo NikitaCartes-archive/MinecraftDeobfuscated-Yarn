@@ -25,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class ClientRecipeBook extends RecipeBook {
-	private static final Logger field_25622 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private Map<RecipeBookGroup, List<RecipeResultCollection>> resultsByGroup = ImmutableMap.of();
 	private List<RecipeResultCollection> orderedResults = ImmutableList.of();
 
@@ -36,7 +36,7 @@ public class ClientRecipeBook extends RecipeBook {
 		map.forEach((recipeBookGroup, list) -> {
 			List var10000 = (List)map2.put(recipeBookGroup, list.stream().map(RecipeResultCollection::new).peek(builder::add).collect(ImmutableList.toImmutableList()));
 		});
-		RecipeBookGroup.field_25783
+		RecipeBookGroup.SEARCH_MAP
 			.forEach(
 				(recipeBookGroup, list) -> {
 					List var10000 = (List)map2.put(
@@ -56,7 +56,7 @@ public class ClientRecipeBook extends RecipeBook {
 		Table<RecipeBookGroup, String, List<Recipe<?>>> table = HashBasedTable.create();
 
 		for (Recipe<?> recipe : iterable) {
-			if (!recipe.isIgnoredInRecipeBook() && !recipe.method_31584()) {
+			if (!recipe.isIgnoredInRecipeBook() && !recipe.isEmpty()) {
 				RecipeBookGroup recipeBookGroup = getGroupForRecipe(recipe);
 				String string = recipe.getGroup();
 				if (string.isEmpty()) {
@@ -106,7 +106,7 @@ public class ClientRecipeBook extends RecipeBook {
 		} else if (recipeType == RecipeType.SMITHING) {
 			return RecipeBookGroup.SMITHING;
 		} else {
-			field_25622.warn("Unknown recipe category: {}/{}", () -> Registry.RECIPE_TYPE.getId(recipe.getType()), recipe::getId);
+			LOGGER.warn("Unknown recipe category: {}/{}", () -> Registry.RECIPE_TYPE.getId(recipe.getType()), recipe::getId);
 			return RecipeBookGroup.UNKNOWN;
 		}
 	}

@@ -23,19 +23,19 @@ public class CrashReportSection {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static String createPositionString(HeightLimitView heightLimitView, double d, double e, double f) {
-		return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", d, e, f, createPositionString(heightLimitView, new BlockPos(d, e, f)));
+	public static String createPositionString(HeightLimitView world, double x, double y, double z) {
+		return String.format(Locale.ROOT, "%.2f,%.2f,%.2f - %s", x, y, z, createPositionString(world, new BlockPos(x, y, z)));
 	}
 
-	public static String createPositionString(HeightLimitView heightLimitView, BlockPos blockPos) {
-		return createPositionString(heightLimitView, blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	public static String createPositionString(HeightLimitView world, BlockPos pos) {
+		return createPositionString(world, pos.getX(), pos.getY(), pos.getZ());
 	}
 
-	public static String createPositionString(HeightLimitView heightLimitView, int i, int j, int k) {
+	public static String createPositionString(HeightLimitView world, int x, int y, int z) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		try {
-			stringBuilder.append(String.format("World: (%d,%d,%d)", i, j, k));
+			stringBuilder.append(String.format("World: (%d,%d,%d)", x, y, z));
 		} catch (Throwable var19) {
 			stringBuilder.append("(Error finding world loc)");
 		}
@@ -43,19 +43,19 @@ public class CrashReportSection {
 		stringBuilder.append(", ");
 
 		try {
-			int l = ChunkSectionPos.getSectionCoord(i);
-			int m = ChunkSectionPos.getSectionCoord(j);
-			int n = ChunkSectionPos.getSectionCoord(k);
-			int o = i & 15;
-			int p = j & 15;
-			int q = k & 15;
-			int r = ChunkSectionPos.getBlockCoord(l);
-			int s = heightLimitView.getSectionCount();
-			int t = ChunkSectionPos.getBlockCoord(n);
-			int u = ChunkSectionPos.getBlockCoord(l + 1) - 1;
-			int v = heightLimitView.getTopHeightLimit() - 1;
-			int w = ChunkSectionPos.getBlockCoord(n + 1) - 1;
-			stringBuilder.append(String.format("Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", o, p, q, l, m, n, r, s, t, u, v, w));
+			int i = ChunkSectionPos.getSectionCoord(x);
+			int j = ChunkSectionPos.getSectionCoord(y);
+			int k = ChunkSectionPos.getSectionCoord(z);
+			int l = x & 15;
+			int m = y & 15;
+			int n = z & 15;
+			int o = ChunkSectionPos.getBlockCoord(i);
+			int p = world.getBottomSectionLimit();
+			int q = ChunkSectionPos.getBlockCoord(k);
+			int r = ChunkSectionPos.getBlockCoord(i + 1) - 1;
+			int s = world.getTopHeightLimit() - 1;
+			int t = ChunkSectionPos.getBlockCoord(k + 1) - 1;
+			stringBuilder.append(String.format("Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", l, m, n, i, j, k, o, p, q, r, s, t));
 		} catch (Throwable var18) {
 			stringBuilder.append("(Error finding chunk loc)");
 		}
@@ -63,19 +63,19 @@ public class CrashReportSection {
 		stringBuilder.append(", ");
 
 		try {
-			int l = i >> 9;
-			int m = k >> 9;
-			int n = l << 5;
-			int o = m << 5;
-			int p = (l + 1 << 5) - 1;
-			int q = (m + 1 << 5) - 1;
-			int r = l << 9;
-			int s = heightLimitView.getSectionCount();
-			int t = m << 9;
-			int u = (l + 1 << 9) - 1;
-			int v = heightLimitView.getTopHeightLimit() - 1;
-			int w = (m + 1 << 9) - 1;
-			stringBuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", l, m, n, o, p, q, r, s, t, u, v, w));
+			int i = x >> 9;
+			int j = z >> 9;
+			int k = i << 5;
+			int l = j << 5;
+			int m = (i + 1 << 5) - 1;
+			int n = (j + 1 << 5) - 1;
+			int o = i << 9;
+			int p = world.getBottomSectionLimit();
+			int q = j << 9;
+			int r = (i + 1 << 9) - 1;
+			int s = world.getTopHeightLimit() - 1;
+			int t = (j + 1 << 9) - 1;
+			stringBuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", i, j, k, l, m, n, o, p, q, r, s, t));
 		} catch (Throwable var17) {
 			stringBuilder.append("(Error finding world loc)");
 		}
@@ -167,12 +167,12 @@ public class CrashReportSection {
 		return this.stackTrace;
 	}
 
-	public static void addBlockInfo(CrashReportSection element, HeightLimitView heightLimitView, BlockPos blockPos, @Nullable BlockState blockState) {
-		if (blockState != null) {
-			element.add("Block", blockState::toString);
+	public static void addBlockInfo(CrashReportSection element, HeightLimitView world, BlockPos pos, @Nullable BlockState state) {
+		if (state != null) {
+			element.add("Block", state::toString);
 		}
 
-		element.add("Block location", (CrashCallable<String>)(() -> createPositionString(heightLimitView, blockPos)));
+		element.add("Block location", (CrashCallable<String>)(() -> createPositionString(world, pos)));
 	}
 
 	static class Element {

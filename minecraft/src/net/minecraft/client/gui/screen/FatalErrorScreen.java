@@ -10,9 +10,9 @@ import net.minecraft.text.Text;
 public class FatalErrorScreen extends Screen {
 	private final Text message;
 
-	public FatalErrorScreen(Text title, Text text) {
+	public FatalErrorScreen(Text title, Text message) {
 		super(title);
-		this.message = text;
+		this.message = message;
 	}
 
 	@Override

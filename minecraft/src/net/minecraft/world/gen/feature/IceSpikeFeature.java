@@ -17,7 +17,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
 	) {
-		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getSectionCount() + 2) {
+		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 2) {
 			blockPos = blockPos.down();
 		}
 

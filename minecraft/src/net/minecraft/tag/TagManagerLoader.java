@@ -19,12 +19,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class TagManagerLoader implements ResourceReloadListener {
-	private static final Logger field_28311 = LogManager.getLogger();
-	private final DynamicRegistryManager field_28312;
+	private static final Logger LOGGER = LogManager.getLogger();
+	private final DynamicRegistryManager registryManager;
 	private TagManager tagManager = TagManager.EMPTY;
 
-	public TagManagerLoader(DynamicRegistryManager dynamicRegistryManager) {
-		this.field_28312 = dynamicRegistryManager;
+	public TagManagerLoader(DynamicRegistryManager registryManager) {
+		this.registryManager = registryManager;
 	}
 
 	public TagManager getTagManager() {
@@ -71,14 +71,14 @@ public class TagManagerLoader implements ResourceReloadListener {
 
 	@Nullable
 	private <T> TagManagerLoader.class_5751<T> method_33178(ResourceManager resourceManager, Executor executor, RequiredTagList<T> requiredTagList) {
-		Optional<? extends Registry<T>> optional = this.field_28312.getOptional(requiredTagList.getRegistryKey());
+		Optional<? extends Registry<T>> optional = this.registryManager.getOptional(requiredTagList.getRegistryKey());
 		if (optional.isPresent()) {
 			Registry<T> registry = (Registry<T>)optional.get();
 			TagGroupLoader<T> tagGroupLoader = new TagGroupLoader<>(registry::getOrEmpty, requiredTagList.method_33149());
 			CompletableFuture<? extends TagGroup<T>> completableFuture = CompletableFuture.supplyAsync(() -> tagGroupLoader.method_33176(resourceManager), executor);
 			return new TagManagerLoader.class_5751<>(requiredTagList, completableFuture);
 		} else {
-			field_28311.warn("Can't find registry for {}", requiredTagList.getRegistryKey());
+			LOGGER.warn("Can't find registry for {}", requiredTagList.getRegistryKey());
 			return null;
 		}
 	}

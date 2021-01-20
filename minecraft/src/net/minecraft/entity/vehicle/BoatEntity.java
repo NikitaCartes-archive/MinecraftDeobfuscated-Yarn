@@ -1,5 +1,6 @@
 package net.minecraft.entity.vehicle;
 
+import com.google.common.collect.Lists;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
@@ -119,11 +120,11 @@ public class BoatEntity extends Entity {
 
 	@Override
 	public boolean collidesWith(Entity other) {
-		return method_30959(this, other);
+		return canCollide(this, other);
 	}
 
-	public static boolean method_30959(Entity entity, Entity entity2) {
-		return (entity2.isCollidable() || entity2.isPushable()) && !entity.isConnectedThroughVehicle(entity2);
+	public static boolean canCollide(Entity entity, Entity other) {
+		return (other.isCollidable() || other.isPushable()) && !entity.isConnectedThroughVehicle(other);
 	}
 
 	@Override
@@ -686,20 +687,23 @@ public class BoatEntity extends Entity {
 		BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e);
 		BlockPos blockPos2 = blockPos.down();
 		if (!this.world.isWater(blockPos2)) {
-			double f = (double)blockPos.getY() + this.world.getDismountHeight(blockPos);
-			double g = (double)blockPos.getY() + this.world.getDismountHeight(blockPos2);
+			List<Vec3d> list = Lists.<Vec3d>newArrayList();
+			double f = this.world.getDismountHeight(blockPos);
+			if (Dismounting.canDismountInBlock(f)) {
+				list.add(new Vec3d(d, (double)blockPos.getY() + f, e));
+			}
+
+			double g = this.world.getDismountHeight(blockPos2);
+			if (Dismounting.canDismountInBlock(g)) {
+				list.add(new Vec3d(d, (double)blockPos2.getY() + g, e));
+			}
 
 			for (EntityPose entityPose : passenger.getPoses()) {
-				Vec3d vec3d2 = Dismounting.findDismountPos(this.world, d, f, e, passenger, entityPose);
-				if (vec3d2 != null) {
-					passenger.setPose(entityPose);
-					return vec3d2;
-				}
-
-				Vec3d vec3d3 = Dismounting.findDismountPos(this.world, d, g, e, passenger, entityPose);
-				if (vec3d3 != null) {
-					passenger.setPose(entityPose);
-					return vec3d3;
+				for (Vec3d vec3d2 : list) {
+					if (Dismounting.canPlaceEntityAt(this.world, vec3d2, passenger, entityPose)) {
+						passenger.setPose(entityPose);
+						return vec3d2;
+					}
 				}
 			}
 		}
@@ -760,7 +764,7 @@ public class BoatEntity extends Entity {
 						return;
 					}
 
-					this.handleFallDamage(this.fallDistance, 1.0F);
+					this.handleFallDamage(this.fallDistance, 1.0F, DamageSource.FALL);
 					if (!this.world.isClient && !this.isRemoved()) {
 						this.kill();
 						if (this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {

@@ -327,6 +327,19 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 		);
 		this.register(EntityType.GIANT, LootTable.builder());
 		this.register(
+			EntityType.GLOW_SQUID,
+			LootTable.builder()
+				.pool(
+					LootPool.builder()
+						.rolls(ConstantLootNumberProvider.create(1.0F))
+						.with(
+							ItemEntry.builder(Items.GLOW_INK_SAC)
+								.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(1.0F, 3.0F)))
+								.apply(LootingEnchantLootFunction.builder(UniformLootNumberProvider.create(0.0F, 1.0F)))
+						)
+				)
+		);
+		this.register(
 			EntityType.GUARDIAN,
 			LootTable.builder()
 				.pool(

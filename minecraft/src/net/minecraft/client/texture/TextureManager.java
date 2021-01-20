@@ -59,48 +59,48 @@ public class TextureManager implements ResourceReloadListener, TextureTickListen
 		abstractTexture.bindTexture();
 	}
 
-	public void registerTexture(Identifier identifier, AbstractTexture abstractTexture) {
-		abstractTexture = this.method_24303(identifier, abstractTexture);
-		AbstractTexture abstractTexture2 = (AbstractTexture)this.textures.put(identifier, abstractTexture);
-		if (abstractTexture2 != abstractTexture) {
-			if (abstractTexture2 != null && abstractTexture2 != MissingSprite.getMissingSpriteTexture()) {
-				this.tickListeners.remove(abstractTexture2);
-				this.method_30299(identifier, abstractTexture2);
+	public void registerTexture(Identifier id, AbstractTexture texture) {
+		texture = this.loadTexture(id, texture);
+		AbstractTexture abstractTexture = (AbstractTexture)this.textures.put(id, texture);
+		if (abstractTexture != texture) {
+			if (abstractTexture != null && abstractTexture != MissingSprite.getMissingSpriteTexture()) {
+				this.tickListeners.remove(abstractTexture);
+				this.closeTexture(id, abstractTexture);
 			}
 
-			if (abstractTexture instanceof TextureTickListener) {
-				this.tickListeners.add((TextureTickListener)abstractTexture);
+			if (texture instanceof TextureTickListener) {
+				this.tickListeners.add((TextureTickListener)texture);
 			}
 		}
 	}
 
-	private void method_30299(Identifier identifier, AbstractTexture abstractTexture) {
-		if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
+	private void closeTexture(Identifier id, AbstractTexture texture) {
+		if (texture != MissingSprite.getMissingSpriteTexture()) {
 			try {
-				abstractTexture.close();
+				texture.close();
 			} catch (Exception var4) {
-				LOGGER.warn("Failed to close texture {}", identifier, var4);
+				LOGGER.warn("Failed to close texture {}", id, var4);
 			}
 		}
 
-		abstractTexture.clearGlId();
+		texture.clearGlId();
 	}
 
-	private AbstractTexture method_24303(Identifier identifier, AbstractTexture abstractTexture) {
+	private AbstractTexture loadTexture(Identifier id, AbstractTexture texture) {
 		try {
-			abstractTexture.load(this.resourceContainer);
-			return abstractTexture;
+			texture.load(this.resourceContainer);
+			return texture;
 		} catch (IOException var6) {
-			if (identifier != MISSING_IDENTIFIER) {
-				LOGGER.warn("Failed to load texture: {}", identifier, var6);
+			if (id != MISSING_IDENTIFIER) {
+				LOGGER.warn("Failed to load texture: {}", id, var6);
 			}
 
 			return MissingSprite.getMissingSpriteTexture();
 		} catch (Throwable var7) {
 			CrashReport crashReport = CrashReport.create(var7, "Registering texture");
 			CrashReportSection crashReportSection = crashReport.addElement("Resource location being registered");
-			crashReportSection.add("Resource location", identifier);
-			crashReportSection.add("Texture object class", (CrashCallable<String>)(() -> abstractTexture.getClass().getName()));
+			crashReportSection.add("Resource location", id);
+			crashReportSection.add("Texture object class", (CrashCallable<String>)(() -> texture.getClass().getName()));
 			throw new CrashException(crashReport);
 		}
 	}
@@ -153,7 +153,7 @@ public class TextureManager implements ResourceReloadListener, TextureTickListen
 	}
 
 	public void close() {
-		this.textures.forEach(this::method_30299);
+		this.textures.forEach(this::closeTexture);
 		this.textures.clear();
 		this.tickListeners.clear();
 		this.dynamicIdCounters.clear();

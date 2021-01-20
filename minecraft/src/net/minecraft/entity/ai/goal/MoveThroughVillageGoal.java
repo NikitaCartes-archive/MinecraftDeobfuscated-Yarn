@@ -30,14 +30,14 @@ public class MoveThroughVillageGoal extends Goal {
 	private final int distance;
 	private final BooleanSupplier doorPassingThroughGetter;
 
-	public MoveThroughVillageGoal(PathAwareEntity pathAwareEntity, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
-		this.mob = pathAwareEntity;
+	public MoveThroughVillageGoal(PathAwareEntity entity, double speed, boolean requiresNighttime, int distance, BooleanSupplier doorPassingThroughGetter) {
+		this.mob = entity;
 		this.speed = speed;
 		this.requiresNighttime = requiresNighttime;
 		this.distance = distance;
 		this.doorPassingThroughGetter = doorPassingThroughGetter;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
-		if (!class_5493.method_30955(pathAwareEntity)) {
+		if (!class_5493.method_30955(entity)) {
 			throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
 		}
 	}

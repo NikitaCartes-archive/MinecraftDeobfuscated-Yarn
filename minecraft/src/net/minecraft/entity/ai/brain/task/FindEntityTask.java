@@ -57,16 +57,16 @@ public class FindEntityTask<E extends LivingEntity, T extends LivingEntity> exte
 
 	@Override
 	protected boolean shouldRun(ServerWorld world, E entity) {
-		return this.shouldRunPredicate.test(entity) && this.method_24582(entity);
+		return this.shouldRunPredicate.test(entity) && this.anyVisibleTo(entity);
 	}
 
-	private boolean method_24582(E livingEntity) {
-		List<LivingEntity> list = (List<LivingEntity>)livingEntity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
-		return list.stream().anyMatch(this::method_24583);
+	private boolean anyVisibleTo(E entity) {
+		List<LivingEntity> list = (List<LivingEntity>)entity.getBrain().getOptionalMemory(MemoryModuleType.VISIBLE_MOBS).get();
+		return list.stream().anyMatch(this::testPredicate);
 	}
 
-	private boolean method_24583(LivingEntity livingEntity) {
-		return this.entityType.equals(livingEntity.getType()) && this.predicate.test(livingEntity);
+	private boolean testPredicate(LivingEntity entity) {
+		return this.entityType.equals(entity.getType()) && this.predicate.test(entity);
 	}
 
 	@Override

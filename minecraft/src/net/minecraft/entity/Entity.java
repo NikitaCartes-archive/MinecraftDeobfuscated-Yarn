@@ -203,7 +203,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.pos = Vec3d.ZERO;
 		this.blockPos = BlockPos.ORIGIN;
 		this.trackedPosition = Vec3d.ZERO;
-		this.setPosition(0.0, 0.0, 0.0);
 		this.dataTracker = new DataTracker(this);
 		this.dataTracker.startTracking(FLAGS, (byte)0);
 		this.dataTracker.startTracking(AIR, this.getMaxAir());
@@ -214,6 +213,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.dataTracker.startTracking(POSE, EntityPose.STANDING);
 		this.dataTracker.startTracking(FROZEN_TICKS, 0);
 		this.initDataTracker();
+		this.setPosition(0.0, 0.0, 0.0);
 		this.standingEyeHeight = this.getEyeHeight(EntityPose.STANDING, this.dimensions);
 	}
 
@@ -310,7 +310,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	@Environment(EnvType.CLIENT)
 	protected void afterSpawn() {
 		if (this.world != null) {
-			for (double d = this.getY(); d > (double)this.world.getSectionCount() && d < (double)this.world.getTopHeightLimit(); d++) {
+			for (double d = this.getY(); d > (double)this.world.getBottomSectionLimit() && d < (double)this.world.getTopHeightLimit(); d++) {
 				this.setPosition(this.getX(), d, this.getZ());
 				if (this.world.isSpaceEmpty(this)) {
 					break;
@@ -348,7 +348,11 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void setPosition(double x, double y, double z) {
 		this.setPos(x, y, z);
-		this.setBoundingBox(this.dimensions.getBoxAt(x, y, z));
+		this.setBoundingBox(this.method_33332());
+	}
+
+	protected Box method_33332() {
+		return this.dimensions.getBoxAt(this.pos);
 	}
 
 	protected void refreshPosition() {
@@ -424,7 +428,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			this.fallDistance *= 0.5F;
 		}
 
-		this.destroyInVoid();
+		this.attemptTickInVoid();
 		if (!this.world.isClient) {
 			this.setFlag(0, this.fireTicks > 0);
 		}
@@ -433,9 +437,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.world.getProfiler().pop();
 	}
 
-	public void destroyInVoid() {
-		if (this.getY() < (double)(this.world.getSectionCount() - 64)) {
-			this.destroy();
+	/**
+	 * Calls {@link #tickInVoid()} when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomSectionLimit() minimum Y position}.
+	 */
+	public void attemptTickInVoid() {
+		if (this.getY() < (double)(this.world.getBottomSectionLimit() - 64)) {
+			this.tickInVoid();
 		}
 	}
 
@@ -487,7 +494,12 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.setFireTicks(0);
 	}
 
-	protected void destroy() {
+	/**
+	 * Called when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomSectionLimit() minimum Y position}.
+	 * 
+	 * <p>{@linkplain LivingEntity Living entities} use this to deal {@linkplain net.minecraft.entity.damage.DamageSource#OUT_OF_WORLD out of world damage}.
+	 */
+	protected void tickInVoid() {
 		this.discard();
 	}
 
@@ -509,8 +521,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 
 	public void move(MovementType type, Vec3d movement) {
 		if (this.noClip) {
-			this.setBoundingBox(this.getBoundingBox().offset(movement));
-			this.moveToBoundingBoxCenter();
+			this.setPosition(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
 		} else {
 			if (type == MovementType.PISTON) {
 				movement = this.adjustMovementForPiston(movement);
@@ -529,8 +540,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			movement = this.adjustMovementForSneaking(movement, type);
 			Vec3d vec3d = this.adjustMovementForCollisions(movement);
 			if (vec3d.lengthSquared() > 1.0E-7) {
-				this.setBoundingBox(this.getBoundingBox().offset(vec3d));
-				this.moveToBoundingBoxCenter();
+				this.setPosition(this.getX() + vec3d.x, this.getY() + vec3d.y, this.getZ() + vec3d.z);
 			}
 
 			this.world.getProfiler().pop();
@@ -823,11 +833,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return (float)((int)this.distanceTraveled + 1);
 	}
 
-	public void moveToBoundingBoxCenter() {
-		Box box = this.getBoundingBox();
-		this.setPos((box.minX + box.maxX) / 2.0, box.minY, (box.minZ + box.maxZ) / 2.0);
-	}
-
 	protected SoundEvent getSwimSound() {
 		return SoundEvents.ENTITY_GENERIC_SWIM;
 	}
@@ -956,10 +961,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.getType().isFireImmune();
 	}
 
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		if (this.hasPassengers()) {
 			for (Entity entity : this.getPassengerList()) {
-				entity.handleFallDamage(fallDistance, damageMultiplier);
+				entity.handleFallDamage(fallDistance, damageMultiplier, damageSource);
 			}
 		}
 
@@ -1194,20 +1199,25 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void refreshPositionAndAngles(double x, double y, double z, float yaw, float pitch) {
-		this.resetPosition(x, y, z);
+		this.setPos(x, y, z);
 		this.yaw = yaw;
 		this.pitch = pitch;
+		this.resetPosition();
 		this.refreshPosition();
 	}
 
-	public void resetPosition(double x, double y, double z) {
-		this.setPos(x, y, z);
-		this.prevX = x;
-		this.prevY = y;
-		this.prevZ = z;
-		this.lastRenderX = x;
-		this.lastRenderY = y;
-		this.lastRenderZ = z;
+	public final void resetPosition() {
+		double d = this.getX();
+		double e = this.getY();
+		double f = this.getZ();
+		this.prevX = d;
+		this.prevY = e;
+		this.prevZ = f;
+		this.lastRenderX = d;
+		this.lastRenderY = e;
+		this.lastRenderZ = f;
+		this.prevYaw = this.yaw;
+		this.prevPitch = this.pitch;
 	}
 
 	public float distanceTo(Entity entity) {
@@ -1497,11 +1507,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 			double e = listTag2.getDouble(1);
 			double f = listTag2.getDouble(2);
 			this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-			this.resetPosition(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
+			this.setPos(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
 			this.yaw = listTag3.getFloat(0);
 			this.pitch = listTag3.getFloat(1);
-			this.prevYaw = this.yaw;
-			this.prevPitch = this.pitch;
+			this.resetPosition();
 			this.setHeadYaw(this.yaw);
 			this.setYaw(this.yaw);
 			this.fallDistance = tag.getFloat("FallDistance");
@@ -2200,7 +2209,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public boolean isInvulnerableTo(DamageSource damageSource) {
-		return this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isSourceCreativePlayer();
+		return this.isRemoved() || this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isSourceCreativePlayer();
 	}
 
 	public boolean isInvulnerable() {
@@ -2467,25 +2476,14 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		EntityDimensions entityDimensions2 = this.getDimensions(entityPose);
 		this.dimensions = entityDimensions2;
 		this.standingEyeHeight = this.getEyeHeight(entityPose, entityDimensions2);
-		if (entityDimensions2.width < entityDimensions.width) {
-			double d = (double)entityDimensions2.width / 2.0;
-			this.setBoundingBox(new Box(this.getX() - d, this.getY(), this.getZ() - d, this.getX() + d, this.getY() + (double)entityDimensions2.height, this.getZ() + d));
-		} else {
-			Box box = this.getBoundingBox();
-			this.setBoundingBox(
-				new Box(
-					box.minX,
-					box.minY,
-					box.minZ,
-					box.minX + (double)entityDimensions2.width,
-					box.minY + (double)entityDimensions2.height,
-					box.minZ + (double)entityDimensions2.width
-				)
-			);
-			if (entityDimensions2.width > entityDimensions.width && !this.firstUpdate && !this.world.isClient) {
-				float f = entityDimensions.width - entityDimensions2.width;
-				this.move(MovementType.SELF, new Vec3d((double)f, 0.0, (double)f));
-			}
+		this.refreshPosition();
+		if (!this.world.isClient
+			&& !this.firstUpdate
+			&& entityDimensions2.width > entityDimensions.width
+			&& this.world.isBlockSpaceEmpty(this, this.getBoundingBox(), (blockState, blockPos) -> true)) {
+			float f = entityDimensions.width - entityDimensions2.width;
+			this.setPosition(this.getX() - (double)f / 2.0, this.getY(), this.getZ() - (double)f / 2.0);
+			this.move(MovementType.SELF, new Vec3d((double)f, 0.0, (double)f));
 		}
 	}
 
@@ -2506,7 +2504,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	@Override
-	public Box getBoundingBox() {
+	public final Box getBoundingBox() {
 		return this.entityBounds;
 	}
 
@@ -2523,7 +2521,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return new Box(vec3d, vec3d2);
 	}
 
-	public void setBoundingBox(Box boundingBox) {
+	public final void setBoundingBox(Box boundingBox) {
 		this.entityBounds = boundingBox;
 	}
 
@@ -2940,7 +2938,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.offsetZ((2.0 * this.random.nextDouble() - 1.0) * widthScale);
 	}
 
-	public void setPos(double x, double y, double z) {
+	public final void setPos(double x, double y, double z) {
 		if (this.pos.x != x || this.pos.y != y || this.pos.z != z) {
 			this.pos = new Vec3d(x, y, z);
 			int i = MathHelper.floor(x);

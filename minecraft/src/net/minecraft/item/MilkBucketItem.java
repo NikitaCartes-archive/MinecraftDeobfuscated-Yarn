@@ -16,19 +16,19 @@ public class MilkBucketItem extends Item {
 	}
 
 	@Override
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity livingEntity) {
-		if (livingEntity instanceof ServerPlayerEntity) {
-			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)livingEntity;
+	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+		if (user instanceof ServerPlayerEntity) {
+			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)user;
 			Criteria.CONSUME_ITEM.trigger(serverPlayerEntity, stack);
 			serverPlayerEntity.incrementStat(Stats.USED.getOrCreateStat(this));
 		}
 
-		if (livingEntity instanceof PlayerEntity && !((PlayerEntity)livingEntity).getAbilities().creativeMode) {
+		if (user instanceof PlayerEntity && !((PlayerEntity)user).getAbilities().creativeMode) {
 			stack.decrement(1);
 		}
 
 		if (!world.isClient) {
-			livingEntity.clearStatusEffects();
+			user.clearStatusEffects();
 		}
 
 		return stack.isEmpty() ? new ItemStack(Items.BUCKET) : stack;

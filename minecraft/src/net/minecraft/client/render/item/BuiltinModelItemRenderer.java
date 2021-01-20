@@ -69,20 +69,20 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloadListen
 	private final ConduitBlockEntity renderConduit = new ConduitBlockEntity(BlockPos.ORIGIN, Blocks.CONDUIT.getDefaultState());
 	private ShieldEntityModel modelShield;
 	private TridentEntityModel modelTrident;
-	private Map<SkullBlock.SkullType, SkullBlockEntityModel> field_27737;
-	private final BlockEntityRenderDispatcher field_27738;
-	private final EntityModelLoader field_27739;
+	private Map<SkullBlock.SkullType, SkullBlockEntityModel> skullModels;
+	private final BlockEntityRenderDispatcher blockEntityRenderDispatcher;
+	private final EntityModelLoader entityModelLoader;
 
 	public BuiltinModelItemRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher, EntityModelLoader entityModelLoader) {
-		this.field_27738 = blockEntityRenderDispatcher;
-		this.field_27739 = entityModelLoader;
+		this.blockEntityRenderDispatcher = blockEntityRenderDispatcher;
+		this.entityModelLoader = entityModelLoader;
 	}
 
 	@Override
 	public void apply(ResourceManager manager) {
-		this.modelShield = new ShieldEntityModel(this.field_27739.getModelPart(EntityModelLayers.SHIELD));
-		this.modelTrident = new TridentEntityModel(this.field_27739.getModelPart(EntityModelLayers.TRIDENT));
-		this.field_27737 = SkullBlockEntityRenderer.getModels(this.field_27739);
+		this.modelShield = new ShieldEntityModel(this.entityModelLoader.getModelPart(EntityModelLayers.SHIELD));
+		this.modelTrident = new TridentEntityModel(this.entityModelLoader.getModelPart(EntityModelLayers.TRIDENT));
+		this.skullModels = SkullBlockEntityRenderer.getModels(this.entityModelLoader);
 	}
 
 	public void render(ItemStack stack, ModelTransformation.Mode mode, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, int overlay) {
@@ -104,7 +104,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloadListen
 				}
 
 				SkullBlock.SkullType skullType = ((AbstractSkullBlock)block).getSkullType();
-				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.field_27737.get(skullType);
+				SkullBlockEntityModel skullBlockEntityModel = (SkullBlockEntityModel)this.skullModels.get(skullType);
 				RenderLayer renderLayer = SkullBlockEntityRenderer.getRenderLayer(skullType, gameProfile);
 				SkullBlockEntityRenderer.renderSkull(null, 180.0F, 0.0F, matrices, vertexConsumers, light, skullBlockEntityModel, renderLayer);
 			} else {
@@ -137,7 +137,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloadListen
 					}
 				}
 
-				this.field_27738.renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
+				this.blockEntityRenderDispatcher.renderEntity(blockEntity, matrices, vertexConsumers, light, overlay);
 			}
 		} else {
 			if (stack.isOf(Items.SHIELD)) {
@@ -151,7 +151,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloadListen
 					);
 				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
-					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.method_24280(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListTag(stack));
+					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.getPatternsFromTag(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListTag(stack));
 					BannerBlockEntityRenderer.renderCanvas(
 						matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, list, stack.hasGlint()
 					);

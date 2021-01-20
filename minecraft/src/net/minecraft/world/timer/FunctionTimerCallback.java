@@ -8,8 +8,8 @@ import net.minecraft.util.Identifier;
 public class FunctionTimerCallback implements TimerCallback<MinecraftServer> {
 	private final Identifier name;
 
-	public FunctionTimerCallback(Identifier identifier) {
-		this.name = identifier;
+	public FunctionTimerCallback(Identifier name) {
+		this.name = name;
 	}
 
 	public void call(MinecraftServer minecraftServer, Timer<MinecraftServer> timer, long l) {

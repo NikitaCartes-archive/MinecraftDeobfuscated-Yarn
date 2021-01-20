@@ -59,8 +59,8 @@ public class PlayerAdvancementTracker {
 		.create();
 	private static final TypeToken<Map<Identifier, AdvancementProgress>> JSON_TYPE = new TypeToken<Map<Identifier, AdvancementProgress>>() {
 	};
-	private final DataFixer field_25324;
-	private final PlayerManager field_25325;
+	private final DataFixer dataFixer;
+	private final PlayerManager playerManager;
 	private final File advancementFile;
 	private final Map<Advancement, AdvancementProgress> advancementToProgress = Maps.<Advancement, AdvancementProgress>newLinkedHashMap();
 	private final Set<Advancement> visibleAdvancements = Sets.<Advancement>newLinkedHashSet();
@@ -72,13 +72,13 @@ public class PlayerAdvancementTracker {
 	private boolean dirty = true;
 
 	public PlayerAdvancementTracker(
-		DataFixer dataFixer, PlayerManager playerManager, ServerAdvancementLoader serverAdvancementLoader, File file, ServerPlayerEntity serverPlayerEntity
+		DataFixer dataFixer, PlayerManager playerManager, ServerAdvancementLoader advancementLoader, File advancementFile, ServerPlayerEntity owner
 	) {
-		this.field_25324 = dataFixer;
-		this.field_25325 = playerManager;
-		this.advancementFile = file;
-		this.owner = serverPlayerEntity;
-		this.load(serverAdvancementLoader);
+		this.dataFixer = dataFixer;
+		this.playerManager = playerManager;
+		this.advancementFile = advancementFile;
+		this.owner = owner;
+		this.load(advancementLoader);
 	}
 
 	public void setOwner(ServerPlayerEntity owner) {
@@ -145,7 +145,7 @@ public class PlayerAdvancementTracker {
 						dynamic = dynamic.set("DataVersion", dynamic.createInt(1343));
 					}
 
-					dynamic = this.field_25324
+					dynamic = this.dataFixer
 						.update(DataFixTypes.ADVANCEMENTS.getTypeReference(), dynamic, dynamic.get("DataVersion").asInt(0), SharedConstants.getGameVersion().getWorldVersion());
 					dynamic = dynamic.remove("DataVersion");
 					Map<Identifier, AdvancementProgress> map = GSON.getAdapter(JSON_TYPE).fromJsonTree(dynamic.getValue());
@@ -268,7 +268,7 @@ public class PlayerAdvancementTracker {
 				if (advancement.getDisplay() != null
 					&& advancement.getDisplay().shouldAnnounceToChat()
 					&& this.owner.world.getGameRules().getBoolean(GameRules.ANNOUNCE_ADVANCEMENTS)) {
-					this.field_25325
+					this.playerManager
 						.broadcastChatMessage(
 							new TranslatableText("chat.type.advancement." + advancement.getDisplay().getFrame().getId(), this.owner.getDisplayName(), advancement.toHoverableText()),
 							MessageType.SYSTEM,

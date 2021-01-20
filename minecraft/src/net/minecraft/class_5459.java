@@ -54,7 +54,7 @@ public class class_5459 {
 				is[t] = s >= u && s <= v ? v + 1 - s : 0;
 			}
 
-			Pair<class_5459.IntBounds, Integer> pair = method_30576(is);
+			Pair<class_5459.IntBounds, Integer> pair = findLargestRectangle(is);
 			class_5459.IntBounds intBounds2 = pair.getFirst();
 			int u = 1 + intBounds2.max - intBounds2.min;
 			int v = pair.getSecond();
@@ -79,19 +79,40 @@ public class class_5459 {
 		return j;
 	}
 
+	/**
+	 * Finds the largest rectangle within a histogram, where the vertical bars each have
+	 * width 1 and height specified in {@code heights}.
+	 * 
+	 * @implNote This implementation is a {@linkplain IntArrayList stack} problem. The
+	 * stack maintains a collection of height limits of rectangles that may grow as the
+	 * array iteration continues. When a new height is encountered, each position {@code p}
+	 * in the stack would be popped if the rectangle with height limit at position {@code
+	 * p} can no longer extend right. The popped rectangle becomes the return value if it
+	 * has a larger area than the current candidate.
+	 * 
+	 * <p>When the rectangle area is calculated, the range is between {@code p0 + 1}, where
+	 * {@code p0} is the current top of stack after popping rectangles that can no longer
+	 * extend, and the current iterated position {@code i}.
+	 * 
+	 * @return the base of the rectangle as an inclusive range and the height of the
+	 * rectangle packed in a pair
+	 * @see https://leetcode.com/problems/largest-rectangle-in-histogram
+	 * 
+	 * @param heights the heights of bars in the histogram
+	 */
 	@VisibleForTesting
-	static Pair<class_5459.IntBounds, Integer> method_30576(int[] is) {
+	static Pair<class_5459.IntBounds, Integer> findLargestRectangle(int[] heights) {
 		int i = 0;
 		int j = 0;
 		int k = 0;
 		IntStack intStack = new IntArrayList();
 		intStack.push(0);
 
-		for (int l = 1; l <= is.length; l++) {
-			int m = l == is.length ? 0 : is[l];
+		for (int l = 1; l <= heights.length; l++) {
+			int m = l == heights.length ? 0 : heights[l];
 
 			while (!intStack.isEmpty()) {
-				int n = is[intStack.topInt()];
+				int n = heights[intStack.topInt()];
 				if (m >= n) {
 					intStack.push(l);
 					break;

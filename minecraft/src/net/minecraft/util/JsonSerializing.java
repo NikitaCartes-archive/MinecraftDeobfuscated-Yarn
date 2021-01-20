@@ -31,6 +31,8 @@ public class JsonSerializing {
 		private final String idFieldName;
 		private final Function<E, T> typeIdentification;
 		@Nullable
+		private final T field_28445;
+		@Nullable
 		private final com.mojang.datafixers.util.Pair<T, JsonSerializing.CustomSerializer<? extends E>> elementSerializer;
 
 		private GsonSerializer(
@@ -38,23 +40,32 @@ public class JsonSerializing {
 			String rootFieldName,
 			String idFieldName,
 			Function<E, T> typeIdentification,
-			@Nullable com.mojang.datafixers.util.Pair<T, JsonSerializing.CustomSerializer<? extends E>> pair
+			@Nullable T jsonSerializableType,
+			@Nullable com.mojang.datafixers.util.Pair<T, JsonSerializing.CustomSerializer<? extends E>> elementSerializer
 		) {
 			this.registry = registry;
 			this.rootFieldName = rootFieldName;
 			this.idFieldName = idFieldName;
 			this.typeIdentification = typeIdentification;
-			this.elementSerializer = pair;
+			this.field_28445 = jsonSerializableType;
+			this.elementSerializer = elementSerializer;
 		}
 
 		@Override
 		public E deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
 			if (jsonElement.isJsonObject()) {
 				JsonObject jsonObject = JsonHelper.asObject(jsonElement, this.rootFieldName);
-				Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, this.idFieldName));
-				T jsonSerializableType = this.registry.get(identifier);
+				String string = JsonHelper.getString(jsonObject, this.idFieldName, "");
+				T jsonSerializableType;
+				if (string.isEmpty()) {
+					jsonSerializableType = this.field_28445;
+				} else {
+					Identifier identifier = new Identifier(string);
+					jsonSerializableType = this.registry.get(identifier);
+				}
+
 				if (jsonSerializableType == null) {
-					throw new JsonSyntaxException("Unknown type '" + identifier + "'");
+					throw new JsonSyntaxException("Unknown type '" + string + "'");
 				} else {
 					return (E)jsonSerializableType.getJsonSerializer().fromJson(jsonObject, jsonDeserializationContext);
 				}
@@ -97,6 +108,8 @@ public class JsonSerializing {
 		private final Function<E, T> typeIdentification;
 		@Nullable
 		private com.mojang.datafixers.util.Pair<T, JsonSerializing.CustomSerializer<? extends E>> customSerializer;
+		@Nullable
+		private T field_28444;
 
 		private TypeHandler(Registry<T> registry, String rootFieldName, String idFieldName, Function<E, T> typeIdentification) {
 			this.registry = registry;
@@ -110,8 +123,15 @@ public class JsonSerializing {
 			return this;
 		}
 
+		public JsonSerializing.TypeHandler<E, T> method_33409(T jsonSerializableType) {
+			this.field_28444 = jsonSerializableType;
+			return this;
+		}
+
 		public Object createGsonSerializer() {
-			return new JsonSerializing.GsonSerializer(this.registry, this.rootFieldName, this.idFieldName, this.typeIdentification, this.customSerializer);
+			return new JsonSerializing.GsonSerializer(
+				this.registry, this.rootFieldName, this.idFieldName, this.typeIdentification, this.field_28444, this.customSerializer
+			);
 		}
 	}
 }

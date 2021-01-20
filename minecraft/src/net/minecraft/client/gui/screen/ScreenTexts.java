@@ -22,7 +22,7 @@ public class ScreenTexts {
 		return new TranslatableText(value ? "options.on.composed" : "options.off.composed", text);
 	}
 
-	public static MutableText method_32700(Text text, Text text2) {
-		return new TranslatableText("options.generic_value", text, text2);
+	public static MutableText composeGenericOptionText(Text text, Text value) {
+		return new TranslatableText("options.generic_value", text, value);
 	}
 }

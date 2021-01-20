@@ -62,7 +62,7 @@ public class DataCommandStorage {
 		}
 
 		@Override
-		public CompoundTag toTag(CompoundTag tag) {
+		public CompoundTag toNbt(CompoundTag tag) {
 			CompoundTag compoundTag = new CompoundTag();
 			this.map.forEach((string, compoundTag2) -> compoundTag.put(string, compoundTag2.copy()));
 			tag.put("contents", compoundTag);

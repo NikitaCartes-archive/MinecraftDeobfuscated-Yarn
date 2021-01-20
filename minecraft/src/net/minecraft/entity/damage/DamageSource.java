@@ -24,7 +24,7 @@ public class DamageSource {
 	public static final DamageSource DROWN = new DamageSource("drown").setBypassesArmor();
 	public static final DamageSource STARVE = new DamageSource("starve").setBypassesArmor().setUnblockable();
 	public static final DamageSource CACTUS = new DamageSource("cactus");
-	public static final DamageSource FALL = new DamageSource("fall").setBypassesArmor();
+	public static final DamageSource FALL = new DamageSource("fall").setBypassesArmor().setFromFalling();
 	public static final DamageSource FLY_INTO_WALL = new DamageSource("flyIntoWall").setBypassesArmor();
 	public static final DamageSource OUT_OF_WORLD = new DamageSource("outOfWorld").setBypassesArmor().setOutOfWorld();
 	public static final DamageSource GENERIC = new DamageSource("generic").setBypassesArmor();
@@ -37,6 +37,7 @@ public class DamageSource {
 	public static final DamageSource SWEET_BERRY_BUSH = new DamageSource("sweetBerryBush");
 	public static final DamageSource FREEZE = new DamageSource("freeze").setBypassesArmor();
 	public static final DamageSource FALLING_STALACTITE = new DamageSource("fallingStalactite").setFallingBlock();
+	public static final DamageSource STALAGMITE = new DamageSource("stalagmite").setBypassesArmor().setFromFalling();
 	private boolean fallingBlock;
 	private boolean bypassesArmor;
 	private boolean outOfWorld;
@@ -47,6 +48,7 @@ public class DamageSource {
 	private boolean scaleWithDifficulty;
 	private boolean magic;
 	private boolean explosive;
+	private boolean fromFalling;
 	public final String name;
 
 	public static DamageSource sting(LivingEntity attacker) {
@@ -228,6 +230,15 @@ public class DamageSource {
 
 	public DamageSource setUsesMagic() {
 		this.magic = true;
+		return this;
+	}
+
+	public boolean isFromFalling() {
+		return this.fromFalling;
+	}
+
+	public DamageSource setFromFalling() {
+		this.fromFalling = true;
 		return this;
 	}
 

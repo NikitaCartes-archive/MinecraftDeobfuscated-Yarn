@@ -15,11 +15,11 @@ public class MemoryTransferTask<E extends MobEntity, T> extends Task<E> {
 	private final MemoryModuleType<T> targetType;
 	private final IntRange duration;
 
-	public MemoryTransferTask(Predicate<E> runPredicate, MemoryModuleType<? extends T> memoryModuleType, MemoryModuleType<T> memoryModuleType2, IntRange duration) {
-		super(ImmutableMap.of(memoryModuleType, MemoryModuleState.VALUE_PRESENT, memoryModuleType2, MemoryModuleState.VALUE_ABSENT));
+	public MemoryTransferTask(Predicate<E> runPredicate, MemoryModuleType<? extends T> sourceType, MemoryModuleType<T> targetType, IntRange duration) {
+		super(ImmutableMap.of(sourceType, MemoryModuleState.VALUE_PRESENT, targetType, MemoryModuleState.VALUE_ABSENT));
 		this.runPredicate = runPredicate;
-		this.sourceType = memoryModuleType;
-		this.targetType = memoryModuleType2;
+		this.sourceType = sourceType;
+		this.targetType = targetType;
 		this.duration = duration;
 	}
 

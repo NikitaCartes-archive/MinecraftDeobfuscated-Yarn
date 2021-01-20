@@ -9,13 +9,13 @@ import net.minecraft.util.math.BlockPos;
 
 @Environment(EnvType.CLIENT)
 public class WaterBubbleParticle extends SpriteBillboardParticle {
-	private WaterBubbleParticle(ClientWorld world, double x, double y, double z, double d, double e, double f) {
+	private WaterBubbleParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
 		super(world, x, y, z);
 		this.setBoundingBoxSpacing(0.02F, 0.02F);
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.2F);
-		this.velocityX = d * 0.2F + (Math.random() * 2.0 - 1.0) * 0.02F;
-		this.velocityY = e * 0.2F + (Math.random() * 2.0 - 1.0) * 0.02F;
-		this.velocityZ = f * 0.2F + (Math.random() * 2.0 - 1.0) * 0.02F;
+		this.velocityX = velocityX * 0.2F + (Math.random() * 2.0 - 1.0) * 0.02F;
+		this.velocityY = velocityY * 0.2F + (Math.random() * 2.0 - 1.0) * 0.02F;
+		this.velocityZ = velocityZ * 0.2F + (Math.random() * 2.0 - 1.0) * 0.02F;
 		this.maxAge = (int)(8.0 / (Math.random() * 0.8 + 0.2));
 	}
 

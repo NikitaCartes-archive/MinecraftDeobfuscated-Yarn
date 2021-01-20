@@ -1435,24 +1435,25 @@ public class DefaultBiomeCreator {
 	}
 
 	public static Biome createDripstoneCaves() {
-		SpawnSettings spawnSettings = new SpawnSettings.Builder().build();
-		GenerationSettings.Builder builder = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
-		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder);
-		builder.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
-		DefaultBiomeFeatures.addLandCarvers(builder);
-		DefaultBiomeFeatures.addDefaultLakes(builder);
-		DefaultBiomeFeatures.addAmethystGeodes(builder);
-		DefaultBiomeFeatures.addDungeons(builder);
-		DefaultBiomeFeatures.addPlainsTallGrass(builder);
-		DefaultBiomeFeatures.addMineables(builder);
-		DefaultBiomeFeatures.addDefaultOres(builder);
-		DefaultBiomeFeatures.addDefaultDisks(builder);
-		DefaultBiomeFeatures.addPlainsFeatures(builder);
-		DefaultBiomeFeatures.addDefaultMushrooms(builder);
-		DefaultBiomeFeatures.addDefaultVegetation(builder);
-		DefaultBiomeFeatures.addSprings(builder);
-		DefaultBiomeFeatures.addFrozenTopLayer(builder);
-		DefaultBiomeFeatures.addDripstone(builder);
+		SpawnSettings.Builder builder = new SpawnSettings.Builder();
+		DefaultBiomeFeatures.addBatsAndMonsters(builder);
+		GenerationSettings.Builder builder2 = new GenerationSettings.Builder().surfaceBuilder(ConfiguredSurfaceBuilders.GRASS);
+		DefaultBiomeFeatures.addDefaultUndergroundStructures(builder2);
+		builder2.structureFeature(ConfiguredStructureFeatures.RUINED_PORTAL);
+		DefaultBiomeFeatures.addLandCarvers(builder2);
+		DefaultBiomeFeatures.addDefaultLakes(builder2);
+		DefaultBiomeFeatures.addAmethystGeodes(builder2);
+		DefaultBiomeFeatures.addDungeons(builder2);
+		DefaultBiomeFeatures.addPlainsTallGrass(builder2);
+		DefaultBiomeFeatures.addMineables(builder2);
+		DefaultBiomeFeatures.addDefaultOres(builder2);
+		DefaultBiomeFeatures.addDefaultDisks(builder2);
+		DefaultBiomeFeatures.addPlainsFeatures(builder2);
+		DefaultBiomeFeatures.addDefaultMushrooms(builder2);
+		DefaultBiomeFeatures.addDefaultVegetation(builder2);
+		DefaultBiomeFeatures.addSprings(builder2);
+		DefaultBiomeFeatures.addFrozenTopLayer(builder2);
+		DefaultBiomeFeatures.addDripstone(builder2);
 		return new Biome.Builder()
 			.precipitation(Biome.Precipitation.RAIN)
 			.category(Biome.Category.PLAINS)
@@ -1463,8 +1464,8 @@ public class DefaultBiomeCreator {
 			.effects(
 				new BiomeEffects.Builder().waterColor(4159204).waterFogColor(329011).fogColor(12638463).skyColor(getSkyColor(0.8F)).moodSound(BiomeMoodSound.CAVE).build()
 			)
-			.spawnSettings(spawnSettings)
-			.generationSettings(builder.build())
+			.spawnSettings(builder.build())
+			.generationSettings(builder2.build())
 			.build();
 	}
 }

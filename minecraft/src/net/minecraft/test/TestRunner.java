@@ -24,22 +24,20 @@ public class TestRunner {
 	private final List<Pair<GameTestBatch, Collection<GameTest>>> batches;
 	private final BlockPos.Mutable reusablePos;
 
-	public TestRunner(
-		Collection<GameTestBatch> collection, BlockPos blockPos, BlockRotation blockRotation, ServerWorld serverWorld, TestManager testManager, int i
-	) {
-		this.reusablePos = blockPos.mutableCopy();
-		this.pos = blockPos;
-		this.world = serverWorld;
+	public TestRunner(Collection<GameTestBatch> batches, BlockPos pos, BlockRotation rotation, ServerWorld world, TestManager testManager, int sizeZ) {
+		this.reusablePos = pos.mutableCopy();
+		this.pos = pos;
+		this.world = world;
 		this.testManager = testManager;
-		this.sizeZ = i;
-		this.batches = (List<Pair<GameTestBatch, Collection<GameTest>>>)collection.stream()
+		this.sizeZ = sizeZ;
+		this.batches = (List<Pair<GameTestBatch, Collection<GameTest>>>)batches.stream()
 			.map(
-				gameTestBatch -> {
-					Collection<GameTest> collectionx = (Collection<GameTest>)gameTestBatch.getTestFunctions()
+				batch -> {
+					Collection<GameTest> collection = (Collection<GameTest>)batch.getTestFunctions()
 						.stream()
-						.map(testFunction -> new GameTest(testFunction, blockRotation, serverWorld))
+						.map(testFunction -> new GameTest(testFunction, rotation, world))
 						.collect(ImmutableList.toImmutableList());
-					return Pair.of(gameTestBatch, collectionx);
+					return Pair.of(batch, collection);
 				}
 			)
 			.collect(ImmutableList.toImmutableList());
@@ -78,7 +76,7 @@ public class TestRunner {
 				}
 
 				@Override
-				public void method_33317(GameTest gameTest) {
+				public void onPassed(GameTest test) {
 					this.method_32239();
 				}
 
@@ -101,8 +99,8 @@ public class TestRunner {
 
 		for (GameTest gameTest : collection) {
 			BlockPos blockPos = new BlockPos(this.reusablePos);
-			StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.method_22250(
-				gameTest.getStructureName(), blockPos, gameTest.method_29402(), 2, this.world, true
+			StructureBlockBlockEntity structureBlockBlockEntity = StructureTestUtil.createStructure(
+				gameTest.getStructureName(), blockPos, gameTest.getRotation(), 2, this.world, true
 			);
 			Box box2 = StructureTestUtil.getStructureBoundingBox(structureBlockBlockEntity);
 			gameTest.setPos(structureBlockBlockEntity.getPos());

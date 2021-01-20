@@ -28,11 +28,11 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		return new BredAnimalsCriterion.Conditions(extended, extended2, extended3, extended4);
 	}
 
-	public void trigger(ServerPlayerEntity serverPlayerEntity, AnimalEntity animalEntity, AnimalEntity animalEntity2, @Nullable PassiveEntity passiveEntity) {
-		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(serverPlayerEntity, animalEntity);
-		LootContext lootContext2 = EntityPredicate.createAdvancementEntityLootContext(serverPlayerEntity, animalEntity2);
-		LootContext lootContext3 = passiveEntity != null ? EntityPredicate.createAdvancementEntityLootContext(serverPlayerEntity, passiveEntity) : null;
-		this.test(serverPlayerEntity, conditions -> conditions.matches(lootContext, lootContext2, lootContext3));
+	public void trigger(ServerPlayerEntity player, AnimalEntity parent, AnimalEntity partner, @Nullable PassiveEntity child) {
+		LootContext lootContext = EntityPredicate.createAdvancementEntityLootContext(player, parent);
+		LootContext lootContext2 = EntityPredicate.createAdvancementEntityLootContext(player, partner);
+		LootContext lootContext3 = child != null ? EntityPredicate.createAdvancementEntityLootContext(player, child) : null;
+		this.test(player, conditions -> conditions.matches(lootContext, lootContext2, lootContext3));
 	}
 
 	public static class Conditions extends AbstractCriterionConditions {
@@ -40,13 +40,11 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 		private final EntityPredicate.Extended partner;
 		private final EntityPredicate.Extended child;
 
-		public Conditions(
-			EntityPredicate.Extended extended, EntityPredicate.Extended extended2, EntityPredicate.Extended extended3, EntityPredicate.Extended extended4
-		) {
-			super(BredAnimalsCriterion.ID, extended);
-			this.parent = extended2;
-			this.partner = extended3;
-			this.child = extended4;
+		public Conditions(EntityPredicate.Extended player, EntityPredicate.Extended parent, EntityPredicate.Extended partner, EntityPredicate.Extended child) {
+			super(BredAnimalsCriterion.ID, player);
+			this.parent = parent;
+			this.partner = partner;
+			this.child = child;
 		}
 
 		public static BredAnimalsCriterion.Conditions any() {
@@ -55,26 +53,24 @@ public class BredAnimalsCriterion extends AbstractCriterion<BredAnimalsCriterion
 			);
 		}
 
-		public static BredAnimalsCriterion.Conditions create(EntityPredicate.Builder builder) {
+		public static BredAnimalsCriterion.Conditions create(EntityPredicate.Builder child) {
 			return new BredAnimalsCriterion.Conditions(
-				EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(builder.build())
+				EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.EMPTY, EntityPredicate.Extended.ofLegacy(child.build())
 			);
 		}
 
-		public static BredAnimalsCriterion.Conditions method_29918(
-			EntityPredicate entityPredicate, EntityPredicate entityPredicate2, EntityPredicate entityPredicate3
-		) {
+		public static BredAnimalsCriterion.Conditions create(EntityPredicate parent, EntityPredicate partner, EntityPredicate child) {
 			return new BredAnimalsCriterion.Conditions(
 				EntityPredicate.Extended.EMPTY,
-				EntityPredicate.Extended.ofLegacy(entityPredicate),
-				EntityPredicate.Extended.ofLegacy(entityPredicate2),
-				EntityPredicate.Extended.ofLegacy(entityPredicate3)
+				EntityPredicate.Extended.ofLegacy(parent),
+				EntityPredicate.Extended.ofLegacy(partner),
+				EntityPredicate.Extended.ofLegacy(child)
 			);
 		}
 
-		public boolean matches(LootContext lootContext, LootContext lootContext2, @Nullable LootContext lootContext3) {
-			return this.child == EntityPredicate.Extended.EMPTY || lootContext3 != null && this.child.test(lootContext3)
-				? this.parent.test(lootContext) && this.partner.test(lootContext2) || this.parent.test(lootContext2) && this.partner.test(lootContext)
+		public boolean matches(LootContext parentContext, LootContext partnerContext, @Nullable LootContext childContext) {
+			return this.child == EntityPredicate.Extended.EMPTY || childContext != null && this.child.test(childContext)
+				? this.parent.test(parentContext) && this.partner.test(partnerContext) || this.parent.test(partnerContext) && this.partner.test(parentContext)
 				: false;
 		}
 

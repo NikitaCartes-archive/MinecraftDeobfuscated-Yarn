@@ -74,8 +74,8 @@ public class BlockStatePropertyLootCondition implements LootCondition {
 			Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "block"));
 			Block block = (Block)Registry.BLOCK.getOrEmpty(identifier).orElseThrow(() -> new IllegalArgumentException("Can't find block " + identifier));
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("properties"));
-			statePredicate.check(block.getStateManager(), string -> {
-				throw new JsonSyntaxException("Block " + block + " has no property " + string);
+			statePredicate.check(block.getStateManager(), propertyName -> {
+				throw new JsonSyntaxException("Block " + block + " has no property " + propertyName);
 			});
 			return new BlockStatePropertyLootCondition(block, statePredicate);
 		}

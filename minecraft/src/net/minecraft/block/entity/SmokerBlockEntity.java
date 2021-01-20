@@ -11,8 +11,8 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
 
 public class SmokerBlockEntity extends AbstractFurnaceBlockEntity {
-	public SmokerBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.SMOKER, blockPos, blockState, RecipeType.SMOKING);
+	public SmokerBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.SMOKER, pos, state, RecipeType.SMOKING);
 	}
 
 	@Override

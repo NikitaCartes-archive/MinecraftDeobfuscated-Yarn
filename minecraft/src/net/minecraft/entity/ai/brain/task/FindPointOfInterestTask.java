@@ -29,17 +29,21 @@ public class FindPointOfInterestTask extends Task<PathAwareEntity> {
 	private final Long2ObjectMap<FindPointOfInterestTask.RetryMarker> foundPositionsToExpiry = new Long2ObjectOpenHashMap<>();
 
 	public FindPointOfInterestTask(
-		PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, MemoryModuleType<GlobalPos> memoryModuleType2, boolean bl, Optional<Byte> optional
+		PointOfInterestType poiType,
+		MemoryModuleType<GlobalPos> memoryModuleType,
+		MemoryModuleType<GlobalPos> targetMemoryModuleType,
+		boolean onlyRunIfChild,
+		Optional<Byte> optional
 	) {
-		super(method_29245(memoryModuleType, memoryModuleType2));
+		super(method_29245(memoryModuleType, targetMemoryModuleType));
 		this.poiType = poiType;
-		this.targetMemoryModuleType = memoryModuleType2;
-		this.onlyRunIfChild = bl;
+		this.targetMemoryModuleType = targetMemoryModuleType;
+		this.onlyRunIfChild = onlyRunIfChild;
 		this.field_25812 = optional;
 	}
 
-	public FindPointOfInterestTask(PointOfInterestType pointOfInterestType, MemoryModuleType<GlobalPos> memoryModuleType, boolean bl, Optional<Byte> optional) {
-		this(pointOfInterestType, memoryModuleType, memoryModuleType, bl, optional);
+	public FindPointOfInterestTask(PointOfInterestType poiType, MemoryModuleType<GlobalPos> memoryModuleType, boolean onlyRunIfChild, Optional<Byte> optional) {
+		this(poiType, memoryModuleType, memoryModuleType, onlyRunIfChild, optional);
 	}
 
 	private static ImmutableMap<MemoryModuleType<?>, MemoryModuleState> method_29245(

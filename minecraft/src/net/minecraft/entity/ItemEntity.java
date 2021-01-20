@@ -105,7 +105,7 @@ public class ItemEntity extends Entity {
 			if (this.world.isClient) {
 				this.noClip = false;
 			} else {
-				this.noClip = !this.world.isSpaceEmpty(this);
+				this.noClip = !this.world.isSpaceEmpty(this, this.getBoundingBox().contract(1.0E-7), entity -> true);
 				if (this.noClip) {
 					this.pushOutOfBlocks(this.getX(), (this.getBoundingBox().minY + this.getBoundingBox().maxY) / 2.0, this.getZ());
 				}
@@ -418,7 +418,7 @@ public class ItemEntity extends Entity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public ItemEntity method_29271() {
+	public ItemEntity copy() {
 		return new ItemEntity(this);
 	}
 

@@ -62,7 +62,7 @@ public class RealmsConnection {
 						}
 
 						RealmsConnection.this.connection.send(new LoginHelloC2SPacket(minecraftClient.getSession().getProfile()));
-						minecraftClient.setCurrentServerEntry(realmsServer.method_31403(string));
+						minecraftClient.setCurrentServerEntry(realmsServer.createServerInfo(string));
 					} catch (UnknownHostException var5) {
 						minecraftClient.getResourcePackDownloader().clear();
 						if (RealmsConnection.this.aborted) {

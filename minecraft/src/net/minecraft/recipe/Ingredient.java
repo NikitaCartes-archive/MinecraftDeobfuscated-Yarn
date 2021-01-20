@@ -51,16 +51,16 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public boolean test(@Nullable ItemStack itemStack) {
-		if (itemStack == null) {
+	public boolean test(@Nullable ItemStack stack) {
+		if (stack == null) {
 			return false;
 		} else {
 			this.cacheMatchingStacks();
 			if (this.matchingStacks.length == 0) {
-				return itemStack.isEmpty();
+				return stack.isEmpty();
 			} else {
-				for (ItemStack itemStack2 : this.matchingStacks) {
-					if (itemStack2.isOf(itemStack.getItem())) {
+				for (ItemStack itemStack : this.matchingStacks) {
+					if (itemStack.isOf(stack.getItem())) {
 						return true;
 					}
 				}
@@ -127,7 +127,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	public static Ingredient ofStacks(Stream<ItemStack> stacks) {
-		return ofEntries(stacks.filter(itemStack -> !itemStack.isEmpty()).map(stack -> new Ingredient.StackEntry(stack)));
+		return ofEntries(stacks.filter(stack -> !stack.isEmpty()).map(stack -> new Ingredient.StackEntry(stack)));
 	}
 
 	public static Ingredient fromTag(Tag<Item> tag) {
@@ -165,8 +165,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 			return new Ingredient.StackEntry(new ItemStack(item));
 		} else if (json.has("tag")) {
 			Identifier identifier = new Identifier(JsonHelper.getString(json, "tag"));
-			Tag<Item> tag = ServerTagManagerHolder.getTagManager()
-				.getTag(Registry.ITEM_KEY, identifier, identifierx -> new JsonSyntaxException("Unknown item tag '" + identifierx + "'"));
+			Tag<Item> tag = ServerTagManagerHolder.getTagManager().getTag(Registry.ITEM_KEY, identifier, id -> new JsonSyntaxException("Unknown item tag '" + id + "'"));
 			return new Ingredient.TagEntry(tag);
 		} else {
 			throw new JsonParseException("An ingredient entry needs either a tag or an item");

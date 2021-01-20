@@ -52,11 +52,11 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		for (int i = 0; i < blockStates.length; i++) {
 			BlockState blockState = blockStates[i] == null ? Blocks.AIR.getDefaultState() : blockStates[i];
 			if (!Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) {
-				return this.config.getSectionCount() + i - 1;
+				return this.config.getBottomSectionLimit() + i - 1;
 			}
 		}
 
-		return this.config.getSectionCount() + blockStates.length;
+		return this.config.getBottomSectionLimit() + blockStates.length;
 	}
 
 	@Override
@@ -69,7 +69,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		for (int i = 0; i < blockStates.length; i++) {
 			BlockState blockState = blockStates[i];
 			if (blockState != null) {
-				int j = world.getSectionCount() + i;
+				int j = world.getBottomSectionLimit() + i;
 
 				for (int k = 0; k < 16; k++) {
 					for (int l = 0; l < 16; l++) {
@@ -89,7 +89,7 @@ public class FlatChunkGenerator extends ChunkGenerator {
 		for (int i = blockStates.length - 1; i >= 0; i--) {
 			BlockState blockState = blockStates[i];
 			if (blockState != null && heightmapType.getBlockPredicate().test(blockState)) {
-				return this.config.getSectionCount() + i + 1;
+				return this.config.getBottomSectionLimit() + i + 1;
 			}
 		}
 

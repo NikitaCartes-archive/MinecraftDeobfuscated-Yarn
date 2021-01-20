@@ -18,8 +18,8 @@ public class RealmsParentalConsentScreen extends RealmsScreen {
 	private final Screen parent;
 	private MultilineText field_26492 = MultilineText.EMPTY;
 
-	public RealmsParentalConsentScreen(Screen screen) {
-		this.parent = screen;
+	public RealmsParentalConsentScreen(Screen parent) {
+		this.parent = parent;
 	}
 
 	@Override

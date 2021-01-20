@@ -55,7 +55,7 @@ public class ItemCommand {
 	);
 	private static final SuggestionProvider<ServerCommandSource> MODIFIER_SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
 		LootFunctionManager lootFunctionManager = commandContext.getSource().getMinecraftServer().getItemModifierManager();
-		return CommandSource.suggestIdentifiers(lootFunctionManager.method_32399(), suggestionsBuilder);
+		return CommandSource.suggestIdentifiers(lootFunctionManager.getFunctionIds(), suggestionsBuilder);
 	};
 
 	public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {

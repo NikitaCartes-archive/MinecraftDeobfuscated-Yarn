@@ -108,7 +108,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public float lastRenderYaw;
 	public float lastRenderPitch;
 	private int field_3938;
-	private float field_3922;
+	private float mountJumpStrength;
 	public float nextNauseaStrength;
 	public float lastNauseaStrength;
 	private boolean usingItem;
@@ -371,7 +371,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 
 	protected void startRidingJump() {
 		this.networkHandler
-			.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_RIDING_JUMP, MathHelper.floor(this.method_3151() * 100.0F)));
+			.sendPacket(new ClientCommandC2SPacket(this, ClientCommandC2SPacket.Mode.START_RIDING_JUMP, MathHelper.floor(this.getMountJumpStrength() * 100.0F)));
 	}
 
 	public void openRidingInventory() {
@@ -552,8 +552,8 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 		return this.hasVehicle() && entity instanceof JumpingMount && ((JumpingMount)entity).canJump();
 	}
 
-	public float method_3151() {
-		return this.field_3922;
+	public float getMountJumpStrength() {
+		return this.mountJumpStrength;
 	}
 
 	@Override
@@ -769,27 +769,27 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			if (this.field_3938 < 0) {
 				this.field_3938++;
 				if (this.field_3938 == 0) {
-					this.field_3922 = 0.0F;
+					this.mountJumpStrength = 0.0F;
 				}
 			}
 
 			if (bl && !this.input.jumping) {
 				this.field_3938 = -10;
-				jumpingMount.setJumpStrength(MathHelper.floor(this.method_3151() * 100.0F));
+				jumpingMount.setJumpStrength(MathHelper.floor(this.getMountJumpStrength() * 100.0F));
 				this.startRidingJump();
 			} else if (!bl && this.input.jumping) {
 				this.field_3938 = 0;
-				this.field_3922 = 0.0F;
+				this.mountJumpStrength = 0.0F;
 			} else if (bl) {
 				this.field_3938++;
 				if (this.field_3938 < 10) {
-					this.field_3922 = (float)this.field_3938 * 0.1F;
+					this.mountJumpStrength = (float)this.field_3938 * 0.1F;
 				} else {
-					this.field_3922 = 0.8F + 2.0F / (float)(this.field_3938 - 9) * 0.1F;
+					this.mountJumpStrength = 0.8F + 2.0F / (float)(this.field_3938 - 9) * 0.1F;
 				}
 			}
 		} else {
-			this.field_3922 = 0.0F;
+			this.mountJumpStrength = 0.0F;
 		}
 
 		super.tickMovement();

@@ -3,6 +3,7 @@ package net.minecraft.client.realms.gui.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.realms.RealmsClient;
@@ -16,8 +17,8 @@ import net.minecraft.util.Util;
 public class RealmsNotificationsScreen extends RealmsScreen {
 	private static final Identifier INVITE_ICON = new Identifier("realms", "textures/gui/realms/invite_icon.png");
 	private static final Identifier TRIAL_ICON = new Identifier("realms", "textures/gui/realms/trial_icon.png");
-	private static final Identifier field_22700 = new Identifier("realms", "textures/gui/realms/news_notification_mainscreen.png");
-	private static final RealmsDataFetcher REALMS_DATA_FETCHER = new RealmsDataFetcher();
+	private static final Identifier NEWS_NOTIFICATION = new Identifier("realms", "textures/gui/realms/news_notification_mainscreen.png");
+	private static final RealmsDataFetcher REALMS_DATA_FETCHER = new RealmsDataFetcher(MinecraftClient.getInstance(), RealmsClient.createRealmsClient());
 	private volatile int numberOfPendingInvites;
 	private static boolean checkedMcoAvailability;
 	private static boolean trialAvailable;
@@ -103,7 +104,7 @@ public class RealmsNotificationsScreen extends RealmsScreen {
 		int m = k + 48 + 2;
 		int n = 0;
 		if (hasUnreadNews) {
-			this.client.getTextureManager().bindTexture(field_22700);
+			this.client.getTextureManager().bindTexture(NEWS_NOTIFICATION);
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.pushMatrix();
 			RenderSystem.scalef(0.4F, 0.4F, 0.4F);

@@ -74,7 +74,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 			EquipmentSlot.MAINHAND,
 			EnchantmentHelper.enchant(
 				skeletonEntity.getRandom(),
-				this.method_30768(skeletonEntity.getMainHandStack()),
+				this.removeEnchantments(skeletonEntity.getMainHandStack()),
 				(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)),
 				false
 			)
@@ -83,7 +83,7 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 			EquipmentSlot.HEAD,
 			EnchantmentHelper.enchant(
 				skeletonEntity.getRandom(),
-				this.method_30768(skeletonEntity.getEquippedStack(EquipmentSlot.HEAD)),
+				this.removeEnchantments(skeletonEntity.getEquippedStack(EquipmentSlot.HEAD)),
 				(int)(5.0F + localDifficulty.getClampedLocalDifficulty() * (float)skeletonEntity.getRandom().nextInt(18)),
 				false
 			)
@@ -91,8 +91,8 @@ public class SkeletonHorseTrapTriggerGoal extends Goal {
 		return skeletonEntity;
 	}
 
-	private ItemStack method_30768(ItemStack itemStack) {
-		itemStack.removeSubTag("Enchantments");
-		return itemStack;
+	private ItemStack removeEnchantments(ItemStack stack) {
+		stack.removeSubTag("Enchantments");
+		return stack;
 	}
 }

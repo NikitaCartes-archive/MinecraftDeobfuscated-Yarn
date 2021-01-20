@@ -23,14 +23,14 @@ public class SpawnLocating {
 		} else {
 			WorldChunk worldChunk = world.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z));
 			int i = bl ? world.getChunkManager().getChunkGenerator().getSpawnHeight() : worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x & 15, z & 15);
-			if (i < world.getSectionCount()) {
+			if (i < world.getBottomSectionLimit()) {
 				return null;
 			} else {
 				int j = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x & 15, z & 15);
 				if (j <= i && j > worldChunk.sampleHeightmap(Heightmap.Type.OCEAN_FLOOR, x & 15, z & 15)) {
 					return null;
 				} else {
-					for (int k = i + 1; k >= world.getSectionCount(); k--) {
+					for (int k = i + 1; k >= world.getBottomSectionLimit(); k--) {
 						mutable.set(x, k, z);
 						BlockState blockState2 = world.getBlockState(mutable);
 						if (!blockState2.getFluidState().isEmpty()) {

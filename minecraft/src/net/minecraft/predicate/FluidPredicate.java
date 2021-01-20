@@ -57,8 +57,7 @@ public class FluidPredicate {
 			Tag<Fluid> tag = null;
 			if (jsonObject.has("tag")) {
 				Identifier identifier2 = new Identifier(JsonHelper.getString(jsonObject, "tag"));
-				tag = ServerTagManagerHolder.getTagManager()
-					.getTag(Registry.FLUID_KEY, identifier2, identifier -> new JsonSyntaxException("Unknown fluid tag '" + identifier + "'"));
+				tag = ServerTagManagerHolder.getTagManager().getTag(Registry.FLUID_KEY, identifier2, id -> new JsonSyntaxException("Unknown fluid tag '" + id + "'"));
 			}
 
 			StatePredicate statePredicate = StatePredicate.fromJson(jsonObject.get("state"));

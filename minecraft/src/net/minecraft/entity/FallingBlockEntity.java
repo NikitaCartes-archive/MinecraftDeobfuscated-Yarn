@@ -182,7 +182,8 @@ public class FallingBlockEntity extends Entity {
 					}
 				} else if (!this.world.isClient
 					&& (
-						this.timeFalling > 100 && (blockPos.getY() <= this.world.getSectionCount() || blockPos.getY() > this.world.getTopHeightLimit()) || this.timeFalling > 600
+						this.timeFalling > 100 && (blockPos.getY() <= this.world.getBottomSectionLimit() || blockPos.getY() > this.world.getTopHeightLimit())
+							|| this.timeFalling > 600
 					)) {
 					if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 						this.dropItem(block);
@@ -203,7 +204,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	public boolean handleFallDamage(float fallDistance, float damageMultiplier) {
+	public boolean handleFallDamage(float fallDistance, float damageMultiplier, DamageSource damageSource) {
 		if (!this.hurtEntities) {
 			return false;
 		} else {
@@ -212,18 +213,18 @@ public class FallingBlockEntity extends Entity {
 				return false;
 			} else {
 				Predicate<Entity> predicate;
-				DamageSource damageSource;
+				DamageSource damageSource2;
 				if (this.block.getBlock() instanceof LandingBlock) {
 					LandingBlock landingBlock = (LandingBlock)this.block.getBlock();
 					predicate = landingBlock.getEntityPredicate();
-					damageSource = landingBlock.getDamageSource();
+					damageSource2 = landingBlock.getDamageSource();
 				} else {
 					predicate = EntityPredicates.EXCEPT_SPECTATOR;
-					damageSource = DamageSource.FALLING_BLOCK;
+					damageSource2 = DamageSource.FALLING_BLOCK;
 				}
 
 				float f = (float)Math.min(MathHelper.floor((float)i * this.fallHurtAmount), this.fallHurtMax);
-				this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource, f));
+				this.world.getOtherEntities(this, this.getBoundingBox(), predicate).forEach(entity -> entity.damage(damageSource2, f));
 				boolean bl = this.block.isIn(BlockTags.ANVIL);
 				if (bl && (double)this.random.nextFloat() < 0.05F + (double)i * 0.05) {
 					BlockState blockState = AnvilBlock.getLandingState(this.block);

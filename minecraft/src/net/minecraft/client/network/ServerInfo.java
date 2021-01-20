@@ -82,8 +82,8 @@ public class ServerInfo {
 		return this.icon;
 	}
 
-	public void setIcon(@Nullable String string) {
-		this.icon = string;
+	public void setIcon(@Nullable String icon) {
+		this.icon = icon;
 	}
 
 	public boolean isLocal() {

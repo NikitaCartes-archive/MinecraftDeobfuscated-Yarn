@@ -164,8 +164,8 @@ public class Item implements ItemConvertible {
 		}
 	}
 
-	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity livingEntity) {
-		return this.isFood() ? livingEntity.eatFood(world, stack) : stack;
+	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
+		return this.isFood() ? user.eatFood(world, stack) : stack;
 	}
 
 	public final int getMaxCount() {

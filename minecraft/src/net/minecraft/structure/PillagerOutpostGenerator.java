@@ -9,7 +9,7 @@ import net.minecraft.structure.processor.StructureProcessorLists;
 import net.minecraft.util.Identifier;
 
 public class PillagerOutpostGenerator {
-	public static final StructurePool field_26252 = StructurePools.register(
+	public static final StructurePool STRUCTURE_POOLS = StructurePools.register(
 		new StructurePool(
 			new Identifier("pillager_outpost/base_plates"),
 			new Identifier("empty"),

@@ -36,8 +36,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	private int transferCooldown = -1;
 	private long lastTickTime;
 
-	public HopperBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.HOPPER, blockPos, blockState);
+	public HopperBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.HOPPER, pos, state);
 	}
 
 	@Override
@@ -87,34 +87,32 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		return new TranslatableText("container.hopper");
 	}
 
-	public static void serverTick(World world, BlockPos blockPos, BlockState blockState, HopperBlockEntity hopperBlockEntity) {
-		hopperBlockEntity.transferCooldown--;
-		hopperBlockEntity.lastTickTime = world.getTime();
-		if (!hopperBlockEntity.needsCooldown()) {
-			hopperBlockEntity.setCooldown(0);
-			insertAndExtract(world, blockPos, blockState, hopperBlockEntity, () -> extract(world, hopperBlockEntity));
+	public static void serverTick(World world, BlockPos pos, BlockState state, HopperBlockEntity blockEntity) {
+		blockEntity.transferCooldown--;
+		blockEntity.lastTickTime = world.getTime();
+		if (!blockEntity.needsCooldown()) {
+			blockEntity.setCooldown(0);
+			insertAndExtract(world, pos, state, blockEntity, () -> extract(world, blockEntity));
 		}
 	}
 
-	private static boolean insertAndExtract(
-		World world, BlockPos blockPos, BlockState blockState, HopperBlockEntity hopperBlockEntity, BooleanSupplier booleanSupplier
-	) {
+	private static boolean insertAndExtract(World world, BlockPos pos, BlockState state, HopperBlockEntity blockEntity, BooleanSupplier booleanSupplier) {
 		if (world.isClient) {
 			return false;
 		} else {
-			if (!hopperBlockEntity.needsCooldown() && (Boolean)blockState.get(HopperBlock.ENABLED)) {
+			if (!blockEntity.needsCooldown() && (Boolean)state.get(HopperBlock.ENABLED)) {
 				boolean bl = false;
-				if (!hopperBlockEntity.isEmpty()) {
-					bl = insert(world, blockPos, blockState, hopperBlockEntity);
+				if (!blockEntity.isEmpty()) {
+					bl = insert(world, pos, state, blockEntity);
 				}
 
-				if (!hopperBlockEntity.isFull()) {
+				if (!blockEntity.isFull()) {
 					bl |= booleanSupplier.getAsBoolean();
 				}
 
 				if (bl) {
-					hopperBlockEntity.setCooldown(8);
-					markDirty(world, blockPos, blockState);
+					blockEntity.setCooldown(8);
+					markDirty(world, pos, state);
 					return true;
 				}
 			}
@@ -133,12 +131,12 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		return true;
 	}
 
-	private static boolean insert(World world, BlockPos blockPos, BlockState blockState, Inventory inventory) {
-		Inventory inventory2 = getOutputInventory(world, blockPos, blockState);
+	private static boolean insert(World world, BlockPos pos, BlockState state, Inventory inventory) {
+		Inventory inventory2 = getOutputInventory(world, pos, state);
 		if (inventory2 == null) {
 			return false;
 		} else {
-			Direction direction = ((Direction)blockState.get(HopperBlock.FACING)).getOpposite();
+			Direction direction = ((Direction)state.get(HopperBlock.FACING)).getOpposite();
 			if (isInventoryFull(inventory2, direction)) {
 				return false;
 			} else {
@@ -289,9 +287,9 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Nullable
-	private static Inventory getOutputInventory(World world, BlockPos blockPos, BlockState blockState) {
-		Direction direction = blockState.get(HopperBlock.FACING);
-		return getInventoryAt(world, blockPos.offset(direction));
+	private static Inventory getOutputInventory(World world, BlockPos pos, BlockState state) {
+		Direction direction = state.get(HopperBlock.FACING);
+		return getInventoryAt(world, pos.offset(direction));
 	}
 
 	@Nullable
@@ -313,8 +311,8 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 	}
 
 	@Nullable
-	public static Inventory getInventoryAt(World world, BlockPos blockPos) {
-		return getInventoryAt(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5);
+	public static Inventory getInventoryAt(World world, BlockPos pos) {
+		return getInventoryAt(world, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5);
 	}
 
 	@Nullable
@@ -392,14 +390,14 @@ public class HopperBlockEntity extends LootableContainerBlockEntity implements H
 		this.inventory = list;
 	}
 
-	public static void onEntityCollided(World world, BlockPos blockPos, BlockState blockState, Entity entity, HopperBlockEntity hopperBlockEntity) {
+	public static void onEntityCollided(World world, BlockPos pos, BlockState state, Entity entity, HopperBlockEntity blockEntity) {
 		if (entity instanceof ItemEntity
 			&& VoxelShapes.matchesAnywhere(
-				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-blockPos.getX()), (double)(-blockPos.getY()), (double)(-blockPos.getZ()))),
-				hopperBlockEntity.getInputAreaShape(),
+				VoxelShapes.cuboid(entity.getBoundingBox().offset((double)(-pos.getX()), (double)(-pos.getY()), (double)(-pos.getZ()))),
+				blockEntity.getInputAreaShape(),
 				BooleanBiFunction.AND
 			)) {
-			insertAndExtract(world, blockPos, blockState, hopperBlockEntity, () -> extract(hopperBlockEntity, (ItemEntity)entity));
+			insertAndExtract(world, pos, state, blockEntity, () -> extract(blockEntity, (ItemEntity)entity));
 		}
 	}
 

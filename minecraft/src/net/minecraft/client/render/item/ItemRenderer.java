@@ -63,12 +63,12 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 	private final ItemModels models;
 	private final TextureManager textureManager;
 	private final ItemColors colorMap;
-	private final BuiltinModelItemRenderer field_27770;
+	private final BuiltinModelItemRenderer builtinModelItemRenderer;
 
 	public ItemRenderer(TextureManager manager, BakedModelManager bakery, ItemColors colorMap, BuiltinModelItemRenderer builtinModelItemRenderer) {
 		this.textureManager = manager;
 		this.models = new ItemModels(bakery);
-		this.field_27770 = builtinModelItemRenderer;
+		this.builtinModelItemRenderer = builtinModelItemRenderer;
 
 		for (Item item : Registry.ITEM) {
 			if (!WITHOUT_MODELS.contains(item)) {
@@ -150,7 +150,7 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 
 				this.renderBakedItemModel(model, stack, light, overlay, matrices, vertexConsumer);
 			} else {
-				this.field_27770.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
+				this.builtinModelItemRenderer.render(stack, renderMode, matrices, vertexConsumers, light, overlay);
 			}
 
 			matrices.pop();
@@ -290,8 +290,8 @@ public class ItemRenderer implements SynchronousResourceReloadListener {
 		this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, 0);
 	}
 
-	public void method_32797(ItemStack itemStack, int i, int j, int k) {
-		this.innerRenderInGui(MinecraftClient.getInstance().player, itemStack, i, j, k);
+	public void renderInGuiWithOverrides(ItemStack stack, int x, int y, int i) {
+		this.innerRenderInGui(MinecraftClient.getInstance().player, stack, x, y, i);
 	}
 
 	/**

@@ -33,8 +33,8 @@ public abstract class PathNodeMaker {
 		this.entity = null;
 	}
 
-	protected PathNode method_27137(BlockPos blockPos) {
-		return this.getNode(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+	protected PathNode getNode(BlockPos pos) {
+		return this.getNode(pos.getX(), pos.getY(), pos.getZ());
 	}
 
 	protected PathNode getNode(int x, int y, int z) {

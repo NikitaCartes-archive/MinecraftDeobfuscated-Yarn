@@ -15,8 +15,8 @@ public class LoggerPrintStream extends PrintStream {
 		this.name = name;
 	}
 
-	public void println(@Nullable String string) {
-		this.log(string);
+	public void println(@Nullable String message) {
+		this.log(message);
 	}
 
 	public void println(Object object) {

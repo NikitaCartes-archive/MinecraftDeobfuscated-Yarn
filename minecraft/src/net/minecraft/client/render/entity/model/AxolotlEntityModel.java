@@ -8,7 +8,6 @@ import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
-import net.minecraft.client.model.ModelUtil;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.Entity;
@@ -42,7 +41,7 @@ public class AxolotlEntityModel<T extends AxolotlEntity> extends AnimalModel<T> 
 		this.rightGills = this.head.getChild("right_gills");
 	}
 
-	public static TexturedModelData method_33296() {
+	public static TexturedModelData getTexturedModelData() {
 		ModelData modelData = new ModelData();
 		ModelPartData modelPartData = modelData.getRoot();
 		ModelPartData modelPartData2 = modelPartData.addChild(
@@ -108,16 +107,16 @@ public class AxolotlEntityModel<T extends AxolotlEntity> extends AnimalModel<T> 
 		this.body.pivotX = 0.0F;
 		this.head.pivotY = 0.0F;
 		this.body.pivotY = 20.0F;
-		ModelUtil.method_33300(this.body, g * (float) (Math.PI / 180.0), f * (float) (Math.PI / 180.0), 0.0F);
-		ModelUtil.method_33300(this.head, 0.0F, 0.0F, 0.0F);
-		ModelUtil.method_33300(this.leftHindLeg, 0.0F, 0.0F, 0.0F);
-		ModelUtil.method_33300(this.rightHindLeg, 0.0F, 0.0F, 0.0F);
-		ModelUtil.method_33300(this.leftFrontLeg, 0.0F, 0.0F, 0.0F);
-		ModelUtil.method_33300(this.rightFrontLeg, 0.0F, 0.0F, 0.0F);
-		ModelUtil.method_33300(this.leftGills, 0.0F, 0.0F, 0.0F);
-		ModelUtil.method_33300(this.rightGills, 0.0F, 0.0F, 0.0F);
-		ModelUtil.method_33300(this.topGills, 0.0F, 0.0F, 0.0F);
-		ModelUtil.method_33300(this.tail, 0.0F, 0.0F, 0.0F);
+		this.body.method_33425(g * (float) (Math.PI / 180.0), f * (float) (Math.PI / 180.0), 0.0F);
+		this.head.method_33425(0.0F, 0.0F, 0.0F);
+		this.leftHindLeg.method_33425(0.0F, 0.0F, 0.0F);
+		this.rightHindLeg.method_33425(0.0F, 0.0F, 0.0F);
+		this.leftFrontLeg.method_33425(0.0F, 0.0F, 0.0F);
+		this.rightFrontLeg.method_33425(0.0F, 0.0F, 0.0F);
+		this.leftGills.method_33425(0.0F, 0.0F, 0.0F);
+		this.rightGills.method_33425(0.0F, 0.0F, 0.0F);
+		this.topGills.method_33425(0.0F, 0.0F, 0.0F);
+		this.tail.method_33425(0.0F, 0.0F, 0.0F);
 	}
 
 	private void method_33291(float f) {
@@ -132,8 +131,8 @@ public class AxolotlEntityModel<T extends AxolotlEntity> extends AnimalModel<T> 
 		this.topGills.pitch = 0.6F + 0.05F * k;
 		this.leftGills.yaw = -this.topGills.pitch;
 		this.rightGills.yaw = -this.leftGills.yaw;
-		ModelUtil.method_33300(this.leftHindLeg, 1.1F, 1.0F, 0.0F);
-		ModelUtil.method_33300(this.leftFrontLeg, 0.8F, 2.3F, -0.5F);
+		this.leftHindLeg.method_33425(1.1F, 1.0F, 0.0F);
+		this.leftFrontLeg.method_33425(0.8F, 2.3F, -0.5F);
 		this.method_33299();
 	}
 
@@ -147,10 +146,10 @@ public class AxolotlEntityModel<T extends AxolotlEntity> extends AnimalModel<T> 
 		this.topGills.pitch = 0.6F - 0.08F * (h * h + 2.0F * MathHelper.sin(g));
 		this.leftGills.yaw = -this.topGills.pitch;
 		this.rightGills.yaw = -this.leftGills.yaw;
-		ModelUtil.method_33300(this.leftHindLeg, 0.9424779F, 1.5F - i, -0.1F);
-		ModelUtil.method_33300(this.leftFrontLeg, this.leftFrontLeg.pitch = 1.0995574F, (float) (Math.PI / 2) - j, 0.0F);
-		ModelUtil.method_33300(this.rightHindLeg, this.leftHindLeg.pitch, -1.0F - i, 0.0F);
-		ModelUtil.method_33300(this.rightFrontLeg, this.leftFrontLeg.pitch, (float) (-Math.PI / 2) - j, 0.0F);
+		this.leftHindLeg.method_33425(0.9424779F, 1.5F - i, -0.1F);
+		this.leftFrontLeg.method_33425(1.0995574F, (float) (Math.PI / 2) - j, 0.0F);
+		this.rightHindLeg.method_33425(this.leftHindLeg.pitch, -1.0F - i, 0.0F);
+		this.rightFrontLeg.method_33425(this.leftFrontLeg.pitch, (float) (-Math.PI / 2) - j, 0.0F);
 	}
 
 	private void method_33297(float f) {
@@ -163,8 +162,8 @@ public class AxolotlEntityModel<T extends AxolotlEntity> extends AnimalModel<T> 
 		this.topGills.pitch = 0.2F * h;
 		this.leftGills.yaw = -0.3F * h - 0.19F;
 		this.rightGills.yaw = -this.leftGills.yaw;
-		ModelUtil.method_33300(this.leftHindLeg, (float) (Math.PI * 3.0 / 4.0) - h * 0.11F, 0.47123894F, 1.7278761F);
-		ModelUtil.method_33300(this.leftFrontLeg, (float) (Math.PI / 4) - h * 0.2F, 2.042035F, 0.0F);
+		this.leftHindLeg.method_33425((float) (Math.PI * 3.0 / 4.0) - h * 0.11F, 0.47123894F, 1.7278761F);
+		this.leftFrontLeg.method_33425((float) (Math.PI / 4) - h * 0.2F, 2.042035F, 0.0F);
 		this.method_33299();
 		this.tail.yaw = 0.5F * h;
 	}
@@ -181,21 +180,21 @@ public class AxolotlEntityModel<T extends AxolotlEntity> extends AnimalModel<T> 
 		this.leftGills.yaw = 0.3F * i + 0.9F;
 		this.rightGills.yaw = -this.leftGills.yaw;
 		this.tail.yaw = 0.3F * MathHelper.cos(h * 0.9F);
-		ModelUtil.method_33300(this.leftHindLeg, 1.8849558F, -0.4F * i, (float) (Math.PI / 2));
-		ModelUtil.method_33300(this.leftFrontLeg, 1.8849558F, -0.2F * j - 0.1F, (float) (Math.PI / 2));
+		this.leftHindLeg.method_33425(1.8849558F, -0.4F * i, (float) (Math.PI / 2));
+		this.leftFrontLeg.method_33425(1.8849558F, -0.2F * j - 0.1F, (float) (Math.PI / 2));
 		this.method_33299();
 	}
 
 	private void method_33298() {
-		ModelUtil.method_33300(this.leftHindLeg, 1.4137167F, 1.0995574F, (float) (Math.PI / 4));
-		ModelUtil.method_33300(this.leftFrontLeg, (float) (Math.PI / 4), 2.042035F, 0.0F);
+		this.leftHindLeg.method_33425(1.4137167F, 1.0995574F, (float) (Math.PI / 4));
+		this.leftFrontLeg.method_33425((float) (Math.PI / 4), 2.042035F, 0.0F);
 		this.body.pitch = -0.15F;
 		this.body.roll = 0.35F;
 		this.method_33299();
 	}
 
 	private void method_33299() {
-		ModelUtil.method_33300(this.rightHindLeg, this.leftHindLeg.pitch, -this.leftHindLeg.yaw, -this.leftHindLeg.roll);
-		ModelUtil.method_33300(this.rightFrontLeg, this.leftFrontLeg.pitch, -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
+		this.rightHindLeg.method_33425(this.leftHindLeg.pitch, -this.leftHindLeg.yaw, -this.leftHindLeg.roll);
+		this.rightFrontLeg.method_33425(this.leftFrontLeg.pitch, -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
 	}
 }

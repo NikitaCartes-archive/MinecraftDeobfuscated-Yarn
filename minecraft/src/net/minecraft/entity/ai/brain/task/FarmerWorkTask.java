@@ -59,7 +59,7 @@ public class FarmerWorkTask extends VillagerWorkTask {
 					for (int q = 0; q < p; q++) {
 						blockState = ComposterBlock.compost(blockState, world, itemStack, blockPos);
 						if ((Integer)blockState.get(ComposterBlock.LEVEL) == 7) {
-							this.method_30232(world, composterState, blockPos, blockState);
+							this.syncComposterEvent(world, composterState, blockPos, blockState);
 							return;
 						}
 					}
@@ -67,11 +67,11 @@ public class FarmerWorkTask extends VillagerWorkTask {
 			}
 		}
 
-		this.method_30232(world, composterState, blockPos, blockState);
+		this.syncComposterEvent(world, composterState, blockPos, blockState);
 	}
 
-	private void method_30232(ServerWorld serverWorld, BlockState blockState, BlockPos blockPos, BlockState blockState2) {
-		serverWorld.syncWorldEvent(1500, blockPos, blockState2 != blockState ? 1 : 0);
+	private void syncComposterEvent(ServerWorld world, BlockState oldState, BlockPos pos, BlockState newState) {
+		world.syncWorldEvent(1500, pos, newState != oldState ? 1 : 0);
 	}
 
 	private void craftAndDropBread(VillagerEntity entity) {

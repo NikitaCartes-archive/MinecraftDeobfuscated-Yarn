@@ -11,9 +11,9 @@ import net.minecraft.world.GameRules;
 
 public class DefeatTargetTask extends Task<LivingEntity> {
 	private final int duration;
-	private final BiPredicate<LivingEntity, LivingEntity> field_25157;
+	private final BiPredicate<LivingEntity, LivingEntity> predicate;
 
-	public DefeatTargetTask(int duration, BiPredicate<LivingEntity, LivingEntity> biPredicate) {
+	public DefeatTargetTask(int duration, BiPredicate<LivingEntity, LivingEntity> predicate) {
 		super(
 			ImmutableMap.of(
 				MemoryModuleType.ATTACK_TARGET,
@@ -27,7 +27,7 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 			)
 		);
 		this.duration = duration;
-		this.field_25157 = biPredicate;
+		this.predicate = predicate;
 	}
 
 	@Override
@@ -38,7 +38,7 @@ public class DefeatTargetTask extends Task<LivingEntity> {
 	@Override
 	protected void run(ServerWorld world, LivingEntity entity, long time) {
 		LivingEntity livingEntity = this.getAttackTarget(entity);
-		if (this.field_25157.test(entity, livingEntity)) {
+		if (this.predicate.test(entity, livingEntity)) {
 			entity.getBrain().remember(MemoryModuleType.DANCING, true, (long)this.duration);
 		}
 

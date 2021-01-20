@@ -208,17 +208,17 @@ public class BlockEntityType<T extends BlockEntity> {
 	private final Type<?> type;
 
 	@Nullable
-	public static Identifier getId(BlockEntityType<?> blockEntityType) {
-		return Registry.BLOCK_ENTITY_TYPE.getId(blockEntityType);
+	public static Identifier getId(BlockEntityType<?> type) {
+		return Registry.BLOCK_ENTITY_TYPE.getId(type);
 	}
 
-	private static <T extends BlockEntity> BlockEntityType<T> create(String string, BlockEntityType.Builder<T> builder) {
+	private static <T extends BlockEntity> BlockEntityType<T> create(String id, BlockEntityType.Builder<T> builder) {
 		if (builder.blocks.isEmpty()) {
-			LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", string);
+			LOGGER.warn("Block entity type {} requires at least one valid block to be defined!", id);
 		}
 
-		Type<?> type = Util.getChoiceType(TypeReferences.BLOCK_ENTITY, string);
-		return Registry.register(Registry.BLOCK_ENTITY_TYPE, string, builder.build(type));
+		Type<?> type = Util.getChoiceType(TypeReferences.BLOCK_ENTITY, id);
+		return Registry.register(Registry.BLOCK_ENTITY_TYPE, id, builder.build(type));
 	}
 
 	public BlockEntityType(BlockEntityType.BlockEntityFactory<? extends T> factory, Set<Block> blocks, Type<?> type) {
@@ -228,8 +228,8 @@ public class BlockEntityType<T extends BlockEntity> {
 	}
 
 	@Nullable
-	public T instantiate(BlockPos blockPos, BlockState blockState) {
-		return (T)this.factory.create(blockPos, blockState);
+	public T instantiate(BlockPos pos, BlockState state) {
+		return (T)this.factory.create(pos, state);
 	}
 
 	public boolean supports(BlockState state) {

@@ -128,8 +128,8 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	private int currentPage;
 	private int pageCount;
 
-	public LecternBlockEntity(BlockPos blockPos, BlockState blockState) {
-		super(BlockEntityType.LECTERN, blockPos, blockState);
+	public LecternBlockEntity(BlockPos pos, BlockState state) {
+		super(BlockEntityType.LECTERN, pos, state);
 	}
 
 	public ItemStack getBook() {

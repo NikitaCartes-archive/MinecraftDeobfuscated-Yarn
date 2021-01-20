@@ -65,7 +65,7 @@ public class LevelLoadingScreen extends Screen {
 		drawCenteredString(matrices, this.textRenderer, string, i, j - 9 / 2 - 30, 16777215);
 	}
 
-	public static void drawChunkMap(MatrixStack matrixStack, WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
+	public static void drawChunkMap(MatrixStack matrices, WorldGenerationProgressTracker worldGenerationProgressTracker, int i, int j, int k, int l) {
 		int m = k + l;
 		int n = worldGenerationProgressTracker.getCenterSize();
 		int o = n * m - l;
@@ -76,10 +76,10 @@ public class LevelLoadingScreen extends Screen {
 		int t = o / 2 + 1;
 		int u = -16772609;
 		if (l != 0) {
-			fill(matrixStack, i - t, j - t, i - t + 1, j + t, -16772609);
-			fill(matrixStack, i + t - 1, j - t, i + t, j + t, -16772609);
-			fill(matrixStack, i - t, j - t, i + t, j - t + 1, -16772609);
-			fill(matrixStack, i - t, j + t - 1, i + t, j + t, -16772609);
+			fill(matrices, i - t, j - t, i - t + 1, j + t, -16772609);
+			fill(matrices, i + t - 1, j - t, i + t, j + t, -16772609);
+			fill(matrices, i - t, j - t, i + t, j - t + 1, -16772609);
+			fill(matrices, i - t, j + t - 1, i + t, j + t, -16772609);
 		}
 
 		for (int v = 0; v < p; v++) {
@@ -87,7 +87,7 @@ public class LevelLoadingScreen extends Screen {
 				ChunkStatus chunkStatus = worldGenerationProgressTracker.getChunkStatus(v, w);
 				int x = r + v * m;
 				int y = s + w * m;
-				fill(matrixStack, x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
+				fill(matrices, x, y, x + k, y + k, STATUS_TO_COLOR.getInt(chunkStatus) | 0xFF000000);
 			}
 		}
 	}

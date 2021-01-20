@@ -57,9 +57,9 @@ public enum BannerPattern {
 
 	private static final BannerPattern[] VALUES = values();
 	public static final int COUNT = VALUES.length;
-	public static final int field_24417 = (int)Arrays.stream(VALUES).filter(bannerPattern -> bannerPattern.field_24419).count();
-	public static final int LOOM_APPLICABLE_COUNT = COUNT - field_24417 - 1;
-	private final boolean field_24419;
+	public static final int HAS_PATTERN_ITEM_COUNT = (int)Arrays.stream(VALUES).filter(bannerPattern -> bannerPattern.hasPatternItem).count();
+	public static final int LOOM_APPLICABLE_COUNT = COUNT - HAS_PATTERN_ITEM_COUNT - 1;
+	private final boolean hasPatternItem;
 	private final String name;
 	private final String id;
 
@@ -67,15 +67,15 @@ public enum BannerPattern {
 		this(name, id, false);
 	}
 
-	private BannerPattern(String name, String id, boolean bl) {
+	private BannerPattern(String name, String id, boolean hasPatternItem) {
 		this.name = name;
 		this.id = id;
-		this.field_24419 = bl;
+		this.hasPatternItem = hasPatternItem;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Identifier getSpriteId(boolean bl) {
-		String string = bl ? "banner" : "shield";
+	public Identifier getSpriteId(boolean banner) {
+		String string = banner ? "banner" : "shield";
 		return new Identifier("entity/" + string + "/" + this.getName());
 	}
 
@@ -100,9 +100,9 @@ public enum BannerPattern {
 	}
 
 	@Nullable
-	public static BannerPattern method_31652(String string) {
+	public static BannerPattern byName(String name) {
 		for (BannerPattern bannerPattern : values()) {
-			if (bannerPattern.name.equals(string)) {
+			if (bannerPattern.name.equals(name)) {
 				return bannerPattern;
 			}
 		}

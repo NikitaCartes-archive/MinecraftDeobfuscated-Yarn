@@ -143,8 +143,7 @@ public class ItemModelGenerator {
 		int i = sprite.getWidth();
 		int j = sprite.getHeight();
 		List<ItemModelGenerator.Frame> list = Lists.<ItemModelGenerator.Frame>newArrayList();
-
-		for (int k = 0; k < sprite.getFrameCount(); k++) {
+		sprite.method_33442().forEach(k -> {
 			for (int l = 0; l < j; l++) {
 				for (int m = 0; m < i; m++) {
 					boolean bl = !this.isPixelTransparent(sprite, k, m, l, i, j);
@@ -154,8 +153,7 @@ public class ItemModelGenerator {
 					this.buildCube(ItemModelGenerator.Side.RIGHT, list, sprite, k, m, l, i, j, bl);
 				}
 			}
-		}
-
+		});
 		return list;
 	}
 

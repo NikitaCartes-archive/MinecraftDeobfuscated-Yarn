@@ -21,49 +21,49 @@ import net.minecraft.util.JsonSerializer;
 import net.minecraft.util.JsonSerializing;
 
 public class ContextLootNbtProvider implements LootNbtProvider {
-	private static final ContextLootNbtProvider.class_5648 field_27915 = new ContextLootNbtProvider.class_5648() {
+	private static final ContextLootNbtProvider.Target BLOCK_ENTITY_TARGET = new ContextLootNbtProvider.Target() {
 		@Override
-		public Tag method_32435(LootContext lootContext) {
-			BlockEntity blockEntity = lootContext.get(LootContextParameters.BLOCK_ENTITY);
+		public Tag getNbt(LootContext context) {
+			BlockEntity blockEntity = context.get(LootContextParameters.BLOCK_ENTITY);
 			return blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
 		}
 
 		@Override
-		public String method_32434() {
+		public String getName() {
 			return "block_entity";
 		}
 
 		@Override
-		public Set<LootContextParameter<?>> method_32436() {
+		public Set<LootContextParameter<?>> getRequiredParameters() {
 			return ImmutableSet.of(LootContextParameters.BLOCK_ENTITY);
 		}
 	};
-	public static final ContextLootNbtProvider field_27914 = new ContextLootNbtProvider(field_27915);
-	private final ContextLootNbtProvider.class_5648 field_27916;
+	public static final ContextLootNbtProvider BLOCK_ENTITY = new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
+	private final ContextLootNbtProvider.Target target;
 
-	private static ContextLootNbtProvider.class_5648 method_32430(LootContext.EntityTarget entityTarget) {
-		return new ContextLootNbtProvider.class_5648() {
+	private static ContextLootNbtProvider.Target getTarget(LootContext.EntityTarget entityTarget) {
+		return new ContextLootNbtProvider.Target() {
 			@Nullable
 			@Override
-			public Tag method_32435(LootContext lootContext) {
-				Entity entity = lootContext.get(entityTarget.getParameter());
+			public Tag getNbt(LootContext context) {
+				Entity entity = context.get(entityTarget.getParameter());
 				return entity != null ? NbtPredicate.entityToTag(entity) : null;
 			}
 
 			@Override
-			public String method_32434() {
+			public String getName() {
 				return entityTarget.name();
 			}
 
 			@Override
-			public Set<LootContextParameter<?>> method_32436() {
+			public Set<LootContextParameter<?>> getRequiredParameters() {
 				return ImmutableSet.of(entityTarget.getParameter());
 			}
 		};
 	}
 
-	private ContextLootNbtProvider(ContextLootNbtProvider.class_5648 arg) {
-		this.field_27916 = arg;
+	private ContextLootNbtProvider(ContextLootNbtProvider.Target target) {
+		this.target = target;
 	}
 
 	@Override
@@ -73,52 +73,52 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 
 	@Nullable
 	@Override
-	public Tag method_32440(LootContext lootContext) {
-		return this.field_27916.method_32435(lootContext);
+	public Tag getNbtTag(LootContext context) {
+		return this.target.getNbt(context);
 	}
 
 	@Override
-	public Set<LootContextParameter<?>> method_32441() {
-		return this.field_27916.method_32436();
+	public Set<LootContextParameter<?>> getRequiredParameters() {
+		return this.target.getRequiredParameters();
 	}
 
-	private static ContextLootNbtProvider method_32431(String string) {
-		if (string.equals("block_entity")) {
-			return new ContextLootNbtProvider(field_27915);
+	private static ContextLootNbtProvider setTarget(String target) {
+		if (target.equals("block_entity")) {
+			return new ContextLootNbtProvider(BLOCK_ENTITY_TARGET);
 		} else {
-			LootContext.EntityTarget entityTarget = LootContext.EntityTarget.fromString(string);
-			return new ContextLootNbtProvider(method_32430(entityTarget));
+			LootContext.EntityTarget entityTarget = LootContext.EntityTarget.fromString(target);
+			return new ContextLootNbtProvider(getTarget(entityTarget));
 		}
 	}
 
 	public static class CustomSerializer implements JsonSerializing.CustomSerializer<ContextLootNbtProvider> {
 		public JsonElement toJson(ContextLootNbtProvider contextLootNbtProvider, JsonSerializationContext jsonSerializationContext) {
-			return new JsonPrimitive(contextLootNbtProvider.field_27916.method_32434());
+			return new JsonPrimitive(contextLootNbtProvider.target.getName());
 		}
 
 		public ContextLootNbtProvider fromJson(JsonElement jsonElement, JsonDeserializationContext jsonDeserializationContext) {
 			String string = jsonElement.getAsString();
-			return ContextLootNbtProvider.method_32431(string);
+			return ContextLootNbtProvider.setTarget(string);
 		}
 	}
 
 	public static class Serializer implements JsonSerializer<ContextLootNbtProvider> {
 		public void toJson(JsonObject jsonObject, ContextLootNbtProvider contextLootNbtProvider, JsonSerializationContext jsonSerializationContext) {
-			jsonObject.addProperty("target", contextLootNbtProvider.field_27916.method_32434());
+			jsonObject.addProperty("target", contextLootNbtProvider.target.getName());
 		}
 
 		public ContextLootNbtProvider fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext) {
 			String string = JsonHelper.getString(jsonObject, "target");
-			return ContextLootNbtProvider.method_32431(string);
+			return ContextLootNbtProvider.setTarget(string);
 		}
 	}
 
-	interface class_5648 {
+	interface Target {
 		@Nullable
-		Tag method_32435(LootContext lootContext);
+		Tag getNbt(LootContext context);
 
-		String method_32434();
+		String getName();
 
-		Set<LootContextParameter<?>> method_32436();
+		Set<LootContextParameter<?>> getRequiredParameters();
 	}
 }

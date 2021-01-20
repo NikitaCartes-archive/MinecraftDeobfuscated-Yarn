@@ -396,7 +396,7 @@ public interface DispenserBehavior {
 				Direction direction = pointer.getBlockState().get(DispenserBlock.FACING);
 				BlockPos blockPos = pointer.getBlockPos().offset(direction);
 				BlockState blockState = world.getBlockState(blockPos);
-				if (AbstractFireBlock.method_30032(world, blockPos, direction)) {
+				if (AbstractFireBlock.canPlaceAt(world, blockPos, direction)) {
 					world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
 				} else if (CampfireBlock.canBeLit(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));

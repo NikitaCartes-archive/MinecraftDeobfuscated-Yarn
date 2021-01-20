@@ -243,7 +243,8 @@ import org.apache.logging.log4j.Logger;
  * 
  * <p>Rendering on a Minecraft client is split into several facilities.
  * The primary entrypoint for rendering is {@link net.minecraft.client.render.GameRenderer#render(float, long, boolean)}.
- * <table border=1>
+ * <div class="fabric"><table border=1>
+ * <caption>Rendering facilities</caption>
  * <tr>
  *  <th><b>Thing to render</b></th> <th><b>Rendering facility</b></th>
  * </tr>
@@ -271,7 +272,7 @@ import org.apache.logging.log4j.Logger;
  * <tr>
  *  <td>Game hud (health bar, hunger bar)</td> <td>{@link net.minecraft.client.gui.hud.InGameHud}</td>
  * </tr>
- * </table>
+ * </table></div>
  * 
  * @see net.minecraft.server.integrated.IntegratedServer
  * @see net.minecraft.client.render.GameRenderer
@@ -285,7 +286,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public static final Identifier UNICODE_FONT_ID = new Identifier("uniform");
 	public static final Identifier ALT_TEXT_RENDERER_ID = new Identifier("alt");
 	private static final CompletableFuture<Unit> COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
-	private static final Text field_26841 = new TranslatableText("multiplayer.socialInteractions.not_available");
+	private static final Text SOCIAL_INTERACTIONS_NOT_AVAILABLE = new TranslatableText("multiplayer.socialInteractions.not_available");
 	private final File resourcePackDir;
 	private final PropertyMap sessionPropertyMap;
 	private final TextureManager textureManager;
@@ -440,7 +441,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.netProxy = args.network.netProxy;
 		YggdrasilAuthenticationService yggdrasilAuthenticationService = new YggdrasilAuthenticationService(this.netProxy);
 		this.sessionService = yggdrasilAuthenticationService.createMinecraftSessionService();
-		this.socialInteractionsService = this.method_31382(yggdrasilAuthenticationService, args);
+		this.socialInteractionsService = this.createSocialInteractionsService(yggdrasilAuthenticationService, args);
 		this.session = args.network.session;
 		LOGGER.info("Setting user: {}", this.session.getUsername());
 		LOGGER.debug("(Session ID is {})", this.session.getSessionId());
@@ -620,7 +621,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return stringBuilder.toString();
 	}
 
-	private SocialInteractionsService method_31382(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
+	private SocialInteractionsService createSocialInteractionsService(YggdrasilAuthenticationService yggdrasilAuthenticationService, RunArgs runArgs) {
 		try {
 			return yggdrasilAuthenticationService.createSocialInteractionsService(runArgs.network.session.getAccessToken());
 		} catch (AuthenticationException var4) {
@@ -1156,7 +1157,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	@Override
 	public void onCursorEnterChanged() {
-		this.mouse.method_30134();
+		this.mouse.setResolutionChanged();
 	}
 
 	private int getFramerateLimit() {
@@ -1615,8 +1616,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		while (this.options.keySocialInteractions.wasPressed()) {
 			if (!this.isConnectedToServer()) {
-				this.player.sendMessage(field_26841, true);
-				NarratorManager.INSTANCE.narrate(field_26841.getString());
+				this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
+				NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE.getString());
 			} else {
 				if (this.field_26843 != null) {
 					this.tutorialManager.method_31364(this.field_26843);

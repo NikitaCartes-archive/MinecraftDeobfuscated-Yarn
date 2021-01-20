@@ -8,9 +8,9 @@ import net.minecraft.client.render.entity.feature.ShulkerHeadFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.ShulkerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -28,35 +28,25 @@ public class ShulkerEntityRenderer extends MobEntityRenderer<ShulkerEntity, Shul
 	}
 
 	public Vec3d getPositionOffset(ShulkerEntity shulkerEntity, float f) {
-		int i = shulkerEntity.getTeleportLerpTimer();
-		if (i > 0 && shulkerEntity.hasAttachedBlock()) {
-			BlockPos blockPos = shulkerEntity.getAttachedBlock();
-			BlockPos blockPos2 = shulkerEntity.getPrevAttachedBlock();
-			double d = (double)((float)i - f) / 6.0;
-			d *= d;
-			double e = (double)(blockPos.getX() - blockPos2.getX()) * d;
-			double g = (double)(blockPos.getY() - blockPos2.getY()) * d;
-			double h = (double)(blockPos.getZ() - blockPos2.getZ()) * d;
-			return new Vec3d(-e, -g, -h);
-		} else {
-			return super.getPositionOffset(shulkerEntity, f);
-		}
+		return (Vec3d)shulkerEntity.method_33352(f).orElse(super.getPositionOffset(shulkerEntity, f));
 	}
 
 	public boolean shouldRender(ShulkerEntity shulkerEntity, Frustum frustum, double d, double e, double f) {
-		if (super.shouldRender(shulkerEntity, frustum, d, e, f)) {
-			return true;
-		} else {
-			if (shulkerEntity.getTeleportLerpTimer() > 0 && shulkerEntity.hasAttachedBlock()) {
-				Vec3d vec3d = Vec3d.of(shulkerEntity.getAttachedBlock());
-				Vec3d vec3d2 = Vec3d.of(shulkerEntity.getPrevAttachedBlock());
-				if (frustum.isVisible(new Box(vec3d2.x, vec3d2.y, vec3d2.z, vec3d.x, vec3d.y, vec3d.z))) {
-					return true;
-				}
-			}
-
-			return false;
-		}
+		return super.shouldRender(shulkerEntity, frustum, d, e, f)
+			? true
+			: shulkerEntity.method_33352(0.0F)
+				.filter(
+					vec3d -> {
+						EntityType<?> entityType = shulkerEntity.getType();
+						float fx = entityType.getHeight() / 2.0F;
+						float g = entityType.getWidth() / 2.0F;
+						Vec3d vec3d2 = Vec3d.ofBottomCenter(shulkerEntity.getBlockPos());
+						return frustum.isVisible(
+							new Box(vec3d.x, vec3d.y + (double)fx, vec3d.z, vec3d2.x, vec3d2.y + (double)fx, vec3d2.z).expand((double)g, (double)fx, (double)g)
+						);
+					}
+				)
+				.isPresent();
 	}
 
 	public Identifier getTexture(ShulkerEntity shulkerEntity) {

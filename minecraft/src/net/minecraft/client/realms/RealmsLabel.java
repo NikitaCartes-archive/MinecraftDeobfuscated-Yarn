@@ -22,8 +22,8 @@ public class RealmsLabel implements Element {
 		this.color = color;
 	}
 
-	public void render(Screen screen, MatrixStack matrixStack) {
-		Screen.drawCenteredText(matrixStack, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.color);
+	public void render(Screen screen, MatrixStack matrices) {
+		Screen.drawCenteredText(matrices, MinecraftClient.getInstance().textRenderer, this.text, this.x, this.y, this.color);
 	}
 
 	public String getText() {

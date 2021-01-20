@@ -214,8 +214,8 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 		return MathHelper.ceil(g / 2.0F);
 	}
 
-	private static boolean isSnowyOrIcy(BlockState blockState) {
-		return blockState.isOf(Blocks.PACKED_ICE) || blockState.isOf(Blocks.SNOW_BLOCK) || blockState.isOf(Blocks.BLUE_ICE);
+	private static boolean isSnowyOrIcy(BlockState state) {
+		return state.isOf(Blocks.PACKED_ICE) || state.isOf(Blocks.SNOW_BLOCK) || state.isOf(Blocks.BLUE_ICE);
 	}
 
 	private boolean isAirBelow(BlockView world, BlockPos pos) {

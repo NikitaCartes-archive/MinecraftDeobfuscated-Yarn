@@ -110,7 +110,7 @@ public class JigsawBlockScreen extends Screen {
 		this.joint = this.jigsaw.getJoint();
 		int i = this.textRenderer.getWidth(JOINT_LABEL_TEXT) + 10;
 		this.jointRotationButton = this.addButton(
-			CyclingButtonWidget.<JigsawBlockEntity.Joint>method_32606(JigsawBlockEntity.Joint::method_32357)
+			CyclingButtonWidget.<JigsawBlockEntity.Joint>method_32606(JigsawBlockEntity.Joint::asText)
 				.method_32624(JigsawBlockEntity.Joint.values())
 				.value(this.joint)
 				.method_32616()
@@ -169,7 +169,7 @@ public class JigsawBlockScreen extends Screen {
 		this.finalStateField.setText(string4);
 		this.generationDepth = i;
 		this.joint = joint;
-		this.jointRotationButton.method_32605(joint);
+		this.jointRotationButton.setValue(joint);
 	}
 
 	@Override

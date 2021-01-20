@@ -17,8 +17,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implements OrderableTooltip {
-	private static final BooleanSupplier field_27961 = Screen::hasAltDown;
-	private static final List<Boolean> field_27962 = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
+	private static final BooleanSupplier HAS_ALT_DOWN = Screen::hasAltDown;
+	private static final List<Boolean> BOOLEAN_VALUES = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
 	private final Text field_27963;
 	private int index;
 	private T value;
@@ -85,7 +85,7 @@ public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implem
 		return true;
 	}
 
-	public void method_32605(T value) {
+	public void setValue(T value) {
 		List<T> list = this.field_27966.method_32626();
 		int i = list.indexOf(value);
 		if (i != -1) {
@@ -96,13 +96,13 @@ public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implem
 	}
 
 	private void method_32609(T value) {
-		Text text = (Text)(this.field_27971 ? (Text)this.field_27967.apply(value) : this.method_32610(value));
+		Text text = (Text)(this.field_27971 ? (Text)this.field_27967.apply(value) : this.getGenericTextForValue(value));
 		this.setMessage(text);
 		this.value = value;
 	}
 
-	private MutableText method_32610(T value) {
-		return ScreenTexts.method_32700(this.field_27963, (Text)this.field_27967.apply(value));
+	private MutableText getGenericTextForValue(T value) {
+		return ScreenTexts.composeGenericOptionText(this.field_27963, (Text)this.field_27967.apply(value));
 	}
 
 	public T getValue() {
@@ -115,7 +115,7 @@ public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implem
 	}
 
 	public MutableText method_32611() {
-		return method_32602((Text)(this.field_27971 ? this.method_32610(this.value) : this.getMessage()));
+		return getNarrationMessage((Text)(this.field_27971 ? this.getGenericTextForValue(this.value) : this.getMessage()));
 	}
 
 	@Override
@@ -128,11 +128,11 @@ public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implem
 	}
 
 	public static CyclingButtonWidget.Builder<Boolean> method_32607(Text text, Text text2) {
-		return new CyclingButtonWidget.Builder<Boolean>(value -> value ? text : text2).method_32620(field_27962);
+		return new CyclingButtonWidget.Builder<Boolean>(value -> value ? text : text2).method_32620(BOOLEAN_VALUES);
 	}
 
 	public static CyclingButtonWidget.Builder<Boolean> method_32614() {
-		return new CyclingButtonWidget.Builder<Boolean>(value -> value ? ScreenTexts.ON : ScreenTexts.OFF).method_32620(field_27962);
+		return new CyclingButtonWidget.Builder<Boolean>(value -> value ? ScreenTexts.ON : ScreenTexts.OFF).method_32620(BOOLEAN_VALUES);
 	}
 
 	public static CyclingButtonWidget.Builder<Boolean> method_32613(boolean bl) {
@@ -165,7 +165,7 @@ public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implem
 		}
 
 		public CyclingButtonWidget.Builder<T> method_32621(List<T> list, List<T> list2) {
-			this.field_27977 = CyclingButtonWidget.class_5680.method_32628(CyclingButtonWidget.field_27961, list, list2);
+			this.field_27977 = CyclingButtonWidget.class_5680.method_32628(CyclingButtonWidget.HAS_ALT_DOWN, list, list2);
 			return this;
 		}
 
@@ -206,7 +206,7 @@ public class CyclingButtonWidget<T> extends AbstractPressableButtonWidget implem
 			} else {
 				T object = (T)(this.value != null ? this.value : list.get(this.field_27972));
 				Text text2 = (Text)this.field_27974.apply(object);
-				Text text3 = (Text)(this.field_27978 ? text2 : ScreenTexts.method_32700(text, text2));
+				Text text3 = (Text)(this.field_27978 ? text2 : ScreenTexts.composeGenericOptionText(text, text2));
 				return new CyclingButtonWidget<>(
 					i, j, k, l, text3, text, this.field_27972, object, this.field_27977, this.field_27974, this.field_27976, arg, this.field_27975, this.field_27978
 				);

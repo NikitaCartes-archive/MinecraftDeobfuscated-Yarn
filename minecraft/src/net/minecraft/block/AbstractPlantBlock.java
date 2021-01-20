@@ -46,7 +46,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-		Optional<BlockPos> optional = this.method_25960(world, pos, state);
+		Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state);
 		return optional.isPresent() && this.getStem().chooseStemState(world.getBlockState(((BlockPos)optional.get()).offset(this.growthDirection)));
 	}
 
@@ -57,23 +57,23 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		Optional<BlockPos> optional = this.method_25960(world, pos, state);
+		Optional<BlockPos> optional = this.getStemHeadPos(world, pos, state);
 		if (optional.isPresent()) {
 			BlockState blockState = world.getBlockState((BlockPos)optional.get());
 			((AbstractPlantStemBlock)blockState.getBlock()).grow(world, random, (BlockPos)optional.get(), blockState);
 		}
 	}
 
-	private Optional<BlockPos> method_25960(BlockView blockView, BlockPos blockPos, BlockState blockState) {
-		BlockPos blockPos2 = blockPos;
+	private Optional<BlockPos> getStemHeadPos(BlockView world, BlockPos pos, BlockState state) {
+		BlockPos blockPos = pos;
 
-		BlockState blockState2;
+		BlockState blockState;
 		do {
-			blockPos2 = blockPos2.offset(this.growthDirection);
-			blockState2 = blockView.getBlockState(blockPos2);
-		} while (blockState2.isOf(blockState.getBlock()));
+			blockPos = blockPos.offset(this.growthDirection);
+			blockState = world.getBlockState(blockPos);
+		} while (blockState.isOf(state.getBlock()));
 
-		return blockState2.isOf(this.getStem()) ? Optional.of(blockPos2) : Optional.empty();
+		return blockState.isOf(this.getStem()) ? Optional.of(blockPos) : Optional.empty();
 	}
 
 	@Override

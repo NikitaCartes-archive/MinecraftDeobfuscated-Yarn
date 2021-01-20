@@ -34,12 +34,14 @@ public class DecorationItem extends Item {
 			AbstractDecorationEntity abstractDecorationEntity;
 			if (this.entityType == EntityType.PAINTING) {
 				abstractDecorationEntity = new PaintingEntity(world, blockPos2, direction);
+			} else if (this.entityType == EntityType.ITEM_FRAME) {
+				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
 			} else {
-				if (this.entityType != EntityType.ITEM_FRAME) {
+				if (this.entityType != EntityType.GLOW_ITEM_FRAME) {
 					return ActionResult.success(world.isClient);
 				}
 
-				abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
+				abstractDecorationEntity = new ItemFrameEntity(EntityType.GLOW_ITEM_FRAME, world, blockPos2, direction);
 			}
 
 			CompoundTag compoundTag = itemStack.getTag();

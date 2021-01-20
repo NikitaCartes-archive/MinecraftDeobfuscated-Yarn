@@ -24,13 +24,17 @@ public class SelectionManager {
 	private int selectionEnd;
 
 	public SelectionManager(
-		Supplier<String> supplier, Consumer<String> consumer, Supplier<String> supplier2, Consumer<String> consumer2, Predicate<String> predicate
+		Supplier<String> stringGetter,
+		Consumer<String> stringSetter,
+		Supplier<String> clipboardGetter,
+		Consumer<String> clipboardSetter,
+		Predicate<String> stringFilter
 	) {
-		this.stringGetter = supplier;
-		this.stringSetter = consumer;
-		this.clipboardGetter = supplier2;
-		this.clipboardSetter = consumer2;
-		this.stringFilter = predicate;
+		this.stringGetter = stringGetter;
+		this.stringSetter = stringSetter;
+		this.clipboardGetter = clipboardGetter;
+		this.clipboardSetter = clipboardSetter;
+		this.stringFilter = stringFilter;
 		this.moveCaretToEnd();
 	}
 
@@ -46,8 +50,8 @@ public class SelectionManager {
 		return string -> setClipboard(client, string);
 	}
 
-	public static void setClipboard(MinecraftClient client, String string) {
-		client.keyboard.setClipboard(string);
+	public static void setClipboard(MinecraftClient client, String clipboard) {
+		client.keyboard.setClipboard(clipboard);
 	}
 
 	public boolean insert(char c) {

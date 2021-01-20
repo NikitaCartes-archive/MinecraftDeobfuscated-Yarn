@@ -396,8 +396,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		int k = chunkGeneratorSettings.getBedrockFloorY();
 		int l = this.worldHeight - 1 - chunkGeneratorSettings.getBedrockCeilingY();
 		int m = 5;
-		boolean bl = l + 5 - 1 >= chunk.getSectionCount() && l < chunk.getTopHeightLimit();
-		boolean bl2 = k + 5 - 1 >= chunk.getSectionCount() && k < chunk.getTopHeightLimit();
+		boolean bl = l + 5 - 1 >= chunk.getBottomSectionLimit() && l < chunk.getTopHeightLimit();
+		boolean bl2 = k + 5 - 1 >= chunk.getBottomSectionLimit() && k < chunk.getTopHeightLimit();
 		if (bl || bl2) {
 			for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
 				if (bl) {
@@ -476,7 +476,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			}
 
 			for (int o = 0; o < this.noiseSizeZ; o++) {
-				ChunkSection chunkSection = protoChunk.getSection(protoChunk.method_32890() - 1);
+				ChunkSection chunkSection = protoChunk.getSection(protoChunk.getSections() - 1);
 				chunkSection.lock();
 
 				for (int p = this.noiseSizeY - 1; p >= 0; p--) {

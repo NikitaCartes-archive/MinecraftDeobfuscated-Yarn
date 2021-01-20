@@ -5,16 +5,16 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 
 public final class VerticalBlockSample {
-	private final int field_28105;
+	private final int startY;
 	private final BlockState[] states;
 
-	public VerticalBlockSample(int i, BlockState[] blockStates) {
-		this.field_28105 = i;
-		this.states = blockStates;
+	public VerticalBlockSample(int startY, BlockState[] states) {
+		this.startY = startY;
+		this.states = states;
 	}
 
-	public BlockState method_32892(BlockPos blockPos) {
-		int i = blockPos.getY() - this.field_28105;
+	public BlockState getState(BlockPos pos) {
+		int i = pos.getY() - this.startY;
 		return i >= 0 && i < this.states.length ? this.states[i] : Blocks.AIR.getDefaultState();
 	}
 }

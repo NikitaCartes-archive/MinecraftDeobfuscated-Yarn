@@ -40,14 +40,14 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 	public static final Identifier BLOCK_ATLAS_TEXTURE = PlayerScreenHandler.BLOCK_ATLAS_TEXTURE;
 	@Deprecated
 	public static final Identifier PARTICLE_ATLAS_TEXTURE = new Identifier("textures/atlas/particles.png");
-	private final List<Sprite> animatedSprites = Lists.<Sprite>newArrayList();
+	private final List<TextureTickListener> animatedSprites = Lists.<TextureTickListener>newArrayList();
 	private final Set<Identifier> spritesToLoad = Sets.<Identifier>newHashSet();
 	private final Map<Identifier, Sprite> sprites = Maps.<Identifier, Sprite>newHashMap();
 	private final Identifier id;
 	private final int maxTextureSize;
 
-	public SpriteAtlasTexture(Identifier identifier) {
-		this.id = identifier;
+	public SpriteAtlasTexture(Identifier id) {
+		this.id = id;
 		this.maxTextureSize = RenderSystem.maxSupportedTextureSize();
 	}
 
@@ -75,8 +75,9 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 				throw new CrashException(crashReport);
 			}
 
-			if (sprite.isAnimated()) {
-				this.animatedSprites.add(sprite);
+			TextureTickListener textureTickListener = sprite.method_33443();
+			if (textureTickListener != null) {
+				this.animatedSprites.add(textureTickListener);
 			}
 		}
 	}
@@ -255,15 +256,15 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 		}
 	}
 
-	private Identifier getTexturePath(Identifier identifier) {
-		return new Identifier(identifier.getNamespace(), String.format("textures/%s%s", identifier.getPath(), ".png"));
+	private Identifier getTexturePath(Identifier id) {
+		return new Identifier(id.getNamespace(), String.format("textures/%s%s", id.getPath(), ".png"));
 	}
 
 	public void tickAnimatedSprites() {
 		this.bindTexture();
 
-		for (Sprite sprite : this.animatedSprites) {
-			sprite.tickAnimation();
+		for (TextureTickListener textureTickListener : this.animatedSprites) {
+			textureTickListener.tick();
 		}
 	}
 

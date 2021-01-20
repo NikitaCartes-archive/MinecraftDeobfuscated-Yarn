@@ -42,7 +42,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	private static final EntityAttributeModifier ATTACKING_SPEED_BOOST = new EntityAttributeModifier(
 		ATTACKING_SPEED_BOOST_ID, "Attacking speed boost", 0.05, EntityAttributeModifier.Operation.ADDITION
 	);
-	private static final IntRange field_25382 = Durations.betweenSeconds(0, 1);
+	private static final IntRange ANGRY_SOUND_DELAY_RANGE = Durations.betweenSeconds(0, 1);
 	private int angrySoundDelay;
 	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
 	private int angerTime;
@@ -94,7 +94,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 				entityAttributeInstance.addTemporaryModifier(ATTACKING_SPEED_BOOST);
 			}
 
-			this.method_30080();
+			this.tickAngrySound();
 		} else if (entityAttributeInstance.hasModifier(ATTACKING_SPEED_BOOST)) {
 			entityAttributeInstance.removeModifier(ATTACKING_SPEED_BOOST);
 		}
@@ -111,11 +111,11 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 		super.mobTick();
 	}
 
-	private void method_30080() {
+	private void tickAngrySound() {
 		if (this.angrySoundDelay > 0) {
 			this.angrySoundDelay--;
 			if (this.angrySoundDelay == 0) {
-				this.method_29533();
+				this.playAngrySound();
 			}
 		}
 	}
@@ -134,7 +134,7 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 
 	private void method_29942() {
 		double d = this.getAttributeValue(EntityAttributes.GENERIC_FOLLOW_RANGE);
-		Box box = Box.method_29968(this.getPos()).expand(d, 10.0, d);
+		Box box = Box.from(this.getPos()).expand(d, 10.0, d);
 		this.world
 			.getEntitiesByClass(ZombifiedPiglinEntity.class, box, EntityPredicates.EXCEPT_SPECTATOR)
 			.stream()
@@ -144,14 +144,14 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 			.forEach(zombifiedPiglinEntity -> zombifiedPiglinEntity.setTarget(this.getTarget()));
 	}
 
-	private void method_29533() {
+	private void playAngrySound() {
 		this.playSound(SoundEvents.ENTITY_ZOMBIFIED_PIGLIN_ANGRY, this.getSoundVolume() * 2.0F, this.getSoundPitch() * 1.8F);
 	}
 
 	@Override
 	public void setTarget(@Nullable LivingEntity target) {
 		if (this.getTarget() == null && target != null) {
-			this.angrySoundDelay = field_25382.choose(this.random);
+			this.angrySoundDelay = ANGRY_SOUND_DELAY_RANGE.choose(this.random);
 			this.field_25608 = field_25609.choose(this.random);
 		}
 

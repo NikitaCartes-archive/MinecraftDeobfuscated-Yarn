@@ -24,8 +24,8 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 	}
 
 	@Override
-	public BlockState getRandomGrowthState(WorldAccess worldAccess) {
-		return this.getDefaultState().with(AGE, Integer.valueOf(worldAccess.getRandom().nextInt(25)));
+	public BlockState getRandomGrowthState(WorldAccess world) {
+		return this.getDefaultState().with(AGE, Integer.valueOf(world.getRandom().nextInt(25)));
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.offset(this.growthDirection);
 		int i = Math.min((Integer)state.get(AGE) + 1, 25);
-		int j = this.method_26376(random);
+		int j = this.getGrowthLength(random);
 
 		for (int k = 0; k < j && this.chooseStemState(world.getBlockState(blockPos)); k++) {
 			world.setBlockState(blockPos, state.with(AGE, Integer.valueOf(i)));
@@ -88,7 +88,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 		}
 	}
 
-	protected abstract int method_26376(Random random);
+	protected abstract int getGrowthLength(Random random);
 
 	protected abstract boolean chooseStemState(BlockState state);
 

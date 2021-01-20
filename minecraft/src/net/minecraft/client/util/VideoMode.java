@@ -20,13 +20,13 @@ public final class VideoMode {
 	private final int refreshRate;
 	private static final Pattern PATTERN = Pattern.compile("(\\d+)x(\\d+)(?:@(\\d+)(?::(\\d+))?)?");
 
-	public VideoMode(int i, int j, int k, int l, int m, int n) {
-		this.width = i;
-		this.height = j;
-		this.redBits = k;
-		this.greenBits = l;
-		this.blueBits = m;
-		this.refreshRate = n;
+	public VideoMode(int width, int height, int redBits, int greenBits, int blueBits, int refreshRate) {
+		this.width = width;
+		this.height = height;
+		this.redBits = redBits;
+		this.greenBits = greenBits;
+		this.blueBits = blueBits;
+		this.refreshRate = refreshRate;
 	}
 
 	public VideoMode(Buffer buffer) {

@@ -18,7 +18,7 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 	public boolean generate(
 		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BlockPileFeatureConfig blockPileFeatureConfig
 	) {
-		if (blockPos.getY() < structureWorldAccess.getSectionCount() + 5) {
+		if (blockPos.getY() < structureWorldAccess.getBottomSectionLimit() + 5) {
 			return false;
 		} else {
 			int i = 2 + random.nextInt(2);

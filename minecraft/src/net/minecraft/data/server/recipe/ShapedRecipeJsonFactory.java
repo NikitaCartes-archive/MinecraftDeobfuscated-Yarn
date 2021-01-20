@@ -26,7 +26,7 @@ import net.minecraft.util.registry.Registry;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ShapedRecipeJsonFactory {
+public class ShapedRecipeJsonFactory implements CraftingRecipeJsonFactory {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Item output;
 	private final int outputCount;
@@ -76,16 +76,17 @@ public class ShapedRecipeJsonFactory {
 		}
 	}
 
-	public ShapedRecipeJsonFactory criterion(String criterionName, CriterionConditions conditions) {
-		this.builder.criterion(criterionName, conditions);
+	public ShapedRecipeJsonFactory criterion(String string, CriterionConditions criterionConditions) {
+		this.builder.criterion(string, criterionConditions);
 		return this;
 	}
 
-	public ShapedRecipeJsonFactory group(String group) {
-		this.group = group;
+	public ShapedRecipeJsonFactory group(String string) {
+		this.group = string;
 		return this;
 	}
 
+	@Override
 	public void offerTo(Consumer<RecipeJsonProvider> exporter) {
 		this.offerTo(exporter, Registry.ITEM.getId(this.output));
 	}

@@ -10,9 +10,9 @@ import net.minecraft.particle.DefaultParticleType;
 
 @Environment(EnvType.CLIENT)
 public class BarrierParticle extends SpriteBillboardParticle {
-	private BarrierParticle(ClientWorld world, double x, double y, double z, ItemConvertible itemConvertible) {
+	private BarrierParticle(ClientWorld world, double x, double y, double z, ItemConvertible item) {
 		super(world, x, y, z);
-		this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModels().getSprite(itemConvertible));
+		this.setSprite(MinecraftClient.getInstance().getItemRenderer().getModels().getSprite(item));
 		this.gravityStrength = 0.0F;
 		this.maxAge = 80;
 		this.collidesWithWorld = false;

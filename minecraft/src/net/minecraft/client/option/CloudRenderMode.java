@@ -11,8 +11,8 @@ public enum CloudRenderMode {
 
 	private final String translationKey;
 
-	private CloudRenderMode(String string2) {
-		this.translationKey = string2;
+	private CloudRenderMode(String translationKey) {
+		this.translationKey = translationKey;
 	}
 
 	public String getTranslationKey() {

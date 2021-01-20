@@ -12,15 +12,15 @@ public class Schema2100 extends IdentifierNormalizingSchema {
 		super(i, schema);
 	}
 
-	protected static void method_21746(Schema schema, Map<String, Supplier<TypeTemplate>> map, String string) {
-		schema.register(map, string, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
+	protected static void registerEntity(Schema schema, Map<String, Supplier<TypeTemplate>> entityTypes, String name) {
+		schema.register(entityTypes, name, (Supplier<TypeTemplate>)(() -> Schema100.targetItems(schema)));
 	}
 
 	@Override
 	public Map<String, Supplier<TypeTemplate>> registerEntities(Schema schema) {
 		Map<String, Supplier<TypeTemplate>> map = super.registerEntities(schema);
-		method_21746(schema, map, "minecraft:bee");
-		method_21746(schema, map, "minecraft:bee_stinger");
+		registerEntity(schema, map, "minecraft:bee");
+		registerEntity(schema, map, "minecraft:bee_stinger");
 		return map;
 	}
 

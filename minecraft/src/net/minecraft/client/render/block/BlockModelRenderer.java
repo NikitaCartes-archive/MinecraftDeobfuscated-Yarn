@@ -29,7 +29,7 @@ import net.minecraft.world.BlockRenderView;
 
 @Environment(EnvType.CLIENT)
 public class BlockModelRenderer {
-	private static final Direction[] field_27743 = Direction.values();
+	private static final Direction[] DIRECTIONS = Direction.values();
 	private final BlockColors colorMap;
 	private static final ThreadLocal<BlockModelRenderer.BrightnessCache> brightnessCache = ThreadLocal.withInitial(() -> new BlockModelRenderer.BrightnessCache());
 
@@ -79,12 +79,12 @@ public class BlockModelRenderer {
 		int overlay
 	) {
 		boolean bl = false;
-		float[] fs = new float[field_27743.length * 2];
+		float[] fs = new float[DIRECTIONS.length * 2];
 		BitSet bitSet = new BitSet(3);
 		BlockModelRenderer.AmbientOcclusionCalculator ambientOcclusionCalculator = new BlockModelRenderer.AmbientOcclusionCalculator();
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
-		for (Direction direction : field_27743) {
+		for (Direction direction : DIRECTIONS) {
 			random.setSeed(seed);
 			List<BakedQuad> list = model.getQuads(state, direction, random);
 			if (!list.isEmpty()) {
@@ -122,7 +122,7 @@ public class BlockModelRenderer {
 		BitSet bitSet = new BitSet(3);
 		BlockPos.Mutable mutable = pos.mutableCopy();
 
-		for (Direction direction : field_27743) {
+		for (Direction direction : DIRECTIONS) {
 			random.setSeed(l);
 			List<BakedQuad> list = model.getQuads(state, direction, random);
 			if (!list.isEmpty()) {
@@ -243,7 +243,7 @@ public class BlockModelRenderer {
 			box[Direction.UP.getId()] = j;
 			box[Direction.NORTH.getId()] = h;
 			box[Direction.SOUTH.getId()] = k;
-			int l = field_27743.length;
+			int l = DIRECTIONS.length;
 			box[Direction.WEST.getId() + l] = 1.0F - f;
 			box[Direction.EAST.getId() + l] = 1.0F - i;
 			box[Direction.DOWN.getId() + l] = 1.0F - g;
@@ -311,7 +311,7 @@ public class BlockModelRenderer {
 		Random random = new Random();
 		long l = 42L;
 
-		for (Direction direction : field_27743) {
+		for (Direction direction : DIRECTIONS) {
 			random.setSeed(42L);
 			renderQuad(entry, vertexConsumer, f, g, h, bakedModel.getQuads(blockState, direction, random), i, j);
 		}
@@ -888,16 +888,16 @@ public class BlockModelRenderer {
 		});
 
 		private NeighborData(
-			Direction[] directions,
+			Direction[] faces,
 			float f,
-			boolean bl,
+			boolean nonCubicWeight,
 			BlockModelRenderer.NeighborOrientation[] neighborOrientations,
 			BlockModelRenderer.NeighborOrientation[] neighborOrientations2,
 			BlockModelRenderer.NeighborOrientation[] neighborOrientations3,
 			BlockModelRenderer.NeighborOrientation[] neighborOrientations4
 		) {
-			this.faces = directions;
-			this.nonCubicWeight = bl;
+			this.faces = faces;
+			this.nonCubicWeight = nonCubicWeight;
 			this.field_4192 = neighborOrientations;
 			this.field_4185 = neighborOrientations2;
 			this.field_4180 = neighborOrientations3;
@@ -927,7 +927,7 @@ public class BlockModelRenderer {
 		private final int shape;
 
 		private NeighborOrientation(Direction direction, boolean bl) {
-			this.shape = direction.getId() + (bl ? BlockModelRenderer.field_27743.length : 0);
+			this.shape = direction.getId() + (bl ? BlockModelRenderer.DIRECTIONS.length : 0);
 		}
 	}
 

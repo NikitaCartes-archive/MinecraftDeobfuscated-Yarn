@@ -15,6 +15,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ClickType;
@@ -44,7 +45,7 @@ public class BundleItem extends Item {
 		} else {
 			ItemStack itemStack = slot.getStack();
 			if (itemStack.isEmpty()) {
-				method_32759(stack).ifPresent(itemStack2 -> addToBundle(stack, slot.method_32756(itemStack2)));
+				removeFirstStack(stack).ifPresent(itemStack2 -> addToBundle(stack, slot.method_32756(itemStack2)));
 			} else if (itemStack.getItem().hasStoredInventory()) {
 				int i = (64 - getBundleOccupancy(stack)) / getItemOccupancy(itemStack);
 				addToBundle(stack, slot.method_32753(itemStack.getCount(), i, playerInventory.player));
@@ -58,7 +59,7 @@ public class BundleItem extends Item {
 	public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
 		if (clickType == ClickType.RIGHT && slot.method_32754(playerInventory.player)) {
 			if (otherStack.isEmpty()) {
-				method_32759(stack).ifPresent(playerInventory::setCursorStack);
+				removeFirstStack(stack).ifPresent(playerInventory::setCursorStack);
 			} else {
 				otherStack.decrement(addToBundle(stack, otherStack));
 			}
@@ -72,7 +73,12 @@ public class BundleItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack itemStack = user.getStackInHand(hand);
-		return dropAllBundledItems(itemStack, user) ? TypedActionResult.success(itemStack, world.isClient()) : TypedActionResult.fail(itemStack);
+		if (dropAllBundledItems(itemStack, user)) {
+			user.incrementStat(Stats.USED.getOrCreateStat(this));
+			return TypedActionResult.success(itemStack, world.isClient());
+		} else {
+			return TypedActionResult.fail(itemStack);
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -148,8 +154,8 @@ public class BundleItem extends Item {
 		return getBundledStacks(stack).mapToInt(itemStack -> getItemOccupancy(itemStack) * itemStack.getCount()).sum();
 	}
 
-	private static Optional<ItemStack> method_32759(ItemStack itemStack) {
-		CompoundTag compoundTag = itemStack.getOrCreateTag();
+	private static Optional<ItemStack> removeFirstStack(ItemStack stack) {
+		CompoundTag compoundTag = stack.getOrCreateTag();
 		if (!compoundTag.contains("Items")) {
 			return Optional.empty();
 		} else {
@@ -159,9 +165,13 @@ public class BundleItem extends Item {
 			} else {
 				int i = 0;
 				CompoundTag compoundTag2 = listTag.getCompound(0);
-				ItemStack itemStack2 = ItemStack.fromTag(compoundTag2);
+				ItemStack itemStack = ItemStack.fromTag(compoundTag2);
 				listTag.remove(0);
-				return Optional.of(itemStack2);
+				if (listTag.isEmpty()) {
+					stack.removeSubTag("Items");
+				}
+
+				return Optional.of(itemStack);
 			}
 		}
 	}
