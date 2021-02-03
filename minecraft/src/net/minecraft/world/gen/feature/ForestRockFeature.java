@@ -5,21 +5,21 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 	public ForestRockFeature(Codec<SingleStateFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		SingleStateFeatureConfig singleStateFeatureConfig
-	) {
-		for(; blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 3; blockPos = blockPos.down()) {
+	@Override
+	public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
+
+		SingleStateFeatureConfig singleStateFeatureConfig;
+		for(singleStateFeatureConfig = featureContext.getConfig(); blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 3; blockPos = blockPos.down()) {
 			if (!structureWorldAccess.isAir(blockPos.down())) {
 				BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());
 				if (isSoil(blockState) || isStone(blockState)) {

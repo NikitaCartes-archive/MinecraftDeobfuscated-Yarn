@@ -24,9 +24,7 @@ public class SoulParticle extends AbstractSlowingParticle {
 	@Override
 	public void tick() {
 		super.tick();
-		if (!this.dead) {
-			this.setSpriteForAge(this.spriteProvider);
-		}
+		this.setSpriteForAge(this.spriteProvider);
 	}
 
 	@Environment(EnvType.CLIENT)

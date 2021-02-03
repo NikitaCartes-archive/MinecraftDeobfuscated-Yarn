@@ -8,16 +8,18 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 	public BasaltPillarFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
 		if (structureWorldAccess.isAir(blockPos) && !structureWorldAccess.isAir(blockPos.up())) {
 			BlockPos.Mutable mutable = blockPos.mutableCopy();
 			BlockPos.Mutable mutable2 = blockPos.mutableCopy();

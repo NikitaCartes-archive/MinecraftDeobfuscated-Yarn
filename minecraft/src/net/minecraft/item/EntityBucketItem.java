@@ -23,6 +23,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class EntityBucketItem extends BucketItem {
 	private final EntityType<?> entityType;
@@ -35,9 +36,10 @@ public class EntityBucketItem extends BucketItem {
 	}
 
 	@Override
-	public void onEmptied(World world, ItemStack stack, BlockPos pos) {
+	public void onEmptied(@Nullable PlayerEntity playerEntity, World world, ItemStack itemStack, BlockPos blockPos) {
 		if (world instanceof ServerWorld) {
-			this.spawnEntity((ServerWorld)world, stack, pos);
+			this.spawnEntity((ServerWorld)world, itemStack, blockPos);
+			world.emitGameEvent(playerEntity, GameEvent.ENTITY_PLACE, blockPos);
 		}
 	}
 

@@ -57,7 +57,7 @@ public class class_5582<T extends EntityLike> {
 
 	public void addEntity(T entityLike) {
 		this.field_27281.addEntity(entityLike);
-		long l = class_5573.method_31779(entityLike.getBlockPos());
+		long l = ChunkSectionPos.method_33706(entityLike.getBlockPos());
 		class_5572<T> lv = this.field_27282.method_31784(l);
 		lv.method_31764(entityLike);
 		entityLike.method_31744(new class_5582.class_5583(entityLike, l, lv));
@@ -97,7 +97,7 @@ public class class_5582<T extends EntityLike> {
 		@Override
 		public void updateEntityPosition() {
 			BlockPos blockPos = this.entity.getBlockPos();
-			long l = class_5573.method_31779(blockPos);
+			long l = ChunkSectionPos.method_33706(blockPos);
 			if (l != this.field_27287) {
 				class_5584 lv = this.field_27288.method_31768();
 				if (!this.field_27288.method_31767(this.entity)) {

@@ -10,7 +10,7 @@ public class AshParticle extends AscendingParticle {
 	protected AshParticle(
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider
 	) {
-		super(world, x, y, z, 0.1F, -0.1F, 0.1F, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.5F, 20, -0.004, false);
+		super(world, x, y, z, 0.1F, -0.1F, 0.1F, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.5F, 20, 0.1F, false);
 	}
 
 	@Environment(EnvType.CLIENT)

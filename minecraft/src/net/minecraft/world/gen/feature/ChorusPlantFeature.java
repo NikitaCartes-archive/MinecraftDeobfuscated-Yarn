@@ -6,16 +6,18 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChorusFlowerBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class ChorusPlantFeature extends Feature<DefaultFeatureConfig> {
 	public ChorusPlantFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
+		Random random = featureContext.getRandom();
 		if (structureWorldAccess.isAir(blockPos) && structureWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.END_STONE)) {
 			ChorusFlowerBlock.generate(structureWorldAccess, blockPos, random, 8);
 			return true;

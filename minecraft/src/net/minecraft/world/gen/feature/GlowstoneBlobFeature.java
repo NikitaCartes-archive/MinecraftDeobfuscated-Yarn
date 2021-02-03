@@ -7,16 +7,18 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class GlowstoneBlobFeature extends Feature<DefaultFeatureConfig> {
 	public GlowstoneBlobFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
+		Random random = featureContext.getRandom();
 		if (!structureWorldAccess.isAir(blockPos)) {
 			return false;
 		} else {

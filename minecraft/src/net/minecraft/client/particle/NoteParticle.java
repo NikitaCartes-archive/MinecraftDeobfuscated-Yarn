@@ -10,6 +10,8 @@ import net.minecraft.util.math.MathHelper;
 public class NoteParticle extends SpriteBillboardParticle {
 	private NoteParticle(ClientWorld world, double x, double y, double z, double d) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
+		this.field_28786 = 0.66F;
+		this.field_28787 = true;
 		this.velocityX *= 0.01F;
 		this.velocityY *= 0.01F;
 		this.velocityZ *= 0.01F;
@@ -29,30 +31,6 @@ public class NoteParticle extends SpriteBillboardParticle {
 	@Override
 	public float getSize(float tickDelta) {
 		return this.scale * MathHelper.clamp(((float)this.age + tickDelta) / (float)this.maxAge * 32.0F, 0.0F, 1.0F);
-	}
-
-	@Override
-	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.y == this.prevPosY) {
-				this.velocityX *= 1.1;
-				this.velocityZ *= 1.1;
-			}
-
-			this.velocityX *= 0.66F;
-			this.velocityY *= 0.66F;
-			this.velocityZ *= 0.66F;
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
-			}
-		}
 	}
 
 	@Environment(EnvType.CLIENT)

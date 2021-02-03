@@ -42,8 +42,8 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	@Override
-	protected boolean canClimb() {
-		return false;
+	protected Entity.class_5799 method_33570() {
+		return Entity.class_5799.NONE;
 	}
 
 	@Override
@@ -133,7 +133,7 @@ public class ExperienceOrbEntity extends Entity {
 	}
 
 	private static boolean wasMergedIntoExistingOrb(ServerWorld world, Vec3d pos, int amount) {
-		Box box = Box.of(1.0, 1.0, 1.0).offset(pos);
+		Box box = Box.of(pos, 1.0, 1.0, 1.0);
 		int i = world.getRandom().nextInt(40);
 		List<ExperienceOrbEntity> list = world.getEntitiesByType(
 			class_5575.method_31795(ExperienceOrbEntity.class), box, experienceOrbEntityx -> isMergeable(experienceOrbEntityx, i, amount)

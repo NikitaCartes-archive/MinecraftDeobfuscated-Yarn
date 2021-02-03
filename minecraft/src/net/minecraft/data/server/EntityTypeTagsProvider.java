@@ -30,7 +30,7 @@ public class EntityTypeTagsProvider extends AbstractTagProvider<EntityType<?>> {
 				EntityType.DRAGON_FIREBALL,
 				EntityType.WITHER_SKULL
 			);
-		this.getOrCreateTagBuilder(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(EntityType.RABBIT, EntityType.ENDERMITE, EntityType.SILVERFISH);
+		this.getOrCreateTagBuilder(EntityTypeTags.POWDER_SNOW_WALKABLE_MOBS).add(EntityType.RABBIT, EntityType.ENDERMITE, EntityType.SILVERFISH, EntityType.FOX);
 		this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_ALWAYS_HOSTILES)
 			.add(EntityType.TROPICAL_FISH, EntityType.PUFFERFISH, EntityType.SALMON, EntityType.COD, EntityType.SQUID, EntityType.GLOW_SQUID);
 		this.getOrCreateTagBuilder(EntityTypeTags.AXOLOTL_TEMPTED_HOSTILES).add(EntityType.DROWNED, EntityType.GUARDIAN);

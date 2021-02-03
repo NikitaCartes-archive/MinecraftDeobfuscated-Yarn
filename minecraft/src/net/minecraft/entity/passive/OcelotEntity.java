@@ -276,6 +276,11 @@ public class OcelotEntity extends AnimalEntity {
 		return new Vec3d(0.0, (double)(0.5F * this.getStandingEyeHeight()), (double)(this.getWidth() * 0.4F));
 	}
 
+	@Override
+	public boolean bypassesSteppingEffects() {
+		return this.getPose() == EntityPose.CROUCHING || super.bypassesSteppingEffects();
+	}
+
 	static class FleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final OcelotEntity ocelot;
 

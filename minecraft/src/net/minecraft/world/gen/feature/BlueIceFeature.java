@@ -8,16 +8,18 @@ import net.minecraft.block.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 	public BlueIceFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
 		if (blockPos.getY() > structureWorldAccess.getSeaLevel() - 1) {
 			return false;
 		} else if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.WATER) && !structureWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.WATER)) {

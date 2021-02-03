@@ -24,6 +24,7 @@ public class ShearsItem extends Item {
 				&& !state.isOf(Blocks.GRASS)
 				&& !state.isOf(Blocks.FERN)
 				&& !state.isOf(Blocks.DEAD_BUSH)
+				&& !state.isOf(Blocks.HANGING_ROOTS)
 				&& !state.isOf(Blocks.VINE)
 				&& !state.isOf(Blocks.TRIPWIRE)
 				&& !state.isIn(BlockTags.WOOL)
@@ -40,8 +41,10 @@ public class ShearsItem extends Item {
 	public float getMiningSpeedMultiplier(ItemStack stack, BlockState state) {
 		if (state.isOf(Blocks.COBWEB) || state.isIn(BlockTags.LEAVES)) {
 			return 15.0F;
+		} else if (state.isIn(BlockTags.WOOL)) {
+			return 5.0F;
 		} else {
-			return state.isIn(BlockTags.WOOL) ? 5.0F : super.getMiningSpeedMultiplier(stack, state);
+			return !state.isOf(Blocks.VINE) && !state.isOf(Blocks.GLOW_LICHEN) ? super.getMiningSpeedMultiplier(stack, state) : 2.0F;
 		}
 	}
 }

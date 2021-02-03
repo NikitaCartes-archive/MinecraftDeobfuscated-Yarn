@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5742;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 
@@ -53,15 +54,17 @@ public class BiomeAccess {
 		return this.storage.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
 	}
 
-	public Biome method_31608(int i, int j) {
-		return this.storage.method_31609(i, j);
+	public Biome method_31608(ChunkPos chunkPos) {
+		return this.storage.method_31609(chunkPos);
 	}
 
 	public interface Storage {
 		Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ);
 
-		default Biome method_31609(int i, int j) {
-			return this.getBiomeForNoiseGen(class_5742.method_33102(i) + BiomeAccess.field_28106, 0, class_5742.method_33102(j) + BiomeAccess.field_28106);
+		default Biome method_31609(ChunkPos chunkPos) {
+			return this.getBiomeForNoiseGen(
+				class_5742.method_33102(chunkPos.x) + BiomeAccess.field_28106, 0, class_5742.method_33102(chunkPos.z) + BiomeAccess.field_28106
+			);
 		}
 	}
 }

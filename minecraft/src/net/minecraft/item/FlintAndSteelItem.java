@@ -31,9 +31,9 @@ public class FlintAndSteelItem extends Item {
 			BlockPos blockPos2 = blockPos.offset(context.getSide());
 			if (AbstractFireBlock.canPlaceAt(world, blockPos2, context.getPlayerFacing())) {
 				world.playSound(playerEntity, blockPos2, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
-				world.emitGameEvent(playerEntity, GameEvent.FLINT_AND_STEEL_USE, blockPos);
 				BlockState blockState2 = AbstractFireBlock.getState(world, blockPos2);
 				world.setBlockState(blockPos2, blockState2, 11);
+				world.emitGameEvent(playerEntity, GameEvent.BLOCK_PLACE, blockPos);
 				ItemStack itemStack = context.getStack();
 				if (playerEntity instanceof ServerPlayerEntity) {
 					Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)playerEntity, blockPos2, itemStack);
@@ -46,8 +46,8 @@ public class FlintAndSteelItem extends Item {
 			}
 		} else {
 			world.playSound(playerEntity, blockPos, SoundEvents.ITEM_FLINTANDSTEEL_USE, SoundCategory.BLOCKS, 1.0F, world.getRandom().nextFloat() * 0.4F + 0.8F);
-			world.emitGameEvent(playerEntity, GameEvent.FLINT_AND_STEEL_USE, blockPos);
 			world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)), 11);
+			world.emitGameEvent(playerEntity, GameEvent.BLOCK_PLACE, blockPos);
 			if (playerEntity != null) {
 				context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
 			}

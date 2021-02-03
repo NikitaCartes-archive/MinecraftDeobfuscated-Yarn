@@ -12,15 +12,20 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 	public HugeFungusFeature(Codec<HugeFungusFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, HugeFungusFeatureConfig hugeFungusFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<HugeFungusFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
+		Random random = featureContext.getRandom();
+		ChunkGenerator chunkGenerator = featureContext.getGenerator();
+		HugeFungusFeatureConfig hugeFungusFeatureConfig = featureContext.getConfig();
 		Block block = hugeFungusFeatureConfig.validBaseBlock.getBlock();
 		BlockPos blockPos2 = null;
 		BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());

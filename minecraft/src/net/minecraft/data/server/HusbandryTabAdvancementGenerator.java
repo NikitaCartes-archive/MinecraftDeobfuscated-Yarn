@@ -93,7 +93,8 @@ public class HusbandryTabAdvancementGenerator implements Consumer<Consumer<Advan
 		Items.DRIED_KELP,
 		Items.SUSPICIOUS_STEW,
 		Items.SWEET_BERRIES,
-		Items.HONEY_BOTTLE
+		Items.HONEY_BOTTLE,
+		Items.GLOW_BERRIES
 	};
 
 	public void accept(Consumer<Advancement> consumer) {

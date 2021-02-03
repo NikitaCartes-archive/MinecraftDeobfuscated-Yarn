@@ -35,7 +35,7 @@ public class FishingRodItem extends Item implements Vanishable {
 				1.0F,
 				0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 			);
-			world.emitGameEvent(user, GameEvent.FISHING_ROD_CAST, user);
+			world.emitGameEvent(user, GameEvent.FISHING_ROD_REEL_IN, user);
 		} else {
 			world.playSound(
 				null,
@@ -47,7 +47,6 @@ public class FishingRodItem extends Item implements Vanishable {
 				0.5F,
 				0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F)
 			);
-			world.emitGameEvent(user, GameEvent.FISHING_ROD_REEL_IN, user);
 			if (!world.isClient) {
 				int i = EnchantmentHelper.getLure(itemStack);
 				int j = EnchantmentHelper.getLuckOfTheSea(itemStack);
@@ -55,6 +54,7 @@ public class FishingRodItem extends Item implements Vanishable {
 			}
 
 			user.incrementStat(Stats.USED.getOrCreateStat(this));
+			world.emitGameEvent(user, GameEvent.FISHING_ROD_CAST, user);
 		}
 
 		return TypedActionResult.success(itemStack, world.isClient());

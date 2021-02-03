@@ -50,8 +50,7 @@ import org.apache.logging.log4j.Logger;
 public class ChunkRegion implements StructureWorldAccess {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final List<Chunk> chunks;
-	private final int centerChunkX;
-	private final int centerChunkZ;
+	private final ChunkPos centerPos;
 	private final int width;
 	private final ServerWorld world;
 	private final long seed;
@@ -72,8 +71,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		} else {
 			ChunkPos chunkPos = ((Chunk)chunks.get(chunks.size() / 2)).getPos();
 			this.chunks = chunks;
-			this.centerChunkX = chunkPos.x;
-			this.centerChunkZ = chunkPos.z;
+			this.centerPos = chunkPos;
 			this.width = i;
 			this.world = world;
 			this.seed = world.getSeed();
@@ -87,12 +85,8 @@ public class ChunkRegion implements StructureWorldAccess {
 		}
 	}
 
-	public int getCenterChunkX() {
-		return this.centerChunkX;
-	}
-
-	public int getCenterChunkZ() {
-		return this.centerChunkZ;
+	public ChunkPos getCenterPos() {
+		return this.centerPos;
 	}
 
 	@Override

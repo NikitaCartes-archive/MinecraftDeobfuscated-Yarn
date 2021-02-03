@@ -39,6 +39,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAttackMob {
 	private static final TrackedData<Byte> SNOW_GOLEM_FLAGS = DataTracker.registerData(SnowGolemEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -139,6 +140,7 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 		ItemStack itemStack = player.getStackInHand(hand);
 		if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
 			this.sheared(SoundCategory.PLAYERS);
+			this.emitGameEvent(GameEvent.SHEAR, player);
 			if (!this.world.isClient) {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}

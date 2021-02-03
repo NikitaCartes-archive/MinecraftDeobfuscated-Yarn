@@ -35,6 +35,10 @@ public final class FluidState extends State<Fluid, FluidState> {
 		return this.getFluid().isStill(this);
 	}
 
+	public boolean isEqualAndStill(Fluid fluid) {
+		return this.owner == fluid && this.owner.isStill(this);
+	}
+
 	public boolean isEmpty() {
 		return this.getFluid().isEmpty();
 	}

@@ -13,22 +13,21 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.UniformFloatDistribution;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.util.DripstoneColumn;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> {
 	public LargeDripstoneFeature(Codec<LargeDripstoneFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		LargeDripstoneFeatureConfig largeDripstoneFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<LargeDripstoneFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
+		LargeDripstoneFeatureConfig largeDripstoneFeatureConfig = featureContext.getConfig();
+		Random random = featureContext.getRandom();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {

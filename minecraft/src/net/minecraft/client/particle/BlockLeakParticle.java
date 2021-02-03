@@ -1,5 +1,6 @@
 package net.minecraft.client.particle;
 
+import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.world.ClientWorld;
@@ -238,8 +239,12 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 	@Environment(EnvType.CLIENT)
 	static class Falling extends BlockLeakParticle {
 		private Falling(ClientWorld world, double x, double y, double z, Fluid fluid) {
-			super(world, x, y, z, fluid);
-			this.maxAge = (int)(64.0 / (Math.random() * 0.8 + 0.2));
+			this(world, x, y, z, fluid, (int)(64.0 / (Math.random() * 0.8 + 0.2)));
+		}
+
+		private Falling(ClientWorld clientWorld, double d, double e, double f, Fluid fluid, int i) {
+			super(clientWorld, d, e, f, fluid);
+			this.maxAge = i;
 		}
 
 		@Override
@@ -362,6 +367,26 @@ public class BlockLeakParticle extends SpriteBillboardParticle {
 			blockLeakParticle.obsidianTear = true;
 			blockLeakParticle.gravityStrength = 0.01F;
 			blockLeakParticle.setColor(0.51171875F, 0.03125F, 0.890625F);
+			blockLeakParticle.setSprite(this.spriteProvider);
+			return blockLeakParticle;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class FallingSporeBlossomFactory implements ParticleFactory<DefaultParticleType> {
+		protected final SpriteProvider spriteProvider;
+		private final Random random;
+
+		public FallingSporeBlossomFactory(SpriteProvider spriteProvider) {
+			this.spriteProvider = spriteProvider;
+			this.random = new Random();
+		}
+
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			int j = (int)(64.0F / MathHelper.nextBetween(this.random, 0.1F, 0.9F));
+			BlockLeakParticle blockLeakParticle = new BlockLeakParticle.Falling(clientWorld, d, e, f, Fluids.EMPTY, j);
+			blockLeakParticle.gravityStrength = 0.005F;
+			blockLeakParticle.setColor(0.32F, 0.5F, 0.22F);
 			blockLeakParticle.setSprite(this.spriteProvider);
 			return blockLeakParticle;
 		}

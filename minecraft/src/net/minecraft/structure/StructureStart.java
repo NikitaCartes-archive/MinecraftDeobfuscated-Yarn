@@ -13,6 +13,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
@@ -36,7 +37,8 @@ public abstract class StructureStart<C extends FeatureConfig> {
 			int i,
 			int j,
 			Biome biome,
-			MineshaftFeatureConfig mineshaftFeatureConfig
+			MineshaftFeatureConfig mineshaftFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 		}
 	};
@@ -68,7 +70,14 @@ public abstract class StructureStart<C extends FeatureConfig> {
 	}
 
 	public abstract void init(
-		DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, StructureManager manager, int chunkX, int chunkZ, Biome biome, C config
+		DynamicRegistryManager registryManager,
+		ChunkGenerator chunkGenerator,
+		StructureManager manager,
+		int chunkX,
+		int chunkZ,
+		Biome biome,
+		C config,
+		HeightLimitView heightLimitView
 	);
 
 	public BlockBox getBoundingBox() {

@@ -6,6 +6,7 @@ import java.util.List;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -34,7 +35,8 @@ public class PillagerOutpostFeature extends JigsawFeature {
 		int j,
 		Biome biome,
 		ChunkPos chunkPos,
-		StructurePoolFeatureConfig structurePoolFeatureConfig
+		StructurePoolFeatureConfig structurePoolFeatureConfig,
+		HeightLimitView heightLimitView
 	) {
 		int k = ChunkSectionPos.getSectionCoord(i);
 		int m = ChunkSectionPos.getSectionCoord(j);

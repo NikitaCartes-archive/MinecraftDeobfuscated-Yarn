@@ -15,7 +15,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,9 +28,11 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+		BlockPos blockPos = featureContext.getPos();
+		Random random = featureContext.getRandom();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
 		int i = 3;
 		int j = random.nextInt(2) + 2;
 		int k = -j - 1;

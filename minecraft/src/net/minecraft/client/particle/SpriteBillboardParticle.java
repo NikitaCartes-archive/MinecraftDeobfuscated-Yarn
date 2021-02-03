@@ -46,6 +46,8 @@ public abstract class SpriteBillboardParticle extends BillboardParticle {
 	}
 
 	public void setSpriteForAge(SpriteProvider spriteProvider) {
-		this.setSprite(spriteProvider.getSprite(this.age, this.maxAge));
+		if (!this.dead) {
+			this.setSprite(spriteProvider.getSprite(this.age, this.maxAge));
+		}
 	}
 }

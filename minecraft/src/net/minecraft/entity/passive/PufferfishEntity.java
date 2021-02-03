@@ -41,6 +41,7 @@ public class PufferfishEntity extends FishEntity {
 
 	public PufferfishEntity(EntityType<? extends PufferfishEntity> entityType, World world) {
 		super(entityType, world);
+		this.calculateDimensions();
 	}
 
 	@Override

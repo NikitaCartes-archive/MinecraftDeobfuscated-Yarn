@@ -9,6 +9,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -34,7 +35,8 @@ public class IglooFeature extends StructureFeature<DefaultFeatureConfig> {
 			int i,
 			int j,
 			Biome biome,
-			DefaultFeatureConfig defaultFeatureConfig
+			DefaultFeatureConfig defaultFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			int k = ChunkSectionPos.getBlockCoord(i);
 			int l = ChunkSectionPos.getBlockCoord(j);

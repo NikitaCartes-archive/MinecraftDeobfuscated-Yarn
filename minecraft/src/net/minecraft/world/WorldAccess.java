@@ -60,6 +60,10 @@ public interface WorldAccess extends class_5423, LunarWorldView {
 		this.emitGameEvent(null, event, pos);
 	}
 
+	default void method_33596(GameEvent gameEvent, Entity entity) {
+		this.emitGameEvent(null, gameEvent, entity.getBlockPos());
+	}
+
 	default void emitGameEvent(@Nullable Entity entity, GameEvent event, Entity emitter) {
 		this.emitGameEvent(entity, event, emitter.getBlockPos());
 	}

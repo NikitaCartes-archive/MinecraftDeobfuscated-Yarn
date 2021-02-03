@@ -32,6 +32,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.MobSpawnerLogic;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class SpawnEggItem extends Item {
 	private static final Map<EntityType<? extends MobEntity>, SpawnEggItem> SPAWN_EGGS = Maps.<EntityType<? extends MobEntity>, SpawnEggItem>newIdentityHashMap();
@@ -89,6 +90,7 @@ public class SpawnEggItem extends Item {
 				)
 				!= null) {
 				itemStack.decrement(1);
+				world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
 			}
 
 			return ActionResult.CONSUME;
@@ -118,6 +120,7 @@ public class SpawnEggItem extends Item {
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
+					world.method_33596(GameEvent.ENTITY_PLACE, user);
 					return TypedActionResult.consume(itemStack);
 				}
 			} else {

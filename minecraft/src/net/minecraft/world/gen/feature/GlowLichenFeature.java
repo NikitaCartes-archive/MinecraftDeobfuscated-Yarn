@@ -12,16 +12,19 @@ import net.minecraft.block.GlowLichenBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class GlowLichenFeature extends Feature<GlowLichenFeatureConfig> {
 	public GlowLichenFeature(Codec<GlowLichenFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, GlowLichenFeatureConfig glowLichenFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<GlowLichenFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
+		Random random = featureContext.getRandom();
+		GlowLichenFeatureConfig glowLichenFeatureConfig = featureContext.getConfig();
 		if (!isAirOrWater(structureWorldAccess.getBlockState(blockPos))) {
 			return false;
 		} else {

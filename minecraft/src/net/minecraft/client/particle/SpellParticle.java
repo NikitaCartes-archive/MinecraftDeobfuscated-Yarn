@@ -13,6 +13,9 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	private SpellParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.5 - RANDOM.nextDouble(), velocityY, 0.5 - RANDOM.nextDouble());
+		this.field_28786 = 0.96F;
+		this.gravityStrength = -0.1F;
+		this.field_28787 = true;
 		this.spriteProvider = spriteProvider;
 		this.velocityY *= 0.2F;
 		if (velocityX == 0.0 && velocityZ == 0.0) {
@@ -33,28 +36,8 @@ public class SpellParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
-			this.setSpriteForAge(this.spriteProvider);
-			this.velocityY += 0.004;
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.y == this.prevPosY) {
-				this.velocityX *= 1.1;
-				this.velocityZ *= 1.1;
-			}
-
-			this.velocityX *= 0.96F;
-			this.velocityY *= 0.96F;
-			this.velocityZ *= 0.96F;
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
-			}
-		}
+		super.tick();
+		this.setSpriteForAge(this.spriteProvider);
 	}
 
 	@Environment(EnvType.CLIENT)

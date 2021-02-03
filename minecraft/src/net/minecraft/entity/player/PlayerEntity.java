@@ -95,6 +95,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Arm;
+import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
@@ -466,15 +467,6 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
-	@Override
-	public void afterSpawn() {
-		this.setPose(EntityPose.STANDING);
-		super.afterSpawn();
-		this.setHealth(this.getMaxHealth());
-		this.deathTime = 0;
-	}
-
 	@Override
 	protected void tickNewAi() {
 		super.tickNewAi();
@@ -611,7 +603,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
 		this.extinguish();
-		this.setFlag(0, false);
+		this.setOnFire(false);
 	}
 
 	@Override
@@ -1326,6 +1318,9 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.abilities;
 	}
 
+	public void method_33592(ItemStack itemStack, ItemStack itemStack2, ClickType clickType) {
+	}
+
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos pos) {
 		this.sleep(pos);
 		this.sleepTimer = 0;
@@ -1716,8 +1711,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected boolean canClimb() {
-		return !this.abilities.flying && (!this.onGround || !this.isSneaky());
+	protected Entity.class_5799 method_33570() {
+		return this.abilities.flying || this.onGround && this.isSneaky() ? Entity.class_5799.NONE : Entity.class_5799.ALL;
 	}
 
 	public void sendAbilitiesUpdate() {

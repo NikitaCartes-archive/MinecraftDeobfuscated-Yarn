@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 	private static final ImmutableList<Block> BLOCKS = ImmutableList.of(
@@ -31,14 +31,13 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		BasaltColumnsFeatureConfig basaltColumnsFeatureConfig
-	) {
-		int i = chunkGenerator.getSeaLevel();
+	@Override
+	public boolean generate(FeatureContext<BasaltColumnsFeatureConfig> featureContext) {
+		int i = featureContext.getGenerator().getSeaLevel();
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
+		BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = featureContext.getConfig();
 		if (!method_30379(structureWorldAccess, i, blockPos.mutableCopy())) {
 			return false;
 		} else {

@@ -14,6 +14,8 @@ public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends 
 		ClientWorld world, double d, double e, double f, double g, double h, double i, T abstractDustParticleEffect, SpriteProvider spriteProvider
 	) {
 		super(world, d, e, f, g, h, i);
+		this.field_28786 = 0.96F;
+		this.field_28787 = true;
 		this.field_28247 = spriteProvider;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
@@ -44,26 +46,7 @@ public class AbstractDustParticle<T extends AbstractDustParticleEffect> extends 
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
-			this.setSpriteForAge(this.field_28247);
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.y == this.prevPosY) {
-				this.velocityX *= 1.1;
-				this.velocityZ *= 1.1;
-			}
-
-			this.velocityX *= 0.96F;
-			this.velocityY *= 0.96F;
-			this.velocityZ *= 0.96F;
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
-			}
-		}
+		super.tick();
+		this.setSpriteForAge(this.field_28247);
 	}
 }

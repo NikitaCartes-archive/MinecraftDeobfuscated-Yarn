@@ -11,7 +11,7 @@ public class WhiteAshParticle extends AscendingParticle {
 	protected WhiteAshParticle(
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider
 	) {
-		super(world, x, y, z, 0.1F, -0.1F, 0.1F, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.0F, 20, -5.0E-4, false);
+		super(world, x, y, z, 0.1F, -0.1F, 0.1F, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.0F, 20, 0.0125F, false);
 		this.colorRed = 0.7294118F;
 		this.colorGreen = 0.69411767F;
 		this.colorBlue = 0.7607843F;

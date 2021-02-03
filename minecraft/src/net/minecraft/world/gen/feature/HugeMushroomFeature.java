@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureConfig> {
 	public HugeMushroomFeature(Codec<HugeMushroomFeatureConfig> codec) {
@@ -60,13 +60,12 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 		}
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		HugeMushroomFeatureConfig hugeMushroomFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<HugeMushroomFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
+		Random random = featureContext.getRandom();
+		HugeMushroomFeatureConfig hugeMushroomFeatureConfig = featureContext.getConfig();
 		int i = this.getHeight(random);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 		if (!this.canGenerate(structureWorldAccess, blockPos, i, mutable, hugeMushroomFeatureConfig)) {

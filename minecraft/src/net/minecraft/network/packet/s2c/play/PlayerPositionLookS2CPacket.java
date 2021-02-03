@@ -17,11 +17,14 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 	private float pitch;
 	private Set<PlayerPositionLookS2CPacket.Flag> flags;
 	private int teleportId;
+	private boolean field_28805;
 
 	public PlayerPositionLookS2CPacket() {
 	}
 
-	public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> flags, int teleportId) {
+	public PlayerPositionLookS2CPacket(
+		double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> flags, int teleportId, boolean bl
+	) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -29,6 +32,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		this.pitch = pitch;
 		this.flags = flags;
 		this.teleportId = teleportId;
+		this.field_28805 = bl;
 	}
 
 	@Override
@@ -40,6 +44,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		this.pitch = buf.readFloat();
 		this.flags = PlayerPositionLookS2CPacket.Flag.getFlags(buf.readUnsignedByte());
 		this.teleportId = buf.readVarInt();
+		this.field_28805 = buf.readBoolean();
 	}
 
 	@Override
@@ -51,6 +56,7 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeFloat(this.pitch);
 		buf.writeByte(PlayerPositionLookS2CPacket.Flag.getBitfield(this.flags));
 		buf.writeVarInt(this.teleportId);
+		buf.writeBoolean(this.field_28805);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -85,6 +91,11 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 	@Environment(EnvType.CLIENT)
 	public int getTeleportId() {
 		return this.teleportId;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean method_33718() {
+		return this.field_28805;
 	}
 
 	@Environment(EnvType.CLIENT)

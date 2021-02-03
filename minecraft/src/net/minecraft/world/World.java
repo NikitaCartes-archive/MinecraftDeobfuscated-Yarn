@@ -163,6 +163,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return (WorldChunk)this.getChunk(i, j, ChunkStatus.FULL);
 	}
 
+	@Nullable
 	@Override
 	public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
 		Chunk chunk = this.getChunkManager().getChunk(chunkX, chunkZ, leastStatus, create);

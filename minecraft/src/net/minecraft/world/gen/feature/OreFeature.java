@@ -8,16 +8,19 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
 	public OreFeature(Codec<OreFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, OreFeatureConfig oreFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<OreFeatureConfig> featureContext) {
+		Random random = featureContext.getRandom();
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		OreFeatureConfig oreFeatureConfig = featureContext.getConfig();
 		float f = random.nextFloat() * (float) Math.PI;
 		float g = (float)oreFeatureConfig.size / 8.0F;
 		int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0F * 2.0F + 1.0F) / 2.0F);

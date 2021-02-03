@@ -10,7 +10,7 @@ public class FireSmokeParticle extends AscendingParticle {
 	protected FireSmokeParticle(
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, float scaleMultiplier, SpriteProvider spriteProvider
 	) {
-		super(world, x, y, z, 0.1F, 0.1F, 0.1F, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.3F, 8, 0.004, true);
+		super(world, x, y, z, 0.1F, 0.1F, 0.1F, velocityX, velocityY, velocityZ, scaleMultiplier, spriteProvider, 0.3F, 8, -0.1F, true);
 	}
 
 	@Environment(EnvType.CLIENT)

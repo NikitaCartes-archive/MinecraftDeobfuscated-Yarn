@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.math.DoubleMath;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import java.util.List;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -150,6 +151,23 @@ public abstract class VoxelShape {
 					? new BlockHitResult(vec3d2, Direction.getFacing(vec3d.x, vec3d.y, vec3d.z).getOpposite(), pos, true)
 					: Box.raycast(this.getBoundingBoxes(), start, end, pos);
 			}
+		}
+	}
+
+	public Optional<Vec3d> method_33661(Vec3d vec3d) {
+		if (this.isEmpty()) {
+			return Optional.empty();
+		} else {
+			Vec3d[] vec3ds = new Vec3d[1];
+			this.forEachBox((d, e, f, g, h, i) -> {
+				double j = MathHelper.clamp(vec3d.getX(), d, g);
+				double k = MathHelper.clamp(vec3d.getY(), e, h);
+				double l = MathHelper.clamp(vec3d.getZ(), f, i);
+				if (vec3ds[0] == null || vec3d.squaredDistanceTo(j, k, l) < vec3d.squaredDistanceTo(vec3ds[0])) {
+					vec3ds[0] = new Vec3d(j, k, l);
+				}
+			});
+			return Optional.of(vec3ds[0]);
 		}
 	}
 

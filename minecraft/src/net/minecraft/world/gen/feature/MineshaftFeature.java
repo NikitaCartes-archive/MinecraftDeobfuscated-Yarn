@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -32,7 +33,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		int j,
 		Biome biome,
 		ChunkPos chunkPos,
-		MineshaftFeatureConfig mineshaftFeatureConfig
+		MineshaftFeatureConfig mineshaftFeatureConfig,
+		HeightLimitView heightLimitView
 	) {
 		chunkRandom.setCarverSeed(l, i, j);
 		double d = (double)mineshaftFeatureConfig.probability;
@@ -56,7 +58,8 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 			int i,
 			int j,
 			Biome biome,
-			MineshaftFeatureConfig mineshaftFeatureConfig
+			MineshaftFeatureConfig mineshaftFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
 				0, this.random, ChunkSectionPos.getOffsetPos(i, 2), ChunkSectionPos.getOffsetPos(j, 2), mineshaftFeatureConfig.type

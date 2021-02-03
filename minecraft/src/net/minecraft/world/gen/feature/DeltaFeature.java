@@ -10,7 +10,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	private static final ImmutableList<Block> BLOCKS = ImmutableList.of(
@@ -22,10 +22,13 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DeltaFeatureConfig> featureContext) {
 		boolean bl = false;
+		Random random = featureContext.getRandom();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		DeltaFeatureConfig deltaFeatureConfig = featureContext.getConfig();
+		BlockPos blockPos = featureContext.getPos();
 		boolean bl2 = random.nextDouble() < 0.9;
 		int i = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;
 		int j = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;

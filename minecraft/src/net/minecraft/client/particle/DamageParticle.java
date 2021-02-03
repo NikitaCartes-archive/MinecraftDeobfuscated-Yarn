@@ -10,6 +10,8 @@ import net.minecraft.util.math.MathHelper;
 public class DamageParticle extends SpriteBillboardParticle {
 	private DamageParticle(ClientWorld world, double x, double y, double z, double d, double e, double f) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
+		this.field_28786 = 0.7F;
+		this.gravityStrength = 0.5F;
 		this.velocityX *= 0.1F;
 		this.velocityY *= 0.1F;
 		this.velocityZ *= 0.1F;
@@ -33,24 +35,9 @@ public class DamageParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			this.colorGreen = (float)((double)this.colorGreen * 0.96);
-			this.colorBlue = (float)((double)this.colorBlue * 0.9);
-			this.velocityX *= 0.7F;
-			this.velocityY *= 0.7F;
-			this.velocityZ *= 0.7F;
-			this.velocityY -= 0.02F;
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
-			}
-		}
+		super.tick();
+		this.colorGreen = (float)((double)this.colorGreen * 0.96);
+		this.colorBlue = (float)((double)this.colorBlue * 0.9);
 	}
 
 	@Override

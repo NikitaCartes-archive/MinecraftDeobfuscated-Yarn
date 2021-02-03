@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class FossilFeature extends Feature<DefaultFeatureConfig> {
 	private static final Identifier SPINE_1 = new Identifier("fossil/spine_1");
@@ -43,9 +43,11 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+		Random random = featureContext.getRandom();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
 		BlockRotation blockRotation = BlockRotation.random(random);
 		int i = random.nextInt(FOSSILS.length);
 		StructureManager structureManager = structureWorldAccess.toServerWorld().getServer().getStructureManager();

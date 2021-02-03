@@ -94,7 +94,7 @@ public class ShovelItem extends MiningToolItem {
 					world.syncWorldEvent(null, 1009, blockPos, 0);
 				}
 
-				CampfireBlock.extinguish(world, blockPos, blockState);
+				CampfireBlock.extinguish(context.getPlayer(), world, blockPos, blockState);
 				blockState3 = blockState.with(CampfireBlock.LIT, Boolean.valueOf(false));
 			}
 

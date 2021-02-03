@@ -11,6 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
@@ -36,9 +37,10 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		int j,
 		Biome biome,
 		ChunkPos chunkPos,
-		DefaultFeatureConfig defaultFeatureConfig
+		DefaultFeatureConfig defaultFeatureConfig,
+		HeightLimitView heightLimitView
 	) {
-		return getGenerationHeight(i, j, chunkGenerator) >= 60;
+		return getGenerationHeight(i, j, chunkGenerator, heightLimitView) >= 60;
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 		return EndCityFeature.Start::new;
 	}
 
-	private static int getGenerationHeight(int chunkX, int chunkZ, ChunkGenerator chunkGenerator) {
+	private static int getGenerationHeight(int chunkX, int chunkZ, ChunkGenerator chunkGenerator, HeightLimitView heightLimitView) {
 		Random random = new Random((long)(chunkX + chunkZ * 10387313));
 		BlockRotation blockRotation = BlockRotation.random(random);
 		int i = 5;
@@ -62,10 +64,10 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 
 		int k = ChunkSectionPos.getOffsetPos(chunkX, 7);
 		int l = ChunkSectionPos.getOffsetPos(chunkZ, 7);
-		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG);
-		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG);
-		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG);
-		int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG);
+		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+		int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 		return Math.min(Math.min(m, n), Math.min(o, p));
 	}
 
@@ -81,10 +83,11 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			int i,
 			int j,
 			Biome biome,
-			DefaultFeatureConfig defaultFeatureConfig
+			DefaultFeatureConfig defaultFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			BlockRotation blockRotation = BlockRotation.random(this.random);
-			int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator);
+			int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator, heightLimitView);
 			if (k >= 60) {
 				BlockPos blockPos = new BlockPos(ChunkSectionPos.getOffsetPos(i, 8), k, ChunkSectionPos.getOffsetPos(j, 8));
 				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);

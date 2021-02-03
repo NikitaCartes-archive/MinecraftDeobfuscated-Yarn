@@ -14,6 +14,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -69,7 +70,8 @@ public class OceanRuinFeature extends StructureFeature<OceanRuinFeatureConfig> {
 			int i,
 			int j,
 			Biome biome,
-			OceanRuinFeatureConfig oceanRuinFeatureConfig
+			OceanRuinFeatureConfig oceanRuinFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			int k = ChunkSectionPos.getBlockCoord(i);
 			int l = ChunkSectionPos.getBlockCoord(j);

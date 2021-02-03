@@ -6,6 +6,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import net.minecraft.world.event.GameEvent;
 
 public class CauldronBlock extends AbstractCauldronBlock {
 	public CauldronBlock(AbstractBlock.Settings settings) {
@@ -21,8 +22,10 @@ public class CauldronBlock extends AbstractCauldronBlock {
 		if (canFillWithPrecipitation(world)) {
 			if (precipitation == Biome.Precipitation.RAIN) {
 				world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
+				world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 			} else if (precipitation == Biome.Precipitation.SNOW) {
 				world.setBlockState(pos, Blocks.POWDER_SNOW_CAULDRON.getDefaultState());
+				world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 			}
 		}
 	}
@@ -37,9 +40,11 @@ public class CauldronBlock extends AbstractCauldronBlock {
 		if (fluid == Fluids.WATER) {
 			world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
 			world.syncWorldEvent(1047, pos, 0);
+			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 		} else if (fluid == Fluids.LAVA) {
 			world.setBlockState(pos, Blocks.LAVA_CAULDRON.getDefaultState());
 			world.syncWorldEvent(1046, pos, 0);
+			world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
 		}
 	}
 }

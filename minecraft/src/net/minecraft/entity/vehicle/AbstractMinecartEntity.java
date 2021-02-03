@@ -126,8 +126,8 @@ public abstract class AbstractMinecartEntity extends Entity {
 	}
 
 	@Override
-	protected boolean canClimb() {
-		return false;
+	protected Entity.class_5799 method_33570() {
+		return Entity.class_5799.EVENTS;
 	}
 
 	@Override
@@ -216,11 +216,11 @@ public abstract class AbstractMinecartEntity extends Entity {
 		} else if (this.isInvulnerableTo(source)) {
 			return false;
 		} else {
-			this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
 			this.setDamageWobbleSide(-this.getDamageWobbleSide());
 			this.setDamageWobbleTicks(10);
 			this.scheduleVelocityUpdate();
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
+			this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
 			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
 			if (bl || this.getDamageWobbleStrength() > 40.0F) {
 				this.removeAllPassengers();

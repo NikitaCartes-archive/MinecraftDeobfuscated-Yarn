@@ -1,15 +1,20 @@
 package net.minecraft.world;
 
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.border.WorldBorder;
@@ -59,11 +64,27 @@ public interface CollisionView extends BlockView {
 		return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box), false);
 	}
 
+	@Environment(EnvType.CLIENT)
 	default boolean isBlockSpaceEmpty(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
-		return this.getBlockCollisions(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
+		return !this.getBlockCollisions(entity, box, biPredicate).allMatch(VoxelShape::isEmpty);
 	}
 
 	default Stream<VoxelShape> getBlockCollisions(@Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> biPredicate) {
 		return StreamSupport.stream(new BlockCollisionSpliterator(this, entity, box, biPredicate), false);
+	}
+
+	default Optional<Vec3d> method_33594(@Nullable Entity entity, VoxelShape voxelShape, Vec3d vec3d, double d, double e, double f) {
+		if (voxelShape.isEmpty()) {
+			return Optional.empty();
+		} else {
+			Box box = Box.method_33660(voxelShape.getBoundingBoxes()).expand(d, e, f);
+			VoxelShape voxelShape2 = (VoxelShape)this.getBlockCollisions(entity, box)
+				.flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream())
+				.map(boxx -> boxx.expand(d / 2.0, e / 2.0, f / 2.0))
+				.map(VoxelShapes::cuboid)
+				.reduce(VoxelShapes.empty(), VoxelShapes::union);
+			VoxelShape voxelShape3 = VoxelShapes.combineAndSimplify(voxelShape, voxelShape2, BooleanBiFunction.ONLY_FIRST);
+			return voxelShape3.method_33661(vec3d);
+		}
 	}
 }

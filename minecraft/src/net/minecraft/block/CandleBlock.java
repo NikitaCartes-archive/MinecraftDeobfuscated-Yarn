@@ -63,7 +63,7 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 	@Override
 	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
 		if (player.getStackInHand(hand).isEmpty() && state.get(LIT)) {
-			extinguish(state, world, pos);
+			extinguish(player, state, world, pos);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.PASS;
@@ -128,7 +128,7 @@ public class CandleBlock extends AbstractCandleBlock implements Waterloggable {
 		if (!state.get(WATERLOGGED) && fluidState.getFluid() == Fluids.WATER) {
 			BlockState blockState = state.with(WATERLOGGED, Boolean.valueOf(true));
 			if (state.get(LIT)) {
-				extinguish(blockState, world, pos);
+				extinguish(null, blockState, world, pos);
 			} else {
 				world.setBlockState(pos, blockState, 3);
 			}

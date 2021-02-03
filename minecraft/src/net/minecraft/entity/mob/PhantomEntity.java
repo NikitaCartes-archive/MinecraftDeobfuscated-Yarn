@@ -41,6 +41,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 
 public class PhantomEntity extends FlyingEntity implements Monster {
+	public static final int field_28641 = MathHelper.ceil(24.166098F);
 	private static final TrackedData<Integer> SIZE = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private Vec3d targetPosition = Vec3d.ZERO;
 	private BlockPos circlingCenter = BlockPos.ORIGIN;
@@ -51,6 +52,11 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		this.experiencePoints = 5;
 		this.moveControl = new PhantomEntity.PhantomMoveControl(this);
 		this.lookControl = new PhantomEntity.PhantomLookControl(this);
+	}
+
+	@Override
+	public boolean hasWings() {
+		return (this.method_33588() + this.age) % field_28641 == 0;
 	}
 
 	@Override
@@ -99,6 +105,10 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 		super.onTrackedDataSet(data);
 	}
 
+	public int method_33588() {
+		return this.getId() * 3;
+	}
+
 	@Override
 	protected boolean isDisallowedInPeaceful() {
 		return true;
@@ -108,8 +118,8 @@ public class PhantomEntity extends FlyingEntity implements Monster {
 	public void tick() {
 		super.tick();
 		if (this.world.isClient) {
-			float f = MathHelper.cos((float)(this.getId() * 3 + this.age) * 0.13F + (float) Math.PI);
-			float g = MathHelper.cos((float)(this.getId() * 3 + this.age + 1) * 0.13F + (float) Math.PI);
+			float f = MathHelper.cos((float)(this.method_33588() + this.age) * 7.448451F + (float) Math.PI);
+			float g = MathHelper.cos((float)(this.method_33588() + this.age + 1) * 7.448451F + (float) Math.PI);
 			if (f > 0.0F && g <= 0.0F) {
 				this.world
 					.playSound(

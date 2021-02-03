@@ -45,6 +45,7 @@ import net.minecraft.village.VillagerType;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataContainer {
 	private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(ZombieVillagerEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
@@ -138,6 +139,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 					this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
 				}
 
+				this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.CONSUME;

@@ -50,7 +50,7 @@ public class GenerationSettings {
 						.listOf()
 						.fieldOf("features")
 						.forGetter(generationSettings -> generationSettings.features),
-					ConfiguredStructureFeature.field_26757
+					ConfiguredStructureFeature.REGISTRY_ELEMENT_CODEC
 						.promotePartial(Util.addPrefix("Structure start: ", LOGGER::error))
 						.fieldOf("starts")
 						.forGetter(generationSettings -> generationSettings.structureFeatures)

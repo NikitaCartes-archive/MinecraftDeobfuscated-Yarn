@@ -8,19 +8,17 @@ import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 	public TwistingVinesFeature(Codec<DefaultFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
-	) {
-		return tryGenerateVines(structureWorldAccess, random, blockPos, 8, 4, 8);
+	@Override
+	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+		return tryGenerateVines(featureContext.getWorld(), featureContext.getRandom(), featureContext.getPos(), 8, 4, 8);
 	}
 
 	public static boolean tryGenerateVines(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {

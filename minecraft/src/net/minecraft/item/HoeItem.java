@@ -32,6 +32,8 @@ public class HoeItem extends MiningToolItem {
 		Blocks.DARK_OAK_LEAVES,
 		Blocks.ACACIA_LEAVES,
 		Blocks.BIRCH_LEAVES,
+		Blocks.AZALEA_LEAVES,
+		Blocks.AZALEA_LEAVES_FLOWERS,
 		Blocks.SCULK_SENSOR
 	);
 	protected static final Map<Block, BlockState> TILLED_BLOCKS = Maps.<Block, BlockState>newHashMap(

@@ -29,6 +29,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 
 public class BatEntity extends AmbientEntity {
+	public static final int field_28637 = MathHelper.ceil(2.4166098F);
 	/**
 	 * Equals 0 when the bat is flying, and 1 when it's roosting.
 	 */
@@ -39,6 +40,11 @@ public class BatEntity extends AmbientEntity {
 	public BatEntity(EntityType<? extends BatEntity> entityType, World world) {
 		super(entityType, world);
 		this.setRoosting(true);
+	}
+
+	@Override
+	public boolean hasWings() {
+		return !this.isRoosting() && this.age % field_28637 == 0;
 	}
 
 	@Override
@@ -171,8 +177,8 @@ public class BatEntity extends AmbientEntity {
 	}
 
 	@Override
-	protected boolean canClimb() {
-		return false;
+	protected Entity.class_5799 method_33570() {
+		return Entity.class_5799.EVENTS;
 	}
 
 	@Override

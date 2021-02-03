@@ -43,6 +43,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public class RavagerEntity extends RaiderEntity {
 	private static final Predicate<Entity> IS_NOT_RAVAGER = entity -> entity.isAlive() && !(entity instanceof RavagerEntity);
@@ -248,6 +249,8 @@ public class RavagerEntity extends RaiderEntity {
 				double f = this.random.nextGaussian() * 0.2;
 				this.world.addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
 			}
+
+			this.world.emitGameEvent(this, GameEvent.RAVAGER_ROAR, this.method_33575());
 		}
 	}
 

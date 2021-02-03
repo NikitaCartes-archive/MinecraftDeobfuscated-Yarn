@@ -229,7 +229,7 @@ public class EntityLootTableGenerator implements Consumer<BiConsumer<Identifier,
 				.pool(
 					LootPool.builder()
 						.rolls(ConstantLootNumberProvider.create(1.0F))
-						.with(ItemEntry.builder(Items.GOLD_INGOT))
+						.with(ItemEntry.builder(Items.COPPER_INGOT))
 						.conditionally(KilledByPlayerLootCondition.builder())
 						.conditionally(RandomChanceWithLootingLootCondition.builder(0.05F, 0.01F))
 				)

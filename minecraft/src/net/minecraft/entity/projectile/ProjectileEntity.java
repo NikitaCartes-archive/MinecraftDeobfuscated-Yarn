@@ -23,6 +23,7 @@ public abstract class ProjectileEntity extends Entity {
 	private UUID ownerUuid;
 	private int ownerEntityId;
 	private boolean leftOwner;
+	private boolean field_28646;
 
 	public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -53,6 +54,8 @@ public abstract class ProjectileEntity extends Entity {
 		if (this.leftOwner) {
 			tag.putBoolean("LeftOwner", true);
 		}
+
+		tag.putBoolean("HasBeenShot", this.field_28646);
 	}
 
 	@Override
@@ -62,10 +65,16 @@ public abstract class ProjectileEntity extends Entity {
 		}
 
 		this.leftOwner = tag.getBoolean("LeftOwner");
+		this.field_28646 = tag.getBoolean("HasBeenShot");
 	}
 
 	@Override
 	public void tick() {
+		if (!this.field_28646) {
+			this.method_33568(GameEvent.PROJECTILE_SHOOT, this.getOwner(), this.getBlockPos());
+			this.field_28646 = true;
+		}
+
 		if (!this.leftOwner) {
 			this.leftOwner = this.shouldLeaveOwner();
 		}
@@ -102,7 +111,6 @@ public abstract class ProjectileEntity extends Entity {
 		this.pitch = (float)(MathHelper.atan2(vec3d.y, (double)f) * 180.0F / (float)Math.PI);
 		this.prevYaw = this.yaw;
 		this.prevPitch = this.pitch;
-		this.emitGameEvent(this.getOwner(), GameEvent.PROJECTILE_SHOOT);
 	}
 
 	public void setProperties(Entity user, float pitch, float yaw, float roll, float modifierZ, float modifierXYZ) {
@@ -123,7 +131,7 @@ public abstract class ProjectileEntity extends Entity {
 		}
 
 		if (type != HitResult.Type.MISS) {
-			this.emitGameEvent(this.getOwner(), GameEvent.PROJECTILE_LAND);
+			this.emitGameEvent(GameEvent.PROJECTILE_LAND, this.getOwner());
 		}
 	}
 
