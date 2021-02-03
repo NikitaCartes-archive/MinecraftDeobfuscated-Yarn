@@ -199,8 +199,12 @@ public final class Biome {
 		}
 	}
 
+	public boolean method_33599(BlockPos blockPos) {
+		return this.getTemperature(blockPos) < 0.15F;
+	}
+
 	public boolean canSetSnow(WorldView world, BlockPos blockPos) {
-		if (this.getTemperature(blockPos) >= 0.15F) {
+		if (!this.method_33599(blockPos)) {
 			return false;
 		} else {
 			if (blockPos.getY() >= world.getBottomSectionLimit() && blockPos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, blockPos) < 10) {
@@ -239,7 +243,7 @@ public final class Biome {
 						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature)
 							.forEach(
 								structureStart -> structureStart.generateStructure(
-										region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopHeightLimit(), o + 15), new ChunkPos(l, m)
+										region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopHeightLimit() - 1, o + 15), new ChunkPos(l, m)
 									)
 							);
 					} catch (Exception var21) {

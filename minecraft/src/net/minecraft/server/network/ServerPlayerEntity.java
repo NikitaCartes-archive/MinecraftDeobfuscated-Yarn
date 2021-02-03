@@ -516,7 +516,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
 		this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
 		this.extinguish();
-		this.setFlag(0, false);
+		this.setOnFire(false);
 		this.getDamageTracker().update();
 	}
 
@@ -845,7 +845,15 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		super.stopRiding();
 		Entity entity2 = this.getVehicle();
 		if (entity2 != entity && this.networkHandler != null) {
-			this.networkHandler.requestTeleport(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+			this.networkHandler.method_33562(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+		}
+	}
+
+	@Override
+	public void method_33567(double d, double e, double f) {
+		this.dismountVehicle();
+		if (this.networkHandler != null) {
+			this.networkHandler.method_33562(d, e, f, this.yaw, this.pitch);
 		}
 	}
 

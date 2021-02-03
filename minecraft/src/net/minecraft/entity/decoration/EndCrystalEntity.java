@@ -43,8 +43,8 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected boolean canClimb() {
-		return false;
+	protected Entity.class_5799 method_33570() {
+		return Entity.class_5799.NONE;
 	}
 
 	@Override

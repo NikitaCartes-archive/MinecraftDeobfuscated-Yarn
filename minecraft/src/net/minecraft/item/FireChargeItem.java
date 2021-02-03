@@ -12,6 +12,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class FireChargeItem extends Item {
 	public FireChargeItem(Item.Settings settings) {
@@ -29,11 +30,13 @@ public class FireChargeItem extends Item {
 			if (AbstractFireBlock.canPlaceAt(world, blockPos, context.getPlayerFacing())) {
 				this.playUseSound(world, blockPos);
 				world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
+				world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_PLACE, blockPos);
 				bl = true;
 			}
 		} else {
 			this.playUseSound(world, blockPos);
 			world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
+			world.emitGameEvent(context.getPlayer(), GameEvent.BLOCK_PLACE, blockPos);
 			bl = true;
 		}
 

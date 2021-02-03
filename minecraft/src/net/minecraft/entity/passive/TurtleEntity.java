@@ -528,7 +528,7 @@ public class TurtleEntity extends AnimalEntity {
 					int i = MathHelper.floor(vec3d2.x);
 					int j = MathHelper.floor(vec3d2.z);
 					int k = 34;
-					if (!this.turtle.world.isRegionLoaded(i - 34, 0, j - 34, i + 34, 0, j + 34)) {
+					if (!this.turtle.world.method_33597(i - 34, j - 34, i + 34, j + 34)) {
 						vec3d2 = null;
 					}
 				}

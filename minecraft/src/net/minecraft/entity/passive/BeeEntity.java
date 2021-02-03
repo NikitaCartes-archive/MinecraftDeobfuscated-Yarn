@@ -88,6 +88,7 @@ import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
 
 public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
+	public static final int field_28638 = MathHelper.ceil(1.4959966F);
 	private static final TrackedData<Byte> STATUS_TRACKER = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Integer> ANGER = DataTracker.registerData(BeeEntity.class, TrackedDataHandlerRegistry.INTEGER);
 	private static final IntRange ANGER_TIME_RANGE = Durations.betweenSeconds(20, 39);
@@ -567,8 +568,12 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	protected boolean hasWings() {
-		return true;
+	public boolean hasWings() {
+		return this.method_33585() && this.age % field_28638 == 0;
+	}
+
+	public boolean method_33585() {
+		return !this.onGround;
 	}
 
 	public void onHoneyDelivered() {

@@ -481,7 +481,11 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				}
 
 				BlockState blockState = this.getBlockState(blockPos2);
-				Biome.Precipitation precipitation = this.getBiome(blockPos2).getPrecipitation();
+				Biome.Precipitation precipitation = this.getBiome(blockPos).getPrecipitation();
+				if (precipitation == Biome.Precipitation.RAIN && biome.method_33599(blockPos2)) {
+					precipitation = Biome.Precipitation.SNOW;
+				}
+
 				blockState.getBlock().precipitationTick(blockState, this, blockPos2, precipitation);
 			}
 		}

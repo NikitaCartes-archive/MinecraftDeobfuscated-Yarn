@@ -22,7 +22,6 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.ScheduledTick;
 import net.minecraft.world.TickPriority;
 import net.minecraft.world.TickScheduler;
@@ -102,9 +101,9 @@ public class ServerTickScheduler<T> implements TickScheduler<T> {
 	}
 
 	public List<ScheduledTick<T>> getScheduledTicksInChunk(ChunkPos chunkPos, boolean updateState, boolean getStaleTicks) {
-		int i = ChunkSectionPos.getBlockCoord(chunkPos.x) - 2;
+		int i = chunkPos.getStartX() - 2;
 		int j = i + 16 + 2;
-		int k = ChunkSectionPos.getBlockCoord(chunkPos.z) - 2;
+		int k = chunkPos.getStartZ() - 2;
 		int l = k + 16 + 2;
 		return this.getScheduledTicks(new BlockBox(i, this.world.getBottomSectionLimit(), k, j, this.world.getTopHeightLimit(), l), updateState, getStaleTicks);
 	}

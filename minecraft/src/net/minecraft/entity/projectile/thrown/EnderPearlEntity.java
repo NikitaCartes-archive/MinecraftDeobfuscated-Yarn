@@ -60,10 +60,11 @@ public class EnderPearlEntity extends ThrownItemEntity {
 					}
 
 					if (entity.hasVehicle()) {
-						entity.stopRiding();
+						serverPlayerEntity.method_33567(this.getX(), this.getY(), this.getZ());
+					} else {
+						entity.requestTeleport(this.getX(), this.getY(), this.getZ());
 					}
 
-					entity.requestTeleport(this.getX(), this.getY(), this.getZ());
 					entity.fallDistance = 0.0F;
 					entity.damage(DamageSource.FALL, 5.0F);
 				}

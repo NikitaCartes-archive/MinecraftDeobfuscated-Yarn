@@ -112,6 +112,7 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	public float prevMaxWingDeviation;
 	public float prevFlapProgress;
 	private float flapSpeed = 1.0F;
+	private float field_28640 = 1.0F;
 	private boolean songPlaying;
 	private BlockPos songSource;
 
@@ -362,14 +363,14 @@ public class ParrotEntity extends TameableShoulderEntity implements Flutterer {
 	}
 
 	@Override
-	protected float playFlySound(float distance) {
-		this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15F, 1.0F);
-		return distance + this.maxWingDeviation / 2.0F;
+	protected boolean hasWings() {
+		return this.field_28627 > this.field_28640;
 	}
 
 	@Override
-	protected boolean hasWings() {
-		return true;
+	protected void playFlySound() {
+		this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15F, 1.0F);
+		this.field_28640 = this.field_28627 + this.maxWingDeviation / 2.0F;
 	}
 
 	@Override

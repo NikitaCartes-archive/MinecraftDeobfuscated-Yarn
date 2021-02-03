@@ -2,6 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -21,7 +22,8 @@ public class BastionRemnantFeature extends JigsawFeature {
 		int j,
 		Biome biome,
 		ChunkPos chunkPos,
-		StructurePoolFeatureConfig structurePoolFeatureConfig
+		StructurePoolFeatureConfig structurePoolFeatureConfig,
+		HeightLimitView heightLimitView
 	) {
 		return chunkRandom.nextInt(5) >= 2;
 	}

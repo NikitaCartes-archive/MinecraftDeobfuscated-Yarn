@@ -66,6 +66,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public abstract class HorseBaseEntity extends AnimalEntity implements InventoryChangedListener, JumpingMount, Saddleable {
 	private static final Predicate<LivingEntity> IS_BRED_HORSE = entity -> entity instanceof HorseBaseEntity && ((HorseBaseEntity)entity).isBred();
@@ -479,6 +480,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 		if (bl) {
 			this.playEatingAnimation();
+			this.method_33569(GameEvent.EAT, this.method_33575());
 		}
 
 		return bl;

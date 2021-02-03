@@ -46,6 +46,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 7.0, 16.0);
@@ -187,17 +188,19 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 		}
 	}
 
-	public static void extinguish(WorldAccess world, BlockPos pos, BlockState state) {
-		if (world.isClient()) {
+	public static void extinguish(@Nullable Entity entity, WorldAccess worldAccess, BlockPos blockPos, BlockState blockState) {
+		if (worldAccess.isClient()) {
 			for (int i = 0; i < 20; i++) {
-				spawnSmokeParticle((World)world, pos, (Boolean)state.get(SIGNAL_FIRE), true);
+				spawnSmokeParticle((World)worldAccess, blockPos, (Boolean)blockState.get(SIGNAL_FIRE), true);
 			}
 		}
 
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+		BlockEntity blockEntity = worldAccess.getBlockEntity(blockPos);
 		if (blockEntity instanceof CampfireBlockEntity) {
 			((CampfireBlockEntity)blockEntity).spawnItemsBeingCooked();
 		}
+
+		worldAccess.emitGameEvent(entity, GameEvent.BLOCK_CHANGE, blockPos);
 	}
 
 	@Override
@@ -209,7 +212,7 @@ public class CampfireBlock extends BlockWithEntity implements Waterloggable {
 					world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				}
 
-				extinguish(world, pos, state);
+				extinguish(null, world, pos, state);
 			}
 
 			world.setBlockState(pos, state.with(WATERLOGGED, Boolean.valueOf(true)).with(LIT, Boolean.valueOf(false)), 3);

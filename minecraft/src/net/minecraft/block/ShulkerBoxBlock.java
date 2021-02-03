@@ -119,11 +119,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
 		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof ShulkerBoxBlockEntity) {
 			ShulkerBoxBlockEntity shulkerBoxBlockEntity = (ShulkerBoxBlockEntity)blockEntity;
-			if (!world.isClient && player.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
+			if (!world.isClient && playerEntity.isCreative() && !shulkerBoxBlockEntity.isEmpty()) {
 				ItemStack itemStack = getItemStack(this.getColor());
 				CompoundTag compoundTag = shulkerBoxBlockEntity.serializeInventory(new CompoundTag());
 				if (!compoundTag.isEmpty()) {
@@ -138,11 +138,11 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 				itemEntity.setToDefaultPickupDelay();
 				world.spawnEntity(itemEntity);
 			} else {
-				shulkerBoxBlockEntity.checkLootInteraction(player);
+				shulkerBoxBlockEntity.checkLootInteraction(playerEntity);
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		super.onBreak(world, pos, state, playerEntity);
 	}
 
 	@Override

@@ -33,7 +33,7 @@ public class GoToPointOfInterestTask extends Task<VillagerEntity> {
 
 		for (int j = 0; j < 5; j++) {
 			Vec3d vec3d2 = class_5534.method_31530(
-				villagerEntity, 15, 7, blockPos -> (double)(-serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)))
+				villagerEntity, 15, 7, blockPos -> (double)(-pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(blockPos)))
 			);
 			if (vec3d2 != null) {
 				int k = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(new BlockPos(vec3d2)));

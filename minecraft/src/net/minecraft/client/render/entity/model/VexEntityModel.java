@@ -62,7 +62,7 @@ public class VexEntityModel extends BipedEntityModel<VexEntity> {
 		this.leftWing.pivotZ = 2.0F;
 		this.rightWing.pivotY = 1.0F;
 		this.leftWing.pivotY = 1.0F;
-		this.rightWing.yaw = 0.47123894F + MathHelper.cos(h * 0.8F) * (float) Math.PI * 0.05F;
+		this.rightWing.yaw = 0.47123894F + MathHelper.cos(h * 45.836624F * (float) (Math.PI / 180.0)) * (float) Math.PI * 0.05F;
 		this.leftWing.yaw = -this.rightWing.yaw;
 		this.leftWing.roll = -0.47123894F;
 		this.leftWing.pitch = 0.47123894F;

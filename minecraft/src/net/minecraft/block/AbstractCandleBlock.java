@@ -1,8 +1,10 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -14,6 +16,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public abstract class AbstractCandleBlock extends Block {
 	public static final BooleanProperty LIT = Properties.LIT;
@@ -63,10 +66,11 @@ public abstract class AbstractCandleBlock extends Block {
 		world.addParticle(ParticleTypes.SMALL_FLAME, vec3d.x, vec3d.y, vec3d.z, 0.0, 0.0, 0.0);
 	}
 
-	protected static void extinguish(BlockState state, WorldAccess world, BlockPos pos) {
-		setLit(world, state, pos, false);
-		world.addParticle(ParticleTypes.SMOKE, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), 0.0, 0.1F, 0.0);
-		world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
+	protected static void extinguish(@Nullable PlayerEntity playerEntity, BlockState blockState, WorldAccess worldAccess, BlockPos blockPos) {
+		setLit(worldAccess, blockState, blockPos, false);
+		worldAccess.addParticle(ParticleTypes.SMOKE, (double)blockPos.getX(), (double)blockPos.getY(), (double)blockPos.getZ(), 0.0, 0.1F, 0.0);
+		worldAccess.playSound(null, blockPos, SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.0F, 1.0F);
+		worldAccess.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
 	}
 
 	private static void setLit(WorldAccess world, BlockState state, BlockPos pos, boolean lit) {

@@ -88,7 +88,7 @@ public class BatEntityModel extends SinglePartEntityModel<BatEntity> {
 			this.leftWing.setPivot(0.0F, 0.0F, 0.0F);
 			this.body.pitch = (float) (Math.PI / 4) + MathHelper.cos(h * 0.1F) * 0.15F;
 			this.body.yaw = 0.0F;
-			this.rightWing.yaw = MathHelper.cos(h * 1.3F) * (float) Math.PI * 0.25F;
+			this.rightWing.yaw = MathHelper.cos(h * 74.48451F * (float) (Math.PI / 180.0)) * (float) Math.PI * 0.25F;
 			this.leftWing.yaw = -this.rightWing.yaw;
 			this.rightWingTip.yaw = this.rightWing.yaw * 0.5F;
 			this.leftWingTip.yaw = -this.rightWing.yaw * 0.5F;

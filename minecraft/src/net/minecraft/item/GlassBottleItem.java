@@ -17,6 +17,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class GlassBottleItem extends Item {
 	public GlassBottleItem(Item.Settings settings) {
@@ -35,6 +36,7 @@ public class GlassBottleItem extends Item {
 			AreaEffectCloudEntity areaEffectCloudEntity = (AreaEffectCloudEntity)list.get(0);
 			areaEffectCloudEntity.setRadius(areaEffectCloudEntity.getRadius() - 0.5F);
 			world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL_DRAGONBREATH, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+			world.emitGameEvent(user, GameEvent.FLUID_PICKUP, user.getBlockPos());
 			return TypedActionResult.success(this.fill(itemStack, user, new ItemStack(Items.DRAGON_BREATH)), world.isClient());
 		} else {
 			HitResult hitResult = raycast(world, user, RaycastContext.FluidHandling.SOURCE_ONLY);
@@ -49,6 +51,7 @@ public class GlassBottleItem extends Item {
 
 					if (world.getFluidState(blockPos).isIn(FluidTags.WATER)) {
 						world.playSound(user, user.getX(), user.getY(), user.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0F, 1.0F);
+						world.emitGameEvent(user, GameEvent.FLUID_PICKUP, blockPos);
 						return TypedActionResult.success(this.fill(itemStack, user, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)), world.isClient());
 					}
 				}

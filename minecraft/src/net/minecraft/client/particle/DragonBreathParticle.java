@@ -15,6 +15,7 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider
 	) {
 		super(world, x, y, z);
+		this.field_28786 = 0.96F;
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
 		this.velocityZ = velocityZ;
@@ -53,10 +54,10 @@ public class DragonBreathParticle extends SpriteBillboardParticle {
 				this.velocityZ *= 1.1;
 			}
 
-			this.velocityX *= 0.96F;
-			this.velocityZ *= 0.96F;
+			this.velocityX = this.velocityX * (double)this.field_28786;
+			this.velocityZ = this.velocityZ * (double)this.field_28786;
 			if (this.reachedGround) {
-				this.velocityY *= 0.96F;
+				this.velocityY = this.velocityY * (double)this.field_28786;
 			}
 		}
 	}

@@ -23,6 +23,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
@@ -223,10 +224,10 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 						int o = j + i * m;
 						int p = k + i * n;
 						ChunkPos chunkPos = this.getStartChunk(config, worldSeed, chunkRandom, o, p);
-						boolean bl3 = world.getBiomeAccess().method_31608(chunkPos.x, chunkPos.z).getGenerationSettings().hasStructureFeature(this);
+						boolean bl3 = world.getBiomeAccess().method_31608(chunkPos).getGenerationSettings().hasStructureFeature(this);
 						if (bl3) {
 							Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
-							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), this, chunk);
+							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.method_33705(chunk), this, chunk);
 							if (structureStart != null && structureStart.hasChildren()) {
 								if (skipExistingChunks && structureStart.isInExistingChunk()) {
 									structureStart.incrementReferences();
@@ -299,7 +300,16 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	 * restrict the spawn in some other way.
 	 */
 	protected boolean shouldStartAt(
-		ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom random, int chunkX, int chunkZ, Biome biome, ChunkPos chunkPos, C config
+		ChunkGenerator chunkGenerator,
+		BiomeSource biomeSource,
+		long worldSeed,
+		ChunkRandom random,
+		int chunkX,
+		int chunkZ,
+		Biome biome,
+		ChunkPos chunkPos,
+		C config,
+		HeightLimitView heightLimitView
 	) {
 		return true;
 	}
@@ -325,14 +335,15 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 		int referenceCount,
 		ChunkRandom chunkRandom,
 		StructureConfig structureConfig,
-		C featureConfig
+		C featureConfig,
+		HeightLimitView heightLimitView
 	) {
 		ChunkPos chunkPos2 = this.getStartChunk(structureConfig, worldSeed, chunkRandom, chunkPos.x, chunkPos.z);
 		if (chunkPos.x == chunkPos2.x
 			&& chunkPos.z == chunkPos2.z
-			&& this.shouldStartAt(chunkGenerator, biomeSource, worldSeed, chunkRandom, chunkPos.x, chunkPos.z, biome, chunkPos2, featureConfig)) {
+			&& this.shouldStartAt(chunkGenerator, biomeSource, worldSeed, chunkRandom, chunkPos.x, chunkPos.z, biome, chunkPos2, featureConfig, heightLimitView)) {
 			StructureStart<C> structureStart = this.createStart(chunkPos.x, chunkPos.z, BlockBox.empty(), referenceCount, worldSeed);
-			structureStart.init(dynamicRegistryManager, chunkGenerator, structureManager, chunkPos.x, chunkPos.z, biome, featureConfig);
+			structureStart.init(dynamicRegistryManager, chunkGenerator, structureManager, chunkPos.x, chunkPos.z, biome, featureConfig, heightLimitView);
 			if (structureStart.hasChildren()) {
 				return structureStart;
 			}

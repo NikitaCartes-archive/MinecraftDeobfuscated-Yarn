@@ -163,7 +163,7 @@ public abstract class AbstractDecorationEntity extends Entity {
 	}
 
 	@Override
-	public void move(MovementType type, Vec3d movement) {
+	public void move(MovementType movementType, Vec3d movement) {
 		if (!this.world.isClient && !this.isRemoved() && movement.lengthSquared() > 0.0) {
 			this.kill();
 			this.onBreak(null);

@@ -2,12 +2,9 @@ package net.minecraft.world.chunk;
 
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -15,10 +12,8 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.collection.PackedIntegerArray;
-import net.minecraft.util.crash.CrashException;
-import net.minecraft.util.crash.CrashReport;
-import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.thread.LockHelper;
 
 public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	private final Palette<T> fallbackPalette;
@@ -33,20 +28,7 @@ public class PalettedContainer<T> implements PaletteResizeListener<T> {
 	private final ReentrantLock writeLock = new ReentrantLock();
 
 	public void lock() {
-		if (this.writeLock.isLocked() && !this.writeLock.isHeldByCurrentThread()) {
-			String string = (String)Thread.getAllStackTraces()
-				.keySet()
-				.stream()
-				.filter(Objects::nonNull)
-				.map(thread -> thread.getName() + ": \n\tat " + (String)Arrays.stream(thread.getStackTrace()).map(Object::toString).collect(Collectors.joining("\n\tat ")))
-				.collect(Collectors.joining("\n"));
-			CrashReport crashReport = new CrashReport("Writing into PalettedContainer from multiple threads", new IllegalStateException());
-			CrashReportSection crashReportSection = crashReport.addElement("Thread dumps");
-			crashReportSection.add("Thread dumps", string);
-			throw new CrashException(crashReport);
-		} else {
-			this.writeLock.lock();
-		}
+		LockHelper.checkLock(this.writeLock, "PalettedContainer");
 	}
 
 	public void unlock() {

@@ -9,7 +9,6 @@ import com.mojang.datafixers.types.templates.Hook.HookFunction;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
@@ -338,28 +337,21 @@ public class Schema99 extends Schema {
 	}
 
 	protected static <T> T method_5359(Dynamic<T> dynamic, Map<String, String> map, String string) {
-		return dynamic.update(
-				"tag",
-				dynamic2 -> dynamic2.update("BlockEntityTag", dynamic2x -> {
-							String stringxx = dynamic.get("id").asString("");
-							String string2 = (String)map.get(IdentifierNormalizingSchema.normalize(stringxx));
-							if (string2 == null) {
-								LOGGER.warn("Unable to resolve BlockEntity for ItemStack: {}", stringxx);
-								return dynamic2x;
-							} else {
-								return dynamic2x.set("id", dynamic.createString(string2));
-							}
-						})
-						.update(
-							"EntityTag",
-							dynamic2x -> {
-								String string2 = dynamic.get("id").asString("");
-								return Objects.equals(IdentifierNormalizingSchema.normalize(string2), "minecraft:armor_stand")
-									? dynamic2x.set("id", dynamic.createString(string))
-									: dynamic2x;
-							}
-						)
-			)
-			.getValue();
+		return dynamic.update("tag", dynamic2 -> dynamic2.update("BlockEntityTag", dynamic2x -> {
+				String stringxx = (String)dynamic.get("id").asString().result().map(IdentifierNormalizingSchema::normalize).orElse("minecraft:air");
+				if (!"minecraft:air".equals(stringxx)) {
+					String string2 = (String)map.get(stringxx);
+					if (string2 != null) {
+						return dynamic2x.set("id", dynamic.createString(string2));
+					}
+
+					LOGGER.warn("Unable to resolve BlockEntity for ItemStack: {}", stringxx);
+				}
+
+				return dynamic2x;
+			}).update("EntityTag", dynamic2x -> {
+				String string2 = dynamic.get("id").asString("");
+				return "minecraft:armor_stand".equals(IdentifierNormalizingSchema.normalize(string2)) ? dynamic2x.set("id", dynamic.createString(string)) : dynamic2x;
+			})).getValue();
 	}
 }

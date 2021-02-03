@@ -9,6 +9,7 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -21,7 +22,7 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 	public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC
 	);
-	public static final Codec<List<Supplier<ConfiguredStructureFeature<?, ?>>>> field_26757 = RegistryElementCodec.method_31194(
+	public static final Codec<List<Supplier<ConfiguredStructureFeature<?, ?>>>> REGISTRY_ELEMENT_CODEC = RegistryElementCodec.method_31194(
 		Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC
 	);
 	public final F feature;
@@ -44,11 +45,23 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
 		ChunkPos chunkPos,
 		Biome biome,
 		int referenceCount,
-		StructureConfig structureConfig
+		StructureConfig structureConfig,
+		HeightLimitView heightLimitView
 	) {
 		return this.feature
 			.tryPlaceStart(
-				registryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, biome, referenceCount, new ChunkRandom(), structureConfig, this.config
+				registryManager,
+				chunkGenerator,
+				biomeSource,
+				structureManager,
+				worldSeed,
+				chunkPos,
+				biome,
+				referenceCount,
+				new ChunkRandom(),
+				structureConfig,
+				this.config,
+				heightLimitView
 			);
 	}
 }

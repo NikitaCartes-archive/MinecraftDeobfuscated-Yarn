@@ -35,7 +35,7 @@ public class StructureAccessor {
 			.getChunk(pos.getSectionX(), pos.getSectionZ(), ChunkStatus.STRUCTURE_REFERENCES)
 			.getStructureReferences(feature)
 			.stream()
-			.map(posx -> ChunkSectionPos.from(new ChunkPos(posx), 0))
+			.map(long_ -> ChunkSectionPos.from(new ChunkPos(long_), this.world.getMinimumSection()))
 			.map(posx -> this.getStructureStart(posx, feature, this.world.getChunk(posx.getSectionX(), posx.getSectionZ(), ChunkStatus.STRUCTURE_STARTS)))
 			.filter(structureStart -> structureStart != null && structureStart.hasChildren());
 	}

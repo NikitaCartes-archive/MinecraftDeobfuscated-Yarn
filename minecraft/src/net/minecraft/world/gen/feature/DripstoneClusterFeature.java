@@ -14,22 +14,21 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.util.DripstoneColumn;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConfig> {
 	public DripstoneClusterFeature(Codec<DripstoneClusterFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		DripstoneClusterFeatureConfig dripstoneClusterFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DripstoneClusterFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
+		DripstoneClusterFeatureConfig dripstoneClusterFeatureConfig = featureContext.getConfig();
+		Random random = featureContext.getRandom();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {

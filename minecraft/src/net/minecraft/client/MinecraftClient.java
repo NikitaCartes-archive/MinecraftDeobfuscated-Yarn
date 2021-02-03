@@ -312,6 +312,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	private final HotbarStorage creativeHotbarStorage;
 	public final Mouse mouse;
 	public final Keyboard keyboard;
+	/**
+	 * The directory that stores options, worlds, resource packs, logs, etc.
+	 */
 	public final File runDirectory;
 	private final String gameVersion;
 	private final String versionType;
@@ -381,6 +384,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	public Entity targetedEntity;
 	@Nullable
 	public HitResult crosshairTarget;
+	/**
+	 * The cooldown for using items when {@linkplain net.minecraft.client.option.GameOptions#keyUse the item use button} is held down.
+	 */
 	private int itemUseCooldown;
 	protected int attackCooldown;
 	private boolean paused;
@@ -463,9 +469,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		KeybindText.setTranslator(KeyBinding::getLocalizedName);
 		this.dataFixer = Schemas.getFixer();
 		this.toastManager = new ToastManager(this);
-		this.tutorialManager = new TutorialManager(this);
 		this.thread = Thread.currentThread();
 		this.options = new GameOptions(this, this.runDirectory);
+		this.tutorialManager = new TutorialManager(this, this.options);
 		this.creativeHotbarStorage = new HotbarStorage(this.runDirectory, this.dataFixer);
 		LOGGER.info("Backend library: {}", RenderSystem.getBackendDescription());
 		WindowSettings windowSettings;

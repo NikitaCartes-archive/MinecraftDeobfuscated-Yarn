@@ -10,9 +10,12 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.TranslatableText;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class SelectWorldScreen extends Screen {
+	private static final Logger field_28783 = LogManager.getLogger();
 	protected final Screen parent;
 	private List<OrderedText> tooltipText;
 	private ButtonWidget deleteButton;

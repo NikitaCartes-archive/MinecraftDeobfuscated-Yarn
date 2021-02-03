@@ -42,7 +42,7 @@ public class FireworksSparkParticle {
 			ParticleManager particleManager,
 			SpriteProvider spriteProvider
 		) {
-			super(world, x, y, z, spriteProvider, -0.004F);
+			super(world, x, y, z, spriteProvider, 0.1F);
 			this.velocityX = velocityX;
 			this.velocityY = velocityY;
 			this.velocityZ = velocityZ;

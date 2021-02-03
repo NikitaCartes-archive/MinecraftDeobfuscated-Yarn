@@ -586,14 +586,16 @@ public class Raid {
 			int l = this.center.getZ() + MathHelper.floor(MathHelper.sin(f) * 32.0F * (float)i) + this.world.random.nextInt(5);
 			int m = this.world.getTopY(Heightmap.Type.WORLD_SURFACE, k, l);
 			mutable.set(k, m, l);
-			if ((!this.world.isNearOccupiedPointOfInterest(mutable) || proximity >= 2)
-				&& this.world.isRegionLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)
-				&& this.world.getChunkManager().shouldTickChunk(new ChunkPos(mutable))
-				&& (
-					SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER)
-						|| this.world.getBlockState(mutable.down()).isOf(Blocks.SNOW) && this.world.getBlockState(mutable).isAir()
-				)) {
-				return mutable;
+			if (!this.world.isNearOccupiedPointOfInterest(mutable) || proximity >= 2) {
+				int n = 10;
+				if (this.world.method_33597(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10)
+					&& this.world.getChunkManager().shouldTickChunk(new ChunkPos(mutable))
+					&& (
+						SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, this.world, mutable, EntityType.RAVAGER)
+							|| this.world.getBlockState(mutable.down()).isOf(Blocks.SNOW) && this.world.getBlockState(mutable).isAir()
+					)) {
+					return mutable;
+				}
 			}
 		}
 

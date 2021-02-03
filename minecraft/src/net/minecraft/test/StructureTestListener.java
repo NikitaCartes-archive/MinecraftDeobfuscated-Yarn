@@ -141,7 +141,7 @@ class StructureTestListener implements TestListener {
 		serverWorld.setBlockState(blockPos3, Blocks.LECTERN.getDefaultState().rotate(test.getRotation()));
 		BlockState blockState = serverWorld.getBlockState(blockPos3);
 		ItemStack itemStack = createBookWithText(test.getStructurePath(), test.isRequired(), output);
-		LecternBlock.putBookIfAbsent(serverWorld, blockPos3, blockState, itemStack);
+		LecternBlock.putBookIfAbsent(null, serverWorld, blockPos3, blockState, itemStack);
 	}
 
 	private static ItemStack createBookWithText(String text, boolean required, String output) {

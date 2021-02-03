@@ -7,6 +7,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -32,7 +33,8 @@ public class JungleTempleFeature extends StructureFeature<DefaultFeatureConfig> 
 			int i,
 			int j,
 			Biome biome,
-			DefaultFeatureConfig defaultFeatureConfig
+			DefaultFeatureConfig defaultFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, ChunkSectionPos.getBlockCoord(i), ChunkSectionPos.getBlockCoord(j));
 			this.children.add(jungleTempleGenerator);

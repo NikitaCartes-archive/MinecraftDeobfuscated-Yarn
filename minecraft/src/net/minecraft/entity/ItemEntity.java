@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ItemEntity extends Entity {
 	private static final TrackedData<ItemStack> STACK = DataTracker.registerData(ItemEntity.class, TrackedDataHandlerRegistry.ITEM_STACK);
@@ -70,8 +71,8 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	protected boolean canClimb() {
-		return false;
+	protected Entity.class_5799 method_33570() {
+		return Entity.class_5799.NONE;
 	}
 
 	@Override
@@ -248,6 +249,7 @@ public class ItemEntity extends Entity {
 		} else {
 			this.scheduleVelocityUpdate();
 			this.health = (int)((float)this.health - amount);
+			this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
 			if (this.health <= 0) {
 				this.getStack().onItemEntityDestroyed(this);
 				this.discard();

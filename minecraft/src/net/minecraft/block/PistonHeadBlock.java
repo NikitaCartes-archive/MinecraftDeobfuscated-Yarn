@@ -89,15 +89,15 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && player.getAbilities().creativeMode) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+		if (!world.isClient && playerEntity.getAbilities().creativeMode) {
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 			if (this.method_26980(state, world.getBlockState(blockPos))) {
 				world.breakBlock(blockPos, false);
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		super.onBreak(world, pos, state, playerEntity);
 	}
 
 	@Override

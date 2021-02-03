@@ -31,6 +31,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public class BellBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -61,7 +62,7 @@ public class BellBlock extends BlockWithEntity {
 		boolean bl = world.isReceivingRedstonePower(pos);
 		if (bl != (Boolean)state.get(POWERED)) {
 			if (bl) {
-				this.ring(world, pos, null);
+				this.method_33600(world, pos, null);
 			}
 
 			world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(bl)), 3);
@@ -85,7 +86,7 @@ public class BellBlock extends BlockWithEntity {
 		BlockPos blockPos = hitResult.getBlockPos();
 		boolean bl2 = !bl || this.isPointOnBell(state, direction, hitResult.getPos().y - (double)blockPos.getY());
 		if (bl2) {
-			boolean bl3 = this.ring(world, blockPos, direction);
+			boolean bl3 = this.ring(player, world, blockPos, direction);
 			if (bl3 && player != null) {
 				player.incrementStat(Stats.BELL_RING);
 			}
@@ -116,15 +117,20 @@ public class BellBlock extends BlockWithEntity {
 		}
 	}
 
-	public boolean ring(World world, BlockPos pos, @Nullable Direction direction) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+	public boolean method_33600(World world, BlockPos blockPos, @Nullable Direction direction) {
+		return this.ring(null, world, blockPos, direction);
+	}
+
+	public boolean ring(@Nullable Entity entity, World world, BlockPos blockPos, @Nullable Direction direction) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (!world.isClient && blockEntity instanceof BellBlockEntity) {
 			if (direction == null) {
-				direction = world.getBlockState(pos).get(FACING);
+				direction = world.getBlockState(blockPos).get(FACING);
 			}
 
 			((BellBlockEntity)blockEntity).activate(direction);
-			world.playSound(null, pos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0F, 1.0F);
+			world.playSound(null, blockPos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0F, 1.0F);
+			world.emitGameEvent(entity, GameEvent.RING_BELL, blockPos);
 			return true;
 		} else {
 			return false;

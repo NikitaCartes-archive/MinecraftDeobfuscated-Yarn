@@ -627,6 +627,7 @@ public abstract class LivingEntity extends Entity {
 	protected void onEquipStack(ItemStack stack) {
 		SoundEvent soundEvent = stack.getEquipSound();
 		if (!stack.isEmpty() && soundEvent != null && !this.isSpectator()) {
+			this.emitGameEvent(GameEvent.EQUIP);
 			this.playSound(soundEvent, 1.0F, 1.0F);
 		}
 	}
@@ -1133,7 +1134,6 @@ public abstract class LivingEntity extends Entity {
 				Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
 			}
 
-			this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
 			return bl3;
 		}
 	}
@@ -1540,6 +1540,7 @@ public abstract class LivingEntity extends Entity {
 				this.setHealth(h - var8);
 				this.getDamageTracker().onDamage(source, h, var8);
 				this.setAbsorptionAmount(this.getAbsorptionAmount() - var8);
+				this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
 			}
 		}
 	}
@@ -1911,7 +1912,7 @@ public abstract class LivingEntity extends Entity {
 			vec3d = new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ());
 		}
 
-		this.requestTeleport(vec3d.x, vec3d.y, vec3d.z);
+		this.method_33567(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -3158,6 +3159,7 @@ public abstract class LivingEntity extends Entity {
 
 	public ItemStack eatFood(World world, ItemStack stack) {
 		if (stack.isFood()) {
+			world.emitGameEvent(this, GameEvent.EAT, this.method_33575());
 			world.playSound(
 				null,
 				this.getX(),
@@ -3173,7 +3175,7 @@ public abstract class LivingEntity extends Entity {
 				stack.decrement(1);
 			}
 
-			this.emitGameEvent(GameEvent.EATING_FINISH);
+			this.emitGameEvent(GameEvent.EAT);
 		}
 
 		return stack;
@@ -3280,5 +3282,25 @@ public abstract class LivingEntity extends Entity {
 				&& !this.getEquippedStack(EquipmentSlot.CHEST).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
 				&& !this.getEquippedStack(EquipmentSlot.LEGS).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES)
 				&& !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
+	}
+
+	@Environment(EnvType.CLIENT)
+	public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
+		double d = mobSpawnS2CPacket.getX();
+		double e = mobSpawnS2CPacket.getY();
+		double f = mobSpawnS2CPacket.getZ();
+		float g = (float)(mobSpawnS2CPacket.getYaw() * 360) / 256.0F;
+		float h = (float)(mobSpawnS2CPacket.getPitch() * 360) / 256.0F;
+		this.updateTrackedPosition(d, e, f);
+		this.bodyYaw = (float)(mobSpawnS2CPacket.getHeadYaw() * 360) / 256.0F;
+		this.headYaw = (float)(mobSpawnS2CPacket.getHeadYaw() * 360) / 256.0F;
+		this.setEntityId(mobSpawnS2CPacket.getId());
+		this.setUuid(mobSpawnS2CPacket.getUuid());
+		this.updatePositionAndAngles(d, e, f, g, h);
+		this.setVelocity(
+			(double)((float)mobSpawnS2CPacket.getVelocityX() / 8000.0F),
+			(double)((float)mobSpawnS2CPacket.getVelocityY() / 8000.0F),
+			(double)((float)mobSpawnS2CPacket.getVelocityZ() / 8000.0F)
+		);
 	}
 }

@@ -13,6 +13,7 @@ public class CloudParticle extends SpriteBillboardParticle {
 
 	private CloudParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
+		this.field_28786 = 0.96F;
 		this.spriteProvider = spriteProvider;
 		float g = 2.5F;
 		this.velocityX *= 0.1F;
@@ -44,17 +45,9 @@ public class CloudParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
+		super.tick();
+		if (!this.dead) {
 			this.setSpriteForAge(this.spriteProvider);
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= 0.96F;
-			this.velocityY *= 0.96F;
-			this.velocityZ *= 0.96F;
 			PlayerEntity playerEntity = this.world.getClosestPlayer(this.x, this.y, this.z, 2.0, false);
 			if (playerEntity != null) {
 				double d = playerEntity.getY();
@@ -63,11 +56,6 @@ public class CloudParticle extends SpriteBillboardParticle {
 					this.velocityY = this.velocityY + (playerEntity.getVelocity().y - this.velocityY) * 0.2;
 					this.setPos(this.x, this.y, this.z);
 				}
-			}
-
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
 			}
 		}
 	}

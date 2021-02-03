@@ -122,6 +122,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.ForcedChunkState;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.Heightmap;
 import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.SaveProperties;
 import net.minecraft.world.WanderingTraderManager;
@@ -362,7 +363,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		worldBorder.load(serverWorldProperties.getWorldBorder());
 		if (!serverWorldProperties.isInitialized()) {
 			try {
-				setupSpawn(serverWorld, serverWorldProperties, generatorOptions.hasBonusChest(), bl, true);
+				setupSpawn(serverWorld, serverWorldProperties, generatorOptions.hasBonusChest(), bl);
 				serverWorldProperties.setInitialized(true);
 				if (bl) {
 					this.setToDebugWorldProperties(this.saveProperties);
@@ -413,13 +414,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	private static void setupSpawn(ServerWorld world, ServerWorldProperties serverWorldProperties, boolean bonusChest, boolean debugWorld, boolean bl) {
-		ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
-		if (!bl) {
-			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(chunkGenerator.getSpawnHeight()), 0.0F);
-		} else if (debugWorld) {
-			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(), 0.0F);
+	private static void setupSpawn(ServerWorld world, ServerWorldProperties serverWorldProperties, boolean bonusChest, boolean debugWorld) {
+		if (debugWorld) {
+			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(80), 0.0F);
 		} else {
+			ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
 			Random random = new Random(world.getSeed());
 			BlockPos blockPos = biomeSource.locateBiome(0, world.getSeaLevel(), 0, 256, biome -> biome.getSpawnSettings().isPlayerSpawnFriendly(), random);
@@ -428,39 +427,45 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				LOGGER.warn("Unable to find spawn biome");
 			}
 
-			boolean bl2 = false;
+			boolean bl = false;
 
 			for (Block block : BlockTags.VALID_SPAWN.values()) {
 				if (biomeSource.getTopMaterials().contains(block.getDefaultState())) {
-					bl2 = true;
+					bl = true;
 					break;
 				}
 			}
 
-			serverWorldProperties.setSpawnPos(chunkPos.getStartPos().add(8, chunkGenerator.getSpawnHeight(), 8), 0.0F);
-			int i = 0;
+			int i = chunkGenerator.getSpawnHeight();
+			if (i < world.getBottomSectionLimit()) {
+				BlockPos blockPos2 = chunkPos.getStartPos();
+				i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX() + 8, blockPos2.getZ() + 8);
+			}
+
+			serverWorldProperties.setSpawnPos(chunkPos.getStartPos().add(8, i, 8), 0.0F);
 			int j = 0;
 			int k = 0;
-			int l = -1;
-			int m = 32;
+			int l = 0;
+			int m = -1;
+			int n = 32;
 
-			for (int n = 0; n < 1024; n++) {
-				if (i > -16 && i <= 16 && j > -16 && j <= 16) {
-					BlockPos blockPos2 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + i, chunkPos.z + j), bl2);
-					if (blockPos2 != null) {
-						serverWorldProperties.setSpawnPos(blockPos2, 0.0F);
+			for (int o = 0; o < 1024; o++) {
+				if (j > -16 && j <= 16 && k > -16 && k <= 16) {
+					BlockPos blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k), bl);
+					if (blockPos3 != null) {
+						serverWorldProperties.setSpawnPos(blockPos3, 0.0F);
 						break;
 					}
 				}
 
-				if (i == j || i < 0 && i == -j || i > 0 && i == 1 - j) {
-					int o = k;
-					k = -l;
-					l = o;
+				if (j == k || j < 0 && j == -k || j > 0 && j == 1 - k) {
+					int p = l;
+					l = -m;
+					m = p;
 				}
 
-				i += k;
 				j += l;
+				k += m;
 			}
 
 			if (bonusChest) {

@@ -109,16 +109,16 @@ public class PointOfInterestSet {
 		}
 	}
 
-	public boolean test(BlockPos pos, Predicate<PointOfInterestType> predicate) {
-		short s = ChunkSectionPos.packLocal(pos);
-		PointOfInterest pointOfInterest = this.pointsOfInterestByPos.get(s);
-		return pointOfInterest != null && predicate.test(pointOfInterest.getType());
+	public boolean test(BlockPos blockPos, Predicate<PointOfInterestType> predicate) {
+		return this.getType(blockPos).filter(predicate).isPresent();
 	}
 
-	public Optional<PointOfInterestType> getType(BlockPos pos) {
-		short s = ChunkSectionPos.packLocal(pos);
-		PointOfInterest pointOfInterest = this.pointsOfInterestByPos.get(s);
-		return pointOfInterest != null ? Optional.of(pointOfInterest.getType()) : Optional.empty();
+	public Optional<PointOfInterestType> getType(BlockPos blockPos) {
+		return this.method_33584(blockPos).map(PointOfInterest::getType);
+	}
+
+	private Optional<PointOfInterest> method_33584(BlockPos blockPos) {
+		return Optional.ofNullable(this.pointsOfInterestByPos.get(ChunkSectionPos.packLocal(blockPos)));
 	}
 
 	public void updatePointsOfInterest(Consumer<BiConsumer<BlockPos, PointOfInterestType>> consumer) {

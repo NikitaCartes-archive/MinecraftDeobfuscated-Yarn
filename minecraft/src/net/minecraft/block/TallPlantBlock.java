@@ -70,16 +70,16 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
 		if (!world.isClient) {
-			if (player.isCreative()) {
-				onBreakInCreative(world, pos, state, player);
+			if (playerEntity.isCreative()) {
+				onBreakInCreative(world, pos, state, playerEntity);
 			} else {
-				dropStacks(state, world, pos, null, player, player.getMainHandStack());
+				dropStacks(state, world, pos, null, playerEntity, playerEntity.getMainHandStack());
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		super.onBreak(world, pos, state, playerEntity);
 	}
 
 	@Override

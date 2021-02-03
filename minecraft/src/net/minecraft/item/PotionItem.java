@@ -21,6 +21,7 @@ import net.minecraft.util.UseAction;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class PotionItem extends Item {
 	public PotionItem(Item.Settings settings) {
@@ -66,6 +67,7 @@ public class PotionItem extends Item {
 			}
 		}
 
+		world.emitGameEvent(user, GameEvent.DRINKING_FINISH, user.method_33575());
 		return stack;
 	}
 

@@ -8,6 +8,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
@@ -83,21 +84,21 @@ public class FlatChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public int getHeight(int x, int z, Heightmap.Type heightmapType) {
+	public int getHeight(int x, int z, Heightmap.Type heightmapType, HeightLimitView world) {
 		BlockState[] blockStates = this.config.getLayerBlocks();
 
 		for (int i = blockStates.length - 1; i >= 0; i--) {
 			BlockState blockState = blockStates[i];
 			if (blockState != null && heightmapType.getBlockPredicate().test(blockState)) {
-				return this.config.getBottomSectionLimit() + i + 1;
+				return world.getBottomSectionLimit() + i + 1;
 			}
 		}
 
-		return 0;
+		return world.getBottomSectionLimit();
 	}
 
 	@Override
-	public VerticalBlockSample getColumnSample(int x, int z) {
+	public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
 		return new VerticalBlockSample(
 			0, (BlockState[])Arrays.stream(this.config.getLayerBlocks()).map(state -> state == null ? Blocks.AIR.getDefaultState() : state).toArray(BlockState[]::new)
 		);

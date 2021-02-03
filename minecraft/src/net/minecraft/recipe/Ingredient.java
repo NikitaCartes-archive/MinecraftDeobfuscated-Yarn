@@ -51,16 +51,16 @@ public final class Ingredient implements Predicate<ItemStack> {
 		}
 	}
 
-	public boolean test(@Nullable ItemStack stack) {
-		if (stack == null) {
+	public boolean test(@Nullable ItemStack itemStack) {
+		if (itemStack == null) {
 			return false;
 		} else {
 			this.cacheMatchingStacks();
 			if (this.matchingStacks.length == 0) {
-				return stack.isEmpty();
+				return itemStack.isEmpty();
 			} else {
-				for (ItemStack itemStack : this.matchingStacks) {
-					if (itemStack.isOf(stack.getItem())) {
+				for (ItemStack itemStack2 : this.matchingStacks) {
+					if (itemStack2.isOf(itemStack.getItem())) {
 						return true;
 					}
 				}

@@ -182,13 +182,7 @@ public class BlockSoundGroup {
 		1.0F, 1.0F, SoundEvents.BLOCK_WOOD_BREAK, SoundEvents.BLOCK_WOOD_STEP, SoundEvents.ITEM_CROP_PLANT, SoundEvents.BLOCK_WOOD_HIT, SoundEvents.BLOCK_WOOD_FALL
 	);
 	public static final BlockSoundGroup VINE = new BlockSoundGroup(
-		1.0F,
-		1.0F,
-		SoundEvents.BLOCK_GRASS_BREAK,
-		SoundEvents.BLOCK_VINE_STEP,
-		SoundEvents.BLOCK_GRASS_PLACE,
-		SoundEvents.BLOCK_GRASS_HIT,
-		SoundEvents.BLOCK_GRASS_FALL
+		1.0F, 1.0F, SoundEvents.BLOCK_VINE_BREAK, SoundEvents.BLOCK_VINE_STEP, SoundEvents.BLOCK_VINE_PLACE, SoundEvents.BLOCK_VINE_HIT, SoundEvents.BLOCK_VINE_FALL
 	);
 	public static final BlockSoundGroup NETHER_WART = new BlockSoundGroup(
 		1.0F,
@@ -492,6 +486,99 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_COPPER_PLACE,
 		SoundEvents.BLOCK_COPPER_HIT,
 		SoundEvents.BLOCK_COPPER_FALL
+	);
+	public static final BlockSoundGroup field_28692 = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_CAVE_VINES_BREAK,
+		SoundEvents.BLOCK_CAVE_VINES_STEP,
+		SoundEvents.BLOCK_CAVE_VINES_PLACE,
+		SoundEvents.BLOCK_CAVE_VINES_HIT,
+		SoundEvents.BLOCK_CAVE_VINES_FALL
+	);
+	public static final BlockSoundGroup SPORE_BLOSSOM = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SPORE_BLOSSOM_BREAK,
+		SoundEvents.BLOCK_SPORE_BLOSSOM_STEP,
+		SoundEvents.BLOCK_SPORE_BLOSSOM_PLACE,
+		SoundEvents.BLOCK_SPORE_BLOSSOM_HIT,
+		SoundEvents.BLOCK_SPORE_BLOSSOM_FALL
+	);
+	public static final BlockSoundGroup AZALEA = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_AZALEA_BREAK,
+		SoundEvents.BLOCK_AZALEA_STEP,
+		SoundEvents.BLOCK_AZALEA_PLACE,
+		SoundEvents.BLOCK_AZALEA_HIT,
+		SoundEvents.BLOCK_AZALEA_FALL
+	);
+	public static final BlockSoundGroup FLOWERING_AZALEA = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_FLOWERING_AZALEA_BREAK,
+		SoundEvents.BLOCK_FLOWERING_AZALEA_STEP,
+		SoundEvents.BLOCK_FLOWERING_AZALEA_PLACE,
+		SoundEvents.BLOCK_FLOWERING_AZALEA_HIT,
+		SoundEvents.BLOCK_FLOWERING_AZALEA_FALL
+	);
+	public static final BlockSoundGroup MOSS_CARPET = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_MOSS_CARPET_BREAK,
+		SoundEvents.BLOCK_MOSS_CARPET_STEP,
+		SoundEvents.BLOCK_MOSS_CARPET_PLACE,
+		SoundEvents.BLOCK_MOSS_CARPET_HIT,
+		SoundEvents.BLOCK_MOSS_CARPET_FALL
+	);
+	public static final BlockSoundGroup MOSS = new BlockSoundGroup(
+		1.0F, 1.0F, SoundEvents.BLOCK_MOSS_BREAK, SoundEvents.BLOCK_MOSS_STEP, SoundEvents.BLOCK_MOSS_PLACE, SoundEvents.BLOCK_MOSS_HIT, SoundEvents.BLOCK_MOSS_FALL
+	);
+	public static final BlockSoundGroup BIG_DRIPLEAF = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_BIG_DRIPLEAF_BREAK,
+		SoundEvents.BLOCK_BIG_DRIPLEAF_STEP,
+		SoundEvents.BLOCK_BIG_DRIPLEAF_PLACE,
+		SoundEvents.BLOCK_BIG_DRIPLEAF_HIT,
+		SoundEvents.BLOCK_BIG_DRIPLEAF_FALL
+	);
+	public static final BlockSoundGroup SMALL_DRIPLEAF = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_SMALL_DRIPLEAF_BREAK,
+		SoundEvents.BLOCK_SMALL_DRIPLEAF_STEP,
+		SoundEvents.BLOCK_SMALL_DRIPLEAF_PLACE,
+		SoundEvents.BLOCK_SMALL_DRIPLEAF_HIT,
+		SoundEvents.BLOCK_SMALL_DRIPLEAF_FALL
+	);
+	public static final BlockSoundGroup ROOTED_DIRT = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_ROOTED_DIRT_BREAK,
+		SoundEvents.BLOCK_ROOTED_DIRT_STEP,
+		SoundEvents.BLOCK_ROOTED_DIRT_PLACE,
+		SoundEvents.BLOCK_ROOTED_DIRT_HIT,
+		SoundEvents.BLOCK_ROOTED_DIRT_FALL
+	);
+	public static final BlockSoundGroup HANGING_ROOTS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_HANGING_ROOTS_BREAK,
+		SoundEvents.BLOCK_HANGING_ROOTS_STEP,
+		SoundEvents.BLOCK_HANGING_ROOTS_PLACE,
+		SoundEvents.BLOCK_HANGING_ROOTS_HIT,
+		SoundEvents.BLOCK_HANGING_ROOTS_FALL
+	);
+	public static final BlockSoundGroup AZALEA_LEAVES = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_AZALEA_LEAVES_BREAK,
+		SoundEvents.BLOCK_AZALEA_LEAVES_STEP,
+		SoundEvents.BLOCK_AZALEA_LEAVES_PLACE,
+		SoundEvents.BLOCK_AZALEA_LEAVES_HIT,
+		SoundEvents.BLOCK_AZALEA_LEAVES_FALL
 	);
 	public static final BlockSoundGroup SCULK_SENSOR = new BlockSoundGroup(
 		1.0F,

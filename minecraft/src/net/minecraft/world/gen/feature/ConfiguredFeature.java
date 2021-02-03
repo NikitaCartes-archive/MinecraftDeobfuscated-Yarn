@@ -12,6 +12,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 import net.minecraft.world.gen.decorator.Decoratable;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -45,7 +46,7 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
 	}
 
 	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
-		return this.feature.generate(world, chunkGenerator, random, pos, this.config);
+		return this.feature.generate(new FeatureContext<>(world, chunkGenerator, random, pos, this.config));
 	}
 
 	public Stream<ConfiguredFeature<?, ?>> method_30648() {

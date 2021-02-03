@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -34,7 +35,8 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 		int j,
 		Biome biome,
 		ChunkPos chunkPos,
-		DefaultFeatureConfig defaultFeatureConfig
+		DefaultFeatureConfig defaultFeatureConfig,
+		HeightLimitView heightLimitView
 	) {
 		return chunkGenerator.isStrongholdStartingChunk(new ChunkPos(i, j));
 	}
@@ -54,7 +56,8 @@ public class StrongholdFeature extends StructureFeature<DefaultFeatureConfig> {
 			int i,
 			int j,
 			Biome biome,
-			DefaultFeatureConfig defaultFeatureConfig
+			DefaultFeatureConfig defaultFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			int k = 0;
 

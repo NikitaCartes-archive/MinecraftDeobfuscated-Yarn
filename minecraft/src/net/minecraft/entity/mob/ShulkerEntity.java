@@ -34,6 +34,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -48,6 +49,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class ShulkerEntity extends GolemEntity implements Monster {
 	private static final UUID COVERED_ARMOR_BONUS_ID = UUID.fromString("7E0292F2-9434-48D5-A29F-9583AF7DF27F");
@@ -80,8 +82,8 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	protected boolean canClimb() {
-		return false;
+	protected Entity.class_5799 method_33570() {
+		return Entity.class_5799.NONE;
 	}
 
 	@Override
@@ -213,7 +215,7 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			for (Entity entity : this.world
 				.getOtherEntities(
 					this,
-					method_33347(direction, g, f).offset(this.getX(), this.getY(), this.getZ()),
+					method_33347(direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5),
 					EntityPredicates.EXCEPT_SPECTATOR.and(entityx -> !entityx.isConnectedThroughVehicle(this))
 				)) {
 				if (!(entity instanceof ShulkerEntity) && !entity.noClip) {
@@ -277,11 +279,11 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	}
 
 	@Override
-	public void move(MovementType type, Vec3d movement) {
-		if (type == MovementType.SHULKER_BOX) {
+	public void move(MovementType movementType, Vec3d movement) {
+		if (movementType == MovementType.SHULKER_BOX) {
 			this.tryTeleport();
 		} else {
-			super.move(type, movement);
+			super.move(movementType, movement);
 		}
 	}
 
@@ -460,8 +462,10 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 			if (peekAmount == 0) {
 				this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
 				this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0F, 1.0F);
+				this.emitGameEvent(GameEvent.SHULKER_CLOSE);
 			} else {
 				this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0F, 1.0F);
+				this.emitGameEvent(GameEvent.SHULKER_OPEN);
 			}
 		}
 
@@ -476,6 +480,13 @@ public class ShulkerEntity extends GolemEntity implements Monster {
 	@Override
 	protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
 		return 0.5F;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
+		super.method_33579(mobSpawnS2CPacket);
+		this.bodyYaw = 0.0F;
 	}
 
 	@Override

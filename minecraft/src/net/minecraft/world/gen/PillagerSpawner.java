@@ -48,7 +48,8 @@ public class PillagerSpawner implements Spawner {
 							int j = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
 							int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
 							BlockPos.Mutable mutable = playerEntity.getBlockPos().mutableCopy().move(j, 0, k);
-							if (!world.isRegionLoaded(mutable.getX() - 10, mutable.getY() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getY() + 10, mutable.getZ() + 10)) {
+							int m = 10;
+							if (!world.method_33597(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10)) {
 								return 0;
 							} else {
 								Biome biome = world.getBiome(mutable);
@@ -56,13 +57,13 @@ public class PillagerSpawner implements Spawner {
 								if (category == Biome.Category.MUSHROOM) {
 									return 0;
 								} else {
-									int m = 0;
-									int n = (int)Math.ceil((double)world.getLocalDifficulty(mutable).getLocalDifficulty()) + 1;
+									int n = 0;
+									int o = (int)Math.ceil((double)world.getLocalDifficulty(mutable).getLocalDifficulty()) + 1;
 
-									for (int o = 0; o < n; o++) {
-										m++;
+									for (int p = 0; p < o; p++) {
+										n++;
 										mutable.setY(world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mutable).getY());
-										if (o == 0) {
+										if (p == 0) {
 											if (!this.spawnPillager(world, mutable, random, true)) {
 												break;
 											}
@@ -74,7 +75,7 @@ public class PillagerSpawner implements Spawner {
 										mutable.setZ(mutable.getZ() + random.nextInt(5) - random.nextInt(5));
 									}
 
-									return m;
+									return n;
 								}
 							}
 						}

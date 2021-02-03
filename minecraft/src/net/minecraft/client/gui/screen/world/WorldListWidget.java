@@ -341,17 +341,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						bl -> {
 							if (bl) {
 								this.client.openScreen(new ProgressScreen());
-								LevelStorage levelStorage = this.client.getLevelStorage();
-								String string = this.level.getName();
-
-								try (LevelStorage.Session session = levelStorage.createSession(string)) {
-									session.deleteSessionLock();
-								} catch (IOException var17) {
-									SystemToast.addWorldDeleteFailureToast(this.client, string);
-									WorldListWidget.LOGGER.error("Failed to delete world {}", string, var17);
-								}
-
-								WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
+								this.method_33685();
 							}
 
 							this.client.openScreen(this.screen);
@@ -362,6 +352,20 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						ScreenTexts.CANCEL
 					)
 				);
+		}
+
+		public void method_33685() {
+			LevelStorage levelStorage = this.client.getLevelStorage();
+			String string = this.level.getName();
+
+			try (LevelStorage.Session session = levelStorage.createSession(string)) {
+				session.deleteSessionLock();
+			} catch (IOException var16) {
+				SystemToast.addWorldDeleteFailureToast(this.client, string);
+				WorldListWidget.LOGGER.error("Failed to delete world {}", string, var16);
+			}
+
+			WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
 		}
 
 		public void edit() {

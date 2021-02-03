@@ -350,6 +350,7 @@ public class WolfEntity extends TameableEntity implements Angerable {
 					}
 
 					this.heal((float)item.getFoodComponent().getHunger());
+					this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
 					return ActionResult.SUCCESS;
 				}
 

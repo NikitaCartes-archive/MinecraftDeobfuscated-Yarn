@@ -255,9 +255,10 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 			return PathNodeType.WATER;
 		} else {
-			if (pathNodeType == PathNodeType.OPEN && y >= 1) {
-				BlockState blockState = world.getBlockState(new BlockPos(x, y - 1, z));
-				PathNodeType pathNodeType3 = getCommonNodeType(world, mutable.set(x, y - 1, z));
+			if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomSectionLimit() + 1) {
+				mutable.set(x, y, z).move(Direction.DOWN);
+				BlockState blockState = world.getBlockState(mutable);
+				PathNodeType pathNodeType3 = getCommonNodeType(world, mutable);
 				if (pathNodeType3 != PathNodeType.WALKABLE && pathNodeType3 != PathNodeType.OPEN && pathNodeType3 != PathNodeType.LAVA) {
 					pathNodeType = PathNodeType.WALKABLE;
 				} else {

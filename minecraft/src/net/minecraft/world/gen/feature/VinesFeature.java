@@ -7,7 +7,7 @@ import net.minecraft.block.VineBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class VinesFeature extends Feature<DefaultFeatureConfig> {
 	private static final Direction[] DIRECTIONS = Direction.values();
@@ -16,9 +16,11 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DefaultFeatureConfig defaultFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+		Random random = featureContext.getRandom();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
 		for (int i = 64; i < 256; i++) {

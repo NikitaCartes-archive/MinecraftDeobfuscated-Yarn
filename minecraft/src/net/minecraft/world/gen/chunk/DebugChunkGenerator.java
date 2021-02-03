@@ -9,11 +9,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
@@ -69,17 +71,16 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	@Override
 	public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int i = region.getCenterChunkX();
-		int j = region.getCenterChunkZ();
+		ChunkPos chunkPos = region.getCenterPos();
 
-		for (int k = 0; k < 16; k++) {
-			for (int l = 0; l < 16; l++) {
-				int m = ChunkSectionPos.getOffsetPos(i, k);
-				int n = ChunkSectionPos.getOffsetPos(j, l);
-				region.setBlockState(mutable.set(m, 60, n), BARRIER, 2);
-				BlockState blockState = getBlockState(m, n);
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 16; j++) {
+				int k = ChunkSectionPos.getOffsetPos(chunkPos.x, i);
+				int l = ChunkSectionPos.getOffsetPos(chunkPos.z, j);
+				region.setBlockState(mutable.set(k, 60, l), BARRIER, 2);
+				BlockState blockState = getBlockState(k, l);
 				if (blockState != null) {
-					region.setBlockState(mutable.set(m, 70, n), blockState, 2);
+					region.setBlockState(mutable.set(k, 70, l), blockState, 2);
 				}
 			}
 		}
@@ -90,12 +91,12 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public int getHeight(int x, int z, Heightmap.Type heightmapType) {
+	public int getHeight(int x, int z, Heightmap.Type heightmapType, HeightLimitView world) {
 		return 0;
 	}
 
 	@Override
-	public VerticalBlockSample getColumnSample(int x, int z) {
+	public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
 		return new VerticalBlockSample(0, new BlockState[0]);
 	}
 

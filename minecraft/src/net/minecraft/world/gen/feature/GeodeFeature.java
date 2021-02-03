@@ -15,7 +15,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 	private static final Direction[] DIRECTIONS = Direction.values();
@@ -24,9 +24,12 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, GeodeFeatureConfig geodeFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<GeodeFeatureConfig> featureContext) {
+		GeodeFeatureConfig geodeFeatureConfig = featureContext.getConfig();
+		Random random = featureContext.getRandom();
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
 		int i = geodeFeatureConfig.minGenOffset;
 		int j = geodeFeatureConfig.maxGenOffset;
 		if (structureWorldAccess.getFluidState(blockPos.add(0, j / 3, 0)).isStill()) {

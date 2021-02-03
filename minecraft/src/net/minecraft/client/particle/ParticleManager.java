@@ -150,6 +150,8 @@ public class ParticleManager implements ResourceReloadListener {
 		this.registerFactory(ParticleTypes.FALLING_HONEY, BlockLeakParticle.FallingHoneyFactory::new);
 		this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.LandingHoneyFactory::new);
 		this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.FallingNectarFactory::new);
+		this.registerFactory(ParticleTypes.FALLING_SPORE_BLOSSOM, BlockLeakParticle.FallingSporeBlossomFactory::new);
+		this.registerFactory(ParticleTypes.SPORE_BLOSSOM_AIR, WaterSuspendParticle.SporeBlossomAirFactory::new);
 		this.registerFactory(ParticleTypes.ASH, AshParticle.Factory::new);
 		this.registerFactory(ParticleTypes.CRIMSON_SPORE, WaterSuspendParticle.CrimsonSporeFactory::new);
 		this.registerFactory(ParticleTypes.WARPED_SPORE, WaterSuspendParticle.WarpedSporeFactory::new);
@@ -450,8 +452,7 @@ public class ParticleManager implements ResourceReloadListener {
 								double w = t * k + e;
 								double x = u * l + f;
 								this.addParticle(
-									new BlockDustParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state)
-										.setBlockPos(pos)
+									new BlockDustParticle(this.world, (double)pos.getX() + v, (double)pos.getY() + w, (double)pos.getZ() + x, s - 0.5, t - 0.5, u - 0.5, state, pos)
 								);
 							}
 						}
@@ -496,7 +497,7 @@ public class ParticleManager implements ResourceReloadListener {
 				d = (double)i + box.maxX + 0.1F;
 			}
 
-			this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState).setBlockPos(pos).move(0.2F).scale(0.6F));
+			this.addParticle(new BlockDustParticle(this.world, d, e, g, 0.0, 0.0, 0.0, blockState, pos).move(0.2F).scale(0.6F));
 		}
 	}
 

@@ -55,6 +55,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class EndermanEntity extends HostileEntity implements Angerable {
 	private static final UUID ATTACKING_SPEED_BOOST_ID = UUID.fromString("020E0DFB-87AE-4653-9556-831010E291A0");
@@ -439,6 +440,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 			boolean bl = blockHitResult.getBlockPos().equals(blockPos);
 			if (blockState.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
 				world.removeBlock(blockPos, false);
+				world.emitGameEvent(this.enderman, GameEvent.BLOCK_DESTROY, blockPos);
 				this.enderman.setCarriedBlock(blockState.getBlock().getDefaultState());
 			}
 		}
@@ -476,6 +478,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 				blockState3 = Block.postProcessState(blockState3, this.enderman.world, blockPos);
 				if (this.canPlaceOn(world, blockPos, blockState3, blockState, blockState2, blockPos2)) {
 					world.setBlockState(blockPos, blockState3, 3);
+					world.emitGameEvent(this.enderman, GameEvent.BLOCK_PLACE, blockPos);
 					this.enderman.setCarriedBlock(null);
 				}
 			}

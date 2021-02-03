@@ -5,14 +5,17 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5829;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
+import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.toast.TutorialToast;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.KeybindText;
 import net.minecraft.text.Text;
+import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -23,10 +26,12 @@ public class TutorialManager {
 	private final MinecraftClient client;
 	@Nullable
 	private TutorialStepHandler currentHandler;
-	private List<TutorialManager.class_5524> field_26893 = Lists.<TutorialManager.class_5524>newArrayList();
+	private final List<TutorialManager.class_5524> field_26893 = Lists.<TutorialManager.class_5524>newArrayList();
+	private final class_5829 field_28801;
 
-	public TutorialManager(MinecraftClient client) {
+	public TutorialManager(MinecraftClient client, GameOptions gameOptions) {
 		this.client = client;
+		this.field_28801 = new class_5829(this, gameOptions);
 	}
 
 	public void onMovement(Input input) {
@@ -125,6 +130,10 @@ public class TutorialManager {
 
 	public static Text getKeybindName(String string) {
 		return new KeybindText("key." + string).formatted(Formatting.BOLD);
+	}
+
+	public void method_33704(ItemStack itemStack, ItemStack itemStack2, ClickType clickType) {
+		this.field_28801.method_33702(itemStack, itemStack2, clickType);
 	}
 
 	@Environment(EnvType.CLIENT)

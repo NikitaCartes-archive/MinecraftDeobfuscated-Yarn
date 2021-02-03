@@ -1,22 +1,24 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 	public EndGatewayFeature(Codec<EndGatewayFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EndGatewayFeatureConfig endGatewayFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<EndGatewayFeatureConfig> featureContext) {
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		EndGatewayFeatureConfig endGatewayFeatureConfig = featureContext.getConfig();
+
 		for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-1, -2, -1), blockPos.add(1, 2, 1))) {
 			boolean bl = blockPos2.getX() == blockPos.getX();
 			boolean bl2 = blockPos2.getY() == blockPos.getY();

@@ -11,7 +11,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.ProbabilityConfig;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class BambooFeature extends Feature<ProbabilityConfig> {
 	private static final BlockState BAMBOO = Blocks.BAMBOO
@@ -27,10 +27,13 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, ProbabilityConfig probabilityConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<ProbabilityConfig> featureContext) {
 		int i = 0;
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
+		ProbabilityConfig probabilityConfig = featureContext.getConfig();
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 		BlockPos.Mutable mutable2 = blockPos.mutableCopy();
 		if (structureWorldAccess.isAir(mutable)) {

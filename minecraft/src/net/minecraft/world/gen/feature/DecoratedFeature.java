@@ -7,6 +7,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.decorator.DecoratorContext;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
@@ -14,12 +15,17 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DecoratedFeatureConfig decoratedFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<DecoratedFeatureConfig> featureContext) {
 		MutableBoolean mutableBoolean = new MutableBoolean();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		DecoratedFeatureConfig decoratedFeatureConfig = featureContext.getConfig();
+		ChunkGenerator chunkGenerator = featureContext.getGenerator();
+		Random random = featureContext.getRandom();
+		BlockPos blockPos = featureContext.getPos();
+		ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)decoratedFeatureConfig.feature.get();
 		decoratedFeatureConfig.decorator.getPositions(new DecoratorContext(structureWorldAccess, chunkGenerator), random, blockPos).forEach(blockPosx -> {
-			if (((ConfiguredFeature)decoratedFeatureConfig.feature.get()).generate(structureWorldAccess, chunkGenerator, random, blockPosx)) {
+			if (configuredFeature.generate(structureWorldAccess, chunkGenerator, random, blockPosx)) {
 				mutableBoolean.setTrue();
 			}
 		});

@@ -32,6 +32,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -121,6 +122,23 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
+	public boolean hasWings() {
+		float f = MathHelper.cos(this.wingPosition * (float) (Math.PI * 2));
+		float g = MathHelper.cos(this.prevWingPosition * (float) (Math.PI * 2));
+		return g <= -0.3F && f >= -0.3F;
+	}
+
+	@Override
+	public void playFlySound() {
+		if (this.world.isClient && !this.isSilent()) {
+			this.world
+				.playSound(
+					this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_FLAP, this.getSoundCategory(), 5.0F, 0.8F + this.random.nextFloat() * 0.3F, false
+				);
+		}
+	}
+
+	@Override
 	protected void initDataTracker() {
 		super.initDataTracker();
 		this.getDataTracker().startTracking(PHASE_TYPE, PhaseType.HOVER.getTypeId());
@@ -147,52 +165,35 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 	@Override
 	public void tickMovement() {
+		this.method_33573();
 		if (this.world.isClient) {
 			this.setHealth(this.getHealth());
-			if (!this.isSilent()) {
-				float f = MathHelper.cos(this.wingPosition * (float) (Math.PI * 2));
-				float g = MathHelper.cos(this.prevWingPosition * (float) (Math.PI * 2));
-				if (g <= -0.3F && f >= -0.3F) {
-					this.world
-						.playSound(
-							this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_FLAP, this.getSoundCategory(), 5.0F, 0.8F + this.random.nextFloat() * 0.3F, false
-						);
-				}
-
-				if (!this.phaseManager.getCurrent().isSittingOrHovering() && --this.ticksUntilNextGrowl < 0) {
-					this.world
-						.playSound(
-							this.getX(),
-							this.getY(),
-							this.getZ(),
-							SoundEvents.ENTITY_ENDER_DRAGON_GROWL,
-							this.getSoundCategory(),
-							2.5F,
-							0.8F + this.random.nextFloat() * 0.3F,
-							false
-						);
-					this.ticksUntilNextGrowl = 200 + this.random.nextInt(200);
-				}
+			if (!this.isSilent() && !this.phaseManager.getCurrent().isSittingOrHovering() && --this.ticksUntilNextGrowl < 0) {
+				this.world
+					.playSound(
+						this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_GROWL, this.getSoundCategory(), 2.5F, 0.8F + this.random.nextFloat() * 0.3F, false
+					);
+				this.ticksUntilNextGrowl = 200 + this.random.nextInt(200);
 			}
 		}
 
 		this.prevWingPosition = this.wingPosition;
 		if (this.isDead()) {
-			float fx = (this.random.nextFloat() - 0.5F) * 8.0F;
-			float gx = (this.random.nextFloat() - 0.5F) * 4.0F;
+			float f = (this.random.nextFloat() - 0.5F) * 8.0F;
+			float g = (this.random.nextFloat() - 0.5F) * 4.0F;
 			float h = (this.random.nextFloat() - 0.5F) * 8.0F;
-			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX() + (double)fx, this.getY() + 2.0 + (double)gx, this.getZ() + (double)h, 0.0, 0.0, 0.0);
+			this.world.addParticle(ParticleTypes.EXPLOSION, this.getX() + (double)f, this.getY() + 2.0 + (double)g, this.getZ() + (double)h, 0.0, 0.0, 0.0);
 		} else {
 			this.tickWithEndCrystals();
 			Vec3d vec3d = this.getVelocity();
-			float gx = 0.2F / (MathHelper.sqrt(squaredHorizontalLength(vec3d)) * 10.0F + 1.0F);
-			gx *= (float)Math.pow(2.0, vec3d.y);
+			float g = 0.2F / (MathHelper.sqrt(squaredHorizontalLength(vec3d)) * 10.0F + 1.0F);
+			g *= (float)Math.pow(2.0, vec3d.y);
 			if (this.phaseManager.getCurrent().isSittingOrHovering()) {
 				this.wingPosition += 0.1F;
 			} else if (this.slowedDownByBlock) {
-				this.wingPosition += gx * 0.5F;
+				this.wingPosition += g * 0.5F;
 			} else {
-				this.wingPosition += gx;
+				this.wingPosition += g;
 			}
 
 			this.yaw = MathHelper.wrapDegrees(this.yaw);
@@ -878,5 +879,16 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	@Override
 	public boolean canUsePortals() {
 		return false;
+	}
+
+	@Environment(EnvType.CLIENT)
+	@Override
+	public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
+		super.method_33579(mobSpawnS2CPacket);
+		EnderDragonPart[] enderDragonParts = this.getBodyParts();
+
+		for (int i = 0; i < enderDragonParts.length; i++) {
+			enderDragonParts[i].setEntityId(i + mobSpawnS2CPacket.getId());
+		}
 	}
 }

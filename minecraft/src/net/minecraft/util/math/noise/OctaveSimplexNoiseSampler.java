@@ -6,21 +6,22 @@ import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
 import java.util.stream.IntStream;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.WorldGenRandom;
 
 public class OctaveSimplexNoiseSampler implements NoiseSampler {
 	private final SimplexNoiseSampler[] octaveSamplers;
 	private final double persistence;
 	private final double lacunarity;
 
-	public OctaveSimplexNoiseSampler(ChunkRandom random, IntStream octaves) {
+	public OctaveSimplexNoiseSampler(WorldGenRandom random, IntStream octaves) {
 		this(random, (List<Integer>)octaves.boxed().collect(ImmutableList.toImmutableList()));
 	}
 
-	public OctaveSimplexNoiseSampler(ChunkRandom random, List<Integer> octaves) {
+	public OctaveSimplexNoiseSampler(WorldGenRandom random, List<Integer> octaves) {
 		this(random, new IntRBTreeSet(octaves));
 	}
 
-	private OctaveSimplexNoiseSampler(ChunkRandom random, IntSortedSet octaves) {
+	private OctaveSimplexNoiseSampler(WorldGenRandom random, IntSortedSet octaves) {
 		if (octaves.isEmpty()) {
 			throw new IllegalArgumentException("Need some octaves!");
 		} else {
@@ -41,19 +42,19 @@ public class OctaveSimplexNoiseSampler implements NoiseSampler {
 					if (m >= 0 && octaves.contains(l - m)) {
 						this.octaveSamplers[m] = new SimplexNoiseSampler(random);
 					} else {
-						random.consume(262);
+						random.skip(262);
 					}
 				}
 
 				if (j > 0) {
 					long n = (long)(simplexNoiseSampler.sample(simplexNoiseSampler.originX, simplexNoiseSampler.originY, simplexNoiseSampler.originZ) * 9.223372E18F);
-					ChunkRandom chunkRandom = new ChunkRandom(n);
+					WorldGenRandom worldGenRandom = new ChunkRandom(n);
 
 					for (int o = l - 1; o >= 0; o--) {
 						if (o < k && octaves.contains(l - o)) {
-							this.octaveSamplers[o] = new SimplexNoiseSampler(chunkRandom);
+							this.octaveSamplers[o] = new SimplexNoiseSampler(worldGenRandom);
 						} else {
-							chunkRandom.consume(262);
+							worldGenRandom.skip(262);
 						}
 					}
 				}

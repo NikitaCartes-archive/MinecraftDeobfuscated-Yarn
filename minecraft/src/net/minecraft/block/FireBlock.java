@@ -422,5 +422,16 @@ public class FireBlock extends AbstractFireBlock {
 		fireBlock.registerFlammableBlock(Blocks.SWEET_BERRY_BUSH, 60, 100);
 		fireBlock.registerFlammableBlock(Blocks.BEEHIVE, 5, 20);
 		fireBlock.registerFlammableBlock(Blocks.BEE_NEST, 30, 20);
+		fireBlock.registerFlammableBlock(Blocks.AZALEA_LEAVES, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.AZALEA_LEAVES_FLOWERS, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.CAVE_VINES_HEAD, 15, 60);
+		fireBlock.registerFlammableBlock(Blocks.CAVE_VINES_BODY, 15, 60);
+		fireBlock.registerFlammableBlock(Blocks.SPORE_BLOSSOM, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.AZALEA, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.FLOWERING_AZALEA, 30, 60);
+		fireBlock.registerFlammableBlock(Blocks.BIG_DRIPLEAF, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.BIG_DRIPLEAF_STEM, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.SMALL_DRIPLEAF, 60, 100);
+		fireBlock.registerFlammableBlock(Blocks.HANGING_ROOTS, 30, 60);
 	}
 }

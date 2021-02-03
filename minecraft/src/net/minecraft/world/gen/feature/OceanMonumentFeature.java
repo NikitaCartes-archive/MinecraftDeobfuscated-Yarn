@@ -13,6 +13,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
@@ -42,7 +43,8 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		int j,
 		Biome biome,
 		ChunkPos chunkPos,
-		DefaultFeatureConfig defaultFeatureConfig
+		DefaultFeatureConfig defaultFeatureConfig,
+		HeightLimitView heightLimitView
 	) {
 		for (Biome biome2 : biomeSource.getBiomesInArea(ChunkSectionPos.getOffsetPos(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.getOffsetPos(j, 9), 16)) {
 			if (!biome2.getGenerationSettings().hasStructureFeature(this)) {
@@ -83,7 +85,8 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 			int i,
 			int j,
 			Biome biome,
-			DefaultFeatureConfig defaultFeatureConfig
+			DefaultFeatureConfig defaultFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			this.method_16588(i, j);
 		}

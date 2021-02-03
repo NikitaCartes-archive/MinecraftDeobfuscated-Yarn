@@ -25,7 +25,7 @@ import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class TreeFeature extends Feature<TreeFeatureConfig> {
@@ -138,9 +138,12 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		setBlockStateWithoutUpdatingNeighbors(world, pos, state);
 	}
 
-	public final boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, TreeFeatureConfig treeFeatureConfig
-	) {
+	@Override
+	public final boolean generate(FeatureContext<TreeFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
+		BlockPos blockPos = featureContext.getPos();
+		TreeFeatureConfig treeFeatureConfig = featureContext.getConfig();
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set2 = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set3 = Sets.<BlockPos>newHashSet();

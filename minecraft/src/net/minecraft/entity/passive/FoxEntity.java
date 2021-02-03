@@ -17,6 +17,7 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CaveVines;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -68,6 +69,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -157,7 +159,7 @@ public class FoxEntity extends AnimalEntity {
 		this.goalSelector.add(7, new FoxEntity.DelayedCalmDownGoal());
 		this.goalSelector.add(8, new FoxEntity.FollowParentGoal(this, 1.25));
 		this.goalSelector.add(9, new FoxEntity.GoToVillageGoal(32, 200));
-		this.goalSelector.add(10, new FoxEntity.EatSweetBerriesGoal(1.2F, 12, 2));
+		this.goalSelector.add(10, new FoxEntity.EatSweetBerriesGoal(1.2F, 12, 1));
 		this.goalSelector.add(10, new PounceAtTargetGoal(this, 0.4F));
 		this.goalSelector.add(11, new WanderAroundFarGoal(this, 1.0));
 		this.goalSelector.add(11, new FoxEntity.PickupItemGoal());
@@ -538,7 +540,7 @@ public class FoxEntity extends AnimalEntity {
 
 	@Override
 	public boolean isBreedingItem(ItemStack stack) {
-		return stack.isOf(Items.SWEET_BERRIES);
+		return stack.isIn(ItemTags.FOX_FOOD);
 	}
 
 	@Override
@@ -893,7 +895,7 @@ public class FoxEntity extends AnimalEntity {
 		@Override
 		protected boolean isTargetPos(WorldView world, BlockPos pos) {
 			BlockState blockState = world.getBlockState(pos);
-			return blockState.isOf(Blocks.SWEET_BERRY_BUSH) && (Integer)blockState.get(SweetBerryBushBlock.AGE) >= 2;
+			return blockState.isOf(Blocks.SWEET_BERRY_BUSH) && (Integer)blockState.get(SweetBerryBushBlock.AGE) >= 2 || CaveVines.hasBerries(blockState);
 		}
 
 		@Override
@@ -915,23 +917,33 @@ public class FoxEntity extends AnimalEntity {
 			if (FoxEntity.this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
 				BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
 				if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
-					int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
-					blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1));
-					int j = 1 + FoxEntity.this.world.random.nextInt(2) + (i == 3 ? 1 : 0);
-					ItemStack itemStack = FoxEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
-					if (itemStack.isEmpty()) {
-						FoxEntity.this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.SWEET_BERRIES));
-						j--;
-					}
-
-					if (j > 0) {
-						Block.dropStack(FoxEntity.this.world, this.targetPos, new ItemStack(Items.SWEET_BERRIES, j));
-					}
-
-					FoxEntity.this.playSound(SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, 1.0F, 1.0F);
-					FoxEntity.this.world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), 2);
+					this.method_33587(blockState);
+				} else if (CaveVines.hasBerries(blockState)) {
+					this.method_33586(blockState);
 				}
 			}
+		}
+
+		private void method_33586(BlockState blockState) {
+			CaveVines.pickBerries(blockState, FoxEntity.this.world, this.targetPos);
+		}
+
+		private void method_33587(BlockState blockState) {
+			int i = (Integer)blockState.get(SweetBerryBushBlock.AGE);
+			blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1));
+			int j = 1 + FoxEntity.this.world.random.nextInt(2) + (i == 3 ? 1 : 0);
+			ItemStack itemStack = FoxEntity.this.getEquippedStack(EquipmentSlot.MAINHAND);
+			if (itemStack.isEmpty()) {
+				FoxEntity.this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.SWEET_BERRIES));
+				j--;
+			}
+
+			if (j > 0) {
+				Block.dropStack(FoxEntity.this.world, this.targetPos, new ItemStack(Items.SWEET_BERRIES, j));
+			}
+
+			FoxEntity.this.playSound(SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, 1.0F, 1.0F);
+			FoxEntity.this.world.setBlockState(this.targetPos, blockState.with(SweetBerryBushBlock.AGE, Integer.valueOf(1)), 2);
 		}
 
 		@Override

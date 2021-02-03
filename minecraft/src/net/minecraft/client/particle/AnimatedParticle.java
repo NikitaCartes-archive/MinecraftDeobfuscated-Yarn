@@ -7,8 +7,6 @@ import net.minecraft.client.world.ClientWorld;
 @Environment(EnvType.CLIENT)
 public class AnimatedParticle extends SpriteBillboardParticle {
 	protected final SpriteProvider spriteProvider;
-	private final float upwardsAcceleration;
-	private float resistance = 0.91F;
 	private float targetColorRed;
 	private float targetColorGreen;
 	private float targetColorBlue;
@@ -16,8 +14,9 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 
 	protected AnimatedParticle(ClientWorld world, double x, double y, double z, SpriteProvider spriteProvider, float upwardsAcceleration) {
 		super(world, x, y, z);
+		this.field_28786 = 0.91F;
+		this.gravityStrength = upwardsAcceleration;
 		this.spriteProvider = spriteProvider;
-		this.upwardsAcceleration = upwardsAcceleration;
 	}
 
 	public void setColor(int rgbHex) {
@@ -42,30 +41,14 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
-			this.setSpriteForAge(this.spriteProvider);
-			if (this.age > this.maxAge / 2) {
-				this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
-				if (this.changesColor) {
-					this.colorRed = this.colorRed + (this.targetColorRed - this.colorRed) * 0.2F;
-					this.colorGreen = this.colorGreen + (this.targetColorGreen - this.colorGreen) * 0.2F;
-					this.colorBlue = this.colorBlue + (this.targetColorBlue - this.colorBlue) * 0.2F;
-				}
-			}
-
-			this.velocityY = this.velocityY + (double)this.upwardsAcceleration;
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX = this.velocityX * (double)this.resistance;
-			this.velocityY = this.velocityY * (double)this.resistance;
-			this.velocityZ = this.velocityZ * (double)this.resistance;
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
+		super.tick();
+		this.setSpriteForAge(this.spriteProvider);
+		if (this.age > this.maxAge / 2) {
+			this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
+			if (this.changesColor) {
+				this.colorRed = this.colorRed + (this.targetColorRed - this.colorRed) * 0.2F;
+				this.colorGreen = this.colorGreen + (this.targetColorGreen - this.colorGreen) * 0.2F;
+				this.colorBlue = this.colorBlue + (this.targetColorBlue - this.colorBlue) * 0.2F;
 			}
 		}
 	}
@@ -73,9 +56,5 @@ public class AnimatedParticle extends SpriteBillboardParticle {
 	@Override
 	public int getBrightness(float tint) {
 		return 15728880;
-	}
-
-	protected void setResistance(float resistance) {
-		this.resistance = resistance;
 	}
 }

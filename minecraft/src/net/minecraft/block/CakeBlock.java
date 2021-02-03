@@ -21,6 +21,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public class CakeBlock extends Block {
 	public static final IntProperty BITES = Properties.BITES;
@@ -58,6 +59,7 @@ public class CakeBlock extends Block {
 
 				world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 				world.setBlockState(pos, CandleCakeBlock.getCandleCakeFromCandle(block));
+				world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 				return ActionResult.SUCCESS;
 			}
 		}
@@ -82,10 +84,12 @@ public class CakeBlock extends Block {
 			player.incrementStat(Stats.EAT_CAKE_SLICE);
 			player.getHungerManager().add(2, 0.1F);
 			int i = (Integer)state.get(BITES);
+			world.emitGameEvent(player, GameEvent.EAT, pos);
 			if (i < 6) {
 				world.setBlockState(pos, state.with(BITES, Integer.valueOf(i + 1)), 3);
 			} else {
 				world.removeBlock(pos, false);
+				world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
 			}
 
 			return ActionResult.SUCCESS;

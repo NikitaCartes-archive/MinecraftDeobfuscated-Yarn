@@ -23,6 +23,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -59,7 +60,14 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 	}
 
 	private static int method_27211(
-		Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean bl, int i, int j, BlockBox blockBox
+		Random random,
+		ChunkGenerator chunkGenerator,
+		RuinedPortalStructurePiece.VerticalPlacement verticalPlacement,
+		boolean bl,
+		int i,
+		int j,
+		BlockBox blockBox,
+		HeightLimitView heightLimitView
 	) {
 		int k;
 		if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
@@ -89,7 +97,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			new BlockPos(blockBox.maxX, 0, blockBox.maxZ)
 		);
 		List<VerticalBlockSample> list2 = (List<VerticalBlockSample>)list.stream()
-			.map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ()))
+			.map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), heightLimitView))
 			.collect(Collectors.toList());
 		Heightmap.Type type = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR
 			? Heightmap.Type.OCEAN_FLOOR_WG
@@ -103,7 +111,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 
 			for (VerticalBlockSample verticalBlockSample : list2) {
 				BlockState blockState = verticalBlockSample.getState(mutable);
-				if (blockState != null && type.getBlockPredicate().test(blockState)) {
+				if (type.getBlockPredicate().test(blockState)) {
 					if (++n == 3) {
 						return m;
 					}
@@ -130,7 +138,8 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			int i,
 			int j,
 			Biome biome,
-			RuinedPortalFeatureConfig ruinedPortalFeatureConfig
+			RuinedPortalFeatureConfig ruinedPortalFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			RuinedPortalStructurePiece.Properties properties = new RuinedPortalStructurePiece.Properties();
 			RuinedPortalStructurePiece.VerticalPlacement verticalPlacement;
@@ -184,8 +193,10 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			Vec3i vec3i = blockBox.getCenter();
 			int k = vec3i.getX();
 			int l = vec3i.getZ();
-			int m = chunkGenerator.getHeight(k, l, RuinedPortalStructurePiece.getHeightmapType(verticalPlacement)) - 1;
-			int n = RuinedPortalFeature.method_27211(this.random, chunkGenerator, verticalPlacement, properties.airPocket, m, blockBox.getBlockCountY(), blockBox);
+			int m = chunkGenerator.getHeight(k, l, RuinedPortalStructurePiece.getHeightmapType(verticalPlacement), heightLimitView) - 1;
+			int n = RuinedPortalFeature.method_27211(
+				this.random, chunkGenerator, verticalPlacement, properties.airPocket, m, blockBox.getBlockCountY(), blockBox, heightLimitView
+			);
 			BlockPos blockPos3 = new BlockPos(blockPos2.getX(), n, blockPos2.getZ());
 			if (ruinedPortalFeatureConfig.portalType == RuinedPortalFeature.Type.MOUNTAIN
 				|| ruinedPortalFeatureConfig.portalType == RuinedPortalFeature.Type.OCEAN

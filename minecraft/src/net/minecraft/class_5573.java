@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.minecraft.entity.EntityLike;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -32,12 +31,6 @@ public class class_5573<T extends EntityLike> {
 	public class_5573(Class<T> class_, Long2ObjectFunction<class_5584> long2ObjectFunction) {
 		this.field_27250 = class_;
 		this.field_27251 = long2ObjectFunction;
-	}
-
-	public static long method_31779(BlockPos blockPos) {
-		return ChunkSectionPos.asLong(
-			ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getY()), ChunkSectionPos.getSectionCoord(blockPos.getZ())
-		);
 	}
 
 	public void method_31777(Box box, Consumer<class_5572<T>> consumer) {

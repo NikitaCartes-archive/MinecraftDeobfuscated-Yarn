@@ -38,9 +38,17 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 		if ((Integer)state.get(AGE) < 25 && random.nextDouble() < this.growthChance) {
 			BlockPos blockPos = pos.offset(this.growthDirection);
 			if (this.chooseStemState(world.getBlockState(blockPos))) {
-				world.setBlockState(blockPos, state.cycle(AGE));
+				world.setBlockState(blockPos, this.age(state, world.random));
 			}
 		}
+	}
+
+	protected BlockState age(BlockState state, Random random) {
+		return state.cycle(AGE);
+	}
+
+	protected BlockState copyState(BlockState from, BlockState to) {
+		return to;
 	}
 
 	@Override
@@ -56,7 +64,7 @@ public abstract class AbstractPlantStemBlock extends AbstractPlantPartBlock impl
 
 			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
 		} else {
-			return this.getPlant().getDefaultState();
+			return this.copyState(state, this.getPlant().getDefaultState());
 		}
 	}
 

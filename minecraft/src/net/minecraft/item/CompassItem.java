@@ -49,13 +49,11 @@ public class CompassItem extends Item implements Vanishable {
 				}
 
 				Optional<RegistryKey<World>> optional = getLodestoneDimension(compoundTag);
-				if (optional.isPresent()
-					&& optional.get() == world.getRegistryKey()
-					&& compoundTag.contains("LodestonePos")
-					&& !((ServerWorld)world)
-						.getPointOfInterestStorage()
-						.hasTypeAt(PointOfInterestType.LODESTONE, NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos")))) {
-					compoundTag.remove("LodestonePos");
+				if (optional.isPresent() && optional.get() == world.getRegistryKey() && compoundTag.contains("LodestonePos")) {
+					BlockPos blockPos = NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos"));
+					if (!world.isInBuildLimit(blockPos) || !((ServerWorld)world).getPointOfInterestStorage().hasTypeAt(PointOfInterestType.LODESTONE, blockPos)) {
+						compoundTag.remove("LodestonePos");
+					}
 				}
 			}
 		}

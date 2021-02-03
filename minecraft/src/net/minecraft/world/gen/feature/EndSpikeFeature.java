@@ -24,7 +24,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	private static final LoadingCache<Long, List<EndSpikeFeature.Spike>> CACHE = CacheBuilder.newBuilder()
@@ -41,9 +41,12 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		return CACHE.getUnchecked(l);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EndSpikeFeatureConfig endSpikeFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<EndSpikeFeatureConfig> featureContext) {
+		EndSpikeFeatureConfig endSpikeFeatureConfig = featureContext.getConfig();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
+		BlockPos blockPos = featureContext.getPos();
 		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
 		if (list.isEmpty()) {
 			list = getSpikes(structureWorldAccess);

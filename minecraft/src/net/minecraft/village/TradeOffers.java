@@ -657,6 +657,7 @@ public class TradeOffers {
 				new TradeOffers.SellItemFactory(Items.BROWN_MUSHROOM, 1, 1, 12, 1),
 				new TradeOffers.SellItemFactory(Items.RED_MUSHROOM, 1, 1, 12, 1),
 				new TradeOffers.SellItemFactory(Items.LILY_PAD, 1, 2, 5, 1),
+				new TradeOffers.SellItemFactory(Items.SMALL_DRIPLEAF, 1, 2, 5, 1),
 				new TradeOffers.SellItemFactory(Items.SAND, 1, 8, 8, 1),
 				new TradeOffers.SellItemFactory(Items.RED_SAND, 1, 4, 6, 1)
 			},

@@ -20,6 +20,10 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 		super(settings, direction, voxelShape, bl);
 	}
 
+	protected BlockState copyState(BlockState from, BlockState to) {
+		return to;
+	}
+
 	@Override
 	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
 		if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
@@ -28,7 +32,7 @@ public abstract class AbstractPlantBlock extends AbstractPlantPartBlock implemen
 
 		AbstractPlantStemBlock abstractPlantStemBlock = this.getStem();
 		if (direction == this.growthDirection && !newState.isOf(this) && !newState.isOf(abstractPlantStemBlock)) {
-			return abstractPlantStemBlock.getRandomGrowthState(world);
+			return this.copyState(state, abstractPlantStemBlock.getRandomGrowthState(world));
 		} else {
 			if (this.tickWater) {
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));

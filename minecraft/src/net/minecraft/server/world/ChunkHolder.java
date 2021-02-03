@@ -164,13 +164,13 @@ public class ChunkHolder {
 	public void markForBlockUpdate(BlockPos blockPos) {
 		WorldChunk worldChunk = this.getWorldChunk();
 		if (worldChunk != null) {
-			byte b = (byte)this.field_26929.getSectionIndex(blockPos.getY());
-			if (this.blockUpdatesBySection[b] == null) {
+			int i = this.field_26929.getSectionIndex(blockPos.getY());
+			if (this.blockUpdatesBySection[i] == null) {
 				this.pendingBlockUpdates = true;
-				this.blockUpdatesBySection[b] = new ShortArraySet();
+				this.blockUpdatesBySection[i] = new ShortArraySet();
 			}
 
-			this.blockUpdatesBySection[b].add(ChunkSectionPos.packLocal(blockPos));
+			this.blockUpdatesBySection[i].add(ChunkSectionPos.packLocal(blockPos));
 		}
 	}
 

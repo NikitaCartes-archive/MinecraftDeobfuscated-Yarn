@@ -19,6 +19,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class FlowerPotBlock extends Block {
 	private static final Map<Block, Block> CONTENT_TO_POTTED = Maps.<Block, Block>newHashMap();
@@ -67,6 +68,7 @@ public class FlowerPotBlock extends Block {
 				world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
 			}
 
+			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 			return ActionResult.success(world.isClient);
 		} else {
 			return ActionResult.CONSUME;

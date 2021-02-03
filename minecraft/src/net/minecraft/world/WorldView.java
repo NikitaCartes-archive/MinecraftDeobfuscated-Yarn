@@ -180,8 +180,13 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	}
 
 	@Deprecated
+	default boolean method_33598(int i, int j) {
+		return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(i), ChunkSectionPos.getSectionCoord(j));
+	}
+
+	@Deprecated
 	default boolean isChunkLoaded(BlockPos pos) {
-		return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()));
+		return this.method_33598(pos.getX(), pos.getZ());
 	}
 
 	@Deprecated
@@ -190,24 +195,25 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	}
 
 	@Deprecated
-	default boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
-		if (maxY >= this.getBottomSectionLimit() && minY < this.getTopHeightLimit()) {
-			minX >>= 4;
-			minZ >>= 4;
-			maxX >>= 4;
-			maxZ >>= 4;
+	default boolean isRegionLoaded(int i, int minY, int j, int k, int maxY, int l) {
+		return maxY >= this.getBottomSectionLimit() && minY < this.getTopHeightLimit() ? this.method_33597(i, j, k, l) : false;
+	}
 
-			for (int i = minX; i <= maxX; i++) {
-				for (int j = minZ; j <= maxZ; j++) {
-					if (!this.isChunkLoaded(i, j)) {
-						return false;
-					}
+	@Deprecated
+	default boolean method_33597(int i, int j, int k, int l) {
+		int m = ChunkSectionPos.getSectionCoord(i);
+		int n = ChunkSectionPos.getSectionCoord(k);
+		int o = ChunkSectionPos.getSectionCoord(j);
+		int p = ChunkSectionPos.getSectionCoord(l);
+
+		for (int q = m; q <= n; q++) {
+			for (int r = o; r <= p; r++) {
+				if (!this.isChunkLoaded(q, r)) {
+					return false;
 				}
 			}
-
-			return true;
-		} else {
-			return false;
 		}
+
+		return true;
 	}
 }

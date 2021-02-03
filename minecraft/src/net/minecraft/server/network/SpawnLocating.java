@@ -14,7 +14,7 @@ import net.minecraft.world.chunk.WorldChunk;
 public class SpawnLocating {
 	@Nullable
 	protected static BlockPos findOverworldSpawn(ServerWorld world, int x, int z, boolean validSpawnNeeded) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(x, 0, z);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(x, world.getBottomSectionLimit(), z);
 		Biome biome = world.getBiome(mutable);
 		boolean bl = world.getDimension().hasCeiling();
 		BlockState blockState = biome.getGenerationSettings().getSurfaceConfig().getTopMaterial();

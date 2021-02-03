@@ -3,22 +3,22 @@ package net.minecraft.util.math.noise;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
-import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.WorldGenRandom;
 
 public class DoublePerlinNoiseSampler {
 	private final double amplitude;
 	private final OctavePerlinNoiseSampler firstSampler;
 	private final OctavePerlinNoiseSampler secondSampler;
 
-	public static DoublePerlinNoiseSampler create(ChunkRandom random, int offset, double... octaves) {
+	public static DoublePerlinNoiseSampler create(WorldGenRandom random, int offset, double... octaves) {
 		return new DoublePerlinNoiseSampler(random, offset, new DoubleArrayList(octaves));
 	}
 
-	public static DoublePerlinNoiseSampler create(ChunkRandom random, int offset, DoubleList octaves) {
+	public static DoublePerlinNoiseSampler create(WorldGenRandom random, int offset, DoubleList octaves) {
 		return new DoublePerlinNoiseSampler(random, offset, octaves);
 	}
 
-	private DoublePerlinNoiseSampler(ChunkRandom random, int offset, DoubleList octaves) {
+	private DoublePerlinNoiseSampler(WorldGenRandom random, int offset, DoubleList octaves) {
 		this.firstSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
 		this.secondSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
 		int i = Integer.MAX_VALUE;

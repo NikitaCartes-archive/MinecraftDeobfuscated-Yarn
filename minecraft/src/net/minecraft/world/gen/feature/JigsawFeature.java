@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -45,7 +46,8 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 			int i,
 			int j,
 			Biome biome,
-			StructurePoolFeatureConfig structurePoolFeatureConfig
+			StructurePoolFeatureConfig structurePoolFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			BlockPos blockPos = new BlockPos(ChunkSectionPos.getBlockCoord(i), this.jigsawFeature.structureStartY, ChunkSectionPos.getBlockCoord(j));
 			StructurePools.initDefaultPools();
@@ -59,7 +61,8 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 				this.children,
 				this.random,
 				this.jigsawFeature.field_25836,
-				this.jigsawFeature.surface
+				this.jigsawFeature.surface,
+				heightLimitView
 			);
 			this.setBoundingBoxFromChildren();
 		}

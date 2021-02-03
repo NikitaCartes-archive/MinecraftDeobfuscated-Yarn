@@ -12,12 +12,6 @@ public class SpitParticle extends ExplosionSmokeParticle {
 		this.gravityStrength = 0.5F;
 	}
 
-	@Override
-	public void tick() {
-		super.tick();
-		this.velocityY = this.velocityY - (0.004 + 0.04 * (double)this.gravityStrength);
-	}
-
 	@Environment(EnvType.CLIENT)
 	public static class Factory implements ParticleFactory<DefaultParticleType> {
 		private final SpriteProvider spriteProvider;

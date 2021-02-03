@@ -38,6 +38,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class MooshroomEntity extends CowEntity implements Shearable {
@@ -104,6 +105,7 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 			return ActionResult.success(this.world.isClient);
 		} else if (itemStack.isOf(Items.SHEARS) && this.isShearable()) {
 			this.sheared(SoundCategory.PLAYERS);
+			this.emitGameEvent(GameEvent.SHEAR, player);
 			if (!this.world.isClient) {
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 			}

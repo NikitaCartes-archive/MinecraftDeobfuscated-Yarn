@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.CuboidBlockIterator;
+import net.minecraft.world.chunk.Chunk;
 
 public class ChunkSectionPos extends Vec3i {
 	private ChunkSectionPos(int x, int y, int z) {
@@ -40,6 +41,10 @@ public class ChunkSectionPos extends Vec3i {
 	 */
 	public static ChunkSectionPos from(long packed) {
 		return new ChunkSectionPos(unpackX(packed), unpackY(packed), unpackZ(packed));
+	}
+
+	public static ChunkSectionPos method_33705(Chunk chunk) {
+		return from(chunk.getPos(), chunk.getMinimumSection());
 	}
 
 	/**
@@ -246,6 +251,10 @@ public class ChunkSectionPos extends Vec3i {
 
 	public ChunkPos toChunkPos() {
 		return new ChunkPos(this.getSectionX(), this.getSectionZ());
+	}
+
+	public static long method_33706(BlockPos blockPos) {
+		return asLong(getSectionCoord(blockPos.getX()), getSectionCoord(blockPos.getY()), getSectionCoord(blockPos.getZ()));
 	}
 
 	public static long asLong(int x, int y, int z) {

@@ -279,7 +279,7 @@ public final class SpawnHelper {
 		int i = chunkPos.getStartX() + world.random.nextInt(16);
 		int j = chunkPos.getStartZ() + world.random.nextInt(16);
 		int k = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i, j) + 1;
-		int l = world.random.nextInt(k - world.getBottomSectionLimit() + 1) + world.getBottomSectionLimit();
+		int l = MathHelper.nextBetween(world.random, world.getBottomSectionLimit(), k);
 		return new BlockPos(i, l, j);
 	}
 
@@ -323,12 +323,12 @@ public final class SpawnHelper {
 		}
 	}
 
-	public static void populateEntities(ServerWorldAccess world, Biome biome, int chunkX, int chunkZ, Random random) {
+	public static void populateEntities(ServerWorldAccess world, Biome biome, ChunkPos chunkPos, Random random) {
 		SpawnSettings spawnSettings = biome.getSpawnSettings();
 		List<SpawnSettings.SpawnEntry> list = spawnSettings.getSpawnEntries(SpawnGroup.CREATURE);
 		if (!list.isEmpty()) {
-			int i = ChunkSectionPos.getBlockCoord(chunkX);
-			int j = ChunkSectionPos.getBlockCoord(chunkZ);
+			int i = chunkPos.getStartX();
+			int j = chunkPos.getStartZ();
 
 			while (random.nextFloat() < spawnSettings.getCreatureSpawnProbability()) {
 				Optional<SpawnSettings.SpawnEntry> optional = WeightedPicker.getRandom(random, list);
@@ -358,8 +358,8 @@ public final class SpawnHelper {
 								Entity entity;
 								try {
 									entity = spawnEntry.type.create(world.toServerWorld());
-								} catch (Exception var28) {
-									LOGGER.warn("Failed to create mob", (Throwable)var28);
+								} catch (Exception var27) {
+									LOGGER.warn("Failed to create mob", (Throwable)var27);
 									continue;
 								}
 

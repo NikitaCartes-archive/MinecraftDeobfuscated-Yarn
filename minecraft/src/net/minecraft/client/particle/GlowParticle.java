@@ -14,6 +14,8 @@ public class GlowParticle extends SpriteBillboardParticle {
 
 	private GlowParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
 		super(world, x, y, z, 0.5 - RANDOM.nextDouble(), e, 0.5 - RANDOM.nextDouble());
+		this.field_28786 = 0.96F;
+		this.field_28787 = true;
 		this.spriteProvider = spriteProvider;
 		this.velocityY *= 0.2F;
 		if (d == 0.0 && f == 0.0) {
@@ -55,27 +57,8 @@ public class GlowParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
-			this.setSpriteForAge(this.spriteProvider);
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			if (this.y == this.prevPosY) {
-				this.velocityX *= 1.1;
-				this.velocityZ *= 1.1;
-			}
-
-			this.velocityX *= 0.96F;
-			this.velocityY *= 0.96F;
-			this.velocityZ *= 0.96F;
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
-			}
-		}
+		super.tick();
+		this.setSpriteForAge(this.spriteProvider);
 	}
 
 	@Environment(EnvType.CLIENT)

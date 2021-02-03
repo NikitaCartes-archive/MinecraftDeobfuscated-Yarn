@@ -34,6 +34,7 @@ import net.minecraft.block.enums.SculkSensorPhase;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.block.enums.StairShape;
 import net.minecraft.block.enums.Thickness;
+import net.minecraft.block.enums.Tilt;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
@@ -1116,6 +1117,24 @@ public class BlockStateModelGenerator {
 		this.registerParentedItemModel(trapdoorBlock, identifier2);
 	}
 
+	private void method_33711() {
+		Identifier identifier = ModelIds.getBlockModelId(Blocks.BIG_DRIPLEAF);
+		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.BIG_DRIPLEAF, "_partial_tilt");
+		Identifier identifier3 = ModelIds.getBlockSubModelId(Blocks.BIG_DRIPLEAF, "_full_tilt");
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.BIG_DRIPLEAF)
+					.coordinate(createNorthDefaultHorizontalRotationStates())
+					.coordinate(
+						BlockStateVariantMap.create(Properties.TILT)
+							.register(Tilt.NONE, BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
+							.register(Tilt.UNSTABLE, BlockStateVariant.create().put(VariantSettings.MODEL, identifier))
+							.register(Tilt.PARTIAL, BlockStateVariant.create().put(VariantSettings.MODEL, identifier2))
+							.register(Tilt.FULL, BlockStateVariant.create().put(VariantSettings.MODEL, identifier3))
+					)
+			);
+	}
+
 	private BlockStateModelGenerator.LogTexturePool registerLog(Block logBlock) {
 		return new BlockStateModelGenerator.LogTexturePool(Texture.sideAndEndForTop(logBlock));
 	}
@@ -1225,6 +1244,19 @@ public class BlockStateModelGenerator {
 		Identifier identifier = this.createSubModel(Blocks.TALL_SEAGRASS, "_top", Models.TEMPLATE_SEAGRASS, Texture::texture);
 		Identifier identifier2 = this.createSubModel(Blocks.TALL_SEAGRASS, "_bottom", Models.TEMPLATE_SEAGRASS, Texture::texture);
 		this.registerDoubleBlock(Blocks.TALL_SEAGRASS, identifier, identifier2);
+	}
+
+	private void method_33712() {
+		Identifier identifier = ModelIds.getBlockSubModelId(Blocks.SMALL_DRIPLEAF, "_top");
+		Identifier identifier2 = ModelIds.getBlockSubModelId(Blocks.SMALL_DRIPLEAF, "_bottom");
+		this.registerParentedItemModel(Blocks.SMALL_DRIPLEAF, identifier);
+		List<BlockStateVariant> list = Arrays.asList(createModelVariantWithRandomHorizontalRotations(identifier));
+		List<BlockStateVariant> list2 = Arrays.asList(createModelVariantWithRandomHorizontalRotations(identifier2));
+		this.blockStateCollector
+			.accept(
+				VariantsBlockStateSupplier.create(Blocks.SMALL_DRIPLEAF)
+					.coordinate(BlockStateVariantMap.create(Properties.DOUBLE_BLOCK_HALF).register(DoubleBlockHalf.LOWER, list2).register(DoubleBlockHalf.UPPER, list))
+			);
 	}
 
 	private void registerDoubleBlock(Block block, Identifier upperHalfModelId, Identifier lowerHalfModelId) {
@@ -1652,6 +1684,11 @@ public class BlockStateModelGenerator {
 						.coordinate(createSouthDefaultHorizontalRotationStates())
 				);
 		}
+	}
+
+	private void method_33713(Block block) {
+		Identifier identifier = Models.TEMPLATE_AZALEA.upload(block, Texture.sideAndTop(block), this.modelCollector);
+		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
 	}
 
 	private void registerBookshelf() {
@@ -2742,6 +2779,17 @@ public class BlockStateModelGenerator {
 			.accept(VariantsBlockStateSupplier.create(Blocks.SCAFFOLDING).coordinate(createBooleanModelMap(Properties.BOTTOM, identifier2, identifier)));
 	}
 
+	private void method_33710() {
+		Identifier identifier = this.createSubModel(Blocks.CAVE_VINES_HEAD, "", Models.CROSS, Texture::cross);
+		Identifier identifier2 = this.createSubModel(Blocks.CAVE_VINES_HEAD, "_lit", Models.CROSS, Texture::cross);
+		this.blockStateCollector
+			.accept(VariantsBlockStateSupplier.create(Blocks.CAVE_VINES_HEAD).coordinate(createBooleanModelMap(Properties.BERRIES, identifier2, identifier)));
+		Identifier identifier3 = this.createSubModel(Blocks.CAVE_VINES_BODY, "", Models.CROSS, Texture::cross);
+		Identifier identifier4 = this.createSubModel(Blocks.CAVE_VINES_BODY, "_lit", Models.CROSS, Texture::cross);
+		this.blockStateCollector
+			.accept(VariantsBlockStateSupplier.create(Blocks.CAVE_VINES_BODY).coordinate(createBooleanModelMap(Properties.BERRIES, identifier4, identifier3)));
+	}
+
 	private void registerRedstoneLamp() {
 		Identifier identifier = TexturedModel.CUBE_ALL.upload(Blocks.REDSTONE_LAMP, this.modelCollector);
 		Identifier identifier2 = this.createSubModel(Blocks.REDSTONE_LAMP, "_on", Models.CUBE_ALL, Texture::all);
@@ -3317,13 +3365,13 @@ public class BlockStateModelGenerator {
 			.family(BlockFamilies.CUT_COPPER)
 			.method_32230(Blocks.WAXED_CUT_COPPER)
 			.family(BlockFamilies.WAXED_CUT_COPPER);
-		this.registerCubeAllModelTexturePool(Blocks.LIGHTLY_WEATHERED_CUT_COPPER)
+		this.registerCubeAllModelTexturePool(Blocks.EXPOSED_CUT_COPPER)
 			.family(BlockFamilies.LIGHTLY_WEATHERED_CUT_COPPER)
-			.method_32230(Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER)
+			.method_32230(Blocks.WAXED_EXPOSED_CUT_COPPER)
 			.family(BlockFamilies.WAXED_LIGHTLY_WEATHERED_CUT_COPPER);
-		this.registerCubeAllModelTexturePool(Blocks.SEMI_WEATHERED_CUT_COPPER)
+		this.registerCubeAllModelTexturePool(Blocks.WEATHERED_CUT_COPPER)
 			.family(BlockFamilies.SEMI_WEATHERED_CUT_COPPER)
-			.method_32230(Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER)
+			.method_32230(Blocks.WAXED_WEATHERED_CUT_COPPER)
 			.family(BlockFamilies.WAXED_SEMI_WEATHERED_CUT_COPPER);
 		this.registerSimpleState(Blocks.AIR);
 		this.registerStateWithModelReference(Blocks.CAVE_AIR, Blocks.AIR);
@@ -3361,6 +3409,11 @@ public class BlockStateModelGenerator {
 		this.registerSimpleState(Blocks.POTTED_BAMBOO);
 		this.registerSimpleState(Blocks.POTTED_CACTUS);
 		this.registerSimpleState(Blocks.POWDER_SNOW);
+		this.registerSimpleState(Blocks.SPORE_BLOSSOM);
+		this.method_33713(Blocks.AZALEA);
+		this.method_33713(Blocks.FLOWERING_AZALEA);
+		this.method_33710();
+		this.registerCarpet(Blocks.MOSS_BLOCK, Blocks.MOSS_CARPET);
 		this.registerBuiltinWithParticle(Blocks.BARRIER, Items.BARRIER);
 		this.registerItemModel(Items.BARRIER);
 		this.registerBuiltinWithParticle(Blocks.STRUCTURE_VOID, Items.STRUCTURE_VOID);
@@ -3433,12 +3486,12 @@ public class BlockStateModelGenerator {
 		this.method_33504();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.COPPER_BLOCK);
-		this.registerSimpleCubeAll(Blocks.LIGHTLY_WEATHERED_COPPER_BLOCK);
-		this.registerSimpleCubeAll(Blocks.SEMI_WEATHERED_COPPER_BLOCK);
+		this.registerSimpleCubeAll(Blocks.EXPOSED_COPPER_BLOCK);
 		this.registerSimpleCubeAll(Blocks.WEATHERED_COPPER_BLOCK);
+		this.registerSimpleCubeAll(Blocks.OXIDIZED_COPPER_BLOCK);
 		this.registerInfested(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER);
-		this.registerInfested(Blocks.LIGHTLY_WEATHERED_COPPER_BLOCK, Blocks.WAXED_LIGHTLY_WEATHERED_COPPER);
-		this.registerInfested(Blocks.SEMI_WEATHERED_COPPER_BLOCK, Blocks.WAXED_SEMI_WEATHERED_COPPER);
+		this.registerInfested(Blocks.EXPOSED_COPPER_BLOCK, Blocks.WAXED_EXPOSED_COPPER);
+		this.registerInfested(Blocks.WEATHERED_COPPER_BLOCK, Blocks.WAXED_WEATHERED_COPPER);
 		this.registerPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
 		this.registerPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
 		this.method_32227();
@@ -3493,6 +3546,8 @@ public class BlockStateModelGenerator {
 		this.registerNorthDefaultHorizontalRotation(Blocks.LADDER);
 		this.registerItemModel(Blocks.LADDER);
 		this.registerNorthDefaultHorizontalRotation(Blocks.LECTERN);
+		this.method_33711();
+		this.registerNorthDefaultHorizontalRotation(Blocks.BIG_DRIPLEAF_STEM);
 		this.registerTorch(Blocks.TORCH, Blocks.WALL_TORCH);
 		this.registerTorch(Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH);
 		this.registerCubeWithCustomTexture(Blocks.CRAFTING_TABLE, Blocks.OAK_PLANKS, Texture::frontSideWithCustomBottom);
@@ -3629,6 +3684,9 @@ public class BlockStateModelGenerator {
 		this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("chest"), Blocks.OAK_PLANKS).includeWithoutItem(Blocks.CHEST, Blocks.TRAPPED_CHEST);
 		this.registerBuiltin(ModelIds.getMinecraftNamespacedBlock("ender_chest"), Blocks.OBSIDIAN).includeWithoutItem(Blocks.ENDER_CHEST);
 		this.registerBuiltin(Blocks.END_PORTAL, Blocks.OBSIDIAN).includeWithItem(Blocks.END_PORTAL, Blocks.END_GATEWAY);
+		this.registerSimpleCubeAll(Blocks.AZALEA_LEAVES);
+		this.registerSimpleCubeAll(Blocks.AZALEA_LEAVES_FLOWERS);
+		this.registerSimpleCubeAll(Blocks.ROOTED_DIRT);
 		this.registerSimpleCubeAll(Blocks.WHITE_CONCRETE);
 		this.registerSimpleCubeAll(Blocks.ORANGE_CONCRETE);
 		this.registerSimpleCubeAll(Blocks.MAGENTA_CONCRETE);
@@ -3761,6 +3819,9 @@ public class BlockStateModelGenerator {
 		this.registerPlantPart(Blocks.KELP, Blocks.KELP_PLANT, BlockStateModelGenerator.TintType.TINTED);
 		this.registerItemModel(Items.KELP);
 		this.excludeFromSimpleItemModelGeneration(Blocks.KELP_PLANT);
+		this.registerTintableCrossBlockState(Blocks.HANGING_ROOTS, BlockStateModelGenerator.TintType.NOT_TINTED);
+		this.registerItemModel(Blocks.HANGING_ROOTS);
+		this.excludeFromSimpleItemModelGeneration(Blocks.CAVE_VINES_BODY);
 		this.registerPlantPart(Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerPlantPart(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT, BlockStateModelGenerator.TintType.NOT_TINTED);
 		this.registerItemModel(Blocks.WEEPING_VINES, "_plant");
@@ -3777,6 +3838,7 @@ public class BlockStateModelGenerator {
 		this.registerDoubleBlock(Blocks.LARGE_FERN, BlockStateModelGenerator.TintType.TINTED);
 		this.registerSunflower();
 		this.registerTallSeagrass();
+		this.method_33712();
 		this.registerCoral(
 			Blocks.TUBE_CORAL,
 			Blocks.DEAD_TUBE_CORAL,

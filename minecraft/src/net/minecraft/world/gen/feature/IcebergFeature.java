@@ -10,19 +10,21 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 	public IcebergFeature(Codec<SingleStateFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
-	) {
-		blockPos = new BlockPos(blockPos.getX(), chunkGenerator.getSeaLevel(), blockPos.getZ());
+	@Override
+	public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		blockPos = new BlockPos(blockPos.getX(), featureContext.getGenerator().getSeaLevel(), blockPos.getZ());
+		Random random = featureContext.getRandom();
 		boolean bl = random.nextDouble() > 0.7;
-		BlockState blockState = singleStateFeatureConfig.state;
+		BlockState blockState = featureContext.getConfig().state;
 		double d = random.nextDouble() * 2.0 * Math.PI;
 		int i = 11 - random.nextInt(5);
 		int j = 3 + random.nextInt(3);

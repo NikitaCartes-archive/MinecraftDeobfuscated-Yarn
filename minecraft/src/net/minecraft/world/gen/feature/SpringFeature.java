@@ -1,20 +1,21 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class SpringFeature extends Feature<SpringFeatureConfig> {
 	public SpringFeature(Codec<SpringFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SpringFeatureConfig springFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<SpringFeatureConfig> featureContext) {
+		SpringFeatureConfig springFeatureConfig = featureContext.getConfig();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
 		if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.up()).getBlock())) {
 			return false;
 		} else if (springFeatureConfig.requiresBlockBelow

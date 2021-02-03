@@ -1350,7 +1350,7 @@ public abstract class MobEntity extends LivingEntity {
 		if (this.world.isDay() && !this.world.isClient) {
 			float f = this.getBrightnessAtEyes();
 			BlockPos blockPos = new BlockPos(this.getX(), this.getEyeY(), this.getZ());
-			boolean bl = this.isWet() || this.inPowderSnow;
+			boolean bl = this.isWet() || this.inPowderSnow || this.wasInPowderSnow;
 			if (f > 0.5F && this.random.nextFloat() * 30.0F < (f - 0.4F) * 2.0F && !bl && this.world.isSkyVisible(blockPos)) {
 				return true;
 			}

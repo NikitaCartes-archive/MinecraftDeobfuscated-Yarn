@@ -32,7 +32,7 @@ public class DripstoneClusterFeatureConfig implements FeatureConfig {
 						.fieldOf("chance_of_dripstone_column_at_max_distance_from_center")
 						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.chanceOfDripstoneColumnAtMaxDistanceFromCenter),
 					Codec.intRange(1, 64)
-						.fieldOf("max_distance_from_center_affecting_chance_of_dripstone_column")
+						.fieldOf("max_distance_from_edge_affecting_chance_of_dripstone_column")
 						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.maxDistanceFromCenterAffectingChanceOfDripstoneColumn),
 					Codec.intRange(1, 64)
 						.fieldOf("max_distance_from_center_affecting_height_bias")

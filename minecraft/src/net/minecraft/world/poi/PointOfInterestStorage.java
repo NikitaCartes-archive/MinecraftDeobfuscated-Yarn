@@ -41,11 +41,11 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public void add(BlockPos pos, PointOfInterestType type) {
-		this.getOrCreate(ChunkSectionPos.from(pos).asLong()).add(pos, type);
+		this.getOrCreate(ChunkSectionPos.method_33706(pos)).add(pos, type);
 	}
 
 	public void remove(BlockPos pos) {
-		this.getOrCreate(ChunkSectionPos.from(pos).asLong()).remove(pos);
+		this.get(ChunkSectionPos.method_33706(pos)).ifPresent(pointOfInterestSet -> pointOfInterestSet.remove(pos));
 	}
 
 	public long count(Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, PointOfInterestStorage.OccupationStatus occupationStatus) {
@@ -53,8 +53,7 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public boolean hasTypeAt(PointOfInterestType type, BlockPos pos) {
-		Optional<PointOfInterestType> optional = this.getOrCreate(ChunkSectionPos.from(pos).asLong()).getType(pos);
-		return optional.isPresent() && ((PointOfInterestType)optional.get()).equals(type);
+		return this.test(pos, type::equals);
 	}
 
 	public Stream<PointOfInterest> getInSquare(
@@ -144,16 +143,17 @@ public class PointOfInterestStorage extends SerializingRegionBasedStorage<PointO
 	}
 
 	public boolean releaseTicket(BlockPos pos) {
-		return this.getOrCreate(ChunkSectionPos.from(pos).asLong()).releaseTicket(pos);
+		return (Boolean)this.get(ChunkSectionPos.method_33706(pos))
+			.map(pointOfInterestSet -> pointOfInterestSet.releaseTicket(pos))
+			.orElseThrow(() -> Util.throwOrPause(new IllegalStateException("POI never registered at " + pos)));
 	}
 
 	public boolean test(BlockPos pos, Predicate<PointOfInterestType> predicate) {
-		return (Boolean)this.get(ChunkSectionPos.from(pos).asLong()).map(pointOfInterestSet -> pointOfInterestSet.test(pos, predicate)).orElse(false);
+		return (Boolean)this.get(ChunkSectionPos.method_33706(pos)).map(pointOfInterestSet -> pointOfInterestSet.test(pos, predicate)).orElse(false);
 	}
 
 	public Optional<PointOfInterestType> getType(BlockPos pos) {
-		PointOfInterestSet pointOfInterestSet = this.getOrCreate(ChunkSectionPos.from(pos).asLong());
-		return pointOfInterestSet.getType(pos);
+		return this.get(ChunkSectionPos.method_33706(pos)).flatMap(pointOfInterestSet -> pointOfInterestSet.getType(pos));
 	}
 
 	public int getDistanceFromNearestOccupied(ChunkSectionPos pos) {

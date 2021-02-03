@@ -12,6 +12,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.EmptyBlockView;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
@@ -38,14 +39,15 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 			int i,
 			int j,
 			Biome biome,
-			DefaultFeatureConfig defaultFeatureConfig
+			DefaultFeatureConfig defaultFeatureConfig,
+			HeightLimitView heightLimitView
 		) {
 			ChunkPos chunkPos = new ChunkPos(i, j);
 			int k = chunkPos.getStartX() + this.random.nextInt(16);
 			int l = chunkPos.getStartZ() + this.random.nextInt(16);
 			int m = chunkGenerator.getSeaLevel();
 			int n = m + this.random.nextInt(chunkGenerator.getWorldHeight() - 2 - m);
-			VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(k, l);
+			VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(k, l, heightLimitView);
 
 			for (BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l); n > m; n--) {
 				BlockState blockState = verticalBlockSample.getState(mutable);

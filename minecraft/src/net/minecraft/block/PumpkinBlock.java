@@ -12,6 +12,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class PumpkinBlock extends GourdBlock {
 	protected PumpkinBlock(AbstractBlock.Settings settings) {
@@ -39,6 +40,7 @@ public class PumpkinBlock extends GourdBlock {
 				);
 				world.spawnEntity(itemEntity);
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+				world.emitGameEvent(player, GameEvent.SHEAR, pos);
 			}
 
 			return ActionResult.success(world.isClient);

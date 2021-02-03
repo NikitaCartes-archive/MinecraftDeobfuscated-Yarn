@@ -31,6 +31,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class LecternBlock extends BlockWithEntity {
 	public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
@@ -146,10 +147,10 @@ public class LecternBlock extends BlockWithEntity {
 		return new LecternBlockEntity(pos, state);
 	}
 
-	public static boolean putBookIfAbsent(World world, BlockPos pos, BlockState state, ItemStack book) {
-		if (!(Boolean)state.get(HAS_BOOK)) {
+	public static boolean putBookIfAbsent(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
+		if (!(Boolean)blockState.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				putBook(world, pos, state, book);
+				putBook(playerEntity, world, blockPos, blockState, itemStack);
 			}
 
 			return true;
@@ -158,13 +159,14 @@ public class LecternBlock extends BlockWithEntity {
 		}
 	}
 
-	private static void putBook(World world, BlockPos pos, BlockState state, ItemStack book) {
-		BlockEntity blockEntity = world.getBlockEntity(pos);
+	private static void putBook(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
+		BlockEntity blockEntity = world.getBlockEntity(blockPos);
 		if (blockEntity instanceof LecternBlockEntity) {
 			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
-			lecternBlockEntity.setBook(book.split(1));
-			setHasBook(world, pos, state, true);
-			world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			lecternBlockEntity.setBook(itemStack.split(1));
+			setHasBook(world, blockPos, blockState, true);
+			world.playSound(null, blockPos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
 		}
 	}
 

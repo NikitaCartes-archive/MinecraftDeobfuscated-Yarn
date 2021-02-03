@@ -13,6 +13,7 @@ import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class MinecartItem extends Item {
 	private static final DispenserBehavior DISPENSER_BEHAVIOR = new ItemDispenserBehavior() {
@@ -102,6 +103,7 @@ public class MinecartItem extends Item {
 				}
 
 				world.spawnEntity(abstractMinecartEntity);
+				world.emitGameEvent(context.getPlayer(), GameEvent.ENTITY_PLACE, blockPos);
 			}
 
 			itemStack.decrement(1);

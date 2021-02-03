@@ -90,12 +90,12 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && player.isCreative()) {
-			TallPlantBlock.onBreakInCreative(world, pos, state, player);
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+		if (!world.isClient && playerEntity.isCreative()) {
+			TallPlantBlock.onBreakInCreative(world, pos, state, playerEntity);
 		}
 
-		super.onBreak(world, pos, state, player);
+		super.onBreak(world, pos, state, playerEntity);
 	}
 
 	@Override

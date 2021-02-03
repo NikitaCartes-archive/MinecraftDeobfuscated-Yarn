@@ -7,21 +7,20 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> {
 	public SmallDripstoneFeature(Codec<SmallDripstoneFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		SmallDripstoneFeatureConfig smallDripstoneFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<SmallDripstoneFeatureConfig> featureContext) {
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		BlockPos blockPos = featureContext.getPos();
+		Random random = featureContext.getRandom();
+		SmallDripstoneFeatureConfig smallDripstoneFeatureConfig = featureContext.getConfig();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {

@@ -59,6 +59,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class SheepEntity extends AnimalEntity implements Shearable {
 	private static final TrackedData<Byte> COLOR = DataTracker.registerData(SheepEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -224,6 +225,7 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 		if (itemStack.isOf(Items.SHEARS)) {
 			if (!this.world.isClient && this.isShearable()) {
 				this.sheared(SoundCategory.PLAYERS);
+				this.emitGameEvent(GameEvent.SHEAR, player);
 				itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
 				return ActionResult.SUCCESS;
 			} else {

@@ -154,10 +154,16 @@ public abstract class AbstractFireBlock extends Block {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+	protected void method_33614(World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState) {
+	}
+
+	@Override
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
 		if (!world.isClient()) {
 			world.syncWorldEvent(null, 1009, pos, 0);
 		}
+
+		super.onBreak(world, pos, state, playerEntity);
 	}
 
 	public static boolean canPlaceAt(World world, BlockPos pos, Direction direction) {

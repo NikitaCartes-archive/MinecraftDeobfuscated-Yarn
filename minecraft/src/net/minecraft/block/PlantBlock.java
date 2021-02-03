@@ -13,7 +13,8 @@ public class PlantBlock extends Block {
 	}
 
 	protected boolean canPlantOnTop(BlockState floor, BlockView world, BlockPos pos) {
-		return floor.isOf(Blocks.GRASS_BLOCK)
+		return floor.isOf(Blocks.MOSS_BLOCK)
+			|| floor.isOf(Blocks.GRASS_BLOCK)
 			|| floor.isOf(Blocks.DIRT)
 			|| floor.isOf(Blocks.COARSE_DIRT)
 			|| floor.isOf(Blocks.PODZOL)

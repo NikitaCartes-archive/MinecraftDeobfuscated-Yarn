@@ -98,6 +98,9 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> INSIDE_STEP_SOUND_BLOCKS = register("inside_step_sound_blocks");
 	public static final Tag.Identified<Block> OCCLUDES_VIBRATION_SIGNALS = register("occludes_vibration_signals");
 	public static final Tag.Identified<Block> DRIPSTONE_REPLACEABLE_BLOCKS = register("dripstone_replaceable_blocks");
+	public static final Tag.Identified<Block> CAVE_VINES = register("cave_vines");
+	public static final Tag.Identified<Block> LUSH_PLANTS_REPLACEABLE = register("lush_plants_replaceable");
+	public static final Tag.Identified<Block> AZALEA_LOG_REPLACEABLE = register("azalea_log_replaceable");
 
 	private static Tag.Identified<Block> register(String id) {
 		return REQUIRED_TAGS.add(id);

@@ -6,6 +6,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -45,6 +46,12 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 		}
 
 		entity.setInPowderSnow(true);
+		if (world.isClient) {
+			entity.extinguish();
+		} else {
+			entity.setOnFire(false);
+		}
+
 		if (!entity.isSpectator() && (entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ()) && world.random.nextBoolean()) {
 			spawnParticles(world, new Vec3d(entity.getX(), (double)pos.getY(), entity.getZ()));
 		}
@@ -55,7 +62,9 @@ public class PowderSnowBlock extends Block implements FluidDrainable {
 		if (context instanceof EntityShapeContext) {
 			EntityShapeContext entityShapeContext = (EntityShapeContext)context;
 			Optional<Entity> optional = entityShapeContext.getEntity();
-			if (optional.isPresent() && canWalkOnPowderSnow((Entity)optional.get()) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {
+			boolean bl = optional.isPresent() && optional.get() instanceof FallingBlockEntity;
+			if (bl
+				|| optional.isPresent() && canWalkOnPowderSnow((Entity)optional.get()) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {
 				return super.getCollisionShape(state, world, pos, context);
 			}
 		}

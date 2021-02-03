@@ -9,27 +9,27 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlobsFeatureConfig> {
 	public NetherrackReplaceBlobsFeature(Codec<NetherrackReplaceBlobsFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess,
-		ChunkGenerator chunkGenerator,
-		Random random,
-		BlockPos blockPos,
-		NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<NetherrackReplaceBlobsFeatureConfig> featureContext) {
+		NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig = featureContext.getConfig();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
 		Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
-		BlockPos blockPos2 = method_27107(
+		BlockPos blockPos = method_27107(
 			structureWorldAccess,
-			blockPos.mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomSectionLimit() + 1, structureWorldAccess.getTopHeightLimit() - 1),
+			featureContext.getPos()
+				.mutableCopy()
+				.clamp(Direction.Axis.Y, structureWorldAccess.getBottomSectionLimit() + 1, structureWorldAccess.getTopHeightLimit() - 1),
 			block
 		);
-		if (blockPos2 == null) {
+		if (blockPos == null) {
 			return false;
 		} else {
 			int i = netherrackReplaceBlobsFeatureConfig.getRadius().getValue(random);
@@ -38,14 +38,14 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 			int l = Math.max(i, Math.max(j, k));
 			boolean bl = false;
 
-			for (BlockPos blockPos3 : BlockPos.iterateOutwards(blockPos2, i, j, k)) {
-				if (blockPos3.getManhattanDistance(blockPos2) > l) {
+			for (BlockPos blockPos2 : BlockPos.iterateOutwards(blockPos, i, j, k)) {
+				if (blockPos2.getManhattanDistance(blockPos) > l) {
 					break;
 				}
 
-				BlockState blockState = structureWorldAccess.getBlockState(blockPos3);
+				BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
 				if (blockState.isOf(block)) {
-					this.setBlockState(structureWorldAccess, blockPos3, netherrackReplaceBlobsFeatureConfig.state);
+					this.setBlockState(structureWorldAccess, blockPos2, netherrackReplaceBlobsFeatureConfig.state);
 					bl = true;
 				}
 			}

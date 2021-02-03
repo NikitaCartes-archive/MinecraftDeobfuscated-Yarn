@@ -10,6 +10,8 @@ import net.minecraft.particle.ParticleTypes;
 public class LavaEmberParticle extends SpriteBillboardParticle {
 	private LavaEmberParticle(ClientWorld world, double x, double y, double z) {
 		super(world, x, y, z, 0.0, 0.0, 0.0);
+		this.gravityStrength = 0.75F;
+		this.field_28786 = 0.999F;
 		this.velocityX *= 0.8F;
 		this.velocityY *= 0.8F;
 		this.velocityZ *= 0.8F;
@@ -39,25 +41,11 @@ public class LavaEmberParticle extends SpriteBillboardParticle {
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		float f = (float)this.age / (float)this.maxAge;
-		if (this.random.nextFloat() > f) {
-			this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ);
-		}
-
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
-			this.velocityY -= 0.03;
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
-			this.velocityX *= 0.999F;
-			this.velocityY *= 0.999F;
-			this.velocityZ *= 0.999F;
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
+		super.tick();
+		if (!this.dead) {
+			float f = (float)this.age / (float)this.maxAge;
+			if (this.random.nextFloat() > f) {
+				this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ);
 			}
 		}
 	}

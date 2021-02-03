@@ -103,8 +103,8 @@ public class StorageIoWorker implements AutoCloseable {
 	}
 
 	private void writeResult() {
-		Iterator<Entry<ChunkPos, StorageIoWorker.Result>> iterator = this.results.entrySet().iterator();
-		if (iterator.hasNext()) {
+		if (!this.results.isEmpty()) {
+			Iterator<Entry<ChunkPos, StorageIoWorker.Result>> iterator = this.results.entrySet().iterator();
 			Entry<ChunkPos, StorageIoWorker.Result> entry = (Entry<ChunkPos, StorageIoWorker.Result>)iterator.next();
 			iterator.remove();
 			this.write((ChunkPos)entry.getKey(), (StorageIoWorker.Result)entry.getValue());

@@ -7,16 +7,19 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 	public RandomPatchFeature(Codec<RandomPatchFeatureConfig> codec) {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, RandomPatchFeatureConfig randomPatchFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<RandomPatchFeatureConfig> featureContext) {
+		RandomPatchFeatureConfig randomPatchFeatureConfig = featureContext.getConfig();
+		Random random = featureContext.getRandom();
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
 		BlockState blockState = randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
 		BlockPos blockPos2;
 		if (randomPatchFeatureConfig.project) {

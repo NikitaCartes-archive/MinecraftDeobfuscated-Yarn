@@ -2641,6 +2641,12 @@ public class WorldRenderer implements SynchronousResourceReloadListener, AutoClo
 						pos, SoundEvents.BLOCK_POINTED_DRIPSTONE_DRIP_WATER_INTO_CAULDRON, SoundCategory.BLOCKS, 2.0F, this.world.random.nextFloat() * 0.1F + 0.9F, false
 					);
 				break;
+			case 1048:
+				this.world
+					.playSound(
+						pos, SoundEvents.ENTITY_SKELETON_CONVERTED_TO_STRAY, SoundCategory.NEUTRAL, 2.0F, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F, false
+					);
+				break;
 			case 1500:
 				ComposterBlock.playEffects(this.world, pos, data > 0);
 				break;

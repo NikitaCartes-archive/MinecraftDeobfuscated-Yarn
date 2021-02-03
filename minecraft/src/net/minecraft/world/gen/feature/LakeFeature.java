@@ -10,7 +10,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	private static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
@@ -19,9 +19,13 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 		super(codec);
 	}
 
-	public boolean generate(
-		StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig
-	) {
+	@Override
+	public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
+		BlockPos blockPos = featureContext.getPos();
+		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+		Random random = featureContext.getRandom();
+		SingleStateFeatureConfig singleStateFeatureConfig = featureContext.getConfig();
+
 		while (blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 5 && structureWorldAccess.isAir(blockPos)) {
 			blockPos = blockPos.down();
 		}

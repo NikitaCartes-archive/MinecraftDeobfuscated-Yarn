@@ -168,20 +168,20 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-		if (!world.isClient && player.isCreative()) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+		if (!world.isClient && playerEntity.isCreative()) {
 			BedPart bedPart = state.get(PART);
 			if (bedPart == BedPart.FOOT) {
 				BlockPos blockPos = pos.offset(getDirectionTowardsOtherPart(bedPart, state.get(FACING)));
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(this) && blockState.get(PART) == BedPart.HEAD) {
 					world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-					world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+					world.syncWorldEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
 				}
 			}
 		}
 
-		super.onBreak(world, pos, state, player);
+		super.onBreak(world, pos, state, playerEntity);
 	}
 
 	@Nullable

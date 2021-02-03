@@ -108,7 +108,7 @@ public class DebugRenderer {
 		if (entity == null) {
 			return Optional.empty();
 		} else {
-			Vec3d vec3d = entity.getCameraPosVec(1.0F);
+			Vec3d vec3d = entity.method_33571();
 			Vec3d vec3d2 = entity.getRotationVec(1.0F).multiply((double)maxDistance);
 			Vec3d vec3d3 = vec3d.add(vec3d2);
 			Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0);

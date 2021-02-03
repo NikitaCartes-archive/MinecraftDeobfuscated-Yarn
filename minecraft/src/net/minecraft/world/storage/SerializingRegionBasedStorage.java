@@ -71,15 +71,14 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	}
 
 	protected Optional<R> get(long pos) {
-		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(pos);
-		if (this.isPosInvalid(chunkSectionPos)) {
+		if (this.isPosInvalid(pos)) {
 			return Optional.empty();
 		} else {
 			Optional<R> optional = this.getIfLoaded(pos);
 			if (optional != null) {
 				return optional;
 			} else {
-				this.loadDataAt(chunkSectionPos.toChunkPos());
+				this.loadDataAt(ChunkSectionPos.from(pos).toChunkPos());
 				optional = this.getIfLoaded(pos);
 				if (optional == null) {
 					throw (IllegalStateException)Util.throwOrPause(new IllegalStateException());
@@ -90,19 +89,23 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		}
 	}
 
-	protected boolean isPosInvalid(ChunkSectionPos pos) {
-		int i = ChunkSectionPos.getBlockCoord(pos.getSectionY());
+	protected boolean isPosInvalid(long l) {
+		int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l));
 		return this.world.isOutOfHeightLimit(i);
 	}
 
 	protected R getOrCreate(long pos) {
-		Optional<R> optional = this.get(pos);
-		if (optional.isPresent()) {
-			return (R)optional.get();
+		if (this.isPosInvalid(pos)) {
+			throw (IllegalArgumentException)Util.throwOrPause(new IllegalArgumentException("sectionPos out of bounds"));
 		} else {
-			R object = (R)this.factory.apply((Runnable)() -> this.onUpdate(pos));
-			this.loadedElements.put(pos, Optional.of(object));
-			return object;
+			Optional<R> optional = this.get(pos);
+			if (optional.isPresent()) {
+				return (R)optional.get();
+			} else {
+				R object = (R)this.factory.apply((Runnable)() -> this.onUpdate(pos));
+				this.loadedElements.put(pos, Optional.of(object));
+				return object;
+			}
 		}
 	}
 
@@ -123,7 +126,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
 		if (data == null) {
 			for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
-				this.loadedElements.put(ChunkSectionPos.from(pos, i).asLong(), Optional.empty());
+				this.loadedElements.put(method_33637(pos, i), Optional.empty());
 			}
 		} else {
 			Dynamic<T> dynamic = new Dynamic<>(dynamicOps, data);
@@ -134,7 +137,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
 
 			for (int l = this.world.getMinimumSection(); l < this.world.getTopSectionLimit(); l++) {
-				long m = ChunkSectionPos.from(pos, l).asLong();
+				long m = method_33637(pos, l);
 				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
 					.result()
 					.flatMap(dynamicx -> ((Codec)this.codecFactory.apply((Runnable)() -> this.onUpdate(m))).parse(dynamicx).resultOrPartial(LOGGER::error));
@@ -163,7 +166,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 
 		for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
-			long l = ChunkSectionPos.from(chunkPos, i).asLong();
+			long l = method_33637(chunkPos, i);
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
 			if (optional != null && optional.isPresent()) {
@@ -186,6 +189,10 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 		);
 	}
 
+	private static long method_33637(ChunkPos chunkPos, int i) {
+		return ChunkSectionPos.asLong(chunkPos.x, i, chunkPos.z);
+	}
+
 	protected void onLoad(long pos) {
 	}
 
@@ -205,7 +212,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	public void saveChunk(ChunkPos pos) {
 		if (!this.unsavedElements.isEmpty()) {
 			for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
-				long l = ChunkSectionPos.from(pos, i).asLong();
+				long l = method_33637(pos, i);
 				if (this.unsavedElements.contains(l)) {
 					this.save(pos);
 					return;

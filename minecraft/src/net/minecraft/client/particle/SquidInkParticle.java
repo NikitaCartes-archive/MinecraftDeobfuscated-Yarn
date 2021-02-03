@@ -13,6 +13,7 @@ public class SquidInkParticle extends AnimatedParticle {
 		ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, int color, SpriteProvider spriteProvider
 	) {
 		super(world, x, y, z, spriteProvider, 0.0F);
+		this.field_28786 = 0.92F;
 		this.scale = 0.5F;
 		this.setColorAlpha(1.0F);
 		this.setColor(
@@ -24,33 +25,19 @@ public class SquidInkParticle extends AnimatedParticle {
 		this.velocityX = velocityX;
 		this.velocityY = velocityY;
 		this.velocityZ = velocityZ;
-		this.setResistance(0.0F);
 	}
 
 	@Override
 	public void tick() {
-		this.prevPosX = this.x;
-		this.prevPosY = this.y;
-		this.prevPosZ = this.z;
-		if (this.age++ >= this.maxAge) {
-			this.markDead();
-		} else {
+		super.tick();
+		if (!this.dead) {
 			this.setSpriteForAge(this.spriteProvider);
 			if (this.age > this.maxAge / 2) {
 				this.setColorAlpha(1.0F - ((float)this.age - (float)(this.maxAge / 2)) / (float)this.maxAge);
 			}
 
-			this.move(this.velocityX, this.velocityY, this.velocityZ);
 			if (this.world.getBlockState(new BlockPos(this.x, this.y, this.z)).isAir()) {
-				this.velocityY -= 0.008F;
-			}
-
-			this.velocityX *= 0.92F;
-			this.velocityY *= 0.92F;
-			this.velocityZ *= 0.92F;
-			if (this.onGround) {
-				this.velocityX *= 0.7F;
-				this.velocityZ *= 0.7F;
+				this.velocityY -= 0.0074F;
 			}
 		}
 	}

@@ -62,7 +62,6 @@ import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
-import net.minecraft.world.chunk.light.LightingProvider;
 
 @Environment(EnvType.CLIENT)
 public class DebugHud extends DrawableHelper {
@@ -255,83 +254,62 @@ public class DebugHud extends DrawableHelper {
 			list.add(
 				String.format(Locale.ROOT, "Facing: %s (%s) (%.1f / %.1f)", direction, string2, MathHelper.wrapDegrees(entity.yaw), MathHelper.wrapDegrees(entity.pitch))
 			);
-			if (this.client.world != null) {
-				if (this.client.world.isChunkLoaded(blockPos)) {
-					WorldChunk worldChunk = this.getClientChunk();
-					if (worldChunk.isEmpty()) {
-						list.add("Waiting for chunk...");
-					} else {
-						int i = this.client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
-						int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
-						int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
-						list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
-						WorldChunk worldChunk2 = this.getChunk();
+			WorldChunk worldChunk = this.getClientChunk();
+			if (worldChunk.isEmpty()) {
+				list.add("Waiting for chunk...");
+			} else {
+				int i = this.client.world.getChunkManager().getLightingProvider().getLight(blockPos, 0);
+				int j = this.client.world.getLightLevel(LightType.SKY, blockPos);
+				int k = this.client.world.getLightLevel(LightType.BLOCK, blockPos);
+				list.add("Client Light: " + i + " (" + j + " sky, " + k + " block)");
+				WorldChunk worldChunk2 = this.getChunk();
+				StringBuilder stringBuilder = new StringBuilder("CH");
+
+				for (Heightmap.Type type : Heightmap.Type.values()) {
+					if (type.shouldSendToClient()) {
+						stringBuilder.append(" ")
+							.append((String)HEIGHT_MAP_TYPES.get(type))
+							.append(": ")
+							.append(worldChunk.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
+					}
+				}
+
+				list.add(stringBuilder.toString());
+				stringBuilder.setLength(0);
+				stringBuilder.append("SH");
+
+				for (Heightmap.Type typex : Heightmap.Type.values()) {
+					if (typex.isStoredServerSide()) {
+						stringBuilder.append(" ").append((String)HEIGHT_MAP_TYPES.get(typex)).append(": ");
 						if (worldChunk2 != null) {
-							LightingProvider lightingProvider = world.getChunkManager().getLightingProvider();
-							list.add(
-								"Server Light: ("
-									+ lightingProvider.get(LightType.SKY).getLightLevel(blockPos)
-									+ " sky, "
-									+ lightingProvider.get(LightType.BLOCK).getLightLevel(blockPos)
-									+ " block)"
-							);
+							stringBuilder.append(worldChunk2.sampleHeightmap(typex, blockPos.getX(), blockPos.getZ()));
 						} else {
-							list.add("Server Light: (?? sky, ?? block)");
-						}
-
-						StringBuilder stringBuilder = new StringBuilder("CH");
-
-						for (Heightmap.Type type : Heightmap.Type.values()) {
-							if (type.shouldSendToClient()) {
-								stringBuilder.append(" ")
-									.append((String)HEIGHT_MAP_TYPES.get(type))
-									.append(": ")
-									.append(worldChunk.sampleHeightmap(type, blockPos.getX(), blockPos.getZ()));
-							}
-						}
-
-						list.add(stringBuilder.toString());
-						stringBuilder.setLength(0);
-						stringBuilder.append("SH");
-
-						for (Heightmap.Type typex : Heightmap.Type.values()) {
-							if (typex.isStoredServerSide()) {
-								stringBuilder.append(" ").append((String)HEIGHT_MAP_TYPES.get(typex)).append(": ");
-								if (worldChunk2 != null) {
-									stringBuilder.append(worldChunk2.sampleHeightmap(typex, blockPos.getX(), blockPos.getZ()));
-								} else {
-									stringBuilder.append("??");
-								}
-							}
-						}
-
-						list.add(stringBuilder.toString());
-						if (blockPos.getY() >= this.client.world.getBottomSectionLimit() && blockPos.getY() < this.client.world.getTopHeightLimit()) {
-							list.add("Biome: " + this.client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(this.client.world.getBiome(blockPos)));
-							long l = 0L;
-							float h = 0.0F;
-							if (worldChunk2 != null) {
-								h = world.getMoonSize();
-								l = worldChunk2.getInhabitedTime();
-							}
-
-							LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);
-							list.add(
-								String.format(
-									Locale.ROOT,
-									"Local Difficulty: %.2f // %.2f (Day %d)",
-									localDifficulty.getLocalDifficulty(),
-									localDifficulty.getClampedLocalDifficulty(),
-									this.client.world.getTimeOfDay() / 24000L
-								)
-							);
+							stringBuilder.append("??");
 						}
 					}
-				} else {
-					list.add("Outside of world...");
 				}
-			} else {
-				list.add("Outside of world...");
+
+				list.add(stringBuilder.toString());
+				if (blockPos.getY() >= this.client.world.getBottomSectionLimit() && blockPos.getY() < this.client.world.getTopHeightLimit()) {
+					list.add("Biome: " + this.client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(this.client.world.getBiome(blockPos)));
+					long l = 0L;
+					float h = 0.0F;
+					if (worldChunk2 != null) {
+						h = world.getMoonSize();
+						l = worldChunk2.getInhabitedTime();
+					}
+
+					LocalDifficulty localDifficulty = new LocalDifficulty(world.getDifficulty(), world.getTimeOfDay(), l, h);
+					list.add(
+						String.format(
+							Locale.ROOT,
+							"Local Difficulty: %.2f // %.2f (Day %d)",
+							localDifficulty.getLocalDifficulty(),
+							localDifficulty.getClampedLocalDifficulty(),
+							this.client.world.getTimeOfDay() / 24000L
+						)
+					);
+				}
 			}
 
 			ServerWorld serverWorld = this.getServerWorld();
@@ -339,10 +317,10 @@ public class DebugHud extends DrawableHelper {
 				SpawnHelper.Info info = serverWorld.getChunkManager().getSpawnInfo();
 				if (info != null) {
 					Object2IntMap<SpawnGroup> object2IntMap = info.getGroupToCount();
-					int kx = info.getSpawningChunkCount();
+					int m = info.getSpawningChunkCount();
 					list.add(
 						"SC: "
-							+ kx
+							+ m
 							+ ", "
 							+ (String)Stream.of(SpawnGroup.values())
 								.map(spawnGroup -> Character.toUpperCase(spawnGroup.getName().charAt(0)) + ": " + object2IntMap.getInt(spawnGroup))

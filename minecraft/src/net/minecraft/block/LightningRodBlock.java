@@ -39,14 +39,36 @@ public class LightningRodBlock extends RodBlock {
 		return state.get(POWERED) ? 15 : 0;
 	}
 
+	@Override
+	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+		return state.get(POWERED) && state.get(FACING) == direction ? 15 : 0;
+	}
+
 	public void setPowered(BlockState state, World world, BlockPos pos) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 3);
+		this.method_33627(state, world, pos);
 		world.getBlockTickScheduler().schedule(pos, this, 8);
+	}
+
+	private void method_33627(BlockState blockState, World world, BlockPos blockPos) {
+		world.updateNeighborsAlways(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite()), this);
 	}
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 3);
+		this.method_33627(state, world, pos);
+	}
+
+	@Override
+	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+		if (!moved && !state.isOf(newState.getBlock())) {
+			if ((Boolean)state.get(POWERED)) {
+				this.method_33627(state, world, pos);
+			}
+
+			super.onStateReplaced(state, world, pos, newState, moved);
+		}
 	}
 
 	@Override
@@ -55,7 +77,7 @@ public class LightningRodBlock extends RodBlock {
 			BlockPos blockPos = hit.getBlockPos();
 			if (world.isSkyVisible(blockPos)) {
 				LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
-				lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
+				lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos.up()));
 				Entity entity = projectile.getOwner();
 				lightningEntity.setChanneler(entity instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity : null);
 				world.spawnEntity(lightningEntity);

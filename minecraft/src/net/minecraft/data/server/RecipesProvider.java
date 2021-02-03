@@ -304,6 +304,7 @@ public class RecipesProvider implements DataProvider {
 		offerBedRecipe(exporter, Items.YELLOW_BED, Blocks.YELLOW_WOOL);
 		offerBedDyeingRecipe(exporter, Items.YELLOW_BED, Items.YELLOW_DYE);
 		offerBannerRecipe(exporter, Items.YELLOW_BANNER, Blocks.YELLOW_WOOL);
+		offerCarpetRecipe(exporter, Blocks.MOSS_CARPET, Blocks.MOSS_BLOCK);
 		offerStainedGlassDyeingRecipe(exporter, Blocks.BLACK_STAINED_GLASS, Items.BLACK_DYE);
 		offerStainedGlassPaneRecipe(exporter, Blocks.BLACK_STAINED_GLASS_PANE, Blocks.BLACK_STAINED_GLASS);
 		offerStainedGlassPaneDyeingRecipe(exporter, Blocks.BLACK_STAINED_GLASS_PANE, Items.BLACK_DYE);
@@ -747,9 +748,9 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_copper_block", conditionsFromItem(Blocks.COPPER_BLOCK))
 			.offerTo(exporter, "copper_ingot_from_copper_block");
 		offerCutCopperRecipe(exporter, Blocks.CUT_COPPER, Blocks.COPPER_BLOCK);
-		offerCutCopperRecipe(exporter, Blocks.LIGHTLY_WEATHERED_CUT_COPPER, Blocks.LIGHTLY_WEATHERED_COPPER_BLOCK);
-		offerCutCopperRecipe(exporter, Blocks.SEMI_WEATHERED_CUT_COPPER, Blocks.SEMI_WEATHERED_COPPER_BLOCK);
+		offerCutCopperRecipe(exporter, Blocks.EXPOSED_CUT_COPPER, Blocks.EXPOSED_COPPER_BLOCK);
 		offerCutCopperRecipe(exporter, Blocks.WEATHERED_CUT_COPPER, Blocks.WEATHERED_COPPER_BLOCK);
+		offerCutCopperRecipe(exporter, Blocks.OXIDIZED_CUT_COPPER, Blocks.OXIDIZED_COPPER_BLOCK);
 		ShapelessRecipeJsonFactory.create(Items.WAXED_COPPER)
 			.input(Items.COPPER_BLOCK)
 			.input(Items.HONEYCOMB)
@@ -758,12 +759,12 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.WAXED_SEMI_WEATHERED_COPPER)
 			.input(Items.SEMI_WEATHERED_COPPER_BLOCK)
 			.input(Items.HONEYCOMB)
-			.criterion("has_semi_weathered_copper_block", conditionsFromItem(Items.SEMI_WEATHERED_COPPER_BLOCK))
+			.criterion("has_weathered_copper_block", conditionsFromItem(Items.SEMI_WEATHERED_COPPER_BLOCK))
 			.offerTo(exporter);
 		ShapelessRecipeJsonFactory.create(Items.WAXED_LIGHTLY_WEATHERED_COPPER)
 			.input(Items.LIGHTLY_WEATHERED_COPPER_BLOCK)
 			.input(Items.HONEYCOMB)
-			.criterion("has_lightly_weathered_copper_block", conditionsFromItem(Items.LIGHTLY_WEATHERED_COPPER_BLOCK))
+			.criterion("has_exposed_copper_block", conditionsFromItem(Items.LIGHTLY_WEATHERED_COPPER_BLOCK))
 			.offerTo(exporter);
 		ShapelessRecipeJsonFactory.create(Items.WAXED_CUT_COPPER)
 			.input(Items.CUT_COPPER)
@@ -773,13 +774,13 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.WAXED_SEMI_WEATHERED_CUT_COPPER)
 			.input(Items.SEMI_WEATHERED_CUT_COPPER)
 			.input(Items.HONEYCOMB)
-			.criterion("has_semi_weathered_cut_copper", conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER))
-			.offerTo(exporter, "waxed_semi_weathered_cut_copper_from_honeycomb");
+			.criterion("has_weathered_cut_copper", conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER))
+			.offerTo(exporter, "waxed_weathered_cut_copper_from_honeycomb");
 		ShapelessRecipeJsonFactory.create(Items.WAXED_LIGHTLY_WEATHERED_CUT_COPPER)
 			.input(Items.LIGHTLY_WEATHERED_CUT_COPPER)
 			.input(Items.HONEYCOMB)
-			.criterion("has_lightly_weathered_cut_copper", conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER))
-			.offerTo(exporter, "waxed_lightly_weathered_cut_copper_from_honeycomb");
+			.criterion("has_exposed_cut_copper", conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER))
+			.offerTo(exporter, "waxed_exposed_cut_copper_from_honeycomb");
 		ShapelessRecipeJsonFactory.create(Items.WAXED_CUT_COPPER_STAIRS)
 			.input(Items.CUT_COPPER_STAIRS)
 			.input(Items.HONEYCOMB)
@@ -788,13 +789,13 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS)
 			.input(Items.SEMI_WEATHERED_CUT_COPPER_STAIRS)
 			.input(Items.HONEYCOMB)
-			.criterion("has_semi_weathered_cut_copper_stairs", conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER_STAIRS))
-			.offerTo(exporter, "waxed_semi_weathered_cut_copper_stairs_from_honeycomb");
+			.criterion("has_weathered_cut_copper_stairs", conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER_STAIRS))
+			.offerTo(exporter, "waxed_weathered_cut_copper_stairs_from_honeycomb");
 		ShapelessRecipeJsonFactory.create(Items.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_STAIRS)
 			.input(Items.LIGHTLY_WEATHERED_CUT_COPPER_STAIRS)
 			.input(Items.HONEYCOMB)
-			.criterion("has_lightly_weathered_cut_copper_stairs", conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER_STAIRS))
-			.offerTo(exporter, "waxed_lightly_weathered_cut_copper_stairs_from_honeycomb");
+			.criterion("has_exposed_cut_copper_stairs", conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER_STAIRS))
+			.offerTo(exporter, "waxed_exposed_cut_copper_stairs_from_honeycomb");
 		ShapelessRecipeJsonFactory.create(Items.WAXED_CUT_COPPER_SLAB)
 			.input(Items.CUT_COPPER_SLAB)
 			.input(Items.HONEYCOMB)
@@ -803,16 +804,16 @@ public class RecipesProvider implements DataProvider {
 		ShapelessRecipeJsonFactory.create(Items.WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB)
 			.input(Items.SEMI_WEATHERED_CUT_COPPER_SLAB)
 			.input(Items.HONEYCOMB)
-			.criterion("has_semi_weathered_cut_copper_slab", conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER_SLAB))
-			.offerTo(exporter, "waxed_semi_weathered_cut_copper_slab_from_honeycomb");
+			.criterion("has_weathered_cut_copper_slab", conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER_SLAB))
+			.offerTo(exporter, "waxed_weathered_cut_copper_slab_from_honeycomb");
 		ShapelessRecipeJsonFactory.create(Items.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB)
 			.input(Items.LIGHTLY_WEATHERED_CUT_COPPER_SLAB)
 			.input(Items.HONEYCOMB)
-			.criterion("has_lightly_weathered_cut_copper_slab", conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER_SLAB))
-			.offerTo(exporter, "waxed_lightly_weathered_cut_copper_slab_from_honeycomb");
+			.criterion("has_exposed_cut_copper_slab", conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER_SLAB))
+			.offerTo(exporter, "waxed_exposed_cut_copper_slab_from_honeycomb");
 		offerCutCopperRecipe(exporter, Blocks.WAXED_CUT_COPPER, Blocks.WAXED_COPPER);
-		offerCutCopperRecipe(exporter, Blocks.WAXED_LIGHTLY_WEATHERED_CUT_COPPER, Blocks.WAXED_LIGHTLY_WEATHERED_COPPER);
-		offerCutCopperRecipe(exporter, Blocks.WAXED_SEMI_WEATHERED_CUT_COPPER, Blocks.WAXED_SEMI_WEATHERED_COPPER);
+		offerCutCopperRecipe(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER, Blocks.WAXED_EXPOSED_COPPER);
+		offerCutCopperRecipe(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER, Blocks.WAXED_WEATHERED_COPPER);
 		ShapelessRecipeJsonFactory.create(Items.CYAN_DYE, 2)
 			.input(Items.BLUE_DYE)
 			.input(Items.GREEN_DYE)
@@ -3069,6 +3070,41 @@ public class RecipesProvider implements DataProvider {
 		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
 			.create("has_polished_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
 			.offerTo(exporter, "polished_blackstone_brick_wall_from_polished_blackstone_bricks_stonecutting");
+		method_33715(exporter, Blocks.CUT_COPPER_SLAB, Blocks.CUT_COPPER, 2);
+		method_33717(exporter, Blocks.CUT_COPPER_STAIRS, Blocks.CUT_COPPER);
+		method_33715(exporter, Blocks.EXPOSED_CUT_COPPER_SLAB, Blocks.EXPOSED_CUT_COPPER, 2);
+		method_33717(exporter, Blocks.EXPOSED_CUT_COPPER_STAIRS, Blocks.EXPOSED_CUT_COPPER);
+		method_33715(exporter, Blocks.WEATHERED_CUT_COPPER_SLAB, Blocks.WEATHERED_CUT_COPPER, 2);
+		method_33717(exporter, Blocks.WEATHERED_CUT_COPPER_STAIRS, Blocks.WEATHERED_CUT_COPPER);
+		method_33715(exporter, Blocks.OXIDIZED_CUT_COPPER_SLAB, Blocks.OXIDIZED_CUT_COPPER, 2);
+		method_33717(exporter, Blocks.OXIDIZED_CUT_COPPER_STAIRS, Blocks.OXIDIZED_CUT_COPPER);
+		method_33715(exporter, Blocks.WAXED_CUT_COPPER_SLAB, Blocks.WAXED_CUT_COPPER, 2);
+		method_33717(exporter, Blocks.WAXED_CUT_COPPER_STAIRS, Blocks.WAXED_CUT_COPPER);
+		method_33715(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, Blocks.WAXED_EXPOSED_CUT_COPPER, 2);
+		method_33717(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS, Blocks.WAXED_EXPOSED_CUT_COPPER);
+		method_33715(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, Blocks.WAXED_WEATHERED_CUT_COPPER, 2);
+		method_33717(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS, Blocks.WAXED_WEATHERED_CUT_COPPER);
+		method_33717(exporter, Blocks.CUT_COPPER, Blocks.COPPER_BLOCK);
+		method_33717(exporter, Blocks.CUT_COPPER_STAIRS, Blocks.COPPER_BLOCK);
+		method_33715(exporter, Blocks.CUT_COPPER_SLAB, Blocks.COPPER_BLOCK, 2);
+		method_33717(exporter, Blocks.EXPOSED_CUT_COPPER, Blocks.EXPOSED_COPPER_BLOCK);
+		method_33717(exporter, Blocks.EXPOSED_CUT_COPPER_STAIRS, Blocks.EXPOSED_COPPER_BLOCK);
+		method_33715(exporter, Blocks.EXPOSED_CUT_COPPER_SLAB, Blocks.EXPOSED_COPPER_BLOCK, 2);
+		method_33717(exporter, Blocks.WEATHERED_CUT_COPPER, Blocks.WEATHERED_COPPER_BLOCK);
+		method_33717(exporter, Blocks.WEATHERED_CUT_COPPER_STAIRS, Blocks.WEATHERED_COPPER_BLOCK);
+		method_33715(exporter, Blocks.WEATHERED_CUT_COPPER_SLAB, Blocks.WEATHERED_COPPER_BLOCK, 2);
+		method_33717(exporter, Blocks.OXIDIZED_CUT_COPPER, Blocks.OXIDIZED_COPPER_BLOCK);
+		method_33717(exporter, Blocks.OXIDIZED_CUT_COPPER_STAIRS, Blocks.OXIDIZED_COPPER_BLOCK);
+		method_33715(exporter, Blocks.OXIDIZED_CUT_COPPER_SLAB, Blocks.OXIDIZED_COPPER_BLOCK, 2);
+		method_33717(exporter, Blocks.WAXED_CUT_COPPER, Blocks.WAXED_COPPER);
+		method_33717(exporter, Blocks.WAXED_CUT_COPPER_STAIRS, Blocks.WAXED_COPPER);
+		method_33715(exporter, Blocks.WAXED_CUT_COPPER_SLAB, Blocks.WAXED_COPPER, 2);
+		method_33717(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER, Blocks.WAXED_EXPOSED_COPPER);
+		method_33717(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS, Blocks.WAXED_EXPOSED_COPPER);
+		method_33715(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, Blocks.WAXED_EXPOSED_COPPER, 2);
+		method_33717(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER, Blocks.WAXED_WEATHERED_COPPER);
+		method_33717(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER_STAIRS, Blocks.WAXED_WEATHERED_COPPER);
+		method_33715(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, Blocks.WAXED_WEATHERED_COPPER, 2);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET);
@@ -3325,6 +3361,16 @@ public class RecipesProvider implements DataProvider {
 		return ShapedRecipeJsonFactory.create(outputItem).input('#', inputItem).pattern("#").pattern("#");
 	}
 
+	private static void method_33717(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+		method_33715(consumer, itemConvertible, itemConvertible2, 1);
+	}
+
+	private static void method_33715(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2, int i) {
+		SingleItemRecipeJsonFactory.create(Ingredient.ofItems(itemConvertible2), itemConvertible, i)
+			.create(hasItem(itemConvertible2), conditionsFromItem(itemConvertible2))
+			.offerTo(consumer, method_33714(itemConvertible, itemConvertible2) + "_stonecutting");
+	}
+
 	private static void generateCookingRecipes(Consumer<RecipeJsonProvider> exporter, String cooker, CookingRecipeSerializer<?> serializer, int cookingTime) {
 		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.BEEF), Items.COOKED_BEEF, 0.35F, cookingTime, serializer)
 			.criterion("has_beef", conditionsFromItem(Items.BEEF))
@@ -3406,7 +3452,15 @@ public class RecipesProvider implements DataProvider {
 	}
 
 	private static String hasItem(ItemConvertible item) {
-		return "has_" + Registry.ITEM.getId(item.asItem()).getPath();
+		return "has_" + method_33716(item);
+	}
+
+	private static String method_33714(ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+		return method_33716(itemConvertible) + "_from_" + method_33716(itemConvertible2);
+	}
+
+	private static String method_33716(ItemConvertible itemConvertible) {
+		return Registry.ITEM.getId(itemConvertible.asItem()).getPath();
 	}
 
 	@Override

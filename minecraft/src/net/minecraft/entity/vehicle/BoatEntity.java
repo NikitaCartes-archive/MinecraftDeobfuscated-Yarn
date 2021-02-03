@@ -103,8 +103,8 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	protected boolean canClimb() {
-		return false;
+	protected Entity.class_5799 method_33570() {
+		return Entity.class_5799.NONE;
 	}
 
 	@Override
@@ -152,11 +152,11 @@ public class BoatEntity extends Entity {
 		if (this.isInvulnerableTo(source)) {
 			return false;
 		} else if (!this.world.isClient && !this.isRemoved()) {
-			this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
 			this.setDamageWobbleSide(-this.getDamageWobbleSide());
 			this.setDamageWobbleTicks(10);
 			this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0F);
 			this.scheduleVelocityUpdate();
+			this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
 			boolean bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
 			if (bl || this.getDamageWobbleStrength() > 40.0F) {
 				if (!bl && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
@@ -191,7 +191,7 @@ public class BoatEntity extends Entity {
 				.playSound(this.getX(), this.getY(), this.getZ(), this.getSplashSound(), this.getSoundCategory(), 1.0F, 0.8F + 0.4F * this.random.nextFloat(), false);
 		}
 
-		this.emitGameEvent(this.getPrimaryPassenger(), GameEvent.SPLASH);
+		this.emitGameEvent(GameEvent.SPLASH, this.getPrimaryPassenger());
 	}
 
 	@Override
@@ -681,7 +681,7 @@ public class BoatEntity extends Entity {
 
 	@Override
 	public Vec3d updatePassengerForDismount(LivingEntity passenger) {
-		Vec3d vec3d = getPassengerDismountOffset((double)(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO), (double)passenger.getWidth(), this.yaw);
+		Vec3d vec3d = getPassengerDismountOffset((double)(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO), (double)passenger.getWidth(), passenger.yaw);
 		double d = this.getX() + vec3d.x;
 		double e = this.getZ() + vec3d.z;
 		BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e);

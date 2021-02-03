@@ -298,6 +298,7 @@ public abstract class ScreenHandler {
 					itemStack = itemStack2.copy();
 				}
 
+				player.method_33592(itemStack6, slot.getStack(), clickType);
 				if (!itemStack6.onStackClicked(slot, clickType, playerInventory) && !itemStack2.onClicked(itemStack6, slot, clickType, playerInventory)) {
 					if (itemStack2.isEmpty()) {
 						if (!itemStack6.isEmpty()) {

@@ -183,6 +183,7 @@ public interface DispenserBehavior {
 					pointer.getWorld(), stack, null, pointer.getBlockPos().offset(direction), SpawnReason.DISPENSER, direction != Direction.UP, false
 				);
 				stack.decrement(1);
+				pointer.getWorld().emitGameEvent(GameEvent.ENTITY_PLACE, pointer.getBlockPos());
 				return stack;
 			}
 		};
@@ -316,7 +317,8 @@ public interface DispenserBehavior {
 				double g = random.nextGaussian() * 0.05 + (double)direction.getOffsetX();
 				double h = random.nextGaussian() * 0.05 + (double)direction.getOffsetY();
 				double i = random.nextGaussian() * 0.05 + (double)direction.getOffsetZ();
-				world.spawnEntity(Util.make(new SmallFireballEntity(world, d, e, f, g, h, i), smallFireballEntity -> smallFireballEntity.setItem(stack)));
+				SmallFireballEntity smallFireballEntity = new SmallFireballEntity(world, d, e, f, g, h, i);
+				world.spawnEntity(Util.make(smallFireballEntity, smallFireballEntityx -> smallFireballEntityx.setItem(stack)));
 				stack.decrement(1);
 				return stack;
 			}
@@ -341,7 +343,7 @@ public interface DispenserBehavior {
 				BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
 				World world = pointer.getWorld();
 				if (fluidModificationItem.placeFluid(null, world, blockPos, null)) {
-					fluidModificationItem.onEmptied(world, stack, blockPos);
+					fluidModificationItem.onEmptied(null, world, stack, blockPos);
 					return new ItemStack(Items.BUCKET);
 				} else {
 					return this.field_13367.dispense(pointer, stack);
@@ -398,8 +400,10 @@ public interface DispenserBehavior {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (AbstractFireBlock.canPlaceAt(world, blockPos, direction)) {
 					world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
+					world.emitGameEvent(null, GameEvent.BLOCK_PLACE, blockPos);
 				} else if (CampfireBlock.canBeLit(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
 					world.setBlockState(blockPos, blockState.with(Properties.LIT, Boolean.valueOf(true)));
+					world.emitGameEvent(null, GameEvent.BLOCK_CHANGE, blockPos);
 				} else if (blockState.getBlock() instanceof TntBlock) {
 					TntBlock.primeTnt(world, blockPos);
 					world.removeBlock(blockPos, false);
@@ -407,11 +411,8 @@ public interface DispenserBehavior {
 					this.setSuccess(false);
 				}
 
-				if (this.isSuccess()) {
-					world.emitGameEvent(null, GameEvent.FLINT_AND_STEEL_USE, blockPos);
-					if (stack.damage(1, world.random, null)) {
-						stack.setCount(0);
-					}
+				if (this.isSuccess() && stack.damage(1, world.random, null)) {
+					stack.setCount(0);
 				}
 
 				return stack;
@@ -440,6 +441,7 @@ public interface DispenserBehavior {
 				TntEntity tntEntity = new TntEntity(world, (double)blockPos.getX() + 0.5, (double)blockPos.getY(), (double)blockPos.getZ() + 0.5, null);
 				world.spawnEntity(tntEntity);
 				world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0F, 1.0F);
+				world.emitGameEvent(null, GameEvent.ENTITY_PLACE, blockPos);
 				stack.decrement(1);
 				return stack;
 			}
@@ -472,6 +474,7 @@ public interface DispenserBehavior {
 								.with(SkullBlock.ROTATION, Integer.valueOf(direction.getAxis() == Direction.Axis.Y ? 0 : direction.getOpposite().getHorizontal() * 4)),
 							3
 						);
+						world.emitGameEvent(null, GameEvent.BLOCK_PLACE, blockPos);
 						BlockEntity blockEntity = world.getBlockEntity(blockPos);
 						if (blockEntity instanceof SkullBlockEntity) {
 							WitherSkullBlock.onPlaced(world, blockPos, (SkullBlockEntity)blockEntity);
@@ -496,6 +499,7 @@ public interface DispenserBehavior {
 				if (world.isAir(blockPos) && carvedPumpkinBlock.canDispense(world, blockPos)) {
 					if (!world.isClient) {
 						world.setBlockState(blockPos, carvedPumpkinBlock.getDefaultState(), 3);
+						world.emitGameEvent(null, GameEvent.BLOCK_PLACE, blockPos);
 					}
 
 					stack.decrement(1);
@@ -521,6 +525,7 @@ public interface DispenserBehavior {
 				private ItemStack method_22141(BlockPointer blockPointer, ItemStack emptyBottleStack, ItemStack filledBottleStack) {
 					emptyBottleStack.decrement(1);
 					if (emptyBottleStack.isEmpty()) {
+						blockPointer.getWorld().emitGameEvent(null, GameEvent.FLUID_PICKUP, blockPointer.getBlockPos());
 						return filledBottleStack.copy();
 					} else {
 						if (blockPointer.<DispenserBlockEntity>getBlockEntity().addToFirstFreeSlot(filledBottleStack.copy()) < 0) {

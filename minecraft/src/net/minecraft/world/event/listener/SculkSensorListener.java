@@ -80,7 +80,7 @@ public class SculkSensorListener implements GameEventListener {
 			return false;
 		} else {
 			if (entity != null) {
-				if (GameEventTags.IGNORE_VIBRATIONS_STEPPING_CAREFULLY.contains(event) && entity.bypassesSteppingEffects()) {
+				if (GameEventTags.IGNORE_VIBRATIONS_SNEAKING.contains(event) && entity.bypassesSteppingEffects()) {
 					return false;
 				}
 

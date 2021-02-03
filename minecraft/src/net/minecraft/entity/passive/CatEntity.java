@@ -469,6 +469,11 @@ public class CatEntity extends TameableEntity {
 		}
 	}
 
+	@Override
+	public boolean bypassesSteppingEffects() {
+		return this.getPose() == EntityPose.CROUCHING || super.bypassesSteppingEffects();
+	}
+
 	static class CatFleeGoal<T extends LivingEntity> extends FleeEntityGoal<T> {
 		private final CatEntity cat;
 

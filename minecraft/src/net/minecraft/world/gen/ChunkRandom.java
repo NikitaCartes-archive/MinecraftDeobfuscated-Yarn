@@ -2,7 +2,9 @@ package net.minecraft.world.gen;
 
 import java.util.Random;
 
-public class ChunkRandom extends Random {
+public class ChunkRandom extends Random implements WorldGenRandom {
+	private int sampleCount;
+
 	public ChunkRandom() {
 	}
 
@@ -10,18 +12,9 @@ public class ChunkRandom extends Random {
 		super(seed);
 	}
 
-	/**
-	 * Skips the provided number of calls to the randomizer.
-	 * 
-	 * <p>The skips give the effect of "scrambling" the randomizer but the output is still
-	 * linearly dependent. Note that since multiple calls to a linear congruential generator is
-	 * equivalent to another linear congruence, this method could be optimized to combine
-	 * the calls into one.</p>
-	 */
-	public void consume(int count) {
-		for (int i = 0; i < count; i++) {
-			this.next(1);
-		}
+	public int next(int count) {
+		this.sampleCount++;
+		return super.next(count);
 	}
 
 	/**

@@ -35,6 +35,8 @@ public class RenderLayers {
 		hashMap.put(Blocks.ACACIA_LEAVES, renderLayer2);
 		hashMap.put(Blocks.BIRCH_LEAVES, renderLayer2);
 		hashMap.put(Blocks.DARK_OAK_LEAVES, renderLayer2);
+		hashMap.put(Blocks.AZALEA_LEAVES, renderLayer2);
+		hashMap.put(Blocks.AZALEA_LEAVES_FLOWERS, renderLayer2);
 		RenderLayer renderLayer3 = RenderLayer.getCutout();
 		hashMap.put(Blocks.OAK_SAPLING, renderLayer3);
 		hashMap.put(Blocks.SPRUCE_SAPLING, renderLayer3);
@@ -230,6 +232,16 @@ public class RenderLayers {
 		hashMap.put(Blocks.LARGE_AMETHYST_BUD, renderLayer3);
 		hashMap.put(Blocks.AMETHYST_CLUSTER, renderLayer3);
 		hashMap.put(Blocks.LIGHTNING_ROD, renderLayer3);
+		hashMap.put(Blocks.CAVE_VINES_HEAD, renderLayer3);
+		hashMap.put(Blocks.CAVE_VINES_BODY, renderLayer3);
+		hashMap.put(Blocks.SPORE_BLOSSOM, renderLayer3);
+		hashMap.put(Blocks.FLOWERING_AZALEA, renderLayer3);
+		hashMap.put(Blocks.AZALEA, renderLayer3);
+		hashMap.put(Blocks.MOSS_CARPET, renderLayer3);
+		hashMap.put(Blocks.BIG_DRIPLEAF, renderLayer3);
+		hashMap.put(Blocks.BIG_DRIPLEAF_STEM, renderLayer3);
+		hashMap.put(Blocks.SMALL_DRIPLEAF, renderLayer3);
+		hashMap.put(Blocks.HANGING_ROOTS, renderLayer3);
 		hashMap.put(Blocks.SCULK_SENSOR, renderLayer3);
 		RenderLayer renderLayer4 = RenderLayer.getTranslucent();
 		hashMap.put(Blocks.ICE, renderLayer4);

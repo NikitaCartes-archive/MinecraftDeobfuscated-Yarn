@@ -99,7 +99,7 @@ public class BeeEntityModel<T extends BeeEntity> extends AnimalModel<T> {
 			this.middleLegs.pitch = 0.0F;
 			this.backLegs.pitch = 0.0F;
 		} else {
-			float k = h * 2.1F;
+			float k = h * 120.32113F * (float) (Math.PI / 180.0);
 			this.rightWing.yaw = 0.0F;
 			this.rightWing.roll = MathHelper.cos(k) * (float) Math.PI * 0.15F;
 			this.leftWing.pitch = this.rightWing.pitch;

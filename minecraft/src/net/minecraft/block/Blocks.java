@@ -198,12 +198,14 @@ public class Blocks {
 	public static final Block STRIPPED_DARK_OAK_WOOD = register(
 		"stripped_dark_oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(2.0F).sounds(BlockSoundGroup.WOOD))
 	);
-	public static final Block OAK_LEAVES = register("oak_leaves", createLeavesBlock());
-	public static final Block SPRUCE_LEAVES = register("spruce_leaves", createLeavesBlock());
-	public static final Block BIRCH_LEAVES = register("birch_leaves", createLeavesBlock());
-	public static final Block JUNGLE_LEAVES = register("jungle_leaves", createLeavesBlock());
-	public static final Block ACACIA_LEAVES = register("acacia_leaves", createLeavesBlock());
-	public static final Block DARK_OAK_LEAVES = register("dark_oak_leaves", createLeavesBlock());
+	public static final Block OAK_LEAVES = register("oak_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
+	public static final Block SPRUCE_LEAVES = register("spruce_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
+	public static final Block BIRCH_LEAVES = register("birch_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
+	public static final Block JUNGLE_LEAVES = register("jungle_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
+	public static final Block ACACIA_LEAVES = register("acacia_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
+	public static final Block DARK_OAK_LEAVES = register("dark_oak_leaves", createLeavesBlock(BlockSoundGroup.GRASS));
+	public static final Block AZALEA_LEAVES = register("azalea_leaves", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
+	public static final Block AZALEA_LEAVES_FLOWERS = register("azalea_leaves_flowers", createLeavesBlock(BlockSoundGroup.AZALEA_LEAVES));
 	public static final Block SPONGE = register("sponge", new SpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS)));
 	public static final Block WET_SPONGE = register(
 		"wet_sponge", new WetSpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6F).sounds(BlockSoundGroup.GRASS))
@@ -497,7 +499,7 @@ public class Blocks {
 		)
 	);
 	public static final Block FURNACE = register(
-		"furnace", new FurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromBlockState(13)))
+		"furnace", new FurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromLitBlockState(13)))
 	);
 	public static final Block OAK_SIGN = register(
 		"oak_sign", new SignBlock(AbstractBlock.Settings.of(Material.WOOD).noCollision().strength(1.0F).sounds(BlockSoundGroup.WOOD), SignType.OAK)
@@ -638,13 +640,13 @@ public class Blocks {
 	public static final Block REDSTONE_ORE = register(
 		"redstone_ore",
 		new RedstoneOreBlock(
-			AbstractBlock.Settings.of(Material.STONE).requiresTool().ticksRandomly().luminance(createLightLevelFromBlockState(9)).strength(3.0F, 3.0F)
+			AbstractBlock.Settings.of(Material.STONE).requiresTool().ticksRandomly().luminance(createLightLevelFromLitBlockState(9)).strength(3.0F, 3.0F)
 		)
 	);
 	public static final Block REDSTONE_TORCH = register(
 		"redstone_torch",
 		new RedstoneTorchBlock(
-			AbstractBlock.Settings.of(Material.DECORATION).noCollision().breakInstantly().luminance(createLightLevelFromBlockState(7)).sounds(BlockSoundGroup.WOOD)
+			AbstractBlock.Settings.of(Material.DECORATION).noCollision().breakInstantly().luminance(createLightLevelFromLitBlockState(7)).sounds(BlockSoundGroup.WOOD)
 		)
 	);
 	public static final Block REDSTONE_WALL_TORCH = register(
@@ -653,7 +655,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.DECORATION)
 				.noCollision()
 				.breakInstantly()
-				.luminance(createLightLevelFromBlockState(7))
+				.luminance(createLightLevelFromLitBlockState(7))
 				.sounds(BlockSoundGroup.WOOD)
 				.dropsLike(REDSTONE_TORCH)
 		)
@@ -891,6 +893,12 @@ public class Blocks {
 	public static final Block VINE = register(
 		"vine", new VineBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2F).sounds(BlockSoundGroup.VINE))
 	);
+	public static final Block GLOW_LICHEN = register(
+		"glow_lichen",
+		new GlowLichenBlock(
+			AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().strength(0.2F).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(blockStatex -> 7)
+		)
+	);
 	public static final Block OAK_FENCE_GATE = register(
 		"oak_fence_gate",
 		new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getDefaultMapColor()).strength(2.0F, 3.0F).sounds(BlockSoundGroup.WOOD))
@@ -958,7 +966,7 @@ public class Blocks {
 		"redstone_lamp",
 		new RedstoneLampBlock(
 			AbstractBlock.Settings.of(Material.REDSTONE_LAMP)
-				.luminance(createLightLevelFromBlockState(15))
+				.luminance(createLightLevelFromLitBlockState(15))
 				.strength(0.3F)
 				.sounds(BlockSoundGroup.GLASS)
 				.allowsSpawning(Blocks::always)
@@ -1357,54 +1365,58 @@ public class Blocks {
 		"hay_block", new HayBlock(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.YELLOW).strength(0.5F).sounds(BlockSoundGroup.GRASS))
 	);
 	public static final Block WHITE_CARPET = register(
-		"white_carpet", new CarpetBlock(DyeColor.WHITE, AbstractBlock.Settings.of(Material.CARPET, MapColor.WHITE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"white_carpet", new DyedCarpetBlock(DyeColor.WHITE, AbstractBlock.Settings.of(Material.CARPET, MapColor.WHITE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block ORANGE_CARPET = register(
-		"orange_carpet", new CarpetBlock(DyeColor.ORANGE, AbstractBlock.Settings.of(Material.CARPET, MapColor.ORANGE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"orange_carpet",
+		new DyedCarpetBlock(DyeColor.ORANGE, AbstractBlock.Settings.of(Material.CARPET, MapColor.ORANGE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block MAGENTA_CARPET = register(
-		"magenta_carpet", new CarpetBlock(DyeColor.MAGENTA, AbstractBlock.Settings.of(Material.CARPET, MapColor.MAGENTA).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"magenta_carpet",
+		new DyedCarpetBlock(DyeColor.MAGENTA, AbstractBlock.Settings.of(Material.CARPET, MapColor.MAGENTA).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block LIGHT_BLUE_CARPET = register(
 		"light_blue_carpet",
-		new CarpetBlock(DyeColor.LIGHT_BLUE, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIGHT_BLUE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		new DyedCarpetBlock(DyeColor.LIGHT_BLUE, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIGHT_BLUE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block YELLOW_CARPET = register(
-		"yellow_carpet", new CarpetBlock(DyeColor.YELLOW, AbstractBlock.Settings.of(Material.CARPET, MapColor.YELLOW).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"yellow_carpet",
+		new DyedCarpetBlock(DyeColor.YELLOW, AbstractBlock.Settings.of(Material.CARPET, MapColor.YELLOW).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block LIME_CARPET = register(
-		"lime_carpet", new CarpetBlock(DyeColor.LIME, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIME).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"lime_carpet", new DyedCarpetBlock(DyeColor.LIME, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIME).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block PINK_CARPET = register(
-		"pink_carpet", new CarpetBlock(DyeColor.PINK, AbstractBlock.Settings.of(Material.CARPET, MapColor.PINK).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"pink_carpet", new DyedCarpetBlock(DyeColor.PINK, AbstractBlock.Settings.of(Material.CARPET, MapColor.PINK).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block GRAY_CARPET = register(
-		"gray_carpet", new CarpetBlock(DyeColor.GRAY, AbstractBlock.Settings.of(Material.CARPET, MapColor.GRAY).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"gray_carpet", new DyedCarpetBlock(DyeColor.GRAY, AbstractBlock.Settings.of(Material.CARPET, MapColor.GRAY).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block LIGHT_GRAY_CARPET = register(
 		"light_gray_carpet",
-		new CarpetBlock(DyeColor.LIGHT_GRAY, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIGHT_GRAY).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		new DyedCarpetBlock(DyeColor.LIGHT_GRAY, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIGHT_GRAY).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block CYAN_CARPET = register(
-		"cyan_carpet", new CarpetBlock(DyeColor.CYAN, AbstractBlock.Settings.of(Material.CARPET, MapColor.CYAN).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"cyan_carpet", new DyedCarpetBlock(DyeColor.CYAN, AbstractBlock.Settings.of(Material.CARPET, MapColor.CYAN).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block PURPLE_CARPET = register(
-		"purple_carpet", new CarpetBlock(DyeColor.PURPLE, AbstractBlock.Settings.of(Material.CARPET, MapColor.PURPLE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"purple_carpet",
+		new DyedCarpetBlock(DyeColor.PURPLE, AbstractBlock.Settings.of(Material.CARPET, MapColor.PURPLE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block BLUE_CARPET = register(
-		"blue_carpet", new CarpetBlock(DyeColor.BLUE, AbstractBlock.Settings.of(Material.CARPET, MapColor.BLUE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"blue_carpet", new DyedCarpetBlock(DyeColor.BLUE, AbstractBlock.Settings.of(Material.CARPET, MapColor.BLUE).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block BROWN_CARPET = register(
-		"brown_carpet", new CarpetBlock(DyeColor.BROWN, AbstractBlock.Settings.of(Material.CARPET, MapColor.BROWN).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"brown_carpet", new DyedCarpetBlock(DyeColor.BROWN, AbstractBlock.Settings.of(Material.CARPET, MapColor.BROWN).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block GREEN_CARPET = register(
-		"green_carpet", new CarpetBlock(DyeColor.GREEN, AbstractBlock.Settings.of(Material.CARPET, MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"green_carpet", new DyedCarpetBlock(DyeColor.GREEN, AbstractBlock.Settings.of(Material.CARPET, MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block RED_CARPET = register(
-		"red_carpet", new CarpetBlock(DyeColor.RED, AbstractBlock.Settings.of(Material.CARPET, MapColor.RED).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"red_carpet", new DyedCarpetBlock(DyeColor.RED, AbstractBlock.Settings.of(Material.CARPET, MapColor.RED).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block BLACK_CARPET = register(
-		"black_carpet", new CarpetBlock(DyeColor.BLACK, AbstractBlock.Settings.of(Material.CARPET, MapColor.BLACK).strength(0.1F).sounds(BlockSoundGroup.WOOL))
+		"black_carpet", new DyedCarpetBlock(DyeColor.BLACK, AbstractBlock.Settings.of(Material.CARPET, MapColor.BLACK).strength(0.1F).sounds(BlockSoundGroup.WOOL))
 	);
 	public static final Block TERRACOTTA = register(
 		"terracotta", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.ORANGE).requiresTool().strength(1.25F, 4.2F))
@@ -2337,10 +2349,11 @@ public class Blocks {
 	public static final Block LOOM = register("loom", new LoomBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block BARREL = register("barrel", new BarrelBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD)));
 	public static final Block SMOKER = register(
-		"smoker", new SmokerBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromBlockState(13)))
+		"smoker", new SmokerBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromLitBlockState(13)))
 	);
 	public static final Block BLAST_FURNACE = register(
-		"blast_furnace", new BlastFurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromBlockState(13)))
+		"blast_furnace",
+		new BlastFurnaceBlock(AbstractBlock.Settings.of(Material.STONE).requiresTool().strength(3.5F).luminance(createLightLevelFromLitBlockState(13)))
 	);
 	public static final Block CARTOGRAPHY_TABLE = register(
 		"cartography_table", new CartographyTableBlock(AbstractBlock.Settings.of(Material.WOOD).strength(2.5F).sounds(BlockSoundGroup.WOOD))
@@ -2376,7 +2389,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.SPRUCE_BROWN)
 				.strength(2.0F)
 				.sounds(BlockSoundGroup.WOOD)
-				.luminance(createLightLevelFromBlockState(15))
+				.luminance(createLightLevelFromLitBlockState(15))
 				.nonOpaque()
 		)
 	);
@@ -2388,7 +2401,7 @@ public class Blocks {
 			AbstractBlock.Settings.of(Material.WOOD, MapColor.SPRUCE_BROWN)
 				.strength(2.0F)
 				.sounds(BlockSoundGroup.WOOD)
-				.luminance(createLightLevelFromBlockState(10))
+				.luminance(createLightLevelFromLitBlockState(10))
 				.nonOpaque()
 		)
 	);
@@ -2883,7 +2896,7 @@ public class Blocks {
 		)
 	);
 	public static final Block CANDLE_CAKE = register(
-		"candle_cake", new CandleCakeBlock(CANDLE, AbstractBlock.Settings.copy(CAKE).luminance(createLightLevelFromBlockState(3)))
+		"candle_cake", new CandleCakeBlock(CANDLE, AbstractBlock.Settings.copy(CAKE).luminance(createLightLevelFromLitBlockState(3)))
 	);
 	public static final Block WHITE_CANDLE_CAKE = register("white_candle_cake", new CandleCakeBlock(WHITE_CANDLE, AbstractBlock.Settings.copy(CANDLE_CAKE)));
 	public static final Block ORANGE_CANDLE_CAKE = register("orange_candle_cake", new CandleCakeBlock(ORANGE_CANDLE, AbstractBlock.Settings.copy(CANDLE_CAKE)));
@@ -2924,25 +2937,25 @@ public class Blocks {
 				.ticksRandomly()
 				.sounds(BlockSoundGroup.AMETHYST_CLUSTER)
 				.strength(1.5F)
-				.luminance(createLightLevelFromBlockState(5))
+				.luminance(createLightLevelFromLitBlockState(5))
 		)
 	);
 	public static final Block LARGE_AMETHYST_BUD = register(
 		"large_amethyst_bud",
 		new AmethystClusterBlock(
-			5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(createLightLevelFromBlockState(4))
+			5, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.MEDIUM_AMETHYST_BUD).luminance(createLightLevelFromLitBlockState(4))
 		)
 	);
 	public static final Block MEDIUM_AMETHYST_BUD = register(
 		"medium_amethyst_bud",
 		new AmethystClusterBlock(
-			4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(createLightLevelFromBlockState(2))
+			4, 3, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.LARGE_AMETHYST_BUD).luminance(createLightLevelFromLitBlockState(2))
 		)
 	);
 	public static final Block SMALL_AMETHYST_BUD = register(
 		"small_amethyst_bud",
 		new AmethystClusterBlock(
-			3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(createLightLevelFromBlockState(1))
+			3, 4, AbstractBlock.Settings.copy(AMETHYST_CLUSTER).sounds(BlockSoundGroup.SMALL_AMETHYST_BUD).luminance(createLightLevelFromLitBlockState(1))
 		)
 	);
 	public static final Block TUFF = register(
@@ -2966,98 +2979,104 @@ public class Blocks {
 			8
 		)
 	);
+	public static final Block OXIDIZED_COPPER_BLOCK = register(
+		"oxidized_copper_block",
+		new OxidizableBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.TEAL).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER))
+	);
 	public static final Block WEATHERED_COPPER_BLOCK = register(
 		"weathered_copper_block",
-		new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.TEAL).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER))
-	);
-	public static final Block SEMI_WEATHERED_COPPER_BLOCK = register(
-		"semi_weathered_copper_block",
-		new CopperBlock(
-			AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER), WEATHERED_COPPER_BLOCK
+		new OxidizableBlock(
+			AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER),
+			Oxidizable.OxidizationLevel.WEATHERED,
+			OXIDIZED_COPPER_BLOCK
 		)
 	);
-	public static final Block LIGHTLY_WEATHERED_COPPER_BLOCK = register(
-		"lightly_weathered_copper_block",
-		new CopperBlock(
+	public static final Block EXPOSED_COPPER_BLOCK = register(
+		"exposed_copper_block",
+		new OxidizableBlock(
 			AbstractBlock.Settings.of(Material.METAL, MapColor.TERRACOTTA_LIGHT_GRAY).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER),
-			SEMI_WEATHERED_COPPER_BLOCK
+			Oxidizable.OxidizationLevel.EXPOSED,
+			WEATHERED_COPPER_BLOCK
 		)
 	);
 	public static final Block COPPER_BLOCK = register(
 		"copper_block",
-		new CopperBlock(
+		new OxidizableBlock(
 			AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0F, 6.0F).sounds(BlockSoundGroup.COPPER),
-			LIGHTLY_WEATHERED_COPPER_BLOCK
+			Oxidizable.OxidizationLevel.UNAFFECTED,
+			EXPOSED_COPPER_BLOCK
 		)
 	);
 	public static final Block COPPER_ORE = register("copper_ore", new Block(AbstractBlock.Settings.copy(IRON_ORE)));
-	public static final Block WEATHERED_CUT_COPPER = register("weathered_cut_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK)));
-	public static final Block SEMI_WEATHERED_CUT_COPPER = register(
-		"semi_weathered_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK), WEATHERED_CUT_COPPER)
+	public static final Block OXIDIZED_CUT_COPPER = register("oxidized_cut_copper", new OxidizableBlock(AbstractBlock.Settings.copy(OXIDIZED_COPPER_BLOCK)));
+	public static final Block WEATHERED_CUT_COPPER = register(
+		"weathered_cut_copper", new OxidizableBlock(AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK), Oxidizable.OxidizationLevel.WEATHERED, OXIDIZED_CUT_COPPER)
 	);
-	public static final Block LIGHTLY_WEATHERED_CUT_COPPER = register(
-		"lightly_weathered_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK), SEMI_WEATHERED_CUT_COPPER)
+	public static final Block EXPOSED_CUT_COPPER = register(
+		"exposed_cut_copper", new OxidizableBlock(AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK), Oxidizable.OxidizationLevel.EXPOSED, WEATHERED_CUT_COPPER)
 	);
-	public static final Block CUT_COPPER = register("cut_copper", new CopperBlock(AbstractBlock.Settings.copy(COPPER_BLOCK), LIGHTLY_WEATHERED_CUT_COPPER));
+	public static final Block CUT_COPPER = register(
+		"cut_copper", new OxidizableBlock(AbstractBlock.Settings.copy(COPPER_BLOCK), Oxidizable.OxidizationLevel.UNAFFECTED, EXPOSED_CUT_COPPER)
+	);
+	public static final Block OXIDIZED_CUT_COPPER_STAIRS = register(
+		"oxidized_cut_copper_stairs", new OxidizableStairs(OXIDIZED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER))
+	);
 	public static final Block WEATHERED_CUT_COPPER_STAIRS = register(
-		"weathered_cut_copper_stairs", new StairsBlock(WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK))
+		"weathered_cut_copper_stairs",
+		new OxidizableStairs(
+			WEATHERED_CUT_COPPER.getDefaultState(),
+			AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK),
+			Oxidizable.OxidizationLevel.WEATHERED,
+			OXIDIZED_CUT_COPPER_STAIRS
+		)
 	);
-	public static final Block SEMI_WEATHERED_CUT_COPPER_STAIRS = register(
-		"semi_weathered_cut_copper_stairs",
-		new CopperStairsBlock(SEMI_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK), WEATHERED_CUT_COPPER_STAIRS)
-	);
-	public static final Block LIGHTLY_WEATHERED_CUT_COPPER_STAIRS = register(
-		"lightly_weathered_cut_copper_stairs",
-		new CopperStairsBlock(
-			LIGHTLY_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK), SEMI_WEATHERED_CUT_COPPER_STAIRS
+	public static final Block EXPOSED_CUT_COPPER_STAIRS = register(
+		"exposed_cut_copper_stairs",
+		new OxidizableStairs(
+			EXPOSED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK), Oxidizable.OxidizationLevel.EXPOSED, WEATHERED_CUT_COPPER_STAIRS
 		)
 	);
 	public static final Block CUT_COPPER_STAIRS = register(
-		"cut_copper_stairs", new CopperStairsBlock(CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK), LIGHTLY_WEATHERED_CUT_COPPER_STAIRS)
+		"cut_copper_stairs",
+		new OxidizableStairs(
+			CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK), Oxidizable.OxidizationLevel.UNAFFECTED, EXPOSED_CUT_COPPER_STAIRS
+		)
+	);
+	public static final Block OXIDIZED_CUT_COPPER_SLAB = register(
+		"oxidized_cut_copper_slab", new OxidizableSlab(AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER).requiresTool())
 	);
 	public static final Block WEATHERED_CUT_COPPER_SLAB = register(
-		"weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WEATHERED_CUT_COPPER).requiresTool())
+		"weathered_cut_copper_slab",
+		new OxidizableSlab(AbstractBlock.Settings.copy(WEATHERED_CUT_COPPER).requiresTool(), Oxidizable.OxidizationLevel.WEATHERED, OXIDIZED_CUT_COPPER_SLAB)
 	);
-	public static final Block SEMI_WEATHERED_CUT_COPPER_SLAB = register(
-		"semi_weathered_cut_copper_slab", new CopperSlabBlock(AbstractBlock.Settings.copy(SEMI_WEATHERED_CUT_COPPER).requiresTool(), WEATHERED_CUT_COPPER_SLAB)
-	);
-	public static final Block LIGHTLY_WEATHERED_CUT_COPPER_SLAB = register(
-		"lightly_weathered_cut_copper_slab",
-		new CopperSlabBlock(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_CUT_COPPER).requiresTool(), SEMI_WEATHERED_CUT_COPPER_SLAB)
+	public static final Block EXPOSED_CUT_COPPER_SLAB = register(
+		"exposed_cut_copper_slab",
+		new OxidizableSlab(AbstractBlock.Settings.copy(EXPOSED_CUT_COPPER).requiresTool(), Oxidizable.OxidizationLevel.EXPOSED, WEATHERED_CUT_COPPER_SLAB)
 	);
 	public static final Block CUT_COPPER_SLAB = register(
-		"cut_copper_slab", new CopperSlabBlock(AbstractBlock.Settings.copy(CUT_COPPER).requiresTool(), LIGHTLY_WEATHERED_CUT_COPPER_SLAB)
+		"cut_copper_slab",
+		new OxidizableSlab(AbstractBlock.Settings.copy(CUT_COPPER).requiresTool(), Oxidizable.OxidizationLevel.UNAFFECTED, EXPOSED_CUT_COPPER_SLAB)
 	);
 	public static final Block WAXED_COPPER = register("waxed_copper", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
-	public static final Block WAXED_SEMI_WEATHERED_COPPER = register(
-		"waxed_semi_weathered_copper", new Block(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK))
-	);
-	public static final Block WAXED_LIGHTLY_WEATHERED_COPPER = register(
-		"waxed_lightly_weathered_copper", new Block(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK))
-	);
-	public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER = register(
-		"waxed_semi_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK))
-	);
-	public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER = register(
-		"waxed_lightly_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK))
-	);
+	public static final Block WAXED_WEATHERED_COPPER = register("waxed_weathered_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK)));
+	public static final Block WAXED_EXPOSED_COPPER = register("waxed_exposed_copper", new Block(AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK)));
+	public static final Block WAXED_WEATHERED_CUT_COPPER = register("waxed_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK)));
+	public static final Block WAXED_EXPOSED_CUT_COPPER = register("waxed_exposed_cut_copper", new Block(AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK)));
 	public static final Block WAXED_CUT_COPPER = register("waxed_cut_copper", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
-	public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS = register(
-		"waxed_semi_weathered_cut_copper_stairs",
-		new StairsBlock(WAXED_SEMI_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK))
+	public static final Block WAXED_WEATHERED_CUT_COPPER_STAIRS = register(
+		"waxed_weathered_cut_copper_stairs", new StairsBlock(WAXED_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK))
 	);
-	public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER_STAIRS = register(
-		"waxed_lightly_weathered_cut_copper_stairs",
-		new StairsBlock(WAXED_LIGHTLY_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK))
+	public static final Block WAXED_EXPOSED_CUT_COPPER_STAIRS = register(
+		"waxed_exposed_cut_copper_stairs", new StairsBlock(WAXED_EXPOSED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK))
 	);
 	public static final Block WAXED_CUT_COPPER_STAIRS = register(
 		"waxed_cut_copper_stairs", new StairsBlock(WAXED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK))
 	);
-	public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB = register(
-		"waxed_semi_weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_SEMI_WEATHERED_CUT_COPPER).requiresTool())
+	public static final Block WAXED_WEATHERED_CUT_COPPER_SLAB = register(
+		"waxed_weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_WEATHERED_CUT_COPPER).requiresTool())
 	);
-	public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB = register(
-		"waxed_lightly_weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_LIGHTLY_WEATHERED_CUT_COPPER).requiresTool())
+	public static final Block WAXED_EXPOSED_CUT_COPPER_SLAB = register(
+		"waxed_exposed_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_EXPOSED_CUT_COPPER).requiresTool())
 	);
 	public static final Block WAXED_CUT_COPPER_SLAB = register(
 		"waxed_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_CUT_COPPER).requiresTool())
@@ -3082,15 +3101,71 @@ public class Blocks {
 		"dripstone_block",
 		new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5F, 1.0F))
 	);
-	public static final Block GLOW_LICHEN = register(
-		"glow_lichen",
-		new GlowLichenBlock(
-			AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().strength(0.2F).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(blockStatex -> 7)
+	public static final Block CAVE_VINES_HEAD = register(
+		"cave_vines_head",
+		new CaveVinesHeadBlock(
+			AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN)
+				.ticksRandomly()
+				.noCollision()
+				.luminance(createLightLevelFromBerriesBlockState(10))
+				.breakInstantly()
+				.sounds(BlockSoundGroup.field_28692)
+		)
+	);
+	public static final Block CAVE_VINES_BODY = register(
+		"cave_vines_body",
+		new CaveVinesBodyBlock(
+			AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN)
+				.noCollision()
+				.luminance(createLightLevelFromBerriesBlockState(14))
+				.breakInstantly()
+				.sounds(BlockSoundGroup.field_28692)
+		)
+	);
+	public static final Block SPORE_BLOSSOM = register(
+		"spore_blossom", new SporeBlossomBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).noCollision().sounds(BlockSoundGroup.SPORE_BLOSSOM))
+	);
+	public static final Block AZALEA = register(
+		"azalea", new AzaleaBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).sounds(BlockSoundGroup.AZALEA).nonOpaque())
+	);
+	public static final Block FLOWERING_AZALEA = register(
+		"flowering_azalea", new AzaleaBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).sounds(BlockSoundGroup.FLOWERING_AZALEA).nonOpaque())
+	);
+	public static final Block MOSS_CARPET = register(
+		"moss_carpet", new CarpetBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.MOSS_CARPET))
+	);
+	public static final Block MOSS_BLOCK = register(
+		"moss_block", new MossBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.MOSS))
+	);
+	public static final Block BIG_DRIPLEAF = register(
+		"big_dripleaf", new BigDripleafBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1F).sounds(BlockSoundGroup.BIG_DRIPLEAF))
+	);
+	public static final Block BIG_DRIPLEAF_STEM = register(
+		"big_dripleaf_stem",
+		new BigDripleafStemBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).noCollision().strength(0.1F).sounds(BlockSoundGroup.BIG_DRIPLEAF))
+	);
+	public static final Block SMALL_DRIPLEAF = register(
+		"small_dripleaf",
+		new SmallDripleafBlock(
+			AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1F).noCollision().breakInstantly().sounds(BlockSoundGroup.SMALL_DRIPLEAF)
+		)
+	);
+	public static final Block ROOTED_DIRT = register(
+		"rooted_dirt", new Block(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.1F).sounds(BlockSoundGroup.ROOTED_DIRT))
+	);
+	public static final Block HANGING_ROOTS = register(
+		"hanging_roots",
+		new HangingRootsBlock(
+			AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).noCollision().breakInstantly().strength(0.1F).sounds(BlockSoundGroup.HANGING_ROOTS)
 		)
 	);
 
-	private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
+	private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
 		return state -> state.get(Properties.LIT) ? litLevel : 0;
+	}
+
+	private static ToIntFunction<BlockState> createLightLevelFromBerriesBlockState(int berriesLevel) {
+		return state -> state.get(Properties.BERRIES) ? berriesLevel : 0;
 	}
 
 	/**
@@ -3165,12 +3240,12 @@ public class Blocks {
 		);
 	}
 
-	private static LeavesBlock createLeavesBlock() {
+	private static LeavesBlock createLeavesBlock(BlockSoundGroup soundGroup) {
 		return new LeavesBlock(
 			AbstractBlock.Settings.of(Material.LEAVES)
 				.strength(0.2F)
 				.ticksRandomly()
-				.sounds(BlockSoundGroup.GRASS)
+				.sounds(soundGroup)
 				.nonOpaque()
 				.allowsSpawning(Blocks::canSpawnOnLeaves)
 				.suffocates(Blocks::never)

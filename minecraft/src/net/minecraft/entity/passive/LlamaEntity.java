@@ -6,7 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.CarpetBlock;
+import net.minecraft.block.DyedCarpetBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -50,6 +50,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob {
 	private static final Ingredient TAMING_INGREDIENT = Ingredient.ofItems(Items.WHEAT, Blocks.HAY_BLOCK.asItem());
@@ -215,20 +216,23 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 			}
 		}
 
-		if (bl && !this.isSilent()) {
-			SoundEvent soundEvent = this.getEatSound();
-			if (soundEvent != null) {
-				this.world
-					.playSound(
-						null,
-						this.getX(),
-						this.getY(),
-						this.getZ(),
-						this.getEatSound(),
-						this.getSoundCategory(),
-						1.0F,
-						1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
-					);
+		if (bl) {
+			this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
+			if (!this.isSilent()) {
+				SoundEvent soundEvent = this.getEatSound();
+				if (soundEvent != null) {
+					this.world
+						.playSound(
+							null,
+							this.getX(),
+							this.getY(),
+							this.getZ(),
+							this.getEatSound(),
+							this.getSoundCategory(),
+							1.0F,
+							1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F
+						);
+				}
 			}
 		}
 
@@ -352,7 +356,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	@Nullable
 	private static DyeColor getColorFromCarpet(ItemStack color) {
 		Block block = Block.getBlockFromItem(color.getItem());
-		return block instanceof CarpetBlock ? ((CarpetBlock)block).getColor() : null;
+		return block instanceof DyedCarpetBlock ? ((DyedCarpetBlock)block).getDyeColor() : null;
 	}
 
 	@Nullable

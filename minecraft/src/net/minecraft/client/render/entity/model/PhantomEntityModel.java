@@ -8,11 +8,11 @@ import net.minecraft.client.model.ModelPartBuilder;
 import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
-public class PhantomEntityModel<T extends Entity> extends SinglePartEntityModel<T> {
+public class PhantomEntityModel<T extends PhantomEntity> extends SinglePartEntityModel<T> {
 	private final ModelPart root;
 	private final ModelPart leftWingBase;
 	private final ModelPart leftWingTip;
@@ -69,15 +69,14 @@ public class PhantomEntityModel<T extends Entity> extends SinglePartEntityModel<
 		return this.root;
 	}
 
-	@Override
-	public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-		float f = ((float)(entity.getId() * 3) + animationProgress) * 0.13F;
-		float g = 16.0F;
-		this.leftWingBase.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
-		this.leftWingTip.roll = MathHelper.cos(f) * 16.0F * (float) (Math.PI / 180.0);
+	public void setAngles(T phantomEntity, float f, float g, float h, float i, float j) {
+		float k = ((float)phantomEntity.method_33588() + h) * 7.448451F * (float) (Math.PI / 180.0);
+		float l = 16.0F;
+		this.leftWingBase.roll = MathHelper.cos(k) * 16.0F * (float) (Math.PI / 180.0);
+		this.leftWingTip.roll = MathHelper.cos(k) * 16.0F * (float) (Math.PI / 180.0);
 		this.rightWingBase.roll = -this.leftWingBase.roll;
 		this.rightWingTip.roll = -this.leftWingTip.roll;
-		this.tailBase.pitch = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
-		this.tailTip.pitch = -(5.0F + MathHelper.cos(f * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
+		this.tailBase.pitch = -(5.0F + MathHelper.cos(k * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
+		this.tailTip.pitch = -(5.0F + MathHelper.cos(k * 2.0F) * 5.0F) * (float) (Math.PI / 180.0);
 	}
 }
