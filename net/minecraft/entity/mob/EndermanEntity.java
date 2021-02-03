@@ -61,6 +61,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class EndermanEntity
@@ -383,6 +384,7 @@ implements Angerable {
             boolean bl = blockHitResult.getBlockPos().equals(blockPos);
             if (blockState.isIn(BlockTags.ENDERMAN_HOLDABLE) && bl) {
                 world.removeBlock(blockPos, false);
+                world.emitGameEvent((Entity)this.enderman, GameEvent.BLOCK_DESTROY, blockPos);
                 this.enderman.setCarriedBlock(blockState.getBlock().getDefaultState());
             }
         }
@@ -424,6 +426,7 @@ implements Angerable {
             }
             if (this.canPlaceOn(world, blockPos, blockState3 = Block.postProcessState(blockState3, this.enderman.world, blockPos), blockState, blockState2, blockPos2)) {
                 world.setBlockState(blockPos, blockState3, 3);
+                world.emitGameEvent((Entity)this.enderman, GameEvent.BLOCK_PLACE, blockPos);
                 this.enderman.setCarriedBlock(null);
             }
         }

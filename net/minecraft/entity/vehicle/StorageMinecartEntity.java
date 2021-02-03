@@ -173,7 +173,7 @@ NamedScreenHandlerFactory {
     public ActionResult interact(PlayerEntity player, Hand hand) {
         player.openHandledScreen(this);
         if (!player.world.isClient) {
-            this.emitGameEvent(player, GameEvent.CONTAINER_OPEN);
+            this.emitGameEvent(GameEvent.CONTAINER_OPEN, player);
             PiglinBrain.onGuardedBlockInteracted(player, true);
             return ActionResult.CONSUME;
         }

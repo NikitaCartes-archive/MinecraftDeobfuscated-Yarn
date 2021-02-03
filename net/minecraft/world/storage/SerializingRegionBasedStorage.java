@@ -68,15 +68,14 @@ implements AutoCloseable {
     }
 
     protected Optional<R> get(long pos) {
-        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(pos);
-        if (this.isPosInvalid(chunkSectionPos)) {
+        if (this.isPosInvalid(pos)) {
             return Optional.empty();
         }
         Optional<R> optional = this.getIfLoaded(pos);
         if (optional != null) {
             return optional;
         }
-        this.loadDataAt(chunkSectionPos.toChunkPos());
+        this.loadDataAt(ChunkSectionPos.from(pos).toChunkPos());
         optional = this.getIfLoaded(pos);
         if (optional == null) {
             throw Util.throwOrPause(new IllegalStateException());
@@ -84,12 +83,15 @@ implements AutoCloseable {
         return optional;
     }
 
-    protected boolean isPosInvalid(ChunkSectionPos pos) {
-        int i = ChunkSectionPos.getBlockCoord(pos.getSectionY());
+    protected boolean isPosInvalid(long l) {
+        int i = ChunkSectionPos.getBlockCoord(ChunkSectionPos.unpackY(l));
         return this.world.isOutOfHeightLimit(i);
     }
 
     protected R getOrCreate(long pos) {
+        if (this.isPosInvalid(pos)) {
+            throw Util.throwOrPause(new IllegalArgumentException("sectionPos out of bounds"));
+        }
         Optional<R> optional = this.get(pos);
         if (optional.isPresent()) {
             return optional.get();
@@ -116,7 +118,7 @@ implements AutoCloseable {
     private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
         if (data == null) {
             for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
-                this.loadedElements.put(ChunkSectionPos.from(pos, i).asLong(), (Optional<R>)Optional.empty());
+                this.loadedElements.put(SerializingRegionBasedStorage.method_33637(pos, i), (Optional<R>)Optional.empty());
             }
         } else {
             int k;
@@ -126,7 +128,7 @@ implements AutoCloseable {
             Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic2, j, k);
             OptionalDynamic<T> optionalDynamic = dynamic22.get("Sections");
             for (int l = this.world.getMinimumSection(); l < this.world.getTopSectionLimit(); ++l) {
-                long m = ChunkSectionPos.from(pos, l).asLong();
+                long m = SerializingRegionBasedStorage.method_33637(pos, l);
                 Optional optional = optionalDynamic.get(Integer.toString(l)).result().flatMap(dynamic -> this.codecFactory.apply(() -> this.onUpdate(m)).parse(dynamic).resultOrPartial(LOGGER::error));
                 this.loadedElements.put(m, (Optional<R>)optional);
                 optional.ifPresent(object -> {
@@ -152,7 +154,7 @@ implements AutoCloseable {
     private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
         HashMap map = Maps.newHashMap();
         for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
-            long l = ChunkSectionPos.from(chunkPos, i).asLong();
+            long l = SerializingRegionBasedStorage.method_33637(chunkPos, i);
             this.unsavedElements.remove(l);
             Optional optional = (Optional)this.loadedElements.get(l);
             if (optional == null || !optional.isPresent()) continue;
@@ -161,6 +163,10 @@ implements AutoCloseable {
             dataResult.resultOrPartial(LOGGER::error).ifPresent(object -> map.put(dynamicOps.createString(string), object));
         }
         return new Dynamic<T>(dynamicOps, dynamicOps.createMap(ImmutableMap.of(dynamicOps.createString("Sections"), dynamicOps.createMap(map), dynamicOps.createString("DataVersion"), dynamicOps.createInt(SharedConstants.getGameVersion().getWorldVersion()))));
+    }
+
+    private static long method_33637(ChunkPos chunkPos, int i) {
+        return ChunkSectionPos.asLong(chunkPos.x, i, chunkPos.z);
     }
 
     protected void onLoad(long pos) {
@@ -182,7 +188,7 @@ implements AutoCloseable {
     public void saveChunk(ChunkPos pos) {
         if (!this.unsavedElements.isEmpty()) {
             for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
-                long l = ChunkSectionPos.from(pos, i).asLong();
+                long l = SerializingRegionBasedStorage.method_33637(pos, i);
                 if (!this.unsavedElements.contains(l)) continue;
                 this.save(pos);
                 return;

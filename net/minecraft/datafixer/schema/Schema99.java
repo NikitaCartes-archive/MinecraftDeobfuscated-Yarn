@@ -13,7 +13,6 @@ import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.DynamicOps;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
@@ -218,16 +217,19 @@ extends Schema {
 
     protected static <T> T method_5359(Dynamic<T> dynamic, Map<String, String> map, String string) {
         return dynamic.update("tag", dynamic22 -> dynamic22.update("BlockEntityTag", dynamic2 -> {
-            String string = dynamic.get("id").asString("");
-            String string2 = (String)map.get(IdentifierNormalizingSchema.normalize(string));
-            if (string2 != null) {
-                return dynamic2.set("id", dynamic.createString(string2));
+            String string = dynamic.get("id").asString().result().map(IdentifierNormalizingSchema::normalize).orElse("minecraft:air");
+            if (!"minecraft:air".equals(string)) {
+                String string2 = (String)map.get(string);
+                if (string2 == null) {
+                    LOGGER.warn("Unable to resolve BlockEntity for ItemStack: {}", (Object)string);
+                } else {
+                    return dynamic2.set("id", dynamic.createString(string2));
+                }
             }
-            LOGGER.warn("Unable to resolve BlockEntity for ItemStack: {}", (Object)string);
             return dynamic2;
         }).update("EntityTag", dynamic2 -> {
             String string2 = dynamic.get("id").asString("");
-            if (Objects.equals(IdentifierNormalizingSchema.normalize(string2), "minecraft:armor_stand")) {
+            if ("minecraft:armor_stand".equals(IdentifierNormalizingSchema.normalize(string2))) {
                 return dynamic2.set("id", dynamic.createString(string));
             }
             return dynamic2;

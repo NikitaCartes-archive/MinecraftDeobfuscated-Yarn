@@ -104,7 +104,7 @@ public class FireworksSparkParticle {
         private boolean field_3802;
 
         private Explosion(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, ParticleManager particleManager, SpriteProvider spriteProvider) {
-            super(world, x, y, z, spriteProvider, -0.004f);
+            super(world, x, y, z, spriteProvider, 0.1f);
             this.velocityX = velocityX;
             this.velocityY = velocityY;
             this.velocityZ = velocityZ;

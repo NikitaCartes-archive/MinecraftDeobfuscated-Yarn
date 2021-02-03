@@ -145,13 +145,11 @@ extends LivingEntity {
         switch (slot.getType()) {
             case HAND: {
                 this.onEquipStack(stack);
-                this.emitGameEvent(null, GameEvent.ARMOR_STAND_ADD_ITEM);
                 this.heldItems.set(slot.getEntitySlotId(), stack);
                 break;
             }
             case ARMOR: {
                 this.onEquipStack(stack);
-                this.emitGameEvent(null, GameEvent.ARMOR_STAND_ADD_ITEM);
                 this.armorItems.set(slot.getEntitySlotId(), stack);
             }
         }
@@ -423,7 +421,6 @@ extends LivingEntity {
         }
         if (source.isSourceCreativePlayer()) {
             this.playBreakSound();
-            this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
             this.spawnBreakParticles();
             this.kill();
             return bl2;
@@ -435,7 +432,7 @@ extends LivingEntity {
             this.kill();
         } else {
             this.world.sendEntityStatus(this, (byte)32);
-            this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
+            this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
             this.lastHitTime = l;
         }
         return true;
@@ -477,6 +474,7 @@ extends LivingEntity {
             this.kill();
         } else {
             this.setHealth(f);
+            this.emitGameEvent(GameEvent.ENTITY_DAMAGED, damageSource.getAttacker());
         }
     }
 
@@ -489,7 +487,6 @@ extends LivingEntity {
         ItemStack itemStack;
         int i;
         this.playBreakSound();
-        this.emitGameEvent(damageSource.getAttacker(), GameEvent.BLOCK_DESTROY);
         this.drop(damageSource);
         for (i = 0; i < this.heldItems.size(); ++i) {
             itemStack = this.heldItems.get(i);

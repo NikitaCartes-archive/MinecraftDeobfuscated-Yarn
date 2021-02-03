@@ -12,11 +12,11 @@ import net.minecraft.client.model.ModelPartData;
 import net.minecraft.client.model.ModelTransform;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
-public class PhantomEntityModel<T extends Entity>
+public class PhantomEntityModel<T extends PhantomEntity>
 extends SinglePartEntityModel<T> {
     private final ModelPart root;
     private final ModelPart leftWingBase;
@@ -57,15 +57,15 @@ extends SinglePartEntityModel<T> {
     }
 
     @Override
-    public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
-        float f = ((float)(((Entity)entity).getId() * 3) + animationProgress) * 0.13f;
-        float g = 16.0f;
-        this.leftWingBase.roll = MathHelper.cos(f) * 16.0f * ((float)Math.PI / 180);
-        this.leftWingTip.roll = MathHelper.cos(f) * 16.0f * ((float)Math.PI / 180);
+    public void setAngles(T phantomEntity, float f, float g, float h, float i, float j) {
+        float k = ((float)((PhantomEntity)phantomEntity).method_33588() + h) * 7.448451f * ((float)Math.PI / 180);
+        float l = 16.0f;
+        this.leftWingBase.roll = MathHelper.cos(k) * 16.0f * ((float)Math.PI / 180);
+        this.leftWingTip.roll = MathHelper.cos(k) * 16.0f * ((float)Math.PI / 180);
         this.rightWingBase.roll = -this.leftWingBase.roll;
         this.rightWingTip.roll = -this.leftWingTip.roll;
-        this.tailBase.pitch = -(5.0f + MathHelper.cos(f * 2.0f) * 5.0f) * ((float)Math.PI / 180);
-        this.tailTip.pitch = -(5.0f + MathHelper.cos(f * 2.0f) * 5.0f) * ((float)Math.PI / 180);
+        this.tailBase.pitch = -(5.0f + MathHelper.cos(k * 2.0f) * 5.0f) * ((float)Math.PI / 180);
+        this.tailTip.pitch = -(5.0f + MathHelper.cos(k * 2.0f) * 5.0f) * ((float)Math.PI / 180);
     }
 }
 

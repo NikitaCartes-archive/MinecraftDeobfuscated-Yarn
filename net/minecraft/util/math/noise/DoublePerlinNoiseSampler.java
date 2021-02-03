@@ -6,25 +6,25 @@ package net.minecraft.util.math.noise;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.doubles.DoubleListIterator;
+import net.minecraft.class_5819;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
-import net.minecraft.world.gen.ChunkRandom;
 
 public class DoublePerlinNoiseSampler {
     private final double amplitude;
     private final OctavePerlinNoiseSampler firstSampler;
     private final OctavePerlinNoiseSampler secondSampler;
 
-    public static DoublePerlinNoiseSampler create(ChunkRandom random, int offset, double ... octaves) {
-        return new DoublePerlinNoiseSampler(random, offset, new DoubleArrayList(octaves));
+    public static DoublePerlinNoiseSampler create(class_5819 arg, int offset, double ... octaves) {
+        return new DoublePerlinNoiseSampler(arg, offset, new DoubleArrayList(octaves));
     }
 
-    public static DoublePerlinNoiseSampler create(ChunkRandom random, int offset, DoubleList octaves) {
-        return new DoublePerlinNoiseSampler(random, offset, octaves);
+    public static DoublePerlinNoiseSampler create(class_5819 arg, int offset, DoubleList octaves) {
+        return new DoublePerlinNoiseSampler(arg, offset, octaves);
     }
 
-    private DoublePerlinNoiseSampler(ChunkRandom random, int offset, DoubleList octaves) {
-        this.firstSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
-        this.secondSampler = OctavePerlinNoiseSampler.create(random, offset, octaves);
+    private DoublePerlinNoiseSampler(class_5819 arg, int offset, DoubleList octaves) {
+        this.firstSampler = OctavePerlinNoiseSampler.create(arg, offset, octaves);
+        this.secondSampler = OctavePerlinNoiseSampler.create(arg, offset, octaves);
         int i = Integer.MAX_VALUE;
         int j = Integer.MIN_VALUE;
         DoubleListIterator doubleListIterator = octaves.iterator();

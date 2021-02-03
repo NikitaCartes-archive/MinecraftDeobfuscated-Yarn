@@ -39,6 +39,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -53,6 +54,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class ShulkerEntity
@@ -86,8 +88,8 @@ implements Monster {
     }
 
     @Override
-    protected boolean canClimb() {
-        return false;
+    protected Entity.class_5799 method_33570() {
+        return Entity.class_5799.field_28630;
     }
 
     @Override
@@ -213,7 +215,7 @@ implements Monster {
         if (h <= 0.0f) {
             return;
         }
-        List<Entity> list = this.world.getOtherEntities(this, ShulkerEntity.method_33347(direction, g, f).offset(this.getX(), this.getY(), this.getZ()), EntityPredicates.EXCEPT_SPECTATOR.and(entity -> !entity.isConnectedThroughVehicle(this)));
+        List<Entity> list = this.world.getOtherEntities(this, ShulkerEntity.method_33347(direction, g, f).offset(this.getX() - 0.5, this.getY(), this.getZ() - 0.5), EntityPredicates.EXCEPT_SPECTATOR.and(entity -> !entity.isConnectedThroughVehicle(this)));
         for (Entity entity2 : list) {
             if (entity2 instanceof ShulkerEntity || entity2.noClip) continue;
             entity2.move(MovementType.SHULKER, new Vec3d(h * (float)direction.getOffsetX(), h * (float)direction.getOffsetY(), h * (float)direction.getOffsetZ()));
@@ -264,11 +266,11 @@ implements Monster {
     }
 
     @Override
-    public void move(MovementType type, Vec3d movement) {
-        if (type == MovementType.SHULKER_BOX) {
+    public void move(MovementType movementType, Vec3d movement) {
+        if (movementType == MovementType.SHULKER_BOX) {
             this.tryTeleport();
         } else {
-            super.move(type, movement);
+            super.move(movementType, movement);
         }
     }
 
@@ -424,8 +426,10 @@ implements Monster {
             if (peekAmount == 0) {
                 this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).addPersistentModifier(COVERED_ARMOR_BONUS);
                 this.playSound(SoundEvents.ENTITY_SHULKER_CLOSE, 1.0f, 1.0f);
+                this.emitGameEvent(GameEvent.SHULKER_CLOSE);
             } else {
                 this.playSound(SoundEvents.ENTITY_SHULKER_OPEN, 1.0f, 1.0f);
+                this.emitGameEvent(GameEvent.SHULKER_OPEN);
             }
         }
         this.dataTracker.set(PEEK_AMOUNT, (byte)peekAmount);
@@ -439,6 +443,13 @@ implements Monster {
     @Override
     protected float getActiveEyeHeight(EntityPose pose, EntityDimensions dimensions) {
         return 0.5f;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
+        super.method_33579(mobSpawnS2CPacket);
+        this.bodyYaw = 0.0f;
     }
 
     @Override

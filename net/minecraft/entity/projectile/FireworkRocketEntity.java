@@ -158,7 +158,7 @@ implements FlyingItemEntity {
 
     private void explodeAndRemove() {
         this.world.sendEntityStatus(this, (byte)17);
-        this.emitGameEvent(this.getOwner(), GameEvent.EXPLODE);
+        this.emitGameEvent(GameEvent.EXPLODE, this.getOwner());
         this.explode();
         this.discard();
     }

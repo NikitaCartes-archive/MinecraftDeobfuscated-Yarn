@@ -8,12 +8,12 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
@@ -27,9 +27,13 @@ extends Feature<SingleStateFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
+    public boolean generate(class_5821<SingleStateFeatureConfig> arg) {
         int t;
         int j;
+        BlockPos blockPos = arg.method_33655();
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        Random random = arg.method_33654();
+        SingleStateFeatureConfig singleStateFeatureConfig = arg.method_33656();
         while (blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 5 && structureWorldAccess.isAir(blockPos)) {
             blockPos = blockPos.down();
         }

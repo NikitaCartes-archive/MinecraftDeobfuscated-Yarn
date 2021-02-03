@@ -21,6 +21,8 @@ extends SpriteBillboardParticle {
     protected ExplosionSmokeParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
         super(world, x, y, z);
         float g;
+        this.gravityStrength = -0.1f;
+        this.field_28786 = 0.9f;
         this.spriteProvider = spriteProvider;
         this.velocityX = d + (Math.random() * 2.0 - 1.0) * (double)0.05f;
         this.velocityY = e + (Math.random() * 2.0 - 1.0) * (double)0.05f;
@@ -40,23 +42,8 @@ extends SpriteBillboardParticle {
 
     @Override
     public void tick() {
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        if (this.age++ >= this.maxAge) {
-            this.markDead();
-            return;
-        }
+        super.tick();
         this.setSpriteForAge(this.spriteProvider);
-        this.velocityY += 0.004;
-        this.move(this.velocityX, this.velocityY, this.velocityZ);
-        this.velocityX *= (double)0.9f;
-        this.velocityY *= (double)0.9f;
-        this.velocityZ *= (double)0.9f;
-        if (this.onGround) {
-            this.velocityX *= (double)0.7f;
-            this.velocityZ *= (double)0.7f;
-        }
     }
 
     @Environment(value=EnvType.CLIENT)

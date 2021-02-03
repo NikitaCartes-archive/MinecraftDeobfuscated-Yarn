@@ -49,6 +49,7 @@ public class FoodComponents {
     public static final FoodComponent SPIDER_EYE = new FoodComponent.Builder().hunger(2).saturationModifier(0.8f).statusEffect(new StatusEffectInstance(StatusEffects.POISON, 100, 0), 1.0f).build();
     public static final FoodComponent SUSPICIOUS_STEW = FoodComponents.create(6);
     public static final FoodComponent SWEET_BERRIES = new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build();
+    public static final FoodComponent field_28647 = new FoodComponent.Builder().hunger(2).saturationModifier(0.1f).build();
     public static final FoodComponent TROPICAL_FISH = new FoodComponent.Builder().hunger(1).saturationModifier(0.1f).build();
 
     private static FoodComponent create(int hunger) {

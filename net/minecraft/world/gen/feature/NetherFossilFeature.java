@@ -15,6 +15,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.EmptyBlockView;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.chunk.VerticalBlockSample;
@@ -39,13 +40,13 @@ extends StructureFeature<DefaultFeatureConfig> {
         }
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
             int n;
             ChunkPos chunkPos = new ChunkPos(i, j);
             int k = chunkPos.getStartX() + this.random.nextInt(16);
             int l = chunkPos.getStartZ() + this.random.nextInt(16);
             int m = chunkGenerator.getSeaLevel();
-            VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(k, l);
+            VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(k, l, heightLimitView);
             BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l);
             for (n = m + this.random.nextInt(chunkGenerator.getWorldHeight() - 2 - m); n > m; --n) {
                 BlockState blockState = verticalBlockSample.getState(mutable);

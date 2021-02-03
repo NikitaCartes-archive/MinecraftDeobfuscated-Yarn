@@ -47,9 +47,6 @@ import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.ConcretePowderBlock;
 import net.minecraft.block.ConduitBlock;
-import net.minecraft.block.CopperBlock;
-import net.minecraft.block.CopperSlabBlock;
-import net.minecraft.block.CopperStairsBlock;
 import net.minecraft.block.CoralBlock;
 import net.minecraft.block.CoralBlockBlock;
 import net.minecraft.block.CoralFanBlock;
@@ -68,6 +65,7 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.DragonEggBlock;
 import net.minecraft.block.DropperBlock;
+import net.minecraft.block.DyedCarpetBlock;
 import net.minecraft.block.EnchantingTableBlock;
 import net.minecraft.block.EndGatewayBlock;
 import net.minecraft.block.EndPortalBlock;
@@ -116,6 +114,7 @@ import net.minecraft.block.MagmaBlock;
 import net.minecraft.block.MapColor;
 import net.minecraft.block.Material;
 import net.minecraft.block.MelonBlock;
+import net.minecraft.block.MossBlock;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.block.MushroomPlantBlock;
 import net.minecraft.block.MyceliumBlock;
@@ -220,6 +219,18 @@ import net.minecraft.block.sapling.DarkOakSaplingGenerator;
 import net.minecraft.block.sapling.JungleSaplingGenerator;
 import net.minecraft.block.sapling.OakSaplingGenerator;
 import net.minecraft.block.sapling.SpruceSaplingGenerator;
+import net.minecraft.class_5800;
+import net.minecraft.class_5801;
+import net.minecraft.class_5802;
+import net.minecraft.class_5804;
+import net.minecraft.class_5805;
+import net.minecraft.class_5806;
+import net.minecraft.class_5808;
+import net.minecraft.class_5809;
+import net.minecraft.class_5810;
+import net.minecraft.class_5812;
+import net.minecraft.class_5813;
+import net.minecraft.class_5814;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.fluid.Fluids;
@@ -296,12 +307,14 @@ public class Blocks {
     public static final Block STRIPPED_JUNGLE_WOOD = Blocks.register("stripped_jungle_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.DIRT_BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block STRIPPED_ACACIA_WOOD = Blocks.register("stripped_acacia_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.ORANGE).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block STRIPPED_DARK_OAK_WOOD = Blocks.register("stripped_dark_oak_wood", new PillarBlock(AbstractBlock.Settings.of(Material.WOOD, MapColor.BROWN).strength(2.0f).sounds(BlockSoundGroup.WOOD)));
-    public static final Block OAK_LEAVES = Blocks.register("oak_leaves", Blocks.createLeavesBlock());
-    public static final Block SPRUCE_LEAVES = Blocks.register("spruce_leaves", Blocks.createLeavesBlock());
-    public static final Block BIRCH_LEAVES = Blocks.register("birch_leaves", Blocks.createLeavesBlock());
-    public static final Block JUNGLE_LEAVES = Blocks.register("jungle_leaves", Blocks.createLeavesBlock());
-    public static final Block ACACIA_LEAVES = Blocks.register("acacia_leaves", Blocks.createLeavesBlock());
-    public static final Block DARK_OAK_LEAVES = Blocks.register("dark_oak_leaves", Blocks.createLeavesBlock());
+    public static final Block OAK_LEAVES = Blocks.register("oak_leaves", Blocks.createLeavesBlock(BlockSoundGroup.GRASS));
+    public static final Block SPRUCE_LEAVES = Blocks.register("spruce_leaves", Blocks.createLeavesBlock(BlockSoundGroup.GRASS));
+    public static final Block BIRCH_LEAVES = Blocks.register("birch_leaves", Blocks.createLeavesBlock(BlockSoundGroup.GRASS));
+    public static final Block JUNGLE_LEAVES = Blocks.register("jungle_leaves", Blocks.createLeavesBlock(BlockSoundGroup.GRASS));
+    public static final Block ACACIA_LEAVES = Blocks.register("acacia_leaves", Blocks.createLeavesBlock(BlockSoundGroup.GRASS));
+    public static final Block DARK_OAK_LEAVES = Blocks.register("dark_oak_leaves", Blocks.createLeavesBlock(BlockSoundGroup.GRASS));
+    public static final Block AZALEA_LEAVES = Blocks.register("azalea_leaves", Blocks.createLeavesBlock(BlockSoundGroup.field_28702));
+    public static final Block AZALEA_LEAVES_FLOWERS = Blocks.register("azalea_leaves_flowers", Blocks.createLeavesBlock(BlockSoundGroup.field_28702));
     public static final Block SPONGE = Blocks.register("sponge", new SpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6f).sounds(BlockSoundGroup.GRASS)));
     public static final Block WET_SPONGE = Blocks.register("wet_sponge", new WetSpongeBlock(AbstractBlock.Settings.of(Material.SPONGE).strength(0.6f).sounds(BlockSoundGroup.GRASS)));
     public static final Block GLASS = Blocks.register("glass", new GlassBlock(AbstractBlock.Settings.of(Material.GLASS).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::never).solidBlock(Blocks::never).suffocates(Blocks::never).blockVision(Blocks::never)));
@@ -487,6 +500,7 @@ public class Blocks {
     public static final Block PUMPKIN_STEM = Blocks.register("pumpkin_stem", new StemBlock((GourdBlock)PUMPKIN, () -> Items.PUMPKIN_SEEDS, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block MELON_STEM = Blocks.register("melon_stem", new StemBlock((GourdBlock)MELON, () -> Items.MELON_SEEDS, AbstractBlock.Settings.of(Material.PLANT).noCollision().ticksRandomly().breakInstantly().sounds(BlockSoundGroup.STEM)));
     public static final Block VINE = Blocks.register("vine", new VineBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().ticksRandomly().strength(0.2f).sounds(BlockSoundGroup.VINE)));
+    public static final Block GLOW_LICHEN = Blocks.register("glow_lichen", new GlowLichenBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().strength(0.2f).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(blockState -> 7)));
     public static final Block OAK_FENCE_GATE = Blocks.register("oak_fence_gate", new FenceGateBlock(AbstractBlock.Settings.of(Material.WOOD, OAK_PLANKS.getDefaultMapColor()).strength(2.0f, 3.0f).sounds(BlockSoundGroup.WOOD)));
     public static final Block BRICK_STAIRS = Blocks.register("brick_stairs", new StairsBlock(BRICKS.getDefaultState(), AbstractBlock.Settings.copy(BRICKS)));
     public static final Block STONE_BRICK_STAIRS = Blocks.register("stone_brick_stairs", new StairsBlock(STONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(STONE_BRICKS)));
@@ -631,22 +645,22 @@ public class Blocks {
     public static final Block DARK_PRISMARINE_SLAB = Blocks.register("dark_prismarine_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.DIAMOND_BLUE).requiresTool().strength(1.5f, 6.0f)));
     public static final Block SEA_LANTERN = Blocks.register("sea_lantern", new Block(AbstractBlock.Settings.of(Material.GLASS, MapColor.OFF_WHITE).strength(0.3f).sounds(BlockSoundGroup.GLASS).luminance(state -> 15)));
     public static final Block HAY_BLOCK = Blocks.register("hay_block", new HayBlock(AbstractBlock.Settings.of(Material.SOLID_ORGANIC, MapColor.YELLOW).strength(0.5f).sounds(BlockSoundGroup.GRASS)));
-    public static final Block WHITE_CARPET = Blocks.register("white_carpet", new CarpetBlock(DyeColor.WHITE, AbstractBlock.Settings.of(Material.CARPET, MapColor.WHITE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block ORANGE_CARPET = Blocks.register("orange_carpet", new CarpetBlock(DyeColor.ORANGE, AbstractBlock.Settings.of(Material.CARPET, MapColor.ORANGE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block MAGENTA_CARPET = Blocks.register("magenta_carpet", new CarpetBlock(DyeColor.MAGENTA, AbstractBlock.Settings.of(Material.CARPET, MapColor.MAGENTA).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block LIGHT_BLUE_CARPET = Blocks.register("light_blue_carpet", new CarpetBlock(DyeColor.LIGHT_BLUE, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIGHT_BLUE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block YELLOW_CARPET = Blocks.register("yellow_carpet", new CarpetBlock(DyeColor.YELLOW, AbstractBlock.Settings.of(Material.CARPET, MapColor.YELLOW).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block LIME_CARPET = Blocks.register("lime_carpet", new CarpetBlock(DyeColor.LIME, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIME).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block PINK_CARPET = Blocks.register("pink_carpet", new CarpetBlock(DyeColor.PINK, AbstractBlock.Settings.of(Material.CARPET, MapColor.PINK).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block GRAY_CARPET = Blocks.register("gray_carpet", new CarpetBlock(DyeColor.GRAY, AbstractBlock.Settings.of(Material.CARPET, MapColor.GRAY).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block LIGHT_GRAY_CARPET = Blocks.register("light_gray_carpet", new CarpetBlock(DyeColor.LIGHT_GRAY, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIGHT_GRAY).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block CYAN_CARPET = Blocks.register("cyan_carpet", new CarpetBlock(DyeColor.CYAN, AbstractBlock.Settings.of(Material.CARPET, MapColor.CYAN).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block PURPLE_CARPET = Blocks.register("purple_carpet", new CarpetBlock(DyeColor.PURPLE, AbstractBlock.Settings.of(Material.CARPET, MapColor.PURPLE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block BLUE_CARPET = Blocks.register("blue_carpet", new CarpetBlock(DyeColor.BLUE, AbstractBlock.Settings.of(Material.CARPET, MapColor.BLUE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block BROWN_CARPET = Blocks.register("brown_carpet", new CarpetBlock(DyeColor.BROWN, AbstractBlock.Settings.of(Material.CARPET, MapColor.BROWN).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block GREEN_CARPET = Blocks.register("green_carpet", new CarpetBlock(DyeColor.GREEN, AbstractBlock.Settings.of(Material.CARPET, MapColor.GREEN).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block RED_CARPET = Blocks.register("red_carpet", new CarpetBlock(DyeColor.RED, AbstractBlock.Settings.of(Material.CARPET, MapColor.RED).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
-    public static final Block BLACK_CARPET = Blocks.register("black_carpet", new CarpetBlock(DyeColor.BLACK, AbstractBlock.Settings.of(Material.CARPET, MapColor.BLACK).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block WHITE_CARPET = Blocks.register("white_carpet", new DyedCarpetBlock(DyeColor.WHITE, AbstractBlock.Settings.of(Material.CARPET, MapColor.WHITE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block ORANGE_CARPET = Blocks.register("orange_carpet", new DyedCarpetBlock(DyeColor.ORANGE, AbstractBlock.Settings.of(Material.CARPET, MapColor.ORANGE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block MAGENTA_CARPET = Blocks.register("magenta_carpet", new DyedCarpetBlock(DyeColor.MAGENTA, AbstractBlock.Settings.of(Material.CARPET, MapColor.MAGENTA).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block LIGHT_BLUE_CARPET = Blocks.register("light_blue_carpet", new DyedCarpetBlock(DyeColor.LIGHT_BLUE, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIGHT_BLUE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block YELLOW_CARPET = Blocks.register("yellow_carpet", new DyedCarpetBlock(DyeColor.YELLOW, AbstractBlock.Settings.of(Material.CARPET, MapColor.YELLOW).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block LIME_CARPET = Blocks.register("lime_carpet", new DyedCarpetBlock(DyeColor.LIME, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIME).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block PINK_CARPET = Blocks.register("pink_carpet", new DyedCarpetBlock(DyeColor.PINK, AbstractBlock.Settings.of(Material.CARPET, MapColor.PINK).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block GRAY_CARPET = Blocks.register("gray_carpet", new DyedCarpetBlock(DyeColor.GRAY, AbstractBlock.Settings.of(Material.CARPET, MapColor.GRAY).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block LIGHT_GRAY_CARPET = Blocks.register("light_gray_carpet", new DyedCarpetBlock(DyeColor.LIGHT_GRAY, AbstractBlock.Settings.of(Material.CARPET, MapColor.LIGHT_GRAY).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block CYAN_CARPET = Blocks.register("cyan_carpet", new DyedCarpetBlock(DyeColor.CYAN, AbstractBlock.Settings.of(Material.CARPET, MapColor.CYAN).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block PURPLE_CARPET = Blocks.register("purple_carpet", new DyedCarpetBlock(DyeColor.PURPLE, AbstractBlock.Settings.of(Material.CARPET, MapColor.PURPLE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block BLUE_CARPET = Blocks.register("blue_carpet", new DyedCarpetBlock(DyeColor.BLUE, AbstractBlock.Settings.of(Material.CARPET, MapColor.BLUE).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block BROWN_CARPET = Blocks.register("brown_carpet", new DyedCarpetBlock(DyeColor.BROWN, AbstractBlock.Settings.of(Material.CARPET, MapColor.BROWN).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block GREEN_CARPET = Blocks.register("green_carpet", new DyedCarpetBlock(DyeColor.GREEN, AbstractBlock.Settings.of(Material.CARPET, MapColor.GREEN).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block RED_CARPET = Blocks.register("red_carpet", new DyedCarpetBlock(DyeColor.RED, AbstractBlock.Settings.of(Material.CARPET, MapColor.RED).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
+    public static final Block BLACK_CARPET = Blocks.register("black_carpet", new DyedCarpetBlock(DyeColor.BLACK, AbstractBlock.Settings.of(Material.CARPET, MapColor.BLACK).strength(0.1f).sounds(BlockSoundGroup.WOOL)));
     public static final Block TERRACOTTA = Blocks.register("terracotta", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.ORANGE).requiresTool().strength(1.25f, 4.2f)));
     public static final Block COAL_BLOCK = Blocks.register("coal_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.BLACK).requiresTool().strength(5.0f, 6.0f)));
     public static final Block PACKED_ICE = Blocks.register("packed_ice", new Block(AbstractBlock.Settings.of(Material.DENSE_ICE).slipperiness(0.98f).strength(0.5f).sounds(BlockSoundGroup.GLASS)));
@@ -1048,42 +1062,57 @@ public class Blocks {
     public static final Block TINTED_GLASS = Blocks.register("tinted_glass", new TintedGlassBlock(AbstractBlock.Settings.copy(GLASS).mapColor(MapColor.GRAY)));
     public static final Block POWDER_SNOW = Blocks.register("powder_snow", new PowderSnowBlock(AbstractBlock.Settings.of(Material.POWDER_SNOW).strength(0.1f).sounds(BlockSoundGroup.POWDER_SNOW).dynamicBounds()));
     public static final Block SCULK_SENSOR = Blocks.register("sculk_sensor", new SculkSensorBlock(AbstractBlock.Settings.of(Material.SCULK, MapColor.CYAN).strength(1.5f).sounds(BlockSoundGroup.SCULK_SENSOR).luminance(state -> 1).emissiveLighting((state, world, pos) -> SculkSensorBlock.getPhase(state) == SculkSensorPhase.ACTIVE), 8));
-    public static final Block WEATHERED_COPPER_BLOCK = Blocks.register("weathered_copper_block", new Block(AbstractBlock.Settings.of(Material.METAL, MapColor.TEAL).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER)));
-    public static final Block SEMI_WEATHERED_COPPER_BLOCK = Blocks.register("semi_weathered_copper_block", new CopperBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), WEATHERED_COPPER_BLOCK));
-    public static final Block LIGHTLY_WEATHERED_COPPER_BLOCK = Blocks.register("lightly_weathered_copper_block", new CopperBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.TERRACOTTA_LIGHT_GRAY).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), SEMI_WEATHERED_COPPER_BLOCK));
-    public static final Block COPPER_BLOCK = Blocks.register("copper_block", new CopperBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), LIGHTLY_WEATHERED_COPPER_BLOCK));
+    public static final Block OXIDIZED_COPPER_BLOCK = Blocks.register("oxidized_copper_block", new class_5812(AbstractBlock.Settings.of(Material.METAL, MapColor.TEAL).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER)));
+    public static final Block WEATHERED_COPPER_BLOCK = Blocks.register("weathered_copper_block", new class_5812(AbstractBlock.Settings.of(Material.METAL, MapColor.DARK_AQUA).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), class_5810.class_5811.field_28706, OXIDIZED_COPPER_BLOCK));
+    public static final Block EXPOSED_COPPER_BLOCK = Blocks.register("exposed_copper_block", new class_5812(AbstractBlock.Settings.of(Material.METAL, MapColor.TERRACOTTA_LIGHT_GRAY).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), class_5810.class_5811.field_28705, WEATHERED_COPPER_BLOCK));
+    public static final Block COPPER_BLOCK = Blocks.register("copper_block", new class_5812(AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER), class_5810.class_5811.field_28704, EXPOSED_COPPER_BLOCK));
     public static final Block COPPER_ORE = Blocks.register("copper_ore", new Block(AbstractBlock.Settings.copy(IRON_ORE)));
-    public static final Block WEATHERED_CUT_COPPER = Blocks.register("weathered_cut_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK)));
-    public static final Block SEMI_WEATHERED_CUT_COPPER = Blocks.register("semi_weathered_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK), WEATHERED_CUT_COPPER));
-    public static final Block LIGHTLY_WEATHERED_CUT_COPPER = Blocks.register("lightly_weathered_cut_copper", new CopperBlock(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK), SEMI_WEATHERED_CUT_COPPER));
-    public static final Block CUT_COPPER = Blocks.register("cut_copper", new CopperBlock(AbstractBlock.Settings.copy(COPPER_BLOCK), LIGHTLY_WEATHERED_CUT_COPPER));
-    public static final Block WEATHERED_CUT_COPPER_STAIRS = Blocks.register("weathered_cut_copper_stairs", new StairsBlock(WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK)));
-    public static final Block SEMI_WEATHERED_CUT_COPPER_STAIRS = Blocks.register("semi_weathered_cut_copper_stairs", new CopperStairsBlock(SEMI_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK), WEATHERED_CUT_COPPER_STAIRS));
-    public static final Block LIGHTLY_WEATHERED_CUT_COPPER_STAIRS = Blocks.register("lightly_weathered_cut_copper_stairs", new CopperStairsBlock(LIGHTLY_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK), SEMI_WEATHERED_CUT_COPPER_STAIRS));
-    public static final Block CUT_COPPER_STAIRS = Blocks.register("cut_copper_stairs", new CopperStairsBlock(CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK), LIGHTLY_WEATHERED_CUT_COPPER_STAIRS));
-    public static final Block WEATHERED_CUT_COPPER_SLAB = Blocks.register("weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WEATHERED_CUT_COPPER).requiresTool()));
-    public static final Block SEMI_WEATHERED_CUT_COPPER_SLAB = Blocks.register("semi_weathered_cut_copper_slab", new CopperSlabBlock(AbstractBlock.Settings.copy(SEMI_WEATHERED_CUT_COPPER).requiresTool(), WEATHERED_CUT_COPPER_SLAB));
-    public static final Block LIGHTLY_WEATHERED_CUT_COPPER_SLAB = Blocks.register("lightly_weathered_cut_copper_slab", new CopperSlabBlock(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_CUT_COPPER).requiresTool(), SEMI_WEATHERED_CUT_COPPER_SLAB));
-    public static final Block CUT_COPPER_SLAB = Blocks.register("cut_copper_slab", new CopperSlabBlock(AbstractBlock.Settings.copy(CUT_COPPER).requiresTool(), LIGHTLY_WEATHERED_CUT_COPPER_SLAB));
+    public static final Block OXIDIZED_CUT_COPPER = Blocks.register("oxidized_cut_copper", new class_5812(AbstractBlock.Settings.copy(OXIDIZED_COPPER_BLOCK)));
+    public static final Block WEATHERED_CUT_COPPER = Blocks.register("weathered_cut_copper", new class_5812(AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK), class_5810.class_5811.field_28706, OXIDIZED_CUT_COPPER));
+    public static final Block EXPOSED_CUT_COPPER = Blocks.register("exposed_cut_copper", new class_5812(AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK), class_5810.class_5811.field_28705, WEATHERED_CUT_COPPER));
+    public static final Block CUT_COPPER = Blocks.register("cut_copper", new class_5812(AbstractBlock.Settings.copy(COPPER_BLOCK), class_5810.class_5811.field_28704, EXPOSED_CUT_COPPER));
+    public static final Block OXIDIZED_CUT_COPPER_STAIRS = Blocks.register("oxidized_cut_copper_stairs", new class_5814(OXIDIZED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER)));
+    public static final Block WEATHERED_CUT_COPPER_STAIRS = Blocks.register("weathered_cut_copper_stairs", new class_5814(WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK), class_5810.class_5811.field_28706, OXIDIZED_CUT_COPPER_STAIRS));
+    public static final Block EXPOSED_CUT_COPPER_STAIRS = Blocks.register("exposed_cut_copper_stairs", new class_5814(EXPOSED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK), class_5810.class_5811.field_28705, WEATHERED_CUT_COPPER_STAIRS));
+    public static final Block CUT_COPPER_STAIRS = Blocks.register("cut_copper_stairs", new class_5814(CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK), class_5810.class_5811.field_28704, EXPOSED_CUT_COPPER_STAIRS));
+    public static final Block OXIDIZED_CUT_COPPER_SLAB = Blocks.register("oxidized_cut_copper_slab", new class_5813(AbstractBlock.Settings.copy(OXIDIZED_CUT_COPPER).requiresTool()));
+    public static final Block WEATHERED_CUT_COPPER_SLAB = Blocks.register("weathered_cut_copper_slab", new class_5813(AbstractBlock.Settings.copy(WEATHERED_CUT_COPPER).requiresTool(), class_5810.class_5811.field_28706, OXIDIZED_CUT_COPPER_SLAB));
+    public static final Block EXPOSED_CUT_COPPER_SLAB = Blocks.register("exposed_cut_copper_slab", new class_5813(AbstractBlock.Settings.copy(EXPOSED_CUT_COPPER).requiresTool(), class_5810.class_5811.field_28705, WEATHERED_CUT_COPPER_SLAB));
+    public static final Block CUT_COPPER_SLAB = Blocks.register("cut_copper_slab", new class_5813(AbstractBlock.Settings.copy(CUT_COPPER).requiresTool(), class_5810.class_5811.field_28704, EXPOSED_CUT_COPPER_SLAB));
     public static final Block WAXED_COPPER = Blocks.register("waxed_copper", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
-    public static final Block WAXED_SEMI_WEATHERED_COPPER = Blocks.register("waxed_semi_weathered_copper", new Block(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK)));
-    public static final Block WAXED_LIGHTLY_WEATHERED_COPPER = Blocks.register("waxed_lightly_weathered_copper", new Block(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK)));
-    public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER = Blocks.register("waxed_semi_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK)));
-    public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER = Blocks.register("waxed_lightly_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK)));
+    public static final Block WAXED_WEATHERED_COPPER = Blocks.register("waxed_weathered_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK)));
+    public static final Block WAXED_EXPOSED_COPPER = Blocks.register("waxed_exposed_copper", new Block(AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK)));
+    public static final Block WAXED_WEATHERED_CUT_COPPER = Blocks.register("waxed_weathered_cut_copper", new Block(AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK)));
+    public static final Block WAXED_EXPOSED_CUT_COPPER = Blocks.register("waxed_exposed_cut_copper", new Block(AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK)));
     public static final Block WAXED_CUT_COPPER = Blocks.register("waxed_cut_copper", new Block(AbstractBlock.Settings.copy(COPPER_BLOCK)));
-    public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS = Blocks.register("waxed_semi_weathered_cut_copper_stairs", new StairsBlock(WAXED_SEMI_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(SEMI_WEATHERED_COPPER_BLOCK)));
-    public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER_STAIRS = Blocks.register("waxed_lightly_weathered_cut_copper_stairs", new StairsBlock(WAXED_LIGHTLY_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(LIGHTLY_WEATHERED_COPPER_BLOCK)));
+    public static final Block WAXED_WEATHERED_CUT_COPPER_STAIRS = Blocks.register("waxed_weathered_cut_copper_stairs", new StairsBlock(WAXED_WEATHERED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(WEATHERED_COPPER_BLOCK)));
+    public static final Block WAXED_EXPOSED_CUT_COPPER_STAIRS = Blocks.register("waxed_exposed_cut_copper_stairs", new StairsBlock(WAXED_EXPOSED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(EXPOSED_COPPER_BLOCK)));
     public static final Block WAXED_CUT_COPPER_STAIRS = Blocks.register("waxed_cut_copper_stairs", new StairsBlock(WAXED_CUT_COPPER.getDefaultState(), AbstractBlock.Settings.copy(COPPER_BLOCK)));
-    public static final Block WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB = Blocks.register("waxed_semi_weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_SEMI_WEATHERED_CUT_COPPER).requiresTool()));
-    public static final Block WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB = Blocks.register("waxed_lightly_weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_LIGHTLY_WEATHERED_CUT_COPPER).requiresTool()));
+    public static final Block WAXED_WEATHERED_CUT_COPPER_SLAB = Blocks.register("waxed_weathered_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_WEATHERED_CUT_COPPER).requiresTool()));
+    public static final Block WAXED_EXPOSED_CUT_COPPER_SLAB = Blocks.register("waxed_exposed_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_EXPOSED_CUT_COPPER).requiresTool()));
     public static final Block WAXED_CUT_COPPER_SLAB = Blocks.register("waxed_cut_copper_slab", new SlabBlock(AbstractBlock.Settings.copy(WAXED_CUT_COPPER).requiresTool()));
     public static final Block LIGHTNING_ROD = Blocks.register("lightning_rod", new LightningRodBlock(AbstractBlock.Settings.of(Material.METAL, MapColor.ORANGE).requiresTool().strength(3.0f, 6.0f).sounds(BlockSoundGroup.COPPER).nonOpaque()));
     public static final Block POINTED_DRIPSTONE = Blocks.register("pointed_dripstone", new PointedDripstoneBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).nonOpaque().sounds(BlockSoundGroup.POINTED_DRIPSTONE).ticksRandomly().strength(1.5f, 3.0f)));
     public static final Block DRIPSTONE_BLOCK = Blocks.register("dripstone_block", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.TERRACOTTA_BROWN).sounds(BlockSoundGroup.DRIPSTONE_BLOCK).requiresTool().strength(1.5f, 1.0f)));
-    public static final Block GLOW_LICHEN = Blocks.register("glow_lichen", new GlowLichenBlock(AbstractBlock.Settings.of(Material.REPLACEABLE_PLANT).noCollision().strength(0.2f).sounds(BlockSoundGroup.GLOW_LICHEN).luminance(blockState -> 7)));
+    public static final Block CAVE_VINES_HEAD = Blocks.register("cave_vines_head", new class_5805(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).ticksRandomly().noCollision().luminance(Blocks.method_33617(10)).breakInstantly().sounds(BlockSoundGroup.field_28692)));
+    public static final Block CAVE_VINES_BODY = Blocks.register("cave_vines_body", new class_5804(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).noCollision().luminance(Blocks.method_33617(14)).breakInstantly().sounds(BlockSoundGroup.field_28692)));
+    public static final Block SPORE_BLOSSOM = Blocks.register("spore_blossom", new class_5809(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).noCollision().sounds(BlockSoundGroup.field_28693)));
+    public static final Block AZALEA = Blocks.register("azalea", new class_5800(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).sounds(BlockSoundGroup.field_28694).nonOpaque()));
+    public static final Block FLOWERING_AZALEA = Blocks.register("flowering_azalea", new class_5800(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).sounds(BlockSoundGroup.field_28695).nonOpaque()));
+    public static final Block MOSS_CARPET = Blocks.register("moss_carpet", new CarpetBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1f).sounds(BlockSoundGroup.MOSS_CARPET)));
+    public static final Block MOSS_BLOCK = Blocks.register("moss_block", new MossBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1f).sounds(BlockSoundGroup.MOSS)));
+    public static final Block BIG_DRIPLEAF = Blocks.register("big_dripleaf", new class_5801(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1f).sounds(BlockSoundGroup.field_28698)));
+    public static final Block BIG_DRIPLEAF_STEM = Blocks.register("big_dripleaf_stem", new class_5802(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).noCollision().strength(0.1f).sounds(BlockSoundGroup.field_28698)));
+    public static final Block SMALL_DRIPLEAF = Blocks.register("small_dripleaf", new class_5808(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1f).noCollision().breakInstantly().sounds(BlockSoundGroup.field_28699)));
+    public static final Block ROOTED_DIRT = Blocks.register("rooted_dirt", new Block(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.1f).sounds(BlockSoundGroup.field_28700)));
+    public static final Block HANGING_ROOTS = Blocks.register("hanging_roots", new class_5806(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).noCollision().breakInstantly().strength(0.1f).sounds(BlockSoundGroup.field_28701)));
 
     private static ToIntFunction<BlockState> createLightLevelFromBlockState(int litLevel) {
         return state -> state.get(Properties.LIT) != false ? litLevel : 0;
+    }
+
+    private static ToIntFunction<BlockState> method_33617(int i) {
+        return blockState -> blockState.get(Properties.field_28716) != false ? i : 0;
     }
 
     /**
@@ -1138,8 +1167,8 @@ public class Blocks {
         return new StainedGlassBlock(color, AbstractBlock.Settings.of(Material.GLASS, color).strength(0.3f).sounds(BlockSoundGroup.GLASS).nonOpaque().allowsSpawning(Blocks::never).solidBlock(Blocks::never).suffocates(Blocks::never).blockVision(Blocks::never));
     }
 
-    private static LeavesBlock createLeavesBlock() {
-        return new LeavesBlock(AbstractBlock.Settings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(BlockSoundGroup.GRASS).nonOpaque().allowsSpawning(Blocks::canSpawnOnLeaves).suffocates(Blocks::never).blockVision(Blocks::never));
+    private static LeavesBlock createLeavesBlock(BlockSoundGroup blockSoundGroup) {
+        return new LeavesBlock(AbstractBlock.Settings.of(Material.LEAVES).strength(0.2f).ticksRandomly().sounds(blockSoundGroup).nonOpaque().allowsSpawning(Blocks::canSpawnOnLeaves).suffocates(Blocks::never).blockVision(Blocks::never));
     }
 
     private static ShulkerBoxBlock createShulkerBoxBlock(DyeColor color, AbstractBlock.Settings settings) {

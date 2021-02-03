@@ -29,6 +29,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ChunkRegion;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
@@ -202,19 +203,18 @@ public abstract class ChunkGenerator {
     }
 
     public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
-        int i = region.getCenterChunkX();
-        int j = region.getCenterChunkZ();
-        int k = ChunkSectionPos.getBlockCoord(i);
-        int l = ChunkSectionPos.getBlockCoord(j);
-        BlockPos blockPos = new BlockPos(k, 0, l);
-        Biome biome = this.populationSource.method_31609(i, j);
+        ChunkPos chunkPos = region.method_33561();
+        int i = chunkPos.getStartX();
+        int j = chunkPos.getStartZ();
+        BlockPos blockPos = new BlockPos(i, region.getBottomSectionLimit(), j);
+        Biome biome = this.populationSource.method_31609(chunkPos);
         ChunkRandom chunkRandom = new ChunkRandom();
-        long m = chunkRandom.setPopulationSeed(region.getSeed(), k, l);
+        long l = chunkRandom.setPopulationSeed(region.getSeed(), i, j);
         try {
-            biome.generateFeatureStep(accessor, this, region, m, chunkRandom, blockPos);
+            biome.generateFeatureStep(accessor, this, region, l, chunkRandom, blockPos);
         } catch (Exception exception) {
             CrashReport crashReport = CrashReport.create(exception, "Biome decoration");
-            crashReport.addElement("Generation").add("CenterX", i).add("CenterZ", j).add("Seed", m).add("Biome", biome);
+            crashReport.addElement("Generation").add("CenterX", chunkPos.x).add("CenterZ", chunkPos.z).add("Seed", l).add("Biome", biome);
             throw new CrashException(crashReport);
         }
     }
@@ -248,21 +248,22 @@ public abstract class ChunkGenerator {
      * Determines which structures should start in the given chunk and creates their starting points.
      */
     public void setStructureStarts(DynamicRegistryManager dynamicRegistryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed) {
-        ChunkPos chunkPos = chunk.getPos();
-        Biome biome = this.populationSource.method_31609(chunkPos.x, chunkPos.z);
-        this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome);
+        Biome biome = this.populationSource.method_31609(chunk.getPos());
+        this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, biome);
         for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getGenerationSettings().getStructureFeatures()) {
-            this.setStructureStart(supplier.get(), dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, chunkPos, biome);
+            this.setStructureStart(supplier.get(), dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, biome);
         }
     }
 
-    private void setStructureStart(ConfiguredStructureFeature<?, ?> configuredStructureFeature, DynamicRegistryManager dynamicRegistryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, Biome biome) {
-        StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), (StructureFeature<?>)configuredStructureFeature.feature, chunk);
+    private void setStructureStart(ConfiguredStructureFeature<?, ?> configuredStructureFeature, DynamicRegistryManager dynamicRegistryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed, Biome biome) {
+        ChunkPos chunkPos = chunk.getPos();
+        ChunkSectionPos chunkSectionPos = ChunkSectionPos.method_33705(chunk);
+        StructureStart<?> structureStart = structureAccessor.getStructureStart(chunkSectionPos, (StructureFeature<?>)configuredStructureFeature.feature, chunk);
         int i = structureStart != null ? structureStart.getReferences() : 0;
         StructureConfig structureConfig = this.structuresConfig.getForType((StructureFeature<?>)configuredStructureFeature.feature);
         if (structureConfig != null) {
-            StructureStart<?> structureStart2 = configuredStructureFeature.tryPlaceStart(dynamicRegistryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, biome, i, structureConfig);
-            structureAccessor.setStructureStart(ChunkSectionPos.from(chunk.getPos(), 0), (StructureFeature<?>)configuredStructureFeature.feature, structureStart2, chunk);
+            StructureStart<?> structureStart2 = configuredStructureFeature.tryPlaceStart(dynamicRegistryManager, this, this.populationSource, structureManager, worldSeed, chunkPos, biome, i, structureConfig, chunk);
+            structureAccessor.setStructureStart(chunkSectionPos, (StructureFeature<?>)configuredStructureFeature.feature, structureStart2, chunk);
         }
     }
 
@@ -272,11 +273,12 @@ public abstract class ChunkGenerator {
      */
     public void addStructureReferences(StructureWorldAccess world, StructureAccessor accessor, Chunk chunk) {
         int i = 8;
-        int j = chunk.getPos().x;
-        int k = chunk.getPos().z;
-        int l = ChunkSectionPos.getBlockCoord(j);
-        int m = ChunkSectionPos.getBlockCoord(k);
-        ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk.getPos(), 0);
+        ChunkPos chunkPos = chunk.getPos();
+        int j = chunkPos.x;
+        int k = chunkPos.z;
+        int l = chunkPos.getStartX();
+        int m = chunkPos.getStartZ();
+        ChunkSectionPos chunkSectionPos = ChunkSectionPos.method_33705(chunk);
         for (int n = j - 8; n <= j + 8; ++n) {
             for (int o = k - 8; o <= k + 8; ++o) {
                 long p = ChunkPos.toLong(n, o);
@@ -307,16 +309,16 @@ public abstract class ChunkGenerator {
         return 63;
     }
 
-    public abstract int getHeight(int var1, int var2, Heightmap.Type var3);
+    public abstract int getHeight(int var1, int var2, Heightmap.Type var3, HeightLimitView var4);
 
-    public abstract VerticalBlockSample getColumnSample(int var1, int var2);
+    public abstract VerticalBlockSample getColumnSample(int var1, int var2, HeightLimitView var3);
 
-    public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType) {
-        return this.getHeight(x, z, heightmapType);
+    public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType, HeightLimitView heightLimitView) {
+        return this.getHeight(x, z, heightmapType, heightLimitView);
     }
 
-    public int getHeightInGround(int x, int z, Heightmap.Type heightmapType) {
-        return this.getHeight(x, z, heightmapType) - 1;
+    public int getHeightInGround(int x, int z, Heightmap.Type heightmapType, HeightLimitView heightLimitView) {
+        return this.getHeight(x, z, heightmapType, heightLimitView) - 1;
     }
 
     public boolean isStrongholdStartingChunk(ChunkPos pos) {

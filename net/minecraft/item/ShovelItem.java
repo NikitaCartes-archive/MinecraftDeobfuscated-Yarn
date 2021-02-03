@@ -54,7 +54,7 @@ extends MiningToolItem {
                 if (!world.isClient()) {
                     world.syncWorldEvent(null, 1009, blockPos, 0);
                 }
-                CampfireBlock.extinguish(world, blockPos, blockState);
+                CampfireBlock.extinguish(context.getPlayer(), world, blockPos, blockState);
                 blockState3 = (BlockState)blockState.with(CampfireBlock.LIT, false);
             }
             if (blockState3 != null) {

@@ -57,6 +57,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.SpawnHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class IronGolemEntity
@@ -270,6 +271,7 @@ implements Angerable {
         }
         float g = 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f;
         this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0f, g);
+        this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
         if (!player.getAbilities().creativeMode) {
             itemStack.decrement(1);
         }

@@ -70,6 +70,10 @@ LunarWorldView {
         this.emitGameEvent(null, event, pos);
     }
 
+    default public void method_33596(GameEvent gameEvent, Entity entity) {
+        this.emitGameEvent(null, gameEvent, entity.getBlockPos());
+    }
+
     default public void emitGameEvent(@Nullable Entity entity, GameEvent event, Entity emitter) {
         this.emitGameEvent(entity, event, emitter.getBlockPos());
     }

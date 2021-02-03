@@ -585,6 +585,7 @@ extends Entity {
         if (stack.isEmpty() || soundEvent == null || this.isSpectator()) {
             return;
         }
+        this.emitGameEvent(GameEvent.EQUIP);
         this.playSound(soundEvent, 1.0f, 1.0f);
     }
 
@@ -1015,7 +1016,6 @@ extends Entity {
         if (entity2 instanceof ServerPlayerEntity) {
             Criteria.PLAYER_HURT_ENTITY.trigger((ServerPlayerEntity)entity2, this, source, f, amount, bl);
         }
-        this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
         return bl3;
     }
 
@@ -1377,6 +1377,7 @@ extends Entity {
         this.setHealth(h - amount);
         this.getDamageTracker().onDamage(source, h, amount);
         this.setAbsorptionAmount(this.getAbsorptionAmount() - amount);
+        this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
     }
 
     public DamageTracker getDamageTracker() {
@@ -1699,7 +1700,7 @@ extends Entity {
 
     private void onDismounted(Entity vehicle) {
         Vec3d vec3d = vehicle.isRemoved() || this.world.getBlockState(vehicle.getBlockPos()).isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.updatePassengerForDismount(this);
-        this.requestTeleport(vec3d.x, vec3d.y, vec3d.z);
+        this.method_33567(vec3d.x, vec3d.y, vec3d.z);
     }
 
     @Override
@@ -2828,12 +2829,13 @@ extends Entity {
 
     public ItemStack eatFood(World world, ItemStack stack) {
         if (stack.isFood()) {
+            world.emitGameEvent((Entity)this, GameEvent.EAT, this.method_33575());
             world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
             this.applyFoodEffects(stack, world, this);
             if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).getAbilities().creativeMode) {
                 stack.decrement(1);
             }
-            this.emitGameEvent(GameEvent.EATING_FINISH);
+            this.emitGameEvent(GameEvent.EAT);
         }
         return stack;
     }
@@ -2953,6 +2955,22 @@ extends Entity {
             return false;
         }
         return !this.getEquippedStack(EquipmentSlot.HEAD).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.CHEST).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.LEGS).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES) && !this.getEquippedStack(EquipmentSlot.FEET).isIn(ItemTags.FREEZE_IMMUNE_WEARABLES);
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
+        double d = mobSpawnS2CPacket.getX();
+        double e = mobSpawnS2CPacket.getY();
+        double f = mobSpawnS2CPacket.getZ();
+        float g = (float)(mobSpawnS2CPacket.getYaw() * 360) / 256.0f;
+        float h = (float)(mobSpawnS2CPacket.getPitch() * 360) / 256.0f;
+        this.updateTrackedPosition(d, e, f);
+        this.bodyYaw = (float)(mobSpawnS2CPacket.getHeadYaw() * 360) / 256.0f;
+        this.headYaw = (float)(mobSpawnS2CPacket.getHeadYaw() * 360) / 256.0f;
+        this.setEntityId(mobSpawnS2CPacket.getId());
+        this.setUuid(mobSpawnS2CPacket.getUuid());
+        this.updatePositionAndAngles(d, e, f, g, h);
+        this.setVelocity((float)mobSpawnS2CPacket.getVelocityX() / 8000.0f, (float)mobSpawnS2CPacket.getVelocityY() / 8000.0f, (float)mobSpawnS2CPacket.getVelocityZ() / 8000.0f);
     }
 }
 

@@ -8,12 +8,12 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 
@@ -24,16 +24,19 @@ extends Feature<SingleStateFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SingleStateFeatureConfig singleStateFeatureConfig) {
+    public boolean generate(class_5821<SingleStateFeatureConfig> arg) {
         boolean bl3;
         int s;
         int r;
         int q;
         int p;
         int l;
-        blockPos = new BlockPos(blockPos.getX(), chunkGenerator.getSeaLevel(), blockPos.getZ());
+        BlockPos blockPos = arg.method_33655();
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        blockPos = new BlockPos(blockPos.getX(), arg.method_33653().getSeaLevel(), blockPos.getZ());
+        Random random = arg.method_33654();
         boolean bl = random.nextDouble() > 0.7;
-        BlockState blockState = singleStateFeatureConfig.state;
+        BlockState blockState = arg.method_33656().state;
         double d = random.nextDouble() * 2.0 * Math.PI;
         int i = 11 - random.nextInt(5);
         int j = 3 + random.nextInt(3);

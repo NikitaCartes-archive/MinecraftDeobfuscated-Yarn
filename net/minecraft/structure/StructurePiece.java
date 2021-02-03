@@ -24,7 +24,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.BlockView;
@@ -88,8 +87,8 @@ public abstract class StructurePiece {
     }
 
     public boolean intersectsChunk(ChunkPos chunkPos, int offset) {
-        int i = ChunkSectionPos.getBlockCoord(chunkPos.x);
-        int j = ChunkSectionPos.getBlockCoord(chunkPos.z);
+        int i = chunkPos.getStartX();
+        int j = chunkPos.getStartZ();
         return this.boundingBox.intersectsXZ(i - offset, j - offset, i + 15 + offset, j + 15 + offset);
     }
 

@@ -91,7 +91,7 @@ extends AnimalModel<T> {
             this.middleLegs.pitch = 0.0f;
             this.backLegs.pitch = 0.0f;
         } else {
-            k = h * 2.1f;
+            k = h * 120.32113f * ((float)Math.PI / 180);
             this.rightWing.yaw = 0.0f;
             this.rightWing.roll = MathHelper.cos(k) * (float)Math.PI * 0.15f;
             this.leftWing.pitch = this.rightWing.pitch;

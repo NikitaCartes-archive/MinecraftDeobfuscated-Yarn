@@ -165,6 +165,7 @@ AutoCloseable {
     }
 
     @Override
+    @Nullable
     public Chunk getChunk(int chunkX, int chunkZ, ChunkStatus leastStatus, boolean create) {
         Chunk chunk = this.getChunkManager().getChunk(chunkX, chunkZ, leastStatus, create);
         if (chunk == null && create) {

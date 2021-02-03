@@ -37,6 +37,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -122,6 +123,20 @@ implements Monster {
     }
 
     @Override
+    public boolean hasWings() {
+        float f = MathHelper.cos(this.wingPosition * ((float)Math.PI * 2));
+        float g = MathHelper.cos(this.prevWingPosition * ((float)Math.PI * 2));
+        return g <= -0.3f && f >= -0.3f;
+    }
+
+    @Override
+    public void playFlySound() {
+        if (this.world.isClient && !this.isSilent()) {
+            this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_FLAP, this.getSoundCategory(), 5.0f, 0.8f + this.random.nextFloat() * 0.3f, false);
+        }
+    }
+
+    @Override
     protected void initDataTracker() {
         super.initDataTracker();
         this.getDataTracker().startTracking(PHASE_TYPE, PhaseType.HOVER.getTypeId());
@@ -153,33 +168,25 @@ implements Monster {
         double k;
         double j;
         double e;
-        float g;
-        float f;
+        this.method_33573();
         if (this.world.isClient) {
             this.setHealth(this.getHealth());
-            if (!this.isSilent()) {
-                f = MathHelper.cos(this.wingPosition * ((float)Math.PI * 2));
-                g = MathHelper.cos(this.prevWingPosition * ((float)Math.PI * 2));
-                if (g <= -0.3f && f >= -0.3f) {
-                    this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_FLAP, this.getSoundCategory(), 5.0f, 0.8f + this.random.nextFloat() * 0.3f, false);
-                }
-                if (!this.phaseManager.getCurrent().isSittingOrHovering() && --this.ticksUntilNextGrowl < 0) {
-                    this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_GROWL, this.getSoundCategory(), 2.5f, 0.8f + this.random.nextFloat() * 0.3f, false);
-                    this.ticksUntilNextGrowl = 200 + this.random.nextInt(200);
-                }
+            if (!this.isSilent() && !this.phaseManager.getCurrent().isSittingOrHovering() && --this.ticksUntilNextGrowl < 0) {
+                this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_GROWL, this.getSoundCategory(), 2.5f, 0.8f + this.random.nextFloat() * 0.3f, false);
+                this.ticksUntilNextGrowl = 200 + this.random.nextInt(200);
             }
         }
         this.prevWingPosition = this.wingPosition;
         if (this.isDead()) {
-            f = (this.random.nextFloat() - 0.5f) * 8.0f;
-            g = (this.random.nextFloat() - 0.5f) * 4.0f;
+            float f = (this.random.nextFloat() - 0.5f) * 8.0f;
+            float g = (this.random.nextFloat() - 0.5f) * 4.0f;
             float h = (this.random.nextFloat() - 0.5f) * 8.0f;
             this.world.addParticle(ParticleTypes.EXPLOSION, this.getX() + (double)f, this.getY() + 2.0 + (double)g, this.getZ() + (double)h, 0.0, 0.0, 0.0);
             return;
         }
         this.tickWithEndCrystals();
         Vec3d vec3d = this.getVelocity();
-        g = 0.2f / (MathHelper.sqrt(EnderDragonEntity.squaredHorizontalLength(vec3d)) * 10.0f + 1.0f);
+        float g = 0.2f / (MathHelper.sqrt(EnderDragonEntity.squaredHorizontalLength(vec3d)) * 10.0f + 1.0f);
         this.wingPosition = this.phaseManager.getCurrent().isSittingOrHovering() ? (this.wingPosition += 0.1f) : (this.slowedDownByBlock ? (this.wingPosition += g * 0.5f) : (this.wingPosition += (g *= (float)Math.pow(2.0, vec3d.y))));
         this.yaw = MathHelper.wrapDegrees(this.yaw);
         if (this.isAiDisabled()) {
@@ -772,6 +779,16 @@ implements Monster {
     @Override
     public boolean canUsePortals() {
         return false;
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
+        super.method_33579(mobSpawnS2CPacket);
+        EnderDragonPart[] enderDragonParts = this.getBodyParts();
+        for (int i = 0; i < enderDragonParts.length; ++i) {
+            enderDragonParts[i].setEntityId(i + mobSpawnS2CPacket.getId());
+        }
     }
 }
 

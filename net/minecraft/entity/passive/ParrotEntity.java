@@ -128,6 +128,7 @@ implements Flutterer {
     public float prevMaxWingDeviation;
     public float prevFlapProgress;
     private float flapSpeed = 1.0f;
+    private float field_28640 = 1.0f;
     private boolean songPlaying;
     private BlockPos songSource;
 
@@ -347,14 +348,14 @@ implements Flutterer {
     }
 
     @Override
-    protected float playFlySound(float distance) {
-        this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
-        return distance + this.maxWingDeviation / 2.0f;
+    protected boolean hasWings() {
+        return this.field_28627 > this.field_28640;
     }
 
     @Override
-    protected boolean hasWings() {
-        return true;
+    protected void playFlySound() {
+        this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
+        this.field_28640 = this.field_28627 + this.maxWingDeviation / 2.0f;
     }
 
     @Override

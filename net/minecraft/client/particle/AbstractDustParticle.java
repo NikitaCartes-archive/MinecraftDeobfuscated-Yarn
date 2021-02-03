@@ -19,6 +19,8 @@ extends SpriteBillboardParticle {
 
     protected AbstractDustParticle(ClientWorld world, double d, double e, double f, double g, double h, double i, T abstractDustParticleEffect, SpriteProvider spriteProvider) {
         super(world, d, e, f, g, h, i);
+        this.field_28786 = 0.96f;
+        this.field_28787 = true;
         this.field_28247 = spriteProvider;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
@@ -49,26 +51,8 @@ extends SpriteBillboardParticle {
 
     @Override
     public void tick() {
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        if (this.age++ >= this.maxAge) {
-            this.markDead();
-            return;
-        }
+        super.tick();
         this.setSpriteForAge(this.field_28247);
-        this.move(this.velocityX, this.velocityY, this.velocityZ);
-        if (this.y == this.prevPosY) {
-            this.velocityX *= 1.1;
-            this.velocityZ *= 1.1;
-        }
-        this.velocityX *= (double)0.96f;
-        this.velocityY *= (double)0.96f;
-        this.velocityZ *= (double)0.96f;
-        if (this.onGround) {
-            this.velocityX *= (double)0.7f;
-            this.velocityZ *= (double)0.7f;
-        }
     }
 }
 

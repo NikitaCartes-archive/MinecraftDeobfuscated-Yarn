@@ -27,7 +27,7 @@ implements ClientPlayerTickable {
     @Override
     public void tick() {
         World world = this.player.world;
-        BlockState blockState2 = world.method_29556(this.player.getBoundingBox().expand(0.0, -0.4f, 0.0).contract(0.001)).filter(blockState -> blockState.isOf(Blocks.BUBBLE_COLUMN)).findFirst().orElse(null);
+        BlockState blockState2 = world.method_29556(this.player.getBoundingBox().expand(0.0, -0.4f, 0.0).contract(1.0E-6)).filter(blockState -> blockState.isOf(Blocks.BUBBLE_COLUMN)).findFirst().orElse(null);
         if (blockState2 != null) {
             if (!this.hasPlayedForCurrentColumn && !this.firstTick && blockState2.isOf(Blocks.BUBBLE_COLUMN) && !this.player.isSpectator()) {
                 boolean bl = blockState2.get(BubbleColumnBlock.DRAG);

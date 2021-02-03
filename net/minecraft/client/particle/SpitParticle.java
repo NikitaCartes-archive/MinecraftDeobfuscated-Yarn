@@ -20,12 +20,6 @@ extends ExplosionSmokeParticle {
         this.gravityStrength = 0.5f;
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        this.velocityY -= 0.004 + 0.04 * (double)this.gravityStrength;
-    }
-
     @Environment(value=EnvType.CLIENT)
     public static class Factory
     implements ParticleFactory<DefaultParticleType> {

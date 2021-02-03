@@ -20,6 +20,8 @@ extends SpriteBillboardParticle {
     private DamageParticle(ClientWorld world, double x, double y, double z, double d, double e, double f) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         float g;
+        this.field_28786 = 0.7f;
+        this.gravityStrength = 0.5f;
         this.velocityX *= (double)0.1f;
         this.velocityY *= (double)0.1f;
         this.velocityZ *= (double)0.1f;
@@ -42,24 +44,9 @@ extends SpriteBillboardParticle {
 
     @Override
     public void tick() {
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        if (this.age++ >= this.maxAge) {
-            this.markDead();
-            return;
-        }
-        this.move(this.velocityX, this.velocityY, this.velocityZ);
+        super.tick();
         this.colorGreen = (float)((double)this.colorGreen * 0.96);
         this.colorBlue = (float)((double)this.colorBlue * 0.9);
-        this.velocityX *= (double)0.7f;
-        this.velocityY *= (double)0.7f;
-        this.velocityZ *= (double)0.7f;
-        this.velocityY -= (double)0.02f;
-        if (this.onGround) {
-            this.velocityX *= (double)0.7f;
-            this.velocityZ *= (double)0.7f;
-        }
     }
 
     @Override

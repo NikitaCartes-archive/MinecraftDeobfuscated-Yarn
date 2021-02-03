@@ -45,6 +45,7 @@ extends AnimalEntity {
     public float prevMaxWingDeviation;
     public float prevFlapProgress;
     public float flapSpeed = 1.0f;
+    private float field_28639 = 1.0f;
     public int eggLayTime = this.random.nextInt(6000) + 6000;
     public boolean jockey;
 
@@ -95,6 +96,16 @@ extends AnimalEntity {
             this.dropItem(Items.EGG);
             this.eggLayTime = this.random.nextInt(6000) + 6000;
         }
+    }
+
+    @Override
+    protected boolean hasWings() {
+        return this.field_28627 > this.field_28639;
+    }
+
+    @Override
+    protected void playFlySound() {
+        this.field_28639 = this.field_28627 + this.maxWingDeviation / 2.0f;
     }
 
     @Override

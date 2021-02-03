@@ -108,8 +108,8 @@ extends Entity {
     }
 
     @Override
-    protected boolean canClimb() {
-        return false;
+    protected Entity.class_5799 method_33570() {
+        return Entity.class_5799.field_28630;
     }
 
     @Override
@@ -161,11 +161,11 @@ extends Entity {
         if (this.world.isClient || this.isRemoved()) {
             return true;
         }
-        this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
         this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0f);
         this.scheduleVelocityUpdate();
+        this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
         boolean bl2 = bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
         if (bl || this.getDamageWobbleStrength() > 40.0f) {
             if (!bl && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
@@ -189,7 +189,7 @@ extends Entity {
         if (this.random.nextInt(20) == 0) {
             this.world.playSound(this.getX(), this.getY(), this.getZ(), this.getSplashSound(), this.getSoundCategory(), 1.0f, 0.8f + 0.4f * this.random.nextFloat(), false);
         }
-        this.emitGameEvent(this.getPrimaryPassenger(), GameEvent.SPLASH);
+        this.emitGameEvent(GameEvent.SPLASH, this.getPrimaryPassenger());
     }
 
     @Override
@@ -615,7 +615,7 @@ extends Entity {
     @Override
     public Vec3d updatePassengerForDismount(LivingEntity passenger) {
         double e;
-        Vec3d vec3d = BoatEntity.getPassengerDismountOffset(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO, passenger.getWidth(), this.yaw);
+        Vec3d vec3d = BoatEntity.getPassengerDismountOffset(this.getWidth() * MathHelper.SQUARE_ROOT_OF_TWO, passenger.getWidth(), passenger.yaw);
         double d = this.getX() + vec3d.x;
         BlockPos blockPos = new BlockPos(d, this.getBoundingBox().maxY, e = this.getZ() + vec3d.z);
         BlockPos blockPos2 = blockPos.down();

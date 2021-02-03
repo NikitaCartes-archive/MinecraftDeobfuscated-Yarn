@@ -38,7 +38,7 @@ extends Task<VillagerEntity> {
         int i = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(villagerEntity.getBlockPos()));
         Vec3d vec3d = null;
         for (int j = 0; j < 5; ++j) {
-            Vec3d vec3d2 = class_5534.method_31530(villagerEntity, 15, 7, blockPos -> -serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)));
+            Vec3d vec3d2 = class_5534.method_31530(villagerEntity, 15, 7, blockPos -> -pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(blockPos)));
             if (vec3d2 == null) continue;
             int k = pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(new BlockPos(vec3d2)));
             if (k < i) {

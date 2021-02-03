@@ -290,18 +290,22 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.client.openScreen(new ConfirmScreen(bl -> {
                 if (bl) {
                     this.client.openScreen(new ProgressScreen());
-                    LevelStorage levelStorage = this.client.getLevelStorage();
-                    String string = this.level.getName();
-                    try (LevelStorage.Session session = levelStorage.createSession(string);){
-                        session.deleteSessionLock();
-                    } catch (IOException iOException) {
-                        SystemToast.addWorldDeleteFailureToast(this.client, string);
-                        LOGGER.error("Failed to delete world {}", (Object)string, (Object)iOException);
-                    }
-                    WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
+                    this.method_33685();
                 }
                 this.client.openScreen(this.screen);
             }, new TranslatableText("selectWorld.deleteQuestion"), new TranslatableText("selectWorld.deleteWarning", this.level.getDisplayName()), new TranslatableText("selectWorld.deleteButton"), ScreenTexts.CANCEL));
+        }
+
+        public void method_33685() {
+            LevelStorage levelStorage = this.client.getLevelStorage();
+            String string = this.level.getName();
+            try (LevelStorage.Session session = levelStorage.createSession(string);){
+                session.deleteSessionLock();
+            } catch (IOException iOException) {
+                SystemToast.addWorldDeleteFailureToast(this.client, string);
+                LOGGER.error("Failed to delete world {}", (Object)string, (Object)iOException);
+            }
+            WorldListWidget.this.filter(() -> this.screen.searchBox.getText(), true);
         }
 
         public void edit() {

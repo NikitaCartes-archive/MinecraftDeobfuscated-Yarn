@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public interface FluidModificationItem {
-    default public void onEmptied(World world, ItemStack stack, BlockPos pos) {
+    default public void onEmptied(@Nullable PlayerEntity playerEntity, World world, ItemStack itemStack, BlockPos blockPos) {
     }
 
     public boolean placeFluid(@Nullable PlayerEntity var1, World var2, BlockPos var3, @Nullable BlockHitResult var4);

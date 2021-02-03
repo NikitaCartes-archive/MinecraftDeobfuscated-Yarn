@@ -208,9 +208,10 @@ extends LandPathNodeMaker {
             }
             return PathNodeType.WATER;
         }
-        if (pathNodeType == PathNodeType.OPEN && y >= 1) {
-            BlockState blockState = world.getBlockState(new BlockPos(x, y - 1, z));
-            PathNodeType pathNodeType3 = AmphibiousPathNodeMaker.getCommonNodeType(world, mutable.set(x, y - 1, z));
+        if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomSectionLimit() + 1) {
+            mutable.set(x, y, z).move(Direction.DOWN);
+            BlockState blockState = world.getBlockState(mutable);
+            PathNodeType pathNodeType3 = AmphibiousPathNodeMaker.getCommonNodeType(world, mutable);
             pathNodeType = pathNodeType3 == PathNodeType.WALKABLE || pathNodeType3 == PathNodeType.OPEN || pathNodeType3 == PathNodeType.LAVA ? PathNodeType.OPEN : PathNodeType.WALKABLE;
             if (pathNodeType3 == PathNodeType.DAMAGE_FIRE || blockState.isOf(Blocks.MAGMA_BLOCK) || blockState.isIn(BlockTags.CAMPFIRES)) {
                 pathNodeType = PathNodeType.DAMAGE_FIRE;

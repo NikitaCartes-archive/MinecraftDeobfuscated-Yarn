@@ -12,6 +12,7 @@ import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -35,8 +36,8 @@ public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends Stru
     /**
      * @see StructureFeature#tryPlaceStart
      */
-    public StructureStart<?> tryPlaceStart(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, Biome biome, int referenceCount, StructureConfig structureConfig) {
-        return ((StructureFeature)this.feature).tryPlaceStart(registryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, biome, referenceCount, new ChunkRandom(), structureConfig, this.config);
+    public StructureStart<?> tryPlaceStart(DynamicRegistryManager registryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, Biome biome, int referenceCount, StructureConfig structureConfig, HeightLimitView heightLimitView) {
+        return ((StructureFeature)this.feature).tryPlaceStart(registryManager, chunkGenerator, biomeSource, structureManager, worldSeed, chunkPos, biome, referenceCount, new ChunkRandom(), structureConfig, this.config, heightLimitView);
     }
 }
 

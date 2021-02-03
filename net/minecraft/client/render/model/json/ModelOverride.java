@@ -3,6 +3,7 @@
  */
 package net.minecraft.client.render.model.json;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
@@ -11,41 +12,49 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import java.lang.reflect.Type;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.item.ModelPredicateProvider;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelOverride {
     private final Identifier modelId;
-    private final Map<Identifier, Float> predicateToThresholds;
+    private final List<Condition> conditions;
 
-    public ModelOverride(Identifier modelId, Map<Identifier, Float> predicateToThresholds) {
+    public ModelOverride(Identifier modelId, List<Condition> conditions) {
         this.modelId = modelId;
-        this.predicateToThresholds = predicateToThresholds;
+        this.conditions = ImmutableList.copyOf(conditions);
     }
 
     public Identifier getModelId() {
         return this.modelId;
     }
 
-    boolean matches(ItemStack stack, @Nullable ClientWorld world, @Nullable LivingEntity entity, int i) {
-        Item item = stack.getItem();
-        for (Map.Entry<Identifier, Float> entry : this.predicateToThresholds.entrySet()) {
-            ModelPredicateProvider modelPredicateProvider = ModelPredicateProviderRegistry.get(item, entry.getKey());
-            if (modelPredicateProvider != null && !(modelPredicateProvider.call(stack, world, entity, i) < entry.getValue().floatValue())) continue;
-            return false;
+    public Stream<Condition> streamConditions() {
+        return this.conditions.stream();
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class Condition {
+        private final Identifier type;
+        private final float threshold;
+
+        public Condition(Identifier type, float threshold) {
+            this.type = type;
+            this.threshold = threshold;
         }
-        return true;
+
+        public Identifier getType() {
+            return this.type;
+        }
+
+        public float getThreshold() {
+            return this.threshold;
+        }
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -58,17 +67,17 @@ public class ModelOverride {
         public ModelOverride deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             Identifier identifier = new Identifier(JsonHelper.getString(jsonObject, "model"));
-            Map<Identifier, Float> map = this.deserializeMinPropertyValues(jsonObject);
-            return new ModelOverride(identifier, map);
+            List<Condition> list = this.deserializeMinPropertyValues(jsonObject);
+            return new ModelOverride(identifier, list);
         }
 
-        protected Map<Identifier, Float> deserializeMinPropertyValues(JsonObject object) {
+        protected List<Condition> deserializeMinPropertyValues(JsonObject object) {
             LinkedHashMap<Identifier, Float> map = Maps.newLinkedHashMap();
             JsonObject jsonObject = JsonHelper.getObject(object, "predicate");
-            for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-                map.put(new Identifier(entry.getKey()), Float.valueOf(JsonHelper.asFloat(entry.getValue(), entry.getKey())));
+            for (Map.Entry<String, JsonElement> entry2 : jsonObject.entrySet()) {
+                map.put(new Identifier(entry2.getKey()), Float.valueOf(JsonHelper.asFloat(entry2.getValue(), entry2.getKey())));
             }
-            return map;
+            return map.entrySet().stream().map(entry -> new Condition((Identifier)entry.getKey(), ((Float)entry.getValue()).floatValue())).collect(ImmutableList.toImmutableList());
         }
 
         @Override

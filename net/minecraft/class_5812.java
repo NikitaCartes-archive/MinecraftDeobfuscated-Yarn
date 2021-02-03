@@ -1,0 +1,57 @@
+/*
+ * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
+ */
+package net.minecraft;
+
+import java.util.Random;
+import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.class_5810;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+
+public class class_5812
+extends Block
+implements class_5810 {
+    private final class_5810.class_5811 field_28709;
+    private final Block field_28710;
+
+    public class_5812(AbstractBlock.Settings settings) {
+        super(settings);
+        this.field_28709 = class_5810.class_5811.values()[class_5810.class_5811.values().length - 1];
+        this.field_28710 = this;
+    }
+
+    public class_5812(AbstractBlock.Settings settings, class_5810.class_5811 arg, Block block) {
+        super(settings);
+        this.field_28709 = arg;
+        this.field_28710 = block;
+    }
+
+    @Override
+    public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        this.method_33621(state, world, pos, random);
+    }
+
+    @Override
+    public boolean hasRandomTicks(BlockState state) {
+        return this.field_28710 != this;
+    }
+
+    @Override
+    public class_5810.class_5811 method_33622() {
+        return this.field_28709;
+    }
+
+    @Override
+    public BlockState getOxidationResult(BlockState state) {
+        return this.field_28710.getDefaultState();
+    }
+
+    @Override
+    public /* synthetic */ Enum method_33622() {
+        return this.method_33622();
+    }
+}
+

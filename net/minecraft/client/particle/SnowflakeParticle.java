@@ -20,6 +20,8 @@ extends SpriteBillboardParticle {
 
     protected SnowflakeParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
         super(world, x, y, z);
+        this.gravityStrength = 0.225f;
+        this.field_28786 = 1.0f;
         this.spriteProvider = spriteProvider;
         this.velocityX = velocityX + (Math.random() * 2.0 - 1.0) * (double)0.05f;
         this.velocityY = velocityY + (Math.random() * 2.0 - 1.0) * (double)0.05f;
@@ -36,23 +38,11 @@ extends SpriteBillboardParticle {
 
     @Override
     public void tick() {
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        if (this.age++ >= this.maxAge) {
-            this.markDead();
-            return;
-        }
+        super.tick();
         this.setSpriteForAge(this.spriteProvider);
-        this.velocityY -= 0.009;
-        this.move(this.velocityX, this.velocityY, this.velocityZ);
         this.velocityX *= (double)0.95f;
         this.velocityY *= (double)0.9f;
         this.velocityZ *= (double)0.95f;
-        if (this.onGround) {
-            this.velocityX *= (double)0.7f;
-            this.velocityZ *= (double)0.7f;
-        }
     }
 
     @Environment(value=EnvType.CLIENT)

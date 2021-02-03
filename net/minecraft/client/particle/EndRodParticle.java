@@ -16,7 +16,7 @@ import net.minecraft.particle.DefaultParticleType;
 public class EndRodParticle
 extends AnimatedParticle {
     private EndRodParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-        super(world, x, y, z, spriteProvider, -5.0E-4f);
+        super(world, x, y, z, spriteProvider, 0.0125f);
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;

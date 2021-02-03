@@ -95,10 +95,10 @@ implements AutoCloseable {
     }
 
     private void writeResult() {
-        Iterator<Map.Entry<ChunkPos, Result>> iterator = this.results.entrySet().iterator();
-        if (!iterator.hasNext()) {
+        if (this.results.isEmpty()) {
             return;
         }
+        Iterator<Map.Entry<ChunkPos, Result>> iterator = this.results.entrySet().iterator();
         Map.Entry<ChunkPos, Result> entry = iterator.next();
         iterator.remove();
         this.write(entry.getKey(), entry.getValue());

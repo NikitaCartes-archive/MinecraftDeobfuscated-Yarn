@@ -13,6 +13,8 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BuddingAmethystBlock;
+import net.minecraft.class_5819;
+import net.minecraft.class_5821;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -21,7 +23,6 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.GeodeCrackConfig;
 import net.minecraft.world.gen.feature.GeodeFeatureConfig;
@@ -37,9 +38,13 @@ extends Feature<GeodeFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, GeodeFeatureConfig geodeFeatureConfig) {
+    public boolean generate(class_5821<GeodeFeatureConfig> arg) {
         int n;
         int m;
+        GeodeFeatureConfig geodeFeatureConfig = arg.method_33656();
+        Random random = arg.method_33654();
+        BlockPos blockPos = arg.method_33655();
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
         int i = geodeFeatureConfig.minGenOffset;
         int j = geodeFeatureConfig.maxGenOffset;
         if (structureWorldAccess.getFluidState(blockPos.add(0, j / 3, 0)).isStill()) {
@@ -48,7 +53,7 @@ extends Feature<GeodeFeatureConfig> {
         LinkedList<Pair<BlockPos, Integer>> list = Lists.newLinkedList();
         int k = geodeFeatureConfig.minDistributionPoints + random.nextInt(geodeFeatureConfig.maxDistributionPoints - geodeFeatureConfig.minDistributionPoints);
         ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
-        DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0);
+        DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create((class_5819)chunkRandom, -4, 1.0);
         LinkedList<BlockPos> list2 = Lists.newLinkedList();
         double d = (double)k / (double)geodeFeatureConfig.maxOuterWallDistance;
         GeodeLayerThicknessConfig geodeLayerThicknessConfig = geodeFeatureConfig.layerThicknessConfig;

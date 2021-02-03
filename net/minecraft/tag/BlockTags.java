@@ -105,6 +105,9 @@ public final class BlockTags {
     public static final Tag.Identified<Block> INSIDE_STEP_SOUND_BLOCKS = BlockTags.register("inside_step_sound_blocks");
     public static final Tag.Identified<Block> OCCLUDES_VIBRATION_SIGNALS = BlockTags.register("occludes_vibration_signals");
     public static final Tag.Identified<Block> DRIPSTONE_REPLACEABLE_BLOCKS = BlockTags.register("dripstone_replaceable_blocks");
+    public static final Tag.Identified<Block> CAVE_VINES = BlockTags.register("cave_vines");
+    public static final Tag.Identified<Block> LUSH_PLANTS_REPLACEABLE = BlockTags.register("lush_plants_replaceable");
+    public static final Tag.Identified<Block> AZALEA_LOG_REPLACEABLE = BlockTags.register("azalea_log_replaceable");
 
     private static Tag.Identified<Block> register(String id) {
         return REQUIRED_TAGS.add(id);

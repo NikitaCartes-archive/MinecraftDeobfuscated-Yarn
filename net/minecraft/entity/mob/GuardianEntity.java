@@ -183,8 +183,8 @@ extends HostileEntity {
     }
 
     @Override
-    protected boolean canClimb() {
-        return false;
+    protected Entity.class_5799 method_33570() {
+        return Entity.class_5799.field_28632;
     }
 
     @Override

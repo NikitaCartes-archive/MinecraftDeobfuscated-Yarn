@@ -864,23 +864,31 @@ ServerPlayPacketListener {
         return stream.anyMatch(voxelShape2 -> !VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND));
     }
 
+    public void method_33562(double d, double e, double f, float g, float h) {
+        this.method_33563(d, e, f, g, h, Collections.emptySet(), true);
+    }
+
     public void requestTeleport(double x, double y, double z, float yaw, float pitch) {
-        this.teleportRequest(x, y, z, yaw, pitch, Collections.emptySet());
+        this.method_33563(x, y, z, yaw, pitch, Collections.emptySet(), false);
     }
 
     public void teleportRequest(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> set) {
-        double d = set.contains((Object)PlayerPositionLookS2CPacket.Flag.X) ? this.player.getX() : 0.0;
-        double e = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Y) ? this.player.getY() : 0.0;
-        double f = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Z) ? this.player.getZ() : 0.0;
-        float g = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Y_ROT) ? this.player.yaw : 0.0f;
-        float h = set.contains((Object)PlayerPositionLookS2CPacket.Flag.X_ROT) ? this.player.pitch : 0.0f;
-        this.requestedTeleportPos = new Vec3d(x, y, z);
+        this.method_33563(x, y, z, yaw, pitch, set, false);
+    }
+
+    public void method_33563(double d, double e, double f, float g, float h, Set<PlayerPositionLookS2CPacket.Flag> set, boolean bl) {
+        double i = set.contains((Object)PlayerPositionLookS2CPacket.Flag.X) ? this.player.getX() : 0.0;
+        double j = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Y) ? this.player.getY() : 0.0;
+        double k = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Z) ? this.player.getZ() : 0.0;
+        float l = set.contains((Object)PlayerPositionLookS2CPacket.Flag.Y_ROT) ? this.player.yaw : 0.0f;
+        float m = set.contains((Object)PlayerPositionLookS2CPacket.Flag.X_ROT) ? this.player.pitch : 0.0f;
+        this.requestedTeleportPos = new Vec3d(d, e, f);
         if (++this.requestedTeleportId == Integer.MAX_VALUE) {
             this.requestedTeleportId = 0;
         }
         this.teleportRequestTick = this.ticks;
-        this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
-        this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, set, this.requestedTeleportId));
+        this.player.updatePositionAndAngles(d, e, f, g, h);
+        this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(d - i, e - j, f - k, g - l, h - m, set, this.requestedTeleportId, bl));
     }
 
     @Override

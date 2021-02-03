@@ -16,6 +16,7 @@ import net.minecraft.block.FluidDrainable;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.FallingBlockEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -59,6 +60,11 @@ implements FluidDrainable {
             entity.slowMovement(state, new Vec3d(0.9f, 0.99f, 0.9f));
         }
         entity.setInPowderSnow(true);
+        if (world.isClient) {
+            entity.extinguish();
+        } else {
+            entity.method_33572(false);
+        }
         if (!entity.isSpectator() && (entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ()) && world.random.nextBoolean()) {
             PowderSnowBlock.spawnParticles(world, new Vec3d(entity.getX(), pos.getY(), entity.getZ()));
         }
@@ -66,10 +72,14 @@ implements FluidDrainable {
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        EntityShapeContext entityShapeContext;
-        Optional<Entity> optional;
-        if (context instanceof EntityShapeContext && (optional = (entityShapeContext = (EntityShapeContext)context).getEntity()).isPresent() && PowderSnowBlock.canWalkOnPowderSnow(optional.get()) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {
-            return super.getCollisionShape(state, world, pos, context);
+        if (context instanceof EntityShapeContext) {
+            boolean bl;
+            EntityShapeContext entityShapeContext = (EntityShapeContext)context;
+            Optional<Entity> optional = entityShapeContext.getEntity();
+            boolean bl2 = bl = optional.isPresent() && optional.get() instanceof FallingBlockEntity;
+            if (bl || optional.isPresent() && PowderSnowBlock.canWalkOnPowderSnow(optional.get()) && context.isAbove(VoxelShapes.fullCube(), pos, false) && !context.isDescending()) {
+                return super.getCollisionShape(state, world, pos, context);
+            }
         }
         return VoxelShapes.empty();
     }

@@ -82,9 +82,11 @@ public class ParticleTypes {
     public static final DefaultParticleType FALLING_HONEY = ParticleTypes.register("falling_honey", false);
     public static final DefaultParticleType LANDING_HONEY = ParticleTypes.register("landing_honey", false);
     public static final DefaultParticleType FALLING_NECTAR = ParticleTypes.register("falling_nectar", false);
+    public static final DefaultParticleType FALLING_SPORE_BLOSSOM = ParticleTypes.register("falling_spore_blossom", false);
     public static final DefaultParticleType ASH = ParticleTypes.register("ash", false);
     public static final DefaultParticleType CRIMSON_SPORE = ParticleTypes.register("crimson_spore", false);
     public static final DefaultParticleType WARPED_SPORE = ParticleTypes.register("warped_spore", false);
+    public static final DefaultParticleType SPORE_BLOSSOM_AIR = ParticleTypes.register("spore_blossom_air", false);
     public static final DefaultParticleType DRIPPING_OBSIDIAN_TEAR = ParticleTypes.register("dripping_obsidian_tear", false);
     public static final DefaultParticleType FALLING_OBSIDIAN_TEAR = ParticleTypes.register("falling_obsidian_tear", false);
     public static final DefaultParticleType LANDING_OBSIDIAN_TEAR = ParticleTypes.register("landing_obsidian_tear", false);

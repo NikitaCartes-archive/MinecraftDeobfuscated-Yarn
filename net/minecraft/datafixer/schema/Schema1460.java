@@ -3,21 +3,34 @@
  */
 package net.minecraft.datafixer.schema;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.schemas.Schema;
 import com.mojang.datafixers.types.templates.Hook;
 import com.mojang.datafixers.types.templates.TypeTemplate;
+import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.datafixer.schema.IdentifierNormalizingSchema;
 import net.minecraft.datafixer.schema.Schema100;
-import net.minecraft.datafixer.schema.Schema705;
+import net.minecraft.datafixer.schema.Schema704;
+import net.minecraft.datafixer.schema.Schema99;
 
 public class Schema1460
 extends IdentifierNormalizingSchema {
+    protected static final Map<String, String> field_28625 = ImmutableMap.builder().putAll(Schema704.BLOCK_RENAMES).put("minecraft:white_bed", "minecraft:bed").put("minecraft:orange_bed", "minecraft:bed").put("minecraft:magenta_bed", "minecraft:bed").put("minecraft:light_blue_bed", "minecraft:bed").put("minecraft:yellow_bed", "minecraft:bed").put("minecraft:lime_bed", "minecraft:bed").put("minecraft:pink_bed", "minecraft:bed").put("minecraft:gray_bed", "minecraft:bed").put("minecraft:silver_bed", "minecraft:bed").put("minecraft:cyan_bed", "minecraft:bed").put("minecraft:purple_bed", "minecraft:bed").put("minecraft:blue_bed", "minecraft:bed").put("minecraft:brown_bed", "minecraft:bed").put("minecraft:green_bed", "minecraft:bed").put("minecraft:red_bed", "minecraft:bed").put("minecraft:black_bed", "minecraft:bed").put("minecraft:oak_sign", "minecraft:sign").put("minecraft:spruce_sign", "minecraft:sign").put("minecraft:birch_sign", "minecraft:sign").put("minecraft:jungle_sign", "minecraft:sign").put("minecraft:acacia_sign", "minecraft:sign").put("minecraft:dark_oak_sign", "minecraft:sign").put("minecraft:crimson_sign", "minecraft:sign").put("minecraft:warped_sign", "minecraft:sign").put("minecraft:skeleton_skull", "minecraft:skull").put("minecraft:wither_skeleton_skull", "minecraft:skull").put("minecraft:zombie_head", "minecraft:skull").put("minecraft:player_head", "minecraft:skull").put("minecraft:creeper_head", "minecraft:skull").put("minecraft:dragon_head", "minecraft:skull").put("minecraft:barrel", "minecraft:barrel").put("minecraft:conduit", "minecraft:conduit").put("minecraft:smoker", "minecraft:smoker").put("minecraft:blast_furnace", "minecraft:blast_furnace").put("minecraft:lectern", "minecraft:lectern").put("minecraft:bell", "minecraft:bell").put("minecraft:jigsaw", "minecraft:jigsaw").put("minecraft:campfire", "minecraft:campfire").put("minecraft:bee_nest", "minecraft:beehive").put("minecraft:beehive", "minecraft:beehive").put("minecraft:sculk_sensor", "minecraft:sculk_sensor").build();
+    protected static final Hook.HookFunction field_28626 = new Hook.HookFunction(){
+
+        @Override
+        public <T> T apply(DynamicOps<T> dynamicOps, T object) {
+            return Schema99.method_5359(new Dynamic<T>(dynamicOps, object), field_28625, "minecraft:armor_stand");
+        }
+    };
+
     public Schema1460(int i, Schema schema) {
         super(i, schema);
     }
@@ -158,7 +171,7 @@ extends IdentifierNormalizingSchema {
         schema.registerType(true, TypeReferences.BLOCK_ENTITY, () -> DSL.taggedChoiceLazy("id", Schema1460.getIdentifierType(), blockEntityTypes));
         schema.registerType(true, TypeReferences.ENTITY_TREE, () -> DSL.optionalFields("Passengers", DSL.list(TypeReferences.ENTITY_TREE.in(schema)), TypeReferences.ENTITY.in(schema)));
         schema.registerType(true, TypeReferences.ENTITY, () -> DSL.taggedChoiceLazy("id", Schema1460.getIdentifierType(), entityTypes));
-        schema.registerType(true, TypeReferences.ITEM_STACK, () -> DSL.hook(DSL.optionalFields("id", TypeReferences.ITEM_NAME.in(schema), "tag", DSL.optionalFields("EntityTag", TypeReferences.ENTITY_TREE.in(schema), "BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema), "CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema)), "CanPlaceOn", DSL.list(TypeReferences.BLOCK_NAME.in(schema)))), Schema705.field_5746, Hook.HookFunction.IDENTITY));
+        schema.registerType(true, TypeReferences.ITEM_STACK, () -> DSL.hook(DSL.optionalFields("id", TypeReferences.ITEM_NAME.in(schema), "tag", DSL.optionalFields("EntityTag", TypeReferences.ENTITY_TREE.in(schema), "BlockEntityTag", TypeReferences.BLOCK_ENTITY.in(schema), "CanDestroy", DSL.list(TypeReferences.BLOCK_NAME.in(schema)), "CanPlaceOn", DSL.list(TypeReferences.BLOCK_NAME.in(schema)))), field_28626, Hook.HookFunction.IDENTITY));
         schema.registerType(false, TypeReferences.HOTBAR, () -> DSL.compoundList(DSL.list(TypeReferences.ITEM_STACK.in(schema))));
         schema.registerType(false, TypeReferences.OPTIONS, DSL::remainder);
         schema.registerType(false, TypeReferences.STRUCTURE, () -> DSL.optionalFields("entities", DSL.list(DSL.optionalFields("nbt", TypeReferences.ENTITY_TREE.in(schema))), "blocks", DSL.list(DSL.optionalFields("nbt", TypeReferences.BLOCK_ENTITY.in(schema))), "palette", DSL.list(TypeReferences.BLOCK_STATE.in(schema))));

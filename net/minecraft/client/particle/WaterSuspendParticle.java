@@ -13,6 +13,7 @@ import net.minecraft.client.particle.SpriteBillboardParticle;
 import net.minecraft.client.particle.SpriteProvider;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.particle.DefaultParticleType;
+import net.minecraft.util.math.MathHelper;
 
 @Environment(value=EnvType.CLIENT)
 public class WaterSuspendParticle
@@ -91,6 +92,28 @@ extends SpriteBillboardParticle {
             WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f, j, k, l);
             waterSuspendParticle.setSprite(this.spriteProvider);
             waterSuspendParticle.setColor(0.9f, 0.4f, 0.5f);
+            return waterSuspendParticle;
+        }
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static class SporeBlossomAirFactory
+    implements ParticleFactory<DefaultParticleType> {
+        private final SpriteProvider spriteProvider;
+        private final Random random;
+
+        public SporeBlossomAirFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
+            this.random = new Random();
+        }
+
+        @Override
+        public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f);
+            waterSuspendParticle.maxAge = MathHelper.nextBetween(this.random, 1000, 2000);
+            waterSuspendParticle.setSprite(this.spriteProvider);
+            waterSuspendParticle.gravityStrength = 0.001f;
+            waterSuspendParticle.setColor(0.32f, 0.5f, 0.22f);
             return waterSuspendParticle;
         }
     }

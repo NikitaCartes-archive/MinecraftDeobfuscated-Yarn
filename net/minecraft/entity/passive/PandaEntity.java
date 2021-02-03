@@ -63,6 +63,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class PandaEntity
@@ -372,6 +373,7 @@ extends AnimalEntity {
                 if (this.getEatingTicks() > 100 && this.canEat(this.getEquippedStack(EquipmentSlot.MAINHAND))) {
                     if (!this.world.isClient) {
                         this.equipStack(EquipmentSlot.MAINHAND, ItemStack.EMPTY);
+                        this.method_33569(GameEvent.EAT, this.method_33575());
                     }
                     this.setScared(false);
                 }
@@ -558,9 +560,11 @@ extends AnimalEntity {
             if (this.isBaby()) {
                 this.eat(player, hand, itemStack);
                 this.growUp((int)((float)(-this.getBreedingAge() / 20) * 0.1f), true);
+                this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
             } else if (!this.world.isClient && this.getBreedingAge() == 0 && this.canEat()) {
                 this.eat(player, hand, itemStack);
                 this.lovePlayer(player);
+                this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
             } else if (!(this.world.isClient || this.isScared() || this.isTouchingWater())) {
                 this.stop();
                 this.setEating(true);

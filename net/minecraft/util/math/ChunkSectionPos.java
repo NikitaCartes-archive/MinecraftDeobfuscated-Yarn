@@ -14,6 +14,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.world.chunk.Chunk;
 
 public class ChunkSectionPos
 extends Vec3i {
@@ -49,6 +50,10 @@ extends Vec3i {
      */
     public static ChunkSectionPos from(long packed) {
         return new ChunkSectionPos(ChunkSectionPos.unpackX(packed), ChunkSectionPos.unpackY(packed), ChunkSectionPos.unpackZ(packed));
+    }
+
+    public static ChunkSectionPos method_33705(Chunk chunk) {
+        return ChunkSectionPos.from(chunk.getPos(), chunk.getMinimumSection());
     }
 
     /**
@@ -253,6 +258,10 @@ extends Vec3i {
 
     public ChunkPos toChunkPos() {
         return new ChunkPos(this.getSectionX(), this.getSectionZ());
+    }
+
+    public static long method_33706(BlockPos blockPos) {
+        return ChunkSectionPos.asLong(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getY()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
     }
 
     public static long asLong(int x, int y, int z) {

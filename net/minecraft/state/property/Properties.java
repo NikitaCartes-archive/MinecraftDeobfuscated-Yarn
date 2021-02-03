@@ -23,6 +23,7 @@ import net.minecraft.block.enums.Thickness;
 import net.minecraft.block.enums.WallMountLocation;
 import net.minecraft.block.enums.WallShape;
 import net.minecraft.block.enums.WireConnection;
+import net.minecraft.class_5816;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.EnumProperty;
@@ -160,6 +161,7 @@ public class Properties {
      */
     public static final BooleanProperty WATERLOGGED = BooleanProperty.of("waterlogged");
     public static final BooleanProperty VINE_END = BooleanProperty.of("vine_end");
+    public static final BooleanProperty field_28716 = BooleanProperty.of("berries");
     /**
      *  A property that specifies the axis a block is oriented to.
      * 
@@ -419,6 +421,7 @@ public class Properties {
      * A property that specifies the size of bamboo leaves.
      */
     public static final EnumProperty<BambooLeaves> BAMBOO_LEAVES = EnumProperty.of("leaves", BambooLeaves.class);
+    public static final EnumProperty<class_5816> field_28717 = EnumProperty.of("tilt", class_5816.class);
     public static final DirectionProperty VERTICAL_DIRECTION = DirectionProperty.of("vertical_direction", Direction.UP, Direction.DOWN);
     public static final EnumProperty<Thickness> THICKNESS = EnumProperty.of("thickness", Thickness.class);
     public static final EnumProperty<SculkSensorPhase> SCULK_SENSOR_PHASE = EnumProperty.of("sculk_sensor_phase", SculkSensorPhase.class);

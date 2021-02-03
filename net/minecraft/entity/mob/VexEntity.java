@@ -44,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class VexEntity
 extends HostileEntity {
+    public static final int field_28645 = MathHelper.ceil(3.9269907f);
     protected static final TrackedData<Byte> VEX_FLAGS = DataTracker.registerData(VexEntity.class, TrackedDataHandlerRegistry.BYTE);
     private MobEntity owner;
     @Nullable
@@ -58,8 +59,13 @@ extends HostileEntity {
     }
 
     @Override
-    public void move(MovementType type, Vec3d movement) {
-        super.move(type, movement);
+    public boolean hasWings() {
+        return this.age % field_28645 == 0;
+    }
+
+    @Override
+    public void move(MovementType movementType, Vec3d movement) {
+        super.move(movementType, movement);
         this.checkBlockCollision();
     }
 
@@ -273,7 +279,7 @@ extends HostileEntity {
         @Override
         public void start() {
             LivingEntity livingEntity = VexEntity.this.getTarget();
-            Vec3d vec3d = livingEntity.getCameraPosVec(1.0f);
+            Vec3d vec3d = livingEntity.method_33571();
             VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
             VexEntity.this.setCharging(true);
             VexEntity.this.playSound(SoundEvents.ENTITY_VEX_CHARGE, 1.0f, 1.0f);
@@ -293,7 +299,7 @@ extends HostileEntity {
             } else {
                 double d = VexEntity.this.squaredDistanceTo(livingEntity);
                 if (d < 9.0) {
-                    Vec3d vec3d = livingEntity.getCameraPosVec(1.0f);
+                    Vec3d vec3d = livingEntity.method_33571();
                     VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
                 }
             }

@@ -1295,7 +1295,7 @@ extends LivingEntity {
             boolean bl;
             float f = this.getBrightnessAtEyes();
             BlockPos blockPos = new BlockPos(this.getX(), this.getEyeY(), this.getZ());
-            boolean bl2 = bl = this.isWet() || this.inPowderSnow;
+            boolean bl2 = bl = this.isWet() || this.inPowderSnow || this.field_28628;
             if (f > 0.5f && this.random.nextFloat() * 30.0f < (f - 0.4f) * 2.0f && !bl && this.world.isSkyVisible(blockPos)) {
                 return true;
             }

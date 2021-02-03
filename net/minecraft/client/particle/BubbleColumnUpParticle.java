@@ -20,6 +20,8 @@ public class BubbleColumnUpParticle
 extends SpriteBillboardParticle {
     private BubbleColumnUpParticle(ClientWorld world, double x, double y, double z, double d, double e, double f) {
         super(world, x, y, z);
+        this.gravityStrength = -0.125f;
+        this.field_28786 = 0.85f;
         this.setBoundingBoxSpacing(0.02f, 0.02f);
         this.scale *= this.random.nextFloat() * 0.6f + 0.2f;
         this.velocityX = d * (double)0.2f + (Math.random() * 2.0 - 1.0) * (double)0.02f;
@@ -30,19 +32,8 @@ extends SpriteBillboardParticle {
 
     @Override
     public void tick() {
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        this.velocityY += 0.005;
-        if (this.maxAge-- <= 0) {
-            this.markDead();
-            return;
-        }
-        this.move(this.velocityX, this.velocityY, this.velocityZ);
-        this.velocityX *= (double)0.85f;
-        this.velocityY *= (double)0.85f;
-        this.velocityZ *= (double)0.85f;
-        if (!this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
+        super.tick();
+        if (!this.dead && !this.world.getFluidState(new BlockPos(this.x, this.y, this.z)).isIn(FluidTags.WATER)) {
             this.markDead();
         }
     }

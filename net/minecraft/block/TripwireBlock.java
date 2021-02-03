@@ -29,6 +29,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class TripwireBlock
 extends Block {
@@ -87,11 +88,12 @@ extends Block {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!world.isClient && !player.getMainHandStack().isEmpty() && player.getMainHandStack().isOf(Items.SHEARS)) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+        if (!world.isClient && !playerEntity.getMainHandStack().isEmpty() && playerEntity.getMainHandStack().isOf(Items.SHEARS)) {
             world.setBlockState(pos, (BlockState)state.with(DISARMED, true), 4);
+            world.emitGameEvent((Entity)playerEntity, GameEvent.SHEAR, pos);
         }
-        super.onBreak(world, pos, state, player);
+        super.onBreak(world, pos, state, playerEntity);
     }
 
     private void update(World world, BlockPos pos, BlockState state) {

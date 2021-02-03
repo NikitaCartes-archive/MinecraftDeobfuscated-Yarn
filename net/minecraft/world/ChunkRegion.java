@@ -60,8 +60,7 @@ public class ChunkRegion
 implements StructureWorldAccess {
     private static final Logger LOGGER = LogManager.getLogger();
     private final List<Chunk> chunks;
-    private final int centerChunkX;
-    private final int centerChunkZ;
+    private final ChunkPos field_28557;
     private final int width;
     private final ServerWorld world;
     private final long seed;
@@ -82,8 +81,7 @@ implements StructureWorldAccess {
         }
         ChunkPos chunkPos = chunks.get(chunks.size() / 2).getPos();
         this.chunks = chunks;
-        this.centerChunkX = chunkPos.x;
-        this.centerChunkZ = chunkPos.z;
+        this.field_28557 = chunkPos;
         this.width = i;
         this.world = world;
         this.seed = world.getSeed();
@@ -96,12 +94,8 @@ implements StructureWorldAccess {
         this.structureAccessor = world.getStructureAccessor().forRegion(this);
     }
 
-    public int getCenterChunkX() {
-        return this.centerChunkX;
-    }
-
-    public int getCenterChunkZ() {
-        return this.centerChunkZ;
+    public ChunkPos method_33561() {
+        return this.field_28557;
     }
 
     @Override

@@ -33,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class BatEntity
 extends AmbientEntity {
+    public static final int field_28637 = MathHelper.ceil(2.4166098f);
     /**
      * Equals 0 when the bat is flying, and 1 when it's roosting.
      */
@@ -43,6 +44,11 @@ extends AmbientEntity {
     public BatEntity(EntityType<? extends BatEntity> entityType, World world) {
         super((EntityType<? extends AmbientEntity>)entityType, world);
         this.setRoosting(true);
+    }
+
+    @Override
+    public boolean hasWings() {
+        return !this.isRoosting() && this.age % field_28637 == 0;
     }
 
     @Override
@@ -171,8 +177,8 @@ extends AmbientEntity {
     }
 
     @Override
-    protected boolean canClimb() {
-        return false;
+    protected Entity.class_5799 method_33570() {
+        return Entity.class_5799.field_28632;
     }
 
     @Override

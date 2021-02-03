@@ -58,6 +58,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class BeehiveBlock
@@ -122,6 +123,7 @@ extends BlockWithEntity {
                 BeehiveBlock.dropHoneycomb(world, pos);
                 itemStack.damage(1, player2, player -> player.sendToolBreakStatus(hand));
                 bl = true;
+                world.emitGameEvent((Entity)player2, GameEvent.SHEAR, pos);
             } else if (itemStack.isOf(Items.GLASS_BOTTLE)) {
                 itemStack.decrement(1);
                 world.playSound(player2, player2.getX(), player2.getY(), player2.getZ(), SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.NEUTRAL, 1.0f, 1.0f);
@@ -131,6 +133,7 @@ extends BlockWithEntity {
                     player2.dropItem(new ItemStack(Items.HONEY_BOTTLE), false);
                 }
                 bl = true;
+                world.emitGameEvent((Entity)player2, GameEvent.FLUID_PICKUP, pos);
             }
         }
         if (bl) {
@@ -240,31 +243,30 @@ extends BlockWithEntity {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
         BlockEntity blockEntity;
-        if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
-            CompoundTag compoundTag;
+        if (!world.isClient && playerEntity.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS) && (blockEntity = world.getBlockEntity(pos)) instanceof BeehiveBlockEntity) {
             boolean bl;
             BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
             ItemStack itemStack = new ItemStack(this);
             int i = state.get(HONEY_LEVEL);
             boolean bl2 = bl = !beehiveBlockEntity.hasNoBees();
-            if (!bl && i == 0) {
-                return;
-            }
-            if (bl) {
+            if (bl || i > 0) {
+                CompoundTag compoundTag;
+                if (bl) {
+                    compoundTag = new CompoundTag();
+                    compoundTag.put("Bees", beehiveBlockEntity.getBees());
+                    itemStack.putSubTag("BlockEntityTag", compoundTag);
+                }
                 compoundTag = new CompoundTag();
-                compoundTag.put("Bees", beehiveBlockEntity.getBees());
-                itemStack.putSubTag("BlockEntityTag", compoundTag);
+                compoundTag.putInt("honey_level", i);
+                itemStack.putSubTag("BlockStateTag", compoundTag);
+                ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), itemStack);
+                itemEntity.setToDefaultPickupDelay();
+                world.spawnEntity(itemEntity);
             }
-            compoundTag = new CompoundTag();
-            compoundTag.putInt("honey_level", i);
-            itemStack.putSubTag("BlockStateTag", compoundTag);
-            ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), itemStack);
-            itemEntity.setToDefaultPickupDelay();
-            world.spawnEntity(itemEntity);
         }
-        super.onBreak(world, pos, state, player);
+        super.onBreak(world, pos, state, playerEntity);
     }
 
     @Override

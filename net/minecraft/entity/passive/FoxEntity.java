@@ -21,6 +21,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
+import net.minecraft.class_5803;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -81,6 +82,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -157,7 +159,7 @@ extends AnimalEntity {
         this.goalSelector.add(7, new DelayedCalmDownGoal());
         this.goalSelector.add(8, new FollowParentGoal(this, 1.25));
         this.goalSelector.add(9, new GoToVillageGoal(32, 200));
-        this.goalSelector.add(10, new EatSweetBerriesGoal((double)1.2f, 12, 2));
+        this.goalSelector.add(10, new EatSweetBerriesGoal((double)1.2f, 12, 1));
         this.goalSelector.add(10, new PounceAtTargetGoal(this, 0.4f));
         this.goalSelector.add(11, new WanderAroundFarGoal(this, 1.0));
         this.goalSelector.add(11, new PickupItemGoal());
@@ -485,7 +487,7 @@ extends AnimalEntity {
 
     @Override
     public boolean isBreedingItem(ItemStack stack) {
-        return stack.isOf(Items.SWEET_BERRIES);
+        return stack.isIn(ItemTags.FOX_FOOD);
     }
 
     @Override
@@ -907,7 +909,7 @@ extends AnimalEntity {
         @Override
         protected boolean isTargetPos(WorldView world, BlockPos pos) {
             BlockState blockState = world.getBlockState(pos);
-            return blockState.isOf(Blocks.SWEET_BERRY_BUSH) && blockState.get(SweetBerryBushBlock.AGE) >= 2;
+            return blockState.isOf(Blocks.SWEET_BERRY_BUSH) && blockState.get(SweetBerryBushBlock.AGE) >= 2 || class_5803.method_33618(blockState);
         }
 
         @Override
@@ -929,9 +931,18 @@ extends AnimalEntity {
                 return;
             }
             BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
-            if (!blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
-                return;
+            if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
+                this.method_33587(blockState);
+            } else if (class_5803.method_33618(blockState)) {
+                this.method_33586(blockState);
             }
+        }
+
+        private void method_33586(BlockState blockState) {
+            class_5803.method_33619(blockState, FoxEntity.this.world, this.targetPos);
+        }
+
+        private void method_33587(BlockState blockState) {
             int i = blockState.get(SweetBerryBushBlock.AGE);
             blockState.with(SweetBerryBushBlock.AGE, 1);
             int j = 1 + FoxEntity.this.world.random.nextInt(2) + (i == 3 ? 1 : 0);

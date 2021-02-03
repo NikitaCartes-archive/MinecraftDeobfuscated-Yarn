@@ -179,7 +179,7 @@ implements FlyingItemEntity {
             this.world.removeBlock(pos, false);
         } else if (CampfireBlock.isLitCampfire(blockState)) {
             this.world.syncWorldEvent(null, 1009, pos, 0);
-            CampfireBlock.extinguish(this.world, pos, blockState);
+            CampfireBlock.extinguish(this.getOwner(), this.world, pos, blockState);
             this.world.setBlockState(pos, (BlockState)blockState.with(CampfireBlock.LIT, false));
         }
     }

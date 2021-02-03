@@ -21,6 +21,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPointer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.world.event.GameEvent;
 
 public class ShearsDispenserBehavior
 extends FallibleItemDispenserBehavior {
@@ -44,6 +45,7 @@ extends FallibleItemDispenserBehavior {
             world.playSound(null, pos, SoundEvents.BLOCK_BEEHIVE_SHEAR, SoundCategory.BLOCKS, 1.0f, 1.0f);
             BeehiveBlock.dropHoneycomb(world, pos);
             ((BeehiveBlock)blockState.getBlock()).takeHoney(world, blockState, pos, null, BeehiveBlockEntity.BeeState.BEE_RELEASED);
+            world.emitGameEvent(null, GameEvent.SHEAR, pos);
             return true;
         }
         return false;
@@ -55,6 +57,7 @@ extends FallibleItemDispenserBehavior {
             Shearable shearable;
             if (!(livingEntity instanceof Shearable) || !(shearable = (Shearable)((Object)livingEntity)).isShearable()) continue;
             shearable.sheared(SoundCategory.BLOCKS);
+            world.emitGameEvent(null, GameEvent.SHEAR, pos);
             return true;
         }
         return false;

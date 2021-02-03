@@ -4,10 +4,9 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
+import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -18,7 +17,10 @@ extends Feature<EmeraldOreFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, EmeraldOreFeatureConfig emeraldOreFeatureConfig) {
+    public boolean generate(class_5821<EmeraldOreFeatureConfig> arg) {
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        BlockPos blockPos = arg.method_33655();
+        EmeraldOreFeatureConfig emeraldOreFeatureConfig = arg.method_33656();
         if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
             structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
         }

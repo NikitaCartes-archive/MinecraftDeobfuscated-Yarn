@@ -53,7 +53,8 @@ implements SculkSensorListener.Listener {
     @Override
     public boolean shouldListen(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
         boolean bl = event == GameEvent.BLOCK_DESTROY && pos.equals(this.getPos());
-        return !bl && SculkSensorBlock.isInactive(this.getCachedState());
+        boolean bl2 = event == GameEvent.BLOCK_PLACE && pos.equals(this.getPos());
+        return !bl && !bl2 && SculkSensorBlock.isInactive(this.getCachedState());
     }
 
     @Override

@@ -45,6 +45,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 
 @EnvironmentInterfaces(value={@EnvironmentInterface(value=EnvType.CLIENT, itf=SkinOverlayOwner.class)})
@@ -144,6 +145,7 @@ implements SkinOverlayOwner {
             }
             if ((i = this.getFuseSpeed()) > 0 && this.currentFuseTime == 0) {
                 this.playSound(SoundEvents.ENTITY_CREEPER_PRIMED, 1.0f, 0.5f);
+                this.emitGameEvent(GameEvent.PRIME_FUSE);
             }
             this.currentFuseTime += i;
             if (this.currentFuseTime < 0) {

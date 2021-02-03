@@ -56,7 +56,8 @@ extends Item {
         if (user.isFallFlying()) {
             ItemStack itemStack = user.getStackInHand(hand);
             if (!world.isClient) {
-                world.spawnEntity(new FireworkRocketEntity(world, itemStack, user));
+                FireworkRocketEntity fireworkRocketEntity = new FireworkRocketEntity(world, itemStack, user);
+                world.spawnEntity(fireworkRocketEntity);
                 if (!user.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }

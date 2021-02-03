@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.gen.ChunkRandom;
@@ -26,7 +27,7 @@ extends StructureFeature<ProbabilityConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, ProbabilityConfig probabilityConfig) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, ProbabilityConfig probabilityConfig, HeightLimitView heightLimitView) {
         chunkRandom.setRegionSeed(l, i, j, 10387320);
         return chunkRandom.nextFloat() < probabilityConfig.probability;
     }
@@ -43,7 +44,7 @@ extends StructureFeature<ProbabilityConfig> {
         }
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, ProbabilityConfig probabilityConfig) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, ProbabilityConfig probabilityConfig, HeightLimitView heightLimitView) {
             BlockPos blockPos = new BlockPos(ChunkSectionPos.getOffsetPos(i, 9), 90, ChunkSectionPos.getOffsetPos(j, 9));
             this.children.add(new BuriedTreasureGenerator.Piece(blockPos));
             this.setBoundingBoxFromChildren();

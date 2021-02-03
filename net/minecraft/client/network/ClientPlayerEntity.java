@@ -71,6 +71,7 @@ import net.minecraft.stat.StatHandler;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.text.Text;
 import net.minecraft.util.Arm;
+import net.minecraft.util.ClickType;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -186,7 +187,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void tick() {
-        if (!this.world.isChunkLoaded(new BlockPos(this.getX(), 0.0, this.getZ()))) {
+        if (!this.world.method_33598(this.getBlockX(), this.getBlockZ())) {
             return;
         }
         super.tick();
@@ -436,7 +437,7 @@ extends AbstractClientPlayerEntity {
     private boolean wouldCollideAt(BlockPos pos) {
         Box box = this.getBoundingBox();
         Box box2 = new Box(pos.getX(), box.minY, pos.getZ(), (double)pos.getX() + 1.0, box.maxY, (double)pos.getZ() + 1.0).contract(1.0E-7);
-        return !this.world.isBlockSpaceEmpty(this, box2, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos));
+        return this.world.isBlockSpaceEmpty(this, box2, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos));
     }
 
     @Override
@@ -614,6 +615,20 @@ extends AbstractClientPlayerEntity {
 
     protected boolean isCamera() {
         return this.client.getCameraEntity() == this;
+    }
+
+    public void method_33689() {
+        this.setPose(EntityPose.STANDING);
+        if (this.world != null) {
+            for (double d = this.getY(); d > (double)this.world.getBottomSectionLimit() && d < (double)this.world.getTopHeightLimit(); d += 1.0) {
+                this.setPosition(this.getX(), d, this.getZ());
+                if (this.world.isSpaceEmpty(this)) break;
+            }
+            this.setVelocity(Vec3d.ZERO);
+            this.pitch = 0.0f;
+        }
+        this.setHealth(this.getMaxHealth());
+        this.deathTime = 0;
     }
 
     @Override
@@ -809,10 +824,10 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void move(MovementType type, Vec3d movement) {
+    public void move(MovementType movementType, Vec3d movement) {
         double d = this.getX();
         double e = this.getZ();
-        super.move(type, movement);
+        super.move(movementType, movement);
         this.autoJump((float)(this.getX() - d), (float)(this.getZ() - e));
     }
 
@@ -981,6 +996,11 @@ extends AbstractClientPlayerEntity {
             return vec3d.rotateX(-h).rotateY(-g).add(this.getCameraPosVec(f));
         }
         return super.method_30951(f);
+    }
+
+    @Override
+    public void method_33592(ItemStack itemStack, ItemStack itemStack2, ClickType clickType) {
+        this.client.getTutorialManager().method_33704(itemStack, itemStack2, clickType);
     }
 }
 

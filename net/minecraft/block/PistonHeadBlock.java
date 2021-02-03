@@ -104,12 +104,12 @@ extends FacingBlock {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
         BlockPos blockPos;
-        if (!world.isClient && player.getAbilities().creativeMode && this.method_26980(state, world.getBlockState(blockPos = pos.offset(state.get(FACING).getOpposite())))) {
+        if (!world.isClient && playerEntity.getAbilities().creativeMode && this.method_26980(state, world.getBlockState(blockPos = pos.offset(state.get(FACING).getOpposite())))) {
             world.breakBlock(blockPos, false);
         }
-        super.onBreak(world, pos, state, player);
+        super.onBreak(world, pos, state, playerEntity);
     }
 
     @Override

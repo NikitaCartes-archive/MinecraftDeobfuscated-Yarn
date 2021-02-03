@@ -84,7 +84,7 @@ implements GameEventListener {
             return false;
         }
         if (entity != null) {
-            if (GameEventTags.IGNORE_VIBRATIONS_STEPPING_CAREFULLY.contains(event) && entity.bypassesSteppingEffects()) {
+            if (GameEventTags.IGNORE_VIBRATIONS_SNEAKING.contains(event) && entity.bypassesSteppingEffects()) {
                 return false;
             }
             if (entity.occludeVibrationSignals()) {

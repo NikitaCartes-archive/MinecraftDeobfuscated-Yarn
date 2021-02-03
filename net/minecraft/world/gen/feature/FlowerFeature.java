@@ -6,10 +6,10 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 
@@ -20,13 +20,17 @@ extends Feature<U> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos, U config) {
-        BlockState blockState = this.getFlowerState(random, pos, config);
+    public boolean generate(class_5821<U> arg) {
+        Random random = arg.method_33654();
+        BlockPos blockPos = arg.method_33655();
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        U featureConfig = arg.method_33656();
+        BlockState blockState = this.getFlowerState(random, blockPos, featureConfig);
         int i = 0;
-        for (int j = 0; j < this.getFlowerAmount(config); ++j) {
-            BlockPos blockPos = this.getPos(random, pos, config);
-            if (!world.isAir(blockPos) || !blockState.canPlaceAt(world, blockPos) || !this.isPosValid(world, blockPos, config)) continue;
-            world.setBlockState(blockPos, blockState, 2);
+        for (int j = 0; j < this.getFlowerAmount(featureConfig); ++j) {
+            BlockPos blockPos2 = this.getPos(random, blockPos, featureConfig);
+            if (!structureWorldAccess.isAir(blockPos2) || !blockState.canPlaceAt(structureWorldAccess, blockPos2) || !this.isPosValid(structureWorldAccess, blockPos2, featureConfig)) continue;
+            structureWorldAccess.setBlockState(blockPos2, blockState, 2);
             ++i;
         }
         return i > 0;

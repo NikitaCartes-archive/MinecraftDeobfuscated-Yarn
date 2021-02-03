@@ -24,6 +24,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5819;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.registry.Registry;
@@ -71,10 +72,10 @@ extends BiomeSource {
         this.humidityNoiseParameters = humidityNoiseParameters;
         this.altitudeNoiseParameters = altitudeNoiseParameters;
         this.weirdnessNoiseParameters = weirdnessNoiseParameters;
-        this.temperatureNoise = DoublePerlinNoiseSampler.create(new ChunkRandom(seed), temperatureNoiseParameters.getFirstOctave(), temperatureNoiseParameters.getAmplitudes());
-        this.humidityNoise = DoublePerlinNoiseSampler.create(new ChunkRandom(seed + 1L), humidityNoiseParameters.getFirstOctave(), humidityNoiseParameters.getAmplitudes());
-        this.altitudeNoise = DoublePerlinNoiseSampler.create(new ChunkRandom(seed + 2L), altitudeNoiseParameters.getFirstOctave(), altitudeNoiseParameters.getAmplitudes());
-        this.weirdnessNoise = DoublePerlinNoiseSampler.create(new ChunkRandom(seed + 3L), weirdnessNoiseParameters.getFirstOctave(), weirdnessNoiseParameters.getAmplitudes());
+        this.temperatureNoise = DoublePerlinNoiseSampler.create((class_5819)new ChunkRandom(seed), temperatureNoiseParameters.getFirstOctave(), temperatureNoiseParameters.getAmplitudes());
+        this.humidityNoise = DoublePerlinNoiseSampler.create((class_5819)new ChunkRandom(seed + 1L), humidityNoiseParameters.getFirstOctave(), humidityNoiseParameters.getAmplitudes());
+        this.altitudeNoise = DoublePerlinNoiseSampler.create((class_5819)new ChunkRandom(seed + 2L), altitudeNoiseParameters.getFirstOctave(), altitudeNoiseParameters.getAmplitudes());
+        this.weirdnessNoise = DoublePerlinNoiseSampler.create((class_5819)new ChunkRandom(seed + 3L), weirdnessNoiseParameters.getFirstOctave(), weirdnessNoiseParameters.getAmplitudes());
         this.biomePoints = biomePoints;
         this.threeDimensionalSampling = false;
     }

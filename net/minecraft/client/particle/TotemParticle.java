@@ -16,7 +16,8 @@ import net.minecraft.particle.DefaultParticleType;
 public class TotemParticle
 extends AnimatedParticle {
     private TotemParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ, SpriteProvider spriteProvider) {
-        super(world, x, y, z, spriteProvider, -0.05f);
+        super(world, x, y, z, spriteProvider, 1.25f);
+        this.field_28786 = 0.6f;
         this.velocityX = velocityX;
         this.velocityY = velocityY;
         this.velocityZ = velocityZ;
@@ -28,7 +29,6 @@ extends AnimatedParticle {
         } else {
             this.setColor(0.1f + this.random.nextFloat() * 0.2f, 0.4f + this.random.nextFloat() * 0.3f, this.random.nextFloat() * 0.2f);
         }
-        this.setResistance(0.6f);
     }
 
     @Environment(value=EnvType.CLIENT)

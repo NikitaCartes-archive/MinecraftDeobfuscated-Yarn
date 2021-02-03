@@ -31,6 +31,10 @@ implements Fertilizable {
         super(settings, direction, voxelShape, bl);
     }
 
+    protected BlockState method_33624(BlockState blockState, BlockState blockState2) {
+        return blockState2;
+    }
+
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
         if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
@@ -38,7 +42,7 @@ implements Fertilizable {
         }
         AbstractPlantStemBlock abstractPlantStemBlock = this.getStem();
         if (direction == this.growthDirection && !newState.isOf(this) && !newState.isOf(abstractPlantStemBlock)) {
-            return abstractPlantStemBlock.getRandomGrowthState(world);
+            return this.method_33624(state, abstractPlantStemBlock.getRandomGrowthState(world));
         }
         if (this.tickWater) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));

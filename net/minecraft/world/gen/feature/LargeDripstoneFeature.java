@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5821;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -15,7 +16,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.UniformFloatDistribution;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.LargeDripstoneFeatureConfig;
 import net.minecraft.world.gen.feature.util.DripstoneColumn;
@@ -29,7 +29,11 @@ extends Feature<LargeDripstoneFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, LargeDripstoneFeatureConfig largeDripstoneFeatureConfig) {
+    public boolean generate(class_5821<LargeDripstoneFeatureConfig> arg) {
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        BlockPos blockPos = arg.method_33655();
+        LargeDripstoneFeatureConfig largeDripstoneFeatureConfig = arg.method_33656();
+        Random random = arg.method_33654();
         if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
             return false;
         }

@@ -18,6 +18,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.ChunkRandom;
@@ -36,7 +37,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
     public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(StructureFeature.MINESHAFT, 0, 0, BlockBox.empty(), 0, 0L){
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView) {
         }
     };
     private final StructureFeature<C> feature;
@@ -66,7 +67,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
         this.boundingBox = box;
     }
 
-    public abstract void init(DynamicRegistryManager var1, ChunkGenerator var2, StructureManager var3, int var4, int var5, Biome var6, C var7);
+    public abstract void init(DynamicRegistryManager var1, ChunkGenerator var2, StructureManager var3, int var4, int var5, Biome var6, C var7, HeightLimitView var8);
 
     public BlockBox getBoundingBox() {
         return this.boundingBox;

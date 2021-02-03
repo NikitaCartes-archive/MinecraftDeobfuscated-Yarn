@@ -13,6 +13,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
@@ -28,6 +29,7 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 
 public class FlowerPotBlock
 extends Block {
@@ -74,6 +76,7 @@ extends Block {
                 }
                 world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
             }
+            world.emitGameEvent((Entity)player, GameEvent.BLOCK_CHANGE, pos);
             return ActionResult.success(world.isClient);
         }
         return ActionResult.CONSUME;

@@ -57,7 +57,7 @@ extends Item {
             this.setRotations(armorStandEntity, world.random);
             serverWorld.spawnEntityAndPassengers(armorStandEntity);
             world.playSound(null, armorStandEntity.getX(), armorStandEntity.getY(), armorStandEntity.getZ(), SoundEvents.ENTITY_ARMOR_STAND_PLACE, SoundCategory.BLOCKS, 0.75f, 0.8f);
-            world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_PLACE, armorStandEntity);
+            world.emitGameEvent((Entity)context.getPlayer(), GameEvent.ENTITY_PLACE, armorStandEntity);
         }
         itemStack.decrement(1);
         return ActionResult.success(world.isClient);

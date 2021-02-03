@@ -21,11 +21,12 @@ implements Packet<ClientPlayPacketListener> {
     private float pitch;
     private Set<Flag> flags;
     private int teleportId;
+    private boolean field_28805;
 
     public PlayerPositionLookS2CPacket() {
     }
 
-    public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<Flag> flags, int teleportId) {
+    public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<Flag> flags, int teleportId, boolean bl) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -33,6 +34,7 @@ implements Packet<ClientPlayPacketListener> {
         this.pitch = pitch;
         this.flags = flags;
         this.teleportId = teleportId;
+        this.field_28805 = bl;
     }
 
     @Override
@@ -44,6 +46,7 @@ implements Packet<ClientPlayPacketListener> {
         this.pitch = buf.readFloat();
         this.flags = Flag.getFlags(buf.readUnsignedByte());
         this.teleportId = buf.readVarInt();
+        this.field_28805 = buf.readBoolean();
     }
 
     @Override
@@ -55,6 +58,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeFloat(this.pitch);
         buf.writeByte(Flag.getBitfield(this.flags));
         buf.writeVarInt(this.teleportId);
+        buf.writeBoolean(this.field_28805);
     }
 
     @Override
@@ -90,6 +94,11 @@ implements Packet<ClientPlayPacketListener> {
     @Environment(value=EnvType.CLIENT)
     public int getTeleportId() {
         return this.teleportId;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public boolean method_33718() {
+        return this.field_28805;
     }
 
     @Environment(value=EnvType.CLIENT)

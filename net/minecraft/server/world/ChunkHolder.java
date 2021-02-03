@@ -159,12 +159,12 @@ public class ChunkHolder {
         if (worldChunk == null) {
             return;
         }
-        byte b = (byte)this.field_26929.getSectionIndex(blockPos.getY());
-        if (this.blockUpdatesBySection[b] == null) {
+        int i = this.field_26929.getSectionIndex(blockPos.getY());
+        if (this.blockUpdatesBySection[i] == null) {
             this.pendingBlockUpdates = true;
-            this.blockUpdatesBySection[b] = new ShortArraySet();
+            this.blockUpdatesBySection[i] = new ShortArraySet();
         }
-        this.blockUpdatesBySection[b].add(ChunkSectionPos.packLocal(blockPos));
+        this.blockUpdatesBySection[i].add(ChunkSectionPos.packLocal(blockPos));
     }
 
     /**

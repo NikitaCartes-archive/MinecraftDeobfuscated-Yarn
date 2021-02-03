@@ -24,6 +24,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,11 +57,11 @@ extends Block {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        if (!world.isClient() && !player.isCreative() && state.get(UNSTABLE).booleanValue()) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+        if (!world.isClient() && !playerEntity.isCreative() && state.get(UNSTABLE).booleanValue()) {
             TntBlock.primeTnt(world, pos);
         }
-        super.onBreak(world, pos, state, player);
+        super.onBreak(world, pos, state, playerEntity);
     }
 
     @Override
@@ -85,6 +86,7 @@ extends Block {
         TntEntity tntEntity = new TntEntity(world, (double)pos.getX() + 0.5, pos.getY(), (double)pos.getZ() + 0.5, igniter);
         world.spawnEntity(tntEntity);
         world.playSound(null, tntEntity.getX(), tntEntity.getY(), tntEntity.getZ(), SoundEvents.ENTITY_TNT_PRIMED, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        world.emitGameEvent((Entity)igniter, GameEvent.PRIME_FUSE, pos);
     }
 
     @Override

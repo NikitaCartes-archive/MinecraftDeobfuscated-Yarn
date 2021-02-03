@@ -57,16 +57,16 @@ implements Predicate<ItemStack> {
     }
 
     @Override
-    public boolean test(@Nullable ItemStack stack) {
-        if (stack == null) {
+    public boolean test(@Nullable ItemStack itemStack) {
+        if (itemStack == null) {
             return false;
         }
         this.cacheMatchingStacks();
         if (this.matchingStacks.length == 0) {
-            return stack.isEmpty();
+            return itemStack.isEmpty();
         }
-        for (ItemStack itemStack : this.matchingStacks) {
-            if (!itemStack.isOf(stack.getItem())) continue;
+        for (ItemStack itemStack2 : this.matchingStacks) {
+            if (!itemStack2.isOf(itemStack.getItem())) continue;
             return true;
         }
         return false;

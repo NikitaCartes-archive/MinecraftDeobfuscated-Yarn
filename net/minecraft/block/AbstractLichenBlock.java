@@ -14,13 +14,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ConnectingBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
@@ -65,7 +65,7 @@ extends Block {
     public AbstractLichenBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState(AbstractLichenBlock.method_33368(this.stateManager));
-        this.field_28422 = AbstractLichenBlock.method_33373(this.stateManager);
+        this.field_28422 = this.method_33615(AbstractLichenBlock::method_33380);
         this.field_28423 = Direction.Type.HORIZONTAL.stream().allMatch(this::method_33369);
         this.field_28424 = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.X).filter(this::method_33369).count() % 2L == 0L;
         this.field_28425 = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::method_33369).count() % 2L == 0L;
@@ -136,7 +136,7 @@ extends Block {
             }
             blockState2 = blockState;
         } else {
-            blockState2 = this.method_33378() && blockState.getFluidState().isStill() ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState();
+            blockState2 = this.method_33378() && blockState.getFluidState().method_33659(Fluids.WATER) ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState();
         }
         BlockPos blockPos2 = blockPos.offset(direction);
         if (AbstractLichenBlock.method_33358(worldAccess, direction, blockPos2, worldAccess.getBlockState(blockPos2))) {
@@ -246,11 +246,6 @@ extends Block {
             blockState = (BlockState)blockState.with(booleanProperty, false);
         }
         return blockState;
-    }
-
-    private static ImmutableMap<BlockState, VoxelShape> method_33373(StateManager<Block, BlockState> stateManager) {
-        Map map = stateManager.getStates().stream().collect(Collectors.toMap(Function.identity(), AbstractLichenBlock::method_33380));
-        return ImmutableMap.copyOf(map);
     }
 
     private static VoxelShape method_33380(BlockState blockState) {

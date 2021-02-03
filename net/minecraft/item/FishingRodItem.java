@@ -34,16 +34,16 @@ implements Vanishable {
                 itemStack.damage(i, user, p -> p.sendToolBreakStatus(hand));
             }
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_RETRIEVE, SoundCategory.NEUTRAL, 1.0f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
-            world.emitGameEvent((Entity)user, GameEvent.FISHING_ROD_CAST, user);
+            world.emitGameEvent((Entity)user, GameEvent.FISHING_ROD_REEL_IN, user);
         } else {
             world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.ENTITY_FISHING_BOBBER_THROW, SoundCategory.NEUTRAL, 0.5f, 0.4f / (world.getRandom().nextFloat() * 0.4f + 0.8f));
-            world.emitGameEvent((Entity)user, GameEvent.FISHING_ROD_REEL_IN, user);
             if (!world.isClient) {
                 int i = EnchantmentHelper.getLure(itemStack);
                 int j = EnchantmentHelper.getLuckOfTheSea(itemStack);
                 world.spawnEntity(new FishingBobberEntity(user, world, j, i));
             }
             user.incrementStat(Stats.USED.getOrCreateStat(this));
+            world.emitGameEvent((Entity)user, GameEvent.FISHING_ROD_CAST, user);
         }
         return TypedActionResult.success(itemStack, world.isClient());
     }

@@ -10,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CandleBlock;
 import net.minecraft.block.CandleCakeBlock;
 import net.minecraft.block.ShapeContext;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -31,6 +32,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
+import net.minecraft.world.event.GameEvent;
 
 public class CakeBlock
 extends Block {
@@ -59,6 +61,7 @@ extends Block {
             }
             world.playSound(null, pos, SoundEvents.BLOCK_CAKE_ADD_CANDLE, SoundCategory.BLOCKS, 1.0f, 1.0f);
             world.setBlockState(pos, CandleCakeBlock.getCandleCakeFromCandle(block));
+            world.emitGameEvent((Entity)player, GameEvent.BLOCK_CHANGE, pos);
             return ActionResult.SUCCESS;
         }
         if (world.isClient) {
@@ -79,10 +82,12 @@ extends Block {
         player.incrementStat(Stats.EAT_CAKE_SLICE);
         player.getHungerManager().add(2, 0.1f);
         int i = state.get(BITES);
+        world.emitGameEvent((Entity)player, GameEvent.EAT, pos);
         if (i < 6) {
             world.setBlockState(pos, (BlockState)state.with(BITES, i + 1), 3);
         } else {
             world.removeBlock(pos, false);
+            world.emitGameEvent((Entity)player, GameEvent.BLOCK_DESTROY, pos);
         }
         return ActionResult.SUCCESS;
     }

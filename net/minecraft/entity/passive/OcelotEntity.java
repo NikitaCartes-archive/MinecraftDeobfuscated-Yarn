@@ -275,6 +275,11 @@ extends AnimalEntity {
     }
 
     @Override
+    public boolean bypassesSteppingEffects() {
+        return this.getPose() == EntityPose.CROUCHING || super.bypassesSteppingEffects();
+    }
+
+    @Override
     public /* synthetic */ PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return this.createChild(world, entity);
     }

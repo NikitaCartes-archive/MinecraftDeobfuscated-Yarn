@@ -82,7 +82,7 @@ implements FluidModificationItem {
             BlockState blockState = world.getBlockState(blockPos);
             BlockPos blockPos4 = blockPos3 = blockState.getBlock() instanceof FluidFillable && this.fluid == Fluids.WATER ? blockPos : blockPos2;
             if (this.placeFluid(user, world, blockPos3, blockHitResult)) {
-                this.onEmptied(world, itemStack, blockPos3);
+                this.onEmptied(user, world, itemStack, blockPos3);
                 if (user instanceof ServerPlayerEntity) {
                     Criteria.PLACED_BLOCK.trigger((ServerPlayerEntity)user, blockPos3, itemStack);
                 }
@@ -102,7 +102,7 @@ implements FluidModificationItem {
     }
 
     @Override
-    public void onEmptied(World world, ItemStack stack, BlockPos pos) {
+    public void onEmptied(@Nullable PlayerEntity playerEntity, World world, ItemStack itemStack, BlockPos blockPos) {
     }
 
     @Override

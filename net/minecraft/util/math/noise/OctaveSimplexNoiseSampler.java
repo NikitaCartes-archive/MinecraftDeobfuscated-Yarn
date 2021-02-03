@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
 import java.util.stream.IntStream;
+import net.minecraft.class_5819;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.gen.ChunkRandom;
@@ -18,15 +19,15 @@ implements NoiseSampler {
     private final double persistence;
     private final double lacunarity;
 
-    public OctaveSimplexNoiseSampler(ChunkRandom random, IntStream octaves) {
-        this(random, octaves.boxed().collect(ImmutableList.toImmutableList()));
+    public OctaveSimplexNoiseSampler(class_5819 arg, IntStream octaves) {
+        this(arg, octaves.boxed().collect(ImmutableList.toImmutableList()));
     }
 
-    public OctaveSimplexNoiseSampler(ChunkRandom random, List<Integer> octaves) {
-        this(random, new IntRBTreeSet(octaves));
+    public OctaveSimplexNoiseSampler(class_5819 arg, List<Integer> octaves) {
+        this(arg, new IntRBTreeSet(octaves));
     }
 
-    private OctaveSimplexNoiseSampler(ChunkRandom random, IntSortedSet octaves) {
+    private OctaveSimplexNoiseSampler(class_5819 arg, IntSortedSet octaves) {
         int j;
         if (octaves.isEmpty()) {
             throw new IllegalArgumentException("Need some octaves!");
@@ -36,7 +37,7 @@ implements NoiseSampler {
         if (k < 1) {
             throw new IllegalArgumentException("Total number of octaves needs to be >= 1");
         }
-        SimplexNoiseSampler simplexNoiseSampler = new SimplexNoiseSampler(random);
+        SimplexNoiseSampler simplexNoiseSampler = new SimplexNoiseSampler(arg);
         int l = j;
         this.octaveSamplers = new SimplexNoiseSampler[k];
         if (l >= 0 && l < k && octaves.contains(0)) {
@@ -44,20 +45,20 @@ implements NoiseSampler {
         }
         for (int m = l + 1; m < k; ++m) {
             if (m >= 0 && octaves.contains(l - m)) {
-                this.octaveSamplers[m] = new SimplexNoiseSampler(random);
+                this.octaveSamplers[m] = new SimplexNoiseSampler(arg);
                 continue;
             }
-            random.consume(262);
+            arg.method_33650(262);
         }
         if (j > 0) {
             long n = (long)(simplexNoiseSampler.sample(simplexNoiseSampler.originX, simplexNoiseSampler.originY, simplexNoiseSampler.originZ) * 9.223372036854776E18);
-            ChunkRandom chunkRandom = new ChunkRandom(n);
+            ChunkRandom lv = new ChunkRandom(n);
             for (int o = l - 1; o >= 0; --o) {
                 if (o < k && octaves.contains(l - o)) {
-                    this.octaveSamplers[o] = new SimplexNoiseSampler(chunkRandom);
+                    this.octaveSamplers[o] = new SimplexNoiseSampler(lv);
                     continue;
                 }
-                chunkRandom.consume(262);
+                lv.method_33650(262);
             }
         }
         this.lacunarity = Math.pow(2.0, j);

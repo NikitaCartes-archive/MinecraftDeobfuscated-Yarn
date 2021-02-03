@@ -9,6 +9,7 @@ import java.util.OptionalInt;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5821;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -17,7 +18,6 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DripstoneClusterFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.util.DripstoneColumn;
@@ -30,7 +30,11 @@ extends Feature<DripstoneClusterFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DripstoneClusterFeatureConfig dripstoneClusterFeatureConfig) {
+    public boolean generate(class_5821<DripstoneClusterFeatureConfig> arg) {
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        BlockPos blockPos = arg.method_33655();
+        DripstoneClusterFeatureConfig dripstoneClusterFeatureConfig = arg.method_33656();
+        Random random = arg.method_33654();
         if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
             return false;
         }

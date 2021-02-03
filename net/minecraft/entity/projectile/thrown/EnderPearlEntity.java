@@ -59,9 +59,10 @@ extends ThrownItemEntity {
                         this.world.spawnEntity(endermiteEntity);
                     }
                     if (entity.hasVehicle()) {
-                        entity.stopRiding();
+                        serverPlayerEntity.method_33567(this.getX(), this.getY(), this.getZ());
+                    } else {
+                        entity.requestTeleport(this.getX(), this.getY(), this.getZ());
                     }
-                    entity.requestTeleport(this.getX(), this.getY(), this.getZ());
                     entity.fallDistance = 0.0f;
                     entity.damage(DamageSource.FALL, 5.0f);
                 }

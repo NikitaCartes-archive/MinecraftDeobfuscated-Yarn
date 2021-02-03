@@ -353,6 +353,7 @@ implements Angerable {
                     itemStack.decrement(1);
                 }
                 this.heal(item.getFoodComponent().getHunger());
+                this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
                 return ActionResult.SUCCESS;
             }
             if (item instanceof DyeItem) {

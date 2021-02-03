@@ -23,6 +23,7 @@ extends SpriteBillboardParticle {
     private CloudParticle(ClientWorld world, double x, double y, double z, double d, double e, double f, SpriteProvider spriteProvider) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
         float h;
+        this.field_28786 = 0.96f;
         this.spriteProvider = spriteProvider;
         float g = 2.5f;
         this.velocityX *= (double)0.1f;
@@ -53,28 +54,16 @@ extends SpriteBillboardParticle {
 
     @Override
     public void tick() {
-        double d;
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        if (this.age++ >= this.maxAge) {
-            this.markDead();
-            return;
-        }
-        this.setSpriteForAge(this.spriteProvider);
-        this.move(this.velocityX, this.velocityY, this.velocityZ);
-        this.velocityX *= (double)0.96f;
-        this.velocityY *= (double)0.96f;
-        this.velocityZ *= (double)0.96f;
-        PlayerEntity playerEntity = this.world.getClosestPlayer(this.x, this.y, this.z, 2.0, false);
-        if (playerEntity != null && this.y > (d = playerEntity.getY())) {
-            this.y += (d - this.y) * 0.2;
-            this.velocityY += (playerEntity.getVelocity().y - this.velocityY) * 0.2;
-            this.setPos(this.x, this.y, this.z);
-        }
-        if (this.onGround) {
-            this.velocityX *= (double)0.7f;
-            this.velocityZ *= (double)0.7f;
+        super.tick();
+        if (!this.dead) {
+            double d;
+            this.setSpriteForAge(this.spriteProvider);
+            PlayerEntity playerEntity = this.world.getClosestPlayer(this.x, this.y, this.z, 2.0, false);
+            if (playerEntity != null && this.y > (d = playerEntity.getY())) {
+                this.y += (d - this.y) * 0.2;
+                this.velocityY += (playerEntity.getVelocity().y - this.velocityY) * 0.2;
+                this.setPos(this.x, this.y, this.z);
+            }
         }
     }
 

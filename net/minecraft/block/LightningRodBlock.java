@@ -47,14 +47,39 @@ extends RodBlock {
         return state.get(POWERED) != false ? 15 : 0;
     }
 
+    @Override
+    public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction) {
+        if (state.get(POWERED).booleanValue() && state.get(FACING) == direction) {
+            return 15;
+        }
+        return 0;
+    }
+
     public void setPowered(BlockState state, World world, BlockPos pos) {
         world.setBlockState(pos, (BlockState)state.with(POWERED, true), 3);
+        this.method_33627(state, world, pos);
         world.getBlockTickScheduler().schedule(pos, this, 8);
+    }
+
+    private void method_33627(BlockState blockState, World world, BlockPos blockPos) {
+        world.updateNeighborsAlways(blockPos.offset(blockState.get(FACING).getOpposite()), this);
     }
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         world.setBlockState(pos, (BlockState)state.with(POWERED, false), 3);
+        this.method_33627(state, world, pos);
+    }
+
+    @Override
+    public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
+        if (moved || state.isOf(newState.getBlock())) {
+            return;
+        }
+        if (state.get(POWERED).booleanValue()) {
+            this.method_33627(state, world, pos);
+        }
+        super.onStateReplaced(state, world, pos, newState, moved);
     }
 
     @Override
@@ -62,7 +87,7 @@ extends RodBlock {
         BlockPos blockPos;
         if (world.isThundering() && projectile instanceof TridentEntity && ((TridentEntity)projectile).hasChanneling() && world.isSkyVisible(blockPos = hit.getBlockPos())) {
             LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
-            lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos));
+            lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(blockPos.up()));
             Entity entity = projectile.getOwner();
             lightningEntity.setChanneler(entity instanceof ServerPlayerEntity ? (ServerPlayerEntity)entity : null);
             world.spawnEntity(lightningEntity);

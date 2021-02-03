@@ -19,6 +19,8 @@ public class LavaEmberParticle
 extends SpriteBillboardParticle {
     private LavaEmberParticle(ClientWorld world, double x, double y, double z) {
         super(world, x, y, z, 0.0, 0.0, 0.0);
+        this.gravityStrength = 0.75f;
+        this.field_28786 = 0.999f;
         this.velocityX *= (double)0.8f;
         this.velocityY *= (double)0.8f;
         this.velocityZ *= (double)0.8f;
@@ -48,25 +50,12 @@ extends SpriteBillboardParticle {
 
     @Override
     public void tick() {
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        float f = (float)this.age / (float)this.maxAge;
-        if (this.random.nextFloat() > f) {
-            this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ);
-        }
-        if (this.age++ >= this.maxAge) {
-            this.markDead();
-            return;
-        }
-        this.velocityY -= 0.03;
-        this.move(this.velocityX, this.velocityY, this.velocityZ);
-        this.velocityX *= (double)0.999f;
-        this.velocityY *= (double)0.999f;
-        this.velocityZ *= (double)0.999f;
-        if (this.onGround) {
-            this.velocityX *= (double)0.7f;
-            this.velocityZ *= (double)0.7f;
+        super.tick();
+        if (!this.dead) {
+            float f = (float)this.age / (float)this.maxAge;
+            if (this.random.nextFloat() > f) {
+                this.world.addParticle(ParticleTypes.SMOKE, this.x, this.y, this.z, this.velocityX, this.velocityY, this.velocityZ);
+            }
         }
     }
 

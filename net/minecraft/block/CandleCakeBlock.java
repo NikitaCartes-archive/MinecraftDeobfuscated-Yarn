@@ -74,7 +74,7 @@ extends AbstractCandleBlock {
             }
             return actionResult;
         }
-        CandleCakeBlock.extinguish(state, world, pos);
+        CandleCakeBlock.extinguish(player, state, world, pos);
         return ActionResult.success(world.isClient);
     }
 

@@ -9,11 +9,11 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.feature.EyesFeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.PhantomEntityModel;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.PhantomEntity;
 import net.minecraft.util.Identifier;
 
 @Environment(value=EnvType.CLIENT)
-public class PhantomEyesFeatureRenderer<T extends Entity>
+public class PhantomEyesFeatureRenderer<T extends PhantomEntity>
 extends EyesFeatureRenderer<T, PhantomEntityModel<T>> {
     private static final RenderLayer SKIN = RenderLayer.getEyes(new Identifier("textures/entity/phantom_eyes.png"));
 

@@ -4,12 +4,13 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.FallingBlock;
+import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 
@@ -20,23 +21,41 @@ extends Feature<DiskFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, DiskFeatureConfig diskFeatureConfig) {
+    public boolean generate(class_5821<DiskFeatureConfig> arg) {
+        DiskFeatureConfig diskFeatureConfig = arg.method_33656();
+        BlockPos blockPos = arg.method_33655();
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
         boolean bl = false;
-        int i = diskFeatureConfig.radius.getValue(random);
-        for (int j = blockPos.getX() - i; j <= blockPos.getX() + i; ++j) {
-            for (int k = blockPos.getZ() - i; k <= blockPos.getZ() + i; ++k) {
-                int m;
-                int l = j - blockPos.getX();
-                if (l * l + (m = k - blockPos.getZ()) * m > i * i) continue;
-                block2: for (int n = blockPos.getY() - diskFeatureConfig.halfHeight; n <= blockPos.getY() + diskFeatureConfig.halfHeight; ++n) {
-                    BlockPos blockPos2 = new BlockPos(j, n, k);
-                    Block block = structureWorldAccess.getBlockState(blockPos2).getBlock();
-                    for (BlockState blockState : diskFeatureConfig.targets) {
-                        if (!blockState.isOf(block)) continue;
-                        structureWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, 2);
-                        bl = true;
-                        continue block2;
+        int i = blockPos.getY();
+        int j = i + diskFeatureConfig.halfHeight;
+        int k = i - diskFeatureConfig.halfHeight - 1;
+        boolean bl2 = diskFeatureConfig.state.getBlock() instanceof FallingBlock;
+        int l = diskFeatureConfig.radius.getValue(arg.method_33654());
+        for (int m = blockPos.getX() - l; m <= blockPos.getX() + l; ++m) {
+            for (int n = blockPos.getZ() - l; n <= blockPos.getZ() + l; ++n) {
+                int p;
+                int o = m - blockPos.getX();
+                if (o * o + (p = n - blockPos.getZ()) * p > l * l) continue;
+                boolean bl3 = false;
+                for (int q = j; q >= k; --q) {
+                    BlockPos blockPos2 = new BlockPos(m, q, n);
+                    BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
+                    Block block = blockState.getBlock();
+                    boolean bl4 = false;
+                    if (q > k) {
+                        for (BlockState blockState2 : diskFeatureConfig.targets) {
+                            if (!blockState2.isOf(block)) continue;
+                            structureWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, 2);
+                            bl = true;
+                            bl4 = true;
+                            break;
+                        }
                     }
+                    if (bl2 && bl3 && blockState.isAir()) {
+                        BlockState blockState3 = diskFeatureConfig.state.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
+                        structureWorldAccess.setBlockState(new BlockPos(m, q + 1, n), blockState3, 2);
+                    }
+                    bl3 = bl4;
                 }
             }
         }

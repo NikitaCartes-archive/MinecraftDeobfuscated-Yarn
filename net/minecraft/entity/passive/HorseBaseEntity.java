@@ -70,6 +70,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public abstract class HorseBaseEntity
@@ -459,6 +460,7 @@ Saddleable {
         }
         if (bl) {
             this.playEatingAnimation();
+            this.method_33569(GameEvent.EAT, this.method_33575());
         }
         return bl;
     }

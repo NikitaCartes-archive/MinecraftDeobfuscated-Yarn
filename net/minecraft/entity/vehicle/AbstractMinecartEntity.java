@@ -140,8 +140,8 @@ extends Entity {
     }
 
     @Override
-    protected boolean canClimb() {
-        return false;
+    protected Entity.class_5799 method_33570() {
+        return Entity.class_5799.field_28632;
     }
 
     @Override
@@ -223,11 +223,11 @@ extends Entity {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        this.emitGameEvent(source.getAttacker(), GameEvent.ENTITY_HIT);
         this.setDamageWobbleSide(-this.getDamageWobbleSide());
         this.setDamageWobbleTicks(10);
         this.scheduleVelocityUpdate();
         this.setDamageWobbleStrength(this.getDamageWobbleStrength() + amount * 10.0f);
+        this.emitGameEvent(GameEvent.ENTITY_DAMAGED, source.getAttacker());
         boolean bl2 = bl = source.getAttacker() instanceof PlayerEntity && ((PlayerEntity)source.getAttacker()).getAbilities().creativeMode;
         if (bl || this.getDamageWobbleStrength() > 40.0f) {
             this.removeAllPassengers();

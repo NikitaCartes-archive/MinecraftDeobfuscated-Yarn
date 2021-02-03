@@ -30,6 +30,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public interface CauldronBehavior {
     public static final Map<Item, CauldronBehavior> EMPTY_CAULDRON_BEHAVIOR = CauldronBehavior.createMap();
@@ -114,6 +115,7 @@ public interface CauldronBehavior {
                 player.incrementStat(Stats.USE_CAULDRON);
                 world.setBlockState(pos, Blocks.WATER_CAULDRON.getDefaultState());
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
             }
             return ActionResult.success(world.isClient);
         });
@@ -127,6 +129,7 @@ public interface CauldronBehavior {
                 player.incrementStat(Stats.USE_CAULDRON);
                 LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_FILL, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
             }
             return ActionResult.success(world.isClient);
         });
@@ -139,6 +142,7 @@ public interface CauldronBehavior {
                 player.incrementStat(Stats.USE_CAULDRON);
                 world.setBlockState(pos, (BlockState)state.cycle(LeveledCauldronBlock.LEVEL));
                 world.playSound(null, pos, SoundEvents.ITEM_BOTTLE_EMPTY, SoundCategory.BLOCKS, 1.0f, 1.0f);
+                world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
             }
             return ActionResult.success(world.isClient);
         });
@@ -196,6 +200,7 @@ public interface CauldronBehavior {
             player.incrementStat(Stats.USE_CAULDRON);
             world.setBlockState(pos, Blocks.CAULDRON.getDefaultState());
             world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            world.emitGameEvent(null, GameEvent.FLUID_PICKUP, pos);
         }
         return ActionResult.success(world.isClient);
     }
@@ -206,6 +211,7 @@ public interface CauldronBehavior {
             player.incrementStat(Stats.FILL_CAULDRON);
             world.setBlockState(pos, state);
             world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            world.emitGameEvent(null, GameEvent.FLUID_PLACE, pos);
         }
         return ActionResult.success(world.isClient);
     }

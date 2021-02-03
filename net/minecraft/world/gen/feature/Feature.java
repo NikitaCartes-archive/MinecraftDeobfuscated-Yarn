@@ -5,19 +5,17 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.Random;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5821;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
-import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.ProbabilityConfig;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.AbstractPileFeature;
 import net.minecraft.world.gen.feature.BambooFeature;
 import net.minecraft.world.gen.feature.BasaltColumnsFeature;
@@ -185,7 +183,7 @@ public abstract class Feature<FC extends FeatureConfig> {
         world.setBlockState(pos, state, 3);
     }
 
-    public abstract boolean generate(StructureWorldAccess var1, ChunkGenerator var2, Random var3, BlockPos var4, FC var5);
+    public abstract boolean generate(class_5821<FC> var1);
 
     protected static boolean isStone(BlockState state) {
         return state.isIn(BlockTags.BASE_STONE_OVERWORLD);

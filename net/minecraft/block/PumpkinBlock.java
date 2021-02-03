@@ -10,6 +10,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CarvedPumpkinBlock;
 import net.minecraft.block.GourdBlock;
 import net.minecraft.block.StemBlock;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -22,6 +23,7 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class PumpkinBlock
 extends GourdBlock {
@@ -42,6 +44,7 @@ extends GourdBlock {
                 itemEntity.setVelocity(0.05 * (double)direction2.getOffsetX() + world.random.nextDouble() * 0.02, 0.05, 0.05 * (double)direction2.getOffsetZ() + world.random.nextDouble() * 0.02);
                 world.spawnEntity(itemEntity);
                 itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
+                world.emitGameEvent((Entity)player, GameEvent.SHEAR, pos);
             }
             return ActionResult.success(world.isClient);
         }

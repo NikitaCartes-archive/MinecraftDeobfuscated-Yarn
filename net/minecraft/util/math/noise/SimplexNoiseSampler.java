@@ -3,7 +3,7 @@
  */
 package net.minecraft.util.math.noise;
 
-import java.util.Random;
+import net.minecraft.class_5819;
 import net.minecraft.util.math.MathHelper;
 
 public class SimplexNoiseSampler {
@@ -16,16 +16,16 @@ public class SimplexNoiseSampler {
     public final double originY;
     public final double originZ;
 
-    public SimplexNoiseSampler(Random random) {
+    public SimplexNoiseSampler(class_5819 arg) {
         int i;
-        this.originX = random.nextDouble() * 256.0;
-        this.originY = random.nextDouble() * 256.0;
-        this.originZ = random.nextDouble() * 256.0;
+        this.originX = arg.nextDouble() * 256.0;
+        this.originY = arg.nextDouble() * 256.0;
+        this.originZ = arg.nextDouble() * 256.0;
         for (i = 0; i < 256; ++i) {
             this.permutations[i] = i;
         }
         for (i = 0; i < 256; ++i) {
-            int j = random.nextInt(256 - i);
+            int j = arg.nextInt(256 - i);
             int k = this.permutations[i];
             this.permutations[i] = this.permutations[j + i];
             this.permutations[j + i] = k;

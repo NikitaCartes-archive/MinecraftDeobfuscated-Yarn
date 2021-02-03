@@ -24,7 +24,7 @@ extends Item {
         if (!world.isClient && !state.isIn(BlockTags.FIRE)) {
             stack.damage(1, miner, e -> e.sendEquipmentBreakStatus(EquipmentSlot.MAINHAND));
         }
-        if (state.isIn(BlockTags.LEAVES) || state.isOf(Blocks.COBWEB) || state.isOf(Blocks.GRASS) || state.isOf(Blocks.FERN) || state.isOf(Blocks.DEAD_BUSH) || state.isOf(Blocks.VINE) || state.isOf(Blocks.TRIPWIRE) || state.isIn(BlockTags.WOOL)) {
+        if (state.isIn(BlockTags.LEAVES) || state.isOf(Blocks.COBWEB) || state.isOf(Blocks.GRASS) || state.isOf(Blocks.FERN) || state.isOf(Blocks.DEAD_BUSH) || state.isOf(Blocks.HANGING_ROOTS) || state.isOf(Blocks.VINE) || state.isOf(Blocks.TRIPWIRE) || state.isIn(BlockTags.WOOL)) {
             return true;
         }
         return super.postMine(stack, world, state, pos, miner);
@@ -42,6 +42,9 @@ extends Item {
         }
         if (state.isIn(BlockTags.WOOL)) {
             return 5.0f;
+        }
+        if (state.isOf(Blocks.VINE) || state.isOf(Blocks.GLOW_LICHEN)) {
+            return 2.0f;
         }
         return super.getMiningSpeedMultiplier(stack, state);
     }

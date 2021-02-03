@@ -9,11 +9,11 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import org.jetbrains.annotations.Nullable;
@@ -27,8 +27,12 @@ extends Feature<BasaltColumnsFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, BasaltColumnsFeatureConfig basaltColumnsFeatureConfig) {
-        int i = chunkGenerator.getSeaLevel();
+    public boolean generate(class_5821<BasaltColumnsFeatureConfig> arg) {
+        int i = arg.method_33653().getSeaLevel();
+        BlockPos blockPos = arg.method_33655();
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        Random random = arg.method_33654();
+        BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = arg.method_33656();
         if (!BasaltColumnsFeature.method_30379(structureWorldAccess, i, blockPos.mutableCopy())) {
             return false;
         }

@@ -49,6 +49,7 @@ import org.jetbrains.annotations.Nullable;
 public class PhantomEntity
 extends FlyingEntity
 implements Monster {
+    public static final int field_28641 = MathHelper.ceil(24.166098f);
     private static final TrackedData<Integer> SIZE = DataTracker.registerData(PhantomEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private Vec3d targetPosition = Vec3d.ZERO;
     private BlockPos circlingCenter = BlockPos.ORIGIN;
@@ -59,6 +60,11 @@ implements Monster {
         this.experiencePoints = 5;
         this.moveControl = new PhantomMoveControl(this);
         this.lookControl = new PhantomLookControl(this);
+    }
+
+    @Override
+    public boolean hasWings() {
+        return (this.method_33588() + this.age) % field_28641 == 0;
     }
 
     @Override
@@ -106,6 +112,10 @@ implements Monster {
         super.onTrackedDataSet(data);
     }
 
+    public int method_33588() {
+        return this.getId() * 3;
+    }
+
     @Override
     protected boolean isDisallowedInPeaceful() {
         return true;
@@ -115,8 +125,8 @@ implements Monster {
     public void tick() {
         super.tick();
         if (this.world.isClient) {
-            float f = MathHelper.cos((float)(this.getId() * 3 + this.age) * 0.13f + (float)Math.PI);
-            float g = MathHelper.cos((float)(this.getId() * 3 + this.age + 1) * 0.13f + (float)Math.PI);
+            float f = MathHelper.cos((float)(this.method_33588() + this.age) * 7.448451f + (float)Math.PI);
+            float g = MathHelper.cos((float)(this.method_33588() + this.age + 1) * 7.448451f + (float)Math.PI);
             if (f > 0.0f && g <= 0.0f) {
                 this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_PHANTOM_FLAP, this.getSoundCategory(), 0.95f + this.random.nextFloat() * 0.05f, 0.95f + this.random.nextFloat() * 0.05f, false);
             }

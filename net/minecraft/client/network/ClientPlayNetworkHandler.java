@@ -110,8 +110,6 @@ import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.AttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.boss.dragon.EnderDragonEntity;
-import net.minecraft.entity.boss.dragon.EnderDragonPart;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -362,7 +360,7 @@ implements ClientPlayPacketListener {
             }
         }
         this.client.debugRenderer.reset();
-        this.client.player.afterSpawn();
+        this.client.player.method_33689();
         int i = packet.getEntityId();
         this.client.player.setEntityId(i);
         this.world.addPlayer(i, this.client.player);
@@ -540,6 +538,9 @@ implements ClientPlayPacketListener {
         double d;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ClientPlayerEntity playerEntity = this.client.player;
+        if (packet.method_33718()) {
+            ((PlayerEntity)playerEntity).dismountVehicle();
+        }
         Vec3d vec3d = playerEntity.getVelocity();
         boolean bl = packet.getFlags().contains((Object)PlayerPositionLookS2CPacket.Flag.X);
         boolean bl2 = packet.getFlags().contains((Object)PlayerPositionLookS2CPacket.Flag.Y);
@@ -567,9 +568,6 @@ implements ClientPlayPacketListener {
         } else {
             h = 0.0;
             playerEntity.lastRenderZ = i = packet.getZ();
-        }
-        if (playerEntity.age > 0 && playerEntity.getVehicle() != null) {
-            ((PlayerEntity)playerEntity).dismountVehicle();
         }
         playerEntity.setPos(e, g, i);
         playerEntity.prevX = e;
@@ -731,26 +729,9 @@ implements ClientPlayPacketListener {
     @Override
     public void onMobSpawn(MobSpawnS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        double d = packet.getX();
-        double e = packet.getY();
-        double f = packet.getZ();
-        float g = (float)(packet.getYaw() * 360) / 256.0f;
-        float h = (float)(packet.getPitch() * 360) / 256.0f;
-        LivingEntity livingEntity = (LivingEntity)EntityType.createInstanceFromId(packet.getEntityTypeId(), this.client.world);
+        LivingEntity livingEntity = (LivingEntity)EntityType.createInstanceFromId(packet.getEntityTypeId(), this.world);
         if (livingEntity != null) {
-            livingEntity.updateTrackedPosition(d, e, f);
-            livingEntity.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
-            livingEntity.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
-            if (livingEntity instanceof EnderDragonEntity) {
-                EnderDragonPart[] enderDragonParts = ((EnderDragonEntity)livingEntity).getBodyParts();
-                for (int i = 0; i < enderDragonParts.length; ++i) {
-                    enderDragonParts[i].setEntityId(i + packet.getId());
-                }
-            }
-            livingEntity.setEntityId(packet.getId());
-            livingEntity.setUuid(packet.getUuid());
-            livingEntity.updatePositionAndAngles(d, e, f, g, h);
-            livingEntity.setVelocity((float)packet.getVelocityX() / 8000.0f, (float)packet.getVelocityY() / 8000.0f, (float)packet.getVelocityZ() / 8000.0f);
+            livingEntity.method_33579(packet);
             this.world.addEntity(packet.getId(), livingEntity);
             if (livingEntity instanceof BeeEntity) {
                 boolean bl = ((BeeEntity)livingEntity).hasAngerTime();
@@ -878,7 +859,7 @@ implements ClientPlayPacketListener {
         if (packet.shouldKeepPlayerAttributes()) {
             clientPlayerEntity2.getAttributes().setFrom(clientPlayerEntity.getAttributes());
         }
-        clientPlayerEntity2.afterSpawn();
+        clientPlayerEntity2.method_33689();
         clientPlayerEntity2.setServerBrand(string);
         this.world.addPlayer(i, clientPlayerEntity2);
         clientPlayerEntity2.yaw = -180.0f;

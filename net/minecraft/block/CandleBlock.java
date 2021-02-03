@@ -68,7 +68,7 @@ implements Waterloggable {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (player.getStackInHand(hand).isEmpty() && state.get(LIT).booleanValue()) {
-            CandleBlock.extinguish(state, world, pos);
+            CandleBlock.extinguish(player, state, world, pos);
             return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
@@ -138,7 +138,7 @@ implements Waterloggable {
         }
         BlockState blockState = (BlockState)state.with(WATERLOGGED, true);
         if (state.get(LIT).booleanValue()) {
-            CandleBlock.extinguish(blockState, world, pos);
+            CandleBlock.extinguish(null, blockState, world, pos);
         } else {
             world.setBlockState(pos, blockState, 3);
         }

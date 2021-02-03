@@ -33,7 +33,7 @@ extends Task<LivingEntity> {
         BlockPos blockPos = brain.getOptionalMemory(MemoryModuleType.MEETING_POINT).get().getPos();
         if (blockPos.isWithinDistance(entity.getBlockPos(), 3.0) && (blockState = world.getBlockState(blockPos)).isOf(Blocks.BELL)) {
             BellBlock bellBlock = (BellBlock)blockState.getBlock();
-            bellBlock.ring(world, blockPos, null);
+            bellBlock.ring(entity, world, blockPos, null);
         }
     }
 }

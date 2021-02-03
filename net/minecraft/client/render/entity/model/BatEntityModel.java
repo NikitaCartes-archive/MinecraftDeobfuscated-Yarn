@@ -80,7 +80,7 @@ extends SinglePartEntityModel<BatEntity> {
             this.leftWing.setPivot(0.0f, 0.0f, 0.0f);
             this.body.pitch = 0.7853982f + MathHelper.cos(h * 0.1f) * 0.15f;
             this.body.yaw = 0.0f;
-            this.rightWing.yaw = MathHelper.cos(h * 1.3f) * (float)Math.PI * 0.25f;
+            this.rightWing.yaw = MathHelper.cos(h * 74.48451f * ((float)Math.PI / 180)) * (float)Math.PI * 0.25f;
             this.leftWing.yaw = -this.rightWing.yaw;
             this.rightWingTip.yaw = this.rightWing.yaw * 0.5f;
             this.leftWingTip.yaw = -this.rightWing.yaw * 0.5f;

@@ -6,9 +6,11 @@ package net.minecraft.block;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableMap;
 import it.unimi.dsi.fastutil.objects.Object2ByteLinkedOpenHashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -121,6 +123,9 @@ implements ItemConvertible {
 
     public static BlockState pushEntitiesUpBeforeBlockChange(BlockState from, BlockState to, World world, BlockPos pos) {
         VoxelShape voxelShape = VoxelShapes.combine(from.getCollisionShape(world, pos), to.getCollisionShape(world, pos), BooleanBiFunction.ONLY_SECOND).offset(pos.getX(), pos.getY(), pos.getZ());
+        if (voxelShape.isEmpty()) {
+            return to;
+        }
         List<Entity> list = world.getOtherEntities(null, voxelShape.getBoundingBox());
         for (Entity entity : list) {
             double d = VoxelShapes.calculateMaxOffset(Direction.Axis.Y, entity.getBoundingBox().offset(0.0, 1.0, 0.0), Stream.of(voxelShape), -1.0);
@@ -393,12 +398,16 @@ implements ItemConvertible {
         return this.jumpVelocityMultiplier;
     }
 
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        world.syncWorldEvent(player, 2001, pos, Block.getRawIdFromState(state));
+    protected void method_33614(World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState) {
+        world.syncWorldEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
+    }
+
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+        this.method_33614(world, playerEntity, pos, state);
         if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
-            PiglinBrain.onGuardedBlockInteracted(player, false);
+            PiglinBrain.onGuardedBlockInteracted(playerEntity, false);
         }
-        world.emitGameEvent((Entity)player, GameEvent.BLOCK_DESTROY, pos);
+        world.emitGameEvent((Entity)playerEntity, GameEvent.BLOCK_DESTROY, pos);
     }
 
     public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
@@ -450,6 +459,10 @@ implements ItemConvertible {
     @Override
     protected Block asBlock() {
         return this;
+    }
+
+    protected ImmutableMap<BlockState, VoxelShape> method_33615(Function<BlockState, VoxelShape> function) {
+        return this.stateManager.getStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
     }
 
     public static final class NeighborGroup {

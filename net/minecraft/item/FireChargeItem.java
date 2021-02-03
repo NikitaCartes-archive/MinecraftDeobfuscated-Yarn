@@ -9,6 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.CandleBlock;
 import net.minecraft.block.CandleCakeBlock;
+import net.minecraft.entity.Entity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundCategory;
@@ -17,6 +18,7 @@ import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.event.GameEvent;
 
 public class FireChargeItem
 extends Item {
@@ -33,10 +35,12 @@ extends Item {
         if (CampfireBlock.canBeLit(blockState) || CandleBlock.canBeLit(blockState) || CandleCakeBlock.canBeLit(blockState)) {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, (BlockState)blockState.with(Properties.LIT, true));
+            world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_PLACE, blockPos);
             bl = true;
         } else if (AbstractFireBlock.canPlaceAt(world, blockPos = blockPos.offset(context.getSide()), context.getPlayerFacing())) {
             this.playUseSound(world, blockPos);
             world.setBlockState(blockPos, AbstractFireBlock.getState(world, blockPos));
+            world.emitGameEvent((Entity)context.getPlayer(), GameEvent.BLOCK_PLACE, blockPos);
             bl = true;
         }
         if (bl) {

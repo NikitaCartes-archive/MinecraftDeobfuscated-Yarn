@@ -51,9 +51,11 @@ public abstract class Particle {
     protected float colorAlpha = 1.0f;
     protected float angle;
     protected float prevAngle;
+    protected float field_28786 = 0.98f;
+    protected boolean field_28787 = false;
 
-    protected Particle(ClientWorld world, double x, double y, double z) {
-        this.world = world;
+    protected Particle(ClientWorld clientWorld, double x, double y, double z) {
+        this.world = clientWorld;
         this.setBoundingBoxSpacing(0.2f, 0.2f);
         this.setPos(x, y, z);
         this.prevPosX = x;
@@ -114,9 +116,13 @@ public abstract class Particle {
         }
         this.velocityY -= 0.04 * (double)this.gravityStrength;
         this.move(this.velocityX, this.velocityY, this.velocityZ);
-        this.velocityX *= (double)0.98f;
-        this.velocityY *= (double)0.98f;
-        this.velocityZ *= (double)0.98f;
+        if (this.field_28787 && this.y == this.prevPosY) {
+            this.velocityX *= 1.1;
+            this.velocityZ *= 1.1;
+        }
+        this.velocityX *= (double)this.field_28786;
+        this.velocityY *= (double)this.field_28786;
+        this.velocityZ *= (double)this.field_28786;
         if (this.onGround) {
             this.velocityX *= (double)0.7f;
             this.velocityZ *= (double)0.7f;

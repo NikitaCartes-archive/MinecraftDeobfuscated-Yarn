@@ -56,6 +56,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public class CampfireBlock
@@ -166,16 +167,17 @@ implements Waterloggable {
         }
     }
 
-    public static void extinguish(WorldAccess world, BlockPos pos, BlockState state) {
+    public static void extinguish(@Nullable Entity entity, WorldAccess worldAccess, BlockPos blockPos, BlockState blockState) {
         BlockEntity blockEntity;
-        if (world.isClient()) {
+        if (worldAccess.isClient()) {
             for (int i = 0; i < 20; ++i) {
-                CampfireBlock.spawnSmokeParticle((World)world, pos, state.get(SIGNAL_FIRE), true);
+                CampfireBlock.spawnSmokeParticle((World)worldAccess, blockPos, blockState.get(SIGNAL_FIRE), true);
             }
         }
-        if ((blockEntity = world.getBlockEntity(pos)) instanceof CampfireBlockEntity) {
+        if ((blockEntity = worldAccess.getBlockEntity(blockPos)) instanceof CampfireBlockEntity) {
             ((CampfireBlockEntity)blockEntity).spawnItemsBeingCooked();
         }
+        worldAccess.emitGameEvent(entity, GameEvent.BLOCK_CHANGE, blockPos);
     }
 
     @Override
@@ -186,7 +188,7 @@ implements Waterloggable {
                 if (!world.isClient()) {
                     world.playSound(null, pos, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, SoundCategory.BLOCKS, 1.0f, 1.0f);
                 }
-                CampfireBlock.extinguish(world, pos, state);
+                CampfireBlock.extinguish(null, world, pos, state);
             }
             world.setBlockState(pos, (BlockState)((BlockState)state.with(WATERLOGGED, true)).with(LIT, false), 3);
             world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));

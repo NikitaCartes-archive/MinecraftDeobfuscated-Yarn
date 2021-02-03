@@ -4,10 +4,9 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import java.util.Random;
+import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
 
@@ -18,8 +17,11 @@ extends Feature<SimpleBlockFeatureConfig> {
     }
 
     @Override
-    public boolean generate(StructureWorldAccess structureWorldAccess, ChunkGenerator chunkGenerator, Random random, BlockPos blockPos, SimpleBlockFeatureConfig simpleBlockFeatureConfig) {
-        if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState(blockPos.down())) && simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {
+    public boolean generate(class_5821<SimpleBlockFeatureConfig> arg) {
+        BlockPos blockPos;
+        SimpleBlockFeatureConfig simpleBlockFeatureConfig = arg.method_33656();
+        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState((blockPos = arg.method_33655()).down())) && simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {
             structureWorldAccess.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);
             return true;
         }

@@ -9,6 +9,7 @@ import com.mojang.serialization.Codec;
 import java.util.Comparator;
 import java.util.Random;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_5819;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
@@ -73,7 +74,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         if (this.seed != seed || this.shoreNoise == null || this.surfaceNoises.isEmpty() || this.underLavaNoises.isEmpty()) {
             this.surfaceNoises = AbstractNetherSurfaceBuilder.createNoisesForStates(this.getSurfaceStates(), seed);
             this.underLavaNoises = AbstractNetherSurfaceBuilder.createNoisesForStates(this.getUnderLavaStates(), seed + (long)this.surfaceNoises.size());
-            this.shoreNoise = new OctavePerlinNoiseSampler(new ChunkRandom(seed + (long)this.surfaceNoises.size() + (long)this.underLavaNoises.size()), ImmutableList.of(Integer.valueOf(0)));
+            this.shoreNoise = new OctavePerlinNoiseSampler((class_5819)new ChunkRandom(seed + (long)this.surfaceNoises.size() + (long)this.underLavaNoises.size()), ImmutableList.of(Integer.valueOf(0)));
         }
         this.seed = seed;
     }
@@ -81,7 +82,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     private static ImmutableMap<BlockState, OctavePerlinNoiseSampler> createNoisesForStates(ImmutableList<BlockState> states, long seed) {
         ImmutableMap.Builder<BlockState, OctavePerlinNoiseSampler> builder = new ImmutableMap.Builder<BlockState, OctavePerlinNoiseSampler>();
         for (BlockState blockState : states) {
-            builder.put(blockState, new OctavePerlinNoiseSampler(new ChunkRandom(seed), ImmutableList.of(Integer.valueOf(-4))));
+            builder.put(blockState, new OctavePerlinNoiseSampler((class_5819)new ChunkRandom(seed), ImmutableList.of(Integer.valueOf(-4))));
             ++seed;
         }
         return builder.build();

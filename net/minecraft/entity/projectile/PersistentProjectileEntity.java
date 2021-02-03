@@ -11,6 +11,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -149,7 +150,7 @@ extends ProjectileEntity {
         if (this.shake > 0) {
             --this.shake;
         }
-        if (this.isTouchingWaterOrRain()) {
+        if (this.isTouchingWaterOrRain() || blockState.isOf(Blocks.POWDER_SNOW)) {
             this.extinguish();
         }
         if (this.inGround && !bl) {
@@ -234,9 +235,9 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void move(MovementType type, Vec3d movement) {
-        super.move(type, movement);
-        if (type != MovementType.SELF && this.shouldFall()) {
+    public void move(MovementType movementType, Vec3d movement) {
+        super.move(movementType, movement);
+        if (movementType != MovementType.SELF && this.shouldFall()) {
             this.fall();
         }
     }
@@ -455,8 +456,8 @@ extends ProjectileEntity {
     protected abstract ItemStack asItemStack();
 
     @Override
-    protected boolean canClimb() {
-        return false;
+    protected Entity.class_5799 method_33570() {
+        return Entity.class_5799.field_28630;
     }
 
     public void setDamage(double damage) {

@@ -10,6 +10,7 @@ import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
+import net.minecraft.class_5819;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
@@ -126,8 +127,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     public void initSeed(long seed) {
         if (this.seed != seed || this.icebergNoise == null || this.icebergCutoffNoise == null) {
             ChunkRandom chunkRandom = new ChunkRandom(seed);
-            this.icebergNoise = new OctaveSimplexNoiseSampler(chunkRandom, IntStream.rangeClosed(-3, 0));
-            this.icebergCutoffNoise = new OctaveSimplexNoiseSampler(chunkRandom, ImmutableList.of(Integer.valueOf(0)));
+            this.icebergNoise = new OctaveSimplexNoiseSampler((class_5819)chunkRandom, IntStream.rangeClosed(-3, 0));
+            this.icebergCutoffNoise = new OctaveSimplexNoiseSampler((class_5819)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
         }
         this.seed = seed;
     }
