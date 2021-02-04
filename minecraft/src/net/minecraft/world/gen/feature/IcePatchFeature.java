@@ -21,7 +21,7 @@ public class IcePatchFeature extends DiskFeature {
 		DiskFeatureConfig diskFeatureConfig = featureContext.getConfig();
 		BlockPos blockPos = featureContext.getPos();
 
-		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 2) {
+		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
 			blockPos = blockPos.down();
 		}
 

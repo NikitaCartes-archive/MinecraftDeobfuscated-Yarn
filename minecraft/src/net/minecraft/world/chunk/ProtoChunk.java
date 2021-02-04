@@ -90,7 +90,7 @@ public class ProtoChunk implements Chunk {
 		this.blockTickScheduler = blockTickScheduler;
 		this.fluidTickScheduler = fluidTickScheduler;
 		this.world = world;
-		this.sections = new ChunkSection[world.getSections()];
+		this.sections = new ChunkSection[world.countVerticalSections()];
 		if (chunkSections != null) {
 			if (this.sections.length == chunkSections.length) {
 				System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -99,7 +99,7 @@ public class ProtoChunk implements Chunk {
 			}
 		}
 
-		this.postProcessingLists = new ShortList[world.getSections()];
+		this.postProcessingLists = new ShortList[world.countVerticalSections()];
 	}
 
 	@Override
@@ -130,7 +130,7 @@ public class ProtoChunk implements Chunk {
 	}
 
 	public ShortList[] getLightSourcesBySection() {
-		ShortList[] shortLists = new ShortList[this.getSections()];
+		ShortList[] shortLists = new ShortList[this.countVerticalSections()];
 
 		for (BlockPos blockPos : this.lightSources) {
 			Chunk.getList(shortLists, this.getSectionIndex(blockPos.getY())).add(getPackedSectionRelative(blockPos));
@@ -140,7 +140,7 @@ public class ProtoChunk implements Chunk {
 	}
 
 	public void addLightSource(short chunkSliceRel, int sectionY) {
-		this.addLightSource(joinBlockPos(chunkSliceRel, this.getSection(sectionY), this.pos));
+		this.addLightSource(joinBlockPos(chunkSliceRel, this.sectionIndexToCoord(sectionY), this.pos));
 	}
 
 	public void addLightSource(BlockPos pos) {
@@ -153,7 +153,7 @@ public class ProtoChunk implements Chunk {
 		int i = pos.getX();
 		int j = pos.getY();
 		int k = pos.getZ();
-		if (j >= this.getBottomSectionLimit() && j < this.getTopHeightLimit()) {
+		if (j >= this.getBottomY() && j < this.getTopY()) {
 			int l = this.getSectionIndex(j);
 			if (this.sections[l] == WorldChunk.EMPTY_SECTION && state.isOf(Blocks.AIR)) {
 				return state;
@@ -206,7 +206,7 @@ public class ProtoChunk implements Chunk {
 
 	public ChunkSection getSection(int y) {
 		if (this.sections[y] == WorldChunk.EMPTY_SECTION) {
-			this.sections[y] = new ChunkSection(this.getSection(y));
+			this.sections[y] = new ChunkSection(this.sectionIndexToCoord(y));
 		}
 
 		return this.sections[y];
@@ -477,12 +477,12 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public int getBottomSectionLimit() {
-		return this.world.getBottomSectionLimit();
+	public int getBottomY() {
+		return this.world.getBottomY();
 	}
 
 	@Override
-	public int getSectionCount() {
-		return this.world.getSectionCount();
+	public int getHeight() {
+		return this.world.getHeight();
 	}
 }

@@ -21,7 +21,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5459;
-import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
@@ -62,6 +61,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
@@ -2076,7 +2076,7 @@ public abstract class LivingEntity extends Entity {
 					q += (0.05 * (double)(this.getStatusEffect(StatusEffects.LEVITATION).getAmplifier() + 1) - vec3d6.y) * 0.2;
 					this.fallDistance = 0.0F;
 				} else if (this.world.isClient && !this.world.isChunkLoaded(blockPos)) {
-					if (this.getY() > (double)this.world.getBottomSectionLimit()) {
+					if (this.getY() > (double)this.world.getBottomY()) {
 						q = -0.1;
 					} else {
 						q = 0.0;
@@ -2992,7 +2992,7 @@ public abstract class LivingEntity extends Entity {
 		if (world.isChunkLoaded(blockPos)) {
 			boolean bl2 = false;
 
-			while (!bl2 && blockPos.getY() > world.getBottomSectionLimit()) {
+			while (!bl2 && blockPos.getY() > world.getBottomY()) {
 				BlockPos blockPos2 = blockPos.down();
 				BlockState blockState = world.getBlockState(blockPos2);
 				if (blockState.getMaterial().blocksMovement()) {
@@ -3245,10 +3245,10 @@ public abstract class LivingEntity extends Entity {
 		}
 	}
 
-	private static class_5630 method_32321(LivingEntity livingEntity, EquipmentSlot equipmentSlot) {
+	private static CommandItemSlot method_32321(LivingEntity livingEntity, EquipmentSlot equipmentSlot) {
 		return equipmentSlot != EquipmentSlot.HEAD && equipmentSlot != EquipmentSlot.MAINHAND && equipmentSlot != EquipmentSlot.OFFHAND
-			? class_5630.method_32331(livingEntity, equipmentSlot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == equipmentSlot)
-			: class_5630.method_32330(livingEntity, equipmentSlot);
+			? CommandItemSlot.of(livingEntity, equipmentSlot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == equipmentSlot)
+			: CommandItemSlot.of(livingEntity, equipmentSlot);
 	}
 
 	@Nullable
@@ -3269,9 +3269,9 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public class_5630 method_32318(int i) {
-		EquipmentSlot equipmentSlot = getEquipmentSlot(i);
-		return equipmentSlot != null ? method_32321(this, equipmentSlot) : super.method_32318(i);
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		EquipmentSlot equipmentSlot = getEquipmentSlot(mappedIndex);
+		return equipmentSlot != null ? method_32321(this, equipmentSlot) : super.getCommandItemSlot(mappedIndex);
 	}
 
 	@Override

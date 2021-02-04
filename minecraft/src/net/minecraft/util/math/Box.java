@@ -183,43 +183,6 @@ public class Box {
 		return new Box(d, e, f, g, h, i);
 	}
 
-	public static Box method_33660(Iterable<Box> iterable) {
-		double d = Double.MAX_VALUE;
-		double e = Double.MAX_VALUE;
-		double f = Double.MAX_VALUE;
-		double g = Double.MIN_VALUE;
-		double h = Double.MIN_VALUE;
-		double i = Double.MIN_VALUE;
-
-		for (Box box : iterable) {
-			if (box.minX < d) {
-				d = box.minX;
-			}
-
-			if (box.minY < e) {
-				e = box.minY;
-			}
-
-			if (box.minZ < f) {
-				f = box.minZ;
-			}
-
-			if (box.maxX > g) {
-				g = box.maxX;
-			}
-
-			if (box.maxY > h) {
-				h = box.maxY;
-			}
-
-			if (box.maxZ > i) {
-				i = box.maxZ;
-			}
-		}
-
-		return new Box(d, e, f, g, h, i);
-	}
-
 	public Box offset(double x, double y, double z) {
 		return new Box(this.minX + x, this.minY + y, this.minZ + z, this.maxX + x, this.maxY + y, this.maxZ + z);
 	}
@@ -480,7 +443,7 @@ public class Box {
 		return new Vec3d(MathHelper.lerp(0.5, this.minX, this.maxX), MathHelper.lerp(0.5, this.minY, this.maxY), MathHelper.lerp(0.5, this.minZ, this.maxZ));
 	}
 
-	public static Box of(Vec3d vec3d, double d, double e, double f) {
-		return new Box(vec3d.x - d / 2.0, vec3d.y - e / 2.0, vec3d.z - f / 2.0, vec3d.x + d / 2.0, vec3d.y + e / 2.0, vec3d.z + f / 2.0);
+	public static Box of(Vec3d center, double dx, double dy, double dz) {
+		return new Box(center.x - dx / 2.0, center.y - dy / 2.0, center.z - dz / 2.0, center.x + dx / 2.0, center.y + dy / 2.0, center.z + dz / 2.0);
 	}
 }

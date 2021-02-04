@@ -149,16 +149,16 @@ public class StructurePoolBasedGenerator {
 		private final int minY;
 		private final int currentSize;
 
-		private ShapedPoolStructurePiece(PoolStructurePiece piece, MutableObject<VoxelShape> mutableObject, int minY, int currentSize) {
+		private ShapedPoolStructurePiece(PoolStructurePiece piece, MutableObject<VoxelShape> pieceShape, int minY, int currentSize) {
 			this.piece = piece;
-			this.pieceShape = mutableObject;
+			this.pieceShape = pieceShape;
 			this.minY = minY;
 			this.currentSize = currentSize;
 		}
 	}
 
 	static final class StructurePoolGenerator {
-		private final Registry<StructurePool> field_25852;
+		private final Registry<StructurePool> registry;
 		private final int maxSize;
 		private final StructurePoolBasedGenerator.PieceFactory pieceFactory;
 		private final ChunkGenerator chunkGenerator;
@@ -169,19 +169,19 @@ public class StructurePoolBasedGenerator {
 
 		private StructurePoolGenerator(
 			Registry<StructurePool> registry,
-			int i,
+			int maxSize,
 			StructurePoolBasedGenerator.PieceFactory pieceFactory,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			List<? super PoolStructurePiece> list,
+			List<? super PoolStructurePiece> children,
 			Random random
 		) {
-			this.field_25852 = registry;
-			this.maxSize = i;
+			this.registry = registry;
+			this.maxSize = maxSize;
 			this.pieceFactory = pieceFactory;
 			this.chunkGenerator = chunkGenerator;
 			this.structureManager = structureManager;
-			this.children = list;
+			this.children = children;
 			this.random = random;
 		}
 
@@ -207,10 +207,10 @@ public class StructurePoolBasedGenerator {
 				int j = blockPos2.getY() - i;
 				int k = -1;
 				Identifier identifier = new Identifier(structureBlockInfo.tag.getString("pool"));
-				Optional<StructurePool> optional = this.field_25852.getOrEmpty(identifier);
+				Optional<StructurePool> optional = this.registry.getOrEmpty(identifier);
 				if (optional.isPresent() && (((StructurePool)optional.get()).getElementCount() != 0 || Objects.equals(identifier, StructurePools.EMPTY.getValue()))) {
 					Identifier identifier2 = ((StructurePool)optional.get()).getTerminatorsId();
-					Optional<StructurePool> optional2 = this.field_25852.getOrEmpty(identifier2);
+					Optional<StructurePool> optional2 = this.registry.getOrEmpty(identifier2);
 					if (optional2.isPresent() && (((StructurePool)optional2.get()).getElementCount() != 0 || Objects.equals(identifier2, StructurePools.EMPTY.getValue()))) {
 						boolean bl3 = blockBox.contains(blockPos3);
 						MutableObject<VoxelShape> mutableObject3;
@@ -250,8 +250,8 @@ public class StructurePoolBasedGenerator {
 											return 0;
 										} else {
 											Identifier identifierx = new Identifier(structureBlockInfox.tag.getString("pool"));
-											Optional<StructurePool> optionalx = this.field_25852.getOrEmpty(identifierx);
-											Optional<StructurePool> optional2x = optionalx.flatMap(structurePool -> this.field_25852.getOrEmpty(structurePool.getTerminatorsId()));
+											Optional<StructurePool> optionalx = this.registry.getOrEmpty(identifierx);
+											Optional<StructurePool> optional2x = optionalx.flatMap(structurePool -> this.registry.getOrEmpty(structurePool.getTerminatorsId()));
 											int ix = (Integer)optionalx.map(structurePool -> structurePool.getHighestY(this.structureManager)).orElse(0);
 											int jx = (Integer)optional2x.map(structurePool -> structurePool.getHighestY(this.structureManager)).orElse(0);
 											return Math.max(ix, jx);

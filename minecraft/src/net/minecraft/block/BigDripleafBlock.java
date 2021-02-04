@@ -89,7 +89,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	protected static void grow(World world, Random random, BlockPos pos) {
-		int i = world.getTopHeightLimit() - pos.getY();
+		int i = world.getTopY() - pos.getY();
 		int j = 1 + random.nextInt(5);
 		int k = Math.min(j, i);
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
@@ -123,7 +123,9 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		if (!state.canPlaceAt(world, pos)) {
 			world.breakBlock(pos, true);
 		}
@@ -132,7 +134,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
 
-		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override

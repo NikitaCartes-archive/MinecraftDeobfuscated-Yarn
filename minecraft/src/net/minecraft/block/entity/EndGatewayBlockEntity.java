@@ -234,7 +234,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	private static boolean method_31698(ServerWorld world, Vec3d vec3d) {
-		return getChunk(world, vec3d).getHighestNonEmptySectionYOffset() <= world.getBottomSectionLimit();
+		return getChunk(world, vec3d).getHighestNonEmptySectionYOffset() <= world.getBottomY();
 	}
 
 	private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean bl) {
@@ -243,7 +243,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		for (int i = -searchRadius; i <= searchRadius; i++) {
 			for (int j = -searchRadius; j <= searchRadius; j++) {
 				if (i != 0 || j != 0 || bl) {
-					for (int k = world.getTopHeightLimit() - 1; k > (blockPos == null ? world.getBottomSectionLimit() : blockPos.getY()); k--) {
+					for (int k = world.getTopY() - 1; k > (blockPos == null ? world.getBottomY() : blockPos.getY()); k--) {
 						BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
 						BlockState blockState = world.getBlockState(blockPos2);
 						if (blockState.isFullCube(world, blockPos2) && (bl || !blockState.isOf(Blocks.BEDROCK))) {

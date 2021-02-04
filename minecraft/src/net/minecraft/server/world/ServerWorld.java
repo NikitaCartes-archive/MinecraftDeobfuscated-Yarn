@@ -545,14 +545,14 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		if (optional.isPresent()) {
 			return (BlockPos)optional.get();
 		} else {
-			Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getTopHeightLimit(), blockPos.getZ())).expand(3.0);
+			Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getTopY(), blockPos.getZ())).expand(3.0);
 			List<LivingEntity> list = this.getEntitiesByClass(
 				LivingEntity.class, box, entity -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos())
 			);
 			if (!list.isEmpty()) {
 				return ((LivingEntity)list.get(this.random.nextInt(list.size()))).getBlockPos();
 			} else {
-				if (blockPos.getY() == this.getBottomSectionLimit() - 1) {
+				if (blockPos.getY() == this.getBottomY() - 1) {
 					blockPos = blockPos.up(2);
 				}
 
@@ -880,7 +880,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			);
 	}
 
-	public int getHeightLimit() {
+	public int getLogicalHeight() {
 		return this.getDimension().getLogicalHeight();
 	}
 

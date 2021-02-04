@@ -219,7 +219,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		} else {
 			this.refreshPositionAndAngles(blockPos, 0.0F, 0.0F);
 
-			while (!world.isSpaceEmpty(this) && this.getY() < (double)(world.getTopHeightLimit() - 1)) {
+			while (!world.isSpaceEmpty(this) && this.getY() < (double)(world.getTopY() - 1)) {
 				this.setPosition(this.getX(), this.getY() + 1.0, this.getZ());
 			}
 		}

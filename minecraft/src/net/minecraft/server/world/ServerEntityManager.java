@@ -84,7 +84,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		if (!this.canAddEntity(entity)) {
 			return false;
 		} else {
-			long l = ChunkSectionPos.method_33706(entity.getBlockPos());
+			long l = ChunkSectionPos.toLong(entity.getBlockPos());
 			class_5572<T> lv = this.field_27265.method_31784(l);
 			lv.method_31764(entity);
 			entity.method_31744(new ServerEntityManager.class_5580(entity, l, lv));
@@ -349,7 +349,7 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		@Override
 		public void updateEntityPosition() {
 			BlockPos blockPos = this.entity.getBlockPos();
-			long l = ChunkSectionPos.method_33706(blockPos);
+			long l = ChunkSectionPos.toLong(blockPos);
 			if (l != this.field_27273) {
 				class_5584 lv = this.field_27274.method_31768();
 				if (!this.field_27274.method_31767(this.entity)) {

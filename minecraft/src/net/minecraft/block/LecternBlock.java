@@ -147,10 +147,10 @@ public class LecternBlock extends BlockWithEntity {
 		return new LecternBlockEntity(pos, state);
 	}
 
-	public static boolean putBookIfAbsent(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
-		if (!(Boolean)blockState.get(HAS_BOOK)) {
+	public static boolean putBookIfAbsent(@Nullable PlayerEntity player, World world, BlockPos pos, BlockState state, ItemStack stack) {
+		if (!(Boolean)state.get(HAS_BOOK)) {
 			if (!world.isClient) {
-				putBook(playerEntity, world, blockPos, blockState, itemStack);
+				putBook(player, world, pos, state, stack);
 			}
 
 			return true;
@@ -159,14 +159,14 @@ public class LecternBlock extends BlockWithEntity {
 		}
 	}
 
-	private static void putBook(@Nullable PlayerEntity playerEntity, World world, BlockPos blockPos, BlockState blockState, ItemStack itemStack) {
-		BlockEntity blockEntity = world.getBlockEntity(blockPos);
+	private static void putBook(@Nullable PlayerEntity player, World world, BlockPos pos, BlockState state, ItemStack stack) {
+		BlockEntity blockEntity = world.getBlockEntity(pos);
 		if (blockEntity instanceof LecternBlockEntity) {
 			LecternBlockEntity lecternBlockEntity = (LecternBlockEntity)blockEntity;
-			lecternBlockEntity.setBook(itemStack.split(1));
-			setHasBook(world, blockPos, blockState, true);
-			world.playSound(null, blockPos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
-			world.emitGameEvent(playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+			lecternBlockEntity.setBook(stack.split(1));
+			setHasBook(world, pos, state, true);
+			world.playSound(null, pos, SoundEvents.ITEM_BOOK_PUT, SoundCategory.BLOCKS, 1.0F, 1.0F);
+			world.emitGameEvent(player, GameEvent.BLOCK_CHANGE, pos);
 		}
 	}
 

@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -40,6 +39,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
@@ -983,19 +983,19 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		return false;
 	}
 
-	private class_5630 method_32335(int i, Predicate<ItemStack> predicate) {
-		return new class_5630() {
+	private CommandItemSlot method_32335(int i, Predicate<ItemStack> predicate) {
+		return new CommandItemSlot() {
 			@Override
-			public ItemStack method_32327() {
+			public ItemStack get() {
 				return HorseBaseEntity.this.items.getStack(i);
 			}
 
 			@Override
-			public boolean method_32332(ItemStack itemStack) {
-				if (!predicate.test(itemStack)) {
+			public boolean set(ItemStack stack) {
+				if (!predicate.test(stack)) {
 					return false;
 				} else {
-					HorseBaseEntity.this.items.setStack(i, itemStack);
+					HorseBaseEntity.this.items.setStack(i, stack);
 					HorseBaseEntity.this.updateSaddle();
 					return true;
 				}
@@ -1004,24 +1004,24 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	public class_5630 method_32318(int i) {
-		int j = i - 400;
-		if (j >= 0 && j < 2 && j < this.items.size()) {
-			if (j == 0) {
-				return this.method_32335(j, itemStack -> itemStack.isEmpty() || itemStack.isOf(Items.SADDLE));
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		int i = mappedIndex - 400;
+		if (i >= 0 && i < 2 && i < this.items.size()) {
+			if (i == 0) {
+				return this.method_32335(i, itemStack -> itemStack.isEmpty() || itemStack.isOf(Items.SADDLE));
 			}
 
-			if (j == 1) {
+			if (i == 1) {
 				if (!this.hasArmorSlot()) {
-					return class_5630.field_27860;
+					return CommandItemSlot.EMPTY;
 				}
 
-				return this.method_32335(j, itemStack -> itemStack.isEmpty() || this.isHorseArmor(itemStack));
+				return this.method_32335(i, itemStack -> itemStack.isEmpty() || this.isHorseArmor(itemStack));
 			}
 		}
 
-		int k = i - 500 + 2;
-		return k >= 2 && k < this.items.size() ? class_5630.method_32328(this.items, k) : super.method_32318(i);
+		int j = mappedIndex - 500 + 2;
+		return j >= 2 && j < this.items.size() ? CommandItemSlot.of(this.items, j) : super.getCommandItemSlot(mappedIndex);
 	}
 
 	@Nullable

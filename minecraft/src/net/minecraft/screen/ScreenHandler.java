@@ -177,7 +177,7 @@ public abstract class ScreenHandler {
 	 */
 	public ItemStack onSlotClick(int slotIndex, int clickData, SlotActionType actionType, PlayerEntity player) {
 		try {
-			return this.removeStack(slotIndex, clickData, actionType, player);
+			return this.internalOnSlotClick(slotIndex, clickData, actionType, player);
 		} catch (Exception var8) {
 			CrashReport crashReport = CrashReport.create(var8, "Container click");
 			CrashReportSection crashReportSection = crashReport.addElement("Click info");
@@ -191,7 +191,12 @@ public abstract class ScreenHandler {
 		}
 	}
 
-	private ItemStack removeStack(int slotIndex, int clickData, SlotActionType actionType, PlayerEntity player) {
+	/**
+	 * The actual logic that handles a slot click. Called by {@link #onSlotClick
+	 * (int, int, SlotActionType, PlayerEntity)} in a try-catch block that wraps
+	 * exceptions from this method into a crash report.
+	 */
+	private ItemStack internalOnSlotClick(int slotIndex, int clickData, SlotActionType actionType, PlayerEntity player) {
 		ItemStack itemStack = ItemStack.EMPTY;
 		PlayerInventory playerInventory = player.getInventory();
 		if (actionType == SlotActionType.QUICK_CRAFT) {
@@ -223,7 +228,7 @@ public abstract class ScreenHandler {
 					if (this.quickCraftSlots.size() == 1) {
 						int j = ((Slot)this.quickCraftSlots.iterator().next()).id;
 						this.endQuickCraft();
-						return this.removeStack(j, this.quickCraftButton, SlotActionType.PICKUP, player);
+						return this.internalOnSlotClick(j, this.quickCraftButton, SlotActionType.PICKUP, player);
 					}
 
 					ItemStack itemStack3 = playerInventory.getCursorStack().copy();
@@ -298,7 +303,7 @@ public abstract class ScreenHandler {
 					itemStack = itemStack2.copy();
 				}
 
-				player.method_33592(itemStack6, slot.getStack(), clickType);
+				player.onPickupSlotClick(itemStack6, slot.getStack(), clickType);
 				if (!itemStack6.onStackClicked(slot, clickType, playerInventory) && !itemStack2.onClicked(itemStack6, slot, clickType, playerInventory)) {
 					if (itemStack2.isEmpty()) {
 						if (!itemStack6.isEmpty()) {

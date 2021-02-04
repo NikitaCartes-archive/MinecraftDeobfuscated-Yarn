@@ -47,7 +47,7 @@ public class FeaturePoolElement extends StructurePoolElement {
 		return compoundTag;
 	}
 
-	public BlockPos getStart(StructureManager structureManager, BlockRotation blockRotation) {
+	public BlockPos getStart(StructureManager structureManager, BlockRotation rotation) {
 		return BlockPos.ORIGIN;
 	}
 
@@ -71,17 +71,17 @@ public class FeaturePoolElement extends StructurePoolElement {
 	@Override
 	public boolean generate(
 		StructureManager structureManager,
-		StructureWorldAccess structureWorldAccess,
+		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
+		BlockPos pos,
 		BlockPos blockPos,
-		BlockPos blockPos2,
-		BlockRotation blockRotation,
-		BlockBox blockBox,
+		BlockRotation rotation,
+		BlockBox box,
 		Random random,
 		boolean keepJigsaws
 	) {
-		return ((ConfiguredFeature)this.feature.get()).generate(structureWorldAccess, chunkGenerator, random, blockPos);
+		return ((ConfiguredFeature)this.feature.get()).generate(world, chunkGenerator, random, pos);
 	}
 
 	@Override

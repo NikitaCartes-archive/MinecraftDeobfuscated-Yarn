@@ -634,7 +634,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	public void method_33689() {
 		this.setPose(EntityPose.STANDING);
 		if (this.world != null) {
-			for (double d = this.getY(); d > (double)this.world.getBottomSectionLimit() && d < (double)this.world.getTopHeightLimit(); d++) {
+			for (double d = this.getY(); d > (double)this.world.getBottomY() && d < (double)this.world.getTopY(); d++) {
 				this.setPosition(this.getX(), d, this.getZ());
 				if (this.world.isSpaceEmpty(this)) {
 					break;
@@ -1075,7 +1075,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	@Override
-	public void method_33592(ItemStack itemStack, ItemStack itemStack2, ClickType clickType) {
-		this.client.getTutorialManager().method_33704(itemStack, itemStack2, clickType);
+	public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
+		this.client.getTutorialManager().onPickupSlotClick(cursorStack, slotStack, clickType);
 	}
 }

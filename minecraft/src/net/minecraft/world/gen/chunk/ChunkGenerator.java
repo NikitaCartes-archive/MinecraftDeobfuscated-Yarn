@@ -132,6 +132,9 @@ public abstract class ChunkGenerator {
 		((ProtoChunk)chunk).setBiomes(new BiomeArray(biomeRegistry, chunk, chunkPos, this.biomeSource));
 	}
 
+	/**
+	 * Generates caves for the given chunk.
+	 */
 	public void carve(long seed, BiomeAccess access, Chunk chunk, GenerationStep.Carver carver) {
 		BiomeAccess biomeAccess = access.withSource(this.populationSource);
 		ChunkRandom chunkRandom = new ChunkRandom();
@@ -207,7 +210,7 @@ public abstract class ChunkGenerator {
 		ChunkPos chunkPos = region.getCenterPos();
 		int i = chunkPos.getStartX();
 		int j = chunkPos.getStartZ();
-		BlockPos blockPos = new BlockPos(i, region.getBottomSectionLimit(), j);
+		BlockPos blockPos = new BlockPos(i, region.getBottomY(), j);
 		Biome biome = this.populationSource.method_31609(chunkPos);
 		ChunkRandom chunkRandom = new ChunkRandom();
 		long l = chunkRandom.setPopulationSeed(region.getSeed(), i, j);
@@ -221,6 +224,9 @@ public abstract class ChunkGenerator {
 		}
 	}
 
+	/**
+	 * Places the surface blocks of the biomes after the noise has been generated.
+	 */
 	public abstract void buildSurface(ChunkRegion region, Chunk chunk);
 
 	public void populateEntities(ChunkRegion region) {
@@ -272,7 +278,7 @@ public abstract class ChunkGenerator {
 		Biome biome
 	) {
 		ChunkPos chunkPos = chunk.getPos();
-		ChunkSectionPos chunkSectionPos = ChunkSectionPos.method_33705(chunk);
+		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk);
 		StructureStart<?> structureStart = structureAccessor.getStructureStart(chunkSectionPos, configuredStructureFeature.feature, chunk);
 		int i = structureStart != null ? structureStart.getReferences() : 0;
 		StructureConfig structureConfig = this.structuresConfig.getForType(configuredStructureFeature.feature);
@@ -295,7 +301,7 @@ public abstract class ChunkGenerator {
 		int k = chunkPos.z;
 		int l = chunkPos.getStartX();
 		int m = chunkPos.getStartZ();
-		ChunkSectionPos chunkSectionPos = ChunkSectionPos.method_33705(chunk);
+		ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(chunk);
 
 		for (int n = j - 8; n <= j + 8; n++) {
 			for (int o = k - 8; o <= k + 8; o++) {
@@ -329,16 +335,22 @@ public abstract class ChunkGenerator {
 		return 63;
 	}
 
-	public abstract int getHeight(int x, int z, Heightmap.Type heightmapType, HeightLimitView world);
+	/**
+	 * Returns the raw noise height of a column for use in structure generation.
+	 */
+	public abstract int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world);
 
+	/**
+	 * Returns a sample of all the block states in a column for use in structure generation.
+	 */
 	public abstract VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world);
 
-	public int getHeightOnGround(int x, int z, Heightmap.Type heightmapType, HeightLimitView heightLimitView) {
-		return this.getHeight(x, z, heightmapType, heightLimitView);
+	public int getHeightOnGround(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
+		return this.getHeight(x, z, heightmap, world);
 	}
 
-	public int getHeightInGround(int x, int z, Heightmap.Type heightmapType, HeightLimitView heightLimitView) {
-		return this.getHeight(x, z, heightmapType, heightLimitView) - 1;
+	public int getHeightInGround(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
+		return this.getHeight(x, z, heightmap, world) - 1;
 	}
 
 	public boolean isStrongholdStartingChunk(ChunkPos pos) {

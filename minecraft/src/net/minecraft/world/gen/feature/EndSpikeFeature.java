@@ -65,7 +65,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		int i = spike.getRadius();
 
 		for (BlockPos blockPos : BlockPos.iterate(
-			new BlockPos(spike.getCenterX() - i, world.getBottomSectionLimit(), spike.getCenterZ() - i),
+			new BlockPos(spike.getCenterX() - i, world.getBottomY(), spike.getCenterZ() - i),
 			new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i)
 		)) {
 			if (blockPos.getSquaredDistance((double)spike.getCenterX(), (double)blockPos.getY(), (double)spike.getCenterZ(), false) <= (double)(i * i + 1)

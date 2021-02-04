@@ -255,8 +255,8 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
-		if (!world.isClient && playerEntity.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (!world.isClient && player.isCreative() && world.getGameRules().getBoolean(GameRules.DO_TILE_DROPS)) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeehiveBlockEntity) {
 				BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
@@ -280,7 +280,7 @@ public class BeehiveBlock extends BlockWithEntity {
 			}
 		}
 
-		super.onBreak(world, pos, state, playerEntity);
+		super.onBreak(world, pos, state, player);
 	}
 
 	@Override
@@ -302,8 +302,10 @@ public class BeehiveBlock extends BlockWithEntity {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		if (world.getBlockState(posFrom).getBlock() instanceof FireBlock) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
+		if (world.getBlockState(neighborPos).getBlock() instanceof FireBlock) {
 			BlockEntity blockEntity = world.getBlockEntity(pos);
 			if (blockEntity instanceof BeehiveBlockEntity) {
 				BeehiveBlockEntity beehiveBlockEntity = (BeehiveBlockEntity)blockEntity;
@@ -311,7 +313,7 @@ public class BeehiveBlock extends BlockWithEntity {
 			}
 		}
 
-		return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	public static Direction getRandomGenerationDirection(Random random) {

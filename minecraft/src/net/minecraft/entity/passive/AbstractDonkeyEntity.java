@@ -1,6 +1,5 @@
 package net.minecraft.entity.passive;
 
-import net.minecraft.class_5630;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -9,6 +8,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -113,23 +113,23 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public class_5630 method_32318(int i) {
-		return i == 499 ? new class_5630() {
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		return mappedIndex == 499 ? new CommandItemSlot() {
 			@Override
-			public ItemStack method_32327() {
+			public ItemStack get() {
 				return AbstractDonkeyEntity.this.hasChest() ? new ItemStack(Items.CHEST) : ItemStack.EMPTY;
 			}
 
 			@Override
-			public boolean method_32332(ItemStack itemStack) {
-				if (itemStack.isEmpty()) {
+			public boolean set(ItemStack stack) {
+				if (stack.isEmpty()) {
 					if (AbstractDonkeyEntity.this.hasChest()) {
 						AbstractDonkeyEntity.this.setHasChest(false);
 						AbstractDonkeyEntity.this.onChestedStatusChanged();
 					}
 
 					return true;
-				} else if (itemStack.isOf(Items.CHEST)) {
+				} else if (stack.isOf(Items.CHEST)) {
 					if (!AbstractDonkeyEntity.this.hasChest()) {
 						AbstractDonkeyEntity.this.setHasChest(true);
 						AbstractDonkeyEntity.this.onChestedStatusChanged();
@@ -140,7 +140,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 					return false;
 				}
 			}
-		} : super.method_32318(i);
+		} : super.getCommandItemSlot(mappedIndex);
 	}
 
 	@Override

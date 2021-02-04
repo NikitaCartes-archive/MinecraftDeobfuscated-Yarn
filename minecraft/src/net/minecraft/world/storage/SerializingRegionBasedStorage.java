@@ -125,7 +125,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
 		if (data == null) {
-			for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
+			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				this.loadedElements.put(method_33637(pos, i), Optional.empty());
 			}
 		} else {
@@ -136,7 +136,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 			Dynamic<T> dynamic2 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic, j, k);
 			OptionalDynamic<T> optionalDynamic = dynamic2.get("Sections");
 
-			for (int l = this.world.getMinimumSection(); l < this.world.getTopSectionLimit(); l++) {
+			for (int l = this.world.getBottomSectionCoord(); l < this.world.getTopSectionCoord(); l++) {
 				long m = method_33637(pos, l);
 				Optional<R> optional = optionalDynamic.get(Integer.toString(l))
 					.result()
@@ -165,7 +165,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 	private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
 		Map<T, T> map = Maps.<T, T>newHashMap();
 
-		for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
+		for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 			long l = method_33637(chunkPos, i);
 			this.unsavedElements.remove(l);
 			Optional<R> optional = this.loadedElements.get(l);
@@ -211,7 +211,7 @@ public class SerializingRegionBasedStorage<R> implements AutoCloseable {
 
 	public void saveChunk(ChunkPos pos) {
 		if (!this.unsavedElements.isEmpty()) {
-			for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
+			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				long l = method_33637(pos, i);
 				if (this.unsavedElements.contains(l)) {
 					this.save(pos);

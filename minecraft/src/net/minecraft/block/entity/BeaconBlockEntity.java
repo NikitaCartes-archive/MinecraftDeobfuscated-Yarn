@@ -161,7 +161,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 		}
 
 		if (blockEntity.field_19179 >= l) {
-			blockEntity.field_19179 = world.getBottomSectionLimit() - 1;
+			blockEntity.field_19179 = world.getBottomY() - 1;
 			boolean bl = m > 0;
 			blockEntity.beamSegments = blockEntity.field_19178;
 			if (!world.isClient) {
@@ -186,7 +186,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 
 		for (int j = 1; j <= 4; i = j++) {
 			int k = y - j;
-			if (k < world.getBottomSectionLimit()) {
+			if (k < world.getBottomY()) {
 				break;
 			}
 
@@ -226,7 +226,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 			}
 
 			int j = (9 + beaconLevel * 2) * 20;
-			Box box = new Box(pos).expand(d).stretch(0.0, (double)world.getSectionCount(), 0.0);
+			Box box = new Box(pos).expand(d).stretch(0.0, (double)world.getHeight(), 0.0);
 			List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
 
 			for (PlayerEntity playerEntity : list) {
@@ -319,7 +319,7 @@ public class BeaconBlockEntity extends BlockEntity implements NamedScreenHandler
 	@Override
 	public void setWorld(World world) {
 		super.setWorld(world);
-		this.field_19179 = world.getBottomSectionLimit() - 1;
+		this.field_19179 = world.getBottomY() - 1;
 	}
 
 	public static class BeamSegment {

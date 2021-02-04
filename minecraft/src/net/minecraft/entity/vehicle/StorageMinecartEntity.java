@@ -1,7 +1,6 @@
 package net.minecraft.entity.vehicle;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -9,6 +8,7 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -103,19 +103,19 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	public class_5630 method_32318(int i) {
-		return i >= 0 && i < this.size() ? new class_5630() {
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		return mappedIndex >= 0 && mappedIndex < this.size() ? new CommandItemSlot() {
 			@Override
-			public ItemStack method_32327() {
-				return StorageMinecartEntity.this.getStack(i);
+			public ItemStack get() {
+				return StorageMinecartEntity.this.getStack(mappedIndex);
 			}
 
 			@Override
-			public boolean method_32332(ItemStack itemStack) {
-				StorageMinecartEntity.this.setStack(i, itemStack);
+			public boolean set(ItemStack stack) {
+				StorageMinecartEntity.this.setStack(mappedIndex, stack);
 				return true;
 			}
-		} : super.method_32318(i);
+		} : super.getCommandItemSlot(mappedIndex);
 	}
 
 	@Override

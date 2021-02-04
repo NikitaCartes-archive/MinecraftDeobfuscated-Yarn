@@ -26,11 +26,11 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 		Random random = featureContext.getRandom();
 		SingleStateFeatureConfig singleStateFeatureConfig = featureContext.getConfig();
 
-		while (blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 5 && structureWorldAccess.isAir(blockPos)) {
+		while (blockPos.getY() > structureWorldAccess.getBottomY() + 5 && structureWorldAccess.isAir(blockPos)) {
 			blockPos = blockPos.down();
 		}
 
-		if (blockPos.getY() <= structureWorldAccess.getBottomSectionLimit() + 4) {
+		if (blockPos.getY() <= structureWorldAccess.getBottomY() + 4) {
 			return false;
 		} else {
 			blockPos = blockPos.down(4);

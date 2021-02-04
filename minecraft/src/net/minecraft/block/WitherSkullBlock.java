@@ -44,7 +44,7 @@ public class WitherSkullBlock extends SkullBlock {
 		if (!world.isClient) {
 			BlockState blockState = blockEntity.getCachedState();
 			boolean bl = blockState.isOf(Blocks.WITHER_SKELETON_SKULL) || blockState.isOf(Blocks.WITHER_SKELETON_WALL_SKULL);
-			if (bl && pos.getY() >= world.getBottomSectionLimit() && world.getDifficulty() != Difficulty.PEACEFUL) {
+			if (bl && pos.getY() >= world.getBottomY() && world.getDifficulty() != Difficulty.PEACEFUL) {
 				BlockPattern blockPattern = getWitherBossPattern();
 				BlockPattern.Result result = blockPattern.searchAround(world, pos);
 				if (result != null) {
@@ -85,10 +85,7 @@ public class WitherSkullBlock extends SkullBlock {
 	}
 
 	public static boolean canDispense(World world, BlockPos pos, ItemStack stack) {
-		return stack.isOf(Items.WITHER_SKELETON_SKULL)
-				&& pos.getY() >= world.getBottomSectionLimit() + 2
-				&& world.getDifficulty() != Difficulty.PEACEFUL
-				&& !world.isClient
+		return stack.isOf(Items.WITHER_SKELETON_SKULL) && pos.getY() >= world.getBottomY() + 2 && world.getDifficulty() != Difficulty.PEACEFUL && !world.isClient
 			? getWitherDispenserPattern().searchAround(world, pos) != null
 			: false;
 	}

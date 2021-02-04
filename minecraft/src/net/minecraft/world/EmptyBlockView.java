@@ -28,12 +28,12 @@ public enum EmptyBlockView implements BlockView {
 	}
 
 	@Override
-	public int getBottomSectionLimit() {
+	public int getBottomY() {
 		return 0;
 	}
 
 	@Override
-	public int getSectionCount() {
+	public int getHeight() {
 		return 0;
 	}
 }

@@ -4,8 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5673;
-import net.minecraft.class_5674;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -17,6 +15,8 @@ import net.minecraft.client.realms.dto.WorldTemplate;
 import net.minecraft.client.realms.dto.WorldTemplatePaginatedList;
 import net.minecraft.client.realms.exception.RealmsServiceException;
 import net.minecraft.client.realms.task.LongRunningTask;
+import net.minecraft.client.realms.task.ResettingNormalWorldTask;
+import net.minecraft.client.realms.task.ResettingWorldTemplateTask;
 import net.minecraft.client.realms.task.SwitchSlotTask;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
@@ -43,26 +43,26 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	private static final Identifier NEW_WORLD_TEXTURE = new Identifier("realms", "textures/gui/realms/new_world.png");
 	private static final Identifier EXPERIENCE_TEXTURE = new Identifier("realms", "textures/gui/realms/experience.png");
 	private static final Identifier INSPIRATION_TEXTURE = new Identifier("realms", "textures/gui/realms/inspiration.png");
-	private WorldTemplatePaginatedList field_20495;
-	private WorldTemplatePaginatedList field_20496;
-	private WorldTemplatePaginatedList field_20497;
-	private WorldTemplatePaginatedList field_20498;
+	private WorldTemplatePaginatedList normalWorldTemplates;
+	private WorldTemplatePaginatedList adventureWorldTemplates;
+	private WorldTemplatePaginatedList experienceWorldTemplates;
+	private WorldTemplatePaginatedList inspirationWorldTemplates;
 	public int slot = -1;
 	private Text resetTitle = new TranslatableText("mco.reset.world.resetting.screen.title");
-	private final Runnable field_22711;
-	private final Runnable field_22712;
+	private final Runnable resetCallback;
+	private final Runnable selectFileUploadCallback;
 
-	public RealmsResetWorldScreen(Screen parent, RealmsServer realmsServer, Runnable runnable, Runnable runnable2) {
+	public RealmsResetWorldScreen(Screen parent, RealmsServer server, Runnable resetCallback, Runnable selectFileUploadCallback) {
 		this.parent = parent;
-		this.serverData = realmsServer;
-		this.field_22711 = runnable;
-		this.field_22712 = runnable2;
+		this.serverData = server;
+		this.resetCallback = resetCallback;
+		this.selectFileUploadCallback = selectFileUploadCallback;
 	}
 
 	public RealmsResetWorldScreen(
-		Screen parent, RealmsServer realmsServer, Text title, Text subtitle, int subtitleColor, Text buttonTitle, Runnable runnable, Runnable runnable2
+		Screen parent, RealmsServer server, Text title, Text subtitle, int subtitleColor, Text buttonTitle, Runnable resetCallback, Runnable selectFileUploadCallback
 	) {
-		this(parent, realmsServer, runnable, runnable2);
+		this(parent, server, resetCallback, selectFileUploadCallback);
 		this.title = title;
 		this.subtitle = subtitle;
 		this.subtitleColor = subtitleColor;
@@ -90,10 +90,10 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 					WorldTemplatePaginatedList worldTemplatePaginatedList3 = realmsClient.fetchWorldTemplates(1, 10, RealmsServer.WorldType.EXPERIENCE);
 					WorldTemplatePaginatedList worldTemplatePaginatedList4 = realmsClient.fetchWorldTemplates(1, 10, RealmsServer.WorldType.INSPIRATION);
 					RealmsResetWorldScreen.this.client.execute(() -> {
-						RealmsResetWorldScreen.this.field_20495 = worldTemplatePaginatedList;
-						RealmsResetWorldScreen.this.field_20496 = worldTemplatePaginatedList2;
-						RealmsResetWorldScreen.this.field_20497 = worldTemplatePaginatedList3;
-						RealmsResetWorldScreen.this.field_20498 = worldTemplatePaginatedList4;
+						RealmsResetWorldScreen.this.normalWorldTemplates = worldTemplatePaginatedList;
+						RealmsResetWorldScreen.this.adventureWorldTemplates = worldTemplatePaginatedList2;
+						RealmsResetWorldScreen.this.experienceWorldTemplates = worldTemplatePaginatedList3;
+						RealmsResetWorldScreen.this.inspirationWorldTemplates = worldTemplatePaginatedList4;
 					});
 				} catch (RealmsServiceException var6) {
 					RealmsResetWorldScreen.LOGGER.error("Couldn't fetch templates in reset world", (Throwable)var6);
@@ -108,14 +108,22 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				row(0) + 10,
 				new TranslatableText("mco.reset.world.generate"),
 				NEW_WORLD_TEXTURE,
-				buttonWidget -> this.client.openScreen(new RealmsResetNormalWorldScreen(this::method_32489, this.title))
+				buttonWidget -> this.client.openScreen(new RealmsResetNormalWorldScreen(this::onResetNormalWorld, this.title))
 			)
 		);
 		this.addButton(
-			new RealmsResetWorldScreen.FrameButton(this.frame(2), row(0) + 10, new TranslatableText("mco.reset.world.upload"), UPLOAD_TEXTURE, buttonWidget -> {
-				Screen screen = new RealmsSelectFileToUploadScreen(this.serverData.id, this.slot != -1 ? this.slot : this.serverData.activeSlot, this, this.field_22712);
-				this.client.openScreen(screen);
-			})
+			new RealmsResetWorldScreen.FrameButton(
+				this.frame(2),
+				row(0) + 10,
+				new TranslatableText("mco.reset.world.upload"),
+				UPLOAD_TEXTURE,
+				buttonWidget -> {
+					Screen screen = new RealmsSelectFileToUploadScreen(
+						this.serverData.id, this.slot != -1 ? this.slot : this.serverData.activeSlot, this, this.selectFileUploadCallback
+					);
+					this.client.openScreen(screen);
+				}
+			)
 		);
 		this.addButton(
 			new RealmsResetWorldScreen.FrameButton(
@@ -125,7 +133,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				SURVIVAL_SPAWN_TEXTURE,
 				buttonWidget -> {
 					RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-						this::method_32488, RealmsServer.WorldType.NORMAL, this.field_20495
+						this::onSelectWorldTemplate, RealmsServer.WorldType.NORMAL, this.normalWorldTemplates
 					);
 					realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.reset.world.template"));
 					this.client.openScreen(realmsSelectWorldTemplateScreen);
@@ -140,7 +148,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				ADVENTURE_TEXTURE,
 				buttonWidget -> {
 					RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-						this::method_32488, RealmsServer.WorldType.ADVENTUREMAP, this.field_20496
+						this::onSelectWorldTemplate, RealmsServer.WorldType.ADVENTUREMAP, this.adventureWorldTemplates
 					);
 					realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.reset.world.adventure"));
 					this.client.openScreen(realmsSelectWorldTemplateScreen);
@@ -155,7 +163,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				EXPERIENCE_TEXTURE,
 				buttonWidget -> {
 					RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-						this::method_32488, RealmsServer.WorldType.EXPERIENCE, this.field_20497
+						this::onSelectWorldTemplate, RealmsServer.WorldType.EXPERIENCE, this.experienceWorldTemplates
 					);
 					realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.reset.world.experience"));
 					this.client.openScreen(realmsSelectWorldTemplateScreen);
@@ -170,7 +178,7 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 				INSPIRATION_TEXTURE,
 				buttonWidget -> {
 					RealmsSelectWorldTemplateScreen realmsSelectWorldTemplateScreen = new RealmsSelectWorldTemplateScreen(
-						this::method_32488, RealmsServer.WorldType.INSPIRATION, this.field_20498
+						this::onSelectWorldTemplate, RealmsServer.WorldType.INSPIRATION, this.inspirationWorldTemplates
 					);
 					realmsSelectWorldTemplateScreen.setTitle(new TranslatableText("mco.reset.world.inspiration"));
 					this.client.openScreen(realmsSelectWorldTemplateScreen);
@@ -207,9 +215,9 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		super.render(matrices, mouseX, mouseY, delta);
 	}
 
-	private void drawFrame(MatrixStack matrices, int x, int y, Text text, Identifier identifier, boolean bl, boolean bl2) {
-		this.client.getTextureManager().bindTexture(identifier);
-		if (bl) {
+	private void drawFrame(MatrixStack matrices, int x, int y, Text text, Identifier texture, boolean hovered, boolean mouseOver) {
+		this.client.getTextureManager().bindTexture(texture);
+		if (hovered) {
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		} else {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -217,14 +225,14 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 
 		DrawableHelper.drawTexture(matrices, x + 2, y + 14, 0.0F, 0.0F, 56, 56, 56, 56);
 		this.client.getTextureManager().bindTexture(SLOT_FRAME_TEXTURE);
-		if (bl) {
+		if (hovered) {
 			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
 		} else {
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		DrawableHelper.drawTexture(matrices, x, y + 12, 0.0F, 0.0F, 60, 60, 60, 60);
-		int i = bl ? 10526880 : 16777215;
+		int i = hovered ? 10526880 : 16777215;
 		drawCenteredText(matrices, this.textRenderer, text, x + 30, y, i);
 	}
 
@@ -236,17 +244,17 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 		this.method_32490(new SwitchSlotTask(this.serverData.id, this.slot, callback));
 	}
 
-	private void method_32488(@Nullable WorldTemplate worldTemplate) {
+	private void onSelectWorldTemplate(@Nullable WorldTemplate template) {
 		this.client.openScreen(this);
-		if (worldTemplate != null) {
-			this.method_32493(() -> this.method_32490(new class_5674(worldTemplate, this.serverData.id, this.resetTitle, this.field_22711)));
+		if (template != null) {
+			this.method_32493(() -> this.method_32490(new ResettingWorldTemplateTask(template, this.serverData.id, this.resetTitle, this.resetCallback)));
 		}
 	}
 
-	private void method_32489(@Nullable ResetWorldInfo resetWorldInfo) {
+	private void onResetNormalWorld(@Nullable ResetWorldInfo info) {
 		this.client.openScreen(this);
-		if (resetWorldInfo != null) {
-			this.method_32493(() -> this.method_32490(new class_5673(resetWorldInfo, this.serverData.id, this.resetTitle, this.field_22711)));
+		if (info != null) {
+			this.method_32493(() -> this.method_32490(new ResettingNormalWorldTask(info, this.serverData.id, this.resetTitle, this.resetCallback)));
 		}
 	}
 
@@ -262,9 +270,9 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	class FrameButton extends ButtonWidget {
 		private final Identifier image;
 
-		public FrameButton(int x, int y, Text text, Identifier identifier, ButtonWidget.PressAction pressAction) {
-			super(x, y, 60, 72, text, pressAction);
-			this.image = identifier;
+		public FrameButton(int x, int y, Text message, Identifier image, ButtonWidget.PressAction onPress) {
+			super(x, y, 60, 72, message, onPress);
+			this.image = image;
 		}
 
 		@Override

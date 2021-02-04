@@ -138,15 +138,15 @@ public class FilledMapItem extends NetworkSyncedItem {
 										for (int z = 0; z < i; z++) {
 											int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
 											BlockState blockState;
-											if (aa <= world.getBottomSectionLimit() + 1) {
+											if (aa <= world.getBottomY() + 1) {
 												blockState = Blocks.BEDROCK.getDefaultState();
 											} else {
 												do {
 													mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
 													blockState = worldChunk.getBlockState(mutable);
-												} while (blockState.getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getBottomSectionLimit());
+												} while (blockState.getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getBottomY());
 
-												if (aa > world.getBottomSectionLimit() && !blockState.getFluidState().isEmpty()) {
+												if (aa > world.getBottomY() && !blockState.getFluidState().isEmpty()) {
 													int ab = aa - 1;
 													mutable2.set(mutable);
 
@@ -155,7 +155,7 @@ public class FilledMapItem extends NetworkSyncedItem {
 														mutable2.setY(ab--);
 														blockState2 = worldChunk.getBlockState(mutable2);
 														w++;
-													} while (ab > world.getBottomSectionLimit() && !blockState2.getFluidState().isEmpty());
+													} while (ab > world.getBottomY() && !blockState2.getFluidState().isEmpty());
 
 													blockState = this.getFluidStateIfVisible(world, blockState, mutable);
 												}

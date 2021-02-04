@@ -78,12 +78,12 @@ public class MineshaftGenerator {
 		private boolean hasSpawner;
 		private final int length;
 
-		public MineshaftCorridor(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.MINESHAFT_CORRIDOR, compoundTag);
-			this.hasRails = compoundTag.getBoolean("hr");
-			this.hasCobwebs = compoundTag.getBoolean("sc");
-			this.hasSpawner = compoundTag.getBoolean("hps");
-			this.length = compoundTag.getInt("Num");
+		public MineshaftCorridor(StructureManager structureManager, CompoundTag nbt) {
+			super(StructurePieceType.MINESHAFT_CORRIDOR, nbt);
+			this.hasRails = nbt.getBoolean("hr");
+			this.hasCobwebs = nbt.getBoolean("sc");
+			this.hasSpawner = nbt.getBoolean("hps");
+			this.length = nbt.getInt("Num");
 		}
 
 		@Override
@@ -235,16 +235,16 @@ public class MineshaftGenerator {
 		}
 
 		@Override
-		protected boolean addChest(StructureWorldAccess structureWorldAccess, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
+		protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
 			BlockPos blockPos = new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
-			if (boundingBox.contains(blockPos) && structureWorldAccess.getBlockState(blockPos).isAir() && !structureWorldAccess.getBlockState(blockPos.down()).isAir()) {
+			if (boundingBox.contains(blockPos) && world.getBlockState(blockPos).isAir() && !world.getBlockState(blockPos.down()).isAir()) {
 				BlockState blockState = Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, random.nextBoolean() ? RailShape.NORTH_SOUTH : RailShape.EAST_WEST);
-				this.addBlock(structureWorldAccess, blockState, x, y, z, boundingBox);
+				this.addBlock(world, blockState, x, y, z, boundingBox);
 				ChestMinecartEntity chestMinecartEntity = new ChestMinecartEntity(
-					structureWorldAccess.toServerWorld(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5
+					world.toServerWorld(), (double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5
 				);
 				chestMinecartEntity.setLootTable(lootTableId, random.nextLong());
-				structureWorldAccess.spawnEntity(chestMinecartEntity);
+				world.spawnEntity(chestMinecartEntity);
 				return true;
 			} else {
 				return false;
@@ -340,34 +340,30 @@ public class MineshaftGenerator {
 			}
 		}
 
-		private void generateSupports(StructureWorldAccess structureWorldAccess, BlockBox boundingBox, int minX, int minY, int z, int maxY, int maxX, Random random) {
-			if (this.isSolidCeiling(structureWorldAccess, boundingBox, minX, maxX, maxY, z)) {
+		private void generateSupports(StructureWorldAccess world, BlockBox boundingBox, int minX, int minY, int z, int maxY, int maxX, Random random) {
+			if (this.isSolidCeiling(world, boundingBox, minX, maxX, maxY, z)) {
 				BlockState blockState = this.getPlanksType();
 				BlockState blockState2 = this.getFenceType();
-				this.fillWithOutline(
-					structureWorldAccess, boundingBox, minX, minY, z, minX, maxY - 1, z, blockState2.with(FenceBlock.WEST, Boolean.valueOf(true)), AIR, false
-				);
-				this.fillWithOutline(
-					structureWorldAccess, boundingBox, maxX, minY, z, maxX, maxY - 1, z, blockState2.with(FenceBlock.EAST, Boolean.valueOf(true)), AIR, false
-				);
+				this.fillWithOutline(world, boundingBox, minX, minY, z, minX, maxY - 1, z, blockState2.with(FenceBlock.WEST, Boolean.valueOf(true)), AIR, false);
+				this.fillWithOutline(world, boundingBox, maxX, minY, z, maxX, maxY - 1, z, blockState2.with(FenceBlock.EAST, Boolean.valueOf(true)), AIR, false);
 				if (random.nextInt(4) == 0) {
-					this.fillWithOutline(structureWorldAccess, boundingBox, minX, maxY, z, minX, maxY, z, blockState, AIR, false);
-					this.fillWithOutline(structureWorldAccess, boundingBox, maxX, maxY, z, maxX, maxY, z, blockState, AIR, false);
+					this.fillWithOutline(world, boundingBox, minX, maxY, z, minX, maxY, z, blockState, AIR, false);
+					this.fillWithOutline(world, boundingBox, maxX, maxY, z, maxX, maxY, z, blockState, AIR, false);
 				} else {
-					this.fillWithOutline(structureWorldAccess, boundingBox, minX, maxY, z, maxX, maxY, z, blockState, AIR, false);
+					this.fillWithOutline(world, boundingBox, minX, maxY, z, maxX, maxY, z, blockState, AIR, false);
 					this.addBlockWithRandomThreshold(
-						structureWorldAccess, boundingBox, random, 0.05F, minX + 1, maxY, z - 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH)
+						world, boundingBox, random, 0.05F, minX + 1, maxY, z - 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH)
 					);
 					this.addBlockWithRandomThreshold(
-						structureWorldAccess, boundingBox, random, 0.05F, minX + 1, maxY, z + 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH)
+						world, boundingBox, random, 0.05F, minX + 1, maxY, z + 1, Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH)
 					);
 				}
 			}
 		}
 
-		private void addCobwebsUnderground(StructureWorldAccess structureWorldAccess, BlockBox boundingBox, Random random, float threshold, int x, int y, int z) {
-			if (this.isUnderSeaLevel(structureWorldAccess, x, y, z, boundingBox)) {
-				this.addBlockWithRandomThreshold(structureWorldAccess, boundingBox, random, threshold, x, y, z, Blocks.COBWEB.getDefaultState());
+		private void addCobwebsUnderground(StructureWorldAccess world, BlockBox boundingBox, Random random, float threshold, int x, int y, int z) {
+			if (this.isUnderSeaLevel(world, x, y, z, boundingBox)) {
+				this.addBlockWithRandomThreshold(world, boundingBox, random, threshold, x, y, z, Blocks.COBWEB.getDefaultState());
 			}
 		}
 	}
@@ -376,10 +372,10 @@ public class MineshaftGenerator {
 		private final Direction direction;
 		private final boolean twoFloors;
 
-		public MineshaftCrossing(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.MINESHAFT_CROSSING, compoundTag);
-			this.twoFloors = compoundTag.getBoolean("tf");
-			this.direction = Direction.fromHorizontal(compoundTag.getInt("D"));
+		public MineshaftCrossing(StructureManager structureManager, CompoundTag nbt) {
+			super(StructurePieceType.MINESHAFT_CROSSING, nbt);
+			this.twoFloors = nbt.getBoolean("tf");
+			this.direction = Direction.fromHorizontal(nbt.getInt("D"));
 		}
 
 		@Override
@@ -608,9 +604,9 @@ public class MineshaftGenerator {
 			}
 		}
 
-		private void generateCrossingPillar(StructureWorldAccess structureWorldAccess, BlockBox boundingBox, int x, int minY, int z, int maxY) {
-			if (!this.getBlockAt(structureWorldAccess, x, maxY + 1, z, boundingBox).isAir()) {
-				this.fillWithOutline(structureWorldAccess, boundingBox, x, minY, z, x, maxY, z, this.getPlanksType(), AIR, false);
+		private void generateCrossingPillar(StructureWorldAccess world, BlockBox boundingBox, int x, int minY, int z, int maxY) {
+			if (!this.getBlockAt(world, x, maxY + 1, z, boundingBox).isAir()) {
+				this.fillWithOutline(world, boundingBox, x, minY, z, x, maxY, z, this.getPlanksType(), AIR, false);
 			}
 		}
 	}
@@ -653,9 +649,9 @@ public class MineshaftGenerator {
 			}
 		}
 
-		protected boolean isSolidCeiling(BlockView blockView, BlockBox boundingBox, int minX, int maxX, int y, int z) {
+		protected boolean isSolidCeiling(BlockView world, BlockBox boundingBox, int minX, int maxX, int y, int z) {
 			for (int i = minX; i <= maxX; i++) {
-				if (this.getBlockAt(blockView, i, y + 1, z, boundingBox).isAir()) {
+				if (this.getBlockAt(world, i, y + 1, z, boundingBox).isAir()) {
 					return false;
 				}
 			}
@@ -673,9 +669,9 @@ public class MineshaftGenerator {
 			this.boundingBox = new BlockBox(x, 50, z, x + 7 + random.nextInt(6), 54 + random.nextInt(6), z + 7 + random.nextInt(6));
 		}
 
-		public MineshaftRoom(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.MINESHAFT_ROOM, compoundTag);
-			ListTag listTag = compoundTag.getList("Entrances", 11);
+		public MineshaftRoom(StructureManager structureManager, CompoundTag nbt) {
+			super(StructurePieceType.MINESHAFT_ROOM, nbt);
+			ListTag listTag = nbt.getList("Entrances", 11);
 
 			for (int i = 0; i < listTag.size(); i++) {
 				this.entrances.add(new BlockBox(listTag.getIntArray(i)));
@@ -856,8 +852,8 @@ public class MineshaftGenerator {
 			this.boundingBox = boundingBox;
 		}
 
-		public MineshaftStairs(StructureManager structureManager, CompoundTag compoundTag) {
-			super(StructurePieceType.MINESHAFT_STAIRS, compoundTag);
+		public MineshaftStairs(StructureManager structureManager, CompoundTag nbt) {
+			super(StructurePieceType.MINESHAFT_STAIRS, nbt);
 		}
 
 		public static BlockBox getBoundingBox(List<StructurePiece> pieces, Random random, int x, int y, int z, Direction orientation) {

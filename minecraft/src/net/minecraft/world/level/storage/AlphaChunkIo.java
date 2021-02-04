@@ -13,12 +13,12 @@ import net.minecraft.world.chunk.ChunkNibbleArray;
 public class AlphaChunkIo {
 	private static final HeightLimitView world = new HeightLimitView() {
 		@Override
-		public int getBottomSectionLimit() {
+		public int getBottomY() {
 			return 0;
 		}
 
 		@Override
-		public int getSectionCount() {
+		public int getHeight() {
 			return 128;
 		}
 	};

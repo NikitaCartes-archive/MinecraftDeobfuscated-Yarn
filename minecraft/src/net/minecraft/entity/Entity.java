@@ -22,7 +22,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.class_5459;
 import net.minecraft.class_5569;
-import net.minecraft.class_5630;
 import net.minecraft.class_5715;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
@@ -44,6 +43,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -437,10 +437,10 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * Calls {@link #tickInVoid()} when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomSectionLimit() minimum Y position}.
+	 * Calls {@link #tickInVoid()} when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomY() minimum Y position}.
 	 */
 	public void attemptTickInVoid() {
-		if (this.getY() < (double)(this.world.getBottomSectionLimit() - 64)) {
+		if (this.getY() < (double)(this.world.getBottomY() - 64)) {
 			this.tickInVoid();
 		}
 	}
@@ -497,7 +497,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	/**
-	 * Called when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomSectionLimit() minimum Y position}.
+	 * Called when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomY() minimum Y position}.
 	 * 
 	 * <p>{@linkplain LivingEntity Living entities} use this to deal {@linkplain net.minecraft.entity.damage.DamageSource#OUT_OF_WORLD out of world damage}.
 	 */
@@ -2577,8 +2577,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return new Vec3d(0.0, (double)this.getStandingEyeHeight(), (double)(this.getWidth() * 0.4F));
 	}
 
-	public class_5630 method_32318(int i) {
-		return class_5630.field_27860;
+	/**
+	 * Obtains an item slot for command modification purpose. Used by commands
+	 * like {@code /loot} or {@code /replaceitem}.
+	 * 
+	 * @see net.minecraft.command.argument.ItemSlotArgumentType
+	 * 
+	 * @param mappedIndex the mapped index as given by the item slot argument
+	 */
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		return CommandItemSlot.EMPTY;
 	}
 
 	@Override

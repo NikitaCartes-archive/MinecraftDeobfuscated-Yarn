@@ -73,7 +73,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 							this.cachedWorld.getBlockState(blockPos).isAir()
 								|| this.cachedWorld.getBlockState(blockPos).canPathfindThrough(this.cachedWorld, blockPos, NavigationType.LAND)
 						)
-						&& blockPos.getY() > this.entity.world.getBottomSectionLimit()
+						&& blockPos.getY() > this.entity.world.getBottomY()
 				) {
 					blockPos = blockPos.down();
 				}
@@ -268,7 +268,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 						return pathNode;
 					}
 
-					while (y > this.entity.world.getBottomSectionLimit()) {
+					while (y > this.entity.world.getBottomY()) {
 						pathNodeType2 = this.getNodeType(this.entity, x, --y, z);
 						if (pathNodeType2 != PathNodeType.WATER) {
 							return pathNode;
@@ -285,7 +285,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 					int j = y;
 
 					while (pathNodeType2 == PathNodeType.OPEN) {
-						if (--y < this.entity.world.getBottomSectionLimit()) {
+						if (--y < this.entity.world.getBottomY()) {
 							PathNode pathNode2 = this.getNode(x, j, z);
 							pathNode2.type = PathNodeType.BLOCKED;
 							pathNode2.penalty = -1.0F;
@@ -446,7 +446,7 @@ public class LandPathNodeMaker extends PathNodeMaker {
 		int j = pos.getY();
 		int k = pos.getZ();
 		PathNodeType pathNodeType = getCommonNodeType(world, pos);
-		if (pathNodeType == PathNodeType.OPEN && j >= world.getBottomSectionLimit() + 1) {
+		if (pathNodeType == PathNodeType.OPEN && j >= world.getBottomY() + 1) {
 			PathNodeType pathNodeType2 = getCommonNodeType(world, pos.set(i, j - 1, k));
 			pathNodeType = pathNodeType2 != PathNodeType.WALKABLE
 					&& pathNodeType2 != PathNodeType.OPEN

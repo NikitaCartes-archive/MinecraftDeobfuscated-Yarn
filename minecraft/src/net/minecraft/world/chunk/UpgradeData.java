@@ -43,7 +43,7 @@ public class UpgradeData {
 	private static final Set<UpgradeData.Logic> CALLBACK_LOGICS = Sets.<UpgradeData.Logic>newHashSet();
 
 	private UpgradeData(HeightLimitView world) {
-		this.centerIndicesToUpgrade = new int[world.getSections()][];
+		this.centerIndicesToUpgrade = new int[world.countVerticalSections()][];
 	}
 
 	public UpgradeData(CompoundTag tag, HeightLimitView world) {
@@ -98,7 +98,7 @@ public class UpgradeData {
 			Direction[] directions = Direction.values();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (BlockPos blockPos : BlockPos.iterate(k, world.getBottomSectionLimit(), m, l, world.getTopHeightLimit() - 1, n)) {
+			for (BlockPos blockPos : BlockPos.iterate(k, world.getBottomY(), m, l, world.getTopY() - 1, n)) {
 				BlockState blockState = world.getBlockState(blockPos);
 				BlockState blockState2 = blockState;
 
@@ -153,7 +153,7 @@ public class UpgradeData {
 
 		for (int ix = 0; ix < this.centerIndicesToUpgrade.length; ix++) {
 			if (this.centerIndicesToUpgrade[ix] != null) {
-				LOGGER.warn("Discarding update data for section {} for chunk ({} {})", worldAccess.getSection(ix), chunkPos.x, chunkPos.z);
+				LOGGER.warn("Discarding update data for section {} for chunk ({} {})", worldAccess.sectionIndexToCoord(ix), chunkPos.x, chunkPos.z);
 			}
 
 			this.centerIndicesToUpgrade[ix] = null;

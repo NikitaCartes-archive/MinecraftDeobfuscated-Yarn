@@ -8,6 +8,9 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 
+/**
+ * Places the top blocks of a biome during chunk generation.
+ */
 public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 	private static final BlockState DIRT = Blocks.DIRT.getDefaultState();
 	private static final BlockState GRASS_BLOCK = Blocks.GRASS_BLOCK.getDefaultState();
@@ -90,6 +93,22 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 		return new ConfiguredSurfaceBuilder<>(this, config);
 	}
 
+	/**
+	 * Places the surface blocks for the given column.
+	 * 
+	 * @param random the Random instance, seeded with a hash of the x and z coordinates
+	 * @param chunk the current chunk being surface built
+	 * @param biome the biome in the column that is being surface built
+	 * @param x X coordinate of the column
+	 * @param z Z coordinate of the column
+	 * @param height height of the column retrieved using {@link net.minecraft.world.Heightmap.Type#WORLD_SURFACE_WG}, and will never be lower than the sea level
+	 * @param noise noise value at this column. Has a range of {@code (-8, 8)} but follows a normal distribution so most values will be around {@code (-2, 2)}
+	 * @param defaultBlock default block of the chunk generator, used to know which block to replace with the surface blocks
+	 * @param defaultFluid Default fluid of the chunk generator
+	 * @param seaLevel the sea level of the chunk generator
+	 * @param seed the world seed
+	 * @param surfaceBlocks the config passed to the chunk generator, stores the states used by the surface builder
+	 */
 	public abstract void generate(
 		Random random,
 		Chunk chunk,
@@ -105,6 +124,9 @@ public abstract class SurfaceBuilder<C extends SurfaceConfig> {
 		C surfaceBlocks
 	);
 
+	/**
+	 * Runs before {@link #generate} and allows for custom noise to be initialized.
+	 */
 	public void initSeed(long seed) {
 	}
 }

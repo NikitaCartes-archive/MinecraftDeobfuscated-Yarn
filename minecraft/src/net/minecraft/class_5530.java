@@ -20,7 +20,7 @@ public class class_5530 {
 		} else {
 			BlockPos blockPos2 = class_5535.method_31537(pathAwareEntity, i, pathAwareEntity.getRandom(), blockPos);
 			if (!class_5493.method_31520(blockPos2, pathAwareEntity) && !class_5493.method_31521(bl, pathAwareEntity, blockPos2)) {
-				blockPos2 = class_5535.method_31540(blockPos2, pathAwareEntity.world.getTopHeightLimit(), blockPosx -> class_5493.method_31523(pathAwareEntity, blockPosx));
+				blockPos2 = class_5535.method_31540(blockPos2, pathAwareEntity.world.getTopY(), blockPosx -> class_5493.method_31523(pathAwareEntity, blockPosx));
 				return class_5493.method_31522(pathAwareEntity, blockPos2) ? null : blockPos2;
 			} else {
 				return null;

@@ -96,7 +96,9 @@ public class FenceBlock extends HorizontalConnectingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
@@ -104,9 +106,9 @@ public class FenceBlock extends HorizontalConnectingBlock {
 		return direction.getAxis().getType() == Direction.Type.HORIZONTAL
 			? state.with(
 				(Property)FACING_PROPERTIES.get(direction),
-				Boolean.valueOf(this.canConnect(newState, newState.isSideSolidFullSquare(world, posFrom, direction.getOpposite()), direction.getOpposite()))
+				Boolean.valueOf(this.canConnect(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction.getOpposite()), direction.getOpposite()))
 			)
-			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override

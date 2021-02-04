@@ -50,10 +50,10 @@ public class CrashReportSection {
 			int m = y & 15;
 			int n = z & 15;
 			int o = ChunkSectionPos.getBlockCoord(i);
-			int p = world.getBottomSectionLimit();
+			int p = world.getBottomY();
 			int q = ChunkSectionPos.getBlockCoord(k);
 			int r = ChunkSectionPos.getBlockCoord(i + 1) - 1;
-			int s = world.getTopHeightLimit() - 1;
+			int s = world.getTopY() - 1;
 			int t = ChunkSectionPos.getBlockCoord(k + 1) - 1;
 			stringBuilder.append(String.format("Section: (at %d,%d,%d in %d,%d,%d; chunk contains blocks %d,%d,%d to %d,%d,%d)", l, m, n, i, j, k, o, p, q, r, s, t));
 		} catch (Throwable var18) {
@@ -70,10 +70,10 @@ public class CrashReportSection {
 			int m = (i + 1 << 5) - 1;
 			int n = (j + 1 << 5) - 1;
 			int o = i << 9;
-			int p = world.getBottomSectionLimit();
+			int p = world.getBottomY();
 			int q = j << 9;
 			int r = (i + 1 << 9) - 1;
-			int s = world.getTopHeightLimit() - 1;
+			int s = world.getTopY() - 1;
 			int t = (j + 1 << 9) - 1;
 			stringBuilder.append(String.format("Region: (%d,%d; contains chunks %d,%d to %d,%d, blocks %d,%d,%d to %d,%d,%d)", i, j, k, l, m, n, o, p, q, r, s, t));
 		} catch (Throwable var17) {

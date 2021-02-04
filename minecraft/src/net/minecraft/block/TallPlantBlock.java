@@ -28,14 +28,16 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y
 			|| doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)
-			|| newState.isOf(this) && newState.get(HALF) != doubleBlockHalf) {
+			|| neighborState.isOf(this) && neighborState.get(HALF) != doubleBlockHalf) {
 			return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 				? Blocks.AIR.getDefaultState()
-				: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		} else {
 			return Blocks.AIR.getDefaultState();
 		}
@@ -46,7 +48,7 @@ public class TallPlantBlock extends PlantBlock {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockPos blockPos = ctx.getBlockPos();
 		World world = ctx.getWorld();
-		return blockPos.getY() < world.getTopHeightLimit() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx) ? super.getPlacementState(ctx) : null;
+		return blockPos.getY() < world.getTopY() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx) ? super.getPlacementState(ctx) : null;
 	}
 
 	@Override
@@ -70,16 +72,16 @@ public class TallPlantBlock extends PlantBlock {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
 		if (!world.isClient) {
-			if (playerEntity.isCreative()) {
-				onBreakInCreative(world, pos, state, playerEntity);
+			if (player.isCreative()) {
+				onBreakInCreative(world, pos, state, player);
 			} else {
-				dropStacks(state, world, pos, null, playerEntity, playerEntity.getMainHandStack());
+				dropStacks(state, world, pos, null, player, player.getMainHandStack());
 			}
 		}
 
-		super.onBreak(world, pos, state, playerEntity);
+		super.onBreak(world, pos, state, player);
 	}
 
 	@Override

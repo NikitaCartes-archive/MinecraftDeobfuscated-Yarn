@@ -15,16 +15,16 @@ import net.minecraft.text.TranslatableText;
 @Environment(EnvType.CLIENT)
 public class RealmsResetNormalWorldScreen extends RealmsScreen {
 	private static final Text RESET_SEED_TEXT = new TranslatableText("mco.reset.world.seed");
-	private final Consumer<ResetWorldInfo> field_27938;
+	private final Consumer<ResetWorldInfo> callback;
 	private RealmsLabel titleLabel;
 	private TextFieldWidget seedEdit;
-	private RealmsWorldGeneratorType field_27939 = RealmsWorldGeneratorType.DEFAULT;
-	private boolean field_27940 = true;
-	private final Text field_24206;
+	private RealmsWorldGeneratorType generatorType = RealmsWorldGeneratorType.DEFAULT;
+	private boolean mapFeatures = true;
+	private final Text parentTitle;
 
-	public RealmsResetNormalWorldScreen(Consumer<ResetWorldInfo> consumer, Text text) {
-		this.field_27938 = consumer;
-		this.field_24206 = text;
+	public RealmsResetNormalWorldScreen(Consumer<ResetWorldInfo> callback, Text parentTitle) {
+		this.callback = callback;
+		this.parentTitle = parentTitle;
 	}
 
 	@Override
@@ -45,20 +45,25 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 		this.addButton(
 			CyclingButtonWidget.<RealmsWorldGeneratorType>method_32606(RealmsWorldGeneratorType::getText)
 				.method_32624(RealmsWorldGeneratorType.values())
-				.value(this.field_27939)
+				.value(this.generatorType)
 				.build(
 					this.width / 2 - 102,
 					row(4),
 					205,
 					20,
 					new TranslatableText("selectWorld.mapType"),
-					(cyclingButtonWidget, realmsWorldGeneratorType) -> this.field_27939 = realmsWorldGeneratorType
+					(cyclingButtonWidget, generatorType) -> this.generatorType = generatorType
 				)
 		);
 		this.addButton(
-			CyclingButtonWidget.method_32613(this.field_27940)
+			CyclingButtonWidget.method_32613(this.mapFeatures)
 				.build(
-					this.width / 2 - 102, row(6) - 2, 205, 20, new TranslatableText("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> this.field_27940 = boolean_
+					this.width / 2 - 102,
+					row(6) - 2,
+					205,
+					20,
+					new TranslatableText("selectWorld.mapFeatures"),
+					(cyclingButtonWidget, mapFeatures) -> this.mapFeatures = mapFeatures
 				)
 		);
 		this.addButton(
@@ -67,8 +72,8 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 				row(12),
 				97,
 				20,
-				this.field_24206,
-				buttonWidget -> this.field_27938.accept(new ResetWorldInfo(this.seedEdit.getText(), this.field_27939, this.field_27940))
+				this.parentTitle,
+				buttonWidget -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 8, row(12), 97, 20, ScreenTexts.BACK, buttonWidget -> this.onClose()));
@@ -82,7 +87,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 
 	@Override
 	public void onClose() {
-		this.field_27938.accept(null);
+		this.callback.accept(null);
 	}
 
 	@Override

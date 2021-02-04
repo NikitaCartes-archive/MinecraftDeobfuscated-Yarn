@@ -46,10 +46,12 @@ public class BannerBlock extends AbstractBannerBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		return direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override

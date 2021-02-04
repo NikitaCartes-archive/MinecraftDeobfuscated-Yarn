@@ -613,7 +613,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			.getChunkManager()
 			.loadChunkFromPacket(i, j, biomeArray, packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
 
-		for (int k = this.world.getMinimumSection(); k < this.world.getTopSectionLimit(); k++) {
+		for (int k = this.world.getBottomSectionCoord(); k < this.world.getTopSectionCoord(); k++) {
 			this.world.scheduleBlockRenders(i, k, j);
 		}
 
@@ -637,7 +637,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		clientChunkManager.unload(i, j);
 		LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
 
-		for (int k = this.world.getMinimumSection(); k < this.world.getTopSectionLimit(); k++) {
+		for (int k = this.world.getBottomSectionCoord(); k < this.world.getTopSectionCoord(); k++) {
 			this.world.scheduleBlockRenders(i, k, j);
 			lightingProvider.setSectionStatus(ChunkSectionPos.from(i, k, j), true);
 		}

@@ -45,7 +45,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	private static final Identifier SLOT_FRAME = new Identifier("realms", "textures/gui/realms/slot_frame.png");
 	private static final Text INFO_TOOLTIP = new TranslatableText("mco.template.info.tooltip");
 	private static final Text TRAILER_TOOLTIP = new TranslatableText("mco.template.trailer.tooltip");
-	private final Consumer<WorldTemplate> field_27941;
+	private final Consumer<WorldTemplate> callback;
 	private RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList templateList;
 	private int selectedTemplate = -1;
 	private Text title;
@@ -65,12 +65,12 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	@Nullable
 	private List<TextRenderingUtils.Line> noTemplatesMessage;
 
-	public RealmsSelectWorldTemplateScreen(Consumer<WorldTemplate> consumer, RealmsServer.WorldType worldType) {
-		this(consumer, worldType, null);
+	public RealmsSelectWorldTemplateScreen(Consumer<WorldTemplate> callback, RealmsServer.WorldType worldType) {
+		this(callback, worldType, null);
 	}
 
-	public RealmsSelectWorldTemplateScreen(Consumer<WorldTemplate> consumer, RealmsServer.WorldType worldType, @Nullable WorldTemplatePaginatedList list) {
-		this.field_27941 = consumer;
+	public RealmsSelectWorldTemplateScreen(Consumer<WorldTemplate> callback, RealmsServer.WorldType worldType, @Nullable WorldTemplatePaginatedList list) {
+		this.callback = callback;
 		this.worldType = worldType;
 		if (list == null) {
 			this.templateList = new RealmsSelectWorldTemplateScreen.WorldTemplateObjectSelectionList();
@@ -142,15 +142,15 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	}
 
 	private boolean shouldPublisherBeVisible() {
-		return this.selectedTemplate != -1 && !this.method_21434().link.isEmpty();
+		return this.selectedTemplate != -1 && !this.getSelectedTemplate().link.isEmpty();
 	}
 
-	private WorldTemplate method_21434() {
+	private WorldTemplate getSelectedTemplate() {
 		return this.templateList.getItem(this.selectedTemplate);
 	}
 
 	private boolean shouldTrailerBeVisible() {
-		return this.selectedTemplate != -1 && !this.method_21434().trailer.isEmpty();
+		return this.selectedTemplate != -1 && !this.getSelectedTemplate().trailer.isEmpty();
 	}
 
 	@Override
@@ -164,22 +164,22 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 	@Override
 	public void onClose() {
-		this.field_27941.accept(null);
+		this.callback.accept(null);
 	}
 
 	private void selectTemplate() {
-		if (this.method_25247()) {
-			this.field_27941.accept(this.method_21434());
+		if (this.isSelectionValid()) {
+			this.callback.accept(this.getSelectedTemplate());
 		}
 	}
 
-	private boolean method_25247() {
+	private boolean isSelectionValid() {
 		return this.selectedTemplate >= 0 && this.selectedTemplate < this.templateList.getItemCount();
 	}
 
 	private void onTrailer() {
-		if (this.method_25247()) {
-			WorldTemplate worldTemplate = this.method_21434();
+		if (this.isSelectionValid()) {
+			WorldTemplate worldTemplate = this.getSelectedTemplate();
 			if (!"".equals(worldTemplate.trailer)) {
 				Util.getOperatingSystem().open(worldTemplate.trailer);
 			}
@@ -187,8 +187,8 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	}
 
 	private void onPublish() {
-		if (this.method_25247()) {
-			WorldTemplate worldTemplate = this.method_21434();
+		if (this.isSelectionValid()) {
+			WorldTemplate worldTemplate = this.getSelectedTemplate();
 			if (!"".equals(worldTemplate.link)) {
 				Util.getOperatingSystem().open(worldTemplate.link);
 			}

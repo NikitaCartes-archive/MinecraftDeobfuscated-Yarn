@@ -31,7 +31,7 @@ public class Heightmap {
 	public Heightmap(Chunk chunk, Heightmap.Type type) {
 		this.blockPredicate = type.getBlockPredicate();
 		this.chunk = chunk;
-		int i = MathHelper.log2DeBruijn(chunk.getSectionCount() + 1);
+		int i = MathHelper.log2DeBruijn(chunk.getHeight() + 1);
 		this.storage = new PackedIntegerArray(i, 256);
 	}
 
@@ -48,7 +48,7 @@ public class Heightmap {
 					objectList.add(chunk.getHeightmap(type));
 				}
 
-				for (int m = j - 1; m >= chunk.getBottomSectionLimit(); m--) {
+				for (int m = j - 1; m >= chunk.getBottomY(); m--) {
 					mutable.set(k, m, l);
 					BlockState blockState = chunk.getBlockState(mutable);
 					if (!blockState.isOf(Blocks.AIR)) {
@@ -84,7 +84,7 @@ public class Heightmap {
 			} else if (i - 1 == y) {
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-				for (int j = y - 1; j >= this.chunk.getBottomSectionLimit(); j--) {
+				for (int j = y - 1; j >= this.chunk.getBottomY(); j--) {
 					mutable.set(x, j, z);
 					if (this.blockPredicate.test(this.chunk.getBlockState(mutable))) {
 						this.set(x, z, j + 1);
@@ -92,7 +92,7 @@ public class Heightmap {
 					}
 				}
 
-				this.set(x, z, this.chunk.getBottomSectionLimit());
+				this.set(x, z, this.chunk.getBottomY());
 				return true;
 			}
 
@@ -105,11 +105,11 @@ public class Heightmap {
 	}
 
 	private int get(int index) {
-		return this.storage.get(index) + this.chunk.getBottomSectionLimit();
+		return this.storage.get(index) + this.chunk.getBottomY();
 	}
 
 	private void set(int x, int z, int height) {
-		this.storage.set(toIndex(x, z), height - this.chunk.getBottomSectionLimit());
+		this.storage.set(toIndex(x, z), height - this.chunk.getBottomY());
 	}
 
 	public void setTo(long[] heightmap) {

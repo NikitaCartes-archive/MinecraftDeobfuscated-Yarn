@@ -227,7 +227,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 						boolean bl3 = world.getBiomeAccess().method_31608(chunkPos).getGenerationSettings().hasStructureFeature(this);
 						if (bl3) {
 							Chunk chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS);
-							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.method_33705(chunk), this, chunk);
+							StructureStart<?> structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk), this, chunk);
 							if (structureStart != null && structureStart.hasChildren()) {
 								if (skipExistingChunks && structureStart.isInExistingChunk()) {
 									structureStart.incrementReferences();

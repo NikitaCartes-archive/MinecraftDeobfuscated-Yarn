@@ -32,11 +32,11 @@ public class StructureManager {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Map<Identifier, Structure> structures = Maps.<Identifier, Structure>newHashMap();
 	private final DataFixer dataFixer;
-	private ResourceManager field_25189;
+	private ResourceManager resourceManager;
 	private final Path generatedPath;
 
 	public StructureManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
-		this.field_25189 = resourceManager;
+		this.resourceManager = resourceManager;
 		this.dataFixer = dataFixer;
 		this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
 	}
@@ -52,15 +52,15 @@ public class StructureManager {
 	}
 
 	@Nullable
-	public Structure getStructure(Identifier identifier) {
-		return (Structure)this.structures.computeIfAbsent(identifier, identifierx -> {
-			Structure structure = this.loadStructureFromFile(identifierx);
-			return structure != null ? structure : this.loadStructureFromResource(identifierx);
+	public Structure getStructure(Identifier id) {
+		return (Structure)this.structures.computeIfAbsent(id, identifier -> {
+			Structure structure = this.loadStructureFromFile(identifier);
+			return structure != null ? structure : this.loadStructureFromResource(identifier);
 		});
 	}
 
-	public void method_29300(ResourceManager resourceManager) {
-		this.field_25189 = resourceManager;
+	public void setResourceManager(ResourceManager resourceManager) {
+		this.resourceManager = resourceManager;
 		this.structures.clear();
 	}
 
@@ -69,7 +69,7 @@ public class StructureManager {
 		Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
 
 		try {
-			Resource resource = this.field_25189.getResource(identifier);
+			Resource resource = this.resourceManager.getResource(identifier);
 			Throwable var4 = null;
 
 			Structure var5;

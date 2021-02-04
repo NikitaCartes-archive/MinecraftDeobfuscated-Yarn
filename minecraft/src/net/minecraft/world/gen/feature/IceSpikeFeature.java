@@ -20,7 +20,7 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 		Random random = featureContext.getRandom();
 		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
 
-		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 2) {
+		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
 			blockPos = blockPos.down();
 		}
 

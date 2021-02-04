@@ -140,7 +140,7 @@ public class WorldChunk implements Chunk {
 		this.fluidTickScheduler = fluidTickScheduler;
 		this.inhabitedTime = inhabitedTime;
 		this.loadToWorldConsumer = loadToWorldConsumer;
-		this.sections = new ChunkSection[world.getSections()];
+		this.sections = new ChunkSection[world.countVerticalSections()];
 		if (sections != null) {
 			if (this.sections.length == sections.length) {
 				System.arraycopy(sections, 0, this.sections, 0, this.sections.length);
@@ -149,7 +149,7 @@ public class WorldChunk implements Chunk {
 			}
 		}
 
-		this.postProcessingLists = new ShortList[world.getSections()];
+		this.postProcessingLists = new ShortList[world.countVerticalSections()];
 	}
 
 	public WorldChunk(ServerWorld serverWorld, ProtoChunk protoChunk, @Nullable Consumer<WorldChunk> consumer) {
@@ -527,7 +527,7 @@ public class WorldChunk implements Chunk {
 				}
 			} else {
 				if (chunkSection == EMPTY_SECTION) {
-					chunkSection = new ChunkSection(this.getSection(i));
+					chunkSection = new ChunkSection(this.sectionIndexToCoord(i));
 					this.sections[i] = chunkSection;
 				}
 
@@ -582,10 +582,7 @@ public class WorldChunk implements Chunk {
 	@Override
 	public Stream<BlockPos> getLightSourcesStream() {
 		return StreamSupport.stream(
-				BlockPos.iterate(
-						this.pos.getStartX(), this.getBottomSectionLimit(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopHeightLimit() - 1, this.pos.getEndZ()
-					)
-					.spliterator(),
+				BlockPos.iterate(this.pos.getStartX(), this.getBottomY(), this.pos.getStartZ(), this.pos.getEndX(), this.getTopY() - 1, this.pos.getEndZ()).spliterator(),
 				false
 			)
 			.filter(blockPos -> this.getBlockState(blockPos).getLuminance() != 0);
@@ -670,7 +667,7 @@ public class WorldChunk implements Chunk {
 		for (int i = 0; i < this.postProcessingLists.length; i++) {
 			if (this.postProcessingLists[i] != null) {
 				for (Short short_ : this.postProcessingLists[i]) {
-					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.getSection(i), chunkPos);
+					BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.sectionIndexToCoord(i), chunkPos);
 					BlockState blockState = this.getBlockState(blockPos);
 					BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
 					this.world.setBlockState(blockPos, blockState2, 20);
@@ -760,13 +757,13 @@ public class WorldChunk implements Chunk {
 	}
 
 	@Override
-	public int getBottomSectionLimit() {
-		return this.world.getBottomSectionLimit();
+	public int getBottomY() {
+		return this.world.getBottomY();
 	}
 
 	@Override
-	public int getSectionCount() {
-		return this.world.getSectionCount();
+	public int getHeight() {
+		return this.world.getHeight();
 	}
 
 	@Override

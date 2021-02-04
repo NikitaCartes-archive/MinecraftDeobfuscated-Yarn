@@ -136,27 +136,25 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public int getHeight(int x, int z, Heightmap.Type heightmapType, HeightLimitView world) {
-		int i = Math.max(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY(), world.getBottomSectionLimit());
+	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
+		int i = Math.max(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY(), world.getBottomY());
 		int j = Math.min(
 			((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY()
 				+ ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getHeight(),
-			world.getTopHeightLimit()
+			world.getTopY()
 		);
 		int k = MathHelper.floorDiv(i, this.verticalNoiseResolution);
 		int l = MathHelper.floorDiv(j - i, this.verticalNoiseResolution);
-		return l <= 0
-			? world.getBottomSectionLimit()
-			: this.sampleHeightmap(x, z, null, heightmapType.getBlockPredicate(), k, l).orElse(world.getBottomSectionLimit());
+		return l <= 0 ? world.getBottomY() : this.sampleHeightmap(x, z, null, heightmap.getBlockPredicate(), k, l).orElse(world.getBottomY());
 	}
 
 	@Override
 	public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
-		int i = Math.max(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY(), world.getBottomSectionLimit());
+		int i = Math.max(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY(), world.getBottomY());
 		int j = Math.min(
 			((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY()
 				+ ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getHeight(),
-			world.getTopHeightLimit()
+			world.getTopY()
 		);
 		int k = MathHelper.floorDiv(i, this.verticalNoiseResolution);
 		int l = MathHelper.floorDiv(j - i, this.verticalNoiseResolution);
@@ -263,8 +261,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		int k = chunkGeneratorSettings.getBedrockFloorY();
 		int l = this.worldHeight - 1 - chunkGeneratorSettings.getBedrockCeilingY();
 		int m = 5;
-		boolean bl = l + 5 - 1 >= chunk.getBottomSectionLimit() && l < chunk.getTopHeightLimit();
-		boolean bl2 = k + 5 - 1 >= chunk.getBottomSectionLimit() && k < chunk.getTopHeightLimit();
+		boolean bl = l + 5 - 1 >= chunk.getBottomY() && l < chunk.getTopY();
+		boolean bl2 = k + 5 - 1 >= chunk.getBottomY() && k < chunk.getTopY();
 		if (bl || bl2) {
 			for (BlockPos blockPos : BlockPos.iterate(i, 0, j, i + 15, 0, j + 15)) {
 				if (bl) {
@@ -292,11 +290,11 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		ProtoChunk protoChunk = (ProtoChunk)chunk;
 		Heightmap heightmap = protoChunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
 		Heightmap heightmap2 = protoChunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
-		int i = Math.max(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY(), chunk.getBottomSectionLimit());
+		int i = Math.max(((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY(), chunk.getBottomY());
 		int j = Math.min(
 			((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getMinimumY()
 				+ ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig().getHeight(),
-			chunk.getTopHeightLimit()
+			chunk.getTopY()
 		);
 		int k = MathHelper.floorDiv(i, this.verticalNoiseResolution);
 		int l = MathHelper.floorDiv(j - i, this.verticalNoiseResolution);
@@ -330,7 +328,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				}
 
 				for (int s = 0; s < this.noiseSizeZ; s++) {
-					ChunkSection chunkSection = protoChunk.getSection(protoChunk.getSections() - 1);
+					ChunkSection chunkSection = protoChunk.getSection(protoChunk.countVerticalSections() - 1);
 					chunkSection.lock();
 
 					for (int u = l - 1; u >= 0; u--) {

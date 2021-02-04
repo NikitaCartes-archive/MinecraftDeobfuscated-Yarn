@@ -19,7 +19,7 @@ public class class_5493 {
 	}
 
 	public static boolean method_31520(BlockPos blockPos, PathAwareEntity pathAwareEntity) {
-		return blockPos.getY() < pathAwareEntity.world.getBottomSectionLimit() || blockPos.getY() > pathAwareEntity.world.getTopHeightLimit();
+		return blockPos.getY() < pathAwareEntity.world.getBottomY() || blockPos.getY() > pathAwareEntity.world.getTopY();
 	}
 
 	public static boolean method_31521(boolean bl, PathAwareEntity pathAwareEntity, BlockPos blockPos) {

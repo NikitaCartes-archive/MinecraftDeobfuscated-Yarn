@@ -349,7 +349,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 			if (this.isChunkLoaded(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z))) {
 				i = this.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z)).sampleHeightmap(heightmap, x & 15, z & 15) + 1;
 			} else {
-				i = this.getBottomSectionLimit();
+				i = this.getBottomY();
 			}
 		} else {
 			i = this.getSeaLevel() + 1;

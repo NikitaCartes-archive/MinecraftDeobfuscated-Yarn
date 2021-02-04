@@ -11,7 +11,6 @@ import com.mojang.brigadier.suggestion.SuggestionProvider;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import net.minecraft.class_5630;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.CommandSource;
@@ -27,6 +26,7 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.LootManager;
@@ -368,8 +368,8 @@ public class LootCommand {
 	private static void replace(Entity entity, List<ItemStack> stacks, int slot, int stackCount, List<ItemStack> addedStacks) {
 		for (int i = 0; i < stackCount; i++) {
 			ItemStack itemStack = i < stacks.size() ? (ItemStack)stacks.get(i) : ItemStack.EMPTY;
-			class_5630 lv = entity.method_32318(slot + i);
-			if (lv != class_5630.field_27860 && lv.method_32332(itemStack.copy())) {
+			CommandItemSlot commandItemSlot = entity.getCommandItemSlot(slot + i);
+			if (commandItemSlot != CommandItemSlot.EMPTY && commandItemSlot.set(itemStack.copy())) {
 				addedStacks.add(itemStack);
 			}
 		}

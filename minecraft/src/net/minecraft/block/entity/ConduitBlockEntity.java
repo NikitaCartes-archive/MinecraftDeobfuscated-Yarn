@@ -173,7 +173,7 @@ public class ConduitBlockEntity extends BlockEntity {
 		int m = pos.getZ();
 		Box box = new Box((double)k, (double)l, (double)m, (double)(k + 1), (double)(l + 1), (double)(m + 1))
 			.expand((double)j)
-			.stretch(0.0, (double)world.getSectionCount(), 0.0);
+			.stretch(0.0, (double)world.getHeight(), 0.0);
 		List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
 		if (!list.isEmpty()) {
 			for (PlayerEntity playerEntity : list) {

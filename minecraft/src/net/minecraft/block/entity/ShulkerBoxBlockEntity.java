@@ -260,8 +260,8 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 		return true;
 	}
 
-	public float getAnimationProgress(float f) {
-		return MathHelper.lerp(f, this.prevAnimationProgress, this.animationProgress);
+	public float getAnimationProgress(float delta) {
+		return MathHelper.lerp(delta, this.prevAnimationProgress, this.animationProgress);
 	}
 
 	@Nullable

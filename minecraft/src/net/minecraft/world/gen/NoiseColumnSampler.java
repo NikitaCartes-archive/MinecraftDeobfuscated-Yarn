@@ -11,7 +11,13 @@ import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 
+/**
+ * Samples noise values for use in chunk generation.
+ */
 public class NoiseColumnSampler {
+	/**
+	 * Table of weights used to weight faraway biomes less than nearby biomes.
+	 */
 	private static final float[] BIOME_WEIGHT_TABLE = Util.make(new float[25], array -> {
 		for (int i = -2; i <= 2; i++) {
 			for (int j = -2; j <= 2; j++) {
@@ -35,7 +41,7 @@ public class NoiseColumnSampler {
 	private final double bottomSlideTarget;
 	private final double bottomSlideSize;
 	private final double bottomSlideOffset;
-	private final double denityFactor;
+	private final double densityFactor;
 	private final double densityOffset;
 
 	public NoiseColumnSampler(
@@ -62,10 +68,13 @@ public class NoiseColumnSampler {
 		this.bottomSlideTarget = (double)config.getBottomSlide().getTarget();
 		this.bottomSlideSize = (double)config.getBottomSlide().getSize();
 		this.bottomSlideOffset = (double)config.getBottomSlide().getOffset();
-		this.denityFactor = config.getDensityFactor();
+		this.densityFactor = config.getDensityFactor();
 		this.densityOffset = config.getDensityOffset();
 	}
 
+	/**
+	 * Samples the noise for the given column and stores it in the buffer parameter.
+	 */
 	public void sampleNoiseColumn(double[] buffer, int x, int z, GenerationShapeConfig config, int seaLevel, int minY, int noiseSizeY) {
 		double d;
 		double e;
@@ -130,13 +139,20 @@ public class NoiseColumnSampler {
 		}
 	}
 
+	/**
+	 * Calculates an offset for the noise.
+	 * <p>For example in the overworld, this makes lower y values solid while making higher y values air.</p>
+	 */
 	private double getOffset(int y, double depth, double scale, double randomDensityOffset) {
 		double d = 1.0 - (double)y * 2.0 / 32.0 + randomDensityOffset;
-		double e = d * this.denityFactor + this.densityOffset;
+		double e = d * this.densityFactor + this.densityOffset;
 		double f = (e + depth) * scale;
 		return f * (double)(f > 0.0 ? 4 : 1);
 	}
 
+	/**
+	 * Interpolates the noise at the top and bottom of the world.
+	 */
 	private double applySlides(double noise, int y) {
 		int i = MathHelper.floorDiv(this.config.getMinimumY(), this.verticalNoiseResolution);
 		int j = y - i;
@@ -153,6 +169,9 @@ public class NoiseColumnSampler {
 		return noise;
 	}
 
+	/**
+	 * Applies a random change to the density to subtly vary the height of the terrain.
+	 */
 	private double getDensityNoise(int x, int z) {
 		double d = this.densityNoise.sample((double)(x * 200), 10.0, (double)(z * 200), 1.0, 0.0, true);
 		double e;

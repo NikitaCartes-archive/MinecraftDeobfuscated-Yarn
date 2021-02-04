@@ -69,7 +69,9 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		if ((Boolean)state.get(WATERLOGGED)) {
 			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 		}
@@ -93,8 +95,8 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		}
 	}
 
-	private static BlockState getFluidBlockState(BlockState blockState) {
-		return blockState.get(WATERLOGGED) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+	private static BlockState getFluidBlockState(BlockState state) {
+		return state.get(WATERLOGGED) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
 	}
 
 	@Override
@@ -120,7 +122,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		if (canDrip(state)) {
 			float f = random.nextFloat();
 			if (!(f > 0.12F)) {
-				method_33276(world, pos, state).filter(fluid -> f < 0.02F || method_33273(fluid)).ifPresent(fluid -> createParticle(world, pos, state, fluid));
+				method_33276(world, pos, state).filter(fluid -> f < 0.02F || isFluidLiquid(fluid)).ifPresent(fluid -> createParticle(world, pos, state, fluid));
 			}
 		}
 	}
@@ -152,7 +154,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 				}
 
 				if (!(dripChance >= f)) {
-					BlockPos blockPos = method_32782(state, world, pos, 10);
+					BlockPos blockPos = getTipPos(state, world, pos, 10);
 					if (blockPos != null) {
 						BlockPos blockPos2 = getCauldronPos(world, blockPos, fluid);
 						if (blockPos2 != null) {
@@ -256,7 +258,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	private void scheduleFall(BlockState state, WorldAccess world, BlockPos pos) {
-		BlockPos blockPos = method_32782(state, world, pos, Integer.MAX_VALUE);
+		BlockPos blockPos = getTipPos(state, world, pos, Integer.MAX_VALUE);
 		if (blockPos != null) {
 			BlockPos.Mutable mutable = blockPos.mutableCopy();
 
@@ -292,8 +294,8 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static void method_32899(World world, BlockPos blockPos, BlockState blockState) {
-		method_33276(world, blockPos, blockState).ifPresent(fluid -> createParticle(world, blockPos, blockState, fluid));
+	public static void createParticle(World world, BlockPos pos, BlockState state) {
+		method_33276(world, pos, state).ifPresent(fluid -> createParticle(world, pos, state, fluid));
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -303,19 +305,19 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 		double e = (double)pos.getX() + 0.5 + vec3d.x;
 		double f = (double)((float)(pos.getY() + 1) - 0.6875F) - 0.0625;
 		double g = (double)pos.getZ() + 0.5 + vec3d.z;
-		Fluid fluid2 = method_33271(world, fluid);
+		Fluid fluid2 = getDripFluid(world, fluid);
 		ParticleEffect particleEffect = fluid2.isIn(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
 		world.addParticle(particleEffect, e, f, g, 0.0, 0.0, 0.0);
 	}
 
 	@Nullable
-	private static BlockPos method_32782(BlockState blockState, WorldAccess worldAccess, BlockPos blockPos, int i) {
-		if (isTip(blockState)) {
-			return blockPos;
+	private static BlockPos getTipPos(BlockState state, WorldAccess world, BlockPos pos, int i) {
+		if (isTip(state)) {
+			return pos;
 		} else {
-			Direction direction = blockState.get(VERTICAL_DIRECTION);
-			Predicate<BlockState> predicate = blockStatex -> blockStatex.isOf(Blocks.POINTED_DRIPSTONE) && blockStatex.get(VERTICAL_DIRECTION) == direction;
-			return (BlockPos)method_33272(worldAccess, blockPos, direction.getDirection(), predicate, PointedDripstoneBlock::isTip, i).orElse(null);
+			Direction direction = state.get(VERTICAL_DIRECTION);
+			Predicate<BlockState> predicate = blockState -> blockState.isOf(Blocks.POINTED_DRIPSTONE) && blockState.get(VERTICAL_DIRECTION) == direction;
+			return (BlockPos)method_33272(world, pos, direction.getDirection(), predicate, PointedDripstoneBlock::isTip, i).orElse(null);
 		}
 	}
 
@@ -397,10 +399,10 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	@Nullable
-	private static BlockPos getCauldronPos(World world, BlockPos blockPos, Fluid fluid) {
-		Predicate<BlockState> predicate = blockState -> blockState.getBlock() instanceof AbstractCauldronBlock
-				&& ((AbstractCauldronBlock)blockState.getBlock()).canBeFilledByDripstone(fluid);
-		return (BlockPos)method_33272(world, blockPos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 10).orElse(null);
+	private static BlockPos getCauldronPos(World world, BlockPos pos, Fluid fluid) {
+		Predicate<BlockState> predicate = state -> state.getBlock() instanceof AbstractCauldronBlock
+				&& ((AbstractCauldronBlock)state.getBlock()).canBeFilledByDripstone(fluid);
+		return (BlockPos)method_33272(world, pos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 10).orElse(null);
 	}
 
 	@Nullable
@@ -410,7 +412,7 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 	}
 
 	public static Fluid getDripFluid(World world, BlockPos pos) {
-		return (Fluid)method_33276(world, pos, world.getBlockState(pos)).filter(PointedDripstoneBlock::method_33273).orElse(Fluids.EMPTY);
+		return (Fluid)method_33276(world, pos, world.getBlockState(pos)).filter(PointedDripstoneBlock::isFluidLiquid).orElse(Fluids.EMPTY);
 	}
 
 	private static Optional<Fluid> method_33276(World world, BlockPos blockPos, BlockState blockState) {
@@ -419,12 +421,15 @@ public class PointedDripstoneBlock extends Block implements LandingBlock, Waterl
 			: getSupportingPos(world, blockPos, blockState, 10).map(blockPosx -> world.getFluidState(blockPosx.up()).getFluid());
 	}
 
-	private static boolean method_33273(Fluid fluid) {
+	/**
+	 * Returns whether the provided {@code fluid} is liquid, namely lava or water.
+	 */
+	private static boolean isFluidLiquid(Fluid fluid) {
 		return fluid == Fluids.LAVA || fluid == Fluids.WATER;
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static Fluid method_33271(World world, Fluid fluid) {
+	private static Fluid getDripFluid(World world, Fluid fluid) {
 		if (fluid.matchesType(Fluids.EMPTY)) {
 			return world.getDimension().isUltrawarm() ? Fluids.LAVA : Fluids.WATER;
 		} else {

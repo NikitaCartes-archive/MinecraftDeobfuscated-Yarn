@@ -75,7 +75,7 @@ public class ChunkSerializer {
 		);
 		boolean bl = compoundTag.getBoolean("isLightOn");
 		ListTag listTag = compoundTag.getList("Sections", 10);
-		int i = world.getSections();
+		int i = world.countVerticalSections();
 		ChunkSection[] chunkSections = new ChunkSection[i];
 		boolean bl2 = world.getDimension().hasSkyLight();
 		ChunkManager chunkManager = world.getChunkManager();
@@ -92,7 +92,7 @@ public class ChunkSerializer {
 				chunkSection.getContainer().read(compoundTag2.getList("Palette", 10), compoundTag2.getLongArray("BlockStates"));
 				chunkSection.calculateCounts();
 				if (!chunkSection.isEmpty()) {
-					chunkSections[world.getSectionIndexFromSection(k)] = chunkSection;
+					chunkSections[world.sectionCoordToIndex(k)] = chunkSection;
 				}
 
 				poiStorage.initForPalette(pos, chunkSection);
@@ -149,9 +149,7 @@ public class ChunkSerializer {
 			}
 
 			if (!bl && protoChunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
-				for (BlockPos blockPos : BlockPos.iterate(
-					pos.getStartX(), world.getBottomSectionLimit(), pos.getStartZ(), pos.getEndX(), world.getTopHeightLimit() - 1, pos.getEndZ()
-				)) {
+				for (BlockPos blockPos : BlockPos.iterate(pos.getStartX(), world.getBottomY(), pos.getStartZ(), pos.getEndX(), world.getTopY() - 1, pos.getEndZ())) {
 					if (chunk.getBlockState(blockPos).getLuminance() != 0) {
 						protoChunk.addLightSource(blockPos);
 					}
@@ -431,7 +429,7 @@ public class ChunkSerializer {
 			map.put(
 				StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), new LongOpenHashSet(Arrays.stream(compoundTag.getLongArray(string)).filter(packedPos -> {
 					ChunkPos chunkPos2 = new ChunkPos(packedPos);
-					if (chunkPos2.method_24022(pos) > 8) {
+					if (chunkPos2.getChebyshevDistance(pos) > 8) {
 						LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", string, chunkPos2, pos);
 						return false;
 					} else {

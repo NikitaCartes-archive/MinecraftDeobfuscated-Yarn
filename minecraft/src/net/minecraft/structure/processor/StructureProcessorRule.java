@@ -32,20 +32,22 @@ public class StructureProcessorRule {
 	@Nullable
 	private final CompoundTag tag;
 
-	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, BlockState blockState) {
-		this(ruleTest, ruleTest2, AlwaysTruePosRuleTest.INSTANCE, blockState, Optional.empty());
+	public StructureProcessorRule(RuleTest inputPredicate, RuleTest locationPredicate, BlockState state) {
+		this(inputPredicate, locationPredicate, AlwaysTruePosRuleTest.INSTANCE, state, Optional.empty());
 	}
 
-	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, PosRuleTest posRuleTest, BlockState blockState) {
-		this(ruleTest, ruleTest2, posRuleTest, blockState, Optional.empty());
+	public StructureProcessorRule(RuleTest inputPredicate, RuleTest locationPredicate, PosRuleTest positionPredicate, BlockState state) {
+		this(inputPredicate, locationPredicate, positionPredicate, state, Optional.empty());
 	}
 
-	public StructureProcessorRule(RuleTest ruleTest, RuleTest ruleTest2, PosRuleTest posRuleTest, BlockState blockState, Optional<CompoundTag> optional) {
-		this.inputPredicate = ruleTest;
-		this.locationPredicate = ruleTest2;
-		this.positionPredicate = posRuleTest;
-		this.outputState = blockState;
-		this.tag = (CompoundTag)optional.orElse(null);
+	public StructureProcessorRule(
+		RuleTest inputPredicate, RuleTest locationPredicate, PosRuleTest positionPredicate, BlockState outputState, Optional<CompoundTag> tag
+	) {
+		this.inputPredicate = inputPredicate;
+		this.locationPredicate = locationPredicate;
+		this.positionPredicate = positionPredicate;
+		this.outputState = outputState;
+		this.tag = (CompoundTag)tag.orElse(null);
 	}
 
 	public boolean test(BlockState input, BlockState location, BlockPos blockPos, BlockPos blockPos2, BlockPos blockPos3, Random random) {

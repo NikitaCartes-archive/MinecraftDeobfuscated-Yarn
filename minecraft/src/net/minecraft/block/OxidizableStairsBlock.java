@@ -4,18 +4,18 @@ import java.util.Random;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 
-public class OxidizableSlab extends SlabBlock implements Oxidizable {
+public class OxidizableStairsBlock extends StairsBlock implements Oxidizable {
 	private final Oxidizable.OxidizationLevel oxidizationLevel;
 	private final Block waxed;
 
-	public OxidizableSlab(AbstractBlock.Settings settings) {
-		super(settings);
+	public OxidizableStairsBlock(BlockState blockState, AbstractBlock.Settings settings) {
+		super(blockState, settings);
 		this.oxidizationLevel = Oxidizable.OxidizationLevel.values()[Oxidizable.OxidizationLevel.values().length - 1];
 		this.waxed = this;
 	}
 
-	public OxidizableSlab(AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block waxed) {
-		super(settings);
+	public OxidizableStairsBlock(BlockState baseBlockState, AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block waxed) {
+		super(baseBlockState, settings);
 		this.oxidizationLevel = oxidizationLevel;
 		this.waxed = waxed;
 	}
@@ -36,6 +36,11 @@ public class OxidizableSlab extends SlabBlock implements Oxidizable {
 
 	@Override
 	public BlockState getDegradationResult(BlockState state) {
-		return this.waxed.getDefaultState().with(TYPE, state.get(TYPE)).with(WATERLOGGED, state.get(WATERLOGGED));
+		return this.waxed
+			.getDefaultState()
+			.with(FACING, state.get(FACING))
+			.with(HALF, state.get(HALF))
+			.with(SHAPE, state.get(SHAPE))
+			.with(WATERLOGGED, state.get(WATERLOGGED));
 	}
 }

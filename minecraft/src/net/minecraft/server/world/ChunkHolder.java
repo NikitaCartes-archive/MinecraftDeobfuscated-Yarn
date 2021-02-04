@@ -95,7 +95,7 @@ public class ChunkHolder {
 		this.level = this.lastTickLevel;
 		this.completedLevel = this.lastTickLevel;
 		this.setLevel(level);
-		this.blockUpdatesBySection = new ShortSet[heightLimitView.getSections()];
+		this.blockUpdatesBySection = new ShortSet[heightLimitView.countVerticalSections()];
 	}
 
 	public CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> getFutureFor(ChunkStatus leastStatus) {
@@ -215,7 +215,7 @@ public class ChunkHolder {
 			for (int j = 0; j < this.blockUpdatesBySection.length; j++) {
 				ShortSet shortSet = this.blockUpdatesBySection[j];
 				if (shortSet != null) {
-					int k = this.field_26929.getSection(j);
+					int k = this.field_26929.sectionIndexToCoord(j);
 					ChunkSectionPos chunkSectionPos = ChunkSectionPos.from(worldChunk.getPos(), k);
 					if (shortSet.size() == 1) {
 						BlockPos blockPos = chunkSectionPos.unpackBlockPos(shortSet.iterator().nextShort());

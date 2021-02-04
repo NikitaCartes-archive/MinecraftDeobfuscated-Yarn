@@ -79,7 +79,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 				super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
 			}
 
-			for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); i++) {
+			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
 			}
 		}, () -> "updateChunkStatus " + pos + " " + true));
@@ -143,10 +143,10 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable(() -> {
 			ChunkSection[] chunkSections = chunk.getSectionArray();
 
-			for (int i = 0; i < chunk.getSections(); i++) {
+			for (int i = 0; i < chunk.countVerticalSections(); i++) {
 				ChunkSection chunkSection = chunkSections[i];
 				if (!ChunkSection.isEmpty(chunkSection)) {
-					int j = this.world.getSection(i);
+					int j = this.world.sectionIndexToCoord(i);
 					super.setSectionStatus(ChunkSectionPos.from(chunkPos, j), false);
 				}
 			}

@@ -72,7 +72,7 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 						BlockPos blockPos2x = blockPos.add(s, t, u);
 						BlockState blockState = structureWorldAccess.getBlockState(blockPos2x);
 						if (s == k || t == -1 || u == p || s == l || t == 4 || u == q) {
-							if (blockPos2x.getY() >= structureWorldAccess.getBottomSectionLimit() && !structureWorldAccess.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
+							if (blockPos2x.getY() >= structureWorldAccess.getBottomY() && !structureWorldAccess.getBlockState(blockPos2x.down()).getMaterial().isSolid()) {
 								structureWorldAccess.setBlockState(blockPos2x, AIR, 2);
 							} else if (blockState.getMaterial().isSolid() && !blockState.isOf(Blocks.CHEST)) {
 								if (t == -1 && random.nextInt(4) != 0) {

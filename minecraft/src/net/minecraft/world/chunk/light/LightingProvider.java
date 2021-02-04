@@ -127,11 +127,11 @@ public class LightingProvider implements LightingView {
 	}
 
 	public int method_31928() {
-		return this.world.getSections() + 2;
+		return this.world.countVerticalSections() + 2;
 	}
 
 	public int method_31929() {
-		return this.world.getMinimumSection() - 1;
+		return this.world.getBottomSectionCoord() - 1;
 	}
 
 	public int method_31930() {

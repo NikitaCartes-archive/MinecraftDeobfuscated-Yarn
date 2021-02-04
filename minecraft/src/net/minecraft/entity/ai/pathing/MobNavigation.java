@@ -38,15 +38,15 @@ public class MobNavigation extends EntityNavigation {
 		if (this.world.getBlockState(target).isAir()) {
 			BlockPos blockPos = target.down();
 
-			while (blockPos.getY() > this.world.getBottomSectionLimit() && this.world.getBlockState(blockPos).isAir()) {
+			while (blockPos.getY() > this.world.getBottomY() && this.world.getBlockState(blockPos).isAir()) {
 				blockPos = blockPos.down();
 			}
 
-			if (blockPos.getY() > this.world.getBottomSectionLimit()) {
+			if (blockPos.getY() > this.world.getBottomY()) {
 				return super.findPathTo(blockPos.up(), distance);
 			}
 
-			while (blockPos.getY() < this.world.getTopHeightLimit() && this.world.getBlockState(blockPos).isAir()) {
+			while (blockPos.getY() < this.world.getTopY() && this.world.getBlockState(blockPos).isAir()) {
 				blockPos = blockPos.up();
 			}
 
@@ -58,7 +58,7 @@ public class MobNavigation extends EntityNavigation {
 		} else {
 			BlockPos blockPos = target.up();
 
-			while (blockPos.getY() < this.world.getTopHeightLimit() && this.world.getBlockState(blockPos).getMaterial().isSolid()) {
+			while (blockPos.getY() < this.world.getTopY() && this.world.getBlockState(blockPos).getMaterial().isSolid()) {
 				blockPos = blockPos.up();
 			}
 

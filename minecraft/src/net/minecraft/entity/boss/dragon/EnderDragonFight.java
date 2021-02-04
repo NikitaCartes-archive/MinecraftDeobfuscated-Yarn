@@ -286,7 +286,7 @@ public class EnderDragonFight {
 
 		int i = this.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING, EndPortalFeature.ORIGIN).getY();
 
-		for (int j = i; j >= this.world.getBottomSectionLimit(); j--) {
+		for (int j = i; j >= this.world.getBottomY(); j--) {
 			BlockPattern.Result result2 = this.endPortalPattern
 				.searchAround(this.world, new BlockPos(EndPortalFeature.ORIGIN.getX(), j, EndPortalFeature.ORIGIN.getZ()));
 			if (result2 != null) {

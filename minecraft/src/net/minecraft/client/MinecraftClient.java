@@ -421,7 +421,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	@Nullable
 	private CompletableFuture<Void> resourceReloadFuture;
 	@Nullable
-	private TutorialToast field_26843;
+	private TutorialToast socialInteractionsToast;
 	private Profiler profiler = DummyProfiler.INSTANCE;
 	private int trackingTick;
 	private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
@@ -1544,9 +1544,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			if (!this.paused) {
 				if (!this.options.joinedFirstServer && this.isConnectedToServer()) {
 					Text text = new TranslatableText("tutorial.socialInteractions.title");
-					Text text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.getKeybindName("socialInteractions"));
-					this.field_26843 = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
-					this.tutorialManager.method_31365(this.field_26843, 160);
+					Text text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
+					this.socialInteractionsToast = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
+					this.tutorialManager.add(this.socialInteractionsToast, 160);
 					this.options.joinedFirstServer = true;
 					this.options.write();
 				}
@@ -1625,9 +1625,9 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 				this.player.sendMessage(SOCIAL_INTERACTIONS_NOT_AVAILABLE, true);
 				NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE.getString());
 			} else {
-				if (this.field_26843 != null) {
-					this.tutorialManager.method_31364(this.field_26843);
-					this.field_26843 = null;
+				if (this.socialInteractionsToast != null) {
+					this.tutorialManager.remove(this.socialInteractionsToast);
+					this.socialInteractionsToast = null;
 				}
 
 				this.openScreen(new SocialInteractionsScreen());

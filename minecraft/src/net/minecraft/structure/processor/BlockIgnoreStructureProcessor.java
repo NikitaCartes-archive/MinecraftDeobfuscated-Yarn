@@ -34,7 +34,7 @@ public class BlockIgnoreStructureProcessor extends StructureProcessor {
 	@Nullable
 	@Override
 	public Structure.StructureBlockInfo process(
-		WorldView worldView,
+		WorldView world,
 		BlockPos pos,
 		BlockPos blockPos,
 		Structure.StructureBlockInfo structureBlockInfo,

@@ -3486,12 +3486,12 @@ public class BlockStateModelGenerator {
 		this.method_33504();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.COPPER_BLOCK);
-		this.registerSimpleCubeAll(Blocks.EXPOSED_COPPER_BLOCK);
-		this.registerSimpleCubeAll(Blocks.WEATHERED_COPPER_BLOCK);
-		this.registerSimpleCubeAll(Blocks.OXIDIZED_COPPER_BLOCK);
-		this.registerInfested(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER);
-		this.registerInfested(Blocks.EXPOSED_COPPER_BLOCK, Blocks.WAXED_EXPOSED_COPPER);
-		this.registerInfested(Blocks.WEATHERED_COPPER_BLOCK, Blocks.WAXED_WEATHERED_COPPER);
+		this.registerSimpleCubeAll(Blocks.EXPOSED_COPPER);
+		this.registerSimpleCubeAll(Blocks.WEATHERED_COPPER);
+		this.registerSimpleCubeAll(Blocks.OXIDIZED_COPPER);
+		this.registerInfested(Blocks.COPPER_BLOCK, Blocks.WAXED_COPPER_BLOCK);
+		this.registerInfested(Blocks.EXPOSED_COPPER, Blocks.WAXED_EXPOSED_COPPER);
+		this.registerInfested(Blocks.WEATHERED_COPPER, Blocks.WAXED_WEATHERED_COPPER);
 		this.registerPressurePlate(Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE, Blocks.GOLD_BLOCK);
 		this.registerPressurePlate(Blocks.HEAVY_WEIGHTED_PRESSURE_PLATE, Blocks.IRON_BLOCK);
 		this.method_32227();

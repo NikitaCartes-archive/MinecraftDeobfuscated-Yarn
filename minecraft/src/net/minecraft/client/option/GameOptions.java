@@ -90,7 +90,7 @@ public class GameOptions {
 	public AttackIndicator attackIndicator = AttackIndicator.CROSSHAIR;
 	public TutorialStep tutorialStep = TutorialStep.MOVEMENT;
 	public boolean joinedFirstServer = false;
-	public boolean field_28777 = false;
+	public boolean hideBundleTutorial = false;
 	public int biomeBlendRadius = 2;
 	public double mouseWheelSensitivity = 1.0;
 	public boolean rawMouseInput = true;
@@ -301,7 +301,7 @@ public class GameOptions {
 		this.skipMultiplayerWarning = visitor.visitBoolean("skipMultiplayerWarning", this.skipMultiplayerWarning);
 		this.hideMatchedNames = visitor.visitBoolean("hideMatchedNames", this.hideMatchedNames);
 		this.joinedFirstServer = visitor.visitBoolean("joinedFirstServer", this.joinedFirstServer);
-		this.field_28777 = visitor.visitBoolean("hideBundleTutorial", this.field_28777);
+		this.hideBundleTutorial = visitor.visitBoolean("hideBundleTutorial", this.hideBundleTutorial);
 		this.syncChunkWrites = visitor.visitBoolean("syncChunkWrites", this.syncChunkWrites);
 
 		for (KeyBinding keyBinding : this.keysAll) {

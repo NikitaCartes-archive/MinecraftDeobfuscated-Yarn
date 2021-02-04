@@ -5,7 +5,6 @@ import java.util.Map;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5630;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -37,6 +36,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
@@ -250,9 +250,9 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public class_5630 method_32318(int i) {
-		int j = i - 300;
-		return j >= 0 && j < this.inventory.size() ? class_5630.method_32328(this.inventory, j) : super.method_32318(i);
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		int i = mappedIndex - 300;
+		return i >= 0 && i < this.inventory.size() ? CommandItemSlot.of(this.inventory, i) : super.getCommandItemSlot(mappedIndex);
 	}
 
 	@Override

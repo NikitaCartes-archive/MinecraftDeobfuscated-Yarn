@@ -23,7 +23,7 @@ public class class_5533 {
 						blockPos2 = class_5535.method_31539(
 							blockPos2,
 							pathAwareEntity.getRandom().nextInt(k - l + 1) + l,
-							pathAwareEntity.world.getTopHeightLimit(),
+							pathAwareEntity.world.getTopY(),
 							blockPosx -> class_5493.method_31523(pathAwareEntity, blockPosx)
 						);
 						return !class_5493.method_31518(pathAwareEntity, blockPos2) && !class_5493.method_31522(pathAwareEntity, blockPos2) ? blockPos2 : null;

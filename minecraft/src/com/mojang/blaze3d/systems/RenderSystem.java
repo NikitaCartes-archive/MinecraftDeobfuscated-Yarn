@@ -852,17 +852,17 @@ public class RenderSystem {
 
 	@Environment(EnvType.CLIENT)
 	public static final class IndexBuffer {
-		private final int field_27332;
-		private final int field_27333;
-		private final RenderSystem.IndexBuffer.class_5591 field_27334;
+		private final int sizeMultiplier;
+		private final int increment;
+		private final RenderSystem.IndexBuffer.IndexMapper indexMapper;
 		private int id;
 		private VertexFormat.IntType vertexFormat = VertexFormat.IntType.BYTE;
 		private int size;
 
-		private IndexBuffer(int i, int j, RenderSystem.IndexBuffer.class_5591 arg) {
-			this.field_27332 = i;
-			this.field_27333 = j;
-			this.field_27334 = arg;
+		private IndexBuffer(int i, int j, RenderSystem.IndexBuffer.IndexMapper indexMapper) {
+			this.sizeMultiplier = i;
+			this.increment = j;
+			this.indexMapper = indexMapper;
 		}
 
 		private void grow(int newSize) {
@@ -881,10 +881,10 @@ public class RenderSystem {
 					throw new RuntimeException("Failed to map GL buffer");
 				} else {
 					this.vertexFormat = intType;
-					it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.method_31922(byteBuffer);
+					it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.getIndexConsumer(byteBuffer);
 
-					for (int j = 0; j < newSize; j += this.field_27333) {
-						this.field_27334.accept(intConsumer, j * this.field_27332 / this.field_27333);
+					for (int j = 0; j < newSize; j += this.increment) {
+						this.indexMapper.accept(intConsumer, j * this.sizeMultiplier / this.increment);
 					}
 
 					GlStateManager.unmapBuffer(34963);
@@ -894,7 +894,7 @@ public class RenderSystem {
 			}
 		}
 
-		private it.unimi.dsi.fastutil.ints.IntConsumer method_31922(ByteBuffer indicesBuffer) {
+		private it.unimi.dsi.fastutil.ints.IntConsumer getIndexConsumer(ByteBuffer indicesBuffer) {
 			switch (this.vertexFormat) {
 				case BYTE:
 					return i -> indicesBuffer.put((byte)i);
@@ -915,8 +915,8 @@ public class RenderSystem {
 		}
 
 		@Environment(EnvType.CLIENT)
-		interface class_5591 {
-			void accept(it.unimi.dsi.fastutil.ints.IntConsumer intConsumer, int i);
+		interface IndexMapper {
+			void accept(it.unimi.dsi.fastutil.ints.IntConsumer indexConsumer, int vertexCount);
 		}
 	}
 }

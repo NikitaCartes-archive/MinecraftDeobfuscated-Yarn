@@ -1,4 +1,4 @@
-package net.minecraft;
+package net.minecraft.world;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -11,13 +11,15 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.util.shape.VoxelShape;
-import net.minecraft.world.EntityView;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.ModifiableTestableWorld;
-import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 
-public interface class_5423 extends EntityView, WorldView, ModifiableTestableWorld {
+/**
+ * A world view or {@link World}'s superinterface that exposes access to
+ * a registry manager.
+ * 
+ * @see #getRegistryManager()
+ */
+public interface RegistryWorldView extends EntityView, WorldView, ModifiableTestableWorld {
 	@Override
 	default Stream<VoxelShape> getEntityCollisions(@Nullable Entity entity, Box box, Predicate<Entity> predicate) {
 		return EntityView.super.getEntityCollisions(entity, box, predicate);

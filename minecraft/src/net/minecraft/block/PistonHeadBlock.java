@@ -89,15 +89,15 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
-		if (!world.isClient && playerEntity.getAbilities().creativeMode) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (!world.isClient && player.getAbilities().creativeMode) {
 			BlockPos blockPos = pos.offset(((Direction)state.get(FACING)).getOpposite());
 			if (this.method_26980(state, world.getBlockState(blockPos))) {
 				world.breakBlock(blockPos, false);
 			}
 		}
 
-		super.onBreak(world, pos, state, playerEntity);
+		super.onBreak(world, pos, state, player);
 	}
 
 	@Override
@@ -112,10 +112,12 @@ public class PistonHeadBlock extends FacingBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		return direction.getOpposite() == state.get(FACING) && !state.canPlaceAt(world, pos)
 			? Blocks.AIR.getDefaultState()
-			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override

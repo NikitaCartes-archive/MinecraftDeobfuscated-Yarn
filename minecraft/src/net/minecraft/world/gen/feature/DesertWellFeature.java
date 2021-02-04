@@ -25,7 +25,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 		BlockPos blockPos = featureContext.getPos();
 		blockPos = blockPos.up();
 
-		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 2) {
+		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
 			blockPos = blockPos.down();
 		}
 

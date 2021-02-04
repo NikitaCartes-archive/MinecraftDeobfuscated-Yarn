@@ -127,7 +127,7 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		BlockState blockState = state;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (Direction direction : FACINGS) {
+		for (Direction direction : DIRECTIONS) {
 			mutable.set(pos, direction);
 			blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
 		}
@@ -408,13 +408,13 @@ public class Block extends AbstractBlock implements ItemConvertible {
 		world.syncWorldEvent(playerEntity, 2001, blockPos, getRawIdFromState(blockState));
 	}
 
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
-		this.method_33614(world, playerEntity, pos, state);
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		this.method_33614(world, player, pos, state);
 		if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
-			PiglinBrain.onGuardedBlockInteracted(playerEntity, false);
+			PiglinBrain.onGuardedBlockInteracted(player, false);
 		}
 
-		world.emitGameEvent(playerEntity, GameEvent.BLOCK_DESTROY, pos);
+		world.emitGameEvent(player, GameEvent.BLOCK_DESTROY, pos);
 	}
 
 	public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {

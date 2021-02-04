@@ -107,7 +107,7 @@ public final class SpawnHelper {
 
 	public static void spawnEntitiesInChunk(SpawnGroup group, ServerWorld world, WorldChunk chunk, SpawnHelper.Checker checker, SpawnHelper.Runner runner) {
 		BlockPos blockPos = getSpawnPos(world, chunk);
-		if (blockPos.getY() >= world.getBottomSectionLimit() + 1) {
+		if (blockPos.getY() >= world.getBottomY() + 1) {
 			spawnEntitiesInChunk(group, world, chunk, blockPos, checker, runner);
 		}
 	}
@@ -279,7 +279,7 @@ public final class SpawnHelper {
 		int i = chunkPos.getStartX() + world.random.nextInt(16);
 		int j = chunkPos.getStartZ() + world.random.nextInt(16);
 		int k = chunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, i, j) + 1;
-		int l = MathHelper.nextBetween(world.random, world.getBottomSectionLimit(), k);
+		int l = MathHelper.nextBetween(world.random, world.getBottomY(), k);
 		return new BlockPos(i, l, j);
 	}
 
@@ -396,7 +396,7 @@ public final class SpawnHelper {
 
 			do {
 				mutable.move(Direction.DOWN);
-			} while (world.getBlockState(mutable).isAir() && mutable.getY() > world.getBottomSectionLimit());
+			} while (world.getBlockState(mutable).isAir() && mutable.getY() > world.getBottomY());
 		}
 
 		if (SpawnRestriction.getLocation(entityType) == SpawnRestriction.Location.ON_GROUND) {

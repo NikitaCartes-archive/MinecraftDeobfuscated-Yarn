@@ -190,7 +190,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 					int i = 0;
 
-					while (y > this.cachedWorld.getBottomSectionLimit() && pathNodeType == PathNodeType.OPEN) {
+					while (y > this.cachedWorld.getBottomY() && pathNodeType == PathNodeType.OPEN) {
 						y--;
 						if (i++ >= this.entity.getSafeFallDistance()) {
 							return null;
@@ -255,7 +255,7 @@ public class AmphibiousPathNodeMaker extends LandPathNodeMaker {
 
 			return PathNodeType.WATER;
 		} else {
-			if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomSectionLimit() + 1) {
+			if (pathNodeType == PathNodeType.OPEN && y >= world.getBottomY() + 1) {
 				mutable.set(x, y, z).move(Direction.DOWN);
 				BlockState blockState = world.getBlockState(mutable);
 				PathNodeType pathNodeType3 = getCommonNodeType(world, mutable);

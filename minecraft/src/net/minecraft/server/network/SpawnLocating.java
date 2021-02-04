@@ -14,7 +14,7 @@ import net.minecraft.world.chunk.WorldChunk;
 public class SpawnLocating {
 	@Nullable
 	protected static BlockPos findOverworldSpawn(ServerWorld world, int x, int z, boolean validSpawnNeeded) {
-		BlockPos.Mutable mutable = new BlockPos.Mutable(x, world.getBottomSectionLimit(), z);
+		BlockPos.Mutable mutable = new BlockPos.Mutable(x, world.getBottomY(), z);
 		Biome biome = world.getBiome(mutable);
 		boolean bl = world.getDimension().hasCeiling();
 		BlockState blockState = biome.getGenerationSettings().getSurfaceConfig().getTopMaterial();
@@ -23,14 +23,14 @@ public class SpawnLocating {
 		} else {
 			WorldChunk worldChunk = world.getChunk(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z));
 			int i = bl ? world.getChunkManager().getChunkGenerator().getSpawnHeight() : worldChunk.sampleHeightmap(Heightmap.Type.MOTION_BLOCKING, x & 15, z & 15);
-			if (i < world.getBottomSectionLimit()) {
+			if (i < world.getBottomY()) {
 				return null;
 			} else {
 				int j = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, x & 15, z & 15);
 				if (j <= i && j > worldChunk.sampleHeightmap(Heightmap.Type.OCEAN_FLOOR, x & 15, z & 15)) {
 					return null;
 				} else {
-					for (int k = i + 1; k >= world.getBottomSectionLimit(); k--) {
+					for (int k = i + 1; k >= world.getBottomY(); k--) {
 						mutable.set(x, k, z);
 						BlockState blockState2 = world.getBlockState(mutable);
 						if (!blockState2.getFluidState().isEmpty()) {

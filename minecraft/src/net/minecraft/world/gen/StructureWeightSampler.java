@@ -15,6 +15,9 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.feature.StructureFeature;
 
+/**
+ * Applies weights to noise values if they are near structures, placing terrain under them and hollowing out the space above them.
+ */
 public class StructureWeightSampler {
 	public static final StructureWeightSampler INSTANCE = new StructureWeightSampler();
 	private static final float[] STRUCTURE_WEIGHT_TABLE = Util.make(new float[13824], array -> {
@@ -41,7 +44,7 @@ public class StructureWeightSampler {
 		this.pieces = new ObjectArrayList<>(10);
 
 		for (StructureFeature<?> structureFeature : StructureFeature.JIGSAW_STRUCTURES) {
-			accessor.getStructuresWithChildren(ChunkSectionPos.method_33705(chunk), structureFeature).forEach(start -> {
+			accessor.getStructuresWithChildren(ChunkSectionPos.from(chunk), structureFeature).forEach(start -> {
 				for (StructurePiece structurePiece : start.getChildren()) {
 					if (structurePiece.intersectsChunk(chunkPos, 12)) {
 						if (structurePiece instanceof PoolStructurePiece) {
@@ -77,6 +80,9 @@ public class StructureWeightSampler {
 		this.junctionIterator = this.junctions.iterator();
 	}
 
+	/**
+	 * Gets the weight of the structures near the given position.
+	 */
 	public double getWeight(int x, int y, int z) {
 		double d = 0.0;
 
@@ -103,6 +109,9 @@ public class StructureWeightSampler {
 		return d;
 	}
 
+	/**
+	 * Gets the structure weight from the array from the given position, or 0 if the position is out of bounds.
+	 */
 	private static double getStructureWeight(int x, int y, int z) {
 		int i = x + 12;
 		int j = y + 12;
@@ -116,6 +125,10 @@ public class StructureWeightSampler {
 		}
 	}
 
+	/**
+	 * Calculates the structure weight for the given position.
+	 * <p>The weight increases as x and z approach {@code (0, 0)}, and positive y values make the weight negative while negative y values make the weight positive.</p>
+	 */
 	private static double calculateStructureWeight(int x, int y, int z) {
 		double d = (double)(x * x + z * z);
 		double e = (double)y + 0.5;

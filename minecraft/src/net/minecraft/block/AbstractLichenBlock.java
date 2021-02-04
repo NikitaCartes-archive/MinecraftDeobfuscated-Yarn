@@ -74,8 +74,10 @@ public class AbstractLichenBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return method_33366(state, direction) && !method_33358(world, direction, posFrom, newState) ? method_33365(state, method_33374(direction)) : state;
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
+		return method_33366(state, direction) && !method_33358(world, direction, neighborPos, neighborState) ? method_33365(state, method_33374(direction)) : state;
 	}
 
 	@Override

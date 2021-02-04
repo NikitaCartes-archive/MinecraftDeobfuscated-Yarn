@@ -120,7 +120,7 @@ public class SpawnEggItem extends Item {
 					}
 
 					user.incrementStat(Stats.USED.getOrCreateStat(this));
-					world.method_33596(GameEvent.ENTITY_PLACE, user);
+					world.emitGameEvent(GameEvent.ENTITY_PLACE, user);
 					return TypedActionResult.consume(itemStack);
 				}
 			} else {

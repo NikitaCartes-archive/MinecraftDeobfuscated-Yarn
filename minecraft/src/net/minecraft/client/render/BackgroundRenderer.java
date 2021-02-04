@@ -126,7 +126,7 @@ public class BackgroundRenderer {
 			lastWaterFogColorUpdateTime = -1L;
 		}
 
-		double d = (camera.getPos().y - (double)world.getBottomSectionLimit()) * world.getLevelProperties().getHorizonShadingRatio();
+		double d = (camera.getPos().y - (double)world.getBottomY()) * world.getLevelProperties().getHorizonShadingRatio();
 		if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
 			int jx = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
 			if (jx < 20) {

@@ -301,11 +301,11 @@ public class BlockPos extends Vec3i {
 				private int limitY;
 				private int dx;
 				private int dy;
-				private boolean field_23379;
+				private boolean swapZ;
 
 				protected BlockPos computeNext() {
-					if (this.field_23379) {
-						this.field_23379 = false;
+					if (this.swapZ) {
+						this.swapZ = false;
 						this.pos.setZ(l - (this.pos.getZ() - l));
 						return this.pos;
 					} else {
@@ -331,7 +331,7 @@ public class BlockPos extends Vec3i {
 							int j = this.dy;
 							int k = this.manhattanDistance - Math.abs(i) - Math.abs(j);
 							if (k <= zRange) {
-								this.field_23379 = k != 0;
+								this.swapZ = k != 0;
 								blockPos = this.pos.set(j + i, k + j, l + k);
 							}
 						}
@@ -415,35 +415,51 @@ public class BlockPos extends Vec3i {
 			};
 	}
 
-	public static Iterable<BlockPos.Mutable> method_30512(BlockPos blockPos, int i, Direction direction, Direction direction2) {
-		Validate.validState(direction.getAxis() != direction2.getAxis(), "The two directions cannot be on the same axis");
+	/**
+	 * Iterates block positions around the {@code center} in a square of
+	 * ({@code 2 * radius + 1}) by ({@code 2 * radius + 1}). The blocks
+	 * are iterated in a (square) spiral around the center.
+	 * 
+	 * <p>The first block returned is the center, then the iterator moves
+	 * a block towards the first direction, followed by moving along
+	 * the second direction.
+	 * 
+	 * @param center the center of iteration
+	 * @param radius the maximum chebychev distance
+	 * @param firstDirection the direction the iterator moves first
+	 * @param secondDirection the direction the iterator moves after the first
+	 * 
+	 * @throws IllegalStateException when the 2 directions lie on the same axis
+	 */
+	public static Iterable<BlockPos.Mutable> iterateInSquare(BlockPos center, int radius, Direction firstDirection, Direction secondDirection) {
+		Validate.validState(firstDirection.getAxis() != secondDirection.getAxis(), "The two directions cannot be on the same axis");
 		return () -> new AbstractIterator<BlockPos.Mutable>() {
-				private final Direction[] directions = new Direction[]{direction, direction2, direction.getOpposite(), direction2.getOpposite()};
-				private final BlockPos.Mutable pos = blockPos.mutableCopy().move(direction2);
-				private final int field_25905 = 4 * i;
-				private int field_25906 = -1;
-				private int field_25907;
-				private int field_25908;
-				private int field_25909 = this.pos.getX();
-				private int field_25910 = this.pos.getY();
-				private int field_25911 = this.pos.getZ();
+				private final Direction[] directions = new Direction[]{firstDirection, secondDirection, firstDirection.getOpposite(), secondDirection.getOpposite()};
+				private final BlockPos.Mutable pos = center.mutableCopy().move(secondDirection);
+				private final int maxDirectionChanges = 4 * radius;
+				private int directionChangeCount = -1;
+				private int maxSteps;
+				private int steps;
+				private int currentX = this.pos.getX();
+				private int currentY = this.pos.getY();
+				private int currentZ = this.pos.getZ();
 
 				protected BlockPos.Mutable computeNext() {
-					this.pos.set(this.field_25909, this.field_25910, this.field_25911).move(this.directions[(this.field_25906 + 4) % 4]);
-					this.field_25909 = this.pos.getX();
-					this.field_25910 = this.pos.getY();
-					this.field_25911 = this.pos.getZ();
-					if (this.field_25908 >= this.field_25907) {
-						if (this.field_25906 >= this.field_25905) {
+					this.pos.set(this.currentX, this.currentY, this.currentZ).move(this.directions[(this.directionChangeCount + 4) % 4]);
+					this.currentX = this.pos.getX();
+					this.currentY = this.pos.getY();
+					this.currentZ = this.pos.getZ();
+					if (this.steps >= this.maxSteps) {
+						if (this.directionChangeCount >= this.maxDirectionChanges) {
 							return this.endOfData();
 						}
 
-						this.field_25906++;
-						this.field_25908 = 0;
-						this.field_25907 = this.field_25906 / 2 + 1;
+						this.directionChangeCount++;
+						this.steps = 0;
+						this.maxSteps = this.directionChangeCount / 2 + 1;
 					}
 
-					this.field_25908++;
+					this.steps++;
 					return this.pos;
 				}
 			};

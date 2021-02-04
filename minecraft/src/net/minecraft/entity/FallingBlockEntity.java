@@ -181,10 +181,7 @@ public class FallingBlockEntity extends Entity {
 						}
 					}
 				} else if (!this.world.isClient
-					&& (
-						this.timeFalling > 100 && (blockPos.getY() <= this.world.getBottomSectionLimit() || blockPos.getY() > this.world.getTopHeightLimit())
-							|| this.timeFalling > 600
-					)) {
+					&& (this.timeFalling > 100 && (blockPos.getY() <= this.world.getBottomY() || blockPos.getY() > this.world.getTopY()) || this.timeFalling > 600)) {
 					if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
 						this.dropItem(block);
 					}

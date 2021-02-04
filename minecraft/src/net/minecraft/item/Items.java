@@ -1457,9 +1457,9 @@ public class Items {
 	public static final Item AMETHYST_CLUSTER = register(Blocks.AMETHYST_CLUSTER, ItemGroup.DECORATIONS);
 	public static final Item SPYGLASS = register("spyglass", new SpyglassItem(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1)));
 	public static final Item COPPER_BLOCK = register(Blocks.COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-	public static final Item LIGHTLY_WEATHERED_COPPER_BLOCK = register(Blocks.EXPOSED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-	public static final Item SEMI_WEATHERED_COPPER_BLOCK = register(Blocks.WEATHERED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WEATHERED_COPPER_BLOCK = register(Blocks.OXIDIZED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
+	public static final Item LIGHTLY_WEATHERED_COPPER_BLOCK = register(Blocks.EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item SEMI_WEATHERED_COPPER_BLOCK = register(Blocks.WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WEATHERED_COPPER_BLOCK = register(Blocks.OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item CUT_COPPER = register(Blocks.CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item LIGHTLY_WEATHERED_CUT_COPPER = register(Blocks.EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SEMI_WEATHERED_CUT_COPPER = register(Blocks.WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
@@ -1472,7 +1472,7 @@ public class Items {
 	public static final Item LIGHTLY_WEATHERED_CUT_COPPER_SLAB = register(Blocks.EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item SEMI_WEATHERED_CUT_COPPER_SLAB = register(Blocks.WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WEATHERED_CUT_COPPER_SLAB = register(Blocks.OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-	public static final Item WAXED_COPPER = register(Blocks.WAXED_COPPER, ItemGroup.BUILDING_BLOCKS);
+	public static final Item WAXED_COPPER = register(Blocks.WAXED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_LIGHTLY_WEATHERED_COPPER = register(Blocks.WAXED_EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_SEMI_WEATHERED_COPPER = register(Blocks.WAXED_WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
 	public static final Item WAXED_CUT_COPPER = register(Blocks.WAXED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);

@@ -17,7 +17,6 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.Block;
@@ -59,6 +58,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.AxeItem;
@@ -1315,7 +1315,17 @@ public abstract class PlayerEntity extends LivingEntity {
 		return this.abilities;
 	}
 
-	public void method_33592(ItemStack itemStack, ItemStack itemStack2, ClickType clickType) {
+	/**
+	 * Called when a player performs a {@link net.minecraft.screen.slot.SlotActionType#PICKUP
+	 * pickup slot action} in a screen handler.
+	 * 
+	 * @implNote This is used by the client player to trigger bundle tutorials.
+	 * 
+	 * @param cursorStack the item stack on the player's cursor
+	 * @param slotStack the item stack in the clicked slot
+	 * @param clickType the click type (mouse button used)
+	 */
+	public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
 	}
 
 	public Either<PlayerEntity.SleepFailureReason, Unit> trySleep(BlockPos pos) {
@@ -1891,12 +1901,12 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public class_5630 method_32318(int i) {
-		if (i >= 0 && i < this.inventory.main.size()) {
-			return class_5630.method_32328(this.inventory, i);
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		if (mappedIndex >= 0 && mappedIndex < this.inventory.main.size()) {
+			return CommandItemSlot.of(this.inventory, mappedIndex);
 		} else {
-			int j = i - 200;
-			return j >= 0 && j < this.enderChestInventory.size() ? class_5630.method_32328(this.enderChestInventory, j) : super.method_32318(i);
+			int i = mappedIndex - 200;
+			return i >= 0 && i < this.enderChestInventory.size() ? CommandItemSlot.of(this.enderChestInventory, i) : super.getCommandItemSlot(mappedIndex);
 		}
 	}
 

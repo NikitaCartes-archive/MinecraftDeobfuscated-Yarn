@@ -61,7 +61,9 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 
 public abstract class AbstractBlock {
-	protected static final Direction[] FACINGS = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
+	protected static final Direction[] DIRECTIONS = new Direction[]{
+		Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP
+	};
 	protected final Material material;
 	protected final boolean collidable;
 	protected final float resistance;
@@ -107,8 +109,22 @@ public abstract class AbstractBlock {
 		}
 	}
 
+	/**
+	 * Gets the possibly updated block state of this block when a neighboring block is updated.
+	 * 
+	 * @return the new state of this block
+	 * 
+	 * @param state the state of this block
+	 * @param direction the direction from this block to the neighbor
+	 * @param neighborState the state of the updated neighbor block
+	 * @param world the world
+	 * @param pos the position of this block
+	 * @param neighborPos the position of the neighbor block
+	 */
 	@Deprecated
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		return state;
 	}
 
@@ -383,8 +399,8 @@ public abstract class AbstractBlock {
 		@Nullable
 		protected AbstractBlock.AbstractBlockState.ShapeCache shapeCache;
 
-		protected AbstractBlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertyMap, MapCodec<BlockState> mapCodec) {
-			super(block, propertyMap, mapCodec);
+		protected AbstractBlockState(Block block, ImmutableMap<Property<?>, Comparable<?>> propertyMap, MapCodec<BlockState> codec) {
+			super(block, propertyMap, codec);
 			AbstractBlock.Settings settings = block.settings;
 			this.luminance = settings.luminance.applyAsInt(this.asBlockState());
 			this.hasSidedTransparency = block.hasSidedTransparency(this.asBlockState());
@@ -603,7 +619,7 @@ public abstract class AbstractBlock {
 			this.getBlock();
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-			for (Direction direction : AbstractBlock.FACINGS) {
+			for (Direction direction : AbstractBlock.DIRECTIONS) {
 				mutable.set(pos, direction);
 				BlockState blockState = world.getBlockState(mutable);
 				BlockState blockState2 = blockState.getStateForNeighborUpdate(direction.getOpposite(), this.asBlockState(), world, mutable, pos);
@@ -664,8 +680,19 @@ public abstract class AbstractBlock {
 			return this.blockVisionPredicate.test(this.asBlockState(), world, pos);
 		}
 
-		public BlockState getStateForNeighborUpdate(Direction direction, BlockState state, WorldAccess world, BlockPos pos, BlockPos fromPos) {
-			return this.getBlock().getStateForNeighborUpdate(this.asBlockState(), direction, state, world, pos, fromPos);
+		/**
+		 * Gets the possibly updated block state of this block when a neighboring block is updated.
+		 * 
+		 * @return the new state of this block
+		 * 
+		 * @param direction the direction from this block to the neighbor
+		 * @param neighborState the state of the updated neighbor block
+		 * @param world the world
+		 * @param pos the position of this block
+		 * @param neighborPos the position of the neighbor block
+		 */
+		public BlockState getStateForNeighborUpdate(Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+			return this.getBlock().getStateForNeighborUpdate(this.asBlockState(), direction, neighborState, world, pos, neighborPos);
 		}
 
 		public boolean canPathfindThrough(BlockView world, BlockPos pos, NavigationType type) {

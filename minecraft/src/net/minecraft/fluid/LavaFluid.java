@@ -119,7 +119,7 @@ public abstract class LavaFluid extends FlowableFluid {
 	}
 
 	private boolean hasBurnableBlock(WorldView world, BlockPos pos) {
-		return pos.getY() >= world.getBottomSectionLimit() && pos.getY() < world.getTopHeightLimit() && !world.isChunkLoaded(pos)
+		return pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && !world.isChunkLoaded(pos)
 			? false
 			: world.getBlockState(pos).getMaterial().isBurnable();
 	}

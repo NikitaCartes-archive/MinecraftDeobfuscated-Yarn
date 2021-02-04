@@ -21,7 +21,7 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
 		Random random = featureContext.getRandom();
 		BlockPileFeatureConfig blockPileFeatureConfig = featureContext.getConfig();
-		if (blockPos.getY() < structureWorldAccess.getBottomSectionLimit() + 5) {
+		if (blockPos.getY() < structureWorldAccess.getBottomY() + 5) {
 			return false;
 		} else {
 			int i = 2 + random.nextInt(2);

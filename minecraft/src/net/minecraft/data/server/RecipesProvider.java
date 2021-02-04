@@ -748,9 +748,9 @@ public class RecipesProvider implements DataProvider {
 			.criterion("has_copper_block", conditionsFromItem(Blocks.COPPER_BLOCK))
 			.offerTo(exporter, "copper_ingot_from_copper_block");
 		offerCutCopperRecipe(exporter, Blocks.CUT_COPPER, Blocks.COPPER_BLOCK);
-		offerCutCopperRecipe(exporter, Blocks.EXPOSED_CUT_COPPER, Blocks.EXPOSED_COPPER_BLOCK);
-		offerCutCopperRecipe(exporter, Blocks.WEATHERED_CUT_COPPER, Blocks.WEATHERED_COPPER_BLOCK);
-		offerCutCopperRecipe(exporter, Blocks.OXIDIZED_CUT_COPPER, Blocks.OXIDIZED_COPPER_BLOCK);
+		offerCutCopperRecipe(exporter, Blocks.EXPOSED_CUT_COPPER, Blocks.EXPOSED_COPPER);
+		offerCutCopperRecipe(exporter, Blocks.WEATHERED_CUT_COPPER, Blocks.WEATHERED_COPPER);
+		offerCutCopperRecipe(exporter, Blocks.OXIDIZED_CUT_COPPER, Blocks.OXIDIZED_COPPER);
 		ShapelessRecipeJsonFactory.create(Items.WAXED_COPPER)
 			.input(Items.COPPER_BLOCK)
 			.input(Items.HONEYCOMB)
@@ -811,7 +811,7 @@ public class RecipesProvider implements DataProvider {
 			.input(Items.HONEYCOMB)
 			.criterion("has_exposed_cut_copper_slab", conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER_SLAB))
 			.offerTo(exporter, "waxed_exposed_cut_copper_slab_from_honeycomb");
-		offerCutCopperRecipe(exporter, Blocks.WAXED_CUT_COPPER, Blocks.WAXED_COPPER);
+		offerCutCopperRecipe(exporter, Blocks.WAXED_CUT_COPPER, Blocks.WAXED_COPPER_BLOCK);
 		offerCutCopperRecipe(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER, Blocks.WAXED_EXPOSED_COPPER);
 		offerCutCopperRecipe(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER, Blocks.WAXED_WEATHERED_COPPER);
 		ShapelessRecipeJsonFactory.create(Items.CYAN_DYE, 2)
@@ -3087,18 +3087,18 @@ public class RecipesProvider implements DataProvider {
 		method_33717(exporter, Blocks.CUT_COPPER, Blocks.COPPER_BLOCK);
 		method_33717(exporter, Blocks.CUT_COPPER_STAIRS, Blocks.COPPER_BLOCK);
 		method_33715(exporter, Blocks.CUT_COPPER_SLAB, Blocks.COPPER_BLOCK, 2);
-		method_33717(exporter, Blocks.EXPOSED_CUT_COPPER, Blocks.EXPOSED_COPPER_BLOCK);
-		method_33717(exporter, Blocks.EXPOSED_CUT_COPPER_STAIRS, Blocks.EXPOSED_COPPER_BLOCK);
-		method_33715(exporter, Blocks.EXPOSED_CUT_COPPER_SLAB, Blocks.EXPOSED_COPPER_BLOCK, 2);
-		method_33717(exporter, Blocks.WEATHERED_CUT_COPPER, Blocks.WEATHERED_COPPER_BLOCK);
-		method_33717(exporter, Blocks.WEATHERED_CUT_COPPER_STAIRS, Blocks.WEATHERED_COPPER_BLOCK);
-		method_33715(exporter, Blocks.WEATHERED_CUT_COPPER_SLAB, Blocks.WEATHERED_COPPER_BLOCK, 2);
-		method_33717(exporter, Blocks.OXIDIZED_CUT_COPPER, Blocks.OXIDIZED_COPPER_BLOCK);
-		method_33717(exporter, Blocks.OXIDIZED_CUT_COPPER_STAIRS, Blocks.OXIDIZED_COPPER_BLOCK);
-		method_33715(exporter, Blocks.OXIDIZED_CUT_COPPER_SLAB, Blocks.OXIDIZED_COPPER_BLOCK, 2);
-		method_33717(exporter, Blocks.WAXED_CUT_COPPER, Blocks.WAXED_COPPER);
-		method_33717(exporter, Blocks.WAXED_CUT_COPPER_STAIRS, Blocks.WAXED_COPPER);
-		method_33715(exporter, Blocks.WAXED_CUT_COPPER_SLAB, Blocks.WAXED_COPPER, 2);
+		method_33717(exporter, Blocks.EXPOSED_CUT_COPPER, Blocks.EXPOSED_COPPER);
+		method_33717(exporter, Blocks.EXPOSED_CUT_COPPER_STAIRS, Blocks.EXPOSED_COPPER);
+		method_33715(exporter, Blocks.EXPOSED_CUT_COPPER_SLAB, Blocks.EXPOSED_COPPER, 2);
+		method_33717(exporter, Blocks.WEATHERED_CUT_COPPER, Blocks.WEATHERED_COPPER);
+		method_33717(exporter, Blocks.WEATHERED_CUT_COPPER_STAIRS, Blocks.WEATHERED_COPPER);
+		method_33715(exporter, Blocks.WEATHERED_CUT_COPPER_SLAB, Blocks.WEATHERED_COPPER, 2);
+		method_33717(exporter, Blocks.OXIDIZED_CUT_COPPER, Blocks.OXIDIZED_COPPER);
+		method_33717(exporter, Blocks.OXIDIZED_CUT_COPPER_STAIRS, Blocks.OXIDIZED_COPPER);
+		method_33715(exporter, Blocks.OXIDIZED_CUT_COPPER_SLAB, Blocks.OXIDIZED_COPPER, 2);
+		method_33717(exporter, Blocks.WAXED_CUT_COPPER, Blocks.WAXED_COPPER_BLOCK);
+		method_33717(exporter, Blocks.WAXED_CUT_COPPER_STAIRS, Blocks.WAXED_COPPER_BLOCK);
+		method_33715(exporter, Blocks.WAXED_CUT_COPPER_SLAB, Blocks.WAXED_COPPER_BLOCK, 2);
 		method_33717(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER, Blocks.WAXED_EXPOSED_COPPER);
 		method_33717(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER_STAIRS, Blocks.WAXED_EXPOSED_COPPER);
 		method_33715(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, Blocks.WAXED_EXPOSED_COPPER, 2);

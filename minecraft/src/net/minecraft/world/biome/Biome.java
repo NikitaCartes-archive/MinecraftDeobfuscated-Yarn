@@ -180,7 +180,7 @@ public final class Biome {
 		if (this.getTemperature(pos) >= 0.15F) {
 			return false;
 		} else {
-			if (pos.getY() >= world.getBottomSectionLimit() && pos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
+			if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
 				BlockState blockState = world.getBlockState(pos);
 				FluidState fluidState = world.getFluidState(pos);
 				if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -207,7 +207,7 @@ public final class Biome {
 		if (!this.method_33599(blockPos)) {
 			return false;
 		} else {
-			if (blockPos.getY() >= world.getBottomSectionLimit() && blockPos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, blockPos) < 10) {
+			if (blockPos.getY() >= world.getBottomY() && blockPos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, blockPos) < 10) {
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos)) {
 					return true;
@@ -239,11 +239,11 @@ public final class Biome {
 					int o = ChunkSectionPos.getBlockCoord(m);
 
 					try {
-						int p = region.getBottomSectionLimit() + 1;
+						int p = region.getBottomY() + 1;
 						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature)
 							.forEach(
 								structureStart -> structureStart.generateStructure(
-										region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopHeightLimit() - 1, o + 15), new ChunkPos(l, m)
+										region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopY() - 1, o + 15), new ChunkPos(l, m)
 									)
 							);
 					} catch (Exception var21) {

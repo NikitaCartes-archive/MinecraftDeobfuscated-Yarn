@@ -20,7 +20,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class PoolStructurePiece extends StructurePiece {
-	private static final Logger field_24991 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	protected final StructurePoolElement poolElement;
 	protected BlockPos pos;
 	private final int groundLevelDelta;
@@ -29,15 +29,15 @@ public class PoolStructurePiece extends StructurePiece {
 	private final StructureManager structureManager;
 
 	public PoolStructurePiece(
-		StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox
+		StructureManager structureManager, StructurePoolElement poolElement, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox boundingBox
 	) {
 		super(StructurePieceType.JIGSAW, 0);
 		this.structureManager = structureManager;
-		this.poolElement = structurePoolElement;
-		this.pos = blockPos;
-		this.groundLevelDelta = i;
-		this.rotation = blockRotation;
-		this.boundingBox = blockBox;
+		this.poolElement = poolElement;
+		this.pos = pos;
+		this.groundLevelDelta = groundLevelDelta;
+		this.rotation = rotation;
+		this.boundingBox = boundingBox;
 	}
 
 	public PoolStructurePiece(StructureManager manager, CompoundTag tag) {
@@ -47,7 +47,7 @@ public class PoolStructurePiece extends StructurePiece {
 		this.groundLevelDelta = tag.getInt("ground_level_delta");
 		this.poolElement = (StructurePoolElement)StructurePoolElement.CODEC
 			.parse(NbtOps.INSTANCE, tag.getCompound("pool_element"))
-			.resultOrPartial(field_24991::error)
+			.resultOrPartial(LOGGER::error)
 			.orElse(EmptyPoolElement.INSTANCE);
 		this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
 		this.boundingBox = this.poolElement.getBoundingBox(manager, this.pos, this.rotation);
@@ -62,10 +62,7 @@ public class PoolStructurePiece extends StructurePiece {
 		tag.putInt("PosY", this.pos.getY());
 		tag.putInt("PosZ", this.pos.getZ());
 		tag.putInt("ground_level_delta", this.groundLevelDelta);
-		StructurePoolElement.CODEC
-			.encodeStart(NbtOps.INSTANCE, this.poolElement)
-			.resultOrPartial(field_24991::error)
-			.ifPresent(tagx -> tag.put("pool_element", tagx));
+		StructurePoolElement.CODEC.encodeStart(NbtOps.INSTANCE, this.poolElement).resultOrPartial(LOGGER::error).ifPresent(tagx -> tag.put("pool_element", tagx));
 		tag.putString("rotation", this.rotation.name());
 		ListTag listTag = new ListTag();
 
@@ -86,20 +83,20 @@ public class PoolStructurePiece extends StructurePiece {
 		ChunkPos chunkPos,
 		BlockPos pos
 	) {
-		return this.method_27236(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
+		return this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
 	}
 
-	public boolean method_27236(
-		StructureWorldAccess structureWorldAccess,
+	public boolean generate(
+		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
 		Random random,
-		BlockBox blockBox,
-		BlockPos blockPos,
+		BlockBox boundingBox,
+		BlockPos pos,
 		boolean keepJigsaws
 	) {
 		return this.poolElement
-			.generate(this.structureManager, structureWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, keepJigsaws);
+			.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
 	}
 
 	@Override

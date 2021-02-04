@@ -26,7 +26,7 @@ public interface TutorialStepHandler {
 	default void onTarget(ClientWorld world, HitResult hitResult) {
 	}
 
-	default void onBlockAttacked(ClientWorld client, BlockPos pos, BlockState state, float f) {
+	default void onBlockBreaking(ClientWorld client, BlockPos pos, BlockState state, float progress) {
 	}
 
 	default void onInventoryOpened() {
