@@ -89,7 +89,7 @@ implements Monster {
 
     @Override
     protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.field_28630;
+        return Entity.class_5799.NONE;
     }
 
     @Override
@@ -346,7 +346,7 @@ implements Monster {
         for (int i = 0; i < 5; ++i) {
             Direction direction;
             BlockPos blockPos2 = blockPos.add(MathHelper.nextBetween(this.random, -8, 8), MathHelper.nextBetween(this.random, -8, 8), MathHelper.nextBetween(this.random, -8, 8));
-            if (blockPos2.getY() <= this.world.getBottomSectionLimit() || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.isSpaceEmpty(this, new Box(blockPos2).contract(1.0E-6)) || (direction = this.findAttachSide(blockPos2)) == null) continue;
+            if (blockPos2.getY() <= this.world.getBottomY() || !this.world.isAir(blockPos2) || !this.world.getWorldBorder().contains(blockPos2) || !this.world.isSpaceEmpty(this, new Box(blockPos2).contract(1.0E-6)) || (direction = this.findAttachSide(blockPos2)) == null) continue;
             this.detach();
             this.dataTracker.set(ATTACHED_FACE, direction);
             this.playSound(SoundEvents.ENTITY_SHULKER_TELEPORT, 1.0f, 1.0f);

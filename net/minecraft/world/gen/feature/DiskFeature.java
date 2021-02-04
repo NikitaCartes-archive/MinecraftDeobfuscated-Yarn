@@ -8,11 +8,11 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FallingBlock;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class DiskFeature
 extends Feature<DiskFeatureConfig> {
@@ -21,16 +21,16 @@ extends Feature<DiskFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DiskFeatureConfig> arg) {
-        DiskFeatureConfig diskFeatureConfig = arg.method_33656();
-        BlockPos blockPos = arg.method_33655();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
+    public boolean generate(FeatureContext<DiskFeatureConfig> featureContext) {
+        DiskFeatureConfig diskFeatureConfig = featureContext.getConfig();
+        BlockPos blockPos = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
         boolean bl = false;
         int i = blockPos.getY();
         int j = i + diskFeatureConfig.halfHeight;
         int k = i - diskFeatureConfig.halfHeight - 1;
         boolean bl2 = diskFeatureConfig.state.getBlock() instanceof FallingBlock;
-        int l = diskFeatureConfig.radius.getValue(arg.method_33654());
+        int l = diskFeatureConfig.radius.getValue(featureContext.getRandom());
         for (int m = blockPos.getX() - l; m <= blockPos.getX() + l; ++m) {
             for (int n = blockPos.getZ() - l; n <= blockPos.getZ() + l; ++n) {
                 int p;

@@ -8,11 +8,11 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5829;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.input.Input;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.toast.TutorialToast;
+import net.minecraft.client.tutorial.BundleTutorial;
 import net.minecraft.client.tutorial.TutorialStep;
 import net.minecraft.client.tutorial.TutorialStepHandler;
 import net.minecraft.client.world.ClientWorld;
@@ -31,12 +31,12 @@ public class TutorialManager {
     private final MinecraftClient client;
     @Nullable
     private TutorialStepHandler currentHandler;
-    private final List<class_5524> field_26893 = Lists.newArrayList();
-    private final class_5829 field_28801;
+    private final List<Entry> entries = Lists.newArrayList();
+    private final BundleTutorial bundleTutorial;
 
-    public TutorialManager(MinecraftClient client, GameOptions gameOptions) {
+    public TutorialManager(MinecraftClient client, GameOptions options) {
         this.client = client;
-        this.field_28801 = new class_5829(this, gameOptions);
+        this.bundleTutorial = new BundleTutorial(this, options);
     }
 
     public void onMovement(Input input) {
@@ -57,9 +57,9 @@ public class TutorialManager {
         }
     }
 
-    public void onBlockAttacked(ClientWorld world, BlockPos pos, BlockState state, float f) {
+    public void onBlockBreaking(ClientWorld world, BlockPos pos, BlockState state, float progress) {
         if (this.currentHandler != null) {
-            this.currentHandler.onBlockAttacked(world, pos, state, f);
+            this.currentHandler.onBlockBreaking(world, pos, state, progress);
         }
     }
 
@@ -90,18 +90,31 @@ public class TutorialManager {
         this.currentHandler = this.client.options.tutorialStep.createHandler(this);
     }
 
-    public void method_31365(TutorialToast tutorialToast, int i) {
-        this.field_26893.add(new class_5524(tutorialToast, i));
-        this.client.getToastManager().add(tutorialToast);
+    /**
+     * Adds an active tutorial entry to this manager and the corresponding toast
+     * to the client's toast manager.
+     * 
+     * @param toast the tutorial toast
+     * @param ticks the time the toast will last, in client ticks
+     */
+    public void add(TutorialToast toast, int ticks) {
+        this.entries.add(new Entry(toast, ticks));
+        this.client.getToastManager().add(toast);
     }
 
-    public void method_31364(TutorialToast tutorialToast) {
-        this.field_26893.removeIf(arg -> ((class_5524)arg).field_26894 == tutorialToast);
-        tutorialToast.hide();
+    /**
+     * Removes an active tutorial from this manager if it's present and hides
+     * the toast.
+     * 
+     * @param toast the tutorial toast
+     */
+    public void remove(TutorialToast toast) {
+        this.entries.removeIf(entry -> ((Entry)entry).toast == toast);
+        toast.hide();
     }
 
     public void tick() {
-        this.field_26893.removeIf(object -> ((class_5524)object).method_31368());
+        this.entries.removeIf(entry -> ((Entry)entry).tick());
         if (this.currentHandler != null) {
             if (this.client.world != null) {
                 this.currentHandler.tick();
@@ -136,29 +149,35 @@ public class TutorialManager {
         return this.client.interactionManager.getCurrentGameMode() == GameMode.SURVIVAL;
     }
 
-    public static Text getKeybindName(String string) {
-        return new KeybindText("key." + string).formatted(Formatting.BOLD);
+    public static Text keyToText(String name) {
+        return new KeybindText("key." + name).formatted(Formatting.BOLD);
     }
 
-    public void method_33704(ItemStack itemStack, ItemStack itemStack2, ClickType clickType) {
-        this.field_28801.method_33702(itemStack, itemStack2, clickType);
+    /**
+     * Called when a player performs a {@link net.minecraft.screen.slot.SlotActionType#PICKUP
+     * pickup slot action} in a screen handler. Used to trigger the bundle tutorial.
+     * 
+     * @see net.minecraft.client.network.ClientPlayerEntity#onPickupSlotClick(ItemStack, ItemStack, ClickType)
+     */
+    public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
+        this.bundleTutorial.onPickupSlotClick(cursorStack, slotStack, clickType);
     }
 
     @Environment(value=EnvType.CLIENT)
-    static final class class_5524 {
-        private final TutorialToast field_26894;
-        private final int field_26895;
-        private int field_26896;
+    static final class Entry {
+        private final TutorialToast toast;
+        private final int expiry;
+        private int age;
 
-        private class_5524(TutorialToast tutorialToast, int i) {
-            this.field_26894 = tutorialToast;
-            this.field_26895 = i;
+        private Entry(TutorialToast toast, int expiry) {
+            this.toast = toast;
+            this.expiry = expiry;
         }
 
-        private boolean method_31368() {
-            this.field_26894.setProgress(Math.min((float)(++this.field_26896) / (float)this.field_26895, 1.0f));
-            if (this.field_26896 > this.field_26895) {
-                this.field_26894.hide();
+        private boolean tick() {
+            this.toast.setProgress(Math.min((float)(++this.age) / (float)this.expiry, 1.0f));
+            if (this.age > this.expiry) {
+                this.toast.hide();
                 return true;
             }
             return false;

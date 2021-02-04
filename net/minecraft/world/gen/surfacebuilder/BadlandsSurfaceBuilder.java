@@ -10,12 +10,12 @@ import java.util.Random;
 import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5819;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.WorldGenRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceConfig;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
@@ -109,8 +109,8 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         }
         if (this.seed != seed || this.heightCutoffNoise == null || this.heightNoise == null) {
             ChunkRandom chunkRandom = new ChunkRandom(seed);
-            this.heightCutoffNoise = new OctaveSimplexNoiseSampler((class_5819)chunkRandom, IntStream.rangeClosed(-3, 0));
-            this.heightNoise = new OctaveSimplexNoiseSampler((class_5819)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
+            this.heightCutoffNoise = new OctaveSimplexNoiseSampler((WorldGenRandom)chunkRandom, IntStream.rangeClosed(-3, 0));
+            this.heightNoise = new OctaveSimplexNoiseSampler((WorldGenRandom)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
         }
         this.seed = seed;
     }
@@ -130,7 +130,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         this.layerBlocks = new BlockState[64];
         Arrays.fill(this.layerBlocks, TERRACOTTA);
         ChunkRandom chunkRandom = new ChunkRandom(seed);
-        this.layerNoise = new OctaveSimplexNoiseSampler((class_5819)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
+        this.layerNoise = new OctaveSimplexNoiseSampler((WorldGenRandom)chunkRandom, ImmutableList.of(Integer.valueOf(0)));
         for (i = 0; i < 64; ++i) {
             if ((i += chunkRandom.nextInt(5) + 1) >= 64) continue;
             this.layerBlocks[i] = ORANGE_TERRACOTTA;

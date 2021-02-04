@@ -29,7 +29,7 @@ import org.apache.logging.log4j.Logger;
 
 public class PoolStructurePiece
 extends StructurePiece {
-    private static final Logger field_24991 = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
     protected final StructurePoolElement poolElement;
     protected BlockPos pos;
     private final int groundLevelDelta;
@@ -37,14 +37,14 @@ extends StructurePiece {
     private final List<JigsawJunction> junctions = Lists.newArrayList();
     private final StructureManager structureManager;
 
-    public PoolStructurePiece(StructureManager structureManager, StructurePoolElement structurePoolElement, BlockPos blockPos, int i, BlockRotation blockRotation, BlockBox blockBox) {
+    public PoolStructurePiece(StructureManager structureManager, StructurePoolElement poolElement, BlockPos pos, int groundLevelDelta, BlockRotation rotation, BlockBox boundingBox) {
         super(StructurePieceType.JIGSAW, 0);
         this.structureManager = structureManager;
-        this.poolElement = structurePoolElement;
-        this.pos = blockPos;
-        this.groundLevelDelta = i;
-        this.rotation = blockRotation;
-        this.boundingBox = blockBox;
+        this.poolElement = poolElement;
+        this.pos = pos;
+        this.groundLevelDelta = groundLevelDelta;
+        this.rotation = rotation;
+        this.boundingBox = boundingBox;
     }
 
     public PoolStructurePiece(StructureManager manager, CompoundTag tag2) {
@@ -52,7 +52,7 @@ extends StructurePiece {
         this.structureManager = manager;
         this.pos = new BlockPos(tag2.getInt("PosX"), tag2.getInt("PosY"), tag2.getInt("PosZ"));
         this.groundLevelDelta = tag2.getInt("ground_level_delta");
-        this.poolElement = StructurePoolElement.CODEC.parse(NbtOps.INSTANCE, tag2.getCompound("pool_element")).resultOrPartial(field_24991::error).orElse(EmptyPoolElement.INSTANCE);
+        this.poolElement = StructurePoolElement.CODEC.parse(NbtOps.INSTANCE, tag2.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElse(EmptyPoolElement.INSTANCE);
         this.rotation = BlockRotation.valueOf(tag2.getString("rotation"));
         this.boundingBox = this.poolElement.getBoundingBox(manager, this.pos, this.rotation);
         ListTag listTag = tag2.getList("junctions", 10);
@@ -66,7 +66,7 @@ extends StructurePiece {
         tag2.putInt("PosY", this.pos.getY());
         tag2.putInt("PosZ", this.pos.getZ());
         tag2.putInt("ground_level_delta", this.groundLevelDelta);
-        StructurePoolElement.CODEC.encodeStart(NbtOps.INSTANCE, this.poolElement).resultOrPartial(field_24991::error).ifPresent(tag -> tag2.put("pool_element", (Tag)tag));
+        StructurePoolElement.CODEC.encodeStart(NbtOps.INSTANCE, this.poolElement).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("pool_element", (Tag)tag));
         tag2.putString("rotation", this.rotation.name());
         ListTag listTag = new ListTag();
         for (JigsawJunction jigsawJunction : this.junctions) {
@@ -77,11 +77,11 @@ extends StructurePiece {
 
     @Override
     public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-        return this.method_27236(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
+        return this.generate(world, structureAccessor, chunkGenerator, random, boundingBox, pos, false);
     }
 
-    public boolean method_27236(StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox blockBox, BlockPos blockPos, boolean keepJigsaws) {
-        return this.poolElement.generate(this.structureManager, structureWorldAccess, structureAccessor, chunkGenerator, this.pos, blockPos, this.rotation, blockBox, random, keepJigsaws);
+    public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, BlockPos pos, boolean keepJigsaws) {
+        return this.poolElement.generate(this.structureManager, world, structureAccessor, chunkGenerator, this.pos, pos, this.rotation, boundingBox, random, keepJigsaws);
     }
 
     @Override

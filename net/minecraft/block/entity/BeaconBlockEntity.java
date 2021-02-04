@@ -170,7 +170,7 @@ implements NamedScreenHandlerFactory {
             }
         }
         if (blockEntity.field_19179 >= l) {
-            blockEntity.field_19179 = world.getBottomSectionLimit() - 1;
+            blockEntity.field_19179 = world.getBottomY() - 1;
             boolean bl = m > 0;
             blockEntity.beamSegments = blockEntity.field_19178;
             if (!world.isClient) {
@@ -192,7 +192,7 @@ implements NamedScreenHandlerFactory {
         int k;
         int i = 0;
         int j = 1;
-        while (j <= 4 && (k = y - j) >= world.getBottomSectionLimit()) {
+        while (j <= 4 && (k = y - j) >= world.getBottomY()) {
             boolean bl = true;
             block1: for (int l = x - j; l <= x + j && bl; ++l) {
                 for (int m = z - j; m <= z + j; ++m) {
@@ -223,7 +223,7 @@ implements NamedScreenHandlerFactory {
             i = 1;
         }
         int j = (9 + beaconLevel * 2) * 20;
-        Box box = new Box(pos).expand(d).stretch(0.0, world.getSectionCount(), 0.0);
+        Box box = new Box(pos).expand(d).stretch(0.0, world.getHeight(), 0.0);
         List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
         for (PlayerEntity playerEntity : list) {
             playerEntity.addStatusEffect(new StatusEffectInstance(primaryEffect, j, i, true, true));
@@ -312,7 +312,7 @@ implements NamedScreenHandlerFactory {
     @Override
     public void setWorld(World world) {
         super.setWorld(world);
-        this.field_19179 = world.getBottomSectionLimit() - 1;
+        this.field_19179 = world.getBottomY() - 1;
     }
 
     public static class BeamSegment {

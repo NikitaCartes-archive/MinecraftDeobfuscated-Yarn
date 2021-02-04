@@ -1140,17 +1140,17 @@ public class RenderSystem {
 
     @Environment(value=EnvType.CLIENT)
     public static final class IndexBuffer {
-        private final int field_27332;
-        private final int field_27333;
-        private final class_5591 field_27334;
+        private final int sizeMultiplier;
+        private final int increment;
+        private final IndexMapper indexMapper;
         private int id;
         private VertexFormat.IntType vertexFormat = VertexFormat.IntType.BYTE;
         private int size;
 
-        private IndexBuffer(int i, int j, class_5591 arg) {
-            this.field_27332 = i;
-            this.field_27333 = j;
-            this.field_27334 = arg;
+        private IndexBuffer(int i, int j, IndexMapper indexMapper) {
+            this.sizeMultiplier = i;
+            this.increment = j;
+            this.indexMapper = indexMapper;
         }
 
         private void grow(int newSize) {
@@ -1170,16 +1170,16 @@ public class RenderSystem {
                 throw new RuntimeException("Failed to map GL buffer");
             }
             this.vertexFormat = intType;
-            it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.method_31922(byteBuffer);
-            for (int j = 0; j < newSize; j += this.field_27333) {
-                this.field_27334.accept(intConsumer, j * this.field_27332 / this.field_27333);
+            it.unimi.dsi.fastutil.ints.IntConsumer intConsumer = this.getIndexConsumer(byteBuffer);
+            for (int j = 0; j < newSize; j += this.increment) {
+                this.indexMapper.accept(intConsumer, j * this.sizeMultiplier / this.increment);
             }
             GlStateManager.unmapBuffer(34963);
             GlStateManager.bindBuffer(34963, 0);
             this.size = newSize;
         }
 
-        private it.unimi.dsi.fastutil.ints.IntConsumer method_31922(ByteBuffer indicesBuffer) {
+        private it.unimi.dsi.fastutil.ints.IntConsumer getIndexConsumer(ByteBuffer indicesBuffer) {
             switch (this.vertexFormat) {
                 case BYTE: {
                     return i -> indicesBuffer.put((byte)i);
@@ -1200,7 +1200,7 @@ public class RenderSystem {
         }
 
         @Environment(value=EnvType.CLIENT)
-        static interface class_5591 {
+        static interface IndexMapper {
             public void accept(it.unimi.dsi.fastutil.ints.IntConsumer var1, int var2);
         }
     }

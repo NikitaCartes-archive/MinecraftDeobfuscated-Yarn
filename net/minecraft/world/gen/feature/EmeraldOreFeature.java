@@ -4,11 +4,11 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.EmeraldOreFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class EmeraldOreFeature
 extends Feature<EmeraldOreFeatureConfig> {
@@ -17,10 +17,10 @@ extends Feature<EmeraldOreFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<EmeraldOreFeatureConfig> arg) {
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        BlockPos blockPos = arg.method_33655();
-        EmeraldOreFeatureConfig emeraldOreFeatureConfig = arg.method_33656();
+    public boolean generate(FeatureContext<EmeraldOreFeatureConfig> featureContext) {
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        BlockPos blockPos = featureContext.getPos();
+        EmeraldOreFeatureConfig emeraldOreFeatureConfig = featureContext.getConfig();
         if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
             structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
         }

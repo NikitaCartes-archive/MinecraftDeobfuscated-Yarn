@@ -36,8 +36,8 @@ implements DebugRenderer.Renderer {
         Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        double d = (double)this.client.world.getBottomSectionLimit() - cameraY;
-        double e = (double)this.client.world.getTopHeightLimit() - cameraY;
+        double d = (double)this.client.world.getBottomY() - cameraY;
+        double e = (double)this.client.world.getTopY() - cameraY;
         RenderSystem.disableTexture();
         RenderSystem.disableBlend();
         ChunkPos chunkPos = entity.getChunkPos();
@@ -73,7 +73,7 @@ implements DebugRenderer.Renderer {
             bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(1.0f, 1.0f, 0.0f, 1.0f).next();
             bufferBuilder.vertex(f + 16.0, e, g + (double)i).color(1.0f, 1.0f, 0.0f, 0.0f).next();
         }
-        for (i = this.client.world.getBottomSectionLimit(); i <= this.client.world.getTopHeightLimit(); i += 2) {
+        for (i = this.client.world.getBottomY(); i <= this.client.world.getTopY(); i += 2) {
             double h = (double)i - cameraY;
             bufferBuilder.vertex(f, h, g).color(1.0f, 1.0f, 0.0f, 0.0f).next();
             bufferBuilder.vertex(f, h, g).color(1.0f, 1.0f, 0.0f, 1.0f).next();
@@ -94,7 +94,7 @@ implements DebugRenderer.Renderer {
                 bufferBuilder.vertex(f + (double)i, e, g + (double)j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
             }
         }
-        for (i = this.client.world.getBottomSectionLimit(); i <= this.client.world.getTopHeightLimit(); i += 16) {
+        for (i = this.client.world.getBottomY(); i <= this.client.world.getTopY(); i += 16) {
             double h = (double)i - cameraY;
             bufferBuilder.vertex(f, h, g).color(0.25f, 0.25f, 1.0f, 0.0f).next();
             bufferBuilder.vertex(f, h, g).color(0.25f, 0.25f, 1.0f, 1.0f).next();

@@ -28,18 +28,18 @@ extends AbstractRailBlock {
         this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(SHAPE, RailShape.NORTH_SOUTH)).with(POWERED, false)).with(WATERLOGGED, false));
     }
 
-    protected boolean isPoweredByOtherRails(World world, BlockPos pos, BlockState state, boolean boolean4, int distance) {
+    protected boolean isPoweredByOtherRails(World world, BlockPos pos, BlockState state, boolean bl, int distance) {
         if (distance >= 8) {
             return false;
         }
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
-        boolean bl = true;
+        boolean bl2 = true;
         RailShape railShape = state.get(SHAPE);
         switch (railShape) {
             case NORTH_SOUTH: {
-                if (boolean4) {
+                if (bl) {
                     ++k;
                     break;
                 }
@@ -47,7 +47,7 @@ extends AbstractRailBlock {
                 break;
             }
             case EAST_WEST: {
-                if (boolean4) {
+                if (bl) {
                     --i;
                     break;
                 }
@@ -55,21 +55,21 @@ extends AbstractRailBlock {
                 break;
             }
             case ASCENDING_EAST: {
-                if (boolean4) {
+                if (bl) {
                     --i;
                 } else {
                     ++i;
                     ++j;
-                    bl = false;
+                    bl2 = false;
                 }
                 railShape = RailShape.EAST_WEST;
                 break;
             }
             case ASCENDING_WEST: {
-                if (boolean4) {
+                if (bl) {
                     --i;
                     ++j;
-                    bl = false;
+                    bl2 = false;
                 } else {
                     ++i;
                 }
@@ -77,31 +77,31 @@ extends AbstractRailBlock {
                 break;
             }
             case ASCENDING_NORTH: {
-                if (boolean4) {
+                if (bl) {
                     ++k;
                 } else {
                     --k;
                     ++j;
-                    bl = false;
+                    bl2 = false;
                 }
                 railShape = RailShape.NORTH_SOUTH;
                 break;
             }
             case ASCENDING_SOUTH: {
-                if (boolean4) {
+                if (bl) {
                     ++k;
                     ++j;
-                    bl = false;
+                    bl2 = false;
                 } else {
                     --k;
                 }
                 railShape = RailShape.NORTH_SOUTH;
             }
         }
-        if (this.isPoweredByOtherRails(world, new BlockPos(i, j, k), boolean4, distance, railShape)) {
+        if (this.isPoweredByOtherRails(world, new BlockPos(i, j, k), bl, distance, railShape)) {
             return true;
         }
-        return bl && this.isPoweredByOtherRails(world, new BlockPos(i, j - 1, k), boolean4, distance, railShape);
+        return bl2 && this.isPoweredByOtherRails(world, new BlockPos(i, j - 1, k), bl, distance, railShape);
     }
 
     protected boolean isPoweredByOtherRails(World world, BlockPos pos, boolean bl, int distance, RailShape shape) {

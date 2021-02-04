@@ -228,7 +228,7 @@ implements ScreenHandlerListener {
             }
         } else {
             this.refreshPositionAndAngles(blockPos, 0.0f, 0.0f);
-            while (!world.isSpaceEmpty(this) && this.getY() < (double)(world.getTopHeightLimit() - 1)) {
+            while (!world.isSpaceEmpty(this) && this.getY() < (double)(world.getTopY() - 1)) {
                 this.setPosition(this.getX(), this.getY() + 1.0, this.getZ());
             }
         }
@@ -485,7 +485,7 @@ implements ScreenHandlerListener {
         this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
         this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
         this.extinguish();
-        this.method_33572(false);
+        this.setOnFire(false);
         this.getDamageTracker().update();
     }
 

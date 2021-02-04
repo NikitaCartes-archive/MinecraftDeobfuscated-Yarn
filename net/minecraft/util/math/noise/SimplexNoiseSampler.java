@@ -3,8 +3,8 @@
  */
 package net.minecraft.util.math.noise;
 
-import net.minecraft.class_5819;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.gen.WorldGenRandom;
 
 public class SimplexNoiseSampler {
     protected static final int[][] GRADIENTS = new int[][]{{1, 1, 0}, {-1, 1, 0}, {1, -1, 0}, {-1, -1, 0}, {1, 0, 1}, {-1, 0, 1}, {1, 0, -1}, {-1, 0, -1}, {0, 1, 1}, {0, -1, 1}, {0, 1, -1}, {0, -1, -1}, {1, 1, 0}, {0, -1, 1}, {-1, 1, 0}, {0, -1, -1}};
@@ -16,16 +16,16 @@ public class SimplexNoiseSampler {
     public final double originY;
     public final double originZ;
 
-    public SimplexNoiseSampler(class_5819 arg) {
+    public SimplexNoiseSampler(WorldGenRandom random) {
         int i;
-        this.originX = arg.nextDouble() * 256.0;
-        this.originY = arg.nextDouble() * 256.0;
-        this.originZ = arg.nextDouble() * 256.0;
+        this.originX = random.nextDouble() * 256.0;
+        this.originY = random.nextDouble() * 256.0;
+        this.originZ = random.nextDouble() * 256.0;
         for (i = 0; i < 256; ++i) {
             this.permutations[i] = i;
         }
         for (i = 0; i < 256; ++i) {
-            int j = arg.nextInt(256 - i);
+            int j = random.nextInt(256 - i);
             int k = this.permutations[i];
             this.permutations[i] = this.permutations[j + i];
             this.permutations[j + i] = k;

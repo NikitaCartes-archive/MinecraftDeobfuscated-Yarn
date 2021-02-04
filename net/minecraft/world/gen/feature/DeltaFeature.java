@@ -9,13 +9,13 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.DeltaFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class DeltaFeature
 extends Feature<DeltaFeatureConfig> {
@@ -27,12 +27,12 @@ extends Feature<DeltaFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DeltaFeatureConfig> arg) {
+    public boolean generate(FeatureContext<DeltaFeatureConfig> featureContext) {
         boolean bl = false;
-        Random random = arg.method_33654();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        DeltaFeatureConfig deltaFeatureConfig = arg.method_33656();
-        BlockPos blockPos = arg.method_33655();
+        Random random = featureContext.getRandom();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        DeltaFeatureConfig deltaFeatureConfig = featureContext.getConfig();
+        BlockPos blockPos = featureContext.getPos();
         boolean bl2 = random.nextDouble() < 0.9;
         int i = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;
         int j = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;

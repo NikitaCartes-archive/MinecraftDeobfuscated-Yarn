@@ -65,7 +65,7 @@ extends Block {
     public AbstractLichenBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.setDefaultState(AbstractLichenBlock.method_33368(this.stateManager));
-        this.field_28422 = this.method_33615(AbstractLichenBlock::method_33380);
+        this.field_28422 = this.getShapesForStates(AbstractLichenBlock::method_33380);
         this.field_28423 = Direction.Type.HORIZONTAL.stream().allMatch(this::method_33369);
         this.field_28424 = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.X).filter(this::method_33369).count() % 2L == 0L;
         this.field_28425 = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::method_33369).count() % 2L == 0L;
@@ -84,8 +84,8 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-        if (!AbstractLichenBlock.method_33366(state, direction) || AbstractLichenBlock.method_33358(world, direction, posFrom, newState)) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (!AbstractLichenBlock.method_33366(state, direction) || AbstractLichenBlock.method_33358(world, direction, neighborPos, neighborState)) {
             return state;
         }
         return AbstractLichenBlock.method_33365(state, AbstractLichenBlock.method_33374(direction));
@@ -136,7 +136,7 @@ extends Block {
             }
             blockState2 = blockState;
         } else {
-            blockState2 = this.method_33378() && blockState.getFluidState().method_33659(Fluids.WATER) ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState();
+            blockState2 = this.method_33378() && blockState.getFluidState().isEqualAndStill(Fluids.WATER) ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState();
         }
         BlockPos blockPos2 = blockPos.offset(direction);
         if (AbstractLichenBlock.method_33358(worldAccess, direction, blockPos2, worldAccess.getBlockState(blockPos2))) {

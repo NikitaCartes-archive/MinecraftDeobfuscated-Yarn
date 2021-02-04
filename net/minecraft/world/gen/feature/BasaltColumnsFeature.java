@@ -9,13 +9,13 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.jetbrains.annotations.Nullable;
 
 public class BasaltColumnsFeature
@@ -27,12 +27,12 @@ extends Feature<BasaltColumnsFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<BasaltColumnsFeatureConfig> arg) {
-        int i = arg.method_33653().getSeaLevel();
-        BlockPos blockPos = arg.method_33655();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
-        BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = arg.method_33656();
+    public boolean generate(FeatureContext<BasaltColumnsFeatureConfig> featureContext) {
+        int i = featureContext.getGenerator().getSeaLevel();
+        BlockPos blockPos = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
+        BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = featureContext.getConfig();
         if (!BasaltColumnsFeature.method_30379(structureWorldAccess, i, blockPos.mutableCopy())) {
             return false;
         }
@@ -73,7 +73,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
 
     @Nullable
     private static BlockPos method_27094(WorldAccess worldAccess, int i, BlockPos.Mutable mutable, int j) {
-        while (mutable.getY() > worldAccess.getBottomSectionLimit() + 1 && j > 0) {
+        while (mutable.getY() > worldAccess.getBottomY() + 1 && j > 0) {
             --j;
             if (BasaltColumnsFeature.method_30379(worldAccess, i, mutable)) {
                 return mutable;
@@ -94,7 +94,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
 
     @Nullable
     private static BlockPos method_27098(WorldAccess worldAccess, BlockPos.Mutable mutable, int i) {
-        while (mutable.getY() < worldAccess.getTopHeightLimit() && i > 0) {
+        while (mutable.getY() < worldAccess.getTopY() && i > 0) {
             --i;
             BlockState blockState = worldAccess.getBlockState(mutable);
             if (BLOCKS.contains(blockState.getBlock())) {

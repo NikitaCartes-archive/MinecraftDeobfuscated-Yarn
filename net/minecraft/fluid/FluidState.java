@@ -40,7 +40,7 @@ extends State<Fluid, FluidState> {
         return this.getFluid().isStill(this);
     }
 
-    public boolean method_33659(Fluid fluid) {
+    public boolean isEqualAndStill(Fluid fluid) {
         return this.owner == fluid && ((Fluid)this.owner).isStill(this);
     }
 

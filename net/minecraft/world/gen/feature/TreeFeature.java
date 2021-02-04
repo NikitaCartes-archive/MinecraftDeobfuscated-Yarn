@@ -16,7 +16,6 @@ import java.util.Set;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.class_5821;
 import net.minecraft.state.property.Properties;
 import net.minecraft.structure.Structure;
 import net.minecraft.tag.BlockTags;
@@ -33,6 +32,7 @@ import net.minecraft.world.TestableWorld;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class TreeFeature
@@ -94,7 +94,7 @@ extends Feature<TreeFeatureConfig> {
         } else {
             blockPos = pos;
         }
-        if (blockPos.getY() < world.getBottomSectionLimit() + 1 || blockPos.getY() + i + 1 > world.getTopHeightLimit()) {
+        if (blockPos.getY() < world.getBottomY() + 1 || blockPos.getY() + i + 1 > world.getTopY()) {
             return false;
         }
         if (!TreeFeature.canPlaceTreeOn(world, blockPos.down())) {
@@ -131,11 +131,11 @@ extends Feature<TreeFeatureConfig> {
     }
 
     @Override
-    public final boolean generate(class_5821<TreeFeatureConfig> arg) {
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
-        BlockPos blockPos = arg.method_33655();
-        TreeFeatureConfig treeFeatureConfig = arg.method_33656();
+    public final boolean generate(FeatureContext<TreeFeatureConfig> featureContext) {
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
+        BlockPos blockPos = featureContext.getPos();
+        TreeFeatureConfig treeFeatureConfig = featureContext.getConfig();
         HashSet<BlockPos> set = Sets.newHashSet();
         HashSet<BlockPos> set2 = Sets.newHashSet();
         HashSet<BlockPos> set3 = Sets.newHashSet();

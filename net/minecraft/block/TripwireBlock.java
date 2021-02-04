@@ -64,11 +64,11 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction.getAxis().isHorizontal()) {
-            return (BlockState)state.with(FACING_PROPERTIES.get(direction), this.shouldConnectTo(newState, direction));
+            return (BlockState)state.with(FACING_PROPERTIES.get(direction), this.shouldConnectTo(neighborState, direction));
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
@@ -88,12 +88,12 @@ extends Block {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
-        if (!world.isClient && !playerEntity.getMainHandStack().isEmpty() && playerEntity.getMainHandStack().isOf(Items.SHEARS)) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        if (!world.isClient && !player.getMainHandStack().isEmpty() && player.getMainHandStack().isOf(Items.SHEARS)) {
             world.setBlockState(pos, (BlockState)state.with(DISARMED, true), 4);
-            world.emitGameEvent((Entity)playerEntity, GameEvent.SHEAR, pos);
+            world.emitGameEvent((Entity)player, GameEvent.SHEAR, pos);
         }
-        super.onBreak(world, pos, state, playerEntity);
+        super.onBreak(world, pos, state, player);
     }
 
     private void update(World world, BlockPos pos, BlockState state) {

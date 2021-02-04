@@ -48,14 +48,14 @@ extends HorizontalConnectingBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction.getAxis().isHorizontal()) {
-            return (BlockState)state.with((Property)FACING_PROPERTIES.get(direction), this.connectsTo(newState, newState.isSideSolidFullSquare(world, posFrom, direction.getOpposite())));
+            return (BlockState)state.with((Property)FACING_PROPERTIES.get(direction), this.connectsTo(neighborState, neighborState.isSideSolidFullSquare(world, neighborPos, direction.getOpposite())));
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
@@ -77,8 +77,8 @@ extends HorizontalConnectingBlock {
         return super.isSideInvisible(state, stateFrom, direction);
     }
 
-    public final boolean connectsTo(BlockState state, boolean bl) {
-        return !PaneBlock.cannotConnect(state) && bl || state.getBlock() instanceof PaneBlock || state.isIn(BlockTags.WALLS);
+    public final boolean connectsTo(BlockState state, boolean sideSolidFullSquare) {
+        return !PaneBlock.cannotConnect(state) && sideSolidFullSquare || state.getBlock() instanceof PaneBlock || state.isIn(BlockTags.WALLS);
     }
 
     @Override

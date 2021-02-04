@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5821;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -14,6 +13,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.HugeMushroomFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public abstract class HugeMushroomFeature
 extends Feature<HugeMushroomFeatureConfig> {
@@ -39,7 +39,7 @@ extends Feature<HugeMushroomFeatureConfig> {
 
     protected boolean canGenerate(WorldAccess world, BlockPos pos, int height, BlockPos.Mutable mutable, HugeMushroomFeatureConfig config) {
         int i = pos.getY();
-        if (i < world.getBottomSectionLimit() + 1 || i + height + 1 >= world.getTopHeightLimit()) {
+        if (i < world.getBottomY() + 1 || i + height + 1 >= world.getTopY()) {
             return false;
         }
         BlockState blockState = world.getBlockState(pos.down());
@@ -60,12 +60,12 @@ extends Feature<HugeMushroomFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<HugeMushroomFeatureConfig> arg) {
+    public boolean generate(FeatureContext<HugeMushroomFeatureConfig> featureContext) {
         BlockPos.Mutable mutable;
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        BlockPos blockPos = arg.method_33655();
-        Random random = arg.method_33654();
-        HugeMushroomFeatureConfig hugeMushroomFeatureConfig = arg.method_33656();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        BlockPos blockPos = featureContext.getPos();
+        Random random = featureContext.getRandom();
+        HugeMushroomFeatureConfig hugeMushroomFeatureConfig = featureContext.getConfig();
         int i = this.getHeight(random);
         if (!this.canGenerate(structureWorldAccess, blockPos, i, mutable = new BlockPos.Mutable(), hugeMushroomFeatureConfig)) {
             return false;

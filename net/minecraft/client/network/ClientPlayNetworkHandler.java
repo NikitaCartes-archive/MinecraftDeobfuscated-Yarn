@@ -605,7 +605,7 @@ implements ClientPlayPacketListener {
         int j = packet.getZ();
         BiomeArray biomeArray = packet.getBiomeArray() == null ? null : new BiomeArray(this.registryManager.get(Registry.BIOME_KEY), (HeightLimitView)this.world, packet.getBiomeArray());
         WorldChunk worldChunk = this.world.getChunkManager().loadChunkFromPacket(i, j, biomeArray, packet.getReadBuffer(), packet.getHeightmaps(), packet.getVerticalStripBitmask());
-        for (int k = this.world.getMinimumSection(); k < this.world.getTopSectionLimit(); ++k) {
+        for (int k = this.world.getBottomSectionCoord(); k < this.world.getTopSectionCoord(); ++k) {
             this.world.scheduleBlockRenders(i, k, j);
         }
         if (worldChunk != null) {
@@ -626,7 +626,7 @@ implements ClientPlayPacketListener {
         ClientChunkManager clientChunkManager = this.world.getChunkManager();
         clientChunkManager.unload(i, j);
         LightingProvider lightingProvider = clientChunkManager.getLightingProvider();
-        for (int k = this.world.getMinimumSection(); k < this.world.getTopSectionLimit(); ++k) {
+        for (int k = this.world.getBottomSectionCoord(); k < this.world.getTopSectionCoord(); ++k) {
             this.world.scheduleBlockRenders(i, k, j);
             lightingProvider.setSectionStatus(ChunkSectionPos.from(i, k, j), true);
         }

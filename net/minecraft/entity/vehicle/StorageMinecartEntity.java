@@ -4,7 +4,6 @@
 package net.minecraft.entity.vehicle;
 
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.class_5630;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.damage.DamageSource;
@@ -12,6 +11,7 @@ import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
@@ -105,23 +105,23 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public class_5630 method_32318(final int i) {
-        if (i >= 0 && i < this.size()) {
-            return new class_5630(){
+    public CommandItemSlot getCommandItemSlot(final int mappedIndex) {
+        if (mappedIndex >= 0 && mappedIndex < this.size()) {
+            return new CommandItemSlot(){
 
                 @Override
-                public ItemStack method_32327() {
-                    return StorageMinecartEntity.this.getStack(i);
+                public ItemStack get() {
+                    return StorageMinecartEntity.this.getStack(mappedIndex);
                 }
 
                 @Override
-                public boolean method_32332(ItemStack itemStack) {
-                    StorageMinecartEntity.this.setStack(i, itemStack);
+                public boolean set(ItemStack stack) {
+                    StorageMinecartEntity.this.setStack(mappedIndex, stack);
                     return true;
                 }
             };
         }
-        return super.method_32318(i);
+        return super.getCommandItemSlot(mappedIndex);
     }
 
     @Override

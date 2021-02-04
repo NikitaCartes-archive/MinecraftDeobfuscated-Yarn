@@ -9,13 +9,13 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5798;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.thread.LockHelper;
 import net.minecraft.world.chunk.ArrayPalette;
 import net.minecraft.world.chunk.BiMapPalette;
 import net.minecraft.world.chunk.Palette;
@@ -35,7 +35,7 @@ implements PaletteResizeListener<T> {
     private final ReentrantLock writeLock = new ReentrantLock();
 
     public void lock() {
-        class_5798.method_33566(this.writeLock, "PalettedContainer");
+        LockHelper.checkLock(this.writeLock, "PalettedContainer");
     }
 
     public void unlock() {

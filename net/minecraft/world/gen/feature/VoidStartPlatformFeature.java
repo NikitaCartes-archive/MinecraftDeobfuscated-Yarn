@@ -5,12 +5,12 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class VoidStartPlatformFeature
 extends Feature<DefaultFeatureConfig> {
@@ -26,13 +26,13 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DefaultFeatureConfig> arg) {
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        ChunkPos chunkPos = new ChunkPos(arg.method_33655());
+    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        ChunkPos chunkPos = new ChunkPos(featureContext.getPos());
         if (VoidStartPlatformFeature.getDistance(chunkPos.x, chunkPos.z, VoidStartPlatformFeature.START_CHUNK.x, VoidStartPlatformFeature.START_CHUNK.z) > 1) {
             return true;
         }
-        BlockPos blockPos = arg.method_33655().add(START_BLOCK);
+        BlockPos blockPos = featureContext.getPos().add(START_BLOCK);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = chunkPos.getStartZ(); i <= chunkPos.getEndZ(); ++i) {
             for (int j = chunkPos.getStartX(); j <= chunkPos.getEndX(); ++j) {

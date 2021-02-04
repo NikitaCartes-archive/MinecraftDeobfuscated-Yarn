@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.block;
 
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -13,11 +13,11 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.WorldView;
 
-public class class_5806
+public class HangingRootsBlock
 extends Block {
-    protected static final VoxelShape field_28689 = Block.createCuboidShape(4.0, 9.0, 4.0, 12.0, 16.0, 12.0);
+    protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 9.0, 4.0, 12.0, 16.0, 12.0);
 
-    protected class_5806(AbstractBlock.Settings settings) {
+    protected HangingRootsBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
@@ -30,7 +30,7 @@ extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return field_28689;
+        return SHAPE;
     }
 }
 

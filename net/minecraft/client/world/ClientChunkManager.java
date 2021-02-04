@@ -112,7 +112,7 @@ extends ChunkManager {
         lightingProvider.setColumnEnabled(chunkPos, true);
         for (int j = 0; j < chunkSections.length; ++j) {
             ChunkSection chunkSection = chunkSections[j];
-            int k = this.world.getSection(j);
+            int k = this.world.sectionIndexToCoord(j);
             lightingProvider.setSectionStatus(ChunkSectionPos.from(x, k, z), ChunkSection.isEmpty(chunkSection));
         }
         this.world.resetChunkColor(chunkPos);

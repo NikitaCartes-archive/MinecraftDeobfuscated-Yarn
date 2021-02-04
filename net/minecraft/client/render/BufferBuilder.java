@@ -206,7 +206,7 @@ implements BufferVertexConsumer {
         if (!this.building) {
             throw new IllegalStateException("Not building!");
         }
-        int i = this.drawMode.method_31973(this.vertexCount);
+        int i = this.drawMode.getSize(this.vertexCount);
         VertexFormat.IntType intType = VertexFormat.IntType.getSmallestTypeFor(i);
         if (this.field_27348 != null) {
             int j = MathHelper.roundUpToMultiple(i * intType.size, 4);

@@ -5,11 +5,11 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SpringFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class SpringFeature
 extends Feature<SpringFeatureConfig> {
@@ -18,11 +18,11 @@ extends Feature<SpringFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<SpringFeatureConfig> arg) {
+    public boolean generate(FeatureContext<SpringFeatureConfig> featureContext) {
         BlockPos blockPos;
-        SpringFeatureConfig springFeatureConfig = arg.method_33656();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState((blockPos = arg.method_33655()).up()).getBlock())) {
+        SpringFeatureConfig springFeatureConfig = featureContext.getConfig();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState((blockPos = featureContext.getPos()).up()).getBlock())) {
             return false;
         }
         if (springFeatureConfig.requiresBlockBelow && !springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.down()).getBlock())) {

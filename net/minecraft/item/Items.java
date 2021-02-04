@@ -183,8 +183,8 @@ public class Items {
     public static final Item JUNGLE_LEAVES = Items.register(Blocks.JUNGLE_LEAVES, ItemGroup.DECORATIONS);
     public static final Item ACACIA_LEAVES = Items.register(Blocks.ACACIA_LEAVES, ItemGroup.DECORATIONS);
     public static final Item DARK_OAK_LEAVES = Items.register(Blocks.DARK_OAK_LEAVES, ItemGroup.DECORATIONS);
-    public static final Item field_28648 = Items.register(Blocks.AZALEA_LEAVES, ItemGroup.DECORATIONS);
-    public static final Item field_28649 = Items.register(Blocks.AZALEA_LEAVES_FLOWERS, ItemGroup.DECORATIONS);
+    public static final Item AZALEA_LEAVES = Items.register(Blocks.AZALEA_LEAVES, ItemGroup.DECORATIONS);
+    public static final Item AZALEA_LEAVES_FLOWERS = Items.register(Blocks.AZALEA_LEAVES_FLOWERS, ItemGroup.DECORATIONS);
     public static final Item SPONGE = Items.register(Blocks.SPONGE, ItemGroup.BUILDING_BLOCKS);
     public static final Item WET_SPONGE = Items.register(Blocks.WET_SPONGE, ItemGroup.BUILDING_BLOCKS);
     public static final Item GLASS = Items.register(Blocks.GLASS, ItemGroup.BUILDING_BLOCKS);
@@ -202,8 +202,8 @@ public class Items {
     public static final Item COBWEB = Items.register(Blocks.COBWEB, ItemGroup.DECORATIONS);
     public static final Item GRASS = Items.register(Blocks.GRASS, ItemGroup.DECORATIONS);
     public static final Item FERN = Items.register(Blocks.FERN, ItemGroup.DECORATIONS);
-    public static final Item field_28650 = Items.register(Blocks.AZALEA, ItemGroup.DECORATIONS);
-    public static final Item field_28651 = Items.register(Blocks.FLOWERING_AZALEA, ItemGroup.DECORATIONS);
+    public static final Item AZALEA = Items.register(Blocks.AZALEA, ItemGroup.DECORATIONS);
+    public static final Item FLOWERING_AZALEA = Items.register(Blocks.FLOWERING_AZALEA, ItemGroup.DECORATIONS);
     public static final Item DEAD_BUSH = Items.register(Blocks.DEAD_BUSH, ItemGroup.DECORATIONS);
     public static final Item SEAGRASS = Items.register(Blocks.SEAGRASS, ItemGroup.DECORATIONS);
     public static final Item SEA_PICKLE = Items.register(Blocks.SEA_PICKLE, ItemGroup.DECORATIONS);
@@ -235,7 +235,7 @@ public class Items {
     public static final Item PINK_TULIP = Items.register(Blocks.PINK_TULIP, ItemGroup.DECORATIONS);
     public static final Item OXEYE_DAISY = Items.register(Blocks.OXEYE_DAISY, ItemGroup.DECORATIONS);
     public static final Item CORNFLOWER = Items.register(Blocks.CORNFLOWER, ItemGroup.DECORATIONS);
-    public static final Item field_28652 = Items.register(Blocks.SPORE_BLOSSOM, ItemGroup.DECORATIONS);
+    public static final Item SPORE_BLOSSOM = Items.register(Blocks.SPORE_BLOSSOM, ItemGroup.DECORATIONS);
     public static final Item LILY_OF_THE_VALLEY = Items.register(Blocks.LILY_OF_THE_VALLEY, ItemGroup.DECORATIONS);
     public static final Item WITHER_ROSE = Items.register(Blocks.WITHER_ROSE, ItemGroup.DECORATIONS);
     public static final Item BROWN_MUSHROOM = Items.register(Blocks.BROWN_MUSHROOM, ItemGroup.DECORATIONS);
@@ -251,10 +251,10 @@ public class Items {
     public static final Item KELP = Items.register(Blocks.KELP, ItemGroup.DECORATIONS);
     public static final Item MOSS_CARPET = Items.register(Blocks.MOSS_CARPET, ItemGroup.DECORATIONS);
     public static final Item MOSS_BLOCK = Items.register(Blocks.MOSS_BLOCK, ItemGroup.DECORATIONS);
-    public static final Item field_28655 = Items.register(Blocks.ROOTED_DIRT, ItemGroup.DECORATIONS);
-    public static final Item field_28656 = Items.register(Blocks.HANGING_ROOTS, ItemGroup.DECORATIONS);
-    public static final Item field_28657 = Items.register(Blocks.BIG_DRIPLEAF, ItemGroup.DECORATIONS);
-    public static final Item field_28658 = Items.register(Blocks.SMALL_DRIPLEAF, ItemGroup.DECORATIONS);
+    public static final Item ROOTED_DIRT = Items.register(Blocks.ROOTED_DIRT, ItemGroup.DECORATIONS);
+    public static final Item HANGING_ROOTS = Items.register(Blocks.HANGING_ROOTS, ItemGroup.DECORATIONS);
+    public static final Item BIG_DRIPLEAF = Items.register(Blocks.BIG_DRIPLEAF, ItemGroup.DECORATIONS);
+    public static final Item SMALL_DRIPLEAF = Items.register(Blocks.SMALL_DRIPLEAF, ItemGroup.DECORATIONS);
     public static final Item BAMBOO = Items.register(Blocks.BAMBOO, ItemGroup.DECORATIONS);
     public static final Item GOLD_BLOCK = Items.register(Blocks.GOLD_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item IRON_BLOCK = Items.register(Blocks.IRON_BLOCK, ItemGroup.BUILDING_BLOCKS);
@@ -1130,9 +1130,9 @@ public class Items {
     public static final Item AMETHYST_CLUSTER = Items.register(Blocks.AMETHYST_CLUSTER, ItemGroup.DECORATIONS);
     public static final Item SPYGLASS = Items.register("spyglass", (Item)new SpyglassItem(new Item.Settings().group(ItemGroup.TOOLS).maxCount(1)));
     public static final Item COPPER_BLOCK = Items.register(Blocks.COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-    public static final Item LIGHTLY_WEATHERED_COPPER_BLOCK = Items.register(Blocks.EXPOSED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-    public static final Item SEMI_WEATHERED_COPPER_BLOCK = Items.register(Blocks.WEATHERED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WEATHERED_COPPER_BLOCK = Items.register(Blocks.OXIDIZED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
+    public static final Item LIGHTLY_WEATHERED_COPPER_BLOCK = Items.register(Blocks.EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item SEMI_WEATHERED_COPPER_BLOCK = Items.register(Blocks.WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WEATHERED_COPPER_BLOCK = Items.register(Blocks.OXIDIZED_COPPER, ItemGroup.BUILDING_BLOCKS);
     public static final Item CUT_COPPER = Items.register(Blocks.CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
     public static final Item LIGHTLY_WEATHERED_CUT_COPPER = Items.register(Blocks.EXPOSED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
     public static final Item SEMI_WEATHERED_CUT_COPPER = Items.register(Blocks.WEATHERED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);
@@ -1145,7 +1145,7 @@ public class Items {
     public static final Item LIGHTLY_WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.EXPOSED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item SEMI_WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.WEATHERED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item WEATHERED_CUT_COPPER_SLAB = Items.register(Blocks.OXIDIZED_CUT_COPPER_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item WAXED_COPPER = Items.register(Blocks.WAXED_COPPER, ItemGroup.BUILDING_BLOCKS);
+    public static final Item WAXED_COPPER = Items.register(Blocks.WAXED_COPPER_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item WAXED_LIGHTLY_WEATHERED_COPPER = Items.register(Blocks.WAXED_EXPOSED_COPPER, ItemGroup.BUILDING_BLOCKS);
     public static final Item WAXED_SEMI_WEATHERED_COPPER = Items.register(Blocks.WAXED_WEATHERED_COPPER, ItemGroup.BUILDING_BLOCKS);
     public static final Item WAXED_CUT_COPPER = Items.register(Blocks.WAXED_CUT_COPPER, ItemGroup.BUILDING_BLOCKS);

@@ -7,12 +7,12 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class GlowstoneBlobFeature
 extends Feature<DefaultFeatureConfig> {
@@ -21,10 +21,10 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DefaultFeatureConfig> arg) {
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        BlockPos blockPos = arg.method_33655();
-        Random random = arg.method_33654();
+    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        BlockPos blockPos = featureContext.getPos();
+        Random random = featureContext.getRandom();
         if (!structureWorldAccess.isAir(blockPos)) {
             return false;
         }

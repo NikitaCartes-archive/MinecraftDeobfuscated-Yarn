@@ -48,11 +48,11 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public void add(BlockPos pos, PointOfInterestType type) {
-        ((PointOfInterestSet)this.getOrCreate(ChunkSectionPos.method_33706(pos))).add(pos, type);
+        ((PointOfInterestSet)this.getOrCreate(ChunkSectionPos.toLong(pos))).add(pos, type);
     }
 
     public void remove(BlockPos pos) {
-        this.get(ChunkSectionPos.method_33706(pos)).ifPresent(pointOfInterestSet -> pointOfInterestSet.remove(pos));
+        this.get(ChunkSectionPos.toLong(pos)).ifPresent(pointOfInterestSet -> pointOfInterestSet.remove(pos));
     }
 
     public long count(Predicate<PointOfInterestType> typePredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
@@ -77,7 +77,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public Stream<PointOfInterest> getInChunk(Predicate<PointOfInterestType> predicate, ChunkPos chunkPos, OccupationStatus occupationStatus) {
-        return IntStream.range(this.world.getMinimumSection(), this.world.getTopSectionLimit()).boxed().map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong())).filter(Optional::isPresent).flatMap(optional -> ((PointOfInterestSet)optional.get()).get(predicate, occupationStatus));
+        return IntStream.range(this.world.getBottomSectionCoord(), this.world.getTopSectionCoord()).boxed().map(integer -> this.get(ChunkSectionPos.from(chunkPos, integer).asLong())).filter(Optional::isPresent).flatMap(optional -> ((PointOfInterestSet)optional.get()).get(predicate, occupationStatus));
     }
 
     public Stream<BlockPos> getPositions(Predicate<PointOfInterestType> typePredicate, Predicate<BlockPos> posPredicate, BlockPos pos, int radius, OccupationStatus occupationStatus) {
@@ -110,15 +110,15 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
     }
 
     public boolean releaseTicket(BlockPos pos) {
-        return this.get(ChunkSectionPos.method_33706(pos)).map(pointOfInterestSet -> pointOfInterestSet.releaseTicket(pos)).orElseThrow(() -> Util.throwOrPause(new IllegalStateException("POI never registered at " + pos)));
+        return this.get(ChunkSectionPos.toLong(pos)).map(pointOfInterestSet -> pointOfInterestSet.releaseTicket(pos)).orElseThrow(() -> Util.throwOrPause(new IllegalStateException("POI never registered at " + pos)));
     }
 
     public boolean test(BlockPos pos, Predicate<PointOfInterestType> predicate) {
-        return this.get(ChunkSectionPos.method_33706(pos)).map(pointOfInterestSet -> pointOfInterestSet.test(pos, predicate)).orElse(false);
+        return this.get(ChunkSectionPos.toLong(pos)).map(pointOfInterestSet -> pointOfInterestSet.test(pos, predicate)).orElse(false);
     }
 
     public Optional<PointOfInterestType> getType(BlockPos pos) {
-        return this.get(ChunkSectionPos.method_33706(pos)).flatMap(pointOfInterestSet -> pointOfInterestSet.getType(pos));
+        return this.get(ChunkSectionPos.toLong(pos)).flatMap(pointOfInterestSet -> pointOfInterestSet.getType(pos));
     }
 
     public int getDistanceFromNearestOccupied(ChunkSectionPos pos) {
@@ -182,7 +182,7 @@ extends SerializingRegionBasedStorage<PointOfInterestSet> {
      * @param radius The radius in blocks
      */
     public void preloadChunks(WorldView world, BlockPos pos, int radius) {
-        ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.world.getMinimumSection(), this.world.getTopSectionLimit()).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong())).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
+        ChunkSectionPos.stream(new ChunkPos(pos), Math.floorDiv(radius, 16), this.world.getBottomSectionCoord(), this.world.getTopSectionCoord()).map(chunkSectionPos -> Pair.of(chunkSectionPos, this.get(chunkSectionPos.asLong()))).filter(pair -> ((Optional)pair.getSecond()).map(PointOfInterestSet::isValid).orElse(false) == false).map(pair -> ((ChunkSectionPos)pair.getFirst()).toChunkPos()).filter(chunkPos -> this.preloadedChunks.add(chunkPos.toLong())).forEach(chunkPos -> world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.EMPTY));
     }
 
     final class PointOfInterestDistanceTracker

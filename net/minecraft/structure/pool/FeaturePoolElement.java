@@ -56,7 +56,7 @@ extends StructurePoolElement {
         return compoundTag;
     }
 
-    public BlockPos getStart(StructureManager structureManager, BlockRotation blockRotation) {
+    public BlockPos getStart(StructureManager structureManager, BlockRotation rotation) {
         return BlockPos.ORIGIN;
     }
 
@@ -74,8 +74,8 @@ extends StructurePoolElement {
     }
 
     @Override
-    public boolean generate(StructureManager structureManager, StructureWorldAccess structureWorldAccess, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos blockPos, BlockPos blockPos2, BlockRotation blockRotation, BlockBox blockBox, Random random, boolean keepJigsaws) {
-        return this.feature.get().generate(structureWorldAccess, chunkGenerator, random, blockPos);
+    public boolean generate(StructureManager structureManager, StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, BlockPos pos, BlockPos blockPos, BlockRotation rotation, BlockBox box, Random random, boolean keepJigsaws) {
+        return this.feature.get().generate(world, chunkGenerator, random, pos);
     }
 
     @Override

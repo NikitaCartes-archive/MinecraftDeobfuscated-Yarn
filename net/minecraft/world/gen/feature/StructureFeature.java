@@ -199,7 +199,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     int p = k + i * n;
                     ChunkPos chunkPos = this.getStartChunk(config, worldSeed, chunkRandom, o, p);
                     boolean bl32 = world.getBiomeAccess().method_31608(chunkPos).getGenerationSettings().hasStructureFeature(this);
-                    if (bl32 && (structureStart = structureAccessor.getStructureStart(ChunkSectionPos.method_33705(chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS)), this, chunk)) != null && structureStart.hasChildren()) {
+                    if (bl32 && (structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS)), this, chunk)) != null && structureStart.hasChildren()) {
                         if (skipExistingChunks && structureStart.isInExistingChunk()) {
                             structureStart.incrementReferences();
                             return structureStart.getPos();

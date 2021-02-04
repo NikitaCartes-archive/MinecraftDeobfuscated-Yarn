@@ -81,7 +81,7 @@ Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
@@ -107,8 +107,8 @@ Waterloggable {
         return (BlockState)state.with(THICKNESS, thickness);
     }
 
-    private static BlockState getFluidBlockState(BlockState blockState) {
-        return blockState.get(WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+    private static BlockState getFluidBlockState(BlockState state) {
+        return state.get(WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
     }
 
     @Override
@@ -138,7 +138,7 @@ Waterloggable {
         if (f > 0.12f) {
             return;
         }
-        PointedDripstoneBlock.method_33276(world, pos, state).filter(fluid -> f < 0.02f || PointedDripstoneBlock.method_33273(fluid)).ifPresent(fluid -> PointedDripstoneBlock.createParticle(world, pos, state, fluid));
+        PointedDripstoneBlock.method_33276(world, pos, state).filter(fluid -> f < 0.02f || PointedDripstoneBlock.isFluidLiquid(fluid)).ifPresent(fluid -> PointedDripstoneBlock.createParticle(world, pos, state, fluid));
     }
 
     @Override
@@ -160,7 +160,7 @@ Waterloggable {
         if (!PointedDripstoneBlock.isHeldByPointedDripstone(state, world, pos)) {
             return;
         }
-        Fluid fluid = PointedDripstoneBlock.getDripFluid(world, pos);
+        Fluid fluid = PointedDripstoneBlock.getDripFluid((World)world, pos);
         if (fluid == Fluids.WATER) {
             f = 0.17578125f;
         } else if (fluid == Fluids.LAVA) {
@@ -171,7 +171,7 @@ Waterloggable {
         if (dripChance >= f) {
             return;
         }
-        BlockPos blockPos = PointedDripstoneBlock.method_32782(state, world, pos, 10);
+        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, 10);
         if (blockPos == null) {
             return;
         }
@@ -258,7 +258,7 @@ Waterloggable {
     }
 
     private void scheduleFall(BlockState state, WorldAccess world, BlockPos pos) {
-        BlockPos blockPos = PointedDripstoneBlock.method_32782(state, world, pos, Integer.MAX_VALUE);
+        BlockPos blockPos = PointedDripstoneBlock.getTipPos(state, world, pos, Integer.MAX_VALUE);
         if (blockPos == null) {
             return;
         }
@@ -290,8 +290,8 @@ Waterloggable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void method_32899(World world, BlockPos blockPos, BlockState blockState) {
-        PointedDripstoneBlock.method_33276(world, blockPos, blockState).ifPresent(fluid -> PointedDripstoneBlock.createParticle(world, blockPos, blockState, fluid));
+    public static void createParticle(World world, BlockPos pos, BlockState state) {
+        PointedDripstoneBlock.method_33276(world, pos, state).ifPresent(fluid -> PointedDripstoneBlock.createParticle(world, pos, state, fluid));
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -301,19 +301,19 @@ Waterloggable {
         double e = (double)pos.getX() + 0.5 + vec3d.x;
         double f = (double)((float)(pos.getY() + 1) - 0.6875f) - 0.0625;
         double g = (double)pos.getZ() + 0.5 + vec3d.z;
-        Fluid fluid2 = PointedDripstoneBlock.method_33271(world, fluid);
+        Fluid fluid2 = PointedDripstoneBlock.getDripFluid(world, fluid);
         DefaultParticleType particleEffect = fluid2.isIn(FluidTags.LAVA) ? ParticleTypes.DRIPPING_DRIPSTONE_LAVA : ParticleTypes.DRIPPING_DRIPSTONE_WATER;
         world.addParticle(particleEffect, e, f, g, 0.0, 0.0, 0.0);
     }
 
     @Nullable
-    private static BlockPos method_32782(BlockState blockState2, WorldAccess worldAccess, BlockPos blockPos, int i) {
-        if (PointedDripstoneBlock.isTip(blockState2)) {
-            return blockPos;
+    private static BlockPos getTipPos(BlockState state, WorldAccess world, BlockPos pos, int i) {
+        if (PointedDripstoneBlock.isTip(state)) {
+            return pos;
         }
-        Direction direction = blockState2.get(VERTICAL_DIRECTION);
+        Direction direction = state.get(VERTICAL_DIRECTION);
         Predicate<BlockState> predicate = blockState -> blockState.isOf(Blocks.POINTED_DRIPSTONE) && blockState.get(VERTICAL_DIRECTION) == direction;
-        return PointedDripstoneBlock.method_33272(worldAccess, blockPos, direction.getDirection(), predicate, PointedDripstoneBlock::isTip, i).orElse(null);
+        return PointedDripstoneBlock.method_33272(world, pos, direction.getDirection(), predicate, PointedDripstoneBlock::isTip, i).orElse(null);
     }
 
     @Nullable
@@ -395,9 +395,9 @@ Waterloggable {
     }
 
     @Nullable
-    private static BlockPos getCauldronPos(World world, BlockPos blockPos, Fluid fluid) {
-        Predicate<BlockState> predicate = blockState -> blockState.getBlock() instanceof AbstractCauldronBlock && ((AbstractCauldronBlock)blockState.getBlock()).canBeFilledByDripstone(fluid);
-        return PointedDripstoneBlock.method_33272(world, blockPos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 10).orElse(null);
+    private static BlockPos getCauldronPos(World world, BlockPos pos, Fluid fluid) {
+        Predicate<BlockState> predicate = state -> state.getBlock() instanceof AbstractCauldronBlock && ((AbstractCauldronBlock)state.getBlock()).canBeFilledByDripstone(fluid);
+        return PointedDripstoneBlock.method_33272(world, pos, Direction.DOWN.getDirection(), AbstractBlock.AbstractBlockState::isAir, predicate, 10).orElse(null);
     }
 
     @Nullable
@@ -406,7 +406,7 @@ Waterloggable {
     }
 
     public static Fluid getDripFluid(World world, BlockPos pos) {
-        return PointedDripstoneBlock.method_33276(world, pos, world.getBlockState(pos)).filter(PointedDripstoneBlock::method_33273).orElse(Fluids.EMPTY);
+        return PointedDripstoneBlock.method_33276(world, pos, world.getBlockState(pos)).filter(PointedDripstoneBlock::isFluidLiquid).orElse(Fluids.EMPTY);
     }
 
     private static Optional<Fluid> method_33276(World world, BlockPos blockPos2, BlockState blockState) {
@@ -416,12 +416,15 @@ Waterloggable {
         return PointedDripstoneBlock.getSupportingPos(world, blockPos2, blockState, 10).map(blockPos -> world.getFluidState(blockPos.up()).getFluid());
     }
 
-    private static boolean method_33273(Fluid fluid) {
+    /**
+     * Returns whether the provided {@code fluid} is liquid, namely lava or water.
+     */
+    private static boolean isFluidLiquid(Fluid fluid) {
         return fluid == Fluids.LAVA || fluid == Fluids.WATER;
     }
 
     @Environment(value=EnvType.CLIENT)
-    private static Fluid method_33271(World world, Fluid fluid) {
+    private static Fluid getDripFluid(World world, Fluid fluid) {
         if (fluid.matchesType(Fluids.EMPTY)) {
             return world.getDimension().isUltrawarm() ? Fluids.LAVA : Fluids.WATER;
         }

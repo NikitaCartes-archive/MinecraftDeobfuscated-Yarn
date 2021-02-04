@@ -64,11 +64,11 @@ extends Block {
         world.addParticle(ParticleTypes.SMALL_FLAME, vec3d.x, vec3d.y, vec3d.z, 0.0, 0.0, 0.0);
     }
 
-    protected static void extinguish(@Nullable PlayerEntity playerEntity, BlockState blockState, WorldAccess worldAccess, BlockPos blockPos) {
-        AbstractCandleBlock.setLit(worldAccess, blockState, blockPos, false);
-        worldAccess.addParticle(ParticleTypes.SMOKE, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 0.0, 0.1f, 0.0);
-        worldAccess.playSound(null, blockPos, SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.0f, 1.0f);
-        worldAccess.emitGameEvent((Entity)playerEntity, GameEvent.BLOCK_CHANGE, blockPos);
+    protected static void extinguish(@Nullable PlayerEntity player, BlockState state, WorldAccess world, BlockPos pos) {
+        AbstractCandleBlock.setLit(world, state, pos, false);
+        world.addParticle(ParticleTypes.SMOKE, pos.getX(), pos.getY(), pos.getZ(), 0.0, 0.1f, 0.0);
+        world.playSound(null, pos, SoundEvents.BLOCK_CANDLE_EXTINGUISH, SoundCategory.BLOCKS, 1.0f, 1.0f);
+        world.emitGameEvent((Entity)player, GameEvent.BLOCK_CHANGE, pos);
     }
 
     private static void setLit(WorldAccess world, BlockState state, BlockPos pos, boolean lit) {

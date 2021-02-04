@@ -4,11 +4,11 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SimpleBlockFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class SimpleBlockFeature
 extends Feature<SimpleBlockFeatureConfig> {
@@ -17,11 +17,11 @@ extends Feature<SimpleBlockFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<SimpleBlockFeatureConfig> arg) {
+    public boolean generate(FeatureContext<SimpleBlockFeatureConfig> featureContext) {
         BlockPos blockPos;
-        SimpleBlockFeatureConfig simpleBlockFeatureConfig = arg.method_33656();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState((blockPos = arg.method_33655()).down())) && simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {
+        SimpleBlockFeatureConfig simpleBlockFeatureConfig = featureContext.getConfig();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState((blockPos = featureContext.getPos()).down())) && simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {
             structureWorldAccess.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);
             return true;
         }

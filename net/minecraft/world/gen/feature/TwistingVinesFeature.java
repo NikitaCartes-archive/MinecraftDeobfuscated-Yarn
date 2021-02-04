@@ -8,13 +8,13 @@ import java.util.Random;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class TwistingVinesFeature
 extends Feature<DefaultFeatureConfig> {
@@ -23,8 +23,8 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DefaultFeatureConfig> arg) {
-        return TwistingVinesFeature.tryGenerateVines(arg.method_33652(), arg.method_33654(), arg.method_33655(), 8, 4, 8);
+    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+        return TwistingVinesFeature.tryGenerateVines(featureContext.getWorld(), featureContext.getRandom(), featureContext.getPos(), 8, 4, 8);
     }
 
     public static boolean tryGenerateVines(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {

@@ -86,7 +86,7 @@ implements Chunk {
         this.blockTickScheduler = blockTickScheduler;
         this.fluidTickScheduler = fluidTickScheduler;
         this.world = world;
-        this.sections = new ChunkSection[world.getSections()];
+        this.sections = new ChunkSection[world.countVerticalSections()];
         if (chunkSections != null) {
             if (this.sections.length == chunkSections.length) {
                 System.arraycopy(chunkSections, 0, this.sections, 0, this.sections.length);
@@ -94,7 +94,7 @@ implements Chunk {
                 LOGGER.warn("Could not set level chunk sections, array length is {} instead of {}", (Object)chunkSections.length, (Object)this.sections.length);
             }
         }
-        this.postProcessingLists = new ShortList[world.getSections()];
+        this.postProcessingLists = new ShortList[world.countVerticalSections()];
     }
 
     @Override
@@ -129,7 +129,7 @@ implements Chunk {
     }
 
     public ShortList[] getLightSourcesBySection() {
-        ShortList[] shortLists = new ShortList[this.getSections()];
+        ShortList[] shortLists = new ShortList[this.countVerticalSections()];
         for (BlockPos blockPos : this.lightSources) {
             Chunk.getList(shortLists, this.getSectionIndex(blockPos.getY())).add(ProtoChunk.getPackedSectionRelative(blockPos));
         }
@@ -137,7 +137,7 @@ implements Chunk {
     }
 
     public void addLightSource(short chunkSliceRel, int sectionY) {
-        this.addLightSource(ProtoChunk.joinBlockPos(chunkSliceRel, this.getSection(sectionY), this.pos));
+        this.addLightSource(ProtoChunk.joinBlockPos(chunkSliceRel, this.sectionIndexToCoord(sectionY), this.pos));
     }
 
     public void addLightSource(BlockPos pos) {
@@ -150,7 +150,7 @@ implements Chunk {
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
-        if (j < this.getBottomSectionLimit() || j >= this.getTopHeightLimit()) {
+        if (j < this.getBottomY() || j >= this.getTopY()) {
             return Blocks.VOID_AIR.getDefaultState();
         }
         int l = this.getSectionIndex(j);
@@ -186,7 +186,7 @@ implements Chunk {
 
     public ChunkSection getSection(int y) {
         if (this.sections[y] == WorldChunk.EMPTY_SECTION) {
-            this.sections[y] = new ChunkSection(this.getSection(y));
+            this.sections[y] = new ChunkSection(this.sectionIndexToCoord(y));
         }
         return this.sections[y];
     }
@@ -459,13 +459,13 @@ implements Chunk {
     }
 
     @Override
-    public int getBottomSectionLimit() {
-        return this.world.getBottomSectionLimit();
+    public int getBottomY() {
+        return this.world.getBottomY();
     }
 
     @Override
-    public int getSectionCount() {
-        return this.world.getSectionCount();
+    public int getHeight() {
+        return this.world.getHeight();
     }
 
     public /* synthetic */ TickScheduler getFluidTickScheduler() {

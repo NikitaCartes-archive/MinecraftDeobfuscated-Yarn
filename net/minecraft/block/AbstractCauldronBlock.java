@@ -81,7 +81,7 @@ extends Block {
         if (blockPos == null) {
             return;
         }
-        Fluid fluid = PointedDripstoneBlock.getDripFluid(world, blockPos);
+        Fluid fluid = PointedDripstoneBlock.getDripFluid((World)world, blockPos);
         if (fluid != Fluids.EMPTY && this.canBeFilledByDripstone(fluid)) {
             this.fillFromDripstone(state, world, pos, fluid);
         }

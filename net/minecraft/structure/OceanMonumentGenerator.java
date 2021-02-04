@@ -188,9 +188,9 @@ public class OceanMonumentGenerator {
             this.roomIndex = index;
         }
 
-        public void setNeighbor(Direction direction, PieceSetting pieceSetting) {
-            this.neighbors[direction.getId()] = pieceSetting;
-            pieceSetting.neighbors[direction.getOpposite().getId()] = this;
+        public void setNeighbor(Direction orientation, PieceSetting setting) {
+            this.neighbors[orientation.getId()] = setting;
+            setting.neighbors[orientation.getOpposite().getId()] = this;
         }
 
         public void checkNeighborStates() {
@@ -227,12 +227,12 @@ public class OceanMonumentGenerator {
 
     public static class Penthouse
     extends Piece {
-        public Penthouse(Direction direction, BlockBox blockBox) {
-            super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, direction, blockBox);
+        public Penthouse(Direction orientation, BlockBox box) {
+            super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, orientation, box);
         }
 
-        public Penthouse(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, compoundTag);
+        public Penthouse(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_PENTHOUSE, nbt);
         }
 
         @Override
@@ -273,7 +273,7 @@ public class OceanMonumentGenerator {
             this.fillWithOutline(world, boundingBox, 8, 0, 10, 8, 2, 10, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
             this.fillWithOutline(world, boundingBox, 6, -1, 7, 7, -1, 8, DARK_PRISMARINE, DARK_PRISMARINE, false);
             this.setAirAndWater(world, boundingBox, 6, -1, 3, 7, -1, 4);
-            this.method_14772(world, boundingBox, 6, 1, 6);
+            this.spawnElderGuardian(world, boundingBox, 6, 1, 6);
             return true;
         }
     }
@@ -282,13 +282,13 @@ public class OceanMonumentGenerator {
     extends Piece {
         private int field_14481;
 
-        public WingRoom(Direction direction, BlockBox blockBox, int i) {
-            super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, direction, blockBox);
+        public WingRoom(Direction orientation, BlockBox box, int i) {
+            super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, orientation, box);
             this.field_14481 = i & 1;
         }
 
-        public WingRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, compoundTag);
+        public WingRoom(StructureManager structureManager, CompoundTag tag) {
+            super(StructurePieceType.OCEAN_MONUMENT_WING_ROOM, tag);
         }
 
         @Override
@@ -337,7 +337,7 @@ public class OceanMonumentGenerator {
                 this.addBlock(world, PRISMARINE_BRICKS, 13, 7, 20, boundingBox);
                 this.fillWithOutline(world, boundingBox, 6, 0, 21, 7, 4, 21, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 this.fillWithOutline(world, boundingBox, 15, 0, 21, 16, 4, 21, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
-                this.method_14772(world, boundingBox, 11, 2, 16);
+                this.spawnElderGuardian(world, boundingBox, 11, 2, 16);
             } else if (this.field_14481 == 1) {
                 int l;
                 this.fillWithOutline(world, boundingBox, 9, 3, 18, 13, 3, 20, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
@@ -371,7 +371,7 @@ public class OceanMonumentGenerator {
                 }
                 this.fillWithOutline(world, boundingBox, 8, 3, 8, 8, 3, 13, DARK_PRISMARINE, DARK_PRISMARINE, false);
                 this.fillWithOutline(world, boundingBox, 14, 3, 8, 14, 3, 13, DARK_PRISMARINE, DARK_PRISMARINE, false);
-                this.method_14772(world, boundingBox, 11, 5, 13);
+                this.spawnElderGuardian(world, boundingBox, 11, 5, 13);
             }
             return true;
         }
@@ -379,12 +379,12 @@ public class OceanMonumentGenerator {
 
     public static class CoreRoom
     extends Piece {
-        public CoreRoom(Direction direction, PieceSetting pieceSetting) {
-            super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, 1, direction, pieceSetting, 2, 2, 2);
+        public CoreRoom(Direction orientation, PieceSetting setting) {
+            super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, 1, orientation, setting, 2, 2, 2);
         }
 
-        public CoreRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, compoundTag);
+        public CoreRoom(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_CORE_ROOM, nbt);
         }
 
         @Override
@@ -453,12 +453,12 @@ public class OceanMonumentGenerator {
 
     public static class DoubleYZRoom
     extends Piece {
-        public DoubleYZRoom(Direction direction, PieceSetting pieceSetting) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, 1, direction, pieceSetting, 1, 2, 2);
+        public DoubleYZRoom(Direction orientation, PieceSetting setting) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, 1, orientation, setting, 1, 2, 2);
         }
 
-        public DoubleYZRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, compoundTag);
+        public DoubleYZRoom(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Y_Z_ROOM, nbt);
         }
 
         @Override
@@ -550,12 +550,12 @@ public class OceanMonumentGenerator {
 
     public static class DoubleXYRoom
     extends Piece {
-        public DoubleXYRoom(Direction direction, PieceSetting pieceSetting) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, 1, direction, pieceSetting, 2, 2, 1);
+        public DoubleXYRoom(Direction orientation, PieceSetting setting) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, 1, orientation, setting, 2, 2, 1);
         }
 
-        public DoubleXYRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, compoundTag);
+        public DoubleXYRoom(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_Y_ROOM, nbt);
         }
 
         @Override
@@ -649,12 +649,12 @@ public class OceanMonumentGenerator {
 
     public static class DoubleZRoom
     extends Piece {
-        public DoubleZRoom(Direction direction, PieceSetting pieceSetting) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, 1, direction, pieceSetting, 1, 1, 2);
+        public DoubleZRoom(Direction orientation, PieceSetting setting) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, 1, orientation, setting, 1, 1, 2);
         }
 
-        public DoubleZRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, compoundTag);
+        public DoubleZRoom(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_Z_ROOM, nbt);
         }
 
         @Override
@@ -731,12 +731,12 @@ public class OceanMonumentGenerator {
 
     public static class DoubleXRoom
     extends Piece {
-        public DoubleXRoom(Direction direction, PieceSetting pieceSetting) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, 1, direction, pieceSetting, 2, 1, 1);
+        public DoubleXRoom(Direction orientation, PieceSetting setting) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, 1, orientation, setting, 2, 1, 1);
         }
 
-        public DoubleXRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, compoundTag);
+        public DoubleXRoom(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_DOUBLE_X_ROOM, nbt);
         }
 
         @Override
@@ -869,12 +869,12 @@ public class OceanMonumentGenerator {
 
     public static class SimpleRoomTop
     extends Piece {
-        public SimpleRoomTop(Direction direction, PieceSetting pieceSetting) {
-            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, 1, direction, pieceSetting, 1, 1, 1);
+        public SimpleRoomTop(Direction direction, PieceSetting setting) {
+            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, 1, direction, setting, 1, 1, 1);
         }
 
-        public SimpleRoomTop(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, compoundTag);
+        public SimpleRoomTop(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_TOP_ROOM, nbt);
         }
 
         @Override
@@ -920,13 +920,13 @@ public class OceanMonumentGenerator {
     extends Piece {
         private int field_14480;
 
-        public SimpleRoom(Direction direction, PieceSetting pieceSetting, Random random) {
-            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, 1, direction, pieceSetting, 1, 1, 1);
+        public SimpleRoom(Direction orientation, PieceSetting setting, Random random) {
+            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, 1, orientation, setting, 1, 1, 1);
             this.field_14480 = random.nextInt(3);
         }
 
-        public SimpleRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, compoundTag);
+        public SimpleRoom(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_SIMPLE_ROOM, nbt);
         }
 
         @Override
@@ -1074,12 +1074,12 @@ public class OceanMonumentGenerator {
 
     public static class Entry
     extends Piece {
-        public Entry(Direction direction, PieceSetting pieceSetting) {
-            super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, 1, direction, pieceSetting, 1, 1, 1);
+        public Entry(Direction orientation, PieceSetting setting) {
+            super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, 1, orientation, setting, 1, 1, 1);
         }
 
-        public Entry(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, compoundTag);
+        public Entry(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_ENTRY_ROOM, nbt);
         }
 
         @Override
@@ -1112,15 +1112,15 @@ public class OceanMonumentGenerator {
         private PieceSetting field_14466;
         private final List<Piece> field_14465 = Lists.newArrayList();
 
-        public Base(Random random, int i, int j, Direction direction) {
+        public Base(Random random, int i, int j, Direction orientation) {
             super(StructurePieceType.OCEAN_MONUMENT_BASE, 0);
-            this.setOrientation(direction);
-            Direction direction2 = this.getFacing();
-            this.boundingBox = direction2.getAxis() == Direction.Axis.Z ? new BlockBox(i, 39, j, i + 58 - 1, 61, j + 58 - 1) : new BlockBox(i, 39, j, i + 58 - 1, 61, j + 58 - 1);
+            this.setOrientation(orientation);
+            Direction direction = this.getFacing();
+            this.boundingBox = direction.getAxis() == Direction.Axis.Z ? new BlockBox(i, 39, j, i + 58 - 1, 61, j + 58 - 1) : new BlockBox(i, 39, j, i + 58 - 1, 61, j + 58 - 1);
             List<PieceSetting> list = this.method_14760(random);
             this.field_14464.used = true;
-            this.field_14465.add(new Entry(direction2, this.field_14464));
-            this.field_14465.add(new CoreRoom(direction2, this.field_14466));
+            this.field_14465.add(new Entry(direction, this.field_14464));
+            this.field_14465.add(new CoreRoom(direction, this.field_14466));
             ArrayList<PieceFactory> list2 = Lists.newArrayList();
             list2.add(new DoubleXYRoomFactory());
             list2.add(new DoubleYZRoomFactory());
@@ -1133,7 +1133,7 @@ public class OceanMonumentGenerator {
                 if (pieceSetting.used || pieceSetting.isAboveLevelThree()) continue;
                 for (PieceFactory pieceFactory : list2) {
                     if (!pieceFactory.canGenerate(pieceSetting)) continue;
-                    this.field_14465.add(pieceFactory.generate(direction2, pieceSetting, random));
+                    this.field_14465.add(pieceFactory.generate(direction, pieceSetting, random));
                     continue block0;
                 }
             }
@@ -1147,13 +1147,13 @@ public class OceanMonumentGenerator {
             BlockBox blockBox2 = BlockBox.create(this.applyXTransform(34, 1), this.applyYTransform(1), this.applyZTransform(34, 1), this.applyXTransform(56, 21), this.applyYTransform(8), this.applyZTransform(56, 21));
             BlockBox blockBox3 = BlockBox.create(this.applyXTransform(22, 22), this.applyYTransform(13), this.applyZTransform(22, 22), this.applyXTransform(35, 35), this.applyYTransform(17), this.applyZTransform(35, 35));
             int n = random.nextInt();
-            this.field_14465.add(new WingRoom(direction2, blockBox, n++));
-            this.field_14465.add(new WingRoom(direction2, blockBox2, n++));
-            this.field_14465.add(new Penthouse(direction2, blockBox3));
+            this.field_14465.add(new WingRoom(direction, blockBox, n++));
+            this.field_14465.add(new WingRoom(direction, blockBox2, n++));
+            this.field_14465.add(new Penthouse(direction, blockBox3));
         }
 
-        public Base(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.OCEAN_MONUMENT_BASE, compoundTag);
+        public Base(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.OCEAN_MONUMENT_BASE, nbt);
         }
 
         private List<PieceSetting> method_14760(Random random) {
@@ -1323,22 +1323,22 @@ public class OceanMonumentGenerator {
                 this.fillWithOutline(structureWorldAccess, blockBox, i + 7, 4, 4, i + 17, 4, 6, PRISMARINE, PRISMARINE, false);
                 this.fillWithOutline(structureWorldAccess, blockBox, i + 18, 4, 4, i + 20, 4, 20, PRISMARINE, PRISMARINE, false);
                 this.fillWithOutline(structureWorldAccess, blockBox, i + 11, 8, 11, i + 13, 8, 20, PRISMARINE, PRISMARINE, false);
-                this.addBlock(structureWorldAccess, field_14470, i + 12, 9, 12, blockBox);
-                this.addBlock(structureWorldAccess, field_14470, i + 12, 9, 15, blockBox);
-                this.addBlock(structureWorldAccess, field_14470, i + 12, 9, 18, blockBox);
+                this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i + 12, 9, 12, blockBox);
+                this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i + 12, 9, 15, blockBox);
+                this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i + 12, 9, 18, blockBox);
                 k = i + (bl ? 19 : 5);
                 int l = i + (bl ? 5 : 19);
                 for (m = 20; m >= 5; m -= 3) {
-                    this.addBlock(structureWorldAccess, field_14470, k, 5, m, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, k, 5, m, blockBox);
                 }
                 for (m = 19; m >= 7; m -= 3) {
-                    this.addBlock(structureWorldAccess, field_14470, l, 5, m, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, l, 5, m, blockBox);
                 }
                 for (m = 0; m < 4; ++m) {
                     int n = bl ? i + 24 - (17 - m * 3) : i + 17 - m * 3;
-                    this.addBlock(structureWorldAccess, field_14470, n, 5, 5, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, n, 5, 5, blockBox);
                 }
-                this.addBlock(structureWorldAccess, field_14470, l, 5, 5, blockBox);
+                this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, l, 5, 5, blockBox);
                 this.fillWithOutline(structureWorldAccess, blockBox, i + 11, 1, 12, i + 13, 7, 12, PRISMARINE, PRISMARINE, false);
                 this.fillWithOutline(structureWorldAccess, blockBox, i + 12, 1, 11, i + 12, 7, 13, PRISMARINE, PRISMARINE, false);
             }
@@ -1462,9 +1462,9 @@ public class OceanMonumentGenerator {
                     this.fillWithOutline(structureWorldAccess, blockBox, i, i + 1, 21, i, i + 1, 57 - i, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 }
                 for (i = 23; i < 53; i += 3) {
-                    this.addBlock(structureWorldAccess, field_14470, 5, 5, i, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, 5, 5, i, blockBox);
                 }
-                this.addBlock(structureWorldAccess, field_14470, 5, 5, 52, blockBox);
+                this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, 5, 5, 52, blockBox);
                 for (i = 0; i < 4; ++i) {
                     this.fillWithOutline(structureWorldAccess, blockBox, i, i + 1, 21, i, i + 1, 57 - i, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 }
@@ -1479,9 +1479,9 @@ public class OceanMonumentGenerator {
                     this.fillWithOutline(structureWorldAccess, blockBox, 57 - i, i + 1, 21, 57 - i, i + 1, 57 - i, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 }
                 for (i = 23; i < 53; i += 3) {
-                    this.addBlock(structureWorldAccess, field_14470, 52, 5, i, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, 52, 5, i, blockBox);
                 }
-                this.addBlock(structureWorldAccess, field_14470, 52, 5, 52, blockBox);
+                this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, 52, 5, 52, blockBox);
                 this.fillWithOutline(structureWorldAccess, blockBox, 51, 1, 52, 53, 3, 52, PRISMARINE, PRISMARINE, false);
                 this.fillWithOutline(structureWorldAccess, blockBox, 52, 1, 51, 52, 3, 53, PRISMARINE, PRISMARINE, false);
             }
@@ -1504,7 +1504,7 @@ public class OceanMonumentGenerator {
                     this.fillWithOutline(structureWorldAccess, blockBox, i + 7, i + 5, 21, i + 7, i + 5, 54, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 }
                 for (i = 21; i <= 45; i += 3) {
-                    this.addBlock(structureWorldAccess, field_14470, 12, 9, i, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, 12, 9, i, blockBox);
                 }
             }
             if (this.method_14775(blockBox, 44, 21, 50, 54)) {
@@ -1515,26 +1515,26 @@ public class OceanMonumentGenerator {
                     this.fillWithOutline(structureWorldAccess, blockBox, 50 - i, i + 5, 21, 50 - i, i + 5, 54, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 }
                 for (i = 21; i <= 45; i += 3) {
-                    this.addBlock(structureWorldAccess, field_14470, 45, 9, i, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, 45, 9, i, blockBox);
                 }
             }
             if (this.method_14775(blockBox, 8, 44, 49, 54)) {
                 this.fillWithOutline(structureWorldAccess, blockBox, 14, 0, 44, 43, 0, 50, PRISMARINE, PRISMARINE, false);
                 this.setAirAndWater(structureWorldAccess, blockBox, 14, 1, 44, 43, 10, 50);
                 for (i = 12; i <= 45; i += 3) {
-                    this.addBlock(structureWorldAccess, field_14470, i, 9, 45, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 9, 52, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 9, 45, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 9, 52, blockBox);
                     if (i != 12 && i != 18 && i != 24 && i != 33 && i != 39 && i != 45) continue;
-                    this.addBlock(structureWorldAccess, field_14470, i, 9, 47, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 9, 50, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 10, 45, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 10, 46, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 10, 51, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 10, 52, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 11, 47, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 11, 50, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 12, 48, blockBox);
-                    this.addBlock(structureWorldAccess, field_14470, i, 12, 49, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 9, 47, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 9, 50, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 10, 45, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 10, 46, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 10, 51, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 10, 52, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 11, 47, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 11, 50, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 12, 48, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 12, 49, blockBox);
                 }
                 for (i = 0; i < 3; ++i) {
                     this.fillWithOutline(structureWorldAccess, blockBox, 8 + i, 5 + i, 54, 49 - i, 5 + i, 54, PRISMARINE, PRISMARINE, false);
@@ -1555,7 +1555,7 @@ public class OceanMonumentGenerator {
                     this.fillWithOutline(structureWorldAccess, blockBox, i + 14, i + 9, 21, i + 14, i + 9, 43 - i, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 }
                 for (i = 23; i <= 39; i += 3) {
-                    this.addBlock(structureWorldAccess, field_14470, 19, 13, i, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, 19, 13, i, blockBox);
                 }
             }
             if (this.method_14775(blockBox, 37, 21, 43, 43)) {
@@ -1567,7 +1567,7 @@ public class OceanMonumentGenerator {
                     this.fillWithOutline(structureWorldAccess, blockBox, 43 - i, i + 9, 21, 43 - i, i + 9, 43 - i, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 }
                 for (i = 23; i <= 39; i += 3) {
-                    this.addBlock(structureWorldAccess, field_14470, 38, 13, i, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, 38, 13, i, blockBox);
                 }
             }
             if (this.method_14775(blockBox, 15, 37, 42, 43)) {
@@ -1578,7 +1578,7 @@ public class OceanMonumentGenerator {
                     this.fillWithOutline(structureWorldAccess, blockBox, 15 + i, i + 9, 43 - i, 42 - i, i + 9, 43 - i, PRISMARINE_BRICKS, PRISMARINE_BRICKS, false);
                 }
                 for (i = 21; i <= 36; i += 3) {
-                    this.addBlock(structureWorldAccess, field_14470, i, 13, 38, blockBox);
+                    this.addBlock(structureWorldAccess, ALSO_PRISMARINE_BRICKS, i, 13, 38, blockBox);
                 }
             }
         }
@@ -1589,7 +1589,7 @@ public class OceanMonumentGenerator {
         protected static final BlockState PRISMARINE = Blocks.PRISMARINE.getDefaultState();
         protected static final BlockState PRISMARINE_BRICKS = Blocks.PRISMARINE_BRICKS.getDefaultState();
         protected static final BlockState DARK_PRISMARINE = Blocks.DARK_PRISMARINE.getDefaultState();
-        protected static final BlockState field_14470 = PRISMARINE_BRICKS;
+        protected static final BlockState ALSO_PRISMARINE_BRICKS = PRISMARINE_BRICKS;
         protected static final BlockState SEA_LANTERN = Blocks.SEA_LANTERN.getDefaultState();
         protected static final BlockState WATER = Blocks.WATER.getDefaultState();
         protected static final Set<Block> ICE_BLOCKS = ((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)((ImmutableSet.Builder)ImmutableSet.builder().add(Blocks.ICE)).add(Blocks.PACKED_ICE)).add(Blocks.BLUE_ICE)).add(WATER.getBlock())).build();
@@ -1607,36 +1607,36 @@ public class OceanMonumentGenerator {
             super(structurePieceType, i);
         }
 
-        public Piece(StructurePieceType structurePieceType, Direction direction, BlockBox blockBox) {
-            super(structurePieceType, 1);
-            this.setOrientation(direction);
-            this.boundingBox = blockBox;
+        public Piece(StructurePieceType type, Direction orientation, BlockBox boundingBox) {
+            super(type, 1);
+            this.setOrientation(orientation);
+            this.boundingBox = boundingBox;
         }
 
-        protected Piece(StructurePieceType structurePieceType, int i, Direction direction, PieceSetting pieceSetting, int j, int k, int l) {
-            super(structurePieceType, i);
-            this.setOrientation(direction);
-            this.setting = pieceSetting;
-            int m = pieceSetting.roomIndex;
-            int n = m % 5;
-            int o = m / 5 % 5;
-            int p = m / 25;
-            this.boundingBox = direction == Direction.NORTH || direction == Direction.SOUTH ? new BlockBox(0, 0, 0, j * 8 - 1, k * 4 - 1, l * 8 - 1) : new BlockBox(0, 0, 0, l * 8 - 1, k * 4 - 1, j * 8 - 1);
-            switch (direction) {
+        protected Piece(StructurePieceType type, int length, Direction orientation, PieceSetting setting, int i, int j, int k) {
+            super(type, length);
+            this.setOrientation(orientation);
+            this.setting = setting;
+            int l = setting.roomIndex;
+            int m = l % 5;
+            int n = l / 5 % 5;
+            int o = l / 25;
+            this.boundingBox = orientation == Direction.NORTH || orientation == Direction.SOUTH ? new BlockBox(0, 0, 0, i * 8 - 1, j * 4 - 1, k * 8 - 1) : new BlockBox(0, 0, 0, k * 8 - 1, j * 4 - 1, i * 8 - 1);
+            switch (orientation) {
                 case NORTH: {
-                    this.boundingBox.move(n * 8, p * 4, -(o + l) * 8 + 1);
+                    this.boundingBox.move(m * 8, o * 4, -(n + k) * 8 + 1);
                     break;
                 }
                 case SOUTH: {
-                    this.boundingBox.move(n * 8, p * 4, o * 8);
+                    this.boundingBox.move(m * 8, o * 4, n * 8);
                     break;
                 }
                 case WEST: {
-                    this.boundingBox.move(-(o + l) * 8 + 1, p * 4, n * 8);
+                    this.boundingBox.move(-(n + k) * 8 + 1, o * 4, m * 8);
                     break;
                 }
                 default: {
-                    this.boundingBox.move(o * 8, p * 4, n * 8);
+                    this.boundingBox.move(n * 8, o * 4, m * 8);
                 }
             }
         }
@@ -1649,17 +1649,17 @@ public class OceanMonumentGenerator {
         protected void toNbt(CompoundTag tag) {
         }
 
-        protected void setAirAndWater(StructureWorldAccess structureWorldAccess, BlockBox blockBox, int x, int y, int z, int width, int height, int depth) {
+        protected void setAirAndWater(StructureWorldAccess world, BlockBox box, int x, int y, int z, int width, int height, int depth) {
             for (int i = y; i <= height; ++i) {
                 for (int j = x; j <= width; ++j) {
                     for (int k = z; k <= depth; ++k) {
-                        BlockState blockState = this.getBlockAt(structureWorldAccess, j, i, k, blockBox);
+                        BlockState blockState = this.getBlockAt(world, j, i, k, box);
                         if (ICE_BLOCKS.contains(blockState.getBlock())) continue;
-                        if (this.applyYTransform(i) >= structureWorldAccess.getSeaLevel() && blockState != WATER) {
-                            this.addBlock(structureWorldAccess, Blocks.AIR.getDefaultState(), j, i, k, blockBox);
+                        if (this.applyYTransform(i) >= world.getSeaLevel() && blockState != WATER) {
+                            this.addBlock(world, Blocks.AIR.getDefaultState(), j, i, k, box);
                             continue;
                         }
-                        this.addBlock(structureWorldAccess, WATER, j, i, k, blockBox);
+                        this.addBlock(world, WATER, j, i, k, box);
                     }
                 }
             }
@@ -1699,16 +1699,16 @@ public class OceanMonumentGenerator {
             return blockBox.intersectsXZ(Math.min(m, o), Math.min(n, p), Math.max(m, o), Math.max(n, p));
         }
 
-        protected boolean method_14772(StructureWorldAccess structureWorldAccess, BlockBox blockBox, int i, int j, int k) {
+        protected boolean spawnElderGuardian(StructureWorldAccess world, BlockBox box, int i, int j, int k) {
             int n;
             int m;
             int l = this.applyXTransform(i, k);
-            if (blockBox.contains(new BlockPos(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k)))) {
-                ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(structureWorldAccess.toServerWorld());
+            if (box.contains(new BlockPos(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k)))) {
+                ElderGuardianEntity elderGuardianEntity = EntityType.ELDER_GUARDIAN.create(world.toServerWorld());
                 elderGuardianEntity.heal(elderGuardianEntity.getMaxHealth());
                 elderGuardianEntity.refreshPositionAndAngles((double)l + 0.5, m, (double)n + 0.5, 0.0f, 0.0f);
-                elderGuardianEntity.initialize(structureWorldAccess, structureWorldAccess.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
-                structureWorldAccess.spawnEntityAndPassengers(elderGuardianEntity);
+                elderGuardianEntity.initialize(world, world.getLocalDifficulty(elderGuardianEntity.getBlockPos()), SpawnReason.STRUCTURE, null, null);
+                world.spawnEntityAndPassengers(elderGuardianEntity);
                 return true;
             }
             return false;

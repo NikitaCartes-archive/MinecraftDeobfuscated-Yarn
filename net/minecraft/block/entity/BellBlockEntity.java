@@ -80,6 +80,9 @@ extends BlockEntity {
         BellBlockEntity.tick(world, pos, state, blockEntity, BellBlockEntity::applyGlowToRaiders);
     }
 
+    /**
+     * Rings the bell in a given direction.
+     */
     public void activate(Direction direction) {
         BlockPos blockPos = this.getPos();
         this.lastSideHit = direction;
@@ -91,6 +94,9 @@ extends BlockEntity {
         this.world.addSyncedBlockEvent(blockPos, this.getCachedState().getBlock(), 1, direction.getId());
     }
 
+    /**
+     * Makes living entities within 48 blocks remember that they heard a bell at the current world time.
+     */
     private void notifyMemoriesOfBell() {
         BlockPos blockPos = this.getPos();
         if (this.world.getTime() > this.lastRingTime + 60L || this.hearingEntities == null) {
@@ -106,6 +112,12 @@ extends BlockEntity {
         }
     }
 
+    /**
+     * Determines whether at least one of the given entities would be affected by the bell.
+     * 
+     * <p>This determines whether the bell resonates.
+     * For some reason, despite affected by the bell, entities more than 32 blocks away will not count as hearing the bell.
+     */
     private static boolean raidersHearBell(BlockPos pos, List<LivingEntity> hearingEntities) {
         for (LivingEntity livingEntity : hearingEntities) {
             if (!livingEntity.isAlive() || livingEntity.isRemoved() || !pos.isWithinDistance(livingEntity.getPos(), 32.0) || !livingEntity.getType().isIn(EntityTypeTags.RAIDERS)) continue;
@@ -118,6 +130,9 @@ extends BlockEntity {
         hearingEntities.stream().filter(livingEntity -> BellBlockEntity.isRaiderEntity(pos, livingEntity)).forEach(BellBlockEntity::applyGlowToEntity);
     }
 
+    /**
+     * Spawns {@link net.minecraft.particle.ParticleTypes#ENTITY_EFFECT} particles around raiders within 48 blocks.
+     */
     private static void applyParticlesToRaiders(World world, BlockPos pos, List<LivingEntity> hearingEntities) {
         MutableInt mutableInt = new MutableInt(16700985);
         int i = (int)hearingEntities.stream().filter(livingEntity -> pos.isWithinDistance(livingEntity.getPos(), 48.0)).count();
@@ -137,10 +152,16 @@ extends BlockEntity {
         });
     }
 
+    /**
+     * Determines whether the given entity is in the {@link net.minecraft.tag.EntityTypeTags#RAIDERS} entity type tag and within 48 blocks of the given position.
+     */
     private static boolean isRaiderEntity(BlockPos pos, LivingEntity entity) {
         return entity.isAlive() && !entity.isRemoved() && pos.isWithinDistance(entity.getPos(), 48.0) && entity.getType().isIn(EntityTypeTags.RAIDERS);
     }
 
+    /**
+     * Gives the {@link net.minecraft.entity.effect.StatusEffects#GLOWING} status effect to the given entity for 3 seconds (60 ticks).
+     */
     private static void applyGlowToEntity(LivingEntity entity) {
         entity.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 60));
     }

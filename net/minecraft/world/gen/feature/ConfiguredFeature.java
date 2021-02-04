@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
-import net.minecraft.class_5821;
 import net.minecraft.util.dynamic.RegistryElementCodec;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -20,6 +19,7 @@ import net.minecraft.world.gen.feature.DecoratedFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,7 +55,7 @@ implements Decoratable<ConfiguredFeature<?, ?>> {
     }
 
     public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
-        return ((Feature)this.feature).generate(new class_5821<FC>(world, chunkGenerator, random, pos, this.config));
+        return ((Feature)this.feature).generate(new FeatureContext<FC>(world, chunkGenerator, random, pos, this.config));
     }
 
     public Stream<ConfiguredFeature<?, ?>> method_30648() {

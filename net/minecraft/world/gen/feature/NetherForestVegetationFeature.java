@@ -6,12 +6,12 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5821;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class NetherForestVegetationFeature
 extends Feature<BlockPileFeatureConfig> {
@@ -20,8 +20,8 @@ extends Feature<BlockPileFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<BlockPileFeatureConfig> arg) {
-        return NetherForestVegetationFeature.generate(arg.method_33652(), arg.method_33654(), arg.method_33655(), arg.method_33656(), 8, 4);
+    public boolean generate(FeatureContext<BlockPileFeatureConfig> featureContext) {
+        return NetherForestVegetationFeature.generate(featureContext.getWorld(), featureContext.getRandom(), featureContext.getPos(), featureContext.getConfig(), 8, 4);
     }
 
     public static boolean generate(WorldAccess world, Random random, BlockPos pos, BlockPileFeatureConfig config, int i, int j) {
@@ -30,14 +30,14 @@ extends Feature<BlockPileFeatureConfig> {
             return false;
         }
         int k = pos.getY();
-        if (k < world.getBottomSectionLimit() + 1 || k + 1 >= world.getTopHeightLimit()) {
+        if (k < world.getBottomY() + 1 || k + 1 >= world.getTopY()) {
             return false;
         }
         int l = 0;
         for (int m = 0; m < i * i; ++m) {
             BlockPos blockPos = pos.add(random.nextInt(i) - random.nextInt(i), random.nextInt(j) - random.nextInt(j), random.nextInt(i) - random.nextInt(i));
             BlockState blockState2 = config.stateProvider.getBlockState(random, blockPos);
-            if (!world.isAir(blockPos) || blockPos.getY() <= world.getBottomSectionLimit() || !blockState2.canPlaceAt(world, blockPos)) continue;
+            if (!world.isAir(blockPos) || blockPos.getY() <= world.getBottomY() || !blockState2.canPlaceAt(world, blockPos)) continue;
             world.setBlockState(blockPos, blockState2, 2);
             ++l;
         }

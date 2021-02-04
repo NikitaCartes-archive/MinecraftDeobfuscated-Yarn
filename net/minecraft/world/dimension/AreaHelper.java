@@ -65,7 +65,7 @@ public class AreaHelper {
 
     @Nullable
     private BlockPos getLowerCorner(BlockPos pos) {
-        int i = Math.max(this.world.getBottomSectionLimit(), pos.getY() - 21);
+        int i = Math.max(this.world.getBottomY(), pos.getY() - 21);
         while (pos.getY() > i && AreaHelper.validStateInsidePortal(this.world.getBlockState(pos.down()))) {
             pos = pos.down();
         }

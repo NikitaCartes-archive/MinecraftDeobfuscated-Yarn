@@ -18,10 +18,10 @@ extends LongRunningTask {
     private final Text title;
     private final Runnable callback;
 
-    public ResettingWorldTask(long l, Text title, Runnable runnable) {
-        this.serverId = l;
+    public ResettingWorldTask(long serverId, Text title, Runnable callback) {
+        this.serverId = serverId;
         this.title = title;
-        this.callback = runnable;
+        this.callback = callback;
     }
 
     protected abstract void method_32517(RealmsClient var1, long var2) throws RealmsServiceException;

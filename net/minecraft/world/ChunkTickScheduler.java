@@ -31,7 +31,7 @@ implements TickScheduler<T> {
         this.shouldExclude = shouldExclude;
         this.pos = pos;
         this.world = world;
-        this.scheduledPositions = new ShortList[world.getSections()];
+        this.scheduledPositions = new ShortList[world.countVerticalSections()];
         for (int i = 0; i < tag.size(); ++i) {
             ListTag listTag = tag.getList(i);
             for (int j = 0; j < listTag.size(); ++j) {
@@ -48,7 +48,7 @@ implements TickScheduler<T> {
         for (int i = 0; i < this.scheduledPositions.length; ++i) {
             if (this.scheduledPositions[i] == null) continue;
             for (Short short_ : this.scheduledPositions[i]) {
-                BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.world.getSection(i), this.pos);
+                BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.world.sectionIndexToCoord(i), this.pos);
                 scheduler.schedule(blockPos, dataMapper.apply(blockPos), 0);
             }
             this.scheduledPositions[i].clear();

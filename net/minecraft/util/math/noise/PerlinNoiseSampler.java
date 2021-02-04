@@ -3,9 +3,9 @@
  */
 package net.minecraft.util.math.noise;
 
-import net.minecraft.class_5819;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
+import net.minecraft.world.gen.WorldGenRandom;
 
 public final class PerlinNoiseSampler {
     private final byte[] permutations;
@@ -13,25 +13,25 @@ public final class PerlinNoiseSampler {
     public final double originY;
     public final double originZ;
 
-    public PerlinNoiseSampler(class_5819 arg) {
+    public PerlinNoiseSampler(WorldGenRandom random) {
         int i;
-        this.originX = arg.nextDouble() * 256.0;
-        this.originY = arg.nextDouble() * 256.0;
-        this.originZ = arg.nextDouble() * 256.0;
+        this.originX = random.nextDouble() * 256.0;
+        this.originY = random.nextDouble() * 256.0;
+        this.originZ = random.nextDouble() * 256.0;
         this.permutations = new byte[256];
         for (i = 0; i < 256; ++i) {
             this.permutations[i] = (byte)i;
         }
         for (i = 0; i < 256; ++i) {
-            int j = arg.nextInt(256 - i);
+            int j = random.nextInt(256 - i);
             byte b = this.permutations[i];
             this.permutations[i] = this.permutations[i + j];
             this.permutations[i + j] = b;
         }
     }
 
-    public double method_33658(double d, double e, double f) {
-        return this.sample(d, e, f, 0.0, 0.0);
+    public double sample(double x, double y, double z) {
+        return this.sample(x, y, z, 0.0, 0.0);
     }
 
     @Deprecated

@@ -9,7 +9,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -19,6 +18,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
 import net.minecraft.world.gen.feature.WeepingVinesFeature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class HugeFungusFeature
 extends Feature<HugeFungusFeatureConfig> {
@@ -27,12 +27,12 @@ extends Feature<HugeFungusFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<HugeFungusFeatureConfig> arg) {
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        BlockPos blockPos = arg.method_33655();
-        Random random = arg.method_33654();
-        ChunkGenerator chunkGenerator = arg.method_33653();
-        HugeFungusFeatureConfig hugeFungusFeatureConfig = arg.method_33656();
+    public boolean generate(FeatureContext<HugeFungusFeatureConfig> featureContext) {
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        BlockPos blockPos = featureContext.getPos();
+        Random random = featureContext.getRandom();
+        ChunkGenerator chunkGenerator = featureContext.getGenerator();
+        HugeFungusFeatureConfig hugeFungusFeatureConfig = featureContext.getConfig();
         Block block = hugeFungusFeatureConfig.validBaseBlock.getBlock();
         BlockPos blockPos2 = null;
         BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());

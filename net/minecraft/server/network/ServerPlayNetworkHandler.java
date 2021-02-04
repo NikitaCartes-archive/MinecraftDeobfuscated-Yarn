@@ -926,7 +926,7 @@ ServerPlayPacketListener {
             case START_DESTROY_BLOCK: 
             case ABORT_DESTROY_BLOCK: 
             case STOP_DESTROY_BLOCK: {
-                this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopHeightLimit());
+                this.player.interactionManager.processBlockBreakingAction(blockPos, action, packet.getDirection(), this.player.world.getTopY());
                 return;
             }
         }
@@ -956,7 +956,7 @@ ServerPlayPacketListener {
         BlockPos blockPos = blockHitResult.getBlockPos();
         Direction direction = blockHitResult.getSide();
         this.player.updateLastActionTime();
-        int i = this.player.world.getTopHeightLimit();
+        int i = this.player.world.getTopY();
         if (blockPos.getY() < i) {
             if (this.requestedTeleportPos == null && this.player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) < 64.0 && serverWorld.canPlayerModifyAt(this.player, blockPos)) {
                 ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);

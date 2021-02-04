@@ -92,12 +92,12 @@ BiomeAccess.Storage {
     public DimensionType getDimension();
 
     @Override
-    default public int getBottomSectionLimit() {
+    default public int getBottomY() {
         return this.getDimension().getMinimumY();
     }
 
     @Override
-    default public int getSectionCount() {
+    default public int getHeight() {
         return this.getDimension().getHeight();
     }
 
@@ -207,7 +207,7 @@ BiomeAccess.Storage {
 
     @Deprecated
     default public boolean isRegionLoaded(int i, int minY, int j, int k, int maxY, int l) {
-        if (maxY < this.getBottomSectionLimit() || minY >= this.getTopHeightLimit()) {
+        if (maxY < this.getBottomY() || minY >= this.getTopY()) {
             return false;
         }
         return this.method_33597(i, j, k, l);

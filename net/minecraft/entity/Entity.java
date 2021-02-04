@@ -34,7 +34,6 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.class_5459;
 import net.minecraft.class_5569;
-import net.minecraft.class_5630;
 import net.minecraft.class_5715;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -56,6 +55,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -209,7 +209,7 @@ CommandOutput {
     private EntityDimensions dimensions;
     private float standingEyeHeight;
     public boolean inPowderSnow;
-    public boolean field_28628;
+    public boolean wasInPowderSnow;
     public boolean field_28629;
     private float field_26997;
     private int prevAge;
@@ -414,7 +414,7 @@ CommandOutput {
         if (this.shouldSpawnSprintingParticles()) {
             this.spawnSprintingParticles();
         }
-        this.field_28628 = this.inPowderSnow;
+        this.wasInPowderSnow = this.inPowderSnow;
         this.inPowderSnow = false;
         this.updateWaterState();
         this.updateSubmergedInWaterState();
@@ -441,21 +441,21 @@ CommandOutput {
         }
         this.attemptTickInVoid();
         if (!this.world.isClient) {
-            this.method_33572(this.fireTicks > 0);
+            this.setOnFire(this.fireTicks > 0);
         }
         this.firstUpdate = false;
         this.world.getProfiler().pop();
     }
 
-    public void method_33572(boolean bl) {
-        this.setFlag(0, bl);
+    public void setOnFire(boolean onFire) {
+        this.setFlag(0, onFire);
     }
 
     /**
-     * Calls {@link #tickInVoid()} when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomSectionLimit() minimum Y position}.
+     * Calls {@link #tickInVoid()} when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomY() minimum Y position}.
      */
     public void attemptTickInVoid() {
-        if (this.getY() < (double)(this.world.getBottomSectionLimit() - 64)) {
+        if (this.getY() < (double)(this.world.getBottomY() - 64)) {
             this.tickInVoid();
         }
     }
@@ -511,7 +511,7 @@ CommandOutput {
     }
 
     /**
-     * Called when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomSectionLimit() minimum Y position}.
+     * Called when the entity is 64 blocks below the world's {@linkplain net.minecraft.world.HeightLimitView#getBottomY() minimum Y position}.
      * 
      * <p>{@linkplain LivingEntity Living entities} use this to deal {@linkplain net.minecraft.entity.damage.DamageSource#OUT_OF_WORLD out of world damage}.
      */
@@ -918,7 +918,7 @@ CommandOutput {
     }
 
     protected class_5799 method_33570() {
-        return class_5799.field_28633;
+        return class_5799.ALL;
     }
 
     public boolean occludeVibrationSignals() {
@@ -2431,8 +2431,16 @@ CommandOutput {
         return new Vec3d(0.0, this.getStandingEyeHeight(), this.getWidth() * 0.4f);
     }
 
-    public class_5630 method_32318(int i) {
-        return class_5630.field_27860;
+    /**
+     * Obtains an item slot for command modification purpose. Used by commands
+     * like {@code /loot} or {@code /replaceitem}.
+     * 
+     * @see net.minecraft.command.argument.ItemSlotArgumentType
+     * 
+     * @param mappedIndex the mapped index as given by the item slot argument
+     */
+    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+        return CommandItemSlot.EMPTY;
     }
 
     @Override
@@ -2924,29 +2932,29 @@ CommandOutput {
     }
 
     public static enum class_5799 {
-        field_28630(false, false),
-        field_28631(true, false),
-        field_28632(false, true),
-        field_28633(true, true);
+        NONE(false, false),
+        SOUNDS(true, false),
+        EVENTS(false, true),
+        ALL(true, true);
 
-        final boolean field_28634;
-        final boolean field_28635;
+        final boolean sounds;
+        final boolean events;
 
-        private class_5799(boolean bl, boolean bl2) {
-            this.field_28634 = bl;
-            this.field_28635 = bl2;
+        private class_5799(boolean sounds, boolean events) {
+            this.sounds = sounds;
+            this.events = events;
         }
 
         public boolean method_33576() {
-            return this.field_28635 || this.field_28634;
+            return this.events || this.sounds;
         }
 
         public boolean method_33577() {
-            return this.field_28635;
+            return this.events;
         }
 
         public boolean method_33578() {
-            return this.field_28634;
+            return this.sounds;
         }
     }
 

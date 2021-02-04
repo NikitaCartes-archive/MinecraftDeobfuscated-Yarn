@@ -37,67 +37,67 @@ public interface CauldronBehavior {
     public static final Map<Item, CauldronBehavior> WATER_CAULDRON_BEHAVIOR = CauldronBehavior.createMap();
     public static final Map<Item, CauldronBehavior> LAVA_CAULDRON_BEHAVIOR = CauldronBehavior.createMap();
     public static final Map<Item, CauldronBehavior> POWDER_SNOW_CAULDRON_BEHAVIOR = CauldronBehavior.createMap();
-    public static final CauldronBehavior FILL_WITH_WATER = (blockState, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.fillCauldron(world, blockPos, playerEntity, hand, itemStack, (BlockState)Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3), SoundEvents.ITEM_BUCKET_EMPTY);
-    public static final CauldronBehavior FILL_WITH_LAVA = (blockState, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.fillCauldron(world, blockPos, playerEntity, hand, itemStack, Blocks.LAVA_CAULDRON.getDefaultState(), SoundEvents.ITEM_BUCKET_EMPTY_LAVA);
-    public static final CauldronBehavior FILL_WITH_POWDER_SNOW = (blockState, world, blockPos, playerEntity, hand, itemStack) -> CauldronBehavior.fillCauldron(world, blockPos, playerEntity, hand, itemStack, (BlockState)Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3), SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW);
-    public static final CauldronBehavior CLEAN_SHULKER_BOX = (blockState, world, blockPos, playerEntity, hand, itemStack) -> {
-        Block block = Block.getBlockFromItem(itemStack.getItem());
+    public static final CauldronBehavior FILL_WITH_WATER = (state, world, pos, player, hand, stack) -> CauldronBehavior.fillCauldron(world, pos, player, hand, stack, (BlockState)Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3), SoundEvents.ITEM_BUCKET_EMPTY);
+    public static final CauldronBehavior FILL_WITH_LAVA = (state, world, pos, player, hand, stack) -> CauldronBehavior.fillCauldron(world, pos, player, hand, stack, Blocks.LAVA_CAULDRON.getDefaultState(), SoundEvents.ITEM_BUCKET_EMPTY_LAVA);
+    public static final CauldronBehavior FILL_WITH_POWDER_SNOW = (state, world, pos, player, hand, stack) -> CauldronBehavior.fillCauldron(world, pos, player, hand, stack, (BlockState)Blocks.POWDER_SNOW_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3), SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW);
+    public static final CauldronBehavior CLEAN_SHULKER_BOX = (state, world, pos, player, hand, stack) -> {
+        Block block = Block.getBlockFromItem(stack.getItem());
         if (!(block instanceof ShulkerBoxBlock)) {
             return ActionResult.PASS;
         }
         if (!world.isClient) {
-            ItemStack itemStack2 = new ItemStack(Blocks.SHULKER_BOX);
-            if (itemStack.hasTag()) {
-                itemStack2.setTag(itemStack.getTag().copy());
+            ItemStack itemStack = new ItemStack(Blocks.SHULKER_BOX);
+            if (stack.hasTag()) {
+                itemStack.setTag(stack.getTag().copy());
             }
-            playerEntity.setStackInHand(hand, itemStack2);
-            playerEntity.incrementStat(Stats.CLEAN_SHULKER_BOX);
-            LeveledCauldronBlock.decrementFluidLevel(blockState, world, blockPos);
+            player.setStackInHand(hand, itemStack);
+            player.incrementStat(Stats.CLEAN_SHULKER_BOX);
+            LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
         }
         return ActionResult.success(world.isClient);
     };
-    public static final CauldronBehavior CLEAN_BANNER = (blockState, world, blockPos, playerEntity, hand, itemStack) -> {
-        if (BannerBlockEntity.getPatternCount(itemStack) <= 0) {
+    public static final CauldronBehavior CLEAN_BANNER = (state, world, pos, player, hand, stack) -> {
+        if (BannerBlockEntity.getPatternCount(stack) <= 0) {
             return ActionResult.PASS;
         }
         if (!world.isClient) {
-            ItemStack itemStack2 = itemStack.copy();
-            itemStack2.setCount(1);
-            BannerBlockEntity.loadFromItemStack(itemStack2);
-            if (!playerEntity.getAbilities().creativeMode) {
-                itemStack.decrement(1);
+            ItemStack itemStack = stack.copy();
+            itemStack.setCount(1);
+            BannerBlockEntity.loadFromItemStack(itemStack);
+            if (!player.getAbilities().creativeMode) {
+                stack.decrement(1);
             }
-            if (itemStack.isEmpty()) {
-                playerEntity.setStackInHand(hand, itemStack2);
-            } else if (playerEntity.getInventory().insertStack(itemStack2)) {
-                ((ServerPlayerEntity)playerEntity).refreshScreenHandler(playerEntity.playerScreenHandler);
+            if (stack.isEmpty()) {
+                player.setStackInHand(hand, itemStack);
+            } else if (player.getInventory().insertStack(itemStack)) {
+                ((ServerPlayerEntity)player).refreshScreenHandler(player.playerScreenHandler);
             } else {
-                playerEntity.dropItem(itemStack2, false);
+                player.dropItem(itemStack, false);
             }
-            playerEntity.incrementStat(Stats.CLEAN_BANNER);
-            LeveledCauldronBlock.decrementFluidLevel(blockState, world, blockPos);
+            player.incrementStat(Stats.CLEAN_BANNER);
+            LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
         }
         return ActionResult.success(world.isClient);
     };
-    public static final CauldronBehavior CLEAN_DYEABLE_ITEM = (blockState, world, blockPos, playerEntity, hand, itemStack) -> {
-        Item item = itemStack.getItem();
+    public static final CauldronBehavior CLEAN_DYEABLE_ITEM = (state, world, pos, player, hand, stack) -> {
+        Item item = stack.getItem();
         if (!(item instanceof DyeableItem)) {
             return ActionResult.PASS;
         }
         DyeableItem dyeableItem = (DyeableItem)((Object)item);
-        if (!dyeableItem.hasColor(itemStack)) {
+        if (!dyeableItem.hasColor(stack)) {
             return ActionResult.PASS;
         }
         if (!world.isClient) {
-            dyeableItem.removeColor(itemStack);
-            playerEntity.incrementStat(Stats.CLEAN_ARMOR);
-            LeveledCauldronBlock.decrementFluidLevel(blockState, world, blockPos);
+            dyeableItem.removeColor(stack);
+            player.incrementStat(Stats.CLEAN_ARMOR);
+            LeveledCauldronBlock.decrementFluidLevel(state, world, pos);
         }
         return ActionResult.success(world.isClient);
     };
 
     public static Object2ObjectOpenHashMap<Item, CauldronBehavior> createMap() {
-        return Util.make(new Object2ObjectOpenHashMap(), object2ObjectOpenHashMap -> object2ObjectOpenHashMap.defaultReturnValue((blockState, world, blockPos, playerEntity, hand, itemStack) -> ActionResult.PASS));
+        return Util.make(new Object2ObjectOpenHashMap(), map -> map.defaultReturnValue((state, world, pos, player, hand, stack) -> ActionResult.PASS));
     }
 
     public ActionResult interact(BlockState var1, World var2, BlockPos var3, PlayerEntity var4, Hand var5, ItemStack var6);
@@ -122,7 +122,7 @@ public interface CauldronBehavior {
         WATER_CAULDRON_BEHAVIOR.put(Items.LAVA_BUCKET, FILL_WITH_LAVA);
         WATER_CAULDRON_BEHAVIOR.put(Items.WATER_BUCKET, FILL_WITH_WATER);
         WATER_CAULDRON_BEHAVIOR.put(Items.POWDER_SNOW_BUCKET, FILL_WITH_POWDER_SNOW);
-        WATER_CAULDRON_BEHAVIOR.put(Items.BUCKET, (state, world, pos, player, hand, stack) -> CauldronBehavior.emptyCauldron(state, world, pos, player, hand, stack, new ItemStack(Items.WATER_BUCKET), blockState -> blockState.get(LeveledCauldronBlock.LEVEL) == 3, SoundEvents.ITEM_BUCKET_FILL));
+        WATER_CAULDRON_BEHAVIOR.put(Items.BUCKET, (state2, world, pos, player, hand, stack) -> CauldronBehavior.emptyCauldron(state2, world, pos, player, hand, stack, new ItemStack(Items.WATER_BUCKET), state -> state.get(LeveledCauldronBlock.LEVEL) == 3, SoundEvents.ITEM_BUCKET_FILL));
         WATER_CAULDRON_BEHAVIOR.put(Items.GLASS_BOTTLE, (state, world, pos, player, hand, stack) -> {
             if (!world.isClient) {
                 player.setStackInHand(hand, ItemUsage.exchangeStack(stack, player, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.WATER)));

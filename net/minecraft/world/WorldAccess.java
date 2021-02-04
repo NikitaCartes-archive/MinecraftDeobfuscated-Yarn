@@ -5,7 +5,6 @@ package net.minecraft.world;
 
 import java.util.Random;
 import net.minecraft.block.Block;
-import net.minecraft.class_5423;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -16,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.LunarWorldView;
+import net.minecraft.world.RegistryWorldView;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.WorldProperties;
 import net.minecraft.world.chunk.ChunkManager;
@@ -23,7 +23,7 @@ import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
 
 public interface WorldAccess
-extends class_5423,
+extends RegistryWorldView,
 LunarWorldView {
     @Override
     default public long getLunarTime() {
@@ -70,8 +70,8 @@ LunarWorldView {
         this.emitGameEvent(null, event, pos);
     }
 
-    default public void method_33596(GameEvent gameEvent, Entity entity) {
-        this.emitGameEvent(null, gameEvent, entity.getBlockPos());
+    default public void emitGameEvent(GameEvent event, Entity emitter) {
+        this.emitGameEvent(null, event, emitter.getBlockPos());
     }
 
     default public void emitGameEvent(@Nullable Entity entity, GameEvent event, Entity emitter) {

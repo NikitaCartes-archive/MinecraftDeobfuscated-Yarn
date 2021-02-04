@@ -75,7 +75,7 @@ implements AutoCloseable {
                 super.enqueueSectionData(LightType.BLOCK, ChunkSectionPos.from(pos, i), null, true);
                 super.enqueueSectionData(LightType.SKY, ChunkSectionPos.from(pos, i), null, true);
             }
-            for (i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
+            for (i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
                 super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
             }
         }, () -> "updateChunkStatus " + pos + " " + true));
@@ -119,10 +119,10 @@ implements AutoCloseable {
         chunk.setLightOn(false);
         this.enqueue(chunkPos.x, chunkPos.z, Stage.PRE_UPDATE, Util.debugRunnable(() -> {
             ChunkSection[] chunkSections = chunk.getSectionArray();
-            for (int i = 0; i < chunk.getSections(); ++i) {
+            for (int i = 0; i < chunk.countVerticalSections(); ++i) {
                 ChunkSection chunkSection = chunkSections[i];
                 if (ChunkSection.isEmpty(chunkSection)) continue;
-                int j = this.world.getSection(i);
+                int j = this.world.sectionIndexToCoord(i);
                 super.setSectionStatus(ChunkSectionPos.from(chunkPos, j), false);
             }
             super.setColumnEnabled(chunkPos, true);

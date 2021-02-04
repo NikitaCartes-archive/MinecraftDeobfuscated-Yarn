@@ -180,9 +180,9 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public PortalRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, compoundTag);
-            this.spawnerPlaced = compoundTag.getBoolean("Mob");
+        public PortalRoom(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, nbt);
+            this.spawnerPlaced = nbt.getBoolean("Mob");
         }
 
         @Override
@@ -308,12 +308,12 @@ public class StrongholdGenerator {
             this.upperRightExists = random.nextInt(3) > 0;
         }
 
-        public FiveWayCrossing(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, compoundTag);
-            this.lowerLeftExists = compoundTag.getBoolean("leftLow");
-            this.upperLeftExists = compoundTag.getBoolean("leftHigh");
-            this.lowerRightExists = compoundTag.getBoolean("rightLow");
-            this.upperRightExists = compoundTag.getBoolean("rightHigh");
+        public FiveWayCrossing(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, nbt);
+            this.lowerLeftExists = nbt.getBoolean("leftLow");
+            this.upperLeftExists = nbt.getBoolean("leftHigh");
+            this.lowerRightExists = nbt.getBoolean("rightLow");
+            this.upperRightExists = nbt.getBoolean("rightHigh");
         }
 
         @Override
@@ -404,9 +404,9 @@ public class StrongholdGenerator {
             this.tall = boundingBox.getBlockCountY() > 6;
         }
 
-        public Library(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_LIBRARY, compoundTag);
-            this.tall = compoundTag.getBoolean("Tall");
+        public Library(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_LIBRARY, nbt);
+            this.tall = nbt.getBoolean("Tall");
         }
 
         @Override
@@ -530,8 +530,8 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public PrisonHall(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_PRISON_HALL, compoundTag);
+        public PrisonHall(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_PRISON_HALL, nbt);
         }
 
         @Override
@@ -588,9 +588,9 @@ public class StrongholdGenerator {
             this.roomType = random.nextInt(5);
         }
 
-        public SquareRoom(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, compoundTag);
-            this.roomType = compoundTag.getInt("Type");
+        public SquareRoom(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, nbt);
+            this.roomType = nbt.getInt("Type");
         }
 
         @Override
@@ -712,8 +712,8 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public RightTurn(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_RIGHT_TURN, compoundTag);
+        public RightTurn(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_RIGHT_TURN, nbt);
         }
 
         @Override
@@ -757,8 +757,8 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public LeftTurn(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_LEFT_TURN, compoundTag);
+        public LeftTurn(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_LEFT_TURN, nbt);
         }
 
         @Override
@@ -813,8 +813,8 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public Stairs(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_STAIRS, compoundTag);
+        public Stairs(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_STAIRS, nbt);
         }
 
         @Override
@@ -860,9 +860,9 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public ChestCorridor(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, compoundTag);
-            this.chestGenerated = compoundTag.getBoolean("Chest");
+        public ChestCorridor(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, nbt);
+            this.chestGenerated = nbt.getBoolean("Chest");
         }
 
         @Override
@@ -919,10 +919,10 @@ public class StrongholdGenerator {
             this.rightExitExists = random.nextInt(2) == 0;
         }
 
-        public Corridor(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_CORRIDOR, compoundTag);
-            this.leftExitExists = compoundTag.getBoolean("Left");
-            this.rightExitExists = compoundTag.getBoolean("Right");
+        public Corridor(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_CORRIDOR, nbt);
+            this.leftExitExists = nbt.getBoolean("Left");
+            this.rightExitExists = nbt.getBoolean("Right");
         }
 
         @Override
@@ -1013,8 +1013,8 @@ public class StrongholdGenerator {
             this.isStructureStart = compoundTag.getBoolean("Source");
         }
 
-        public SpiralStaircase(StructureManager structureManager, CompoundTag compoundTag) {
-            this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, compoundTag);
+        public SpiralStaircase(StructureManager structureManager, CompoundTag nbt) {
+            this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, nbt);
         }
 
         @Override
@@ -1076,9 +1076,9 @@ public class StrongholdGenerator {
             this.length = orientation == Direction.NORTH || orientation == Direction.SOUTH ? boundingBox.getBlockCountZ() : boundingBox.getBlockCountX();
         }
 
-        public SmallCorridor(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, compoundTag);
-            this.length = compoundTag.getInt("Steps");
+        public SmallCorridor(StructureManager structureManager, CompoundTag nbt) {
+            super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, nbt);
+            this.length = nbt.getInt("Steps");
         }
 
         @Override

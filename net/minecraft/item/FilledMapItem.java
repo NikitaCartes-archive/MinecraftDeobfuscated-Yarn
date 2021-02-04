@@ -142,11 +142,11 @@ extends NetworkSyncedItem {
                         for (int z = 0; z < i; ++z) {
                             BlockState blockState;
                             int aa = worldChunk.sampleHeightmap(Heightmap.Type.WORLD_SURFACE, y + u, z + v) + 1;
-                            if (aa > world.getBottomSectionLimit() + 1) {
+                            if (aa > world.getBottomY() + 1) {
                                 do {
                                     mutable.set(chunkPos.getStartX() + y + u, --aa, chunkPos.getStartZ() + z + v);
-                                } while ((blockState = worldChunk.getBlockState(mutable)).getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getBottomSectionLimit());
-                                if (aa > world.getBottomSectionLimit() && !blockState.getFluidState().isEmpty()) {
+                                } while ((blockState = worldChunk.getBlockState(mutable)).getMapColor(world, mutable) == MapColor.CLEAR && aa > world.getBottomY());
+                                if (aa > world.getBottomY() && !blockState.getFluidState().isEmpty()) {
                                     BlockState blockState2;
                                     int ab = aa - 1;
                                     mutable2.set(mutable);
@@ -154,7 +154,7 @@ extends NetworkSyncedItem {
                                         mutable2.setY(ab--);
                                         blockState2 = worldChunk.getBlockState(mutable2);
                                         ++w;
-                                    } while (ab > world.getBottomSectionLimit() && !blockState2.getFluidState().isEmpty());
+                                    } while (ab > world.getBottomY() && !blockState2.getFluidState().isEmpty());
                                     blockState = this.getFluidStateIfVisible(world, blockState, mutable);
                                 }
                             } else {

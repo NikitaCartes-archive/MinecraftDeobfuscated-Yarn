@@ -137,9 +137,9 @@ extends Block {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == Direction.DOWN) {
-            return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+            return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
         }
         BlockState blockState = this.getPlacementShape(state, world, pos);
         if (!this.hasAdjacentBlocks(blockState)) {
@@ -191,7 +191,7 @@ extends Block {
             }
             return;
         }
-        if (direction == Direction.UP && pos.getY() < world.getTopHeightLimit() - 1) {
+        if (direction == Direction.UP && pos.getY() < world.getTopY() - 1) {
             if (this.shouldHaveSide(world, pos, direction)) {
                 world.setBlockState(pos, (BlockState)state.with(UP, true), 2);
                 return;
@@ -211,7 +211,7 @@ extends Block {
                 return;
             }
         }
-        if (pos.getY() > world.getBottomSectionLimit() && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.isOf(this)) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
+        if (pos.getY() > world.getBottomY() && ((blockState = world.getBlockState(blockPos2 = pos.down())).isAir() || blockState.isOf(this)) && (blockState3 = blockState.isAir() ? this.getDefaultState() : blockState) != (blockState4 = this.getGrownState(state, blockState3, random)) && this.hasHorizontalSide(blockState4)) {
             world.setBlockState(blockPos2, blockState4, 2);
         }
     }

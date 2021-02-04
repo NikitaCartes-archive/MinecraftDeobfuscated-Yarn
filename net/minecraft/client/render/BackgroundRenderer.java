@@ -124,7 +124,7 @@ public class BackgroundRenderer {
             }
             lastWaterFogColorUpdateTime = -1L;
         }
-        double d = (camera.getPos().y - (double)world.getBottomSectionLimit()) * world.getLevelProperties().getHorizonShadingRatio();
+        double d = (camera.getPos().y - (double)world.getBottomY()) * world.getLevelProperties().getHorizonShadingRatio();
         if (camera.getFocusedEntity() instanceof LivingEntity && ((LivingEntity)camera.getFocusedEntity()).hasStatusEffect(StatusEffects.BLINDNESS)) {
             j2 = ((LivingEntity)camera.getFocusedEntity()).getStatusEffect(StatusEffects.BLINDNESS).getDuration();
             d = j2 < 20 ? (d *= (double)(1.0f - (float)j2 / 20.0f)) : 0.0;

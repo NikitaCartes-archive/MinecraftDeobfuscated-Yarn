@@ -8,7 +8,6 @@ import java.util.HashSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.class_5630;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -23,6 +22,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -221,12 +221,12 @@ Merchant {
     }
 
     @Override
-    public class_5630 method_32318(int i) {
-        int j = i - 300;
-        if (j >= 0 && j < this.inventory.size()) {
-            return class_5630.method_32328(this.inventory, j);
+    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+        int i = mappedIndex - 300;
+        if (i >= 0 && i < this.inventory.size()) {
+            return CommandItemSlot.of(this.inventory, i);
         }
-        return super.method_32318(i);
+        return super.getCommandItemSlot(mappedIndex);
     }
 
     @Override

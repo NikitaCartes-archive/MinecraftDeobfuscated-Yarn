@@ -7,13 +7,13 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class AbstractPileFeature
 extends Feature<BlockPileFeatureConfig> {
@@ -22,12 +22,12 @@ extends Feature<BlockPileFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<BlockPileFeatureConfig> arg) {
-        BlockPos blockPos = arg.method_33655();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
-        BlockPileFeatureConfig blockPileFeatureConfig = arg.method_33656();
-        if (blockPos.getY() < structureWorldAccess.getBottomSectionLimit() + 5) {
+    public boolean generate(FeatureContext<BlockPileFeatureConfig> featureContext) {
+        BlockPos blockPos = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
+        BlockPileFeatureConfig blockPileFeatureConfig = featureContext.getConfig();
+        if (blockPos.getY() < structureWorldAccess.getBottomY() + 5) {
             return false;
         }
         int i = 2 + random.nextInt(2);

@@ -150,14 +150,14 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == BedBlock.getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
-            if (newState.isOf(this) && newState.get(PART) != state.get(PART)) {
-                return (BlockState)state.with(OCCUPIED, newState.get(OCCUPIED));
+            if (neighborState.isOf(this) && neighborState.get(PART) != state.get(PART)) {
+                return (BlockState)state.with(OCCUPIED, neighborState.get(OCCUPIED));
             }
             return Blocks.AIR.getDefaultState();
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     private static Direction getDirectionTowardsOtherPart(BedPart part, Direction direction) {
@@ -165,15 +165,15 @@ implements BlockEntityProvider {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         BlockPos blockPos;
         BlockState blockState;
         BedPart bedPart;
-        if (!world.isClient && playerEntity.isCreative() && (bedPart = state.get(PART)) == BedPart.FOOT && (blockState = world.getBlockState(blockPos = pos.offset(BedBlock.getDirectionTowardsOtherPart(bedPart, state.get(FACING))))).isOf(this) && blockState.get(PART) == BedPart.HEAD) {
+        if (!world.isClient && player.isCreative() && (bedPart = state.get(PART)) == BedPart.FOOT && (blockState = world.getBlockState(blockPos = pos.offset(BedBlock.getDirectionTowardsOtherPart(bedPart, state.get(FACING))))).isOf(this) && blockState.get(PART) == BedPart.HEAD) {
             world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-            world.syncWorldEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
+            world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
         }
-        super.onBreak(world, pos, state, playerEntity);
+        super.onBreak(world, pos, state, player);
     }
 
     @Override

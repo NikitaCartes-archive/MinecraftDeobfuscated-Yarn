@@ -24,7 +24,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 public class ConfiguredStructureFeature<FC extends FeatureConfig, F extends StructureFeature<FC>> {
     public static final Codec<ConfiguredStructureFeature<?, ?>> CODEC = Registry.STRUCTURE_FEATURE.dispatch(configuredStructureFeature -> configuredStructureFeature.feature, StructureFeature::getCodec);
     public static final Codec<Supplier<ConfiguredStructureFeature<?, ?>>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC);
-    public static final Codec<List<Supplier<ConfiguredStructureFeature<?, ?>>>> field_26757 = RegistryElementCodec.method_31194(Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC);
+    public static final Codec<List<Supplier<ConfiguredStructureFeature<?, ?>>>> REGISTRY_ELEMENT_CODEC = RegistryElementCodec.method_31194(Registry.CONFIGURED_STRUCTURE_FEATURE_WORLDGEN, CODEC);
     public final F feature;
     public final FC config;
 

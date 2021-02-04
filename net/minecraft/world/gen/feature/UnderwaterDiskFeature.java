@@ -4,10 +4,10 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_5821;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.world.gen.feature.DiskFeature;
 import net.minecraft.world.gen.feature.DiskFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class UnderwaterDiskFeature
 extends DiskFeature {
@@ -16,11 +16,11 @@ extends DiskFeature {
     }
 
     @Override
-    public boolean generate(class_5821<DiskFeatureConfig> arg) {
-        if (!arg.method_33652().getFluidState(arg.method_33655()).isIn(FluidTags.WATER)) {
+    public boolean generate(FeatureContext<DiskFeatureConfig> featureContext) {
+        if (!featureContext.getWorld().getFluidState(featureContext.getPos()).isIn(FluidTags.WATER)) {
             return false;
         }
-        return super.generate(arg);
+        return super.generate(featureContext);
     }
 }
 

@@ -117,7 +117,7 @@ implements AutoCloseable {
 
     private <T> void update(ChunkPos pos, DynamicOps<T> dynamicOps, @Nullable T data) {
         if (data == null) {
-            for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
+            for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
                 this.loadedElements.put(SerializingRegionBasedStorage.method_33637(pos, i), (Optional<R>)Optional.empty());
             }
         } else {
@@ -127,7 +127,7 @@ implements AutoCloseable {
             boolean bl = j != (k = SharedConstants.getGameVersion().getWorldVersion());
             Dynamic<T> dynamic22 = this.dataFixer.update(this.dataFixTypes.getTypeReference(), dynamic2, j, k);
             OptionalDynamic<T> optionalDynamic = dynamic22.get("Sections");
-            for (int l = this.world.getMinimumSection(); l < this.world.getTopSectionLimit(); ++l) {
+            for (int l = this.world.getBottomSectionCoord(); l < this.world.getTopSectionCoord(); ++l) {
                 long m = SerializingRegionBasedStorage.method_33637(pos, l);
                 Optional optional = optionalDynamic.get(Integer.toString(l)).result().flatMap(dynamic -> this.codecFactory.apply(() -> this.onUpdate(m)).parse(dynamic).resultOrPartial(LOGGER::error));
                 this.loadedElements.put(m, (Optional<R>)optional);
@@ -153,7 +153,7 @@ implements AutoCloseable {
 
     private <T> Dynamic<T> method_20367(ChunkPos chunkPos, DynamicOps<T> dynamicOps) {
         HashMap map = Maps.newHashMap();
-        for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
+        for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
             long l = SerializingRegionBasedStorage.method_33637(chunkPos, i);
             this.unsavedElements.remove(l);
             Optional optional = (Optional)this.loadedElements.get(l);
@@ -187,7 +187,7 @@ implements AutoCloseable {
 
     public void saveChunk(ChunkPos pos) {
         if (!this.unsavedElements.isEmpty()) {
-            for (int i = this.world.getMinimumSection(); i < this.world.getTopSectionLimit(); ++i) {
+            for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); ++i) {
                 long l = SerializingRegionBasedStorage.method_33637(pos, i);
                 if (!this.unsavedElements.contains(l)) continue;
                 this.save(pos);

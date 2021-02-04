@@ -47,30 +47,30 @@ implements Fertilizable {
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockPos blockPos;
         if (state.get(AGE) < 25 && random.nextDouble() < this.growthChance && this.chooseStemState(world.getBlockState(blockPos = pos.offset(this.growthDirection)))) {
-            world.setBlockState(blockPos, this.method_33626(state, world.random));
+            world.setBlockState(blockPos, this.age(state, world.random));
         }
     }
 
-    protected BlockState method_33626(BlockState blockState, Random random) {
-        return (BlockState)blockState.cycle(AGE);
+    protected BlockState age(BlockState state, Random random) {
+        return (BlockState)state.cycle(AGE);
     }
 
-    protected BlockState method_33625(BlockState blockState, BlockState blockState2) {
-        return blockState2;
+    protected BlockState copyState(BlockState from, BlockState to) {
+        return to;
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (direction == this.growthDirection.getOpposite() && !state.canPlaceAt(world, pos)) {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
-        if (direction == this.growthDirection && (newState.isOf(this) || newState.isOf(this.getPlant()))) {
-            return this.method_33625(state, this.getPlant().getDefaultState());
+        if (direction == this.growthDirection && (neighborState.isOf(this) || neighborState.isOf(this.getPlant()))) {
+            return this.copyState(state, this.getPlant().getDefaultState());
         }
         if (this.tickWater) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

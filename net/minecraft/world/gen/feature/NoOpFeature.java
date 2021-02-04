@@ -4,9 +4,9 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_5821;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class NoOpFeature
 extends Feature<DefaultFeatureConfig> {
@@ -15,7 +15,7 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DefaultFeatureConfig> arg) {
+    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
         return true;
     }
 }

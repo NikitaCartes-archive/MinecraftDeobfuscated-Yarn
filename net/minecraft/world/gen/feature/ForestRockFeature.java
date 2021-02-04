@@ -6,11 +6,11 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class ForestRockFeature
 extends Feature<SingleStateFeatureConfig> {
@@ -19,16 +19,16 @@ extends Feature<SingleStateFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<SingleStateFeatureConfig> arg) {
+    public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
         BlockState blockState;
-        BlockPos blockPos = arg.method_33655();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
-        SingleStateFeatureConfig singleStateFeatureConfig = arg.method_33656();
-        while (blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 3 && (structureWorldAccess.isAir(blockPos.down()) || !ForestRockFeature.isSoil(blockState = structureWorldAccess.getBlockState(blockPos.down())) && !ForestRockFeature.isStone(blockState))) {
+        BlockPos blockPos = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
+        SingleStateFeatureConfig singleStateFeatureConfig = featureContext.getConfig();
+        while (blockPos.getY() > structureWorldAccess.getBottomY() + 3 && (structureWorldAccess.isAir(blockPos.down()) || !ForestRockFeature.isSoil(blockState = structureWorldAccess.getBlockState(blockPos.down())) && !ForestRockFeature.isStone(blockState))) {
             blockPos = blockPos.down();
         }
-        if (blockPos.getY() <= structureWorldAccess.getBottomSectionLimit() + 3) {
+        if (blockPos.getY() <= structureWorldAccess.getBottomY() + 3) {
             return false;
         }
         for (int i = 0; i < 3; ++i) {

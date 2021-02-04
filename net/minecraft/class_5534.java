@@ -61,7 +61,7 @@ public class class_5534 {
 
     @Nullable
     public static BlockPos method_31533(PathAwareEntity pathAwareEntity, BlockPos blockPos2) {
-        if (class_5493.method_31518(pathAwareEntity, blockPos2 = class_5535.method_31540(blockPos2, pathAwareEntity.world.getTopHeightLimit(), blockPos -> class_5493.method_31523(pathAwareEntity, blockPos))) || class_5493.method_31522(pathAwareEntity, blockPos2)) {
+        if (class_5493.method_31518(pathAwareEntity, blockPos2 = class_5535.method_31540(blockPos2, pathAwareEntity.world.getTopY(), blockPos -> class_5493.method_31523(pathAwareEntity, blockPos))) || class_5493.method_31522(pathAwareEntity, blockPos2)) {
             return null;
         }
         return blockPos2;

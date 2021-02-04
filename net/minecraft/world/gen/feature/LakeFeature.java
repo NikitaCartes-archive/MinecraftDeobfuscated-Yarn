@@ -8,7 +8,6 @@ import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.LightType;
@@ -17,6 +16,7 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.SingleStateFeatureConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class LakeFeature
 extends Feature<SingleStateFeatureConfig> {
@@ -27,17 +27,17 @@ extends Feature<SingleStateFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<SingleStateFeatureConfig> arg) {
+    public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
         int t;
         int j;
-        BlockPos blockPos = arg.method_33655();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
-        SingleStateFeatureConfig singleStateFeatureConfig = arg.method_33656();
-        while (blockPos.getY() > structureWorldAccess.getBottomSectionLimit() + 5 && structureWorldAccess.isAir(blockPos)) {
+        BlockPos blockPos = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
+        SingleStateFeatureConfig singleStateFeatureConfig = featureContext.getConfig();
+        while (blockPos.getY() > structureWorldAccess.getBottomY() + 5 && structureWorldAccess.isAir(blockPos)) {
             blockPos = blockPos.down();
         }
-        if (blockPos.getY() <= structureWorldAccess.getBottomSectionLimit() + 4) {
+        if (blockPos.getY() <= structureWorldAccess.getBottomY() + 4) {
             return false;
         }
         if (structureWorldAccess.getStructures(ChunkSectionPos.from(blockPos = blockPos.down(4)), StructureFeature.VILLAGE).findAny().isPresent()) {

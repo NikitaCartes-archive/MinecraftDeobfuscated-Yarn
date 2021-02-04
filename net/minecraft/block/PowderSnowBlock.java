@@ -63,7 +63,7 @@ implements FluidDrainable {
         if (world.isClient) {
             entity.extinguish();
         } else {
-            entity.method_33572(false);
+            entity.setOnFire(false);
         }
         if (!entity.isSpectator() && (entity.lastRenderX != entity.getX() || entity.lastRenderZ != entity.getZ()) && world.random.nextBoolean()) {
             PowderSnowBlock.spawnParticles(world, new Vec3d(entity.getX(), pos.getY(), entity.getZ()));

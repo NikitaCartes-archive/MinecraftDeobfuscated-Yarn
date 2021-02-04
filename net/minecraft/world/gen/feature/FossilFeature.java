@@ -5,7 +5,6 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_5821;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePlacementData;
@@ -21,6 +20,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class FossilFeature
 extends Feature<DefaultFeatureConfig> {
@@ -48,29 +48,29 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DefaultFeatureConfig> arg) {
+    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
         int m;
-        Random random = arg.method_33654();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        BlockPos blockPos = arg.method_33655();
+        Random random = featureContext.getRandom();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        BlockPos blockPos = featureContext.getPos();
         BlockRotation blockRotation = BlockRotation.random(random);
         int i = random.nextInt(FOSSILS.length);
         StructureManager structureManager = structureWorldAccess.toServerWorld().getServer().getStructureManager();
         Structure structure = structureManager.getStructureOrBlank(FOSSILS[i]);
         Structure structure2 = structureManager.getStructureOrBlank(COAL_FOSSILS[i]);
         ChunkPos chunkPos = new ChunkPos(blockPos);
-        BlockBox blockBox = new BlockBox(chunkPos.getStartX(), structureWorldAccess.getBottomSectionLimit(), chunkPos.getStartZ(), chunkPos.getEndX(), structureWorldAccess.getTopHeightLimit(), chunkPos.getEndZ());
+        BlockBox blockBox = new BlockBox(chunkPos.getStartX(), structureWorldAccess.getBottomY(), chunkPos.getStartZ(), chunkPos.getEndX(), structureWorldAccess.getTopY(), chunkPos.getEndZ());
         StructurePlacementData structurePlacementData = new StructurePlacementData().setRotation(blockRotation).setBoundingBox(blockBox).setRandom(random).addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
         BlockPos blockPos2 = structure.getRotatedSize(blockRotation);
         int j = random.nextInt(16 - blockPos2.getX());
         int k = random.nextInt(16 - blockPos2.getZ());
-        int l = structureWorldAccess.getTopHeightLimit();
+        int l = structureWorldAccess.getTopY();
         for (m = 0; m < blockPos2.getX(); ++m) {
             for (int n = 0; n < blockPos2.getZ(); ++n) {
                 l = Math.min(l, structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, blockPos.getX() + m + j, blockPos.getZ() + n + k));
             }
         }
-        m = Math.max(l - 15 - random.nextInt(10), structureWorldAccess.getBottomSectionLimit() + 10);
+        m = Math.max(l - 15 - random.nextInt(10), structureWorldAccess.getBottomY() + 10);
         BlockPos blockPos3 = structure.offsetByTransformedSize(blockPos.add(j, m, k), BlockMirror.NONE, blockRotation);
         BlockRotStructureProcessor blockRotStructureProcessor = new BlockRotStructureProcessor(0.9f);
         structurePlacementData.clearProcessors().addProcessor(blockRotStructureProcessor);

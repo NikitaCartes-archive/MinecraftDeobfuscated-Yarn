@@ -73,7 +73,7 @@ extends ChunkGenerator {
     @Override
     public void generateFeatures(ChunkRegion region, StructureAccessor accessor) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        ChunkPos chunkPos = region.method_33561();
+        ChunkPos chunkPos = region.getCenterPos();
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {
                 int k = ChunkSectionPos.getOffsetPos(chunkPos.x, i);
@@ -91,12 +91,12 @@ extends ChunkGenerator {
     }
 
     @Override
-    public int getHeight(int x, int z, Heightmap.Type heightmapType, HeightLimitView heightLimitView) {
+    public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
         return 0;
     }
 
     @Override
-    public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView heightLimitView) {
+    public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
         return new VerticalBlockSample(0, new BlockState[0]);
     }
 

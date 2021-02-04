@@ -22,7 +22,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
-import net.minecraft.class_5819;
 import net.minecraft.client.color.world.FoliageColors;
 import net.minecraft.client.color.world.GrassColors;
 import net.minecraft.fluid.FluidState;
@@ -56,6 +55,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.WorldGenRandom;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.Feature;
@@ -72,9 +72,9 @@ public final class Biome {
     public static final Codec<Supplier<Biome>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.BIOME_KEY, CODEC);
     public static final Codec<List<Supplier<Biome>>> field_26750 = RegistryElementCodec.method_31194(Registry.BIOME_KEY, CODEC);
     private final Map<Integer, List<StructureFeature<?>>> structures = Registry.STRUCTURE_FEATURE.stream().collect(Collectors.groupingBy(structureFeature -> structureFeature.getGenerationStep().ordinal()));
-    private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler((class_5819)new ChunkRandom(1234L), ImmutableList.of(Integer.valueOf(0)));
-    private static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler((class_5819)new ChunkRandom(3456L), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
-    public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler((class_5819)new ChunkRandom(2345L), ImmutableList.of(Integer.valueOf(0)));
+    private static final OctaveSimplexNoiseSampler TEMPERATURE_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(1234L), ImmutableList.of(Integer.valueOf(0)));
+    private static final OctaveSimplexNoiseSampler FROZEN_OCEAN_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(3456L), ImmutableList.of(Integer.valueOf(-2), Integer.valueOf(-1), Integer.valueOf(0)));
+    public static final OctaveSimplexNoiseSampler FOLIAGE_NOISE = new OctaveSimplexNoiseSampler((WorldGenRandom)new ChunkRandom(2345L), ImmutableList.of(Integer.valueOf(0)));
     private final Weather weather;
     private final GenerationSettings generationSettings;
     private final SpawnSettings spawnSettings;
@@ -152,7 +152,7 @@ public final class Biome {
         if (this.getTemperature(pos) >= 0.15f) {
             return false;
         }
-        if (pos.getY() >= world.getBottomSectionLimit() && pos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
+        if (pos.getY() >= world.getBottomY() && pos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, pos) < 10) {
             BlockState blockState = world.getBlockState(pos);
             FluidState fluidState = world.getFluidState(pos);
             if (fluidState.getFluid() == Fluids.WATER && blockState.getBlock() instanceof FluidBlock) {
@@ -178,7 +178,7 @@ public final class Biome {
         if (!this.method_33599(blockPos)) {
             return false;
         }
-        return blockPos.getY() >= world.getBottomSectionLimit() && blockPos.getY() < world.getTopHeightLimit() && world.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = world.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos);
+        return blockPos.getY() >= world.getBottomY() && blockPos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = world.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos);
     }
 
     public GenerationSettings getGenerationSettings() {
@@ -199,8 +199,8 @@ public final class Biome {
                     int n = ChunkSectionPos.getBlockCoord(l);
                     int o = ChunkSectionPos.getBlockCoord(m);
                     try {
-                        int p = region.getBottomSectionLimit() + 1;
-                        structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopHeightLimit() - 1, o + 15), new ChunkPos(l, m)));
+                        int p = region.getBottomY() + 1;
+                        structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopY() - 1, o + 15), new ChunkPos(l, m)));
                     } catch (Exception exception) {
                         CrashReport crashReport = CrashReport.create(exception, "Feature placement");
                         crashReport.addElement("Feature").add("Id", Registry.STRUCTURE_FEATURE.getId(structureFeature)).add("Description", () -> structureFeature.toString());

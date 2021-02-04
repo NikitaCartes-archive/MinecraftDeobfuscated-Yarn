@@ -50,11 +50,11 @@ extends PlantBlock {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-        if (!newState.isOf(this.gourdBlock) && direction == state.get(FACING)) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (!neighborState.isOf(this.gourdBlock) && direction == state.get(FACING)) {
             return (BlockState)this.gourdBlock.getStem().getDefaultState().with(StemBlock.AGE, 7);
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

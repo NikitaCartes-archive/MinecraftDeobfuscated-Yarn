@@ -49,20 +49,20 @@ extends EntityNavigation {
         BlockPos blockPos;
         if (this.world.getBlockState(target).isAir()) {
             blockPos = target.down();
-            while (blockPos.getY() > this.world.getBottomSectionLimit() && this.world.getBlockState(blockPos).isAir()) {
+            while (blockPos.getY() > this.world.getBottomY() && this.world.getBlockState(blockPos).isAir()) {
                 blockPos = blockPos.down();
             }
-            if (blockPos.getY() > this.world.getBottomSectionLimit()) {
+            if (blockPos.getY() > this.world.getBottomY()) {
                 return super.findPathTo(blockPos.up(), distance);
             }
-            while (blockPos.getY() < this.world.getTopHeightLimit() && this.world.getBlockState(blockPos).isAir()) {
+            while (blockPos.getY() < this.world.getTopY() && this.world.getBlockState(blockPos).isAir()) {
                 blockPos = blockPos.up();
             }
             target = blockPos;
         }
         if (this.world.getBlockState(target).getMaterial().isSolid()) {
             blockPos = target.up();
-            while (blockPos.getY() < this.world.getTopHeightLimit() && this.world.getBlockState(blockPos).getMaterial().isSolid()) {
+            while (blockPos.getY() < this.world.getTopY() && this.world.getBlockState(blockPos).getMaterial().isSolid()) {
                 blockPos = blockPos.up();
             }
             return super.findPathTo(blockPos, distance);

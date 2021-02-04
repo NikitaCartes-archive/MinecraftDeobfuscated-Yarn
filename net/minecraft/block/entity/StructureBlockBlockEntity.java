@@ -274,7 +274,7 @@ extends BlockEntity {
         BlockPos blockPos = this.getPos();
         int i = 80;
         BlockPos blockPos2 = new BlockPos(blockPos.getX() - 80, 0, blockPos.getZ() - 80);
-        List<StructureBlockBlockEntity> list = this.findStructureBlockEntities(blockPos2, blockPos3 = new BlockPos(blockPos.getX() + 80, this.world.getTopHeightLimit() - 1, blockPos.getZ() + 80));
+        List<StructureBlockBlockEntity> list = this.findStructureBlockEntities(blockPos2, blockPos3 = new BlockPos(blockPos.getX() + 80, this.world.getTopY() - 1, blockPos.getZ() + 80));
         List<StructureBlockBlockEntity> list2 = this.findCorners(list);
         if (list2.size() < 1) {
             return false;

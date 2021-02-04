@@ -4,12 +4,12 @@
 package net.minecraft.world.gen;
 
 import java.util.Random;
-import net.minecraft.class_5819;
+import net.minecraft.world.gen.WorldGenRandom;
 
 public class ChunkRandom
 extends Random
-implements class_5819 {
-    private int field_28768;
+implements WorldGenRandom {
+    private int sampleCount;
 
     public ChunkRandom() {
     }
@@ -19,9 +19,9 @@ implements class_5819 {
     }
 
     @Override
-    public int next(int i) {
-        ++this.field_28768;
-        return super.next(i);
+    public int next(int count) {
+        ++this.sampleCount;
+        return super.next(count);
     }
 
     /**

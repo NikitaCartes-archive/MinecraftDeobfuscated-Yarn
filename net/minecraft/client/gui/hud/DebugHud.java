@@ -229,7 +229,7 @@ extends DrawableHelper {
                 stringBuilder.append("??");
             }
             list.add(stringBuilder.toString());
-            if (blockPos.getY() >= this.client.world.getBottomSectionLimit() && blockPos.getY() < this.client.world.getTopHeightLimit()) {
+            if (blockPos.getY() >= this.client.world.getBottomY() && blockPos.getY() < this.client.world.getTopY()) {
                 list.add("Biome: " + this.client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(this.client.world.getBiome(blockPos)));
                 long l = 0L;
                 float h = 0.0f;

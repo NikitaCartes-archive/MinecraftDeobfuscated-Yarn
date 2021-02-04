@@ -9,13 +9,13 @@ import net.minecraft.block.BambooBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.BambooLeaves;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class BambooFeature
 extends Feature<ProbabilityConfig> {
@@ -29,12 +29,12 @@ extends Feature<ProbabilityConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<ProbabilityConfig> arg) {
+    public boolean generate(FeatureContext<ProbabilityConfig> featureContext) {
         int i = 0;
-        BlockPos blockPos = arg.method_33655();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
-        ProbabilityConfig probabilityConfig = arg.method_33656();
+        BlockPos blockPos = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
+        ProbabilityConfig probabilityConfig = featureContext.getConfig();
         BlockPos.Mutable mutable = blockPos.mutableCopy();
         BlockPos.Mutable mutable2 = blockPos.mutableCopy();
         if (structureWorldAccess.isAir(mutable)) {

@@ -79,7 +79,7 @@ public class ChunkSerializer {
         ChunkTickScheduler<Fluid> chunkTickScheduler2 = new ChunkTickScheduler<Fluid>(fluid -> fluid == null || fluid == Fluids.EMPTY, pos, compoundTag.getList("LiquidsToBeTicked", 9), world);
         boolean bl = compoundTag.getBoolean("isLightOn");
         ListTag listTag = compoundTag.getList("Sections", 10);
-        int i = world.getSections();
+        int i = world.countVerticalSections();
         ChunkSection[] chunkSections = new ChunkSection[i];
         boolean bl2 = world.getDimension().hasSkyLight();
         ServerChunkManager chunkManager = world.getChunkManager();
@@ -95,7 +95,7 @@ public class ChunkSerializer {
                 chunkSection.getContainer().read(compoundTag2.getList("Palette", 10), compoundTag2.getLongArray("BlockStates"));
                 chunkSection.calculateCounts();
                 if (!chunkSection.isEmpty()) {
-                    chunkSections[world.getSectionIndexFromSection((int)k)] = chunkSection;
+                    chunkSections[world.sectionCoordToIndex((int)k)] = chunkSection;
                 }
                 poiStorage.initForPalette(pos, chunkSection);
             }
@@ -122,7 +122,7 @@ public class ChunkSerializer {
                 protoChunk.setLightingProvider(lightingProvider);
             }
             if (!bl && chunk.getStatus().isAtLeast(ChunkStatus.LIGHT)) {
-                for (BlockPos blockPos : BlockPos.iterate(pos.getStartX(), world.getBottomSectionLimit(), pos.getStartZ(), pos.getEndX(), world.getTopHeightLimit() - 1, pos.getEndZ())) {
+                for (BlockPos blockPos : BlockPos.iterate(pos.getStartX(), world.getBottomY(), pos.getStartZ(), pos.getEndX(), world.getTopY() - 1, pos.getEndZ())) {
                     if (chunk.getBlockState(blockPos).getLuminance() == 0) continue;
                     protoChunk.addLightSource(blockPos);
                 }
@@ -342,7 +342,7 @@ public class ChunkSerializer {
         for (String string : compoundTag.getKeys()) {
             map.put((StructureFeature<?>)StructureFeature.STRUCTURES.get(string.toLowerCase(Locale.ROOT)), new LongOpenHashSet(Arrays.stream(compoundTag.getLongArray(string)).filter(packedPos -> {
                 ChunkPos chunkPos2 = new ChunkPos(packedPos);
-                if (chunkPos2.method_24022(pos) > 8) {
+                if (chunkPos2.getChebyshevDistance(pos) > 8) {
                     LOGGER.warn("Found invalid structure reference [ {} @ {} ] for chunk {}.", (Object)string, (Object)chunkPos2, (Object)pos);
                     return false;
                 }

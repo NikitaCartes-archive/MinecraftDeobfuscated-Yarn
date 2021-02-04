@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.class_5821;
 import net.minecraft.loot.LootTables;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -21,6 +20,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class BonusChestFeature
 extends Feature<DefaultFeatureConfig> {
@@ -29,10 +29,10 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DefaultFeatureConfig> arg) {
-        Random random = arg.method_33654();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        ChunkPos chunkPos = new ChunkPos(arg.method_33655());
+    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+        Random random = featureContext.getRandom();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        ChunkPos chunkPos = new ChunkPos(featureContext.getPos());
         List list = IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()).boxed().collect(Collectors.toList());
         Collections.shuffle(list, random);
         List list2 = IntStream.rangeClosed(chunkPos.getStartZ(), chunkPos.getEndZ()).boxed().collect(Collectors.toList());

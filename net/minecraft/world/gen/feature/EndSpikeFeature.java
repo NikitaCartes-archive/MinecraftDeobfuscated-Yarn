@@ -21,7 +21,6 @@ import java.util.stream.IntStream;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PaneBlock;
-import net.minecraft.class_5821;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.util.math.BlockPos;
@@ -33,6 +32,7 @@ import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.feature.EndSpikeFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class EndSpikeFeature
 extends Feature<EndSpikeFeatureConfig> {
@@ -49,11 +49,11 @@ extends Feature<EndSpikeFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<EndSpikeFeatureConfig> arg) {
-        EndSpikeFeatureConfig endSpikeFeatureConfig = arg.method_33656();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
-        BlockPos blockPos = arg.method_33655();
+    public boolean generate(FeatureContext<EndSpikeFeatureConfig> featureContext) {
+        EndSpikeFeatureConfig endSpikeFeatureConfig = featureContext.getConfig();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
+        BlockPos blockPos = featureContext.getPos();
         List<Spike> list = endSpikeFeatureConfig.getSpikes();
         if (list.isEmpty()) {
             list = EndSpikeFeature.getSpikes(structureWorldAccess);
@@ -67,7 +67,7 @@ extends Feature<EndSpikeFeatureConfig> {
 
     private void generateSpike(ServerWorldAccess world, Random random, EndSpikeFeatureConfig config, Spike spike) {
         int i = spike.getRadius();
-        for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, world.getBottomSectionLimit(), spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
+        for (BlockPos blockPos : BlockPos.iterate(new BlockPos(spike.getCenterX() - i, world.getBottomY(), spike.getCenterZ() - i), new BlockPos(spike.getCenterX() + i, spike.getHeight() + 10, spike.getCenterZ() + i))) {
             if (blockPos.getSquaredDistance(spike.getCenterX(), blockPos.getY(), spike.getCenterZ(), false) <= (double)(i * i + 1) && blockPos.getY() < spike.getHeight()) {
                 this.setBlockState(world, blockPos, Blocks.OBSIDIAN.getDefaultState());
                 continue;

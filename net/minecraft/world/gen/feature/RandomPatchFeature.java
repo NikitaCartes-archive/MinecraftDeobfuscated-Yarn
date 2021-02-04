@@ -6,7 +6,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5821;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3i;
@@ -14,6 +13,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class RandomPatchFeature
 extends Feature<RandomPatchFeatureConfig> {
@@ -22,11 +22,11 @@ extends Feature<RandomPatchFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<RandomPatchFeatureConfig> arg) {
-        RandomPatchFeatureConfig randomPatchFeatureConfig = arg.method_33656();
-        Random random = arg.method_33654();
-        BlockPos blockPos = arg.method_33655();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
+    public boolean generate(FeatureContext<RandomPatchFeatureConfig> featureContext) {
+        RandomPatchFeatureConfig randomPatchFeatureConfig = featureContext.getConfig();
+        Random random = featureContext.getRandom();
+        BlockPos blockPos = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
         BlockState blockState = randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
         BlockPos blockPos2 = randomPatchFeatureConfig.project ? structureWorldAccess.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, blockPos) : blockPos;
         int i = 0;

@@ -10,7 +10,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5630;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -43,6 +42,7 @@ import net.minecraft.entity.passive.MerchantEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.raid.RaiderEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
@@ -251,12 +251,12 @@ implements CrossbowUser {
     }
 
     @Override
-    public class_5630 method_32318(int i) {
-        int j = i - 300;
-        if (j >= 0 && j < this.inventory.size()) {
-            return class_5630.method_32328(this.inventory, j);
+    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+        int i = mappedIndex - 300;
+        if (i >= 0 && i < this.inventory.size()) {
+            return CommandItemSlot.of(this.inventory, i);
         }
-        return super.method_32318(i);
+        return super.getCommandItemSlot(mappedIndex);
     }
 
     @Override

@@ -160,11 +160,11 @@ extends Block {
     }
 
     @Override
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!world.isClient()) {
             world.syncWorldEvent(null, 1009, pos, 0);
         }
-        super.onBreak(world, pos, state, playerEntity);
+        super.onBreak(world, pos, state, player);
     }
 
     public static boolean canPlaceAt(World world, BlockPos pos, Direction direction) {

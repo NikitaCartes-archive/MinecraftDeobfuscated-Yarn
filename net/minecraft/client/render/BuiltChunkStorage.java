@@ -55,7 +55,7 @@ public class BuiltChunkStorage {
     protected void setViewDistance(int viewDistance) {
         int i;
         this.sizeX = i = viewDistance * 2 + 1;
-        this.sizeY = this.world.getSections();
+        this.sizeY = this.world.countVerticalSections();
         this.sizeZ = i;
     }
 
@@ -71,7 +71,7 @@ public class BuiltChunkStorage {
                 int q = j - 8 - p / 2;
                 int r = q + Math.floorMod(o * 16 - q, p);
                 for (int s = 0; s < this.sizeY; ++s) {
-                    int t = this.world.getBottomSectionLimit() + s * 16;
+                    int t = this.world.getBottomY() + s * 16;
                     ChunkBuilder.BuiltChunk builtChunk = this.chunks[this.getChunkIndex(k, s, o)];
                     builtChunk.setOrigin(n, t, r);
                 }
@@ -81,7 +81,7 @@ public class BuiltChunkStorage {
 
     public void scheduleRebuild(int x, int y, int z, boolean important) {
         int i = Math.floorMod(x, this.sizeX);
-        int j = Math.floorMod(y - this.world.getMinimumSection(), this.sizeY);
+        int j = Math.floorMod(y - this.world.getBottomSectionCoord(), this.sizeY);
         int k = Math.floorMod(z, this.sizeZ);
         ChunkBuilder.BuiltChunk builtChunk = this.chunks[this.getChunkIndex(i, j, k)];
         builtChunk.scheduleRebuild(important);
@@ -90,7 +90,7 @@ public class BuiltChunkStorage {
     @Nullable
     protected ChunkBuilder.BuiltChunk getRenderedChunk(BlockPos pos) {
         int i = MathHelper.floorDiv(pos.getX(), 16);
-        int j = MathHelper.floorDiv(pos.getY() - this.world.getBottomSectionLimit(), 16);
+        int j = MathHelper.floorDiv(pos.getY() - this.world.getBottomY(), 16);
         int k = MathHelper.floorDiv(pos.getZ(), 16);
         if (j < 0 || j >= this.sizeY) {
             return null;

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.block;
 
 import java.util.Random;
 import net.fabricmc.api.EnvType;
@@ -18,11 +18,11 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
 
-public class class_5809
+public class SporeBlossomBlock
 extends Block {
-    private static final VoxelShape field_28703 = Block.createCuboidShape(2.0, 13.0, 2.0, 14.0, 16.0, 14.0);
+    private static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 13.0, 2.0, 14.0, 16.0, 14.0);
 
-    public class_5809(AbstractBlock.Settings settings) {
+    public SporeBlossomBlock(AbstractBlock.Settings settings) {
         super(settings);
     }
 
@@ -45,7 +45,7 @@ extends Block {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return field_28703;
+        return SHAPE;
     }
 }
 

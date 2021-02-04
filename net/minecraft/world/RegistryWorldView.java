@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -20,7 +20,13 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.Nullable;
 
-public interface class_5423
+/**
+ * A world view or {@link World}'s superinterface that exposes access to
+ * a registry manager.
+ * 
+ * @see #getRegistryManager()
+ */
+public interface RegistryWorldView
 extends EntityView,
 WorldView,
 ModifiableTestableWorld {

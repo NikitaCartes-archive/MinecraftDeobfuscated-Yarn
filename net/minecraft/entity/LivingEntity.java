@@ -34,7 +34,6 @@ import net.minecraft.block.LadderBlock;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.class_5459;
-import net.minecraft.class_5630;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -77,6 +76,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.ElytraItem;
@@ -1853,7 +1853,7 @@ extends Entity {
                         q -= d;
                     }
                 } else {
-                    q = this.getY() > (double)this.world.getBottomSectionLimit() ? -0.1 : 0.0;
+                    q = this.getY() > (double)this.world.getBottomY() ? -0.1 : 0.0;
                 }
                 this.setVelocity(vec3d6.x * (double)f, q * (double)0.98f, vec3d6.z * (double)f);
             }
@@ -2676,7 +2676,7 @@ extends Entity {
         BlockPos blockPos = new BlockPos(x, g, z);
         if (world.isChunkLoaded(blockPos)) {
             boolean bl2 = false;
-            while (!bl2 && blockPos.getY() > world.getBottomSectionLimit()) {
+            while (!bl2 && blockPos.getY() > world.getBottomY()) {
                 BlockPos blockPos2 = blockPos.down();
                 BlockState blockState = world.getBlockState(blockPos2);
                 if (blockState.getMaterial().blocksMovement()) {
@@ -2910,11 +2910,11 @@ extends Entity {
         return EquipmentSlot.MAINHAND;
     }
 
-    private static class_5630 method_32321(LivingEntity livingEntity, EquipmentSlot equipmentSlot) {
+    private static CommandItemSlot method_32321(LivingEntity livingEntity, EquipmentSlot equipmentSlot) {
         if (equipmentSlot == EquipmentSlot.HEAD || equipmentSlot == EquipmentSlot.MAINHAND || equipmentSlot == EquipmentSlot.OFFHAND) {
-            return class_5630.method_32330(livingEntity, equipmentSlot);
+            return CommandItemSlot.of(livingEntity, equipmentSlot);
         }
-        return class_5630.method_32331(livingEntity, equipmentSlot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == equipmentSlot);
+        return CommandItemSlot.of(livingEntity, equipmentSlot, itemStack -> itemStack.isEmpty() || MobEntity.getPreferredEquipmentSlot(itemStack) == equipmentSlot);
     }
 
     @Nullable
@@ -2941,12 +2941,12 @@ extends Entity {
     }
 
     @Override
-    public class_5630 method_32318(int i) {
-        EquipmentSlot equipmentSlot = LivingEntity.getEquipmentSlot(i);
+    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+        EquipmentSlot equipmentSlot = LivingEntity.getEquipmentSlot(mappedIndex);
         if (equipmentSlot != null) {
             return LivingEntity.method_32321(this, equipmentSlot);
         }
-        return super.method_32318(i);
+        return super.getCommandItemSlot(mappedIndex);
     }
 
     @Override

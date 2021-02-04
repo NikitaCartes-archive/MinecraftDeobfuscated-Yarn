@@ -40,7 +40,7 @@ public abstract class StructurePoolElement {
     private volatile StructurePool.Projection projection;
 
     protected static <E extends StructurePoolElement> RecordCodecBuilder<E, StructurePool.Projection> method_28883() {
-        return ((MapCodec)StructurePool.Projection.field_24956.fieldOf("projection")).forGetter(StructurePoolElement::getProjection);
+        return ((MapCodec)StructurePool.Projection.CODEC.fieldOf("projection")).forGetter(StructurePoolElement::getProjection);
     }
 
     protected StructurePoolElement(StructurePool.Projection projection) {

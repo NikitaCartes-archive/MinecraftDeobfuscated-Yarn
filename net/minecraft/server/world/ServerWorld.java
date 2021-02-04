@@ -480,12 +480,12 @@ implements StructureWorldAccess {
         if (optional.isPresent()) {
             return optional.get();
         }
-        Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getTopHeightLimit(), blockPos.getZ())).expand(3.0);
+        Box box = new Box(blockPos, new BlockPos(blockPos.getX(), this.getTopY(), blockPos.getZ())).expand(3.0);
         List<LivingEntity> list = this.getEntitiesByClass(LivingEntity.class, box, entity -> entity != null && entity.isAlive() && this.isSkyVisible(entity.getBlockPos()));
         if (!list.isEmpty()) {
             return list.get(this.random.nextInt(list.size())).getBlockPos();
         }
-        if (blockPos.getY() == this.getBottomSectionLimit() - 1) {
+        if (blockPos.getY() == this.getBottomY() - 1) {
             blockPos = blockPos.up(2);
         }
         return blockPos;
@@ -781,7 +781,7 @@ implements StructureWorldAccess {
         this.server.getPlayerManager().sendToAround(player, pos.getX(), pos.getY(), pos.getZ(), 64.0, this.getRegistryKey(), new WorldEventS2CPacket(eventId, pos, data, false));
     }
 
-    public int getHeightLimit() {
+    public int getLogicalHeight() {
         return this.getDimension().getLogicalHeight();
     }
 

@@ -45,7 +45,7 @@ extends BiomeSource {
         this.smallIslandsBiome = smallIslandsBiome;
         this.barrensBiome = barrensBiome;
         ChunkRandom chunkRandom = new ChunkRandom(seed);
-        chunkRandom.method_33650(17292);
+        chunkRandom.skip(17292);
         this.noise = new SimplexNoiseSampler(chunkRandom);
     }
 

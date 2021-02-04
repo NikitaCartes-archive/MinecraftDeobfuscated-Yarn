@@ -141,7 +141,7 @@ extends Entity {
 
     @Override
     protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.field_28632;
+        return Entity.class_5799.EVENTS;
     }
 
     @Override

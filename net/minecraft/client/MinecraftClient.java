@@ -323,6 +323,9 @@ WindowEventHandler {
     private final HotbarStorage creativeHotbarStorage;
     public final Mouse mouse;
     public final Keyboard keyboard;
+    /**
+     * The directory that stores options, worlds, resource packs, logs, etc.
+     */
     public final File runDirectory;
     private final String gameVersion;
     private final String versionType;
@@ -392,6 +395,9 @@ WindowEventHandler {
     public Entity targetedEntity;
     @Nullable
     public HitResult crosshairTarget;
+    /**
+     * The cooldown for using items when {@linkplain net.minecraft.client.option.GameOptions#keyUse the item use button} is held down.
+     */
     private int itemUseCooldown;
     protected int attackCooldown;
     private boolean paused;
@@ -426,7 +432,7 @@ WindowEventHandler {
     @Nullable
     private CompletableFuture<Void> resourceReloadFuture;
     @Nullable
-    private TutorialToast field_26843;
+    private TutorialToast socialInteractionsToast;
     private Profiler profiler = DummyProfiler.INSTANCE;
     private int trackingTick;
     private final TickTimeTracker tickTimeTracker = new TickTimeTracker(Util.nanoTimeSupplier, () -> this.trackingTick);
@@ -1400,9 +1406,9 @@ WindowEventHandler {
             if (!this.paused) {
                 if (!this.options.joinedFirstServer && this.isConnectedToServer()) {
                     TranslatableText text = new TranslatableText("tutorial.socialInteractions.title");
-                    TranslatableText text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.getKeybindName("socialInteractions"));
-                    this.field_26843 = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
-                    this.tutorialManager.method_31365(this.field_26843, 160);
+                    TranslatableText text2 = new TranslatableText("tutorial.socialInteractions.description", TutorialManager.keyToText("socialInteractions"));
+                    this.socialInteractionsToast = new TutorialToast(TutorialToast.Type.SOCIAL_INTERACTIONS, text, text2, true);
+                    this.tutorialManager.add(this.socialInteractionsToast, 160);
                     this.options.joinedFirstServer = true;
                     this.options.write();
                 }
@@ -1474,9 +1480,9 @@ WindowEventHandler {
                 NarratorManager.INSTANCE.narrate(SOCIAL_INTERACTIONS_NOT_AVAILABLE.getString());
                 continue;
             }
-            if (this.field_26843 != null) {
-                this.tutorialManager.method_31364(this.field_26843);
-                this.field_26843 = null;
+            if (this.socialInteractionsToast != null) {
+                this.tutorialManager.remove(this.socialInteractionsToast);
+                this.socialInteractionsToast = null;
             }
             this.openScreen(new SocialInteractionsScreen());
         }

@@ -141,7 +141,7 @@ implements ItemConvertible {
     public static BlockState postProcessState(BlockState state, WorldAccess world, BlockPos pos) {
         BlockState blockState = state;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (Direction direction : FACINGS) {
+        for (Direction direction : DIRECTIONS) {
             mutable.set(pos, direction);
             blockState = blockState.getStateForNeighborUpdate(direction, world.getBlockState(mutable), world, pos, mutable);
         }
@@ -402,12 +402,12 @@ implements ItemConvertible {
         world.syncWorldEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
     }
 
-    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
-        this.method_33614(world, playerEntity, pos, state);
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        this.method_33614(world, player, pos, state);
         if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
-            PiglinBrain.onGuardedBlockInteracted(playerEntity, false);
+            PiglinBrain.onGuardedBlockInteracted(player, false);
         }
-        world.emitGameEvent((Entity)playerEntity, GameEvent.BLOCK_DESTROY, pos);
+        world.emitGameEvent((Entity)player, GameEvent.BLOCK_DESTROY, pos);
     }
 
     public void precipitationTick(BlockState state, World world, BlockPos pos, Biome.Precipitation precipitation) {
@@ -461,7 +461,7 @@ implements ItemConvertible {
         return this;
     }
 
-    protected ImmutableMap<BlockState, VoxelShape> method_33615(Function<BlockState, VoxelShape> function) {
+    protected ImmutableMap<BlockState, VoxelShape> getShapesForStates(Function<BlockState, VoxelShape> function) {
         return this.stateManager.getStates().stream().collect(ImmutableMap.toImmutableMap(Function.identity(), function));
     }
 

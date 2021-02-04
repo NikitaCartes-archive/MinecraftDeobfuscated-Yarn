@@ -83,7 +83,7 @@ extends BlockView {
         if (voxelShape2.isEmpty()) {
             return Optional.empty();
         }
-        Box box2 = Box.method_33660(voxelShape2.getBoundingBoxes()).expand(d, e, f);
+        Box box2 = voxelShape2.getBoundingBox().expand(d, e, f);
         VoxelShape voxelShape22 = this.getBlockCollisions(entity, box2).flatMap(voxelShape -> voxelShape.getBoundingBoxes().stream()).map(box -> box.expand(d / 2.0, e / 2.0, f / 2.0)).map(VoxelShapes::cuboid).reduce(VoxelShapes.empty(), VoxelShapes::union);
         VoxelShape voxelShape3 = VoxelShapes.combineAndSimplify(voxelShape2, voxelShape22, BooleanBiFunction.ONLY_FIRST);
         return voxelShape3.method_33661(vec3d);

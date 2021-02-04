@@ -8,12 +8,12 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5819;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.WorldGenRandom;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.TernarySurfaceConfig;
 
@@ -80,7 +80,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
     @Override
     public void initSeed(long seed) {
         if (this.seed != seed || this.surfaceNoise == null) {
-            this.surfaceNoise = new OctavePerlinNoiseSampler((class_5819)new ChunkRandom(seed), ImmutableList.of(Integer.valueOf(0)));
+            this.surfaceNoise = new OctavePerlinNoiseSampler((WorldGenRandom)new ChunkRandom(seed), ImmutableList.of(Integer.valueOf(0)));
         }
         this.seed = seed;
     }

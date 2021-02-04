@@ -8,7 +8,6 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5821;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -102,6 +101,7 @@ import net.minecraft.world.gen.feature.UnderwaterDiskFeature;
 import net.minecraft.world.gen.feature.VinesFeature;
 import net.minecraft.world.gen.feature.VoidStartPlatformFeature;
 import net.minecraft.world.gen.feature.WeepingVinesFeature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DefaultFeatureConfig> NO_OP = Feature.register("no_op", new NoOpFeature(DefaultFeatureConfig.CODEC));
@@ -183,7 +183,7 @@ public abstract class Feature<FC extends FeatureConfig> {
         world.setBlockState(pos, state, 3);
     }
 
-    public abstract boolean generate(class_5821<FC> var1);
+    public abstract boolean generate(FeatureContext<FC> var1);
 
     protected static boolean isStone(BlockState state) {
         return state.isIn(BlockTags.BASE_STONE_OVERWORLD);

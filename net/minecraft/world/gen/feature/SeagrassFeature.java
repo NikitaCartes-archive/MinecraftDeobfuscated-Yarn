@@ -9,12 +9,12 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.TallSeagrassBlock;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class SeagrassFeature
 extends Feature<ProbabilityConfig> {
@@ -23,12 +23,12 @@ extends Feature<ProbabilityConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<ProbabilityConfig> arg) {
+    public boolean generate(FeatureContext<ProbabilityConfig> featureContext) {
         boolean bl = false;
-        Random random = arg.method_33654();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        BlockPos blockPos = arg.method_33655();
-        ProbabilityConfig probabilityConfig = arg.method_33656();
+        Random random = featureContext.getRandom();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        BlockPos blockPos = featureContext.getPos();
+        ProbabilityConfig probabilityConfig = featureContext.getConfig();
         int i = random.nextInt(8) - random.nextInt(8);
         int j = random.nextInt(8) - random.nextInt(8);
         int k = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + i, blockPos.getZ() + j);

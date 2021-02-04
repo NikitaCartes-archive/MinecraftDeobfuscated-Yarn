@@ -30,7 +30,6 @@ import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
-import net.minecraft.class_5630;
 import net.minecraft.client.render.entity.PlayerModelPart;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
@@ -66,6 +65,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.FishingBobberEntity;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.EnderChestInventory;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.AxeItem;
@@ -518,7 +518,7 @@ extends LivingEntity {
         this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_DEATH));
         this.resetStat(Stats.CUSTOM.getOrCreateStat(Stats.TIME_SINCE_REST));
         this.extinguish();
-        this.method_33572(false);
+        this.setOnFire(false);
     }
 
     @Override
@@ -1156,7 +1156,17 @@ extends LivingEntity {
         return this.abilities;
     }
 
-    public void method_33592(ItemStack itemStack, ItemStack itemStack2, ClickType clickType) {
+    /**
+     * Called when a player performs a {@link net.minecraft.screen.slot.SlotActionType#PICKUP
+     * pickup slot action} in a screen handler.
+     * 
+     * @implNote This is used by the client player to trigger bundle tutorials.
+     * 
+     * @param cursorStack the item stack on the player's cursor
+     * @param slotStack the item stack in the clicked slot
+     * @param clickType the click type (mouse button used)
+     */
+    public void onPickupSlotClick(ItemStack cursorStack, ItemStack slotStack, ClickType clickType) {
     }
 
     public Either<SleepFailureReason, Unit> trySleep(BlockPos pos) {
@@ -1549,7 +1559,7 @@ extends LivingEntity {
 
     @Override
     protected Entity.class_5799 method_33570() {
-        return !this.abilities.flying && (!this.onGround || !this.isSneaky()) ? Entity.class_5799.field_28633 : Entity.class_5799.field_28630;
+        return !this.abilities.flying && (!this.onGround || !this.isSneaky()) ? Entity.class_5799.ALL : Entity.class_5799.NONE;
     }
 
     public void sendAbilitiesUpdate() {
@@ -1729,15 +1739,15 @@ extends LivingEntity {
     }
 
     @Override
-    public class_5630 method_32318(int i) {
-        if (i >= 0 && i < this.inventory.main.size()) {
-            return class_5630.method_32328(this.inventory, i);
+    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+        if (mappedIndex >= 0 && mappedIndex < this.inventory.main.size()) {
+            return CommandItemSlot.of(this.inventory, mappedIndex);
         }
-        int j = i - 200;
-        if (j >= 0 && j < this.enderChestInventory.size()) {
-            return class_5630.method_32328(this.enderChestInventory, j);
+        int i = mappedIndex - 200;
+        if (i >= 0 && i < this.enderChestInventory.size()) {
+            return CommandItemSlot.of(this.enderChestInventory, i);
         }
-        return super.method_32318(i);
+        return super.getCommandItemSlot(mappedIndex);
     }
 
     @Environment(value=EnvType.CLIENT)

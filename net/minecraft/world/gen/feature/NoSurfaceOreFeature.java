@@ -5,13 +5,13 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class NoSurfaceOreFeature
 extends Feature<OreFeatureConfig> {
@@ -20,11 +20,11 @@ extends Feature<OreFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<OreFeatureConfig> arg) {
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
-        OreFeatureConfig oreFeatureConfig = arg.method_33656();
-        BlockPos blockPos = arg.method_33655();
+    public boolean generate(FeatureContext<OreFeatureConfig> featureContext) {
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
+        OreFeatureConfig oreFeatureConfig = featureContext.getConfig();
+        BlockPos blockPos = featureContext.getPos();
         int i = random.nextInt(oreFeatureConfig.size + 1);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int j = 0; j < i; ++j) {

@@ -11,7 +11,6 @@ import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.entity.MobSpawnerBlockEntity;
-import net.minecraft.class_5821;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTables;
 import net.minecraft.structure.StructurePiece;
@@ -21,6 +20,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,14 +35,14 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<DefaultFeatureConfig> arg) {
+    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
         BlockPos blockPos2;
         int u;
         int t;
         int s;
-        BlockPos blockPos = arg.method_33655();
-        Random random = arg.method_33654();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
+        BlockPos blockPos = featureContext.getPos();
+        Random random = featureContext.getRandom();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
         int i = 3;
         int j = random.nextInt(2) + 2;
         int k = -j - 1;
@@ -79,7 +79,7 @@ extends Feature<DefaultFeatureConfig> {
                     blockPos2 = blockPos.add(s, t, u);
                     BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
                     if (s == k || t == -1 || u == p || s == l || t == 4 || u == q) {
-                        if (blockPos2.getY() >= structureWorldAccess.getBottomSectionLimit() && !structureWorldAccess.getBlockState(blockPos2.down()).getMaterial().isSolid()) {
+                        if (blockPos2.getY() >= structureWorldAccess.getBottomY() && !structureWorldAccess.getBlockState(blockPos2.down()).getMaterial().isSolid()) {
                             structureWorldAccess.setBlockState(blockPos2, AIR, 2);
                             continue;
                         }

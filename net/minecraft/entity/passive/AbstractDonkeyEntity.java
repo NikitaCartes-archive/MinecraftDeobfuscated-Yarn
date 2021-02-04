@@ -4,7 +4,6 @@
 package net.minecraft.entity.passive;
 
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5630;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -13,6 +12,7 @@ import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.HorseBaseEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -114,25 +114,25 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public class_5630 method_32318(int i) {
-        if (i == 499) {
-            return new class_5630(){
+    public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+        if (mappedIndex == 499) {
+            return new CommandItemSlot(){
 
                 @Override
-                public ItemStack method_32327() {
+                public ItemStack get() {
                     return AbstractDonkeyEntity.this.hasChest() ? new ItemStack(Items.CHEST) : ItemStack.EMPTY;
                 }
 
                 @Override
-                public boolean method_32332(ItemStack itemStack) {
-                    if (itemStack.isEmpty()) {
+                public boolean set(ItemStack stack) {
+                    if (stack.isEmpty()) {
                         if (AbstractDonkeyEntity.this.hasChest()) {
                             AbstractDonkeyEntity.this.setHasChest(false);
                             AbstractDonkeyEntity.this.onChestedStatusChanged();
                         }
                         return true;
                     }
-                    if (itemStack.isOf(Items.CHEST)) {
+                    if (stack.isOf(Items.CHEST)) {
                         if (!AbstractDonkeyEntity.this.hasChest()) {
                             AbstractDonkeyEntity.this.setHasChest(true);
                             AbstractDonkeyEntity.this.onChestedStatusChanged();
@@ -143,7 +143,7 @@ extends HorseBaseEntity {
                 }
             };
         }
-        return super.method_32318(i);
+        return super.getCommandItemSlot(mappedIndex);
     }
 
     @Override

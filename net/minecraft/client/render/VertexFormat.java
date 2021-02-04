@@ -103,7 +103,7 @@ public class VertexFormat {
             this.field_27385 = k;
         }
 
-        public int method_31973(int vertexCount) {
+        public int getSize(int vertexCount) {
             int i;
             switch (this) {
                 case LINES: 

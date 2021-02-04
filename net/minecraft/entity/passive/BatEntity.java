@@ -154,7 +154,7 @@ extends AmbientEntity {
                 }
             }
         } else {
-            if (!(this.hangingPosition == null || this.world.isAir(this.hangingPosition) && this.hangingPosition.getY() > this.world.getBottomSectionLimit())) {
+            if (!(this.hangingPosition == null || this.world.isAir(this.hangingPosition) && this.hangingPosition.getY() > this.world.getBottomY())) {
                 this.hangingPosition = null;
             }
             if (this.hangingPosition == null || this.random.nextInt(30) == 0 || this.hangingPosition.isWithinDistance(this.getPos(), 2.0)) {
@@ -178,7 +178,7 @@ extends AmbientEntity {
 
     @Override
     protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.field_28632;
+        return Entity.class_5799.EVENTS;
     }
 
     @Override

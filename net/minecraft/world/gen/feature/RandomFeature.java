@@ -5,13 +5,13 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.RandomFeatureEntry;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class RandomFeature
 extends Feature<RandomFeatureConfig> {
@@ -20,12 +20,12 @@ extends Feature<RandomFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<RandomFeatureConfig> arg) {
-        RandomFeatureConfig randomFeatureConfig = arg.method_33656();
-        Random random = arg.method_33654();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        ChunkGenerator chunkGenerator = arg.method_33653();
-        BlockPos blockPos = arg.method_33655();
+    public boolean generate(FeatureContext<RandomFeatureConfig> featureContext) {
+        RandomFeatureConfig randomFeatureConfig = featureContext.getConfig();
+        Random random = featureContext.getRandom();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        ChunkGenerator chunkGenerator = featureContext.getGenerator();
+        BlockPos blockPos = featureContext.getPos();
         for (RandomFeatureEntry randomFeatureEntry : randomFeatureConfig.features) {
             if (!(random.nextFloat() < randomFeatureEntry.chance)) continue;
             return randomFeatureEntry.generate(structureWorldAccess, chunkGenerator, random, blockPos);

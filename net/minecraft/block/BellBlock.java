@@ -73,7 +73,7 @@ extends BlockWithEntity {
         boolean bl = world.isReceivingRedstonePower(pos);
         if (bl != state.get(POWERED)) {
             if (bl) {
-                this.method_33600(world, pos, null);
+                this.ring(world, pos, null);
             }
             world.setBlockState(pos, (BlockState)state.with(POWERED, bl), 3);
         }
@@ -127,19 +127,19 @@ extends BlockWithEntity {
         return false;
     }
 
-    public boolean method_33600(World world, BlockPos blockPos, @Nullable Direction direction) {
-        return this.ring(null, world, blockPos, direction);
+    public boolean ring(World world, BlockPos pos, @Nullable Direction direction) {
+        return this.ring(null, world, pos, direction);
     }
 
-    public boolean ring(@Nullable Entity entity, World world, BlockPos blockPos, @Nullable Direction direction) {
-        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+    public boolean ring(@Nullable Entity entity, World world, BlockPos pos, @Nullable Direction direction) {
+        BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!world.isClient && blockEntity instanceof BellBlockEntity) {
             if (direction == null) {
-                direction = world.getBlockState(blockPos).get(FACING);
+                direction = world.getBlockState(pos).get(FACING);
             }
             ((BellBlockEntity)blockEntity).activate(direction);
-            world.playSound(null, blockPos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0f, 1.0f);
-            world.emitGameEvent(entity, GameEvent.RING_BELL, blockPos);
+            world.playSound(null, pos, SoundEvents.BLOCK_BELL_USE, SoundCategory.BLOCKS, 2.0f, 1.0f);
+            world.emitGameEvent(entity, GameEvent.RING_BELL, pos);
             return true;
         }
         return false;
@@ -217,21 +217,21 @@ extends BlockWithEntity {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         Attachment attachment = state.get(ATTACHMENT);
         Direction direction2 = BellBlock.getPlacementSide(state).getOpposite();
         if (direction2 == direction && !state.canPlaceAt(world, pos) && attachment != Attachment.DOUBLE_WALL) {
             return Blocks.AIR.getDefaultState();
         }
         if (direction.getAxis() == state.get(FACING).getAxis()) {
-            if (attachment == Attachment.DOUBLE_WALL && !newState.isSideSolidFullSquare(world, posFrom, direction)) {
+            if (attachment == Attachment.DOUBLE_WALL && !neighborState.isSideSolidFullSquare(world, neighborPos, direction)) {
                 return (BlockState)((BlockState)state.with(ATTACHMENT, Attachment.SINGLE_WALL)).with(FACING, direction.getOpposite());
             }
-            if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && newState.isSideSolidFullSquare(world, posFrom, state.get(FACING))) {
+            if (attachment == Attachment.SINGLE_WALL && direction2.getOpposite() == direction && neighborState.isSideSolidFullSquare(world, neighborPos, state.get(FACING))) {
                 return (BlockState)state.with(ATTACHMENT, Attachment.DOUBLE_WALL);
             }
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override

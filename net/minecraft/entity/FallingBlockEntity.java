@@ -88,7 +88,7 @@ extends Entity {
 
     @Override
     protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.field_28630;
+        return Entity.class_5799.NONE;
     }
 
     @Override
@@ -173,7 +173,7 @@ extends Entity {
                         this.onDestroyedOnLanding(block, blockPos);
                     }
                 }
-            } else if (!(this.world.isClient || (this.timeFalling <= 100 || blockPos.getY() > this.world.getBottomSectionLimit() && blockPos.getY() <= this.world.getTopHeightLimit()) && this.timeFalling <= 600)) {
+            } else if (!(this.world.isClient || (this.timeFalling <= 100 || blockPos.getY() > this.world.getBottomY() && blockPos.getY() <= this.world.getTopY()) && this.timeFalling <= 600)) {
                 if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
                     this.dropItem(block);
                 }

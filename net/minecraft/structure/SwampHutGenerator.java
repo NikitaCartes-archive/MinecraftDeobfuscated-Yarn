@@ -34,10 +34,10 @@ extends StructurePieceWithDimensions {
         super(StructurePieceType.SWAMP_HUT, random, i, 64, j, 7, 7, 9);
     }
 
-    public SwampHutGenerator(StructureManager structureManager, CompoundTag compoundTag) {
-        super(StructurePieceType.SWAMP_HUT, compoundTag);
-        this.hasWitch = compoundTag.getBoolean("Witch");
-        this.hasCat = compoundTag.getBoolean("Cat");
+    public SwampHutGenerator(StructureManager structureManager, CompoundTag nbt) {
+        super(StructurePieceType.SWAMP_HUT, nbt);
+        this.hasWitch = nbt.getBoolean("Witch");
+        this.hasCat = nbt.getBoolean("Cat");
     }
 
     @Override
@@ -101,21 +101,21 @@ extends StructurePieceWithDimensions {
             witchEntity.initialize(world, world.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
             world.spawnEntityAndPassengers(witchEntity);
         }
-        this.method_16181(world, boundingBox);
+        this.spawnCat(world, boundingBox);
         return true;
     }
 
-    private void method_16181(ServerWorldAccess serverWorldAccess, BlockBox blockBox) {
+    private void spawnCat(ServerWorldAccess world, BlockBox box) {
         int k;
         int j;
         int i;
-        if (!this.hasCat && blockBox.contains(new BlockPos(i = this.applyXTransform(2, 5), j = this.applyYTransform(2), k = this.applyZTransform(2, 5)))) {
+        if (!this.hasCat && box.contains(new BlockPos(i = this.applyXTransform(2, 5), j = this.applyYTransform(2), k = this.applyZTransform(2, 5)))) {
             this.hasCat = true;
-            CatEntity catEntity = EntityType.CAT.create(serverWorldAccess.toServerWorld());
+            CatEntity catEntity = EntityType.CAT.create(world.toServerWorld());
             catEntity.setPersistent();
             catEntity.refreshPositionAndAngles((double)i + 0.5, j, (double)k + 0.5, 0.0f, 0.0f);
-            catEntity.initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
-            serverWorldAccess.spawnEntityAndPassengers(catEntity);
+            catEntity.initialize(world, world.getLocalDifficulty(new BlockPos(i, j, k)), SpawnReason.STRUCTURE, null, null);
+            world.spawnEntityAndPassengers(catEntity);
         }
     }
 }

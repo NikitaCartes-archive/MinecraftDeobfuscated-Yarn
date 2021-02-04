@@ -7,13 +7,13 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.jetbrains.annotations.Nullable;
 
 public class NetherrackReplaceBlobsFeature
@@ -23,12 +23,12 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<NetherrackReplaceBlobsFeatureConfig> arg) {
-        NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig = arg.method_33656();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
-        Random random = arg.method_33654();
+    public boolean generate(FeatureContext<NetherrackReplaceBlobsFeatureConfig> featureContext) {
+        NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig = featureContext.getConfig();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        Random random = featureContext.getRandom();
         Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
-        BlockPos blockPos = NetherrackReplaceBlobsFeature.method_27107(structureWorldAccess, arg.method_33655().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomSectionLimit() + 1, structureWorldAccess.getTopHeightLimit() - 1), block);
+        BlockPos blockPos = NetherrackReplaceBlobsFeature.method_27107(structureWorldAccess, featureContext.getPos().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopY() - 1), block);
         if (blockPos == null) {
             return false;
         }
@@ -49,7 +49,7 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
 
     @Nullable
     private static BlockPos method_27107(WorldAccess worldAccess, BlockPos.Mutable mutable, Block block) {
-        while (mutable.getY() > worldAccess.getBottomSectionLimit() + 1) {
+        while (mutable.getY() > worldAccess.getBottomY() + 1) {
             BlockState blockState = worldAccess.getBlockState(mutable);
             if (blockState.isOf(block)) {
                 return mutable;

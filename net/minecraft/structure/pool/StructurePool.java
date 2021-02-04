@@ -44,31 +44,31 @@ public class StructurePool {
     private final Identifier terminatorsId;
     private int highestY = Integer.MIN_VALUE;
 
-    public StructurePool(Identifier identifier, Identifier identifier2, List<Pair<StructurePoolElement, Integer>> list) {
-        this.id = identifier;
-        this.elementCounts = list;
+    public StructurePool(Identifier id, Identifier terminatorsId, List<Pair<StructurePoolElement, Integer>> elementCounts) {
+        this.id = id;
+        this.elementCounts = elementCounts;
         this.elements = Lists.newArrayList();
-        for (Pair<StructurePoolElement, Integer> pair : list) {
+        for (Pair<StructurePoolElement, Integer> pair : elementCounts) {
             StructurePoolElement structurePoolElement = pair.getFirst();
             for (int i = 0; i < pair.getSecond(); ++i) {
                 this.elements.add(structurePoolElement);
             }
         }
-        this.terminatorsId = identifier2;
+        this.terminatorsId = terminatorsId;
     }
 
-    public StructurePool(Identifier identifier, Identifier identifier2, List<Pair<Function<Projection, ? extends StructurePoolElement>, Integer>> list, Projection projection) {
-        this.id = identifier;
+    public StructurePool(Identifier id, Identifier terminatorsId, List<Pair<Function<Projection, ? extends StructurePoolElement>, Integer>> elementCounts, Projection projection) {
+        this.id = id;
         this.elementCounts = Lists.newArrayList();
         this.elements = Lists.newArrayList();
-        for (Pair<Function<Projection, ? extends StructurePoolElement>, Integer> pair : list) {
+        for (Pair<Function<Projection, ? extends StructurePoolElement>, Integer> pair : elementCounts) {
             StructurePoolElement structurePoolElement = pair.getFirst().apply(projection);
             this.elementCounts.add(Pair.of(structurePoolElement, pair.getSecond()));
             for (int i = 0; i < pair.getSecond(); ++i) {
                 this.elements.add(structurePoolElement);
             }
         }
-        this.terminatorsId = identifier2;
+        this.terminatorsId = terminatorsId;
     }
 
     public int getHighestY(StructureManager structureManager) {
@@ -103,14 +103,14 @@ public class StructurePool {
         TERRAIN_MATCHING("terrain_matching", ImmutableList.of(new GravityStructureProcessor(Heightmap.Type.WORLD_SURFACE_WG, -1))),
         RIGID("rigid", ImmutableList.of());
 
-        public static final Codec<Projection> field_24956;
+        public static final Codec<Projection> CODEC;
         private static final Map<String, Projection> PROJECTIONS_BY_ID;
         private final String id;
         private final ImmutableList<StructureProcessor> processors;
 
-        private Projection(String string2, ImmutableList<StructureProcessor> immutableList) {
-            this.id = string2;
-            this.processors = immutableList;
+        private Projection(String id, ImmutableList<StructureProcessor> processors) {
+            this.id = id;
+            this.processors = processors;
         }
 
         public String getId() {
@@ -131,7 +131,7 @@ public class StructurePool {
         }
 
         static {
-            field_24956 = StringIdentifiable.createCodec(Projection::values, Projection::getById);
+            CODEC = StringIdentifiable.createCodec(Projection::values, Projection::getById);
             PROJECTIONS_BY_ID = Arrays.stream(Projection.values()).collect(Collectors.toMap(Projection::getId, projection -> projection));
         }
     }

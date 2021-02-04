@@ -457,7 +457,7 @@ extends ProjectileEntity {
 
     @Override
     protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.field_28630;
+        return Entity.class_5799.NONE;
     }
 
     public void setDamage(double damage) {

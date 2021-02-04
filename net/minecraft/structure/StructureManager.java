@@ -36,11 +36,11 @@ public class StructureManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<Identifier, Structure> structures = Maps.newHashMap();
     private final DataFixer dataFixer;
-    private ResourceManager field_25189;
+    private ResourceManager resourceManager;
     private final Path generatedPath;
 
     public StructureManager(ResourceManager resourceManager, LevelStorage.Session session, DataFixer dataFixer) {
-        this.field_25189 = resourceManager;
+        this.resourceManager = resourceManager;
         this.dataFixer = dataFixer;
         this.generatedPath = session.getDirectory(WorldSavePath.GENERATED).normalize();
     }
@@ -55,15 +55,15 @@ public class StructureManager {
     }
 
     @Nullable
-    public Structure getStructure(Identifier identifier2) {
-        return this.structures.computeIfAbsent(identifier2, identifier -> {
+    public Structure getStructure(Identifier id) {
+        return this.structures.computeIfAbsent(id, identifier -> {
             Structure structure = this.loadStructureFromFile((Identifier)identifier);
             return structure != null ? structure : this.loadStructureFromResource((Identifier)identifier);
         });
     }
 
-    public void method_29300(ResourceManager resourceManager) {
-        this.field_25189 = resourceManager;
+    public void setResourceManager(ResourceManager resourceManager) {
+        this.resourceManager = resourceManager;
         this.structures.clear();
     }
 
@@ -75,7 +75,7 @@ public class StructureManager {
     @Nullable
     private Structure loadStructureFromResource(Identifier id) {
         Identifier identifier = new Identifier(id.getNamespace(), "structures/" + id.getPath() + ".nbt");
-        try (Resource resource = this.field_25189.getResource(identifier);){
+        try (Resource resource = this.resourceManager.getResource(identifier);){
             Structure structure = this.readStructure(resource.getInputStream());
             return structure;
         } catch (FileNotFoundException fileNotFoundException) {

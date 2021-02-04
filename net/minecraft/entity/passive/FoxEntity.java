@@ -20,8 +20,8 @@ import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CaveVines;
 import net.minecraft.block.SweetBerryBushBlock;
-import net.minecraft.class_5803;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -909,7 +909,7 @@ extends AnimalEntity {
         @Override
         protected boolean isTargetPos(WorldView world, BlockPos pos) {
             BlockState blockState = world.getBlockState(pos);
-            return blockState.isOf(Blocks.SWEET_BERRY_BUSH) && blockState.get(SweetBerryBushBlock.AGE) >= 2 || class_5803.method_33618(blockState);
+            return blockState.isOf(Blocks.SWEET_BERRY_BUSH) && blockState.get(SweetBerryBushBlock.AGE) >= 2 || CaveVines.hasBerries(blockState);
         }
 
         @Override
@@ -933,13 +933,13 @@ extends AnimalEntity {
             BlockState blockState = FoxEntity.this.world.getBlockState(this.targetPos);
             if (blockState.isOf(Blocks.SWEET_BERRY_BUSH)) {
                 this.method_33587(blockState);
-            } else if (class_5803.method_33618(blockState)) {
+            } else if (CaveVines.hasBerries(blockState)) {
                 this.method_33586(blockState);
             }
         }
 
         private void method_33586(BlockState blockState) {
-            class_5803.method_33619(blockState, FoxEntity.this.world, this.targetPos);
+            CaveVines.pickBerries(blockState, FoxEntity.this.world, this.targetPos);
         }
 
         private void method_33587(BlockState blockState) {

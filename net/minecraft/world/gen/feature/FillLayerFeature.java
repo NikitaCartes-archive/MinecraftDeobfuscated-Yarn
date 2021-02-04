@@ -4,11 +4,11 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.class_5821;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.FillLayerFeatureConfig;
+import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class FillLayerFeature
 extends Feature<FillLayerFeatureConfig> {
@@ -17,10 +17,10 @@ extends Feature<FillLayerFeatureConfig> {
     }
 
     @Override
-    public boolean generate(class_5821<FillLayerFeatureConfig> arg) {
-        BlockPos blockPos = arg.method_33655();
-        FillLayerFeatureConfig fillLayerFeatureConfig = arg.method_33656();
-        StructureWorldAccess structureWorldAccess = arg.method_33652();
+    public boolean generate(FeatureContext<FillLayerFeatureConfig> featureContext) {
+        BlockPos blockPos = featureContext.getPos();
+        FillLayerFeatureConfig fillLayerFeatureConfig = featureContext.getConfig();
+        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < 16; ++i) {
             for (int j = 0; j < 16; ++j) {

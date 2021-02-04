@@ -12,11 +12,11 @@ import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
 import java.util.stream.IntStream;
-import net.minecraft.class_5819;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.world.gen.ChunkRandom;
+import net.minecraft.world.gen.WorldGenRandom;
 import org.jetbrains.annotations.Nullable;
 
 public class OctavePerlinNoiseSampler
@@ -26,16 +26,16 @@ implements NoiseSampler {
     private final double persistence;
     private final double lacunarity;
 
-    public OctavePerlinNoiseSampler(class_5819 arg, IntStream octaves) {
-        this(arg, octaves.boxed().collect(ImmutableList.toImmutableList()));
+    public OctavePerlinNoiseSampler(WorldGenRandom random, IntStream octaves) {
+        this(random, octaves.boxed().collect(ImmutableList.toImmutableList()));
     }
 
-    public OctavePerlinNoiseSampler(class_5819 arg, List<Integer> octaves) {
-        this(arg, new IntRBTreeSet(octaves));
+    public OctavePerlinNoiseSampler(WorldGenRandom random, List<Integer> octaves) {
+        this(random, new IntRBTreeSet(octaves));
     }
 
-    public static OctavePerlinNoiseSampler create(class_5819 arg, int offset, DoubleList amplitudes) {
-        return new OctavePerlinNoiseSampler(arg, Pair.of(offset, amplitudes));
+    public static OctavePerlinNoiseSampler create(WorldGenRandom random, int offset, DoubleList amplitudes) {
+        return new OctavePerlinNoiseSampler(random, Pair.of(offset, amplitudes));
     }
 
     private static Pair<Integer, DoubleList> calculateAmplitudes(IntSortedSet octaves) {
@@ -57,15 +57,15 @@ implements NoiseSampler {
         return Pair.of(-i, doubleList);
     }
 
-    private OctavePerlinNoiseSampler(class_5819 arg, IntSortedSet octaves) {
-        this(arg, OctavePerlinNoiseSampler.calculateAmplitudes(octaves));
+    private OctavePerlinNoiseSampler(WorldGenRandom random, IntSortedSet octaves) {
+        this(random, OctavePerlinNoiseSampler.calculateAmplitudes(octaves));
     }
 
-    private OctavePerlinNoiseSampler(class_5819 arg, Pair<Integer, DoubleList> offsetAndAmplitudes) {
+    private OctavePerlinNoiseSampler(WorldGenRandom random, Pair<Integer, DoubleList> offsetAndAmplitudes) {
         double d;
         int i = offsetAndAmplitudes.getFirst();
         this.amplitudes = offsetAndAmplitudes.getSecond();
-        PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(arg);
+        PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(random);
         int j = this.amplitudes.size();
         int k = -i;
         this.octaveSamplers = new PerlinNoiseSampler[j];
@@ -76,28 +76,28 @@ implements NoiseSampler {
             if (l < j) {
                 double e = this.amplitudes.getDouble(l);
                 if (e != 0.0) {
-                    this.octaveSamplers[l] = new PerlinNoiseSampler(arg);
+                    this.octaveSamplers[l] = new PerlinNoiseSampler(random);
                     continue;
                 }
-                arg.method_33650(262);
+                random.skip(262);
                 continue;
             }
-            arg.method_33650(262);
+            random.skip(262);
         }
         if (k < j - 1) {
-            long m = (long)(perlinNoiseSampler.method_33658(0.0, 0.0, 0.0) * 9.223372036854776E18);
-            ChunkRandom lv = new ChunkRandom(m);
+            long m = (long)(perlinNoiseSampler.sample(0.0, 0.0, 0.0) * 9.223372036854776E18);
+            ChunkRandom worldGenRandom = new ChunkRandom(m);
             for (int n = k + 1; n < j; ++n) {
                 if (n >= 0) {
                     double f = this.amplitudes.getDouble(n);
                     if (f != 0.0) {
-                        this.octaveSamplers[n] = new PerlinNoiseSampler(lv);
+                        this.octaveSamplers[n] = new PerlinNoiseSampler(worldGenRandom);
                         continue;
                     }
-                    lv.method_33650(262);
+                    worldGenRandom.skip(262);
                     continue;
                 }
-                lv.method_33650(262);
+                worldGenRandom.skip(262);
             }
         }
         this.lacunarity = Math.pow(2.0, -k);

@@ -23,7 +23,7 @@ extends Decorator<NopeDecoratorConfig> {
         int j;
         int i;
         int k;
-        if (random.nextInt(700) == 0 && (k = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, i = random.nextInt(16) + blockPos.getX(), j = random.nextInt(16) + blockPos.getZ())) > decoratorContext.getBottomSectionLimit()) {
+        if (random.nextInt(700) == 0 && (k = decoratorContext.getTopY(Heightmap.Type.MOTION_BLOCKING, i = random.nextInt(16) + blockPos.getX(), j = random.nextInt(16) + blockPos.getZ())) > decoratorContext.getBottomY()) {
             int l = k + 3 + random.nextInt(7);
             return Stream.of(new BlockPos(i, l, j));
         }

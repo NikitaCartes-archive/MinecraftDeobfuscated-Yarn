@@ -1,10 +1,11 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BigDripleafBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,7 +14,6 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.Waterloggable;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.class_5801;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
@@ -32,21 +32,21 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 
-public class class_5808
+public class SmallDripleafBlock
 extends TallPlantBlock
 implements Fertilizable,
 Waterloggable {
-    private static final BooleanProperty field_28691 = Properties.WATERLOGGED;
-    protected static final VoxelShape field_28690 = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
+    private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+    protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
-    public class_5808(AbstractBlock.Settings settings) {
+    public SmallDripleafBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HALF, DoubleBlockHalf.LOWER)).with(field_28691, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HALF, DoubleBlockHalf.LOWER)).with(WATERLOGGED, false));
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return field_28690;
+        return SHAPE;
     }
 
     @Override
@@ -60,19 +60,19 @@ Waterloggable {
         BlockState blockState = super.getPlacementState(ctx);
         if (blockState != null) {
             FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-            return (BlockState)blockState.with(field_28691, fluidState.getFluid() == Fluids.WATER);
+            return (BlockState)blockState.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
         }
         return null;
     }
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        world.setBlockState(pos.up(), (BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(field_28691, world.isWater(pos.up())), 3);
+        world.setBlockState(pos.up(), (BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(WATERLOGGED, world.isWater(pos.up())), 3);
     }
 
     @Override
     public FluidState getFluidState(BlockState state) {
-        if (state.get(field_28691).booleanValue()) {
+        if (state.get(WATERLOGGED).booleanValue()) {
             return Fluids.WATER.getStill(false);
         }
         return super.getFluidState(state);
@@ -85,20 +85,20 @@ Waterloggable {
         }
         BlockPos blockPos = pos.down();
         BlockState blockState = world.getBlockState(blockPos);
-        return blockState.isOf(Blocks.CLAY) || world.getFluidState(pos).method_33659(Fluids.WATER) && this.canPlantOnTop(blockState, world, blockPos);
+        return blockState.isOf(Blocks.CLAY) || world.getFluidState(pos).isEqualAndStill(Fluids.WATER) && this.canPlantOnTop(blockState, world, blockPos);
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-        if (state.get(field_28691).booleanValue()) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
+        if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(HALF, field_28691);
+        builder.add(HALF, WATERLOGGED);
     }
 
     @Override
@@ -114,7 +114,7 @@ Waterloggable {
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         if (state.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
-            class_5801.method_33603(world, random, pos);
+            BigDripleafBlock.grow(world, random, pos);
         } else {
             BlockPos blockPos = pos.down();
             this.grow(world, random, blockPos, world.getBlockState(blockPos));

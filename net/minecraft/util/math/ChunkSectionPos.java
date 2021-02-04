@@ -52,8 +52,8 @@ extends Vec3i {
         return new ChunkSectionPos(ChunkSectionPos.unpackX(packed), ChunkSectionPos.unpackY(packed), ChunkSectionPos.unpackZ(packed));
     }
 
-    public static ChunkSectionPos method_33705(Chunk chunk) {
-        return ChunkSectionPos.from(chunk.getPos(), chunk.getMinimumSection());
+    public static ChunkSectionPos from(Chunk chunk) {
+        return ChunkSectionPos.from(chunk.getPos(), chunk.getBottomSectionCoord());
     }
 
     /**
@@ -78,6 +78,8 @@ extends Vec3i {
 
     /**
      * Converts a world coordinate to the corresponding chunk-section coordinate.
+     * 
+     * @implNote This implementation returns {@code coord / 16}.
      */
     public static int getSectionCoord(int coord) {
         return coord >> 4;
@@ -260,8 +262,8 @@ extends Vec3i {
         return new ChunkPos(this.getSectionX(), this.getSectionZ());
     }
 
-    public static long method_33706(BlockPos blockPos) {
-        return ChunkSectionPos.asLong(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getY()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
+    public static long toLong(BlockPos pos) {
+        return ChunkSectionPos.asLong(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getY()), ChunkSectionPos.getSectionCoord(pos.getZ()));
     }
 
     public static long asLong(int x, int y, int z) {

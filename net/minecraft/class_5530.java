@@ -27,7 +27,7 @@ public class class_5530 {
         if (class_5493.method_31520(blockPos22, pathAwareEntity) || class_5493.method_31521(bl, pathAwareEntity, blockPos22)) {
             return null;
         }
-        if (class_5493.method_31522(pathAwareEntity, blockPos22 = class_5535.method_31540(blockPos22, pathAwareEntity.world.getTopHeightLimit(), blockPos -> class_5493.method_31523(pathAwareEntity, blockPos)))) {
+        if (class_5493.method_31522(pathAwareEntity, blockPos22 = class_5535.method_31540(blockPos22, pathAwareEntity.world.getTopY(), blockPos -> class_5493.method_31523(pathAwareEntity, blockPos)))) {
             return null;
         }
         return blockPos22;

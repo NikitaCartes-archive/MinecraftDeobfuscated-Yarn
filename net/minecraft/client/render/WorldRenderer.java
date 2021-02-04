@@ -376,7 +376,7 @@ AutoCloseable {
             int l = random.nextInt(21) - 10;
             BlockPos blockPos3 = worldView.getTopPosition(Heightmap.Type.MOTION_BLOCKING, blockPos.add(k, 0, l)).down();
             Biome biome = worldView.getBiome(blockPos3);
-            if (blockPos3.getY() <= worldView.getBottomSectionLimit() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos3) >= 0.15f)) continue;
+            if (blockPos3.getY() <= worldView.getBottomY() || blockPos3.getY() > blockPos.getY() + 10 || blockPos3.getY() < blockPos.getY() - 10 || biome.getPrecipitation() != Biome.Precipitation.RAIN || !(biome.getTemperature(blockPos3) >= 0.15f)) continue;
             blockPos2 = blockPos3;
             if (this.client.options.particles == ParticlesMode.MINIMAL) break;
             double d = random.nextDouble();
@@ -619,7 +619,7 @@ AutoCloseable {
         this.entityRenderDispatcher.setWorld(world);
         this.world = world;
         if (world != null) {
-            this.visibleChunks.ensureCapacity(4356 * world.getSections());
+            this.visibleChunks.ensureCapacity(4356 * world.countVerticalSections());
             this.reload();
         } else {
             this.chunksToRebuild.clear();
@@ -754,7 +754,7 @@ AutoCloseable {
             Entity.setRenderDistanceMultiplier(MathHelper.clamp((double)this.client.options.viewDistance / 8.0, 1.0, 2.5) * (double)this.client.options.entityDistanceScaling);
             boolean bl = this.client.chunkCullingEnabled;
             if (builtChunk == null) {
-                int p = blockPos.getY() > this.world.getBottomSectionLimit() ? this.world.getTopHeightLimit() - 8 : this.world.getBottomSectionLimit() + 8;
+                int p = blockPos.getY() > this.world.getBottomY() ? this.world.getTopY() - 8 : this.world.getBottomY() + 8;
                 int q = MathHelper.floor(vec3d.x / 16.0) * 16;
                 int r = MathHelper.floor(vec3d.z / 16.0) * 16;
                 Direction[] list = Lists.newArrayList();
@@ -820,7 +820,7 @@ AutoCloseable {
         if (MathHelper.abs(pos.getX() - blockPos.getX()) > this.renderDistance * 16) {
             return null;
         }
-        if (blockPos.getY() < this.world.getBottomSectionLimit() || blockPos.getY() >= this.world.getTopHeightLimit()) {
+        if (blockPos.getY() < this.world.getBottomY() || blockPos.getY() >= this.world.getTopY()) {
             return null;
         }
         if (MathHelper.abs(pos.getZ() - blockPos.getZ()) > this.renderDistance * 16) {
@@ -2233,7 +2233,7 @@ AutoCloseable {
                 break;
             }
             case 1504: {
-                PointedDripstoneBlock.method_32899(this.world, pos, this.world.getBlockState(pos));
+                PointedDripstoneBlock.createParticle(this.world, pos, this.world.getBlockState(pos));
                 break;
             }
             case 1501: {

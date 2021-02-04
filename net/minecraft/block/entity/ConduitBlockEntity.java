@@ -164,7 +164,7 @@ extends BlockEntity {
         int i = activatingBlocks.size();
         int j = i / 7 * 16;
         int k = pos.getX();
-        Box box = new Box(k, l = pos.getY(), m = pos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, world.getSectionCount(), 0.0);
+        Box box = new Box(k, l = pos.getY(), m = pos.getZ(), k + 1, l + 1, m + 1).expand(j).stretch(0.0, world.getHeight(), 0.0);
         List<PlayerEntity> list = world.getNonSpectatingEntities(PlayerEntity.class, box);
         if (list.isEmpty()) {
             return;

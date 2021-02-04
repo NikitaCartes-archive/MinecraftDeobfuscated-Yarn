@@ -20,6 +20,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CandleBlock;
 import net.minecraft.block.CarrotsBlock;
+import net.minecraft.block.CaveVines;
 import net.minecraft.block.CocoaBlock;
 import net.minecraft.block.ComposterBlock;
 import net.minecraft.block.CropBlock;
@@ -38,7 +39,6 @@ import net.minecraft.block.TntBlock;
 import net.minecraft.block.enums.BedPart;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
-import net.minecraft.class_5803;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
@@ -184,7 +184,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
     }
 
     private static LootTable.Builder method_33709(Block block) {
-        return LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.GLOW_BERRIES)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(class_5803.field_28688, true))));
+        return LootTable.builder().pool(LootPool.builder().with(ItemEntry.builder(Items.GLOW_BERRIES)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CaveVines.BERRIES, true))));
     }
 
     private static LootTable.Builder oreDrops(Block dropWithSilkTouch, Item drop) {
@@ -654,15 +654,15 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.TINTED_GLASS);
         this.addDrop(Blocks.SCULK_SENSOR);
         this.addDrop(Blocks.COPPER_BLOCK);
-        this.addDrop(Blocks.EXPOSED_COPPER_BLOCK);
-        this.addDrop(Blocks.WEATHERED_COPPER_BLOCK);
-        this.addDrop(Blocks.OXIDIZED_COPPER_BLOCK);
+        this.addDrop(Blocks.EXPOSED_COPPER);
+        this.addDrop(Blocks.WEATHERED_COPPER);
+        this.addDrop(Blocks.OXIDIZED_COPPER);
         this.addDrop(Blocks.COPPER_ORE);
         this.addDrop(Blocks.CUT_COPPER);
         this.addDrop(Blocks.EXPOSED_CUT_COPPER);
         this.addDrop(Blocks.WEATHERED_CUT_COPPER);
         this.addDrop(Blocks.OXIDIZED_CUT_COPPER);
-        this.addDrop(Blocks.WAXED_COPPER);
+        this.addDrop(Blocks.WAXED_COPPER_BLOCK);
         this.addDrop(Blocks.WAXED_WEATHERED_COPPER);
         this.addDrop(Blocks.WAXED_EXPOSED_COPPER);
         this.addDrop(Blocks.WAXED_CUT_COPPER);

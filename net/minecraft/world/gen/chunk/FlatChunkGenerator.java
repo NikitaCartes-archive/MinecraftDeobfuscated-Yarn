@@ -58,9 +58,9 @@ extends ChunkGenerator {
             BlockState blockState;
             BlockState blockState2 = blockState = blockStates[i] == null ? Blocks.AIR.getDefaultState() : blockStates[i];
             if (Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) continue;
-            return this.config.getBottomSectionLimit() + i - 1;
+            return this.config.getBottomY() + i - 1;
         }
-        return this.config.getBottomSectionLimit() + blockStates.length;
+        return this.config.getBottomY() + blockStates.length;
     }
 
     @Override
@@ -72,7 +72,7 @@ extends ChunkGenerator {
         for (int i = 0; i < blockStates.length; ++i) {
             BlockState blockState = blockStates[i];
             if (blockState == null) continue;
-            int j = world.getBottomSectionLimit() + i;
+            int j = world.getBottomY() + i;
             for (int k = 0; k < 16; ++k) {
                 for (int l = 0; l < 16; ++l) {
                     chunk.setBlockState(mutable.set(k, j, l), blockState, false);
@@ -84,18 +84,18 @@ extends ChunkGenerator {
     }
 
     @Override
-    public int getHeight(int x, int z, Heightmap.Type heightmapType, HeightLimitView heightLimitView) {
+    public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
         BlockState[] blockStates = this.config.getLayerBlocks();
         for (int i = blockStates.length - 1; i >= 0; --i) {
             BlockState blockState = blockStates[i];
-            if (blockState == null || !heightmapType.getBlockPredicate().test(blockState)) continue;
-            return heightLimitView.getBottomSectionLimit() + i + 1;
+            if (blockState == null || !heightmap.getBlockPredicate().test(blockState)) continue;
+            return world.getBottomY() + i + 1;
         }
-        return heightLimitView.getBottomSectionLimit();
+        return world.getBottomY();
     }
 
     @Override
-    public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView heightLimitView) {
+    public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
         return new VerticalBlockSample(0, (BlockState[])Arrays.stream(this.config.getLayerBlocks()).map(state -> state == null ? Blocks.AIR.getDefaultState() : state).toArray(BlockState[]::new));
     }
 }

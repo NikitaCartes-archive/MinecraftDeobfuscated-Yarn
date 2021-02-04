@@ -24,7 +24,7 @@ public class class_5533 {
             if (blockPos22 == null) {
                 return null;
             }
-            if (class_5493.method_31518(pathAwareEntity, blockPos22 = class_5535.method_31539(blockPos22, pathAwareEntity.getRandom().nextInt(k - l + 1) + l, pathAwareEntity.world.getTopHeightLimit(), blockPos -> class_5493.method_31523(pathAwareEntity, blockPos))) || class_5493.method_31522(pathAwareEntity, blockPos22)) {
+            if (class_5493.method_31518(pathAwareEntity, blockPos22 = class_5535.method_31539(blockPos22, pathAwareEntity.getRandom().nextInt(k - l + 1) + l, pathAwareEntity.world.getTopY(), blockPos -> class_5493.method_31523(pathAwareEntity, blockPos))) || class_5493.method_31522(pathAwareEntity, blockPos22)) {
                 return null;
             }
             return blockPos22;

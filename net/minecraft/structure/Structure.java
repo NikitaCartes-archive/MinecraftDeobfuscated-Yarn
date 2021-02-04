@@ -172,7 +172,7 @@ public class Structure {
         return Structure.transformAround(pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition());
     }
 
-    public boolean place(ServerWorldAccess serverWorldAccess, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, Random random, int i) {
+    public boolean place(ServerWorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, Random random, int i) {
         if (this.blockInfoLists.isEmpty()) {
             return false;
         }
@@ -190,19 +190,19 @@ public class Structure {
         int m = Integer.MIN_VALUE;
         int n = Integer.MIN_VALUE;
         int o = Integer.MIN_VALUE;
-        List<StructureBlockInfo> list5 = Structure.process(serverWorldAccess, pos, blockPos, placementData, list);
+        List<StructureBlockInfo> list5 = Structure.process(world, pos, blockPos, placementData, list);
         for (StructureBlockInfo structureBlockInfo : list5) {
             BlockEntity blockEntity;
             BlockPos blockPos2 = structureBlockInfo.pos;
             if (blockBox != null && !blockBox.contains(blockPos2)) continue;
-            FluidState fluidState = placementData.shouldPlaceFluids() ? serverWorldAccess.getFluidState(blockPos2) : null;
+            FluidState fluidState = placementData.shouldPlaceFluids() ? world.getFluidState(blockPos2) : null;
             BlockState blockState = structureBlockInfo.state.mirror(placementData.getMirror()).rotate(placementData.getRotation());
             if (structureBlockInfo.tag != null) {
-                blockEntity = serverWorldAccess.getBlockEntity(blockPos2);
+                blockEntity = world.getBlockEntity(blockPos2);
                 Clearable.clear(blockEntity);
-                serverWorldAccess.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), 20);
+                world.setBlockState(blockPos2, Blocks.BARRIER.getDefaultState(), 20);
             }
-            if (!serverWorldAccess.setBlockState(blockPos2, blockState, i)) continue;
+            if (!world.setBlockState(blockPos2, blockState, i)) continue;
             j = Math.min(j, blockPos2.getX());
             k = Math.min(k, blockPos2.getY());
             l = Math.min(l, blockPos2.getZ());
@@ -210,7 +210,7 @@ public class Structure {
             n = Math.max(n, blockPos2.getY());
             o = Math.max(o, blockPos2.getZ());
             list4.add(Pair.of(blockPos2, structureBlockInfo.tag));
-            if (structureBlockInfo.tag != null && (blockEntity = serverWorldAccess.getBlockEntity(blockPos2)) != null) {
+            if (structureBlockInfo.tag != null && (blockEntity = world.getBlockEntity(blockPos2)) != null) {
                 structureBlockInfo.tag.putInt("x", blockPos2.getX());
                 structureBlockInfo.tag.putInt("y", blockPos2.getY());
                 structureBlockInfo.tag.putInt("z", blockPos2.getZ());
@@ -225,7 +225,7 @@ public class Structure {
                 continue;
             }
             if (!(blockState.getBlock() instanceof FluidFillable)) continue;
-            ((FluidFillable)((Object)blockState.getBlock())).tryFillWithFluid(serverWorldAccess, blockPos2, blockState, fluidState);
+            ((FluidFillable)((Object)blockState.getBlock())).tryFillWithFluid(world, blockPos2, blockState, fluidState);
             if (fluidState.isStill()) continue;
             list2.add(blockPos2);
         }
@@ -238,15 +238,15 @@ public class Structure {
                 BlockState blockState2;
                 Object block;
                 BlockPos blockPos2 = (BlockPos)iterator.next();
-                FluidState fluidState2 = serverWorldAccess.getFluidState(blockPos2);
+                FluidState fluidState2 = world.getFluidState(blockPos2);
                 for (int p = 0; p < directions.length && !fluidState2.isStill(); ++p) {
                     BlockPos blockPos4 = blockPos2.offset(directions[p]);
-                    FluidState fluidState = serverWorldAccess.getFluidState(blockPos4);
+                    FluidState fluidState = world.getFluidState(blockPos4);
                     if (!fluidState.isStill() || list3.contains(blockPos4)) continue;
                     fluidState2 = fluidState;
                 }
-                if (!fluidState2.isStill() || !((block = (blockState2 = serverWorldAccess.getBlockState(blockPos2)).getBlock()) instanceof FluidFillable)) continue;
-                ((FluidFillable)block).tryFillWithFluid(serverWorldAccess, blockPos2, blockState2, fluidState2);
+                if (!fluidState2.isStill() || !((block = (blockState2 = world.getBlockState(blockPos2)).getBlock()) instanceof FluidFillable)) continue;
+                ((FluidFillable)block).tryFillWithFluid(world, blockPos2, blockState2, fluidState2);
                 bl = true;
                 iterator.remove();
             }
@@ -261,25 +261,25 @@ public class Structure {
                     BlockPos blockPos5 = (BlockPos)pair.getFirst();
                     ((VoxelSet)voxelSet).set(blockPos5.getX() - n2, blockPos5.getY() - r, blockPos5.getZ() - p);
                 }
-                Structure.updateCorner(serverWorldAccess, i, voxelSet, n2, r, p);
+                Structure.updateCorner(world, i, voxelSet, n2, r, p);
             }
             for (Pair pair : list4) {
                 BlockEntity blockEntity;
                 BlockPos blockPos6 = (BlockPos)pair.getFirst();
                 if (!placementData.shouldUpdateNeighbors()) {
                     BlockState blockState3;
-                    BlockState blockState2 = serverWorldAccess.getBlockState(blockPos6);
-                    if (blockState2 != (blockState3 = Block.postProcessState(blockState2, serverWorldAccess, blockPos6))) {
-                        serverWorldAccess.setBlockState(blockPos6, blockState3, i & 0xFFFFFFFE | 0x10);
+                    BlockState blockState2 = world.getBlockState(blockPos6);
+                    if (blockState2 != (blockState3 = Block.postProcessState(blockState2, world, blockPos6))) {
+                        world.setBlockState(blockPos6, blockState3, i & 0xFFFFFFFE | 0x10);
                     }
-                    serverWorldAccess.updateNeighbors(blockPos6, blockState3.getBlock());
+                    world.updateNeighbors(blockPos6, blockState3.getBlock());
                 }
-                if (pair.getSecond() == null || (blockEntity = serverWorldAccess.getBlockEntity(blockPos6)) == null) continue;
+                if (pair.getSecond() == null || (blockEntity = world.getBlockEntity(blockPos6)) == null) continue;
                 blockEntity.markDirty();
             }
         }
         if (!placementData.shouldIgnoreEntities()) {
-            this.spawnEntities(serverWorldAccess, pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition(), blockBox, placementData.method_27265());
+            this.spawnEntities(world, pos, placementData.getMirror(), placementData.getRotation(), placementData.getPosition(), blockBox, placementData.method_27265());
         }
         return true;
     }
@@ -301,14 +301,14 @@ public class Structure {
         });
     }
 
-    public static List<StructureBlockInfo> process(WorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData structurePlacementData, List<StructureBlockInfo> list) {
+    public static List<StructureBlockInfo> process(WorldAccess world, BlockPos pos, BlockPos blockPos, StructurePlacementData placementData, List<StructureBlockInfo> list) {
         ArrayList<StructureBlockInfo> list2 = Lists.newArrayList();
         for (StructureBlockInfo structureBlockInfo : list) {
-            BlockPos blockPos2 = Structure.transform(structurePlacementData, structureBlockInfo.pos).add(pos);
+            BlockPos blockPos2 = Structure.transform(placementData, structureBlockInfo.pos).add(pos);
             StructureBlockInfo structureBlockInfo2 = new StructureBlockInfo(blockPos2, structureBlockInfo.state, structureBlockInfo.tag != null ? structureBlockInfo.tag.copy() : null);
-            Iterator<StructureProcessor> iterator = structurePlacementData.getProcessors().iterator();
+            Iterator<StructureProcessor> iterator = placementData.getProcessors().iterator();
             while (structureBlockInfo2 != null && iterator.hasNext()) {
-                structureBlockInfo2 = iterator.next().process(world, pos, blockPos, structureBlockInfo, structureBlockInfo2, structurePlacementData);
+                structureBlockInfo2 = iterator.next().process(world, pos, blockPos, structureBlockInfo, structureBlockInfo2, placementData);
             }
             if (structureBlockInfo2 == null) continue;
             list2.add(structureBlockInfo2);
@@ -316,12 +316,12 @@ public class Structure {
         return list2;
     }
 
-    private void spawnEntities(ServerWorldAccess serverWorldAccess, BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot, @Nullable BlockBox area, boolean bl) {
+    private void spawnEntities(ServerWorldAccess world, BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot, @Nullable BlockBox area, boolean bl) {
         for (StructureEntityInfo structureEntityInfo : this.entities) {
-            BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, blockMirror, blockRotation, pivot).add(pos);
+            BlockPos blockPos = Structure.transformAround(structureEntityInfo.blockPos, mirror, rotation, pivot).add(pos);
             if (area != null && !area.contains(blockPos)) continue;
             CompoundTag compoundTag = structureEntityInfo.tag.copy();
-            Vec3d vec3d = Structure.transformAround(structureEntityInfo.pos, blockMirror, blockRotation, pivot);
+            Vec3d vec3d = Structure.transformAround(structureEntityInfo.pos, mirror, rotation, pivot);
             Vec3d vec3d2 = vec3d.add(pos.getX(), pos.getY(), pos.getZ());
             ListTag listTag = new ListTag();
             listTag.add(DoubleTag.of(vec3d2.x));
@@ -329,27 +329,27 @@ public class Structure {
             listTag.add(DoubleTag.of(vec3d2.z));
             compoundTag.put("Pos", listTag);
             compoundTag.remove("UUID");
-            Structure.getEntity(serverWorldAccess, compoundTag).ifPresent(entity -> {
-                float f = entity.applyMirror(blockMirror);
-                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.yaw - entity.applyRotation(blockRotation), entity.pitch);
+            Structure.getEntity(world, compoundTag).ifPresent(entity -> {
+                float f = entity.applyMirror(mirror);
+                entity.refreshPositionAndAngles(vec3d.x, vec3d.y, vec3d.z, f += entity.yaw - entity.applyRotation(rotation), entity.pitch);
                 if (bl && entity instanceof MobEntity) {
-                    ((MobEntity)entity).initialize(serverWorldAccess, serverWorldAccess.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, compoundTag);
+                    ((MobEntity)entity).initialize(world, world.getLocalDifficulty(new BlockPos(vec3d2)), SpawnReason.STRUCTURE, null, compoundTag);
                 }
-                serverWorldAccess.spawnEntityAndPassengers((Entity)entity);
+                world.spawnEntityAndPassengers((Entity)entity);
             });
         }
     }
 
-    private static Optional<Entity> getEntity(ServerWorldAccess serverWorldAccess, CompoundTag compoundTag) {
+    private static Optional<Entity> getEntity(ServerWorldAccess world, CompoundTag nbt) {
         try {
-            return EntityType.getEntityFromTag(compoundTag, serverWorldAccess.toServerWorld());
+            return EntityType.getEntityFromTag(nbt, world.toServerWorld());
         } catch (Exception exception) {
             return Optional.empty();
         }
     }
 
-    public BlockPos getRotatedSize(BlockRotation blockRotation) {
-        switch (blockRotation) {
+    public BlockPos getRotatedSize(BlockRotation rotation) {
+        switch (rotation) {
             case COUNTERCLOCKWISE_90: 
             case CLOCKWISE_90: {
                 return new BlockPos(this.size.getZ(), this.size.getY(), this.size.getX());
@@ -358,12 +358,12 @@ public class Structure {
         return this.size;
     }
 
-    public static BlockPos transformAround(BlockPos pos, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot) {
+    public static BlockPos transformAround(BlockPos pos, BlockMirror mirror, BlockRotation rotation, BlockPos pivot) {
         int i = pos.getX();
         int j = pos.getY();
         int k = pos.getZ();
         boolean bl = true;
-        switch (blockMirror) {
+        switch (mirror) {
             case LEFT_RIGHT: {
                 k = -k;
                 break;
@@ -378,7 +378,7 @@ public class Structure {
         }
         int l = pivot.getX();
         int m = pivot.getZ();
-        switch (blockRotation) {
+        switch (rotation) {
             case CLOCKWISE_180: {
                 return new BlockPos(l + l - i, j, m + m - k);
             }
@@ -392,12 +392,12 @@ public class Structure {
         return bl ? new BlockPos(i, j, k) : pos;
     }
 
-    public static Vec3d transformAround(Vec3d point, BlockMirror blockMirror, BlockRotation blockRotation, BlockPos pivot) {
+    public static Vec3d transformAround(Vec3d point, BlockMirror mirror, BlockRotation rotation, BlockPos pivot) {
         double d = point.x;
         double e = point.y;
         double f = point.z;
         boolean bl = true;
-        switch (blockMirror) {
+        switch (mirror) {
             case LEFT_RIGHT: {
                 f = 1.0 - f;
                 break;
@@ -412,7 +412,7 @@ public class Structure {
         }
         int i = pivot.getX();
         int j = pivot.getZ();
-        switch (blockRotation) {
+        switch (rotation) {
             case CLOCKWISE_180: {
                 return new Vec3d((double)(i + i + 1) - d, e, (double)(j + j + 1) - f);
             }
@@ -426,47 +426,47 @@ public class Structure {
         return bl ? new Vec3d(d, e, f) : point;
     }
 
-    public BlockPos offsetByTransformedSize(BlockPos blockPos, BlockMirror blockMirror, BlockRotation blockRotation) {
-        return Structure.applyTransformedOffset(blockPos, blockMirror, blockRotation, this.getSize().getX(), this.getSize().getZ());
+    public BlockPos offsetByTransformedSize(BlockPos pos, BlockMirror mirror, BlockRotation rotation) {
+        return Structure.applyTransformedOffset(pos, mirror, rotation, this.getSize().getX(), this.getSize().getZ());
     }
 
-    public static BlockPos applyTransformedOffset(BlockPos blockPos, BlockMirror blockMirror, BlockRotation blockRotation, int offsetX, int offsetZ) {
-        int i = blockMirror == BlockMirror.FRONT_BACK ? --offsetX : 0;
-        int j = blockMirror == BlockMirror.LEFT_RIGHT ? --offsetZ : 0;
-        BlockPos blockPos2 = blockPos;
-        switch (blockRotation) {
+    public static BlockPos applyTransformedOffset(BlockPos pos, BlockMirror mirror, BlockRotation rotation, int offsetX, int offsetZ) {
+        int i = mirror == BlockMirror.FRONT_BACK ? --offsetX : 0;
+        int j = mirror == BlockMirror.LEFT_RIGHT ? --offsetZ : 0;
+        BlockPos blockPos = pos;
+        switch (rotation) {
             case NONE: {
-                blockPos2 = blockPos.add(i, 0, j);
+                blockPos = pos.add(i, 0, j);
                 break;
             }
             case CLOCKWISE_90: {
-                blockPos2 = blockPos.add(offsetZ - j, 0, i);
+                blockPos = pos.add(offsetZ - j, 0, i);
                 break;
             }
             case CLOCKWISE_180: {
-                blockPos2 = blockPos.add(offsetX - i, 0, offsetZ - j);
+                blockPos = pos.add(offsetX - i, 0, offsetZ - j);
                 break;
             }
             case COUNTERCLOCKWISE_90: {
-                blockPos2 = blockPos.add(j, 0, offsetX - i);
+                blockPos = pos.add(j, 0, offsetX - i);
             }
         }
-        return blockPos2;
+        return blockPos;
     }
 
-    public BlockBox calculateBoundingBox(StructurePlacementData structurePlacementData, BlockPos pos) {
-        return this.method_27267(pos, structurePlacementData.getRotation(), structurePlacementData.getPosition(), structurePlacementData.getMirror());
+    public BlockBox calculateBoundingBox(StructurePlacementData placementData, BlockPos pos) {
+        return this.calculateBoundingBox(pos, placementData.getRotation(), placementData.getPosition(), placementData.getMirror());
     }
 
-    public BlockBox method_27267(BlockPos blockPos, BlockRotation blockRotation, BlockPos blockPos2, BlockMirror blockMirror) {
-        BlockPos blockPos3 = this.getRotatedSize(blockRotation);
-        int i = blockPos2.getX();
-        int j = blockPos2.getZ();
-        int k = blockPos3.getX() - 1;
-        int l = blockPos3.getY() - 1;
-        int m = blockPos3.getZ() - 1;
+    public BlockBox calculateBoundingBox(BlockPos pos, BlockRotation rotation, BlockPos blockPos, BlockMirror mirror) {
+        BlockPos blockPos2 = this.getRotatedSize(rotation);
+        int i = blockPos.getX();
+        int j = blockPos.getZ();
+        int k = blockPos2.getX() - 1;
+        int l = blockPos2.getY() - 1;
+        int m = blockPos2.getZ() - 1;
         BlockBox blockBox = new BlockBox(0, 0, 0, 0, 0, 0);
-        switch (blockRotation) {
+        switch (rotation) {
             case NONE: {
                 blockBox = new BlockBox(0, 0, 0, k, l, m);
                 break;
@@ -483,19 +483,19 @@ public class Structure {
                 blockBox = new BlockBox(i + j - k, 0, j - i, i + j, l, j - i + m);
             }
         }
-        switch (blockMirror) {
+        switch (mirror) {
             case NONE: {
                 break;
             }
             case FRONT_BACK: {
-                this.mirrorBoundingBox(blockRotation, k, m, blockBox, Direction.WEST, Direction.EAST);
+                this.mirrorBoundingBox(rotation, k, m, blockBox, Direction.WEST, Direction.EAST);
                 break;
             }
             case LEFT_RIGHT: {
-                this.mirrorBoundingBox(blockRotation, m, k, blockBox, Direction.NORTH, Direction.SOUTH);
+                this.mirrorBoundingBox(rotation, m, k, blockBox, Direction.NORTH, Direction.SOUTH);
             }
         }
-        blockBox.move(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        blockBox.move(pos.getX(), pos.getY(), pos.getZ());
         return blockBox;
     }
 

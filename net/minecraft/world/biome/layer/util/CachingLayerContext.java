@@ -4,13 +4,13 @@
 package net.minecraft.world.biome.layer.util;
 
 import it.unimi.dsi.fastutil.longs.Long2IntLinkedOpenHashMap;
-import net.minecraft.class_5820;
 import net.minecraft.util.math.noise.PerlinNoiseSampler;
 import net.minecraft.world.biome.layer.util.CachingLayerSampler;
 import net.minecraft.world.biome.layer.util.LayerOperator;
 import net.minecraft.world.biome.layer.util.LayerSampleContext;
 import net.minecraft.world.biome.layer.util.LayerSampler;
 import net.minecraft.world.biome.source.SeedMixer;
+import net.minecraft.world.gen.SimpleRandom;
 
 public class CachingLayerContext
 implements LayerSampleContext<CachingLayerSampler> {
@@ -22,7 +22,7 @@ implements LayerSampleContext<CachingLayerSampler> {
 
     public CachingLayerContext(int cacheCapacity, long seed, long salt) {
         this.worldSeed = CachingLayerContext.addSalt(seed, salt);
-        this.noiseSampler = new PerlinNoiseSampler(new class_5820(seed));
+        this.noiseSampler = new PerlinNoiseSampler(new SimpleRandom(seed));
         this.cache = new Long2IntLinkedOpenHashMap(16, 0.25f);
         this.cache.defaultReturnValue(Integer.MIN_VALUE);
         this.cacheCapacity = cacheCapacity;

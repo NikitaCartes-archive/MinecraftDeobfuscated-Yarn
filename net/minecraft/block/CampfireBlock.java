@@ -127,14 +127,14 @@ implements Waterloggable {
     }
 
     @Override
-    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+    public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
         if (direction == Direction.DOWN) {
-            return (BlockState)state.with(SIGNAL_FIRE, this.doesBlockCauseSignalFire(newState));
+            return (BlockState)state.with(SIGNAL_FIRE, this.doesBlockCauseSignalFire(neighborState));
         }
-        return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+        return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 
     private boolean doesBlockCauseSignalFire(BlockState state) {
@@ -167,17 +167,17 @@ implements Waterloggable {
         }
     }
 
-    public static void extinguish(@Nullable Entity entity, WorldAccess worldAccess, BlockPos blockPos, BlockState blockState) {
+    public static void extinguish(@Nullable Entity entity, WorldAccess world, BlockPos pos, BlockState state) {
         BlockEntity blockEntity;
-        if (worldAccess.isClient()) {
+        if (world.isClient()) {
             for (int i = 0; i < 20; ++i) {
-                CampfireBlock.spawnSmokeParticle((World)worldAccess, blockPos, blockState.get(SIGNAL_FIRE), true);
+                CampfireBlock.spawnSmokeParticle((World)world, pos, state.get(SIGNAL_FIRE), true);
             }
         }
-        if ((blockEntity = worldAccess.getBlockEntity(blockPos)) instanceof CampfireBlockEntity) {
+        if ((blockEntity = world.getBlockEntity(pos)) instanceof CampfireBlockEntity) {
             ((CampfireBlockEntity)blockEntity).spawnItemsBeingCooked();
         }
-        worldAccess.emitGameEvent(entity, GameEvent.BLOCK_CHANGE, blockPos);
+        world.emitGameEvent(entity, GameEvent.BLOCK_CHANGE, pos);
     }
 
     @Override

@@ -86,7 +86,7 @@ public class StructurePoolBasedGenerator {
     }
 
     static final class StructurePoolGenerator {
-        private final Registry<StructurePool> field_25852;
+        private final Registry<StructurePool> registry;
         private final int maxSize;
         private final PieceFactory pieceFactory;
         private final ChunkGenerator chunkGenerator;
@@ -95,13 +95,13 @@ public class StructurePoolBasedGenerator {
         private final Random random;
         private final Deque<ShapedPoolStructurePiece> structurePieces = Queues.newArrayDeque();
 
-        private StructurePoolGenerator(Registry<StructurePool> registry, int i, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> list, Random random) {
-            this.field_25852 = registry;
-            this.maxSize = i;
+        private StructurePoolGenerator(Registry<StructurePool> registry, int maxSize, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, List<? super PoolStructurePiece> children, Random random) {
+            this.registry = registry;
+            this.maxSize = maxSize;
             this.pieceFactory = pieceFactory;
             this.chunkGenerator = chunkGenerator;
             this.structureManager = structureManager;
-            this.children = list;
+            this.children = children;
             this.random = random;
         }
 
@@ -124,13 +124,13 @@ public class StructurePoolBasedGenerator {
                 int j = blockPos2.getY() - i;
                 int k = -1;
                 Identifier identifier = new Identifier(structureBlockInfo2.tag.getString("pool"));
-                Optional<StructurePool> optional = this.field_25852.getOrEmpty(identifier);
+                Optional<StructurePool> optional = this.registry.getOrEmpty(identifier);
                 if (!optional.isPresent() || optional.get().getElementCount() == 0 && !Objects.equals(identifier, StructurePools.EMPTY.getValue())) {
                     LOGGER.warn("Empty or none existent pool: {}", (Object)identifier);
                     continue;
                 }
                 Identifier identifier2 = optional.get().getTerminatorsId();
-                Optional<StructurePool> optional2 = this.field_25852.getOrEmpty(identifier2);
+                Optional<StructurePool> optional2 = this.registry.getOrEmpty(identifier2);
                 if (!optional2.isPresent() || optional2.get().getElementCount() == 0 && !Objects.equals(identifier2, StructurePools.EMPTY.getValue())) {
                     LOGGER.warn("Empty or none existent fallback pool: {}", (Object)identifier2);
                     continue;
@@ -161,8 +161,8 @@ public class StructurePoolBasedGenerator {
                                 return 0;
                             }
                             Identifier identifier = new Identifier(structureBlockInfo.tag.getString("pool"));
-                            Optional<StructurePool> optional = this.field_25852.getOrEmpty(identifier);
-                            Optional<Integer> optional2 = optional.flatMap(structurePool -> this.field_25852.getOrEmpty(structurePool.getTerminatorsId()));
+                            Optional<StructurePool> optional = this.registry.getOrEmpty(identifier);
+                            Optional<Integer> optional2 = optional.flatMap(structurePool -> this.registry.getOrEmpty(structurePool.getTerminatorsId()));
                             int i = optional.map(structurePool -> structurePool.getHighestY(this.structureManager)).orElse(0);
                             int j = optional2.map(structurePool -> structurePool.getHighestY(this.structureManager)).orElse(0);
                             return Math.max(i, j);
@@ -229,9 +229,9 @@ public class StructurePoolBasedGenerator {
         private final int minY;
         private final int currentSize;
 
-        private ShapedPoolStructurePiece(PoolStructurePiece piece, MutableObject<VoxelShape> mutableObject, int minY, int currentSize) {
+        private ShapedPoolStructurePiece(PoolStructurePiece piece, MutableObject<VoxelShape> pieceShape, int minY, int currentSize) {
             this.piece = piece;
-            this.pieceShape = mutableObject;
+            this.pieceShape = pieceShape;
             this.minY = minY;
             this.currentSize = currentSize;
         }

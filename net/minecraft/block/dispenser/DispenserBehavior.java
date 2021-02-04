@@ -246,7 +246,7 @@ public interface DispenserBehavior {
                 List<HorseBaseEntity> list = pointer.getWorld().getEntitiesByClass(HorseBaseEntity.class, new Box(blockPos), horseBaseEntity -> horseBaseEntity.isAlive() && horseBaseEntity.hasArmorSlot());
                 for (HorseBaseEntity horseBaseEntity2 : list) {
                     if (!horseBaseEntity2.isHorseArmor(stack) || horseBaseEntity2.hasArmorInSlot() || !horseBaseEntity2.isTame()) continue;
-                    horseBaseEntity2.method_32318(401).method_32332(stack.split(1));
+                    horseBaseEntity2.getCommandItemSlot(401).set(stack.split(1));
                     this.setSuccess(true);
                     return stack;
                 }
@@ -280,7 +280,7 @@ public interface DispenserBehavior {
                 BlockPos blockPos = pointer.getBlockPos().offset(pointer.getBlockState().get(DispenserBlock.FACING));
                 List<AbstractDonkeyEntity> list = pointer.getWorld().getEntitiesByClass(AbstractDonkeyEntity.class, new Box(blockPos), abstractDonkeyEntity -> abstractDonkeyEntity.isAlive() && !abstractDonkeyEntity.hasChest());
                 for (AbstractDonkeyEntity abstractDonkeyEntity2 : list) {
-                    if (!abstractDonkeyEntity2.isTame() || !abstractDonkeyEntity2.method_32318(499).method_32332(stack)) continue;
+                    if (!abstractDonkeyEntity2.isTame() || !abstractDonkeyEntity2.getCommandItemSlot(499).set(stack)) continue;
                     stack.decrement(1);
                     this.setSuccess(true);
                     return stack;
