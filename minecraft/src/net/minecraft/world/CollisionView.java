@@ -77,7 +77,7 @@ public interface CollisionView extends BlockView {
 		if (voxelShape.isEmpty()) {
 			return Optional.empty();
 		} else {
-			Box box = Box.method_33660(voxelShape.getBoundingBoxes()).expand(d, e, f);
+			Box box = voxelShape.getBoundingBox().expand(d, e, f);
 			VoxelShape voxelShape2 = (VoxelShape)this.getBlockCollisions(entity, box)
 				.flatMap(voxelShapex -> voxelShapex.getBoundingBoxes().stream())
 				.map(boxx -> boxx.expand(d / 2.0, e / 2.0, f / 2.0))

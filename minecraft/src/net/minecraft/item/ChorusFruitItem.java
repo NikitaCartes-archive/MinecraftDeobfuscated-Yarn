@@ -27,8 +27,8 @@ public class ChorusFruitItem extends Item {
 				double g = user.getX() + (user.getRandom().nextDouble() - 0.5) * 16.0;
 				double h = MathHelper.clamp(
 					user.getY() + (double)(user.getRandom().nextInt(16) - 8),
-					(double)world.getBottomSectionLimit(),
-					(double)(world.getBottomSectionLimit() + ((ServerWorld)world).getHeightLimit() - 1)
+					(double)world.getBottomY(),
+					(double)(world.getBottomY() + ((ServerWorld)world).getLogicalHeight() - 1)
 				);
 				double j = user.getZ() + (user.getRandom().nextDouble() - 0.5) * 16.0;
 				if (user.hasVehicle()) {

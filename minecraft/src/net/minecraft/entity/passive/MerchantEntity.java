@@ -5,7 +5,6 @@ import java.util.Set;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5630;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -20,6 +19,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -217,9 +217,9 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 	}
 
 	@Override
-	public class_5630 method_32318(int i) {
-		int j = i - 300;
-		return j >= 0 && j < this.inventory.size() ? class_5630.method_32328(this.inventory, j) : super.method_32318(i);
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		int i = mappedIndex - 300;
+		return i >= 0 && i < this.inventory.size() ? CommandItemSlot.of(this.inventory, i) : super.getCommandItemSlot(mappedIndex);
 	}
 
 	@Override

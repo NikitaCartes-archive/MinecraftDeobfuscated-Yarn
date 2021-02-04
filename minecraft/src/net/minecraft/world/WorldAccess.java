@@ -2,7 +2,6 @@ package net.minecraft.world;
 
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_5423;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,7 +13,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.event.GameEvent;
 
-public interface WorldAccess extends class_5423, LunarWorldView {
+public interface WorldAccess extends RegistryWorldView, LunarWorldView {
 	@Override
 	default long getLunarTime() {
 		return this.getLevelProperties().getTimeOfDay();
@@ -60,8 +59,8 @@ public interface WorldAccess extends class_5423, LunarWorldView {
 		this.emitGameEvent(null, event, pos);
 	}
 
-	default void method_33596(GameEvent gameEvent, Entity entity) {
-		this.emitGameEvent(null, gameEvent, entity.getBlockPos());
+	default void emitGameEvent(GameEvent event, Entity emitter) {
+		this.emitGameEvent(null, event, emitter.getBlockPos());
 	}
 
 	default void emitGameEvent(@Nullable Entity entity, GameEvent event, Entity emitter) {

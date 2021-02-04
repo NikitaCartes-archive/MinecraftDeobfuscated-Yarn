@@ -48,12 +48,12 @@ public class TntBlock extends Block {
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
-		if (!world.isClient() && !playerEntity.isCreative() && state.get(UNSTABLE)) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (!world.isClient() && !player.isCreative() && state.get(UNSTABLE)) {
 			primeTnt(world, pos);
 		}
 
-		super.onBreak(world, pos, state, playerEntity);
+		super.onBreak(world, pos, state, player);
 	}
 
 	@Override

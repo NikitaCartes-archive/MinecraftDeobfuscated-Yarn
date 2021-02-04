@@ -99,8 +99,8 @@ public class ChunkPos {
 		return new BlockPos(this.getStartX(), 0, this.getStartZ());
 	}
 
-	public int method_24022(ChunkPos chunkPos) {
-		return Math.max(Math.abs(this.x - chunkPos.x), Math.abs(this.z - chunkPos.z));
+	public int getChebyshevDistance(ChunkPos pos) {
+		return Math.max(Math.abs(this.x - pos.x), Math.abs(this.z - pos.z));
 	}
 
 	public static Stream<ChunkPos> stream(ChunkPos center, int radius) {

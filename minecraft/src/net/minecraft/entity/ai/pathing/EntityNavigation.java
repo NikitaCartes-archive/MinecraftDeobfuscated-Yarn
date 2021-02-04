@@ -117,7 +117,7 @@ public abstract class EntityNavigation {
 	protected Path findPathToAny(Set<BlockPos> positions, int range, boolean bl, int distance) {
 		if (positions.isEmpty()) {
 			return null;
-		} else if (this.entity.getY() < (double)this.world.getBottomSectionLimit()) {
+		} else if (this.entity.getY() < (double)this.world.getBottomY()) {
 			return null;
 		} else if (!this.isAtValidPosition()) {
 			return null;

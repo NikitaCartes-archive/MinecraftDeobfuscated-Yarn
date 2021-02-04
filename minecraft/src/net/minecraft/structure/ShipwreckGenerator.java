@@ -21,7 +21,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.ShipwreckFeatureConfig;
 
 public class ShipwreckGenerator {
-	private static final BlockPos field_14536 = new BlockPos(4, 0, 15);
+	private static final BlockPos DEFAULT_POSITION = new BlockPos(4, 0, 15);
 	private static final Identifier[] BEACHED_TEMPLATES = new Identifier[]{
 		new Identifier("shipwreck/with_mast"),
 		new Identifier("shipwreck/sideways_full"),
@@ -100,7 +100,7 @@ public class ShipwreckGenerator {
 			StructurePlacementData structurePlacementData = new StructurePlacementData()
 				.setRotation(this.rotation)
 				.setMirror(BlockMirror.NONE)
-				.setPosition(ShipwreckGenerator.field_14536)
+				.setPosition(ShipwreckGenerator.DEFAULT_POSITION)
 				.addProcessor(BlockIgnoreStructureProcessor.IGNORE_AIR_AND_STRUCTURE_BLOCKS);
 			this.setStructureData(structure, this.pos, structurePlacementData);
 		}
@@ -126,7 +126,7 @@ public class ShipwreckGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			int i = world.getTopHeightLimit();
+			int i = world.getTopY();
 			int j = 0;
 			BlockPos blockPos = this.structure.getSize();
 			Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;

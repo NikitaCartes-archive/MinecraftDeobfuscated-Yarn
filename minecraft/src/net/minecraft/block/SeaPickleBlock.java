@@ -62,7 +62,9 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		if (!state.canPlaceAt(world, pos)) {
 			return Blocks.AIR.getDefaultState();
 		} else {
@@ -70,7 +72,7 @@ public class SeaPickleBlock extends PlantBlock implements Fertilizable, Waterlog
 				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
 			}
 
-			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		}
 	}
 

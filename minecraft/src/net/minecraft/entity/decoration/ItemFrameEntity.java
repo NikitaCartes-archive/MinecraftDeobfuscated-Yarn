@@ -3,7 +3,6 @@ package net.minecraft.entity.decoration;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5630;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -17,6 +16,7 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -271,19 +271,19 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public class_5630 method_32318(int i) {
-		return i == 0 ? new class_5630() {
+	public CommandItemSlot getCommandItemSlot(int mappedIndex) {
+		return mappedIndex == 0 ? new CommandItemSlot() {
 			@Override
-			public ItemStack method_32327() {
+			public ItemStack get() {
 				return ItemFrameEntity.this.getHeldItemStack();
 			}
 
 			@Override
-			public boolean method_32332(ItemStack itemStack) {
-				ItemFrameEntity.this.setHeldItemStack(itemStack);
+			public boolean set(ItemStack stack) {
+				ItemFrameEntity.this.setHeldItemStack(stack);
 				return true;
 			}
-		} : super.method_32318(i);
+		} : super.getCommandItemSlot(mappedIndex);
 	}
 
 	@Override

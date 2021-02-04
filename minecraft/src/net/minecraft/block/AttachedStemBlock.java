@@ -49,10 +49,12 @@ public class AttachedStemBlock extends PlantBlock {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
-		return !newState.isOf(this.gourdBlock) && direction == state.get(FACING)
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
+		return !neighborState.isOf(this.gourdBlock) && direction == state.get(FACING)
 			? this.gourdBlock.getStem().getDefaultState().with(StemBlock.AGE, Integer.valueOf(7))
-			: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+			: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override

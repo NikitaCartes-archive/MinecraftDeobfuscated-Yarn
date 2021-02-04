@@ -16,10 +16,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.BuiltinRegistries;
 
 public class StructureProcessorLists {
-	private static final StructureProcessorRule field_26621 = new StructureProcessorRule(
+	private static final StructureProcessorRule BLACKSTONE_TO_GILDED_BLACKSTONE = new StructureProcessorRule(
 		new RandomBlockMatchRuleTest(Blocks.BLACKSTONE, 0.01F), AlwaysTrueRuleTest.INSTANCE, Blocks.GILDED_BLACKSTONE.getDefaultState()
 	);
-	private static final StructureProcessorRule field_26622 = new StructureProcessorRule(
+	private static final StructureProcessorRule GILDED_BLACKSTONE_TO_BLACKSTONE = new StructureProcessorRule(
 		new RandomBlockMatchRuleTest(Blocks.GILDED_BLACKSTONE, 0.5F), AlwaysTrueRuleTest.INSTANCE, Blocks.BLACKSTONE.getDefaultState()
 	);
 	public static final StructureProcessorList EMPTY = register("empty", ImmutableList.of());
@@ -328,8 +328,8 @@ public class StructureProcessorLists {
 						AlwaysTrueRuleTest.INSTANCE,
 						Blocks.POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26622,
-					field_26621
+					GILDED_BLACKSTONE_TO_BLACKSTONE,
+					BLACKSTONE_TO_GILDED_BLACKSTONE
 				)
 			)
 		)
@@ -349,8 +349,8 @@ public class StructureProcessorLists {
 						AlwaysTrueRuleTest.INSTANCE,
 						Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26622,
-					field_26621
+					GILDED_BLACKSTONE_TO_BLACKSTONE,
+					BLACKSTONE_TO_GILDED_BLACKSTONE
 				)
 			)
 		)
@@ -366,8 +366,8 @@ public class StructureProcessorLists {
 						Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.BLACKSTONE, 1.0E-4F), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					field_26622,
-					field_26621
+					GILDED_BLACKSTONE_TO_BLACKSTONE,
+					BLACKSTONE_TO_GILDED_BLACKSTONE
 				)
 			)
 		)
@@ -383,8 +383,8 @@ public class StructureProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.GOLD_BLOCK, 0.1F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26622,
-					field_26621
+					GILDED_BLACKSTONE_TO_BLACKSTONE,
+					BLACKSTONE_TO_GILDED_BLACKSTONE
 				)
 			)
 		)
@@ -400,8 +400,8 @@ public class StructureProcessorLists {
 						Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
 					new StructureProcessorRule(new RandomBlockMatchRuleTest(Blocks.BLACKSTONE, 1.0E-4F), AlwaysTrueRuleTest.INSTANCE, Blocks.AIR.getDefaultState()),
-					field_26622,
-					field_26621
+					GILDED_BLACKSTONE_TO_BLACKSTONE,
+					BLACKSTONE_TO_GILDED_BLACKSTONE
 				)
 			)
 		)
@@ -420,8 +420,8 @@ public class StructureProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.GOLD_BLOCK, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26622,
-					field_26621
+					GILDED_BLACKSTONE_TO_BLACKSTONE,
+					BLACKSTONE_TO_GILDED_BLACKSTONE
 				)
 			)
 		)
@@ -446,8 +446,8 @@ public class StructureProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.GOLD_BLOCK, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26622,
-					field_26621
+					GILDED_BLACKSTONE_TO_BLACKSTONE,
+					BLACKSTONE_TO_GILDED_BLACKSTONE
 				)
 			)
 		)
@@ -463,8 +463,8 @@ public class StructureProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.GOLD_BLOCK, 0.6F), AlwaysTrueRuleTest.INSTANCE, Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.getDefaultState()
 					),
-					field_26622,
-					field_26621
+					GILDED_BLACKSTONE_TO_BLACKSTONE,
+					BLACKSTONE_TO_GILDED_BLACKSTONE
 				)
 			)
 		)
@@ -520,7 +520,7 @@ public class StructureProcessorLists {
 					new StructureProcessorRule(
 						new RandomBlockMatchRuleTest(Blocks.POLISHED_BLACKSTONE_BRICKS, 0.3F), AlwaysTrueRuleTest.INSTANCE, Blocks.BLACKSTONE.getDefaultState()
 					),
-					field_26622
+					GILDED_BLACKSTONE_TO_BLACKSTONE
 				)
 			)
 		)
@@ -539,7 +539,7 @@ public class StructureProcessorLists {
 						new AxisAlignedLinearPosRuleTest(0.0F, 0.05F, 0, 100, Direction.Axis.Y),
 						Blocks.AIR.getDefaultState()
 					),
-					field_26622
+					GILDED_BLACKSTONE_TO_BLACKSTONE
 				)
 			)
 		)

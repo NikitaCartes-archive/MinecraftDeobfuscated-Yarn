@@ -30,7 +30,7 @@ public abstract class StructurePoolElement {
 	private volatile StructurePool.Projection projection;
 
 	protected static <E extends StructurePoolElement> RecordCodecBuilder<E, StructurePool.Projection> method_28883() {
-		return StructurePool.Projection.field_24956.fieldOf("projection").forGetter(StructurePoolElement::getProjection);
+		return StructurePool.Projection.CODEC.fieldOf("projection").forGetter(StructurePoolElement::getProjection);
 	}
 
 	protected StructurePoolElement(StructurePool.Projection projection) {
@@ -45,13 +45,13 @@ public abstract class StructurePoolElement {
 
 	public abstract boolean generate(
 		StructureManager structureManager,
-		StructureWorldAccess structureWorldAccess,
+		StructureWorldAccess world,
 		StructureAccessor structureAccessor,
 		ChunkGenerator chunkGenerator,
+		BlockPos pos,
 		BlockPos blockPos,
-		BlockPos blockPos2,
-		BlockRotation blockRotation,
-		BlockBox blockBox,
+		BlockRotation rotation,
+		BlockBox box,
 		Random random,
 		boolean keepJigsaws
 	);

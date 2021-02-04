@@ -148,7 +148,7 @@ public class BatEntity extends AmbientEntity {
 				}
 			}
 		} else {
-			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() <= this.world.getBottomSectionLimit())) {
+			if (this.hangingPosition != null && (!this.world.isAir(this.hangingPosition) || this.hangingPosition.getY() <= this.world.getBottomY())) {
 				this.hangingPosition = null;
 			}
 

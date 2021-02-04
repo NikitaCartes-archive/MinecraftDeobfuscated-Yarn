@@ -58,7 +58,7 @@ public class SpreadPlayersCommand {
 																		Vec2ArgumentType.getVec2(commandContext, "center"),
 																		FloatArgumentType.getFloat(commandContext, "spreadDistance"),
 																		FloatArgumentType.getFloat(commandContext, "maxRange"),
-																		commandContext.getSource().getWorld().getTopHeightLimit(),
+																		commandContext.getSource().getWorld().getTopY(),
 																		BoolArgumentType.getBool(commandContext, "respectTeams"),
 																		EntityArgumentType.getEntities(commandContext, "targets")
 																	)
@@ -310,7 +310,7 @@ public class SpreadPlayersCommand {
 			mutable.move(Direction.DOWN);
 
 			boolean bl3;
-			for(boolean bl2 = blockView.getBlockState(mutable).isAir(); mutable.getY() > blockView.getBottomSectionLimit(); bl2 = bl3) {
+			for(boolean bl2 = blockView.getBlockState(mutable).isAir(); mutable.getY() > blockView.getBottomY(); bl2 = bl3) {
 				mutable.move(Direction.DOWN);
 				bl3 = blockView.getBlockState(mutable).isAir();
 				if (!bl3 && bl2 && bl) {

@@ -51,7 +51,7 @@ public class class_5534 {
 
 	@Nullable
 	public static BlockPos method_31533(PathAwareEntity pathAwareEntity, BlockPos blockPos) {
-		blockPos = class_5535.method_31540(blockPos, pathAwareEntity.world.getTopHeightLimit(), blockPosx -> class_5493.method_31523(pathAwareEntity, blockPosx));
+		blockPos = class_5535.method_31540(blockPos, pathAwareEntity.world.getTopY(), blockPosx -> class_5493.method_31523(pathAwareEntity, blockPosx));
 		return !class_5493.method_31518(pathAwareEntity, blockPos) && !class_5493.method_31522(pathAwareEntity, blockPos) ? blockPos : null;
 	}
 

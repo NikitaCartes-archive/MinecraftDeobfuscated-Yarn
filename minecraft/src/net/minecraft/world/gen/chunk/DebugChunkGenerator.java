@@ -92,7 +92,7 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public int getHeight(int x, int z, Heightmap.Type heightmapType, HeightLimitView world) {
+	public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
 		return 0;
 	}
 

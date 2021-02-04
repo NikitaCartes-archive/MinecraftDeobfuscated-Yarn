@@ -155,11 +155,15 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		if (direction == getDirectionTowardsOtherPart(state.get(PART), state.get(FACING))) {
-			return newState.isOf(this) && newState.get(PART) != state.get(PART) ? state.with(OCCUPIED, newState.get(OCCUPIED)) : Blocks.AIR.getDefaultState();
+			return neighborState.isOf(this) && neighborState.get(PART) != state.get(PART)
+				? state.with(OCCUPIED, neighborState.get(OCCUPIED))
+				: Blocks.AIR.getDefaultState();
 		} else {
-			return super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		}
 	}
 
@@ -168,20 +172,20 @@ public class BedBlock extends HorizontalFacingBlock implements BlockEntityProvid
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
-		if (!world.isClient && playerEntity.isCreative()) {
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (!world.isClient && player.isCreative()) {
 			BedPart bedPart = state.get(PART);
 			if (bedPart == BedPart.FOOT) {
 				BlockPos blockPos = pos.offset(getDirectionTowardsOtherPart(bedPart, state.get(FACING)));
 				BlockState blockState = world.getBlockState(blockPos);
 				if (blockState.isOf(this) && blockState.get(PART) == BedPart.HEAD) {
 					world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-					world.syncWorldEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
+					world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
 				}
 			}
 		}
 
-		super.onBreak(world, pos, state, playerEntity);
+		super.onBreak(world, pos, state, player);
 	}
 
 	@Nullable

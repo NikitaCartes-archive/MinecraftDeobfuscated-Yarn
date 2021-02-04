@@ -83,7 +83,7 @@ public class class_5459 {
 	 * Finds the largest rectangle within a histogram, where the vertical bars each have
 	 * width 1 and height specified in {@code heights}.
 	 * 
-	 * @implNote This implementation is a {@linkplain IntArrayList stack} problem. The
+	 * @implNote This implementation solves the problem using a stack. The
 	 * stack maintains a collection of height limits of rectangles that may grow as the
 	 * array iteration continues. When a new height is encountered, each position {@code p}
 	 * in the stack would be popped if the rectangle with height limit at position {@code
@@ -96,7 +96,8 @@ public class class_5459 {
 	 * 
 	 * @return the base of the rectangle as an inclusive range and the height of the
 	 * rectangle packed in a pair
-	 * @see https://leetcode.com/problems/largest-rectangle-in-histogram
+	 * @see <a href="https://leetcode.com/problems/largest-rectangle-in-histogram">Largest
+	 * Rectangle in Histogram - LeetCode</a>
 	 * 
 	 * @param heights the heights of bars in the histogram
 	 */

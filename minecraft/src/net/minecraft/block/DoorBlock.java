@@ -76,26 +76,31 @@ public class DoorBlock extends Block {
 	}
 
 	@Override
-	public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState newState, WorldAccess world, BlockPos pos, BlockPos posFrom) {
+	public BlockState getStateForNeighborUpdate(
+		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
+	) {
 		DoubleBlockHalf doubleBlockHalf = state.get(HALF);
 		if (direction.getAxis() != Direction.Axis.Y || doubleBlockHalf == DoubleBlockHalf.LOWER != (direction == Direction.UP)) {
 			return doubleBlockHalf == DoubleBlockHalf.LOWER && direction == Direction.DOWN && !state.canPlaceAt(world, pos)
 				? Blocks.AIR.getDefaultState()
-				: super.getStateForNeighborUpdate(state, direction, newState, world, pos, posFrom);
+				: super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		} else {
-			return newState.isOf(this) && newState.get(HALF) != doubleBlockHalf
-				? state.with(FACING, newState.get(FACING)).with(OPEN, newState.get(OPEN)).with(HINGE, newState.get(HINGE)).with(POWERED, newState.get(POWERED))
+			return neighborState.isOf(this) && neighborState.get(HALF) != doubleBlockHalf
+				? state.with(FACING, neighborState.get(FACING))
+					.with(OPEN, neighborState.get(OPEN))
+					.with(HINGE, neighborState.get(HINGE))
+					.with(POWERED, neighborState.get(POWERED))
 				: Blocks.AIR.getDefaultState();
 		}
 	}
 
 	@Override
-	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity playerEntity) {
-		if (!world.isClient && playerEntity.isCreative()) {
-			TallPlantBlock.onBreakInCreative(world, pos, state, playerEntity);
+	public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+		if (!world.isClient && player.isCreative()) {
+			TallPlantBlock.onBreakInCreative(world, pos, state, player);
 		}
 
-		super.onBreak(world, pos, state, playerEntity);
+		super.onBreak(world, pos, state, player);
 	}
 
 	@Override
@@ -125,7 +130,7 @@ public class DoorBlock extends Block {
 	public BlockState getPlacementState(ItemPlacementContext ctx) {
 		BlockPos blockPos = ctx.getBlockPos();
 		World world = ctx.getWorld();
-		if (blockPos.getY() < world.getTopHeightLimit() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx)) {
+		if (blockPos.getY() < world.getTopY() - 1 && world.getBlockState(blockPos.up()).canReplace(ctx)) {
 			boolean bl = world.isReceivingRedstonePower(blockPos) || world.isReceivingRedstonePower(blockPos.up());
 			return this.getDefaultState()
 				.with(FACING, ctx.getPlayerFacing())

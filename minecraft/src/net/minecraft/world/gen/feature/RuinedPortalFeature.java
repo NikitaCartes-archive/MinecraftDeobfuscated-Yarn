@@ -189,7 +189,7 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			BlockMirror blockMirror = this.random.nextFloat() < 0.5F ? BlockMirror.NONE : BlockMirror.FRONT_BACK;
 			BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
 			BlockPos blockPos2 = new ChunkPos(i, j).getStartPos();
-			BlockBox blockBox = structure.method_27267(blockPos2, blockRotation, blockPos, blockMirror);
+			BlockBox blockBox = structure.calculateBoundingBox(blockPos2, blockRotation, blockPos, blockMirror);
 			Vec3i vec3i = blockBox.getCenter();
 			int k = vec3i.getX();
 			int l = vec3i.getZ();

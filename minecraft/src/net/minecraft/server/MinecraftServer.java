@@ -438,7 +438,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			int i = chunkGenerator.getSpawnHeight();
-			if (i < world.getBottomSectionLimit()) {
+			if (i < world.getBottomY()) {
 				BlockPos blockPos2 = chunkPos.getStartPos();
 				i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX() + 8, blockPos2.getZ() + 8);
 			}
@@ -1122,7 +1122,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				snooper.addInfo("world[" + i + "][mode]", this.saveProperties.getGameMode());
 				snooper.addInfo("world[" + i + "][difficulty]", serverWorld.getDifficulty());
 				snooper.addInfo("world[" + i + "][hardcore]", this.saveProperties.isHardcore());
-				snooper.addInfo("world[" + i + "][height]", serverWorld.getTopHeightLimit());
+				snooper.addInfo("world[" + i + "][height]", serverWorld.getTopY());
 				snooper.addInfo("world[" + i + "][chunks_loaded]", serverWorld.getChunkManager().getLoadedChunkCount());
 				++i;
 			}
@@ -1363,7 +1363,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
 				this.commandFunctionManager.update(this.serverResourceManager.getFunctionLoader());
-				this.structureManager.method_29300(this.serverResourceManager.getResourceManager());
+				this.structureManager.setResourceManager(this.serverResourceManager.getResourceManager());
 			}, this);
 		if (this.isOnThread()) {
 			this.runTasks(completableFuture::isDone);
