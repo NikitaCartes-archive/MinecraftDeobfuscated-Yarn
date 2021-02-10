@@ -67,7 +67,7 @@ public class DefaultSurfaceBuilder extends SurfaceBuilder<TernarySurfaceConfig> 
 		int k = x & 15;
 		int l = z & 15;
 
-		for (int m = height; m >= 0; m--) {
+		for (int m = height; m >= 50; m--) {
 			mutable.set(k, m, l);
 			BlockState blockState3 = chunk.getBlockState(mutable);
 			if (blockState3.isAir()) {

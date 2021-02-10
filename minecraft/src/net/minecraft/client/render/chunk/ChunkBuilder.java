@@ -541,11 +541,11 @@ public class ChunkBuilder {
 					float f = (float)vec3d.x;
 					float g = (float)vec3d.y;
 					float h = (float)vec3d.z;
-					BufferBuilder.class_5594 lv = this.data.bufferState;
-					if (lv != null && this.data.nonEmptyLayers.contains(RenderLayer.getTranslucent())) {
+					BufferBuilder.State state = this.data.bufferState;
+					if (state != null && this.data.nonEmptyLayers.contains(RenderLayer.getTranslucent())) {
 						BufferBuilder bufferBuilder = buffers.get(RenderLayer.getTranslucent());
 						BuiltChunk.this.beginBufferBuilding(bufferBuilder);
-						bufferBuilder.restoreState(lv);
+						bufferBuilder.restoreState(state);
 						bufferBuilder.method_31948(f - (float)BuiltChunk.this.origin.getX(), g - (float)BuiltChunk.this.origin.getY(), h - (float)BuiltChunk.this.origin.getZ());
 						this.data.bufferState = bufferBuilder.popState();
 						bufferBuilder.end();
@@ -609,7 +609,7 @@ public class ChunkBuilder {
 		private final List<BlockEntity> blockEntities = Lists.<BlockEntity>newArrayList();
 		private ChunkOcclusionData occlusionGraph = new ChunkOcclusionData();
 		@Nullable
-		private BufferBuilder.class_5594 bufferState;
+		private BufferBuilder.State bufferState;
 
 		public boolean isEmpty() {
 			return this.empty;

@@ -11,8 +11,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5577;
-import net.minecraft.class_5582;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -73,13 +71,15 @@ import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.entity.EntityHandler;
+import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.level.ColorResolver;
 
 @Environment(EnvType.CLIENT)
 public class ClientWorld extends World {
 	private final EntityList entityList = new EntityList();
-	private final class_5582<Entity> entityManager = new class_5582<>(Entity.class, new ClientWorld.EntityLoader());
+	private final ClientEntityManager<Entity> entityManager = new ClientEntityManager<>(Entity.class, new ClientWorld.ClientEntityHandler());
 	private final ClientPlayNetworkHandler netHandler;
 	private final WorldRenderer worldRenderer;
 	private final ClientWorld.Properties clientWorldProperties;
@@ -153,13 +153,13 @@ public class ClientWorld extends World {
 	}
 
 	public Iterable<Entity> getEntities() {
-		return this.getEntityIdMap().iterate();
+		return this.getEntityLookup().iterate();
 	}
 
 	public void tickEntities() {
 		Profiler profiler = this.getProfiler();
 		profiler.push("entities");
-		this.entityList.forEachEntity(entity -> {
+		this.entityList.forEach(entity -> {
 			if (!entity.isRemoved() && !entity.hasVehicle()) {
 				this.tickEntity(this::tickEntity, entity);
 			}
@@ -183,7 +183,7 @@ public class ClientWorld extends World {
 	private void tickPassenger(Entity entity, Entity passenger) {
 		if (passenger.isRemoved() || passenger.getVehicle() != entity) {
 			passenger.stopRiding();
-		} else if (passenger instanceof PlayerEntity || this.entityList.hasEntity(passenger)) {
+		} else if (passenger instanceof PlayerEntity || this.entityList.has(passenger)) {
 			passenger.resetPosition();
 			passenger.age++;
 			passenger.tickRiding();
@@ -197,12 +197,12 @@ public class ClientWorld extends World {
 	public void unloadBlockEntities(WorldChunk chunk) {
 		chunk.removeAllBlockEntities();
 		this.chunkManager.getLightingProvider().setColumnEnabled(chunk.getPos(), false);
-		this.entityManager.method_31875(chunk.getPos());
+		this.entityManager.stopTicking(chunk.getPos());
 	}
 
 	public void resetChunkColor(ChunkPos chunkPos) {
 		this.colorCache.forEach((colorResolver, biomeColorCache) -> biomeColorCache.reset(chunkPos.x, chunkPos.z));
-		this.entityManager.method_31869(chunkPos);
+		this.entityManager.startTicking(chunkPos);
 	}
 
 	public void reloadColor() {
@@ -215,7 +215,7 @@ public class ClientWorld extends World {
 	}
 
 	public int getRegularEntityCount() {
-		return this.entityManager.getRegularEntityCount();
+		return this.entityManager.getEntityCount();
 	}
 
 	public void addPlayer(int id, AbstractClientPlayerEntity player) {
@@ -232,7 +232,7 @@ public class ClientWorld extends World {
 	}
 
 	public void removeEntity(int entityId, Entity.RemovalReason removalReason) {
-		Entity entity = this.getEntityIdMap().getById(entityId);
+		Entity entity = this.getEntityLookup().get(entityId);
 		if (entity != null) {
 			entity.setRemoved(removalReason);
 		}
@@ -241,7 +241,7 @@ public class ClientWorld extends World {
 	@Nullable
 	@Override
 	public Entity getEntityById(int id) {
-		return this.getEntityIdMap().getById(id);
+		return this.getEntityLookup().get(id);
 	}
 
 	public void setBlockStateWithoutNeighborUpdates(BlockPos pos, BlockState state) {
@@ -717,12 +717,12 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	protected class_5577<Entity> getEntityIdMap() {
-		return this.entityManager.method_31866();
+	protected EntityLookup<Entity> getEntityLookup() {
+		return this.entityManager.getLookup();
 	}
 
 	public String asString() {
-		return "Chunks[C] W: " + this.chunkManager.getDebugString() + " E: " + this.entityManager.method_31879();
+		return "Chunks[C] W: " + this.chunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
 	}
 
 	@Override
@@ -731,31 +731,31 @@ public class ClientWorld extends World {
 	}
 
 	@Environment(EnvType.CLIENT)
-	final class EntityLoader implements net.minecraft.world.EntityLoader<Entity> {
-		private EntityLoader() {
+	final class ClientEntityHandler implements EntityHandler<Entity> {
+		private ClientEntityHandler() {
 		}
 
-		public void method_31802(Entity entity) {
+		public void create(Entity entity) {
 		}
 
-		public void destroyEntity(Entity entity) {
+		public void destroy(Entity entity) {
 		}
 
-		public void addEntity(Entity entity) {
-			ClientWorld.this.entityList.addEntity(entity);
+		public void startTicking(Entity entity) {
+			ClientWorld.this.entityList.add(entity);
 		}
 
-		public void removeEntity(Entity entity) {
-			ClientWorld.this.entityList.removeEntity(entity);
+		public void stopTicking(Entity entity) {
+			ClientWorld.this.entityList.remove(entity);
 		}
 
-		public void onLoadEntity(Entity entity) {
+		public void startTracking(Entity entity) {
 			if (entity instanceof AbstractClientPlayerEntity) {
 				ClientWorld.this.players.add((AbstractClientPlayerEntity)entity);
 			}
 		}
 
-		public void onUnloadEntity(Entity entity) {
+		public void stopTracking(Entity entity) {
 			entity.detach();
 			ClientWorld.this.players.remove(entity);
 		}

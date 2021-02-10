@@ -37,7 +37,7 @@ public class BoatItem extends Item {
 			double d = 5.0;
 			List<Entity> list = world.getOtherEntities(user, user.getBoundingBox().stretch(vec3d.multiply(5.0)).expand(1.0), RIDERS);
 			if (!list.isEmpty()) {
-				Vec3d vec3d2 = user.method_33571();
+				Vec3d vec3d2 = user.getEyePos();
 
 				for (Entity entity : list) {
 					Box box = entity.getBoundingBox().expand((double)entity.getTargetingMargin());

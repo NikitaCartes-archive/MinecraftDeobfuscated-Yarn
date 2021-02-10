@@ -42,11 +42,11 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<EndSpikeFeatureConfig> featureContext) {
-		EndSpikeFeatureConfig endSpikeFeatureConfig = featureContext.getConfig();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<EndSpikeFeatureConfig> context) {
+		EndSpikeFeatureConfig endSpikeFeatureConfig = context.getConfig();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
+		BlockPos blockPos = context.getPos();
 		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
 		if (list.isEmpty()) {
 			list = getSpikes(structureWorldAccess);

@@ -1,14 +1,18 @@
-package net.minecraft.client.util.math;
+package net.minecraft.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+/**
+ * @implNote This should be in same package as {@link ModelCuboidData} as
+ * its package private static fields are accessed by it.
+ */
 @Environment(EnvType.CLIENT)
 public class Dilation {
 	public static final Dilation NONE = new Dilation(0.0F);
-	public final float radiusX;
-	public final float radiusY;
-	public final float radiusZ;
+	final float radiusX;
+	final float radiusY;
+	final float radiusZ;
 
 	public Dilation(float radiusX, float radiusY, float radiusZ) {
 		this.radiusX = radiusX;

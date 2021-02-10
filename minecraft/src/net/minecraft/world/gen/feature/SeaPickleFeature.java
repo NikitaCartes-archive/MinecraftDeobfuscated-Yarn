@@ -17,12 +17,12 @@ public class SeaPickleFeature extends Feature<CountConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<CountConfig> featureContext) {
+	public boolean generate(FeatureContext<CountConfig> context) {
 		int i = 0;
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		int j = featureContext.getConfig().getCount().getValue(random);
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		int j = context.getConfig().getCount().getValue(random);
 
 		for (int k = 0; k < j; k++) {
 			int l = random.nextInt(8) - random.nextInt(8);

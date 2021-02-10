@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5742;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
@@ -46,12 +45,12 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 	}
 
 	public Set<Biome> getBiomesInArea(int x, int y, int z, int radius) {
-		int i = class_5742.method_33100(x - radius);
-		int j = class_5742.method_33100(y - radius);
-		int k = class_5742.method_33100(z - radius);
-		int l = class_5742.method_33100(x + radius);
-		int m = class_5742.method_33100(y + radius);
-		int n = class_5742.method_33100(z + radius);
+		int i = BiomeCoords.fromBlock(x - radius);
+		int j = BiomeCoords.fromBlock(y - radius);
+		int k = BiomeCoords.fromBlock(z - radius);
+		int l = BiomeCoords.fromBlock(x + radius);
+		int m = BiomeCoords.fromBlock(y + radius);
+		int n = BiomeCoords.fromBlock(z + radius);
 		int o = l - i + 1;
 		int p = m - j + 1;
 		int q = n - k + 1;
@@ -78,10 +77,10 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 
 	@Nullable
 	public BlockPos locateBiome(int x, int y, int z, int radius, int i, Predicate<Biome> predicate, Random random, boolean bl) {
-		int j = class_5742.method_33100(x);
-		int k = class_5742.method_33100(z);
-		int l = class_5742.method_33100(radius);
-		int m = class_5742.method_33100(y);
+		int j = BiomeCoords.fromBlock(x);
+		int k = BiomeCoords.fromBlock(z);
+		int l = BiomeCoords.fromBlock(radius);
+		int m = BiomeCoords.fromBlock(y);
 		BlockPos blockPos = null;
 		int n = 0;
 		int o = bl ? 0 : l;
@@ -103,7 +102,7 @@ public abstract class BiomeSource implements BiomeAccess.Storage {
 					int t = k + q;
 					if (predicate.test(this.getBiomeForNoiseGen(s, m, t))) {
 						if (blockPos == null || random.nextInt(n + 1) == 0) {
-							blockPos = new BlockPos(class_5742.method_33101(s), y, class_5742.method_33101(t));
+							blockPos = new BlockPos(BiomeCoords.toBlock(s), y, BiomeCoords.toBlock(t));
 							if (bl) {
 								return blockPos;
 							}

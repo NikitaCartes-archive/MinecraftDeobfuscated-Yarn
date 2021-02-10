@@ -3,7 +3,6 @@ package net.minecraft.world.dimension;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_5459;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,6 +15,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.WorldAccess;
 
@@ -164,46 +164,53 @@ public class AreaHelper {
 		return this.isValid() && this.foundPortalBlocks == this.width * this.height;
 	}
 
-	public static Vec3d method_30494(class_5459.class_5460 arg, Direction.Axis axis, Vec3d vec3d, EntityDimensions entityDimensions) {
-		double d = (double)arg.field_25937 - (double)entityDimensions.width;
-		double e = (double)arg.field_25938 - (double)entityDimensions.height;
-		BlockPos blockPos = arg.field_25936;
+	public static Vec3d entityPosInPortal(PortalUtil.Rectangle portalRect, Direction.Axis portalAxis, Vec3d entityPos, EntityDimensions entityDimensions) {
+		double d = (double)portalRect.width - (double)entityDimensions.width;
+		double e = (double)portalRect.height - (double)entityDimensions.height;
+		BlockPos blockPos = portalRect.lowerLeft;
 		double g;
 		if (d > 0.0) {
-			float f = (float)blockPos.getComponentAlongAxis(axis) + entityDimensions.width / 2.0F;
-			g = MathHelper.clamp(MathHelper.getLerpProgress(vec3d.getComponentAlongAxis(axis) - (double)f, 0.0, d), 0.0, 1.0);
+			float f = (float)blockPos.getComponentAlongAxis(portalAxis) + entityDimensions.width / 2.0F;
+			g = MathHelper.clamp(MathHelper.getLerpProgress(entityPos.getComponentAlongAxis(portalAxis) - (double)f, 0.0, d), 0.0, 1.0);
 		} else {
 			g = 0.5;
 		}
 
 		double h;
 		if (e > 0.0) {
-			Direction.Axis axis2 = Direction.Axis.Y;
-			h = MathHelper.clamp(MathHelper.getLerpProgress(vec3d.getComponentAlongAxis(axis2) - (double)blockPos.getComponentAlongAxis(axis2), 0.0, e), 0.0, 1.0);
+			Direction.Axis axis = Direction.Axis.Y;
+			h = MathHelper.clamp(MathHelper.getLerpProgress(entityPos.getComponentAlongAxis(axis) - (double)blockPos.getComponentAlongAxis(axis), 0.0, e), 0.0, 1.0);
 		} else {
 			h = 0.0;
 		}
 
-		Direction.Axis axis2 = axis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
-		double i = vec3d.getComponentAlongAxis(axis2) - ((double)blockPos.getComponentAlongAxis(axis2) + 0.5);
+		Direction.Axis axis = portalAxis == Direction.Axis.X ? Direction.Axis.Z : Direction.Axis.X;
+		double i = entityPos.getComponentAlongAxis(axis) - ((double)blockPos.getComponentAlongAxis(axis) + 0.5);
 		return new Vec3d(g, h, i);
 	}
 
-	public static TeleportTarget method_30484(
-		ServerWorld serverWorld, class_5459.class_5460 arg, Direction.Axis axis, Vec3d vec3d, EntityDimensions entityDimensions, Vec3d vec3d2, float f, float g
+	public static TeleportTarget getNetherTeleportTarget(
+		ServerWorld destination,
+		PortalUtil.Rectangle portalRect,
+		Direction.Axis portalAxis,
+		Vec3d offset,
+		EntityDimensions dimensions,
+		Vec3d velocity,
+		float yaw,
+		float pitch
 	) {
-		BlockPos blockPos = arg.field_25936;
-		BlockState blockState = serverWorld.getBlockState(blockPos);
-		Direction.Axis axis2 = blockState.get(Properties.HORIZONTAL_AXIS);
-		double d = (double)arg.field_25937;
-		double e = (double)arg.field_25938;
-		int i = axis == axis2 ? 0 : 90;
-		Vec3d vec3d3 = axis == axis2 ? vec3d2 : new Vec3d(vec3d2.z, vec3d2.y, -vec3d2.x);
-		double h = (double)entityDimensions.width / 2.0 + (d - (double)entityDimensions.width) * vec3d.getX();
-		double j = (e - (double)entityDimensions.height) * vec3d.getY();
-		double k = 0.5 + vec3d.getZ();
-		boolean bl = axis2 == Direction.Axis.X;
-		Vec3d vec3d4 = new Vec3d((double)blockPos.getX() + (bl ? h : k), (double)blockPos.getY() + j, (double)blockPos.getZ() + (bl ? k : h));
-		return new TeleportTarget(vec3d4, vec3d3, f + (float)i, g);
+		BlockPos blockPos = portalRect.lowerLeft;
+		BlockState blockState = destination.getBlockState(blockPos);
+		Direction.Axis axis = blockState.get(Properties.HORIZONTAL_AXIS);
+		double d = (double)portalRect.width;
+		double e = (double)portalRect.height;
+		int i = portalAxis == axis ? 0 : 90;
+		Vec3d vec3d = portalAxis == axis ? velocity : new Vec3d(velocity.z, velocity.y, -velocity.x);
+		double f = (double)dimensions.width / 2.0 + (d - (double)dimensions.width) * offset.getX();
+		double g = (e - (double)dimensions.height) * offset.getY();
+		double h = 0.5 + offset.getZ();
+		boolean bl = axis == Direction.Axis.X;
+		Vec3d vec3d2 = new Vec3d((double)blockPos.getX() + (bl ? f : h), (double)blockPos.getY() + g, (double)blockPos.getZ() + (bl ? h : f));
+		return new TeleportTarget(vec3d2, vec3d, yaw + (float)i, pitch);
 	}
 }

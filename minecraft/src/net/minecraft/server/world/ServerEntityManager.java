@@ -19,55 +19,58 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import net.minecraft.class_5566;
-import net.minecraft.class_5569;
-import net.minecraft.class_5570;
-import net.minecraft.class_5571;
-import net.minecraft.class_5572;
-import net.minecraft.class_5573;
-import net.minecraft.class_5577;
-import net.minecraft.class_5578;
-import net.minecraft.class_5584;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLike;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.profiler.CsvWriter;
-import net.minecraft.world.EntityLoader;
+import net.minecraft.world.entity.EntityChangeListener;
+import net.minecraft.world.entity.EntityHandler;
+import net.minecraft.world.entity.EntityIndex;
+import net.minecraft.world.entity.EntityLike;
+import net.minecraft.world.entity.EntityLookup;
+import net.minecraft.world.entity.EntityTrackingSection;
+import net.minecraft.world.entity.EntityTrackingStatus;
+import net.minecraft.world.entity.SectionedEntityCache;
+import net.minecraft.world.entity.SimpleEntityLookup;
+import net.minecraft.world.storage.ChunkDataAccess;
+import net.minecraft.world.storage.ChunkDataList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * An entity manager for a server environment.
+ */
 public class ServerEntityManager<T extends EntityLike> implements AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private final Set<UUID> entityUuids = Sets.<UUID>newHashSet();
-	private final EntityLoader<T> entityLoader;
-	private final class_5571<T> field_27263;
-	private final class_5570<T> trackedEntities;
-	private final class_5573<T> field_27265;
-	private final class_5577<T> field_27266;
-	private final Long2ObjectMap<class_5584> field_27267 = new Long2ObjectOpenHashMap<>();
-	private final Long2ObjectMap<ServerEntityManager.class_5581> field_27268 = new Long2ObjectOpenHashMap<>();
-	private final LongSet field_27269 = new LongOpenHashSet();
-	private final Queue<class_5566<T>> loadingQueue = Queues.<class_5566<T>>newConcurrentLinkedQueue();
+	private final EntityHandler<T> handler;
+	private final ChunkDataAccess<T> dataAccess;
+	private final EntityIndex<T> index;
+	private final SectionedEntityCache<T> cache;
+	private final EntityLookup<T> lookup;
+	private final Long2ObjectMap<EntityTrackingStatus> trackingStatuses = new Long2ObjectOpenHashMap<>();
+	private final Long2ObjectMap<ServerEntityManager.Status> managedStatuses = new Long2ObjectOpenHashMap<>();
+	private final LongSet pendingUnloads = new LongOpenHashSet();
+	private final Queue<ChunkDataList<T>> loadingQueue = Queues.<ChunkDataList<T>>newConcurrentLinkedQueue();
 
-	public ServerEntityManager(Class<T> class_, EntityLoader<T> entityLoader, class_5571<T> arg) {
-		this.trackedEntities = new class_5570<>();
-		this.field_27265 = new class_5573<>(class_, this.field_27267);
-		this.field_27267.defaultReturnValue(class_5584.HIDDEN);
-		this.field_27268.defaultReturnValue(ServerEntityManager.class_5581.field_27275);
-		this.entityLoader = entityLoader;
-		this.field_27263 = arg;
-		this.field_27266 = new class_5578<>(this.trackedEntities, this.field_27265);
+	public ServerEntityManager(Class<T> entityClass, EntityHandler<T> handler, ChunkDataAccess<T> dataAccess) {
+		this.index = new EntityIndex<>();
+		this.cache = new SectionedEntityCache<>(entityClass, this.trackingStatuses);
+		this.trackingStatuses.defaultReturnValue(EntityTrackingStatus.HIDDEN);
+		this.managedStatuses.defaultReturnValue(ServerEntityManager.Status.FRESH);
+		this.handler = handler;
+		this.dataAccess = dataAccess;
+		this.lookup = new SimpleEntityLookup<>(this.index, this.cache);
 	}
 
-	private void method_31811(long l, class_5572<T> arg) {
-		if (arg.method_31761()) {
-			this.field_27265.method_31786(l);
+	private void entityLeftSection(long sectionPos, EntityTrackingSection<T> section) {
+		if (section.isEmpty()) {
+			this.cache.removeSection(sectionPos);
 		}
 	}
 
-	private boolean canAddEntity(T entity) {
+	private boolean addEntityUuid(T entity) {
 		if (!this.entityUuids.add(entity.getUuid())) {
 			LOGGER.warn("UUID of added entity already exists: {}", entity);
 			return false;
@@ -76,179 +79,230 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		}
 	}
 
+	/**
+	 * Adds a newly created entity to this manager.
+	 * 
+	 * @return if the entity was added
+	 * 
+	 * @param entity the newly created entity
+	 */
 	public boolean addEntity(T entity) {
 		return this.addEntity(entity, false);
 	}
 
-	private boolean addEntity(T entity, boolean bl) {
-		if (!this.canAddEntity(entity)) {
+	/**
+	 * Loads or adds an entity to this manager.
+	 * 
+	 * @return if the entity was loaded or added
+	 * 
+	 * @param entity the entity
+	 * @param existing whether this entity is loaded from the map than created anew
+	 */
+	private boolean addEntity(T entity, boolean existing) {
+		if (!this.addEntityUuid(entity)) {
 			return false;
 		} else {
 			long l = ChunkSectionPos.toLong(entity.getBlockPos());
-			class_5572<T> lv = this.field_27265.method_31784(l);
-			lv.method_31764(entity);
-			entity.method_31744(new ServerEntityManager.class_5580(entity, l, lv));
-			if (!bl) {
-				this.entityLoader.method_31802(entity);
+			EntityTrackingSection<T> entityTrackingSection = this.cache.getTrackingSection(l);
+			entityTrackingSection.add(entity);
+			entity.setListener(new ServerEntityManager.Listener(entity, l, entityTrackingSection));
+			if (!existing) {
+				this.handler.create(entity);
 			}
 
-			class_5584 lv2 = method_31832(entity, lv.method_31768());
-			if (lv2.shouldTrack()) {
-				this.method_31847(entity);
+			EntityTrackingStatus entityTrackingStatus = getNeededLoadStatus(entity, entityTrackingSection.getStatus());
+			if (entityTrackingStatus.shouldTrack()) {
+				this.startTracking(entity);
 			}
 
-			if (lv2.shouldTick()) {
-				this.method_31838(entity);
+			if (entityTrackingStatus.shouldTick()) {
+				this.startTicking(entity);
 			}
 
 			return true;
 		}
 	}
 
-	private static <T extends EntityLike> class_5584 method_31832(T entityLike, class_5584 arg) {
-		return entityLike.isPlayer() ? class_5584.TICKING : arg;
+	private static <T extends EntityLike> EntityTrackingStatus getNeededLoadStatus(T entity, EntityTrackingStatus current) {
+		return entity.isPlayer() ? EntityTrackingStatus.TICKING : current;
 	}
 
-	public void method_31828(Stream<T> stream) {
-		stream.forEach(entity -> this.addEntity((T)entity, true));
+	/**
+	 * Loads a few entities from disk to this manager.
+	 */
+	public void loadEntities(Stream<T> entities) {
+		entities.forEach(entity -> this.addEntity((T)entity, true));
 	}
 
-	public void method_31835(Stream<T> stream) {
-		stream.forEach(entity -> this.addEntity((T)entity, false));
+	/**
+	 * Adds a few newly created entities to this manager.
+	 */
+	public void addEntities(Stream<T> entities) {
+		entities.forEach(entity -> this.addEntity((T)entity, false));
 	}
 
-	private void method_31838(T entity) {
-		this.entityLoader.addEntity(entity);
+	private void startTicking(T entity) {
+		this.handler.startTicking(entity);
 	}
 
-	private void removeEntity(T entity) {
-		this.entityLoader.removeEntity(entity);
+	private void stopTicking(T entity) {
+		this.handler.stopTicking(entity);
 	}
 
-	private void method_31847(T entity) {
-		this.trackedEntities.addEntity(entity);
-		this.entityLoader.onLoadEntity(entity);
+	private void startTracking(T entity) {
+		this.index.add(entity);
+		this.handler.startTracking(entity);
 	}
 
-	private void method_31850(T entity) {
-		this.entityLoader.onUnloadEntity(entity);
-		this.trackedEntities.removeEntity(entity);
+	private void stopTracking(T entity) {
+		this.handler.stopTracking(entity);
+		this.index.remove(entity);
 	}
 
-	public void method_31815(ChunkPos chunkPos, ChunkHolder.LevelType levelType) {
-		class_5584 lv = class_5584.method_31884(levelType);
-		this.method_31816(chunkPos, lv);
+	/**
+	 * Updates the tracking status of tracking sections in a chunk at {@code
+	 * chunkPos} given the {@code levelType}.
+	 * 
+	 * @see updateTrackingStatus(ChunkPos, EntityTrackingStatus)
+	 * 
+	 * @param chunkPos the chunk to update
+	 * @param levelType the updated level type of the chunk
+	 */
+	public void updateTrackingStatus(ChunkPos chunkPos, ChunkHolder.LevelType levelType) {
+		EntityTrackingStatus entityTrackingStatus = EntityTrackingStatus.fromLevelType(levelType);
+		this.updateTrackingStatus(chunkPos, entityTrackingStatus);
 	}
 
-	public void method_31816(ChunkPos chunkPos, class_5584 arg) {
+	/**
+	 * Updates the {@code trackingStatus} of tracking sections in a chunk
+	 * at {@code chunkPos}.
+	 * 
+	 * @param chunkPos the chunk to update
+	 * @param trackingStatus the updated section tracking status
+	 */
+	public void updateTrackingStatus(ChunkPos chunkPos, EntityTrackingStatus trackingStatus) {
 		long l = chunkPos.toLong();
-		if (arg == class_5584.HIDDEN) {
-			this.field_27267.remove(l);
-			this.field_27269.add(l);
+		if (trackingStatus == EntityTrackingStatus.HIDDEN) {
+			this.trackingStatuses.remove(l);
+			this.pendingUnloads.add(l);
 		} else {
-			this.field_27267.put(l, arg);
-			this.field_27269.remove(l);
-			this.method_31810(l);
+			this.trackingStatuses.put(l, trackingStatus);
+			this.pendingUnloads.remove(l);
+			this.readIfFresh(l);
 		}
 
-		this.field_27265.method_31782(l).forEach(arg2 -> {
-			class_5584 lv = arg2.method_31763(arg);
-			boolean bl = lv.shouldTrack();
-			boolean bl2 = arg.shouldTrack();
-			boolean bl3 = lv.shouldTick();
-			boolean bl4 = arg.shouldTick();
+		this.cache.getTrackingSections(l).forEach(group -> {
+			EntityTrackingStatus entityTrackingStatus2 = group.swapStatus(trackingStatus);
+			boolean bl = entityTrackingStatus2.shouldTrack();
+			boolean bl2 = trackingStatus.shouldTrack();
+			boolean bl3 = entityTrackingStatus2.shouldTick();
+			boolean bl4 = trackingStatus.shouldTick();
 			if (bl3 && !bl4) {
-				arg2.method_31766().filter(entityLike -> !entityLike.isPlayer()).forEach(this::removeEntity);
+				group.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this::stopTicking);
 			}
 
 			if (bl && !bl2) {
-				arg2.method_31766().filter(entityLike -> !entityLike.isPlayer()).forEach(this::method_31850);
+				group.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this::stopTracking);
 			} else if (!bl && bl2) {
-				arg2.method_31766().filter(entityLike -> !entityLike.isPlayer()).forEach(this::method_31847);
+				group.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this::startTracking);
 			}
 
 			if (!bl3 && bl4) {
-				arg2.method_31766().filter(entityLike -> !entityLike.isPlayer()).forEach(this::method_31838);
+				group.stream().filter(entityLike -> !entityLike.isPlayer()).forEach(this::startTicking);
 			}
 		});
 	}
 
-	private void method_31810(long l) {
-		ServerEntityManager.class_5581 lv = this.field_27268.get(l);
-		if (lv == ServerEntityManager.class_5581.field_27275) {
-			this.method_31830(l);
+	private void readIfFresh(long chunkPos) {
+		ServerEntityManager.Status status = this.managedStatuses.get(chunkPos);
+		if (status == ServerEntityManager.Status.FRESH) {
+			this.scheduleRead(chunkPos);
 		}
 	}
 
-	private boolean method_31812(long l, Consumer<T> consumer) {
-		ServerEntityManager.class_5581 lv = this.field_27268.get(l);
-		if (lv == ServerEntityManager.class_5581.field_27276) {
+	/**
+	 * Tries to save entities in a chunk and performs an {@code action} on each
+	 * saved entity if successful.
+	 * 
+	 * <p>If a chunk is {@link Status#FRESH} or {@link Status#PENDING}, it
+	 * cannot be saved.
+	 * 
+	 * @return whether the saving is successful
+	 * 
+	 * @param action action performed on each saved entity if saving is successful
+	 */
+	private boolean trySave(long chunkPos, Consumer<T> action) {
+		ServerEntityManager.Status status = this.managedStatuses.get(chunkPos);
+		if (status == ServerEntityManager.Status.PENDING) {
 			return false;
 		} else {
-			List<T> list = (List<T>)this.field_27265.method_31782(l).flatMap(arg -> arg.method_31766().filter(EntityLike::shouldSave)).collect(Collectors.toList());
+			List<T> list = (List<T>)this.cache
+				.getTrackingSections(chunkPos)
+				.flatMap(entityTrackingSection -> entityTrackingSection.stream().filter(EntityLike::shouldSave))
+				.collect(Collectors.toList());
 			if (list.isEmpty()) {
-				if (lv == ServerEntityManager.class_5581.field_27277) {
-					this.field_27263.method_31760(new class_5566<>(new ChunkPos(l), ImmutableList.of()));
+				if (status == ServerEntityManager.Status.LOADED) {
+					this.dataAccess.writeChunkData(new ChunkDataList<>(new ChunkPos(chunkPos), ImmutableList.of()));
 				}
 
 				return true;
-			} else if (lv == ServerEntityManager.class_5581.field_27275) {
-				this.method_31830(l);
+			} else if (status == ServerEntityManager.Status.FRESH) {
+				this.scheduleRead(chunkPos);
 				return false;
 			} else {
-				this.field_27263.method_31760(new class_5566<>(new ChunkPos(l), list));
-				list.forEach(consumer);
+				this.dataAccess.writeChunkData(new ChunkDataList<>(new ChunkPos(chunkPos), list));
+				list.forEach(action);
 				return true;
 			}
 		}
 	}
 
-	private void method_31830(long l) {
-		this.field_27268.put(l, ServerEntityManager.class_5581.field_27276);
-		ChunkPos chunkPos = new ChunkPos(l);
-		this.field_27263.method_31759(chunkPos).thenAccept(this.loadingQueue::add).exceptionally(throwable -> {
-			LOGGER.error("Failed to read chunk {}", chunkPos, throwable);
+	private void scheduleRead(long chunkPos) {
+		this.managedStatuses.put(chunkPos, ServerEntityManager.Status.PENDING);
+		ChunkPos chunkPos2 = new ChunkPos(chunkPos);
+		this.dataAccess.readChunkData(chunkPos2).thenAccept(this.loadingQueue::add).exceptionally(throwable -> {
+			LOGGER.error("Failed to read chunk {}", chunkPos2, throwable);
 			return null;
 		});
 	}
 
-	private boolean method_31837(long l) {
-		boolean bl = this.method_31812(l, entityLike -> entityLike.streamPassengers().forEach(this::method_31852));
+	private boolean unload(long chunkPos) {
+		boolean bl = this.trySave(chunkPos, entityLike -> entityLike.streamPassengersAndSelf().forEach(this::unload));
 		if (!bl) {
 			return false;
 		} else {
-			this.field_27268.remove(l);
+			this.managedStatuses.remove(chunkPos);
 			return true;
 		}
 	}
 
-	private void method_31852(EntityLike entity) {
+	private void unload(EntityLike entity) {
 		entity.setRemoved(Entity.RemovalReason.UNLOADED_TO_CHUNK);
-		entity.method_31744(class_5569.field_27243);
+		entity.setListener(EntityChangeListener.NONE);
 	}
 
-	private void method_31851() {
-		this.field_27269.removeIf(l -> this.field_27267.get(l) != class_5584.HIDDEN ? true : this.method_31837(l));
+	private void unloadChunks() {
+		this.pendingUnloads.removeIf(pos -> this.trackingStatuses.get(pos) != EntityTrackingStatus.HIDDEN ? true : this.unload(pos));
 	}
 
-	private void method_31853() {
-		class_5566<T> lv;
-		while ((lv = (class_5566<T>)this.loadingQueue.poll()) != null) {
-			lv.method_31742().forEach(entityLike -> this.addEntity((T)entityLike, true));
-			this.field_27268.put(lv.method_31741().toLong(), ServerEntityManager.class_5581.field_27277);
+	private void loadChunks() {
+		ChunkDataList<T> chunkDataList;
+		while ((chunkDataList = (ChunkDataList<T>)this.loadingQueue.poll()) != null) {
+			chunkDataList.stream().forEach(entity -> this.addEntity((T)entity, true));
+			this.managedStatuses.put(chunkDataList.getChunkPos().toLong(), ServerEntityManager.Status.LOADED);
 		}
 	}
 
-	public void method_31809() {
-		this.method_31853();
-		this.method_31851();
+	public void tick() {
+		this.loadChunks();
+		this.unloadChunks();
 	}
 
-	private LongSet method_31855() {
-		LongSet longSet = this.field_27265.method_31770();
+	private LongSet getLoadedChunks() {
+		LongSet longSet = this.cache.getChunkPositions();
 
-		for (Entry<ServerEntityManager.class_5581> entry : Long2ObjectMaps.fastIterable(this.field_27268)) {
-			if (entry.getValue() == ServerEntityManager.class_5581.field_27277) {
+		for (Entry<ServerEntityManager.Status> entry : Long2ObjectMaps.fastIterable(this.managedStatuses)) {
+			if (entry.getValue() == ServerEntityManager.Status.LOADED) {
 				longSet.add(entry.getLongKey());
 			}
 		}
@@ -256,46 +310,46 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 		return longSet;
 	}
 
-	public void method_31829() {
-		this.method_31855().forEach(l -> {
-			boolean bl = this.field_27267.get(l) == class_5584.HIDDEN;
+	public void save() {
+		this.getLoadedChunks().forEach(pos -> {
+			boolean bl = this.trackingStatuses.get(pos) == EntityTrackingStatus.HIDDEN;
 			if (bl) {
-				this.method_31837(l);
+				this.unload(pos);
 			} else {
-				this.method_31812(l, entityLike -> {
+				this.trySave(pos, entityLike -> {
 				});
 			}
 		});
 	}
 
-	public void method_31836() {
-		LongSet longSet = this.method_31855();
+	public void flush() {
+		LongSet longSet = this.getLoadedChunks();
 
 		while (!longSet.isEmpty()) {
-			this.field_27263.method_31758();
-			this.method_31853();
-			longSet.removeIf(l -> {
-				boolean bl = this.field_27267.get(l) == class_5584.HIDDEN;
-				return bl ? this.method_31837(l) : this.method_31812(l, entityLike -> {
+			this.dataAccess.awaitAll();
+			this.loadChunks();
+			longSet.removeIf(pos -> {
+				boolean bl = this.trackingStatuses.get(pos) == EntityTrackingStatus.HIDDEN;
+				return bl ? this.unload(pos) : this.trySave(pos, entityLike -> {
 				});
 			});
 		}
 	}
 
 	public void close() throws IOException {
-		this.method_31836();
-		this.field_27263.close();
+		this.flush();
+		this.dataAccess.close();
 	}
 
-	public boolean method_31827(UUID uUID) {
-		return this.entityUuids.contains(uUID);
+	public boolean has(UUID uuid) {
+		return this.entityUuids.contains(uuid);
 	}
 
-	public class_5577<T> method_31841() {
-		return this.field_27266;
+	public EntityLookup<T> getLookup() {
+		return this.lookup;
 	}
 
-	public void method_31826(Writer writer) throws IOException {
+	public void dump(Writer writer) throws IOException {
 		CsvWriter csvWriter = CsvWriter.makeHeader()
 			.addColumn("x")
 			.addColumn("y")
@@ -304,117 +358,135 @@ public class ServerEntityManager<T extends EntityLike> implements AutoCloseable 
 			.addColumn("load_status")
 			.addColumn("entity_count")
 			.startBody(writer);
-		this.field_27265.method_31770().forEach(l -> {
-			ServerEntityManager.class_5581 lv = this.field_27268.get(l);
-			this.field_27265.method_31772(l).forEach(lx -> {
-				class_5572<T> lvx = this.field_27265.method_31785(lx);
-				if (lvx != null) {
-					try {
-						csvWriter.printRow(ChunkSectionPos.unpackX(lx), ChunkSectionPos.unpackY(lx), ChunkSectionPos.unpackZ(lx), lvx.method_31768(), lv, lvx.method_31769());
-					} catch (IOException var7) {
-						throw new UncheckedIOException(var7);
-					}
+		this.cache
+			.getChunkPositions()
+			.forEach(
+				chunkPos -> {
+					ServerEntityManager.Status status = this.managedStatuses.get(chunkPos);
+					this.cache
+						.getSections(chunkPos)
+						.forEach(
+							sectionPos -> {
+								EntityTrackingSection<T> entityTrackingSection = this.cache.findTrackingSection(sectionPos);
+								if (entityTrackingSection != null) {
+									try {
+										csvWriter.printRow(
+											ChunkSectionPos.unpackX(sectionPos),
+											ChunkSectionPos.unpackY(sectionPos),
+											ChunkSectionPos.unpackZ(sectionPos),
+											entityTrackingSection.getStatus(),
+											status,
+											entityTrackingSection.size()
+										);
+									} catch (IOException var7) {
+										throw new UncheckedIOException(var7);
+									}
+								}
+							}
+						);
 				}
-			});
-		});
+			);
 	}
 
 	public String getDebugString() {
 		return this.entityUuids.size()
 			+ ","
-			+ this.trackedEntities.getEntityCount()
+			+ this.index.size()
 			+ ","
-			+ this.field_27265.method_31781()
+			+ this.cache.sectionCount()
 			+ ","
-			+ this.field_27268.size()
+			+ this.managedStatuses.size()
 			+ ","
-			+ this.field_27267.size()
+			+ this.trackingStatuses.size()
 			+ ","
 			+ this.loadingQueue.size()
 			+ ","
-			+ this.field_27269.size();
+			+ this.pendingUnloads.size();
 	}
 
-	class class_5580 implements class_5569 {
+	class Listener implements EntityChangeListener {
 		private final T entity;
-		private long field_27273;
-		private class_5572<T> field_27274;
+		private long sectionPos;
+		private EntityTrackingSection<T> section;
 
-		private class_5580(T entity, long l, class_5572<T> arg) {
+		private Listener(T entity, long sectionPos, EntityTrackingSection<T> section) {
 			this.entity = entity;
-			this.field_27273 = l;
-			this.field_27274 = arg;
+			this.sectionPos = sectionPos;
+			this.section = section;
 		}
 
 		@Override
 		public void updateEntityPosition() {
 			BlockPos blockPos = this.entity.getBlockPos();
 			long l = ChunkSectionPos.toLong(blockPos);
-			if (l != this.field_27273) {
-				class_5584 lv = this.field_27274.method_31768();
-				if (!this.field_27274.method_31767(this.entity)) {
-					ServerEntityManager.LOGGER.warn("Entity {} wasn't found in section {} (moving to {})", this.entity, ChunkSectionPos.from(this.field_27273), l);
+			if (l != this.sectionPos) {
+				EntityTrackingStatus entityTrackingStatus = this.section.getStatus();
+				if (!this.section.remove(this.entity)) {
+					ServerEntityManager.LOGGER.warn("Entity {} wasn't found in section {} (moving to {})", this.entity, ChunkSectionPos.from(this.sectionPos), l);
 				}
 
-				ServerEntityManager.this.method_31811(this.field_27273, this.field_27274);
-				class_5572<T> lv2 = ServerEntityManager.this.field_27265.method_31784(l);
-				lv2.method_31764(this.entity);
-				this.field_27274 = lv2;
-				this.field_27273 = l;
-				this.method_31865(lv, lv2.method_31768());
+				ServerEntityManager.this.entityLeftSection(this.sectionPos, this.section);
+				EntityTrackingSection<T> entityTrackingSection = ServerEntityManager.this.cache.getTrackingSection(l);
+				entityTrackingSection.add(this.entity);
+				this.section = entityTrackingSection;
+				this.sectionPos = l;
+				this.updateLoadStatus(entityTrackingStatus, entityTrackingSection.getStatus());
 			}
 		}
 
-		private void method_31865(class_5584 arg, class_5584 arg2) {
-			class_5584 lv = ServerEntityManager.method_31832(this.entity, arg);
-			class_5584 lv2 = ServerEntityManager.method_31832(this.entity, arg2);
-			if (lv != lv2) {
-				boolean bl = lv.shouldTrack();
-				boolean bl2 = lv2.shouldTrack();
+		private void updateLoadStatus(EntityTrackingStatus oldStatus, EntityTrackingStatus newStatus) {
+			EntityTrackingStatus entityTrackingStatus = ServerEntityManager.getNeededLoadStatus(this.entity, oldStatus);
+			EntityTrackingStatus entityTrackingStatus2 = ServerEntityManager.getNeededLoadStatus(this.entity, newStatus);
+			if (entityTrackingStatus != entityTrackingStatus2) {
+				boolean bl = entityTrackingStatus.shouldTrack();
+				boolean bl2 = entityTrackingStatus2.shouldTrack();
 				if (bl && !bl2) {
-					ServerEntityManager.this.method_31850(this.entity);
+					ServerEntityManager.this.stopTracking(this.entity);
 				} else if (!bl && bl2) {
-					ServerEntityManager.this.method_31847(this.entity);
+					ServerEntityManager.this.startTracking(this.entity);
 				}
 
-				boolean bl3 = lv.shouldTick();
-				boolean bl4 = lv2.shouldTick();
+				boolean bl3 = entityTrackingStatus.shouldTick();
+				boolean bl4 = entityTrackingStatus2.shouldTick();
 				if (bl3 && !bl4) {
-					ServerEntityManager.this.removeEntity(this.entity);
+					ServerEntityManager.this.stopTicking(this.entity);
 				} else if (!bl3 && bl4) {
-					ServerEntityManager.this.method_31838(this.entity);
+					ServerEntityManager.this.startTicking(this.entity);
 				}
 			}
 		}
 
 		@Override
 		public void remove(Entity.RemovalReason reason) {
-			if (!this.field_27274.method_31767(this.entity)) {
-				ServerEntityManager.LOGGER.warn("Entity {} wasn't found in section {} (destroying due to {})", this.entity, ChunkSectionPos.from(this.field_27273), reason);
+			if (!this.section.remove(this.entity)) {
+				ServerEntityManager.LOGGER.warn("Entity {} wasn't found in section {} (destroying due to {})", this.entity, ChunkSectionPos.from(this.sectionPos), reason);
 			}
 
-			class_5584 lv = ServerEntityManager.method_31832(this.entity, this.field_27274.method_31768());
-			if (lv.shouldTick()) {
-				ServerEntityManager.this.removeEntity(this.entity);
+			EntityTrackingStatus entityTrackingStatus = ServerEntityManager.getNeededLoadStatus(this.entity, this.section.getStatus());
+			if (entityTrackingStatus.shouldTick()) {
+				ServerEntityManager.this.stopTicking(this.entity);
 			}
 
-			if (lv.shouldTrack()) {
-				ServerEntityManager.this.method_31850(this.entity);
+			if (entityTrackingStatus.shouldTrack()) {
+				ServerEntityManager.this.stopTracking(this.entity);
 			}
 
 			if (reason.shouldDestroy()) {
-				ServerEntityManager.this.entityLoader.destroyEntity(this.entity);
+				ServerEntityManager.this.handler.destroy(this.entity);
 			}
 
 			ServerEntityManager.this.entityUuids.remove(this.entity.getUuid());
-			this.entity.method_31744(field_27243);
-			ServerEntityManager.this.method_31811(this.field_27273, this.field_27274);
+			this.entity.setListener(NONE);
+			ServerEntityManager.this.entityLeftSection(this.sectionPos, this.section);
 		}
 	}
 
-	static enum class_5581 {
-		field_27275,
-		field_27276,
-		field_27277;
+	/**
+	 * The status of chunks within a server entity manager.
+	 */
+	static enum Status {
+		FRESH,
+		PENDING,
+		LOADED;
 	}
 }

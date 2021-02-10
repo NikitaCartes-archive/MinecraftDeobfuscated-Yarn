@@ -130,7 +130,7 @@ public class ChunkTaskPrioritySystem implements ChunkHolder.LevelUpdateListener,
 			if (stream == null) {
 				this.idleActors.add(actor);
 			} else {
-				Util.combine((List)stream.map(executeOrAddBlocking -> executeOrAddBlocking.map(actor::ask, addBlocking -> {
+				Util.method_33791((List)stream.map(executeOrAddBlocking -> executeOrAddBlocking.map(actor::ask, addBlocking -> {
 						addBlocking.run();
 						return CompletableFuture.completedFuture(Unit.INSTANCE);
 					})).collect(Collectors.toList())).thenAccept(list -> this.enqueueExecution(queue, actor));

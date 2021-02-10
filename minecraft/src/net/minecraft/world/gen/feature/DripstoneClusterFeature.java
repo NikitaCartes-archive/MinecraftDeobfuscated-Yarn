@@ -24,11 +24,11 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DripstoneClusterFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		DripstoneClusterFeatureConfig dripstoneClusterFeatureConfig = featureContext.getConfig();
-		Random random = featureContext.getRandom();
+	public boolean generate(FeatureContext<DripstoneClusterFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		DripstoneClusterFeatureConfig dripstoneClusterFeatureConfig = context.getConfig();
+		Random random = context.getRandom();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {
@@ -154,7 +154,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 			return 0;
 		} else {
 			int i = Math.abs(localX) + Math.abs(localZ);
-			float f = (float)MathHelper.lerpFromProgress((double)i, 0.0, (double)config.maxDistanceFromCenterAffectingHeightBias, (double)height / 2.0, 0.0);
+			float f = (float)MathHelper.clampedLerpFromProgress((double)i, 0.0, (double)config.maxDistanceFromCenterAffectingHeightBias, (double)height / 2.0, 0.0);
 			return (int)clampedGaussian(random, 0.0F, (float)height, f, (float)config.heightDeviation);
 		}
 	}
@@ -195,7 +195,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 		int i = radiusX - Math.abs(localX);
 		int j = radiusZ - Math.abs(localZ);
 		int k = Math.min(i, j);
-		return MathHelper.lerpFromProgress(
+		return MathHelper.clampedLerpFromProgress(
 			(double)k, 0.0, (double)config.maxDistanceFromCenterAffectingChanceOfDripstoneColumn, (double)config.chanceOfDripstoneColumnAtMaxDistanceFromCenter, 1.0
 		);
 	}

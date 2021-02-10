@@ -88,7 +88,7 @@ public class FoxEntity extends AnimalEntity {
 	private static final TrackedData<Byte> FOX_FLAGS = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.BYTE);
 	private static final TrackedData<Optional<UUID>> OWNER = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
 	private static final TrackedData<Optional<UUID>> OTHER_TRUSTED = DataTracker.registerData(FoxEntity.class, TrackedDataHandlerRegistry.OPTIONAL_UUID);
-	private static final Predicate<ItemEntity> PICKABLE_DROP_FILTER = itemEntity -> !itemEntity.cannotPickup() && itemEntity.isAlive();
+	private static final Predicate<ItemEntity> PICKABLE_DROP_FILTER = item -> !item.cannotPickup() && item.isAlive();
 	private static final Predicate<Entity> JUST_ATTACKED_SOMETHING_FILTER = entity -> {
 		if (!(entity instanceof LivingEntity)) {
 			return false;
@@ -1461,10 +1461,10 @@ public class FoxEntity extends AnimalEntity {
 		private final String key;
 		private final List<RegistryKey<Biome>> biomes;
 
-		private Type(int id, String key, RegistryKey<Biome>... registryKeys) {
+		private Type(int id, String key, RegistryKey<Biome>... biomes) {
 			this.id = id;
 			this.key = key;
-			this.biomes = Arrays.asList(registryKeys);
+			this.biomes = Arrays.asList(biomes);
 		}
 
 		public String getKey() {

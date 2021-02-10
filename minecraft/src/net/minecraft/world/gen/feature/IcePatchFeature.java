@@ -14,12 +14,12 @@ public class IcePatchFeature extends DiskFeature {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DiskFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		ChunkGenerator chunkGenerator = featureContext.getGenerator();
-		Random random = featureContext.getRandom();
-		DiskFeatureConfig diskFeatureConfig = featureContext.getConfig();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<DiskFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		ChunkGenerator chunkGenerator = context.getGenerator();
+		Random random = context.getRandom();
+		DiskFeatureConfig diskFeatureConfig = context.getConfig();
+		BlockPos blockPos = context.getPos();
 
 		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
 			blockPos = blockPos.down();

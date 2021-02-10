@@ -15,11 +15,11 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
-import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Matrix4f;
@@ -108,7 +108,7 @@ public class DebugRenderer {
 		if (entity == null) {
 			return Optional.empty();
 		} else {
-			Vec3d vec3d = entity.method_33571();
+			Vec3d vec3d = entity.getEyePos();
 			Vec3d vec3d2 = entity.getRotationVec(1.0F).multiply((double)maxDistance);
 			Vec3d vec3d3 = vec3d.add(vec3d2);
 			Box box = entity.getBoundingBox().stretch(vec3d2).expand(1.0);

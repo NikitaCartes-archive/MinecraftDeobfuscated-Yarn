@@ -2,6 +2,8 @@ package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
@@ -17,7 +19,6 @@ import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.biome.source.BiomeAccess;
@@ -87,7 +88,8 @@ public class DebugChunkGenerator extends ChunkGenerator {
 	}
 
 	@Override
-	public void populateNoise(WorldAccess world, StructureAccessor accessor, Chunk chunk) {
+	public CompletableFuture<Chunk> populateNoise(Executor executor, StructureAccessor accessor, Chunk chunk) {
+		return CompletableFuture.completedFuture(chunk);
 	}
 
 	@Override

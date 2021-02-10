@@ -9,7 +9,7 @@ public class NoOpFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		return true;
 	}
 }

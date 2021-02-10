@@ -32,7 +32,7 @@ public class Sprite implements AutoCloseable {
 	private final int height;
 	protected final NativeImage[] images;
 	@Nullable
-	private final Sprite.class_5790 field_28468;
+	private final Sprite.Animation animation;
 	private final int x;
 	private final int y;
 	private final float uMin;
@@ -51,7 +51,7 @@ public class Sprite implements AutoCloseable {
 		this.uMax = (float)(x + this.width) / (float)atlasWidth;
 		this.vMin = (float)y / (float)atlasHeight;
 		this.vMax = (float)(y + this.height) / (float)atlasHeight;
-		this.field_28468 = this.method_33437(info, nativeImage.getWidth(), nativeImage.getHeight(), maxLevel);
+		this.animation = this.method_33437(info, nativeImage.getWidth(), nativeImage.getHeight(), maxLevel);
 
 		try {
 			try {
@@ -82,46 +82,46 @@ public class Sprite implements AutoCloseable {
 	}
 
 	private int getFrameCount() {
-		return this.field_28468 != null ? this.field_28468.field_28472.size() : 1;
+		return this.animation != null ? this.animation.frames.size() : 1;
 	}
 
 	@Nullable
-	private Sprite.class_5790 method_33437(Sprite.Info info, int i, int j, int k) {
+	private Sprite.Animation method_33437(Sprite.Info info, int nativeImageWidth, int nativeImageHeight, int maxLevel) {
 		AnimationResourceMetadata animationResourceMetadata = info.animationData;
-		int l = i / animationResourceMetadata.getWidth(info.width);
-		int m = j / animationResourceMetadata.getHeight(info.height);
-		int n = l * m;
-		List<Sprite.class_5791> list = Lists.<Sprite.class_5791>newArrayList();
-		animationResourceMetadata.method_33460((ix, jx) -> list.add(new Sprite.class_5791(ix, jx)));
+		int i = nativeImageWidth / animationResourceMetadata.getWidth(info.width);
+		int j = nativeImageHeight / animationResourceMetadata.getHeight(info.height);
+		int k = i * j;
+		List<Sprite.AnimationFrame> list = Lists.<Sprite.AnimationFrame>newArrayList();
+		animationResourceMetadata.forEachFrame((index, time) -> list.add(new Sprite.AnimationFrame(index, time)));
 		if (list.isEmpty()) {
-			for (int o = 0; o < n; o++) {
-				list.add(new Sprite.class_5791(o, animationResourceMetadata.getDefaultFrameTime()));
+			for (int l = 0; l < k; l++) {
+				list.add(new Sprite.AnimationFrame(l, animationResourceMetadata.getDefaultFrameTime()));
 			}
 		} else {
-			int o = 0;
+			int l = 0;
 			IntSet intSet = new IntOpenHashSet();
 
-			for (Iterator<Sprite.class_5791> iterator = list.iterator(); iterator.hasNext(); o++) {
-				Sprite.class_5791 lv = (Sprite.class_5791)iterator.next();
+			for (Iterator<Sprite.AnimationFrame> iterator = list.iterator(); iterator.hasNext(); l++) {
+				Sprite.AnimationFrame animationFrame = (Sprite.AnimationFrame)iterator.next();
 				boolean bl = true;
-				if (lv.field_28476 <= 0) {
-					LOGGER.warn("Invalid frame duration on sprite {} frame {}: {}", this.id, o, lv.field_28476);
+				if (animationFrame.time <= 0) {
+					LOGGER.warn("Invalid frame duration on sprite {} frame {}: {}", this.id, l, animationFrame.time);
 					bl = false;
 				}
 
-				if (lv.field_28475 < 0 || lv.field_28475 >= n) {
-					LOGGER.warn("Invalid frame index on sprite {} frame {}: {}", this.id, o, lv.field_28475);
+				if (animationFrame.index < 0 || animationFrame.index >= k) {
+					LOGGER.warn("Invalid frame index on sprite {} frame {}: {}", this.id, l, animationFrame.index);
 					bl = false;
 				}
 
 				if (bl) {
-					intSet.add(lv.field_28475);
+					intSet.add(animationFrame.index);
 				} else {
 					iterator.remove();
 				}
 			}
 
-			int[] is = IntStream.range(0, n).filter(ix -> !intSet.contains(ix)).toArray();
+			int[] is = IntStream.range(0, k).filter(ix -> !intSet.contains(ix)).toArray();
 			if (is.length > 0) {
 				LOGGER.warn("Unused frames in sprite {}: {}", this.id, Arrays.toString(is));
 			}
@@ -130,8 +130,8 @@ public class Sprite implements AutoCloseable {
 		if (list.size() <= 1) {
 			return null;
 		} else {
-			Sprite.Interpolation interpolation = animationResourceMetadata.shouldInterpolate() ? new Sprite.Interpolation(info, k) : null;
-			return new Sprite.class_5790(ImmutableList.copyOf(list), l, interpolation);
+			Sprite.Interpolation interpolation = animationResourceMetadata.shouldInterpolate() ? new Sprite.Interpolation(info, maxLevel) : null;
+			return new Sprite.Animation(ImmutableList.copyOf(list), i, interpolation);
 		}
 	}
 
@@ -184,7 +184,7 @@ public class Sprite implements AutoCloseable {
 	}
 
 	public IntStream method_33442() {
-		return this.field_28468 != null ? this.field_28468.method_33450() : IntStream.of(1);
+		return this.animation != null ? this.animation.method_33450() : IntStream.of(1);
 	}
 
 	public void close() {
@@ -194,8 +194,8 @@ public class Sprite implements AutoCloseable {
 			}
 		}
 
-		if (this.field_28468 != null) {
-			this.field_28468.close();
+		if (this.animation != null) {
+			this.animation.close();
 		}
 	}
 
@@ -227,17 +227,17 @@ public class Sprite implements AutoCloseable {
 	public boolean isPixelTransparent(int frame, int x, int y) {
 		int i = x;
 		int j = y;
-		if (this.field_28468 != null) {
-			i = x + this.field_28468.method_33446(frame) * this.width;
-			j = y + this.field_28468.method_33451(frame) * this.height;
+		if (this.animation != null) {
+			i = x + this.animation.getFrameX(frame) * this.width;
+			j = y + this.animation.getFrameY(frame) * this.height;
 		}
 
 		return (this.images[0].getPixelColor(i, j) >> 24 & 0xFF) == 0;
 	}
 
 	public void upload() {
-		if (this.field_28468 != null) {
-			this.field_28468.method_33445();
+		if (this.animation != null) {
+			this.animation.upload();
 		} else {
 			this.upload(0, 0, this.images);
 		}
@@ -255,11 +255,87 @@ public class Sprite implements AutoCloseable {
 
 	@Nullable
 	public TextureTickListener method_33443() {
-		return this.field_28468;
+		return this.animation;
 	}
 
 	public VertexConsumer getTextureSpecificVertexConsumer(VertexConsumer vertexConsumer) {
 		return new SpriteTexturedVertexConsumer(vertexConsumer, this);
+	}
+
+	@Environment(EnvType.CLIENT)
+	class Animation implements TextureTickListener, AutoCloseable {
+		private int frameIndex;
+		private int frameTicks;
+		private final List<Sprite.AnimationFrame> frames;
+		private final int frameCount;
+		@Nullable
+		private final Sprite.Interpolation interpolation;
+
+		private Animation(List<Sprite.AnimationFrame> frames, int frameCount, @Nullable Sprite.Interpolation interpolation) {
+			this.frames = frames;
+			this.frameCount = frameCount;
+			this.interpolation = interpolation;
+		}
+
+		private int getFrameX(int frame) {
+			return frame % this.frameCount;
+		}
+
+		private int getFrameY(int frame) {
+			return frame / this.frameCount;
+		}
+
+		private void upload(int frameIndex) {
+			int i = this.getFrameX(frameIndex) * Sprite.this.width;
+			int j = this.getFrameY(frameIndex) * Sprite.this.height;
+			Sprite.this.upload(i, j, Sprite.this.images);
+		}
+
+		public void close() {
+			if (this.interpolation != null) {
+				this.interpolation.close();
+			}
+		}
+
+		@Override
+		public void tick() {
+			this.frameTicks++;
+			Sprite.AnimationFrame animationFrame = (Sprite.AnimationFrame)this.frames.get(this.frameIndex);
+			if (this.frameTicks >= animationFrame.time) {
+				int i = animationFrame.index;
+				this.frameIndex = (this.frameIndex + 1) % this.frames.size();
+				this.frameTicks = 0;
+				int j = ((Sprite.AnimationFrame)this.frames.get(this.frameIndex)).index;
+				if (i != j) {
+					this.upload(j);
+				}
+			} else if (this.interpolation != null) {
+				if (!RenderSystem.isOnRenderThread()) {
+					RenderSystem.recordRenderCall(() -> this.interpolation.apply(this));
+				} else {
+					this.interpolation.apply(this);
+				}
+			}
+		}
+
+		public void upload() {
+			this.upload(((Sprite.AnimationFrame)this.frames.get(0)).index);
+		}
+
+		public IntStream method_33450() {
+			return this.frames.stream().mapToInt(animationFrame -> animationFrame.index).distinct();
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	static class AnimationFrame {
+		private final int index;
+		private final int time;
+
+		private AnimationFrame(int index, int time) {
+			this.index = index;
+			this.time = time;
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -310,11 +386,11 @@ public class Sprite implements AutoCloseable {
 		 * based on the tick position within the current frame,
 		 * and upload the results to the currently bound texture to the frame slot at position (0,0).
 		 */
-		private void apply(Sprite.class_5790 arg) {
-			Sprite.class_5791 lv = (Sprite.class_5791)arg.field_28472.get(arg.field_28470);
-			double d = 1.0 - (double)arg.field_28471 / (double)lv.field_28476;
-			int i = lv.field_28475;
-			int j = ((Sprite.class_5791)arg.field_28472.get((arg.field_28470 + 1) % arg.field_28472.size())).field_28475;
+		private void apply(Sprite.Animation animation) {
+			Sprite.AnimationFrame animationFrame = (Sprite.AnimationFrame)animation.frames.get(animation.frameIndex);
+			double d = 1.0 - (double)animation.frameTicks / (double)animationFrame.time;
+			int i = animationFrame.index;
+			int j = ((Sprite.AnimationFrame)animation.frames.get((animation.frameIndex + 1) % animation.frames.size())).index;
 			if (i != j) {
 				for (int k = 0; k < this.images.length; k++) {
 					int l = Sprite.this.width >> k;
@@ -322,8 +398,8 @@ public class Sprite implements AutoCloseable {
 
 					for (int n = 0; n < m; n++) {
 						for (int o = 0; o < l; o++) {
-							int p = this.getPixelColor(arg, i, k, o, n);
-							int q = this.getPixelColor(arg, j, k, o, n);
+							int p = this.getPixelColor(animation, i, k, o, n);
+							int q = this.getPixelColor(animation, j, k, o, n);
 							int r = this.lerp(d, p >> 16 & 0xFF, q >> 16 & 0xFF);
 							int s = this.lerp(d, p >> 8 & 0xFF, q >> 8 & 0xFF);
 							int t = this.lerp(d, p & 0xFF, q & 0xFF);
@@ -339,8 +415,9 @@ public class Sprite implements AutoCloseable {
 		/**
 		 * Returns the pixel color at frame {@code frameIndex} within mipmap {@code layer} at sprite relative coordinates.
 		 */
-		private int getPixelColor(Sprite.class_5790 arg, int i, int j, int k, int l) {
-			return Sprite.this.images[j].getPixelColor(k + (arg.method_33446(i) * Sprite.this.width >> j), l + (arg.method_33451(i) * Sprite.this.height >> j));
+		private int getPixelColor(Sprite.Animation animation, int frameIndex, int i, int j, int k) {
+			return Sprite.this.images[i]
+				.getPixelColor(j + (animation.getFrameX(frameIndex) * Sprite.this.width >> i), k + (animation.getFrameY(frameIndex) * Sprite.this.height >> i));
 		}
 
 		/**
@@ -357,82 +434,6 @@ public class Sprite implements AutoCloseable {
 					nativeImage.close();
 				}
 			}
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	class class_5790 implements TextureTickListener, AutoCloseable {
-		private int field_28470;
-		private int field_28471;
-		private final List<Sprite.class_5791> field_28472;
-		private final int field_28473;
-		@Nullable
-		private final Sprite.Interpolation field_28474;
-
-		private class_5790(List<Sprite.class_5791> list, int i, @Nullable Sprite.Interpolation interpolation) {
-			this.field_28472 = list;
-			this.field_28473 = i;
-			this.field_28474 = interpolation;
-		}
-
-		private int method_33446(int i) {
-			return i % this.field_28473;
-		}
-
-		private int method_33451(int i) {
-			return i / this.field_28473;
-		}
-
-		private void method_33455(int i) {
-			int j = this.method_33446(i) * Sprite.this.width;
-			int k = this.method_33451(i) * Sprite.this.height;
-			Sprite.this.upload(j, k, Sprite.this.images);
-		}
-
-		public void close() {
-			if (this.field_28474 != null) {
-				this.field_28474.close();
-			}
-		}
-
-		@Override
-		public void tick() {
-			this.field_28471++;
-			Sprite.class_5791 lv = (Sprite.class_5791)this.field_28472.get(this.field_28470);
-			if (this.field_28471 >= lv.field_28476) {
-				int i = lv.field_28475;
-				this.field_28470 = (this.field_28470 + 1) % this.field_28472.size();
-				this.field_28471 = 0;
-				int j = ((Sprite.class_5791)this.field_28472.get(this.field_28470)).field_28475;
-				if (i != j) {
-					this.method_33455(j);
-				}
-			} else if (this.field_28474 != null) {
-				if (!RenderSystem.isOnRenderThread()) {
-					RenderSystem.recordRenderCall(() -> this.field_28474.apply(this));
-				} else {
-					this.field_28474.apply(this);
-				}
-			}
-		}
-
-		public void method_33445() {
-			this.method_33455(((Sprite.class_5791)this.field_28472.get(0)).field_28475);
-		}
-
-		public IntStream method_33450() {
-			return this.field_28472.stream().mapToInt(arg -> arg.field_28475).distinct();
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	static class class_5791 {
-		private final int field_28475;
-		private final int field_28476;
-
-		private class_5791(int i, int j) {
-			this.field_28475 = i;
-			this.field_28476 = j;
 		}
 	}
 }

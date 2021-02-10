@@ -590,8 +590,16 @@ public class MathHelper {
 		return n * n;
 	}
 
-	public static double lerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
+	public static double square(double n) {
+		return n * n;
+	}
+
+	public static double clampedLerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
 		return clampedLerp(start, end, getLerpProgress(lerpValue, lerpStart, lerpEnd));
+	}
+
+	public static double lerpFromProgress(double lerpValue, double lerpStart, double lerpEnd, double start, double end) {
+		return lerp(getLerpProgress(lerpValue, lerpStart, lerpEnd), start, end);
 	}
 
 	/**

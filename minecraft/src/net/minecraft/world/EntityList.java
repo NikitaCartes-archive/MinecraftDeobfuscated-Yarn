@@ -8,57 +8,75 @@ import java.util.function.Consumer;
 import javax.annotation.Nullable;
 import net.minecraft.entity.Entity;
 
+/**
+ * A storage of entities that supports modification during iteration.
+ * 
+ * <p>The entities are stored by their network IDs.
+ * 
+ * @see EntityList#forEach(Consumer)
+ */
 public class EntityList {
 	private Int2ObjectMap<Entity> entities = new Int2ObjectLinkedOpenHashMap<>();
-	private Int2ObjectMap<Entity> field_27255 = new Int2ObjectLinkedOpenHashMap<>();
+	private Int2ObjectMap<Entity> temp = new Int2ObjectLinkedOpenHashMap<>();
 	@Nullable
-	private Int2ObjectMap<Entity> cachedEntityList;
+	private Int2ObjectMap<Entity> iterating;
 
-	private void method_31789() {
-		if (this.cachedEntityList == this.entities) {
-			this.field_27255.clear();
+	/**
+	 * Ensures that the modified {@code entities} map is not currently iterated.
+	 * If {@code entities} is iterated, this moves its value to {@code temp} so
+	 * modification to {@code entities} is safe.
+	 */
+	private void ensureSafe() {
+		if (this.iterating == this.entities) {
+			this.temp.clear();
 
 			for (Entry<Entity> entry : Int2ObjectMaps.fastIterable(this.entities)) {
-				this.field_27255.put(entry.getIntKey(), (Entity)entry.getValue());
+				this.temp.put(entry.getIntKey(), (Entity)entry.getValue());
 			}
 
 			Int2ObjectMap<Entity> int2ObjectMap = this.entities;
-			this.entities = this.field_27255;
-			this.field_27255 = int2ObjectMap;
+			this.entities = this.temp;
+			this.temp = int2ObjectMap;
 		}
 	}
 
-	public void addEntity(Entity entity) {
-		this.method_31789();
+	public void add(Entity entity) {
+		this.ensureSafe();
 		this.entities.put(entity.getId(), entity);
 	}
 
-	public void removeEntity(Entity entity) {
-		this.method_31789();
+	public void remove(Entity entity) {
+		this.ensureSafe();
 		this.entities.remove(entity.getId());
 	}
 
-	public boolean hasEntity(Entity entity) {
+	public boolean has(Entity entity) {
 		return this.entities.containsKey(entity.getId());
 	}
 
 	/**
-	 * Runs an action on every single entity.
+	 * Runs an {@code action} on every entity in this storage.
 	 * 
-	 * @throws UnsupportedOperationException if there is an attempt to have more than one concurrent iteration
+	 * <p>If this storage is updated during the iteration, the iteration will
+	 * not be updated to reflect updated contents. For example, if an entity
+	 * is added by the {@code action}, the {@code action} won't run on that
+	 * entity later.
+	 * 
+	 * @throws UnsupportedOperationException if this is called before an iteration
+	 * has finished, such as within the {@code action} or from another thread
 	 */
-	public void forEachEntity(Consumer<Entity> action) {
-		if (this.cachedEntityList != null) {
+	public void forEach(Consumer<Entity> action) {
+		if (this.iterating != null) {
 			throw new UnsupportedOperationException("Only one concurrent iteration supported");
 		} else {
-			this.cachedEntityList = this.entities;
+			this.iterating = this.entities;
 
 			try {
 				for (Entity entity : this.entities.values()) {
 					action.accept(entity);
 				}
 			} finally {
-				this.cachedEntityList = null;
+				this.iterating = null;
 			}
 		}
 	}

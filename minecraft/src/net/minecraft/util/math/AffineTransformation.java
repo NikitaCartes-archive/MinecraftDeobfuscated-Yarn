@@ -1,4 +1,4 @@
-package net.minecraft.client.util.math;
+package net.minecraft.util.math;
 
 import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
@@ -6,12 +6,12 @@ import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.tuple.Triple;
 
+/**
+ * @implNote Even though this is used only on the client, it accesses protected
+ * fields from {@link Matrix4f}, which requires them to be in the same package.
+ */
 @Environment(EnvType.CLIENT)
 public final class AffineTransformation {
 	private final Matrix4f matrix;

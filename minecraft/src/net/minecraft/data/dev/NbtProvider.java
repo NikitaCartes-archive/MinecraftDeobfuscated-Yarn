@@ -43,7 +43,7 @@ public class NbtProvider implements DataProvider {
 	@Nullable
 	public static Path convertNbtToSnbt(Path inputPath, String location, Path outputPath) {
 		try {
-			method_32234(outputPath.resolve(location + ".snbt"), NbtHelper.toPrettyPrintedString(NbtIo.readCompressed(Files.newInputStream(inputPath))));
+			writeTo(outputPath.resolve(location + ".snbt"), NbtHelper.toPrettyPrintedString(NbtIo.readCompressed(Files.newInputStream(inputPath))));
 			LOGGER.info("Converted {} from NBT to SNBT", location);
 			return outputPath.resolve(location + ".snbt");
 		} catch (IOException var4) {
@@ -52,13 +52,13 @@ public class NbtProvider implements DataProvider {
 		}
 	}
 
-	public static void method_32234(Path path, String string) throws IOException {
-		Files.createDirectories(path.getParent());
-		BufferedWriter bufferedWriter = Files.newBufferedWriter(path);
+	public static void writeTo(Path file, String content) throws IOException {
+		Files.createDirectories(file.getParent());
+		BufferedWriter bufferedWriter = Files.newBufferedWriter(file);
 		Throwable var3 = null;
 
 		try {
-			bufferedWriter.write(string);
+			bufferedWriter.write(content);
 			bufferedWriter.write(10);
 		} catch (Throwable var12) {
 			var3 = var12;

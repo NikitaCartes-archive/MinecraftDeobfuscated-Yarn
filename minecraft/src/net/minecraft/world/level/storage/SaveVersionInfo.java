@@ -49,7 +49,6 @@ public class SaveVersionInfo {
 		return this.versionName;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public int getVersionId() {
 		return this.versionId;
 	}

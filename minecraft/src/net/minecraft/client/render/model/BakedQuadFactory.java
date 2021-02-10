@@ -6,10 +6,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.json.ModelElementFace;
 import net.minecraft.client.render.model.json.ModelElementTexture;
 import net.minecraft.client.texture.Sprite;
-import net.minecraft.client.util.math.AffineTransformation;
-import net.minecraft.client.util.math.AffineTransformations;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.AffineTransformation;
+import net.minecraft.util.math.AffineTransformations;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
@@ -17,6 +16,7 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vector4f;
 
 @Environment(EnvType.CLIENT)
 public class BakedQuadFactory {

@@ -1,13 +1,18 @@
 package net.minecraft.world.gen.feature;
 
+import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
+import java.util.Set;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class OreFeature extends Feature<OreFeatureConfig> {
@@ -16,11 +21,11 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<OreFeatureConfig> featureContext) {
-		Random random = featureContext.getRandom();
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		OreFeatureConfig oreFeatureConfig = featureContext.getConfig();
+	public boolean generate(FeatureContext<OreFeatureConfig> context) {
+		Random random = context.getRandom();
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		OreFeatureConfig oreFeatureConfig = context.getConfig();
 		float f = random.nextFloat() * (float) Math.PI;
 		float g = (float)oreFeatureConfig.size / 8.0F;
 		int i = MathHelper.ceil(((float)oreFeatureConfig.size / 16.0F * 2.0F + 1.0F) / 2.0F);
@@ -103,34 +108,45 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		for (int lx = 0; lx < k; lx++) {
-			double o = ds[lx * 4 + 3];
-			if (!(o < 0.0)) {
-				double p = ds[lx * 4 + 0];
-				double q = ds[lx * 4 + 1];
-				double r = ds[lx * 4 + 2];
-				int s = Math.max(MathHelper.floor(p - o), x);
-				int t = Math.max(MathHelper.floor(q - o), y);
-				int u = Math.max(MathHelper.floor(r - o), z);
-				int v = Math.max(MathHelper.floor(p + o), s);
-				int w = Math.max(MathHelper.floor(q + o), t);
-				int aa = Math.max(MathHelper.floor(r + o), u);
+		Set<ChunkSection> set = Sets.<ChunkSection>newHashSet();
 
-				for (int ab = s; ab <= v; ab++) {
-					double ac = ((double)ab + 0.5 - p) / o;
-					if (ac * ac < 1.0) {
-						for (int ad = t; ad <= w; ad++) {
-							double ae = ((double)ad + 0.5 - q) / o;
-							if (ac * ac + ae * ae < 1.0) {
-								for (int af = u; af <= aa; af++) {
-									double ag = ((double)af + 0.5 - r) / o;
-									if (ac * ac + ae * ae + ag * ag < 1.0) {
-										int ah = ab - x + (ad - y) * size + (af - z) * size * i;
-										if (!bitSet.get(ah)) {
-											bitSet.set(ah);
-											mutable.set(ab, ad, af);
-											if (config.target.test(world.getBlockState(mutable), random)) {
-												world.setBlockState(mutable, config.state, 2);
+		for (int nx = 0; nx < k; nx++) {
+			double d = ds[nx * 4 + 3];
+			if (!(d < 0.0)) {
+				double e = ds[nx * 4 + 0];
+				double g = ds[nx * 4 + 1];
+				double h = ds[nx * 4 + 2];
+				int o = Math.max(MathHelper.floor(e - d), x);
+				int p = Math.max(MathHelper.floor(g - d), y);
+				int q = Math.max(MathHelper.floor(h - d), z);
+				int r = Math.max(MathHelper.floor(e + d), o);
+				int s = Math.max(MathHelper.floor(g + d), p);
+				int t = Math.max(MathHelper.floor(h + d), q);
+
+				for (int u = o; u <= r; u++) {
+					double v = ((double)u + 0.5 - e) / d;
+					if (v * v < 1.0) {
+						for (int w = p; w <= s; w++) {
+							double aa = ((double)w + 0.5 - g) / d;
+							if (v * v + aa * aa < 1.0) {
+								for (int ab = q; ab <= t; ab++) {
+									double ac = ((double)ab + 0.5 - h) / d;
+									if (v * v + aa * aa + ac * ac < 1.0 && !world.isOutOfHeightLimit(w)) {
+										int ad = u - x + (w - y) * size + (ab - z) * size * i;
+										if (!bitSet.get(ad)) {
+											bitSet.set(ad);
+											mutable.set(u, w, ab);
+											Chunk chunk = world.getChunk(ChunkSectionPos.getSectionCoord(u), ChunkSectionPos.getSectionCoord(ab));
+											ChunkSection chunkSection = chunk.getSection(chunk.getSectionIndex(w));
+											if (set.add(chunkSection)) {
+												chunkSection.lock();
+											}
+
+											int ae = ChunkSectionPos.getLocalCoord(u);
+											int af = ChunkSectionPos.getLocalCoord(w);
+											int ag = ChunkSectionPos.getLocalCoord(ab);
+											if (config.target.test(chunkSection.getBlockState(ae, af, ag), random)) {
+												chunkSection.setBlockState(ae, af, ag, config.state, false);
 												j++;
 											}
 										}
@@ -141,6 +157,10 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 					}
 				}
 			}
+		}
+
+		for (ChunkSection chunkSection2 : set) {
+			chunkSection2.unlock();
 		}
 
 		return j > 0;

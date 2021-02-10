@@ -16,10 +16,10 @@ public class BlueIceFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
 		if (blockPos.getY() > structureWorldAccess.getSeaLevel() - 1) {
 			return false;
 		} else if (!structureWorldAccess.getBlockState(blockPos).isOf(Blocks.WATER) && !structureWorldAccess.getBlockState(blockPos.down()).isOf(Blocks.WATER)) {

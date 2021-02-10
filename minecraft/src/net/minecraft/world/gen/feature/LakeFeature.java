@@ -20,11 +20,11 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
-		SingleStateFeatureConfig singleStateFeatureConfig = featureContext.getConfig();
+	public boolean generate(FeatureContext<SingleStateFeatureConfig> context) {
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
+		SingleStateFeatureConfig singleStateFeatureConfig = context.getConfig();
 
 		while (blockPos.getY() > structureWorldAccess.getBottomY() + 5 && structureWorldAccess.isAir(blockPos)) {
 			blockPos = blockPos.down();

@@ -14,12 +14,12 @@ public class SimpleRandomFeature extends Feature<SimpleRandomFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<SimpleRandomFeatureConfig> featureContext) {
-		Random random = featureContext.getRandom();
-		SimpleRandomFeatureConfig simpleRandomFeatureConfig = featureContext.getConfig();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		ChunkGenerator chunkGenerator = featureContext.getGenerator();
+	public boolean generate(FeatureContext<SimpleRandomFeatureConfig> context) {
+		Random random = context.getRandom();
+		SimpleRandomFeatureConfig simpleRandomFeatureConfig = context.getConfig();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		ChunkGenerator chunkGenerator = context.getGenerator();
 		int i = random.nextInt(simpleRandomFeatureConfig.features.size());
 		ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)((Supplier)simpleRandomFeatureConfig.features.get(i)).get();
 		return configuredFeature.generate(structureWorldAccess, chunkGenerator, random, blockPos);

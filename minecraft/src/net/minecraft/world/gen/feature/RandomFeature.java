@@ -13,12 +13,12 @@ public class RandomFeature extends Feature<RandomFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<RandomFeatureConfig> featureContext) {
-		RandomFeatureConfig randomFeatureConfig = featureContext.getConfig();
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		ChunkGenerator chunkGenerator = featureContext.getGenerator();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<RandomFeatureConfig> context) {
+		RandomFeatureConfig randomFeatureConfig = context.getConfig();
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		ChunkGenerator chunkGenerator = context.getGenerator();
+		BlockPos blockPos = context.getPos();
 
 		for (RandomFeatureEntry randomFeatureEntry : randomFeatureConfig.features) {
 			if (random.nextFloat() < randomFeatureEntry.chance) {

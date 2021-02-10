@@ -1107,8 +1107,17 @@ public abstract class MobEntity extends LivingEntity {
 		return this.positionTargetRange != -1.0F;
 	}
 
+	/**
+	 * Converts this entity to the provided {@code entityType}.
+	 * <p>The new entity will keep many of the properties set for this entity,
+	 * including its vehicle, its name and whether it is persistent or not.
+	 * <p>If {@code keepEquipment} is {@code true}, it will also keep its equipment.
+	 * 
+	 * @param entityType the entity type to convert to
+	 * @param keepEquipment whether the equipment of this entity should be kept
+	 */
 	@Nullable
-	public <T extends MobEntity> T method_29243(EntityType<T> entityType, boolean bl) {
+	public <T extends MobEntity> T convertTo(EntityType<T> entityType, boolean keepEquipment) {
 		if (this.isRemoved()) {
 			return null;
 		} else {
@@ -1126,7 +1135,7 @@ public abstract class MobEntity extends LivingEntity {
 			}
 
 			mobEntity.setInvulnerable(this.isInvulnerable());
-			if (bl) {
+			if (keepEquipment) {
 				mobEntity.setCanPickUpLoot(this.canPickUpLoot());
 
 				for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {

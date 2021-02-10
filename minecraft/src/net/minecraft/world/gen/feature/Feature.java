@@ -41,6 +41,9 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> FREEZE_TOP_LAYER = register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> VINES = register("vines", new VinesFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<GlowLichenFeatureConfig> GLOW_LICHEN = register("glow_lichen", new GlowLichenFeature(GlowLichenFeatureConfig.CODEC));
+	public static final Feature<UnderwaterMagmaFeatureConfig> UNDERWATER_MAGMA = register(
+		"underwater_magma", new UnderwaterMagmaFeature(UnderwaterMagmaFeatureConfig.CODEC)
+	);
 	public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = register("monster_room", new DungeonFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> BLUE_ICE = register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<SingleStateFeatureConfig> ICEBERG = register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));
@@ -117,7 +120,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		world.setBlockState(pos, state, 3);
 	}
 
-	public abstract boolean generate(FeatureContext<FC> featureContext);
+	public abstract boolean generate(FeatureContext<FC> context);
 
 	protected static boolean isStone(BlockState state) {
 		return state.isIn(BlockTags.BASE_STONE_OVERWORLD);

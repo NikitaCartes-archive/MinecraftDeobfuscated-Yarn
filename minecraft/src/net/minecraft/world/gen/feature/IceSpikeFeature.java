@@ -15,10 +15,10 @@ public class IceSpikeFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-		BlockPos blockPos = featureContext.getPos();
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		BlockPos blockPos = context.getPos();
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
 
 		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
 			blockPos = blockPos.down();

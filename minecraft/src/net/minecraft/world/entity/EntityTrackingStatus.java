@@ -1,8 +1,13 @@
-package net.minecraft;
+package net.minecraft.world.entity;
 
 import net.minecraft.server.world.ChunkHolder;
 
-public enum class_5584 {
+/**
+ * The status of entity tracking sections within entity managers.
+ * 
+ * @see EntityTrackingSection
+ */
+public enum EntityTrackingStatus {
 	HIDDEN(false, false),
 	TRACKED(true, false),
 	TICKING(true, true);
@@ -10,7 +15,7 @@ public enum class_5584 {
 	private final boolean tracked;
 	private final boolean tick;
 
-	private class_5584(boolean tracked, boolean tick) {
+	private EntityTrackingStatus(boolean tracked, boolean tick) {
 		this.tracked = tracked;
 		this.tick = tick;
 	}
@@ -23,7 +28,7 @@ public enum class_5584 {
 		return this.tracked;
 	}
 
-	public static class_5584 method_31884(ChunkHolder.LevelType levelType) {
+	public static EntityTrackingStatus fromLevelType(ChunkHolder.LevelType levelType) {
 		if (levelType.isAfter(ChunkHolder.LevelType.ENTITY_TICKING)) {
 			return TICKING;
 		} else {

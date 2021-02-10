@@ -139,11 +139,11 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 	}
 
 	@Override
-	public final boolean generate(FeatureContext<TreeFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
-		BlockPos blockPos = featureContext.getPos();
-		TreeFeatureConfig treeFeatureConfig = featureContext.getConfig();
+	public final boolean generate(FeatureContext<TreeFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
+		BlockPos blockPos = context.getPos();
+		TreeFeatureConfig treeFeatureConfig = context.getConfig();
 		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set2 = Sets.<BlockPos>newHashSet();
 		Set<BlockPos> set3 = Sets.<BlockPos>newHashSet();

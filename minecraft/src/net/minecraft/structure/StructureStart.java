@@ -143,18 +143,18 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		}
 	}
 
-	protected void randomUpwardTranslation(int seaLevel, Random random, int minSeaLevelDistance) {
-		int i = seaLevel - minSeaLevelDistance;
-		int j = this.boundingBox.getBlockCountY() + 1;
-		if (j < i) {
-			j += random.nextInt(i - j);
+	protected void randomUpwardTranslation(int seaLevel, int i, Random random, int j) {
+		int k = seaLevel - j;
+		int l = this.boundingBox.getBlockCountY() + i + 1;
+		if (l < k) {
+			l += random.nextInt(k - l);
 		}
 
-		int k = j - this.boundingBox.maxY;
-		this.boundingBox.move(0, k, 0);
+		int m = l - this.boundingBox.maxY;
+		this.boundingBox.move(0, m, 0);
 
 		for (StructurePiece structurePiece : this.children) {
-			structurePiece.translate(0, k, 0);
+			structurePiece.translate(0, m, 0);
 		}
 	}
 

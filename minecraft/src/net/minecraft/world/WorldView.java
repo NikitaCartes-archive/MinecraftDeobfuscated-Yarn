@@ -4,7 +4,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5742;
 import net.minecraft.block.BlockState;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
@@ -14,6 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionType;
@@ -57,7 +57,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 
 	@Override
 	default Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-		Chunk chunk = this.getChunk(class_5742.method_33103(biomeX), class_5742.method_33103(biomeZ), ChunkStatus.BIOMES, false);
+		Chunk chunk = this.getChunk(BiomeCoords.toChunk(biomeX), BiomeCoords.toChunk(biomeZ), ChunkStatus.BIOMES, false);
 		return chunk != null && chunk.getBiomeArray() != null
 			? chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ)
 			: this.getGeneratorStoredBiome(biomeX, biomeY, biomeZ);

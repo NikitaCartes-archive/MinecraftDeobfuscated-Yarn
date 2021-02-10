@@ -18,13 +18,13 @@ public class IcebergFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		blockPos = new BlockPos(blockPos.getX(), featureContext.getGenerator().getSeaLevel(), blockPos.getZ());
-		Random random = featureContext.getRandom();
+	public boolean generate(FeatureContext<SingleStateFeatureConfig> context) {
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		blockPos = new BlockPos(blockPos.getX(), context.getGenerator().getSeaLevel(), blockPos.getZ());
+		Random random = context.getRandom();
 		boolean bl = random.nextDouble() > 0.7;
-		BlockState blockState = featureContext.getConfig().state;
+		BlockState blockState = context.getConfig().state;
 		double d = random.nextDouble() * 2.0 * Math.PI;
 		int i = 11 - random.nextInt(5);
 		int j = 3 + random.nextInt(3);

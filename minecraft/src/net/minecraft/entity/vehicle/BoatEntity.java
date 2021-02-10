@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5459;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -48,6 +47,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 
@@ -138,8 +138,8 @@ public class BoatEntity extends Entity {
 	}
 
 	@Override
-	protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-		return LivingEntity.method_31079(super.method_30633(axis, arg));
+	protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
+		return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
 	}
 
 	@Override
@@ -524,7 +524,7 @@ public class BoatEntity extends Entity {
 		int m = MathHelper.floor(box.minZ);
 		int n = MathHelper.ceil(box.maxZ);
 		boolean bl = false;
-		this.waterLevel = Double.MIN_VALUE;
+		this.waterLevel = -Double.MAX_VALUE;
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (int o = i; o < j; o++) {

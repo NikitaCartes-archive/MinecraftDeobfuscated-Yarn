@@ -343,7 +343,7 @@ public abstract class PlayerManager {
 			if (entity.hasPlayerRider()) {
 				LOGGER.debug("Removing player mount");
 				player.stopRiding();
-				entity.streamPassengers().forEach(entityx -> entityx.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
+				entity.streamPassengersAndSelf().forEach(entityx -> entityx.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
 			}
 		}
 

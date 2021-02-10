@@ -28,12 +28,12 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<ProbabilityConfig> featureContext) {
+	public boolean generate(FeatureContext<ProbabilityConfig> context) {
 		int i = 0;
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
-		ProbabilityConfig probabilityConfig = featureContext.getConfig();
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
+		ProbabilityConfig probabilityConfig = context.getConfig();
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 		BlockPos.Mutable mutable2 = blockPos.mutableCopy();
 		if (structureWorldAccess.isAir(mutable)) {

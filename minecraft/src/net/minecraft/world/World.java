@@ -12,8 +12,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5575;
-import net.minecraft.class_5577;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -39,6 +37,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -60,6 +59,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
@@ -568,7 +568,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	public List<Entity> getOtherEntities(@Nullable Entity except, Box box, Predicate<? super Entity> predicate) {
 		this.getProfiler().visit("getEntities");
 		List<Entity> list = Lists.<Entity>newArrayList();
-		this.getEntityIdMap().method_31807(box, entity2 -> {
+		this.getEntityLookup().forEachIntersects(box, entity2 -> {
 			if (entity2 != except && predicate.test(entity2)) {
 				list.add(entity2);
 			}
@@ -585,17 +585,17 @@ public abstract class World implements WorldAccess, AutoCloseable {
 	}
 
 	@Override
-	public <T extends Entity> List<T> getEntitiesByType(class_5575<Entity, T> arg, Box box, Predicate<? super T> predicate) {
+	public <T extends Entity> List<T> getEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate) {
 		this.getProfiler().visit("getEntities");
 		List<T> list = Lists.<T>newArrayList();
-		this.getEntityIdMap().method_31805(arg, box, entity -> {
+		this.getEntityLookup().forEachIntersects(filter, box, entity -> {
 			if (predicate.test(entity)) {
 				list.add(entity);
 			}
 
 			if (entity instanceof EnderDragonEntity) {
 				for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
-					T entity2 = arg.method_31796(enderDragonPart);
+					T entity2 = filter.downcast(enderDragonPart);
 					if (entity2 != null && predicate.test(entity2)) {
 						list.add(entity2);
 					}
@@ -905,7 +905,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 		return this.debugWorld;
 	}
 
-	protected abstract class_5577<Entity> getEntityIdMap();
+	protected abstract EntityLookup<Entity> getEntityLookup();
 
 	protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos pos, int range) {
 		int i = ChunkSectionPos.getSectionCoord(pos.getX() - range);
@@ -920,7 +920,7 @@ public abstract class World implements WorldAccess, AutoCloseable {
 				Chunk chunk = this.getChunkManager().getWorldChunk(o, p);
 				if (chunk != null) {
 					for (int q = m; q <= n; q++) {
-						chunk.method_32914(q).listen(gameEvent, entity, pos);
+						chunk.getGameEventDispatcher(q).dispatch(gameEvent, entity, pos);
 					}
 				}
 			}

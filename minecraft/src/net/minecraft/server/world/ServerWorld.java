@@ -33,11 +33,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5565;
-import net.minecraft.class_5571;
-import net.minecraft.class_5575;
-import net.minecraft.class_5577;
-import net.minecraft.class_5715;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -90,6 +85,7 @@ import net.minecraft.tag.TagManager;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.ProgressListener;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Unit;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.function.BooleanBiFunction;
@@ -128,7 +124,10 @@ import net.minecraft.world.chunk.BlockEntityTickInvoker;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.entity.EntityHandler;
+import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
 import net.minecraft.world.gen.Spawner;
@@ -139,6 +138,8 @@ import net.minecraft.world.level.ServerWorldProperties;
 import net.minecraft.world.level.storage.LevelStorage;
 import net.minecraft.world.poi.PointOfInterestStorage;
 import net.minecraft.world.poi.PointOfInterestType;
+import net.minecraft.world.storage.ChunkDataAccess;
+import net.minecraft.world.storage.EntityChunkDataAccess;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -161,7 +162,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final ServerTickScheduler<Fluid> fluidTickScheduler = new ServerTickScheduler<>(
 		this, fluid -> fluid == null || fluid == Fluids.EMPTY, Registry.FLUID::getId, this::tickFluid
 	);
-	private final Set<MobEntity> mobSet = new ObjectOpenHashSet<>();
+	private final Set<MobEntity> loadedMobs = new ObjectOpenHashSet<>();
 	protected final RaidManager raidManager;
 	private final ObjectLinkedOpenHashSet<BlockEvent> syncedBlockEventQueue = new ObjectLinkedOpenHashSet<>();
 	private boolean inBlockTick;
@@ -193,8 +194,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		this.worldProperties = properties;
 		boolean bl = server.syncChunkWrites();
 		DataFixer dataFixer = server.getDataFixer();
-		class_5571<Entity> lv = new class_5565(this, new File(session.getWorldDirectory(registryKey), "entities"), dataFixer, bl, server);
-		this.entityManager = new ServerEntityManager<>(Entity.class, new ServerWorld.EntityLoader(), lv);
+		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(registryKey), "entities"), dataFixer, bl, server);
+		this.entityManager = new ServerEntityManager<>(Entity.class, new ServerWorld.ServerEntityHandler(), chunkDataAccess);
 		this.serverChunkManager = new ServerChunkManager(
 			this,
 			session,
@@ -205,7 +206,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			server.getPlayerManager().getViewDistance(),
 			bl,
 			worldGenerationProgressListener,
-			this.entityManager::method_31815,
+			this.entityManager::updateTrackingStatus,
 			() -> server.getOverworld().getPersistentStateManager()
 		);
 		this.portalForcer = new PortalForcer(this);
@@ -375,7 +376,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				profiler.pop();
 			}
 
-			this.entityList.forEachEntity(entity -> {
+			this.entityList.forEach(entity -> {
 				if (!entity.isRemoved()) {
 					if (this.shouldCancelSpawn(entity)) {
 						entity.discard();
@@ -403,7 +404,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		profiler.push("entityManagement");
-		this.entityManager.method_31809();
+		this.entityManager.tick();
 		profiler.pop();
 	}
 
@@ -670,7 +671,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private void tickPassenger(Entity vehicle, Entity passenger) {
 		if (passenger.isRemoved() || passenger.getVehicle() != vehicle) {
 			passenger.stopRiding();
-		} else if (passenger instanceof PlayerEntity || this.entityList.hasEntity(passenger)) {
+		} else if (passenger instanceof PlayerEntity || this.entityList.has(passenger)) {
 			passenger.resetPosition();
 			passenger.age++;
 			Profiler profiler = this.getProfiler();
@@ -704,9 +705,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 			serverChunkManager.save(flush);
 			if (flush) {
-				this.entityManager.method_31836();
+				this.entityManager.flush();
 			} else {
-				this.entityManager.method_31829();
+				this.entityManager.save();
 			}
 		}
 	}
@@ -730,9 +731,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	 * 
 	 * @param predicate a predicate which returned entities must satisfy
 	 */
-	public <T extends Entity> List<? extends T> getEntitiesByType(class_5575<Entity, T> arg, Predicate<? super T> predicate) {
+	public <T extends Entity> List<? extends T> getEntitiesByType(TypeFilter<Entity, T> typeFilter, Predicate<? super T> predicate) {
 		List<T> list = Lists.<T>newArrayList();
-		this.getEntityIdMap().method_31806(arg, entity -> {
+		this.getEntityLookup().forEach(typeFilter, entity -> {
 			if (predicate.test(entity)) {
 				list.add(entity);
 			}
@@ -792,7 +793,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	private void addPlayer(ServerPlayerEntity player) {
-		Entity entity = this.getEntityIdMap().getByUuid(player.getUuid());
+		Entity entity = this.getEntityLookup().get(player.getUuid());
 		if (entity != null) {
 			LOGGER.warn("Force-added player with duplicate UUID {}", player.getUuid().toString());
 			entity.detach();
@@ -812,7 +813,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public boolean shouldCreateNewEntityWithPassenger(Entity entity) {
-		if (entity.streamPassengersRecursively().map(Entity::getUuid).anyMatch(this.entityManager::method_31827)) {
+		if (entity.streamSelfAndPassengers().map(Entity::getUuid).anyMatch(this.entityManager::has)) {
 			return false;
 		} else {
 			this.spawnEntityAndPassengers(entity);
@@ -895,7 +896,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		VoxelShape voxelShape = oldState.getCollisionShape(this, pos);
 		VoxelShape voxelShape2 = newState.getCollisionShape(this, pos);
 		if (VoxelShapes.matchesAnywhere(voxelShape, voxelShape2, BooleanBiFunction.NOT_SAME)) {
-			for (MobEntity mobEntity : this.mobSet) {
+			for (MobEntity mobEntity : this.loadedMobs) {
 				EntityNavigation entityNavigation = mobEntity.getNavigation();
 				if (!entityNavigation.shouldRecalculatePath()) {
 					entityNavigation.onBlockChanged(pos);
@@ -1040,19 +1041,19 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	@Nullable
 	@Override
 	public Entity getEntityById(int id) {
-		return this.getEntityIdMap().getById(id);
+		return this.getEntityLookup().get(id);
 	}
 
 	@Deprecated
 	@Nullable
 	public Entity method_31424(int i) {
-		Entity entity = this.getEntityIdMap().getById(i);
+		Entity entity = this.getEntityLookup().get(i);
 		return entity != null ? entity : this.dragonParts.get(i);
 	}
 
 	@Nullable
 	public Entity getEntity(UUID uuid) {
-		return this.getEntityIdMap().getByUuid(uuid);
+		return this.getEntityLookup().get(uuid);
 	}
 
 	@Nullable
@@ -1310,7 +1311,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Throwable var176 = null;
 
 		try {
-			this.entityManager.method_31826(writer4);
+			this.entityManager.dump(writer4);
 		} catch (Throwable var157) {
 			var176 = var157;
 			throw var157;
@@ -1333,7 +1334,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Throwable writer6 = null;
 
 		try {
-			dumpEntities(writer5, this.getEntityIdMap().iterate());
+			dumpEntities(writer5, this.getEntityLookup().iterate());
 		} catch (Throwable var156) {
 			writer6 = var156;
 			throw var156;
@@ -1431,7 +1432,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public Iterable<Entity> iterateEntities() {
-		return this.getEntityIdMap().iterate();
+		return this.getEntityLookup().iterate();
 	}
 
 	public String toString() {
@@ -1468,21 +1469,28 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			"players: %s, entities: %s [%s], block_entities: %d [%s], block_ticks: %d, fluid_ticks: %d, chunk_source: %s",
 			this.players.size(),
 			this.entityManager.getDebugString(),
-			method_31270(this.entityManager.method_31841().iterate(), entity -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()),
+			getTopFive(this.entityManager.getLookup().iterate(), entity -> Registry.ENTITY_TYPE.getId(entity.getType()).toString()),
 			this.blockEntityTickers.size(),
-			method_31270(this.blockEntityTickers, BlockEntityTickInvoker::getName),
+			getTopFive(this.blockEntityTickers, BlockEntityTickInvoker::getName),
 			this.getBlockTickScheduler().getTicks(),
 			this.getFluidTickScheduler().getTicks(),
 			this.getChunkSourceDebugString()
 		);
 	}
 
-	private static <T> String method_31270(Iterable<T> iterable, Function<T, String> function) {
+	/**
+	 * Categories {@code items} with the {@code classifier} and reports a message
+	 * indicating the top five biggest categories.
+	 * 
+	 * @param items the items to classify
+	 * @param classifier the classifier that determines the category of any item
+	 */
+	private static <T> String getTopFive(Iterable<T> items, Function<T, String> classifier) {
 		try {
 			Object2IntOpenHashMap<String> object2IntOpenHashMap = new Object2IntOpenHashMap<>();
 
-			for (T object : iterable) {
-				String string = (String)function.apply(object);
+			for (T object : items) {
+				String string = (String)classifier.apply(object);
 				object2IntOpenHashMap.addTo(string, 1);
 			}
 
@@ -1507,16 +1515,16 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	@Override
-	protected class_5577<Entity> getEntityIdMap() {
-		return this.entityManager.method_31841();
+	protected EntityLookup<Entity> getEntityLookup() {
+		return this.entityManager.getLookup();
 	}
 
-	public void method_31423(Stream<Entity> stream) {
-		this.entityManager.method_31828(stream);
+	public void loadEntities(Stream<Entity> entities) {
+		this.entityManager.loadEntities(entities);
 	}
 
-	public void method_31426(Stream<Entity> stream) {
-		this.entityManager.method_31835(stream);
+	public void addEntities(Stream<Entity> entities) {
+		this.entityManager.addEntities(entities);
 	}
 
 	@Override
@@ -1529,26 +1537,26 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		return "Chunks[S] W: " + this.serverChunkManager.getDebugString() + " E: " + this.entityManager.getDebugString();
 	}
 
-	final class EntityLoader implements net.minecraft.world.EntityLoader<Entity> {
-		private EntityLoader() {
+	final class ServerEntityHandler implements EntityHandler<Entity> {
+		private ServerEntityHandler() {
 		}
 
-		public void method_31802(Entity entity) {
+		public void create(Entity entity) {
 		}
 
-		public void destroyEntity(Entity entity) {
+		public void destroy(Entity entity) {
 			ServerWorld.this.getScoreboard().resetEntityScore(entity);
 		}
 
-		public void addEntity(Entity entity) {
-			ServerWorld.this.entityList.addEntity(entity);
+		public void startTicking(Entity entity) {
+			ServerWorld.this.entityList.add(entity);
 		}
 
-		public void removeEntity(Entity entity) {
-			ServerWorld.this.entityList.removeEntity(entity);
+		public void stopTicking(Entity entity) {
+			ServerWorld.this.entityList.remove(entity);
 		}
 
-		public void onLoadEntity(Entity entity) {
+		public void startTracking(Entity entity) {
 			ServerWorld.this.getChunkManager().loadEntity(entity);
 			if (entity instanceof ServerPlayerEntity) {
 				ServerWorld.this.players.add((ServerPlayerEntity)entity);
@@ -1556,7 +1564,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			}
 
 			if (entity instanceof MobEntity) {
-				ServerWorld.this.mobSet.add((MobEntity)entity);
+				ServerWorld.this.loadedMobs.add((MobEntity)entity);
 			}
 
 			if (entity instanceof EnderDragonEntity) {
@@ -1566,7 +1574,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			}
 		}
 
-		public void onUnloadEntity(Entity entity) {
+		public void stopTracking(Entity entity) {
 			ServerWorld.this.getChunkManager().unloadEntity(entity);
 			if (entity instanceof ServerPlayerEntity) {
 				ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
@@ -1575,7 +1583,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			}
 
 			if (entity instanceof MobEntity) {
-				ServerWorld.this.mobSet.remove(entity);
+				ServerWorld.this.loadedMobs.remove(entity);
 			}
 
 			if (entity instanceof EnderDragonEntity) {
@@ -1584,9 +1592,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 				}
 			}
 
-			class_5715 lv = entity.method_32877();
-			if (lv != null) {
-				lv.method_32949(entity.world);
+			EntityGameEventHandler entityGameEventHandler = entity.getGameEventHandler();
+			if (entityGameEventHandler != null) {
+				entityGameEventHandler.onEntityRemoval(entity.world);
 			}
 		}
 	}

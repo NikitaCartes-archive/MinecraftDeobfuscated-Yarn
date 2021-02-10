@@ -1,4 +1,4 @@
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.screen.option;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -6,7 +6,9 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.option.GameOptionsScreen;
+import net.minecraft.client.gui.screen.DialogScreen;
+import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.option.FullscreenOption;

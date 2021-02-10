@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_5713;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -23,6 +22,7 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureHolder;
 import net.minecraft.world.TickScheduler;
 import net.minecraft.world.biome.source.BiomeArray;
+import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 
@@ -30,8 +30,8 @@ import org.apache.logging.log4j.LogManager;
  * Represents a scoped, modifiable view of biomes, block states, fluid states and block entities.
  */
 public interface Chunk extends BlockView, StructureHolder {
-	default class_5713 method_32914(int i) {
-		return class_5713.EMPTY;
+	default GameEventDispatcher getGameEventDispatcher(int ySectionCoord) {
+		return GameEventDispatcher.EMPTY;
 	}
 
 	@Nullable
@@ -63,6 +63,15 @@ public interface Chunk extends BlockView, StructureHolder {
 	Set<BlockPos> getBlockEntityPositions();
 
 	ChunkSection[] getSectionArray();
+
+	default ChunkSection getSection(int yIndex) {
+		ChunkSection[] chunkSections = this.getSectionArray();
+		if (chunkSections[yIndex] == WorldChunk.EMPTY_SECTION) {
+			chunkSections[yIndex] = new ChunkSection(this.sectionIndexToCoord(yIndex));
+		}
+
+		return chunkSections[yIndex];
+	}
 
 	Collection<Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 

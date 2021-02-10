@@ -42,7 +42,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 		this.nameField.setFocusUnlocked(false);
 		this.nameField.setEditableColor(-1);
 		this.nameField.setUneditableColor(-1);
-		this.nameField.setHasBorder(false);
+		this.nameField.setDrawsBackground(false);
 		this.nameField.setMaxLength(35);
 		this.nameField.setChangedListener(this::onRenamed);
 		this.children.add(this.nameField);

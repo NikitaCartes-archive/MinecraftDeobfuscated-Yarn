@@ -1,4 +1,4 @@
-package net.minecraft.client.util.math;
+package net.minecraft.util.math;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
@@ -6,10 +6,6 @@ import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
-import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

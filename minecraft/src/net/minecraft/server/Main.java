@@ -50,6 +50,7 @@ import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraft.world.updater.WorldUpdater;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -110,6 +111,12 @@ public class Main {
 			LevelStorage levelStorage = LevelStorage.create(file.toPath());
 			LevelStorage.Session session = levelStorage.createSession(string);
 			MinecraftServer.convertLevel(session);
+			LevelSummary levelSummary = session.getLevelSummary();
+			if (levelSummary != null && levelSummary.isPreWorldHeightChangeVersion()) {
+				LOGGER.info("Loading of old worlds is temporarily disabled.");
+				return;
+			}
+
 			DataPackSettings dataPackSettings = session.getDataPackSettings();
 			boolean bl = optionSet.has(optionSpec7);
 			if (bl) {
@@ -136,9 +143,9 @@ public class Main {
 			ServerResourceManager serverResourceManager;
 			try {
 				serverResourceManager = (ServerResourceManager)completableFuture.get();
-			} catch (Exception var41) {
+			} catch (Exception var42) {
 				LOGGER.warn(
-					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var41
+					"Failed to load datapacks, can't proceed with server load. You can either fix your datapacks or reset to vanilla with --safeMode", (Throwable)var42
 				);
 				resourcePackManager.close();
 				return;
@@ -211,8 +218,8 @@ public class Main {
 			};
 			thread.setUncaughtExceptionHandler(new UncaughtExceptionLogger(LOGGER));
 			Runtime.getRuntime().addShutdownHook(thread);
-		} catch (Exception var42) {
-			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var42);
+		} catch (Exception var43) {
+			LOGGER.fatal("Failed to start the minecraft server", (Throwable)var43);
 		}
 	}
 

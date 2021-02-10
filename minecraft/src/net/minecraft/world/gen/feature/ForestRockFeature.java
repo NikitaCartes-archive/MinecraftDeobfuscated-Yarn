@@ -13,13 +13,13 @@ public class ForestRockFeature extends Feature<SingleStateFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
+	public boolean generate(FeatureContext<SingleStateFeatureConfig> context) {
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
 
 		SingleStateFeatureConfig singleStateFeatureConfig;
-		for (singleStateFeatureConfig = featureContext.getConfig(); blockPos.getY() > structureWorldAccess.getBottomY() + 3; blockPos = blockPos.down()) {
+		for (singleStateFeatureConfig = context.getConfig(); blockPos.getY() > structureWorldAccess.getBottomY() + 3; blockPos = blockPos.down()) {
 			if (!structureWorldAccess.isAir(blockPos.down())) {
 				BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());
 				if (isSoil(blockState) || isStone(blockState)) {

@@ -5,16 +5,13 @@ import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.minecraft.block.enums.Tilt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -23,11 +20,9 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -43,11 +38,10 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	private static final EnumProperty<Tilt> TILT = Properties.TILT;
 	private static final Object2IntMap<Tilt> NEXT_TILT_DELAYS = Util.make(new Object2IntArrayMap<>(), object2IntArrayMap -> {
 		object2IntArrayMap.defaultReturnValue(-1);
-		object2IntArrayMap.put(Tilt.UNSTABLE, 20);
+		object2IntArrayMap.put(Tilt.UNSTABLE, 10);
 		object2IntArrayMap.put(Tilt.PARTIAL, 10);
 		object2IntArrayMap.put(Tilt.FULL, 100);
 	});
-	private static final Box UNTILTED_SHAPE = Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 16.0, 16.0).getBoundingBox();
 	private static final Map<Tilt, VoxelShape> SHAPES_FOR_TILT = ImmutableMap.of(
 		Tilt.NONE,
 		Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0),
@@ -76,7 +70,7 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		this.shapes = this.getShapesForStates(BigDripleafBlock::getShapeForState);
 	}
 
-	protected static VoxelShape getShapeForState(BlockState state) {
+	private static VoxelShape getShapeForState(BlockState state) {
 		return VoxelShapes.union(getShapeForStateTilt(state), getShapeForStateDirection(state));
 	}
 
@@ -89,25 +83,46 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	protected static void grow(World world, Random random, BlockPos pos) {
-		int i = world.getTopY() - pos.getY();
-		int j = 1 + random.nextInt(5);
-		int k = Math.min(j, i);
+		int i = 1 + random.nextInt(5);
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		BlockPos.Mutable mutable = pos.mutableCopy();
+		int j = 0;
 
-		for (int l = 0; l < k; l++) {
-			Block block = l == k - 1 ? Blocks.BIG_DRIPLEAF : Blocks.BIG_DRIPLEAF_STEM;
-			BlockState blockState = block.getDefaultState()
-				.with(WATERLOGGED, Boolean.valueOf(world.getFluidState(mutable).getFluid() == Fluids.WATER))
-				.with(HorizontalFacingBlock.FACING, direction);
-			world.setBlockState(mutable, blockState, 2);
+		while (j < i && canGrowInto(world, mutable, world.getBlockState(mutable))) {
+			j++;
 			mutable.move(Direction.UP);
 		}
+
+		int k = pos.getY() + j - 1;
+		mutable.setY(pos.getY());
+
+		while (mutable.getY() < k) {
+			BigDripleafStemBlock.placeStemAt(world, mutable, world.getFluidState(mutable), direction);
+			mutable.move(Direction.UP);
+		}
+
+		placeDripleafAt(world, mutable, world.getFluidState(mutable), direction);
+	}
+
+	private static boolean canGrowInto(BlockState state) {
+		return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.SMALL_DRIPLEAF);
+	}
+
+	private static boolean canGrowInto(World world, BlockPos pos, BlockState state) {
+		return world.isInBuildLimit(pos) && canGrowInto(state);
+	}
+
+	protected static boolean placeDripleafAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
+		BlockState blockState = Blocks.BIG_DRIPLEAF
+			.getDefaultState()
+			.with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER)))
+			.with(FACING, direction);
+		return world.setBlockState(pos, blockState, 2);
 	}
 
 	@Override
 	public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
-		world.breakBlock(hit.getBlockPos(), true, projectile);
+		this.changeTilt(state, world, hit.getBlockPos(), Tilt.FULL, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_DOWN);
 	}
 
 	@Override
@@ -126,21 +141,21 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		if (!state.canPlaceAt(world, pos)) {
-			world.breakBlock(pos, true);
-		}
+		if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
+			return state.get(WATERLOGGED) ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+		} else {
+			if ((Boolean)state.get(WATERLOGGED)) {
+				world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			}
 
-		if ((Boolean)state.get(WATERLOGGED)) {
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 		}
-
-		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override
 	public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
 		BlockState blockState = world.getBlockState(pos.up());
-		return blockState.isAir() || blockState.getFluidState().isIn(FluidTags.WATER);
+		return canGrowInto(blockState);
 	}
 
 	@Override
@@ -151,29 +166,18 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
 		BlockPos blockPos = pos.up();
-		if (world.isInBuildLimit(blockPos)) {
-			BlockState blockState = world.getBlockState(blockPos);
-			Fluid fluid = blockState.getFluidState().getFluid();
-			boolean bl;
-			if (!blockState.isAir() && fluid != Fluids.FLOWING_WATER) {
-				if (fluid != Fluids.WATER) {
-					return;
-				}
-
-				bl = true;
-			} else {
-				bl = false;
-			}
-
-			world.setBlockState(blockPos, Blocks.BIG_DRIPLEAF.getDefaultState().with(FACING, state.get(FACING)).with(WATERLOGGED, Boolean.valueOf(bl)), 2);
-			world.setBlockState(pos, Blocks.BIG_DRIPLEAF_STEM.getDefaultState().with(FACING, state.get(FACING)).with(WATERLOGGED, state.get(WATERLOGGED)), 2);
+		BlockState blockState = world.getBlockState(blockPos);
+		if (canGrowInto(world, blockPos, blockState)) {
+			Direction direction = state.get(FACING);
+			BigDripleafStemBlock.placeStemAt(world, pos, state.getFluidState(), direction);
+			placeDripleafAt(world, blockPos, blockState.getFluidState(), direction);
 		}
 	}
 
 	@Override
 	public void onEntityCollision(BlockState state, World world, BlockPos pos, Entity entity) {
 		if (!world.isClient) {
-			if (state.get(TILT) == Tilt.NONE && shouldEntityTilt(pos, entity, true)) {
+			if (state.get(TILT) == Tilt.NONE && isEntityAbove(pos, entity)) {
 				this.changeTilt(state, world, pos, Tilt.UNSTABLE, null);
 			}
 		}
@@ -181,36 +185,30 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		Tilt tilt = state.get(TILT);
-		if (tilt == Tilt.UNSTABLE) {
-			if (shouldTilt(world, pos, true)) {
+		if (world.isReceivingRedstonePower(pos)) {
+			resetTilt(state, world, pos);
+		} else {
+			Tilt tilt = state.get(TILT);
+			if (tilt == Tilt.UNSTABLE) {
 				this.changeTilt(state, world, pos, Tilt.PARTIAL, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_DOWN);
-			} else {
-				this.resetTilt(state, world, pos);
-			}
-		} else if (tilt == Tilt.PARTIAL) {
-			if (shouldTilt(world, pos, false)) {
+			} else if (tilt == Tilt.PARTIAL) {
 				this.changeTilt(state, world, pos, Tilt.FULL, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_DOWN);
-			} else {
-				this.changeTilt(state, world, pos, Tilt.UNSTABLE, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
+			} else if (tilt == Tilt.FULL) {
+				resetTilt(state, world, pos);
 			}
-		} else if (tilt == Tilt.FULL) {
-			this.resetTilt(state, world, pos);
 		}
 	}
 
-	private void playTiltSound(World world, BlockPos pos, SoundEvent sound) {
+	@Override
+	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+		if (world.isReceivingRedstonePower(pos)) {
+			resetTilt(state, world, pos);
+		}
+	}
+
+	private static void playTiltSound(World world, BlockPos blockPos, SoundEvent soundEvent) {
 		float f = MathHelper.nextBetween(world.random, 0.8F, 1.2F);
-		world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0F, f);
-	}
-
-	private static boolean shouldTilt(World world, BlockPos pos, boolean bl) {
-		Predicate<Entity> predicate = EntityPredicates.EXCEPT_SPECTATOR.and(entity -> shouldEntityTilt(pos, entity, bl));
-		return !world.getOtherEntities((Entity)null, UNTILTED_SHAPE.offset(pos), predicate).isEmpty();
-	}
-
-	private static boolean shouldEntityTilt(BlockPos pos, Entity entity, boolean bl) {
-		return bl && entity.bypassesSteppingEffects() ? false : isEntityAbove(pos, entity);
+		world.playSound(null, blockPos, soundEvent, SoundCategory.BLOCKS, 1.0F, f);
 	}
 
 	private static boolean isEntityAbove(BlockPos pos, Entity entity) {
@@ -218,9 +216,9 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 	}
 
 	private void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt, @Nullable SoundEvent sound) {
-		this.changeTilt(state, world, pos, tilt);
+		changeTilt(state, world, pos, tilt);
 		if (sound != null) {
-			this.playTiltSound(world, pos, sound);
+			playTiltSound(world, pos, sound);
 		}
 
 		int i = NEXT_TILT_DELAYS.getInt(tilt);
@@ -229,15 +227,15 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		}
 	}
 
-	private void resetTilt(BlockState state, World world, BlockPos pos) {
-		this.changeTilt(state, world, pos, Tilt.NONE);
-		this.playTiltSound(world, pos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
+	private static void resetTilt(BlockState blockState, World world, BlockPos blockPos) {
+		changeTilt(blockState, world, blockPos, Tilt.NONE);
+		playTiltSound(world, blockPos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
 	}
 
-	private void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt) {
-		world.setBlockState(pos, state.with(TILT, tilt), 2);
+	private static void changeTilt(BlockState blockState, World world, BlockPos blockPos, Tilt tilt) {
+		world.setBlockState(blockPos, blockState.with(TILT, tilt), 2);
 		if (tilt.isStable()) {
-			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos);
 		}
 	}
 

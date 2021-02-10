@@ -46,8 +46,8 @@ public class GenerationShapeConfig {
 	private final boolean amplified;
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
-		if (config.getMinimumY() + config.getHeight() > DimensionType.field_28135) {
-			return DataResult.error("min_y + height cannot be higher than: " + DimensionType.field_28135);
+		if (config.getMinimumY() + config.getHeight() > DimensionType.field_28135 + 1) {
+			return DataResult.error("min_y + height cannot be higher than: " + (DimensionType.field_28135 + 1));
 		} else if (config.getHeight() % 16 != 0) {
 			return DataResult.error("height has to be a multiple of 16");
 		} else {

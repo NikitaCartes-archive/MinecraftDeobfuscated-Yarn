@@ -14,7 +14,7 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 	private final float[] heightToHorizontalStretchFactor = new float[1024];
 
 	public RavineCarver(Codec<ProbabilityConfig> configCodec) {
-		super(configCodec, 256);
+		super(configCodec, 384);
 	}
 
 	public boolean shouldCarve(Random random, int i, int j, ProbabilityConfig probabilityConfig) {
@@ -59,7 +59,7 @@ public class RavineCarver extends Carver<ProbabilityConfig> {
 		Random random = new Random(seed);
 		float f = 1.0F;
 
-		for (int i = 0; i < 256; i++) {
+		for (int i = 0; i < 384; i++) {
 			if (i == 0 || random.nextInt(3) == 0) {
 				f = 1.0F + random.nextFloat() * random.nextFloat();
 			}

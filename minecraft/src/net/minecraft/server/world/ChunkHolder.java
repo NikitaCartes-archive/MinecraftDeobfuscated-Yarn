@@ -28,6 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.thread.AtomicStack;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
@@ -54,6 +55,8 @@ public class ChunkHolder {
 	private volatile CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> tickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
 	private volatile CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> entityTickingFuture = UNLOADED_WORLD_CHUNK_FUTURE;
 	private CompletableFuture<Chunk> savingFuture = CompletableFuture.completedFuture(null);
+	@Nullable
+	private final AtomicStack<ChunkHolder.MultithreadAction> actionStack = null;
 	private int lastTickLevel;
 	private int level;
 	private int completedLevel;
@@ -272,7 +275,7 @@ public class ChunkHolder {
 
 		if (getTargetStatusForLevel(this.level).isAtLeast(targetStatus)) {
 			CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture2 = chunkStorage.getChunk(this, targetStatus);
-			this.combineSavingFuture(completableFuture2);
+			this.combineSavingFuture(completableFuture2, "schedule " + targetStatus);
 			this.futuresByStatus.set(i, completableFuture2);
 			return completableFuture2;
 		} else {
@@ -280,7 +283,11 @@ public class ChunkHolder {
 		}
 	}
 
-	private void combineSavingFuture(CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> then) {
+	private void combineSavingFuture(CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> then, String thenDesc) {
+		if (this.actionStack != null) {
+			this.actionStack.push(new ChunkHolder.MultithreadAction(Thread.currentThread(), then, thenDesc));
+		}
+
 		this.savingFuture = this.savingFuture.thenCombine(then, (chunk, either) -> either.map(chunkx -> chunkx, unloaded -> chunk));
 	}
 
@@ -345,7 +352,7 @@ public class ChunkHolder {
 				CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> completableFuture = (CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>>)this.futuresByStatus
 					.get(i);
 				if (completableFuture != null) {
-					completableFuture.complete(either);
+					this.futuresByStatus.set(i, completableFuture.thenApply(either2 -> either));
 				} else {
 					this.futuresByStatus.set(i, CompletableFuture.completedFuture(either));
 				}
@@ -358,13 +365,13 @@ public class ChunkHolder {
 		if (!bl3 && bl4) {
 			this.accessibleFuture = chunkStorage.method_31417(this);
 			this.method_31409(chunkStorage, this.accessibleFuture, executor, ChunkHolder.LevelType.BORDER);
-			this.combineSavingFuture(this.accessibleFuture);
+			this.combineSavingFuture(this.accessibleFuture, "full");
 		}
 
 		if (bl3 && !bl4) {
 			CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> completableFuture = this.accessibleFuture;
 			this.accessibleFuture = UNLOADED_WORLD_CHUNK_FUTURE;
-			this.combineSavingFuture(completableFuture.thenApply(either -> either.ifLeft(chunkStorage::enableTickSchedulers)));
+			this.combineSavingFuture(completableFuture.thenApply(either -> either.ifLeft(chunkStorage::enableTickSchedulers)), "unfull");
 		}
 
 		boolean bl5 = levelType.isAfter(ChunkHolder.LevelType.TICKING);
@@ -372,7 +379,7 @@ public class ChunkHolder {
 		if (!bl5 && bl6) {
 			this.tickingFuture = chunkStorage.makeChunkTickable(this);
 			this.method_31409(chunkStorage, this.tickingFuture, executor, ChunkHolder.LevelType.TICKING);
-			this.combineSavingFuture(this.tickingFuture);
+			this.combineSavingFuture(this.tickingFuture, "ticking");
 		}
 
 		if (bl5 && !bl6) {
@@ -389,7 +396,7 @@ public class ChunkHolder {
 
 			this.entityTickingFuture = chunkStorage.makeChunkEntitiesTickable(this.pos);
 			this.method_31409(chunkStorage, this.entityTickingFuture, executor, ChunkHolder.LevelType.ENTITY_TICKING);
-			this.combineSavingFuture(this.entityTickingFuture);
+			this.combineSavingFuture(this.entityTickingFuture, "entity ticking");
 		}
 
 		if (bl7 && !bl8) {
@@ -433,7 +440,7 @@ public class ChunkHolder {
 			}
 		}
 
-		this.combineSavingFuture(CompletableFuture.completedFuture(Either.left(readOnlyChunk.getWrappedChunk())));
+		this.combineSavingFuture(CompletableFuture.completedFuture(Either.left(readOnlyChunk.getWrappedChunk())), "replaceProto");
 	}
 
 	public static enum LevelType {
@@ -450,6 +457,18 @@ public class ChunkHolder {
 	@FunctionalInterface
 	public interface LevelUpdateListener {
 		void updateLevel(ChunkPos pos, IntSupplier levelGetter, int targetLevel, IntConsumer levelSetter);
+	}
+
+	static final class MultithreadAction {
+		private final Thread thread;
+		private final CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> action;
+		private final String actionDesc;
+
+		private MultithreadAction(Thread thread, CompletableFuture<? extends Either<? extends Chunk, ChunkHolder.Unloaded>> action, String actionDesc) {
+			this.thread = thread;
+			this.action = action;
+			this.actionDesc = actionDesc;
+		}
 	}
 
 	public interface PlayersWatchingChunkProvider {

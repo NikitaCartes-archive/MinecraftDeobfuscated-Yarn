@@ -136,7 +136,7 @@ public class ChunkSerializer {
 				tickScheduler2,
 				l,
 				chunkSections,
-				worldChunk -> writeEntities(world, compoundTag, worldChunk)
+				worldChunk -> loadEntities(world, compoundTag, worldChunk)
 			);
 		} else {
 			ProtoChunk protoChunk = new ProtoChunk(pos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2, world);
@@ -355,11 +355,11 @@ public class ChunkSerializer {
 		return ChunkStatus.ChunkType.field_12808;
 	}
 
-	private static void writeEntities(ServerWorld world, CompoundTag tag, WorldChunk chunk) {
+	private static void loadEntities(ServerWorld world, CompoundTag tag, WorldChunk chunk) {
 		if (tag.contains("Entities", 9)) {
 			ListTag listTag = tag.getList("Entities", 10);
 			if (!listTag.isEmpty()) {
-				world.method_31423(EntityType.method_31489(listTag, world));
+				world.loadEntities(EntityType.streamFromNbt(listTag, world));
 			}
 		}
 

@@ -14,10 +14,10 @@ public class EndIslandFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
+		BlockPos blockPos = context.getPos();
 		float f = (float)(random.nextInt(3) + 4);
 
 		for (int i = 0; f > 0.5F; i--) {

@@ -13,7 +13,7 @@ public class Vibration {
 	public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
 					BlockPos.CODEC.fieldOf("origin").forGetter(vibration -> vibration.origin),
-					PositionSource.TYPE_CODEC.fieldOf("destination").forGetter(vibration -> vibration.destination),
+					PositionSource.CODEC.fieldOf("destination").forGetter(vibration -> vibration.destination),
 					Codec.INT.fieldOf("arrival_in_ticks").forGetter(vibration -> vibration.arrivalInTicks)
 				)
 				.apply(instance, Vibration::new)

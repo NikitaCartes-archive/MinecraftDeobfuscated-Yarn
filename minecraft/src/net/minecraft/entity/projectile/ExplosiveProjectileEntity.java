@@ -18,9 +18,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
-	public double posX;
-	public double posY;
-	public double posZ;
+	public double powerX;
+	public double powerY;
+	public double powerZ;
 
 	protected ExplosiveProjectileEntity(EntityType<? extends ExplosiveProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -34,9 +34,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		this.refreshPosition();
 		double d = (double)MathHelper.sqrt(directionX * directionX + directionY * directionY + directionZ * directionZ);
 		if (d != 0.0) {
-			this.posX = directionX / d * 0.1;
-			this.posY = directionY / d * 0.1;
-			this.posZ = directionZ / d * 0.1;
+			this.powerX = directionX / d * 0.1;
+			this.powerY = directionY / d * 0.1;
+			this.powerZ = directionZ / d * 0.1;
 		}
 	}
 
@@ -94,7 +94,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 				g = 0.8F;
 			}
 
-			this.setVelocity(vec3d.add(this.posX, this.posY, this.posZ).multiply((double)g));
+			this.setVelocity(vec3d.add(this.powerX, this.powerY, this.powerZ).multiply((double)g));
 			this.world.addParticle(this.getParticleType(), d, e + 0.5, f, 0.0, 0.0, 0.0);
 			this.setPosition(d, e, f);
 		} else {
@@ -122,7 +122,7 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	@Override
 	public void writeCustomDataToTag(CompoundTag tag) {
 		super.writeCustomDataToTag(tag);
-		tag.put("power", this.toListTag(new double[]{this.posX, this.posY, this.posZ}));
+		tag.put("power", this.toListTag(new double[]{this.powerX, this.powerY, this.powerZ}));
 	}
 
 	@Override
@@ -131,9 +131,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		if (tag.contains("power", 9)) {
 			ListTag listTag = tag.getList("power", 6);
 			if (listTag.size() == 3) {
-				this.posX = listTag.getDouble(0);
-				this.posY = listTag.getDouble(1);
-				this.posZ = listTag.getDouble(2);
+				this.powerX = listTag.getDouble(0);
+				this.powerY = listTag.getDouble(1);
+				this.powerZ = listTag.getDouble(2);
 			}
 		}
 	}
@@ -158,9 +158,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 			if (entity != null) {
 				Vec3d vec3d = entity.getRotationVector();
 				this.setVelocity(vec3d);
-				this.posX = vec3d.x * 0.1;
-				this.posY = vec3d.y * 0.1;
-				this.posZ = vec3d.z * 0.1;
+				this.powerX = vec3d.x * 0.1;
+				this.powerY = vec3d.y * 0.1;
+				this.powerZ = vec3d.z * 0.1;
 				this.setOwner(entity);
 				return true;
 			} else {
@@ -179,7 +179,16 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		Entity entity = this.getOwner();
 		int i = entity == null ? 0 : entity.getId();
 		return new EntitySpawnS2CPacket(
-			this.getId(), this.getUuid(), this.getX(), this.getY(), this.getZ(), this.pitch, this.yaw, this.getType(), i, new Vec3d(this.posX, this.posY, this.posZ)
+			this.getId(),
+			this.getUuid(),
+			this.getX(),
+			this.getY(),
+			this.getZ(),
+			this.pitch,
+			this.yaw,
+			this.getType(),
+			i,
+			new Vec3d(this.powerX, this.powerY, this.powerZ)
 		);
 	}
 
@@ -192,9 +201,9 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 		double f = packet.getVelocityZ();
 		double g = (double)MathHelper.sqrt(d * d + e * e + f * f);
 		if (g != 0.0) {
-			this.posX = d / g * 0.1;
-			this.posY = e / g * 0.1;
-			this.posZ = f / g * 0.1;
+			this.powerX = d / g * 0.1;
+			this.powerY = e / g * 0.1;
+			this.powerZ = f / g * 0.1;
 		}
 	}
 }

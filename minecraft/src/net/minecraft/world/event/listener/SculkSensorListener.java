@@ -19,23 +19,23 @@ import net.minecraft.world.event.PositionSource;
 public class SculkSensorListener implements GameEventListener {
 	protected final PositionSource positionSource;
 	protected final int range;
-	protected final SculkSensorListener.Listener listener;
+	protected final SculkSensorListener.Callback callback;
 	protected Optional<GameEvent> event = Optional.empty();
 	protected int distance;
-	protected int cooldown = 0;
+	protected int delay = 0;
 
-	public SculkSensorListener(PositionSource positionSource, int range, SculkSensorListener.Listener listener) {
+	public SculkSensorListener(PositionSource positionSource, int range, SculkSensorListener.Callback listener) {
 		this.positionSource = positionSource;
 		this.range = range;
-		this.listener = listener;
+		this.callback = listener;
 	}
 
-	public void listen(World world) {
+	public void tick(World world) {
 		if (this.event.isPresent()) {
-			this.cooldown--;
-			if (this.cooldown <= 0) {
-				this.cooldown = 0;
-				this.listener.listen(world, this, (GameEvent)this.event.get(), this.distance);
+			this.delay--;
+			if (this.delay <= 0) {
+				this.delay = 0;
+				this.callback.accept(world, this, (GameEvent)this.event.get(), this.distance);
 				this.event = Optional.empty();
 			}
 		}
@@ -61,7 +61,7 @@ public class SculkSensorListener implements GameEventListener {
 				return false;
 			} else {
 				BlockPos blockPos = (BlockPos)optional.get();
-				if (!this.listener.shouldListen(world, this, pos, event, entity)) {
+				if (!this.callback.accepts(world, this, pos, event, entity)) {
 					return false;
 				} else if (this.isOccluded(world, pos, blockPos)) {
 					return false;
@@ -97,8 +97,8 @@ public class SculkSensorListener implements GameEventListener {
 		this.event = Optional.of(event);
 		if (world instanceof ServerWorld) {
 			this.distance = MathHelper.floor(MathHelper.sqrt(pos.getSquaredDistance(sourcePos, false)));
-			this.cooldown = this.distance;
-			((ServerWorld)world).sendVibrationPacket(new Vibration(pos, this.positionSource, this.cooldown));
+			this.delay = this.distance;
+			((ServerWorld)world).sendVibrationPacket(new Vibration(pos, this.positionSource, this.delay));
 		}
 	}
 
@@ -108,9 +108,15 @@ public class SculkSensorListener implements GameEventListener {
 			== HitResult.Type.BLOCK;
 	}
 
-	public interface Listener {
-		boolean shouldListen(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity);
+	public interface Callback {
+		/**
+		 * Returns whether the callback wants to accept this event.
+		 */
+		boolean accepts(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity);
 
-		void listen(World world, GameEventListener listener, GameEvent event, int i);
+		/**
+		 * Accepts a game event after delay.
+		 */
+		void accept(World world, GameEventListener listener, GameEvent event, int distance);
 	}
 }

@@ -16,11 +16,11 @@ public class SmallDripstoneFeature extends Feature<SmallDripstoneFeatureConfig> 
 	}
 
 	@Override
-	public boolean generate(FeatureContext<SmallDripstoneFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		Random random = featureContext.getRandom();
-		SmallDripstoneFeatureConfig smallDripstoneFeatureConfig = featureContext.getConfig();
+	public boolean generate(FeatureContext<SmallDripstoneFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		Random random = context.getRandom();
+		SmallDripstoneFeatureConfig smallDripstoneFeatureConfig = context.getConfig();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {

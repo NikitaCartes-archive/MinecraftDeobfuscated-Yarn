@@ -139,7 +139,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 					this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
 				}
 
-				this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
+				this.emitGameEvent(GameEvent.MOB_INTERACT, this.method_33575());
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.CONSUME;
@@ -195,7 +195,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 	}
 
 	private void finishConversion(ServerWorld world) {
-		VillagerEntity villagerEntity = this.method_29243(EntityType.VILLAGER, false);
+		VillagerEntity villagerEntity = this.convertTo(EntityType.VILLAGER, false);
 
 		for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 			ItemStack itemStack = this.getEquippedStack(equipmentSlot);

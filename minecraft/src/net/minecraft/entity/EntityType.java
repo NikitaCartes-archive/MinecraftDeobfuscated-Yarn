@@ -12,7 +12,6 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5575;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -132,6 +131,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -145,7 +145,7 @@ import net.minecraft.world.WorldView;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class EntityType<T extends Entity> implements class_5575<Entity, T> {
+public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = register(
 		"area_effect_cloud",
@@ -871,8 +871,8 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 		}).orElse(null);
 	}
 
-	public static Stream<Entity> method_31489(List<? extends Tag> list, World world) {
-		final Spliterator<? extends Tag> spliterator = list.spliterator();
+	public static Stream<Entity> streamFromNbt(List<? extends Tag> entityNbtList, World world) {
+		final Spliterator<? extends Tag> spliterator = entityNbtList.spliterator();
 		return StreamSupport.stream(new Spliterator<Entity>() {
 			public boolean tryAdvance(Consumer<? super Entity> consumer) {
 				return spliterator.tryAdvance(tag -> EntityType.loadEntityWithPassengers((CompoundTag)tag, world, entity -> {
@@ -886,7 +886,7 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 			}
 
 			public long estimateSize() {
-				return (long)list.size();
+				return (long)entityNbtList.size();
 			}
 
 			public int characteristics() {
@@ -935,12 +935,12 @@ public class EntityType<T extends Entity> implements class_5575<Entity, T> {
 	}
 
 	@Nullable
-	public T method_31796(Entity entity) {
+	public T downcast(Entity entity) {
 		return (T)(entity.getType() == this ? entity : null);
 	}
 
 	@Override
-	public Class<? extends Entity> method_31794() {
+	public Class<? extends Entity> getBaseClass() {
 		return Entity.class;
 	}
 

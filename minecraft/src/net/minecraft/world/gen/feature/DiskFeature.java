@@ -15,16 +15,16 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DiskFeatureConfig> featureContext) {
-		DiskFeatureConfig diskFeatureConfig = featureContext.getConfig();
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+	public boolean generate(FeatureContext<DiskFeatureConfig> context) {
+		DiskFeatureConfig diskFeatureConfig = context.getConfig();
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
 		boolean bl = false;
 		int i = blockPos.getY();
 		int j = i + diskFeatureConfig.halfHeight;
 		int k = i - diskFeatureConfig.halfHeight - 1;
 		boolean bl2 = diskFeatureConfig.state.getBlock() instanceof FallingBlock;
-		int l = diskFeatureConfig.radius.getValue(featureContext.getRandom());
+		int l = diskFeatureConfig.radius.getValue(context.getRandom());
 
 		for (int m = blockPos.getX() - l; m <= blockPos.getX() + l; m++) {
 			for (int n = blockPos.getZ() - l; n <= blockPos.getZ() + l; n++) {

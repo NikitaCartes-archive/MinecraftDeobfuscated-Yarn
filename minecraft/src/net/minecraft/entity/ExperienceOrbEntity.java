@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5575;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.damage.DamageSource;
@@ -17,6 +16,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -116,7 +116,7 @@ public class ExperienceOrbEntity extends Entity {
 
 		if (this.world instanceof ServerWorld) {
 			for (ExperienceOrbEntity experienceOrbEntity : this.world
-				.getEntitiesByType(class_5575.method_31795(ExperienceOrbEntity.class), this.getBoundingBox().expand(0.5), this::isMergeable)) {
+				.getEntitiesByType(TypeFilter.instanceOf(ExperienceOrbEntity.class), this.getBoundingBox().expand(0.5), this::isMergeable)) {
 				this.merge(experienceOrbEntity);
 			}
 		}
@@ -136,7 +136,7 @@ public class ExperienceOrbEntity extends Entity {
 		Box box = Box.of(pos, 1.0, 1.0, 1.0);
 		int i = world.getRandom().nextInt(40);
 		List<ExperienceOrbEntity> list = world.getEntitiesByType(
-			class_5575.method_31795(ExperienceOrbEntity.class), box, experienceOrbEntityx -> isMergeable(experienceOrbEntityx, i, amount)
+			TypeFilter.instanceOf(ExperienceOrbEntity.class), box, experienceOrbEntityx -> isMergeable(experienceOrbEntityx, i, amount)
 		);
 		if (!list.isEmpty()) {
 			ExperienceOrbEntity experienceOrbEntity = (ExperienceOrbEntity)list.get(0);

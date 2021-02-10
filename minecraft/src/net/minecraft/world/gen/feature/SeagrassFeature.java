@@ -18,12 +18,12 @@ public class SeagrassFeature extends Feature<ProbabilityConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<ProbabilityConfig> featureContext) {
+	public boolean generate(FeatureContext<ProbabilityConfig> context) {
 		boolean bl = false;
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		ProbabilityConfig probabilityConfig = featureContext.getConfig();
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		ProbabilityConfig probabilityConfig = context.getConfig();
 		int i = random.nextInt(8) - random.nextInt(8);
 		int j = random.nextInt(8) - random.nextInt(8);
 		int k = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX() + i, blockPos.getZ() + j);

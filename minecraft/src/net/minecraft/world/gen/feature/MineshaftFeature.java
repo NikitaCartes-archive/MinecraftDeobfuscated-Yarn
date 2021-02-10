@@ -4,6 +4,9 @@ import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -76,22 +79,28 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 					structurePiece.translate(0, l, 0);
 				}
 			} else {
-				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), this.random, 10);
+				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
 			}
 		}
 	}
 
 	public static enum Type implements StringIdentifiable {
-		NORMAL("normal"),
-		MESA("mesa");
+		NORMAL("normal", Blocks.OAK_WOOD, Blocks.OAK_PLANKS, Blocks.OAK_FENCE),
+		MESA("mesa", Blocks.DARK_OAK_WOOD, Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_FENCE);
 
 		public static final Codec<MineshaftFeature.Type> CODEC = StringIdentifiable.createCodec(MineshaftFeature.Type::values, MineshaftFeature.Type::byName);
 		private static final Map<String, MineshaftFeature.Type> BY_NAME = (Map<String, MineshaftFeature.Type>)Arrays.stream(values())
 			.collect(Collectors.toMap(MineshaftFeature.Type::getName, type -> type));
 		private final String name;
+		private final BlockState wood;
+		private final BlockState planks;
+		private final BlockState fence;
 
-		private Type(String name) {
+		private Type(String name, Block wood, Block planks, Block fence) {
 			this.name = name;
+			this.wood = wood.getDefaultState();
+			this.planks = planks.getDefaultState();
+			this.fence = fence.getDefaultState();
 		}
 
 		public String getName() {
@@ -104,6 +113,18 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 
 		public static MineshaftFeature.Type byIndex(int index) {
 			return index >= 0 && index < values().length ? values()[index] : NORMAL;
+		}
+
+		public BlockState getWood() {
+			return this.wood;
+		}
+
+		public BlockState getPlanks() {
+			return this.planks;
+		}
+
+		public BlockState getFence() {
+			return this.fence;
 		}
 
 		@Override

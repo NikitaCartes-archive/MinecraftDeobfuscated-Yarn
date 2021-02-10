@@ -17,13 +17,13 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
 
-		for (int i = 64; i < 256; i++) {
+		for (int i = 64; i < 384; i++) {
 			mutable.set(blockPos);
 			mutable.move(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
 			mutable.setY(i);

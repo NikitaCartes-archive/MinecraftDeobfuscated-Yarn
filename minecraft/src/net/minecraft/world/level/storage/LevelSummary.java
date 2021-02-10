@@ -97,7 +97,7 @@ public class LevelSummary implements Comparable<LevelSummary> {
 
 	@Environment(EnvType.CLIENT)
 	public boolean isDifferentVersion() {
-		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.versionInfo.isStable() || this.method_33405().method_33406();
+		return this.isFutureLevel() || !SharedConstants.getGameVersion().isStable() && !this.versionInfo.isStable() || this.getConversionWarning().promptsBackup();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -106,20 +106,34 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public LevelSummary.class_5781 method_33405() {
+	public LevelSummary.ConversionWarning getConversionWarning() {
 		GameVersion gameVersion = SharedConstants.getGameVersion();
 		int i = gameVersion.getWorldVersion();
 		int j = this.versionInfo.getVersionId();
 		if (!gameVersion.isStable() && j < i) {
-			return LevelSummary.class_5781.field_28439;
+			return LevelSummary.ConversionWarning.UPGRADE_TO_SNAPSHOT;
 		} else {
-			return j > i ? LevelSummary.class_5781.field_28438 : LevelSummary.class_5781.field_28437;
+			return j > i ? LevelSummary.ConversionWarning.DOWNGRADE : LevelSummary.ConversionWarning.NONE;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
 	public boolean isLocked() {
 		return this.locked;
+	}
+
+	/**
+	 * Returns whether the level is from a version before the world height was changed to -64 to 320.
+	 * 
+	 * <p>This includes world versions {@code 2692} and earlier (21w05b and earlier).
+	 */
+	public boolean isPreWorldHeightChangeVersion() {
+		return this.versionInfo.getVersionId() <= 2692;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public boolean isUnavailable() {
+		return this.isLocked() || this.isPreWorldHeightChangeVersion();
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -135,6 +149,8 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	private Text createDetails() {
 		if (this.isLocked()) {
 			return new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+		} else if (this.isPreWorldHeightChangeVersion()) {
+			return new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
 		} else if (this.requiresConversion()) {
 			return new TranslatableText("selectWorld.conversion");
 		} else {
@@ -159,31 +175,31 @@ public class LevelSummary implements Comparable<LevelSummary> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static enum class_5781 {
-		field_28437(false, false, ""),
-		field_28438(true, true, "downgrade"),
-		field_28439(true, false, "snapshot");
+	public static enum ConversionWarning {
+		NONE(false, false, ""),
+		DOWNGRADE(true, true, "downgrade"),
+		UPGRADE_TO_SNAPSHOT(true, false, "snapshot");
 
-		private final boolean field_28440;
-		private final boolean field_28441;
-		private final String field_28442;
+		private final boolean backup;
+		private final boolean boldRedFormatting;
+		private final String translationKeySuffix;
 
-		private class_5781(boolean bl, boolean bl2, String string2) {
-			this.field_28440 = bl;
-			this.field_28441 = bl2;
-			this.field_28442 = string2;
+		private ConversionWarning(boolean backup, boolean boldRedFormatting, String translationKeySuffix) {
+			this.backup = backup;
+			this.boldRedFormatting = boldRedFormatting;
+			this.translationKeySuffix = translationKeySuffix;
 		}
 
-		public boolean method_33406() {
-			return this.field_28440;
+		public boolean promptsBackup() {
+			return this.backup;
 		}
 
-		public boolean method_33407() {
-			return this.field_28441;
+		public boolean needsBoldRedFormatting() {
+			return this.boldRedFormatting;
 		}
 
-		public String method_33408() {
-			return this.field_28442;
+		public String getTranslationKeySuffix() {
+			return this.translationKeySuffix;
 		}
 	}
 }

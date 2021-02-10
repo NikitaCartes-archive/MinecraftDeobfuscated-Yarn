@@ -33,8 +33,8 @@ import net.minecraft.world.event.listener.GameEventListener;
 @Environment(EnvType.CLIENT)
 public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 	private final MinecraftClient client;
-	private final List<GameEventDebugRenderer.Listener> field_28256 = Lists.<GameEventDebugRenderer.Listener>newArrayList();
-	private final List<GameEventDebugRenderer.class_5741> field_28257 = Lists.<GameEventDebugRenderer.class_5741>newArrayList();
+	private final List<GameEventDebugRenderer.Entry> entries = Lists.<GameEventDebugRenderer.Entry>newArrayList();
+	private final List<GameEventDebugRenderer.Listener> listeners = Lists.<GameEventDebugRenderer.Listener>newArrayList();
 
 	public GameEventDebugRenderer(MinecraftClient client) {
 		this.client = client;
@@ -44,12 +44,12 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		World world = this.client.world;
 		if (world == null) {
-			this.field_28256.clear();
-			this.field_28257.clear();
+			this.entries.clear();
+			this.listeners.clear();
 		} else {
 			BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
-			this.field_28256.removeIf(GameEventDebugRenderer.Listener::method_33093);
-			this.field_28257.removeIf(arg -> arg.method_33095(world, blockPos));
+			this.entries.removeIf(GameEventDebugRenderer.Entry::hasExpired);
+			this.listeners.removeIf(listener -> listener.isTooFar(world, blockPos));
 			RenderSystem.pushMatrix();
 			RenderSystem.disableTexture();
 			RenderSystem.enableDepthTest();
@@ -57,16 +57,16 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.defaultBlendFunc();
 			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getLines());
 
-			for (GameEventDebugRenderer.class_5741 lv : this.field_28257) {
-				lv.getPos(world)
+			for (GameEventDebugRenderer.Listener listener : this.listeners) {
+				listener.getPos(world)
 					.ifPresent(
-						blockPosx -> {
-							int ix = blockPosx.getX() - lv.getRange();
-							int jx = blockPosx.getY() - lv.getRange();
-							int k = blockPosx.getZ() - lv.getRange();
-							int l = blockPosx.getX() + lv.getRange();
-							int m = blockPosx.getY() + lv.getRange();
-							int n = blockPosx.getZ() + lv.getRange();
+						pos -> {
+							int ix = pos.getX() - listener.getRange();
+							int jx = pos.getY() - listener.getRange();
+							int k = pos.getZ() - listener.getRange();
+							int l = pos.getX() + listener.getRange();
+							int m = pos.getY() + listener.getRange();
+							int n = pos.getZ() + listener.getRange();
 							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
 							WorldRenderer.method_22983(
 								matrices,
@@ -88,8 +88,8 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			BufferBuilder bufferBuilder = tessellator.getBuffer();
 			bufferBuilder.begin(VertexFormat.DrawMode.TRIANGLE_STRIP, VertexFormats.POSITION_COLOR);
 
-			for (GameEventDebugRenderer.class_5741 lv2 : this.field_28257) {
-				lv2.getPos(world)
+			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
+				listener2.getPos(world)
 					.ifPresent(
 						blockPosx -> {
 							Vec3f vec3f = new Vec3f(1.0F, 1.0F, 0.0F);
@@ -116,8 +116,8 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.lineWidth(2.0F);
 			RenderSystem.depthMask(false);
 
-			for (GameEventDebugRenderer.class_5741 lv2 : this.field_28257) {
-				lv2.getPos(world)
+			for (GameEventDebugRenderer.Listener listener2 : this.listeners) {
+				listener2.getPos(world)
 					.ifPresent(
 						blockPosx -> {
 							DebugRenderer.drawString("Listener Origin", (double)blockPosx.getX(), (double)((float)blockPosx.getY() + 1.8F), (double)blockPosx.getZ(), -1, 0.025F);
@@ -128,8 +128,8 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 					);
 			}
 
-			for (GameEventDebugRenderer.Listener listener : this.field_28256) {
-				Vec3d vec3d = listener.field_28260;
+			for (GameEventDebugRenderer.Entry entry : this.entries) {
+				Vec3d vec3d = entry.field_28260;
 				double d = 0.2F;
 				double e = vec3d.x - 0.2F;
 				double f = vec3d.y - 0.2F;
@@ -138,7 +138,7 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 				double i = vec3d.y + 0.2F + 0.5;
 				double j = vec3d.z + 0.2F;
 				method_33089(new Box(e, f, g, h, i, j), 1.0F, 1.0F, 1.0F, 0.2F);
-				DebugRenderer.drawString(listener.field_28259.getId(), vec3d.x, vec3d.y + 0.85F, vec3d.z, -7564911, 0.0075F);
+				DebugRenderer.drawString(entry.event.getId(), vec3d.x, vec3d.y + 0.85F, vec3d.z, -7564911, 0.0075F);
 			}
 
 			RenderSystem.depthMask(true);
@@ -159,43 +159,43 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	public void method_33087(GameEvent gameEvent, BlockPos blockPos) {
-		this.field_28256.add(new GameEventDebugRenderer.Listener(Util.getMeasuringTimeMs(), gameEvent, Vec3d.ofBottomCenter(blockPos)));
+		this.entries.add(new GameEventDebugRenderer.Entry(Util.getMeasuringTimeMs(), gameEvent, Vec3d.ofBottomCenter(blockPos)));
 	}
 
 	public void method_33088(PositionSource positionSource, int i) {
-		this.field_28257.add(new GameEventDebugRenderer.class_5741(positionSource, i));
+		this.listeners.add(new GameEventDebugRenderer.Listener(positionSource, i));
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class Listener {
-		public final long field_28258;
-		public final GameEvent field_28259;
+	static class Entry {
+		public final long startingMs;
+		public final GameEvent event;
 		public final Vec3d field_28260;
 
-		public Listener(long l, GameEvent gameEvent, Vec3d vec3d) {
-			this.field_28258 = l;
-			this.field_28259 = gameEvent;
+		public Entry(long l, GameEvent gameEvent, Vec3d vec3d) {
+			this.startingMs = l;
+			this.event = gameEvent;
 			this.field_28260 = vec3d;
 		}
 
-		public boolean method_33093() {
-			return Util.getMeasuringTimeMs() - this.field_28258 > 3000L;
+		public boolean hasExpired() {
+			return Util.getMeasuringTimeMs() - this.startingMs > 3000L;
 		}
 	}
 
 	@Environment(EnvType.CLIENT)
-	static class class_5741 implements GameEventListener {
+	static class Listener implements GameEventListener {
 		public final PositionSource positionSource;
 		public final int range;
 
-		public class_5741(PositionSource positionSource, int range) {
+		public Listener(PositionSource positionSource, int range) {
 			this.positionSource = positionSource;
 			this.range = range;
 		}
 
-		public boolean method_33095(World world, BlockPos blockPos) {
+		public boolean isTooFar(World world, BlockPos pos) {
 			Optional<BlockPos> optional = this.positionSource.getPos(world);
-			return !optional.isPresent() || ((BlockPos)optional.get()).getSquaredDistance(blockPos) <= 1024.0;
+			return !optional.isPresent() || ((BlockPos)optional.get()).getSquaredDistance(pos) <= 1024.0;
 		}
 
 		public Optional<BlockPos> getPos(World world) {

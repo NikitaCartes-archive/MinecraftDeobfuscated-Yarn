@@ -18,109 +18,117 @@ import net.minecraft.util.collection.DefaultedList;
 public class BundleTooltipComponent implements TooltipComponent {
 	public static final Identifier TEXTURE = new Identifier("textures/gui/container/bundle.png");
 	private final DefaultedList<ItemStack> inventory;
-	private final int field_28360;
+	private final int occupancy;
 
-	public BundleTooltipComponent(BundleTooltipData bundleTooltipData) {
-		this.inventory = bundleTooltipData.getInventory();
-		this.field_28360 = bundleTooltipData.getBundleOccupancy();
+	public BundleTooltipComponent(BundleTooltipData data) {
+		this.inventory = data.getInventory();
+		this.occupancy = data.getBundleOccupancy();
 	}
 
 	@Override
 	public int getHeight() {
-		return this.method_33290() * 20 + 2 + 4;
+		return this.getRows() * 20 + 2 + 4;
 	}
 
 	@Override
 	public int getWidth(TextRenderer textRenderer) {
-		return this.method_33289() * 18 + 2;
+		return this.getColumns() * 18 + 2;
 	}
 
 	@Override
 	public void drawItems(TextRenderer textRenderer, int x, int y, MatrixStack matrices, ItemRenderer itemRenderer, int z, TextureManager textureManager) {
-		int i = this.method_33289();
-		int j = this.method_33290();
-		boolean bl = this.field_28360 >= 64;
+		int i = this.getColumns();
+		int j = this.getRows();
+		boolean bl = this.occupancy >= 64;
 		int k = 0;
 
 		for (int l = 0; l < j; l++) {
 			for (int m = 0; m < i; m++) {
 				int n = x + m * 18 + 1;
 				int o = y + l * 20 + 1;
-				this.method_33287(n, o, k++, bl, textRenderer, matrices, itemRenderer, z, textureManager);
+				this.drawSlot(n, o, k++, bl, textRenderer, matrices, itemRenderer, z, textureManager);
 			}
 		}
 
-		this.method_33286(x, y, i, j, matrices, z, textureManager);
+		this.drawOutline(x, y, i, j, matrices, z, textureManager);
 	}
 
-	private void method_33287(
-		int i, int j, int k, boolean bl, TextRenderer textRenderer, MatrixStack matrixStack, ItemRenderer itemRenderer, int l, TextureManager textureManager
+	private void drawSlot(
+		int x,
+		int y,
+		int index,
+		boolean shouldBlock,
+		TextRenderer textRenderer,
+		MatrixStack matrices,
+		ItemRenderer itemRenderer,
+		int z,
+		TextureManager textureManager
 	) {
-		if (k >= this.inventory.size()) {
-			this.method_33288(matrixStack, i, j, l, textureManager, bl ? BundleTooltipComponent.class_5771.field_28362 : BundleTooltipComponent.class_5771.field_28361);
+		if (index >= this.inventory.size()) {
+			this.draw(matrices, x, y, z, textureManager, shouldBlock ? BundleTooltipComponent.Sprite.BLOCKED_SLOT : BundleTooltipComponent.Sprite.SLOT);
 		} else {
-			ItemStack itemStack = this.inventory.get(k);
-			this.method_33288(matrixStack, i, j, l, textureManager, BundleTooltipComponent.class_5771.field_28361);
-			itemRenderer.renderInGuiWithOverrides(itemStack, i + 1, j + 1, k);
-			itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, i + 1, j + 1);
-			if (k == 0) {
-				HandledScreen.method_33285(matrixStack, i + 1, j + 1, l);
+			ItemStack itemStack = this.inventory.get(index);
+			this.draw(matrices, x, y, z, textureManager, BundleTooltipComponent.Sprite.SLOT);
+			itemRenderer.renderInGuiWithOverrides(itemStack, x + 1, y + 1, index);
+			itemRenderer.renderGuiItemOverlay(textRenderer, itemStack, x + 1, y + 1);
+			if (index == 0) {
+				HandledScreen.method_33285(matrices, x + 1, y + 1, z);
 			}
 		}
 	}
 
-	private void method_33286(int i, int j, int k, int l, MatrixStack matrixStack, int m, TextureManager textureManager) {
-		this.method_33288(matrixStack, i, j, m, textureManager, BundleTooltipComponent.class_5771.field_28366);
-		this.method_33288(matrixStack, i + k * 18 + 1, j, m, textureManager, BundleTooltipComponent.class_5771.field_28366);
+	private void drawOutline(int x, int y, int columns, int rows, MatrixStack matrices, int z, TextureManager textureManager) {
+		this.draw(matrices, x, y, z, textureManager, BundleTooltipComponent.Sprite.BORDER_CORNER_TOP);
+		this.draw(matrices, x + columns * 18 + 1, y, z, textureManager, BundleTooltipComponent.Sprite.BORDER_CORNER_TOP);
 
-		for (int n = 0; n < k; n++) {
-			this.method_33288(matrixStack, i + 1 + n * 18, j, m, textureManager, BundleTooltipComponent.class_5771.field_28364);
-			this.method_33288(matrixStack, i + 1 + n * 18, j + l * 20, m, textureManager, BundleTooltipComponent.class_5771.field_28365);
+		for (int i = 0; i < columns; i++) {
+			this.draw(matrices, x + 1 + i * 18, y, z, textureManager, BundleTooltipComponent.Sprite.BORDER_HORIZONTAL_TOP);
+			this.draw(matrices, x + 1 + i * 18, y + rows * 20, z, textureManager, BundleTooltipComponent.Sprite.BORDER_HORIZONTAL_BOTTOM);
 		}
 
-		for (int n = 0; n < l; n++) {
-			this.method_33288(matrixStack, i, j + n * 20 + 1, m, textureManager, BundleTooltipComponent.class_5771.field_28363);
-			this.method_33288(matrixStack, i + k * 18 + 1, j + n * 20 + 1, m, textureManager, BundleTooltipComponent.class_5771.field_28363);
+		for (int i = 0; i < rows; i++) {
+			this.draw(matrices, x, y + i * 20 + 1, z, textureManager, BundleTooltipComponent.Sprite.BORDER_VERTICAL);
+			this.draw(matrices, x + columns * 18 + 1, y + i * 20 + 1, z, textureManager, BundleTooltipComponent.Sprite.BORDER_VERTICAL);
 		}
 
-		this.method_33288(matrixStack, i, j + l * 20, m, textureManager, BundleTooltipComponent.class_5771.field_28367);
-		this.method_33288(matrixStack, i + k * 18 + 1, j + l * 20, m, textureManager, BundleTooltipComponent.class_5771.field_28367);
+		this.draw(matrices, x, y + rows * 20, z, textureManager, BundleTooltipComponent.Sprite.BORDER_CORNER_BOTTOM);
+		this.draw(matrices, x + columns * 18 + 1, y + rows * 20, z, textureManager, BundleTooltipComponent.Sprite.BORDER_CORNER_BOTTOM);
 	}
 
-	private void method_33288(MatrixStack matrixStack, int i, int j, int k, TextureManager textureManager, BundleTooltipComponent.class_5771 arg) {
+	private void draw(MatrixStack matrices, int x, int y, int z, TextureManager textureManager, BundleTooltipComponent.Sprite sprite) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		textureManager.bindTexture(TEXTURE);
-		DrawableHelper.drawTexture(matrixStack, i, j, k, (float)arg.field_28368, (float)arg.field_28369, arg.field_28370, arg.field_28371, 128, 128);
+		DrawableHelper.drawTexture(matrices, x, y, z, (float)sprite.u, (float)sprite.v, sprite.width, sprite.height, 128, 128);
 	}
 
-	private int method_33289() {
+	private int getColumns() {
 		return Math.max(2, (int)Math.ceil(Math.sqrt((double)this.inventory.size() + 1.0)));
 	}
 
-	private int method_33290() {
-		return (int)Math.ceil(((double)this.inventory.size() + 1.0) / (double)this.method_33289());
+	private int getRows() {
+		return (int)Math.ceil(((double)this.inventory.size() + 1.0) / (double)this.getColumns());
 	}
 
 	@Environment(EnvType.CLIENT)
-	static enum class_5771 {
-		field_28361(0, 0, 18, 20),
-		field_28362(0, 40, 18, 20),
-		field_28363(0, 18, 1, 20),
-		field_28364(0, 20, 18, 1),
-		field_28365(0, 60, 18, 1),
-		field_28366(0, 20, 1, 1),
-		field_28367(0, 60, 1, 1);
+	static enum Sprite {
+		SLOT(0, 0, 18, 20),
+		BLOCKED_SLOT(0, 40, 18, 20),
+		BORDER_VERTICAL(0, 18, 1, 20),
+		BORDER_HORIZONTAL_TOP(0, 20, 18, 1),
+		BORDER_HORIZONTAL_BOTTOM(0, 60, 18, 1),
+		BORDER_CORNER_TOP(0, 20, 1, 1),
+		BORDER_CORNER_BOTTOM(0, 60, 1, 1);
 
-		public final int field_28368;
-		public final int field_28369;
-		public final int field_28370;
-		public final int field_28371;
+		public final int u;
+		public final int v;
+		public final int width;
+		public final int height;
 
-		private class_5771(int j, int k, int l, int m) {
-			this.field_28368 = j;
-			this.field_28369 = k;
-			this.field_28370 = l;
-			this.field_28371 = m;
+		private Sprite(int u, int v, int width, int height) {
+			this.u = u;
+			this.v = v;
+			this.width = width;
+			this.height = height;
 		}
 	}
 }
