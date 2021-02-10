@@ -23,11 +23,11 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 	}
 
 	@Override
-	public boolean generate(FeatureContext<LargeDripstoneFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		LargeDripstoneFeatureConfig largeDripstoneFeatureConfig = featureContext.getConfig();
-		Random random = featureContext.getRandom();
+	public boolean generate(FeatureContext<LargeDripstoneFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		LargeDripstoneFeatureConfig largeDripstoneFeatureConfig = context.getConfig();
+		Random random = context.getRandom();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {

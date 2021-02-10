@@ -23,7 +23,7 @@ public abstract class ProjectileEntity extends Entity {
 	private UUID ownerUuid;
 	private int ownerEntityId;
 	private boolean leftOwner;
-	private boolean field_28646;
+	private boolean shot;
 
 	public ProjectileEntity(EntityType<? extends ProjectileEntity> entityType, World world) {
 		super(entityType, world);
@@ -55,7 +55,7 @@ public abstract class ProjectileEntity extends Entity {
 			tag.putBoolean("LeftOwner", true);
 		}
 
-		tag.putBoolean("HasBeenShot", this.field_28646);
+		tag.putBoolean("HasBeenShot", this.shot);
 	}
 
 	@Override
@@ -65,14 +65,14 @@ public abstract class ProjectileEntity extends Entity {
 		}
 
 		this.leftOwner = tag.getBoolean("LeftOwner");
-		this.field_28646 = tag.getBoolean("HasBeenShot");
+		this.shot = tag.getBoolean("HasBeenShot");
 	}
 
 	@Override
 	public void tick() {
-		if (!this.field_28646) {
-			this.method_33568(GameEvent.PROJECTILE_SHOOT, this.getOwner(), this.getBlockPos());
-			this.field_28646 = true;
+		if (!this.shot) {
+			this.emitGameEvent(GameEvent.PROJECTILE_SHOOT, this.getOwner(), this.getBlockPos());
+			this.shot = true;
 		}
 
 		if (!this.leftOwner) {

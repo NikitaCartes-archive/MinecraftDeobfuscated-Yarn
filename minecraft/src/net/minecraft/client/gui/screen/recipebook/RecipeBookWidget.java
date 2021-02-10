@@ -85,7 +85,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 		String string = this.searchField != null ? this.searchField.getText() : "";
 		this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, 9 + 5, new TranslatableText("itemGroup.search"));
 		this.searchField.setMaxLength(50);
-		this.searchField.setHasBorder(false);
+		this.searchField.setDrawsBackground(false);
 		this.searchField.setVisible(true);
 		this.searchField.setEditableColor(16777215);
 		this.searchField.setText(string);
@@ -378,7 +378,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 			return true;
 		} else if (this.client.options.keyChat.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {
 			this.searching = true;
-			this.searchField.setSelected(true);
+			this.searchField.setTextFieldFocused(true);
 			return true;
 		} else {
 			return false;

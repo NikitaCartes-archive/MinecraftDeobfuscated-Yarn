@@ -29,10 +29,10 @@ public class DungeonFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-		BlockPos blockPos = featureContext.getPos();
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		BlockPos blockPos = context.getPos();
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
 		int i = 3;
 		int j = random.nextInt(2) + 2;
 		int k = -j - 1;

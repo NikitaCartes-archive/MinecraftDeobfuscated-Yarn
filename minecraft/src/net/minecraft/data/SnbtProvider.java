@@ -126,7 +126,7 @@ public class SnbtProvider implements DataProvider {
 
 			return var11;
 		} catch (Throwable var23) {
-			throw new SnbtProvider.class_5621(path, var23);
+			throw new SnbtProvider.CompressionException(path, var23);
 		}
 	}
 
@@ -135,7 +135,7 @@ public class SnbtProvider implements DataProvider {
 			Path path2 = field_24615.resolve(compressedData.name + ".snbt");
 
 			try {
-				NbtProvider.method_32234(path2, compressedData.field_24616);
+				NbtProvider.writeTo(path2, compressedData.field_24616);
 			} catch (IOException var18) {
 				LOGGER.error("Couldn't write structure SNBT {} at {}", compressedData.name, path2, var18);
 			}
@@ -190,14 +190,14 @@ public class SnbtProvider implements DataProvider {
 		}
 	}
 
+	static class CompressionException extends RuntimeException {
+		public CompressionException(Path path, Throwable cause) {
+			super(path.toAbsolutePath().toString(), cause);
+		}
+	}
+
 	@FunctionalInterface
 	public interface Tweaker {
 		CompoundTag write(String name, CompoundTag nbt);
-	}
-
-	static class class_5621 extends RuntimeException {
-		public class_5621(Path path, Throwable throwable) {
-			super(path.toAbsolutePath().toString(), throwable);
-		}
 	}
 }

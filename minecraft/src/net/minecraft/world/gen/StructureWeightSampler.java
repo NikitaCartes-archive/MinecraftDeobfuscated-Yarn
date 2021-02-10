@@ -37,10 +37,8 @@ public class StructureWeightSampler {
 
 	public StructureWeightSampler(StructureAccessor accessor, Chunk chunk) {
 		ChunkPos chunkPos = chunk.getPos();
-		int i = chunkPos.x;
-		int j = chunkPos.z;
-		int k = chunkPos.getStartX();
-		int l = chunkPos.getStartZ();
+		int i = chunkPos.getStartX();
+		int j = chunkPos.getStartZ();
 		this.junctions = new ObjectArrayList<>(32);
 		this.pieces = new ObjectArrayList<>(10);
 
@@ -56,9 +54,9 @@ public class StructureWeightSampler {
 							}
 
 							for(JigsawJunction jigsawJunction : poolStructurePiece.getJunctions()) {
-								int kxx = jigsawJunction.getSourceX();
-								int lxx = jigsawJunction.getSourceZ();
-								if (kxx > k - 12 && lxx > l - 12 && kxx < k + 15 + 12 && lxx < l + 15 + 12) {
+								int k = jigsawJunction.getSourceX();
+								int l = jigsawJunction.getSourceZ();
+								if (k > i - 12 && l > j - 12 && k < i + 15 + 12 && l < j + 15 + 12) {
 									this.junctions.add(jigsawJunction);
 								}
 							}

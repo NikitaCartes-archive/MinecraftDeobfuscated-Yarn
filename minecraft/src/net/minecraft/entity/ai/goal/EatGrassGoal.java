@@ -70,7 +70,7 @@ public class EatGrassGoal extends Goal {
 				}
 
 				this.mob.onEatingGrass();
-				this.mob.method_33569(GameEvent.EAT, this.mob.method_33575());
+				this.mob.emitGameEvent(GameEvent.EAT, this.mob.method_33575());
 			} else {
 				BlockPos blockPos2 = blockPos.down();
 				if (this.world.getBlockState(blockPos2).isOf(Blocks.GRASS_BLOCK)) {
@@ -80,7 +80,7 @@ public class EatGrassGoal extends Goal {
 					}
 
 					this.mob.onEatingGrass();
-					this.mob.method_33569(GameEvent.EAT, this.mob.method_33575());
+					this.mob.emitGameEvent(GameEvent.EAT, this.mob.method_33575());
 				}
 			}
 		}

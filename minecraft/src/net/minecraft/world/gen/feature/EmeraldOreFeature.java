@@ -11,10 +11,10 @@ public class EmeraldOreFeature extends Feature<EmeraldOreFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<EmeraldOreFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		EmeraldOreFeatureConfig emeraldOreFeatureConfig = featureContext.getConfig();
+	public boolean generate(FeatureContext<EmeraldOreFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		EmeraldOreFeatureConfig emeraldOreFeatureConfig = context.getConfig();
 		if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
 			structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);
 		}

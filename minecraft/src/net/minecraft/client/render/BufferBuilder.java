@@ -91,19 +91,19 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 		}
 	}
 
-	public BufferBuilder.class_5594 popState() {
-		return new BufferBuilder.class_5594(this.drawMode, this.vertexCount, this.field_27348, this.field_27349, this.field_27350, this.field_27351);
+	public BufferBuilder.State popState() {
+		return new BufferBuilder.State(this.drawMode, this.vertexCount, this.field_27348, this.field_27349, this.field_27350, this.field_27351);
 	}
 
-	public void restoreState(BufferBuilder.class_5594 arg) {
+	public void restoreState(BufferBuilder.State state) {
 		this.buffer.clear();
-		this.drawMode = arg.field_27358;
-		this.vertexCount = arg.field_27359;
+		this.drawMode = state.drawMode;
+		this.vertexCount = state.vertexCount;
 		this.elementOffset = this.buildStart;
-		this.field_27348 = arg.field_27360;
-		this.field_27349 = arg.field_27361;
-		this.field_27350 = arg.field_27362;
-		this.field_27351 = arg.field_27363;
+		this.field_27348 = state.field_27360;
+		this.field_27349 = state.field_27361;
+		this.field_27350 = state.field_27362;
+		this.field_27351 = state.field_27363;
 		this.field_27352 = true;
 	}
 
@@ -430,18 +430,18 @@ public class BufferBuilder extends FixedColorVertexConsumer implements BufferVer
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class class_5594 {
-		private final VertexFormat.DrawMode field_27358;
-		private final int field_27359;
+	public static class State {
+		private final VertexFormat.DrawMode drawMode;
+		private final int vertexCount;
 		@Nullable
 		private final Vec3f[] field_27360;
 		private final float field_27361;
 		private final float field_27362;
 		private final float field_27363;
 
-		private class_5594(VertexFormat.DrawMode drawMode, int i, @Nullable Vec3f[] vec3fs, float f, float g, float h) {
-			this.field_27358 = drawMode;
-			this.field_27359 = i;
+		private State(VertexFormat.DrawMode drawMode, int i, @Nullable Vec3f[] vec3fs, float f, float g, float h) {
+			this.drawMode = drawMode;
+			this.vertexCount = i;
 			this.field_27360 = vec3fs;
 			this.field_27361 = f;
 			this.field_27362 = g;

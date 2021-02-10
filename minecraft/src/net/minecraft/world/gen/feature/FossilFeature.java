@@ -44,10 +44,10 @@ public class FossilFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
 		BlockRotation blockRotation = BlockRotation.random(random);
 		int i = random.nextInt(FOSSILS.length);
 		StructureManager structureManager = structureWorldAccess.toServerWorld().getServer().getStructureManager();

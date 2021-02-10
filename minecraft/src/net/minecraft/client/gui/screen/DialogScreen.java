@@ -19,7 +19,7 @@ public class DialogScreen extends Screen {
 	private int linesY;
 	private int buttonWidth;
 
-	protected DialogScreen(Text title, List<StringVisitable> list, ImmutableList<DialogScreen.ChoiceButton> choiceButtons) {
+	public DialogScreen(Text title, List<StringVisitable> list, ImmutableList<DialogScreen.ChoiceButton> choiceButtons) {
 		super(title);
 		this.message = StringVisitable.concat(list);
 		this.choiceButtons = choiceButtons;

@@ -86,10 +86,10 @@ public class DebugInfoSender {
 	public static void sendBeeDebugData(BeeEntity bee) {
 	}
 
-	public static void method_33139(World world, GameEvent event, BlockPos pos) {
+	public static void sendGameEvent(World world, GameEvent event, BlockPos pos) {
 	}
 
-	public static void method_33140(World world, GameEventListener eventListener) {
+	public static void sendGameEventListener(World world, GameEventListener eventListener) {
 	}
 
 	public static void sendBeehiveDebugData(World world, BlockPos pos, BlockState state, BeehiveBlockEntity blockEntity) {

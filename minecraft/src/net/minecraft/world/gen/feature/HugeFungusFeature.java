@@ -20,12 +20,12 @@ public class HugeFungusFeature extends Feature<HugeFungusFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<HugeFungusFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		Random random = featureContext.getRandom();
-		ChunkGenerator chunkGenerator = featureContext.getGenerator();
-		HugeFungusFeatureConfig hugeFungusFeatureConfig = featureContext.getConfig();
+	public boolean generate(FeatureContext<HugeFungusFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		Random random = context.getRandom();
+		ChunkGenerator chunkGenerator = context.getGenerator();
+		HugeFungusFeatureConfig hugeFungusFeatureConfig = context.getConfig();
 		Block block = hugeFungusFeatureConfig.validBaseBlock.getBlock();
 		BlockPos blockPos2 = null;
 		BlockState blockState = structureWorldAccess.getBlockState(blockPos.down());

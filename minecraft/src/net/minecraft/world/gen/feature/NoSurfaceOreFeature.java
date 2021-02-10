@@ -14,11 +14,11 @@ public class NoSurfaceOreFeature extends Feature<OreFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<OreFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
-		OreFeatureConfig oreFeatureConfig = featureContext.getConfig();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<OreFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
+		OreFeatureConfig oreFeatureConfig = context.getConfig();
+		BlockPos blockPos = context.getPos();
 		int i = random.nextInt(oreFeatureConfig.size + 1);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 

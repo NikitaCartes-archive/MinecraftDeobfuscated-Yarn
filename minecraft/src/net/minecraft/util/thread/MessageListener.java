@@ -13,6 +13,13 @@ public interface MessageListener<Msg> extends AutoCloseable {
 	default void close() {
 	}
 
+	/**
+	 * Asks a message provider for a message.
+	 * 
+	 * The {@link CompletableFuture} returned from this function will never complete exceptionally.
+	 * 
+	 * @return CompletableFuture future that completes with the received message
+	 */
 	default <Source> CompletableFuture<Source> ask(Function<? super MessageListener<Source>, ? extends Msg> messageProvider) {
 		CompletableFuture<Source> completableFuture = new CompletableFuture();
 		Msg object = (Msg)messageProvider.apply(create("ask future procesor handle", completableFuture::complete));
@@ -20,9 +27,18 @@ public interface MessageListener<Msg> extends AutoCloseable {
 		return completableFuture;
 	}
 
-	default <Source> CompletableFuture<Source> method_27918(Function<? super MessageListener<Either<Source, Exception>>, ? extends Msg> function) {
+	/**
+	 * Asks a fallible message provider for a message.
+	 * 
+	 * The provider is given a MessageListener that accepts a {@link Either} representing either
+	 * a valid response (generic parameter Source) or an Exception, which decides whether the
+	 * future completes successfully or exceptionally.
+	 * 
+	 * @return CompletableFuture that may either complete successfully or exceptionally
+	 */
+	default <Source> CompletableFuture<Source> askFallible(Function<? super MessageListener<Either<Source, Exception>>, ? extends Msg> messageProvider) {
 		CompletableFuture<Source> completableFuture = new CompletableFuture();
-		Msg object = (Msg)function.apply(create("ask future procesor handle", either -> {
+		Msg object = (Msg)messageProvider.apply(create("ask future procesor handle", either -> {
 			either.ifLeft(completableFuture::complete);
 			either.ifRight(completableFuture::completeExceptionally);
 		}));

@@ -12,10 +12,10 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<SpringFeatureConfig> featureContext) {
-		SpringFeatureConfig springFeatureConfig = featureContext.getConfig();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<SpringFeatureConfig> context) {
+		SpringFeatureConfig springFeatureConfig = context.getConfig();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
 		if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.up()).getBlock())) {
 			return false;
 		} else if (springFeatureConfig.requiresBlockBelow

@@ -23,12 +23,12 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DeltaFeatureConfig> featureContext) {
+	public boolean generate(FeatureContext<DeltaFeatureConfig> context) {
 		boolean bl = false;
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		DeltaFeatureConfig deltaFeatureConfig = featureContext.getConfig();
-		BlockPos blockPos = featureContext.getPos();
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		DeltaFeatureConfig deltaFeatureConfig = context.getConfig();
+		BlockPos blockPos = context.getPos();
 		boolean bl2 = random.nextDouble() < 0.9;
 		int i = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;
 		int j = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;

@@ -82,7 +82,7 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		this.previousOutputTextField.setText("-");
 		this.children.add(this.previousOutputTextField);
 		this.setInitialFocus(this.consoleCommandTextField);
-		this.consoleCommandTextField.setSelected(true);
+		this.consoleCommandTextField.setTextFieldFocused(true);
 		this.commandSuggestor = new CommandSuggestor(this.client, this, this.consoleCommandTextField, this.textRenderer, true, true, 0, 7, false, Integer.MIN_VALUE);
 		this.commandSuggestor.setWindowActive(true);
 		this.commandSuggestor.refresh();

@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.minecraft.SharedConstants;
-import net.minecraft.class_5629;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
@@ -123,6 +122,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.TextStream;
+import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -156,7 +156,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ServerPlayNetworkHandler implements class_5629, ServerPlayPacketListener {
+public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerPlayPacketListener {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public final ClientConnection connection;
 	private final MinecraftServer server;
@@ -1492,7 +1492,7 @@ public class ServerPlayNetworkHandler implements class_5629, ServerPlayPacketLis
 	}
 
 	@Override
-	public ServerPlayerEntity method_32311() {
+	public ServerPlayerEntity getPlayer() {
 		return this.player;
 	}
 }

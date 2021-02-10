@@ -32,12 +32,12 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<BasaltColumnsFeatureConfig> featureContext) {
-		int i = featureContext.getGenerator().getSeaLevel();
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
-		BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = featureContext.getConfig();
+	public boolean generate(FeatureContext<BasaltColumnsFeatureConfig> context) {
+		int i = context.getGenerator().getSeaLevel();
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
+		BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = context.getConfig();
 		if (!method_30379(structureWorldAccess, i, blockPos.mutableCopy())) {
 			return false;
 		} else {

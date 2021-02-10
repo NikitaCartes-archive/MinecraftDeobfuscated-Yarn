@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Dilation;
 
 @Environment(EnvType.CLIENT)
 public class ModelPartBuilder {

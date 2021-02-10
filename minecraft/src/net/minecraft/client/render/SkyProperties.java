@@ -135,7 +135,7 @@ public abstract class SkyProperties {
 	@Environment(EnvType.CLIENT)
 	public static class Overworld extends SkyProperties {
 		public Overworld() {
-			super(128.0F, true, SkyProperties.SkyType.NORMAL, false, false);
+			super(192.0F, true, SkyProperties.SkyType.NORMAL, false, false);
 		}
 
 		@Override

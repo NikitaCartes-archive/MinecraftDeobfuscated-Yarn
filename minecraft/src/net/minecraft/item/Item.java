@@ -359,7 +359,7 @@ public class Item implements ItemConvertible {
 	protected static BlockHitResult raycast(World world, PlayerEntity player, RaycastContext.FluidHandling fluidHandling) {
 		float f = player.pitch;
 		float g = player.yaw;
-		Vec3d vec3d = player.method_33571();
+		Vec3d vec3d = player.getEyePos();
 		float h = MathHelper.cos(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
 		float i = MathHelper.sin(-g * (float) (Math.PI / 180.0) - (float) Math.PI);
 		float j = -MathHelper.cos(-f * (float) (Math.PI / 180.0));

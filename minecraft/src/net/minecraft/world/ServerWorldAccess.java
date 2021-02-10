@@ -13,6 +13,6 @@ public interface ServerWorldAccess extends WorldAccess {
 	 * Spawns an entity and all its passengers (recursively) into the world.
 	 */
 	default void spawnEntityAndPassengers(Entity entity) {
-		entity.streamPassengersRecursively().forEach(this::spawnEntity);
+		entity.streamSelfAndPassengers().forEach(this::spawnEntity);
 	}
 }

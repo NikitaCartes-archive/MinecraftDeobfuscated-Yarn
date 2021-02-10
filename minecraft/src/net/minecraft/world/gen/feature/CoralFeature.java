@@ -19,10 +19,10 @@ public abstract class CoralFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-		Random random = featureContext.getRandom();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		Random random = context.getRandom();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
 		BlockState blockState = BlockTags.CORAL_BLOCKS.getRandom(random).getDefaultState();
 		return this.spawnCoral(structureWorldAccess, random, blockPos, blockState);
 	}

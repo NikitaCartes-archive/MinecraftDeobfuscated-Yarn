@@ -5,22 +5,22 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
 public final class Matrix4f {
-	public float a00;
-	public float a01;
-	public float a02;
-	public float a03;
-	public float a10;
-	public float a11;
-	public float a12;
-	public float a13;
-	public float a20;
-	public float a21;
-	public float a22;
-	public float a23;
-	public float a30;
-	public float a31;
-	public float a32;
-	public float a33;
+	protected float a00;
+	protected float a01;
+	protected float a02;
+	protected float a03;
+	protected float a10;
+	protected float a11;
+	protected float a12;
+	protected float a13;
+	protected float a20;
+	protected float a21;
+	protected float a22;
+	protected float a23;
+	protected float a30;
+	protected float a31;
+	protected float a32;
+	protected float a33;
 
 	public Matrix4f() {
 	}

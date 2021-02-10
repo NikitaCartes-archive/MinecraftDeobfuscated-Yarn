@@ -162,7 +162,7 @@ public class SpriteAtlasTexture extends AbstractTexture implements TextureTickLi
 								animationResourceMetadata = AnimationResourceMetadata.EMPTY;
 							}
 
-							Pair<Integer, Integer> pair = animationResourceMetadata.method_24141(pngFile.width, pngFile.height);
+							Pair<Integer, Integer> pair = animationResourceMetadata.ensureImageSize(pngFile.width, pngFile.height);
 							info = new Sprite.Info(identifier, pair.getFirst(), pair.getSecond(), animationResourceMetadata);
 						} catch (Throwable var20) {
 							var7 = var20;

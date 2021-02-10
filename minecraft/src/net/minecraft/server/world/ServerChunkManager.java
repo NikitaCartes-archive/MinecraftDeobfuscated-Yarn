@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5567;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -41,6 +40,7 @@ import net.minecraft.world.WorldProperties;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.ChunkStatusChangeListener;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -75,7 +75,7 @@ public class ServerChunkManager extends ChunkManager {
 		int viewDistance,
 		boolean bl,
 		WorldGenerationProgressListener worldGenerationProgressListener,
-		class_5567 arg,
+		ChunkStatusChangeListener chunkStatusChangeListener,
 		Supplier<PersistentStateManager> supplier
 	) {
 		this.world = serverWorld;
@@ -96,7 +96,7 @@ public class ServerChunkManager extends ChunkManager {
 			this,
 			this.getChunkGenerator(),
 			worldGenerationProgressListener,
-			arg,
+			chunkStatusChangeListener,
 			supplier,
 			viewDistance,
 			bl

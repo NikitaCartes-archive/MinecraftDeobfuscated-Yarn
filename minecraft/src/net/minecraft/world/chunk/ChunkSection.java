@@ -24,15 +24,15 @@ public class ChunkSection {
 	}
 
 	public ChunkSection(int yOffset, short nonEmptyBlockCount, short randomTickableBlockCount, short nonEmptyFluidCount) {
-		this.yOffset = method_31729(yOffset);
+		this.yOffset = blockCoordFromChunkCoord(yOffset);
 		this.nonEmptyBlockCount = nonEmptyBlockCount;
 		this.randomTickableBlockCount = randomTickableBlockCount;
 		this.nonEmptyFluidCount = nonEmptyFluidCount;
 		this.container = new PalettedContainer<>(PALETTE, Block.STATE_IDS, NbtHelper::toBlockState, NbtHelper::fromBlockState, Blocks.AIR.getDefaultState());
 	}
 
-	public static int method_31729(int i) {
-		return i << 4;
+	public static int blockCoordFromChunkCoord(int chunkPos) {
+		return chunkPos << 4;
 	}
 
 	public BlockState getBlockState(int x, int y, int z) {

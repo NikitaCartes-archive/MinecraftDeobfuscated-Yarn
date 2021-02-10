@@ -60,7 +60,7 @@ public class AddServerScreen extends Screen {
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
 		this.serverNameField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 66, 200, 20, new TranslatableText("addServer.enterName"));
-		this.serverNameField.setSelected(true);
+		this.serverNameField.setTextFieldFocused(true);
 		this.serverNameField.setText(this.server.name);
 		this.serverNameField.setChangedListener(this::onClose);
 		this.children.add(this.serverNameField);

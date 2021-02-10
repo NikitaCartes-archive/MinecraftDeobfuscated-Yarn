@@ -287,7 +287,7 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 			} else {
 				float g = 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.2F;
 				this.playSound(SoundEvents.ENTITY_IRON_GOLEM_REPAIR, 1.0F, g);
-				this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
+				this.emitGameEvent(GameEvent.MOB_INTERACT, this.method_33575());
 				if (!player.getAbilities().creativeMode) {
 					itemStack.decrement(1);
 				}

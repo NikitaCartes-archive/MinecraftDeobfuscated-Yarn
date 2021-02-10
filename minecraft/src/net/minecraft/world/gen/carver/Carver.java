@@ -23,11 +23,9 @@ import net.minecraft.world.gen.ProbabilityConfig;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
-	public static final Carver<ProbabilityConfig> CAVE = register("cave", new CaveCarver(ProbabilityConfig.CODEC, 256));
+	public static final Carver<ProbabilityConfig> CAVE = register("cave", new CaveCarver(ProbabilityConfig.CODEC, 384));
 	public static final Carver<ProbabilityConfig> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(ProbabilityConfig.CODEC));
 	public static final Carver<ProbabilityConfig> CANYON = register("canyon", new RavineCarver(ProbabilityConfig.CODEC));
-	public static final Carver<ProbabilityConfig> UNDERWATER_CANYON = register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig.CODEC));
-	public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig.CODEC));
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
@@ -181,7 +179,7 @@ public abstract class Carver<C extends CarverConfig> {
 			if (!this.canCarveBlock(blockState, blockState2)) {
 				return false;
 			} else {
-				if (y < 11) {
+				if (y < -53) {
 					chunk.setBlockState(currentPos, LAVA.getBlockState(), false);
 				} else {
 					chunk.setBlockState(currentPos, CAVE_AIR, false);

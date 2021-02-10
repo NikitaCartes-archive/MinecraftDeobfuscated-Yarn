@@ -16,11 +16,11 @@ public class AbstractPileFeature extends Feature<BlockPileFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<BlockPileFeatureConfig> featureContext) {
-		BlockPos blockPos = featureContext.getPos();
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		Random random = featureContext.getRandom();
-		BlockPileFeatureConfig blockPileFeatureConfig = featureContext.getConfig();
+	public boolean generate(FeatureContext<BlockPileFeatureConfig> context) {
+		BlockPos blockPos = context.getPos();
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		Random random = context.getRandom();
+		BlockPileFeatureConfig blockPileFeatureConfig = context.getConfig();
 		if (blockPos.getY() < structureWorldAccess.getBottomY() + 5) {
 			return false;
 		} else {

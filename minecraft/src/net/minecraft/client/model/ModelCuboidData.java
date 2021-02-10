@@ -3,7 +3,6 @@ package net.minecraft.client.model;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.Vector2f;
 import net.minecraft.util.math.Vec3f;
 

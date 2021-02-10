@@ -55,16 +55,22 @@ public class BigDripleafStemBlock extends HorizontalFacingBlock implements Water
 	public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
-		BlockState blockState2 = world.getBlockState(pos.up());
-		Block block = blockState2.getBlock();
-		return (blockState.isOf(this) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) && (block == this || block == Blocks.BIG_DRIPLEAF);
+		return blockState.isOf(this) || blockState.isSideSolidFullSquare(world, blockPos, Direction.UP);
+	}
+
+	protected static boolean placeStemAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
+		BlockState blockState = Blocks.BIG_DRIPLEAF_STEM
+			.getDefaultState()
+			.with(WATERLOGGED, Boolean.valueOf(fluidState.isEqualAndStill(Fluids.WATER)))
+			.with(FACING, direction);
+		return world.setBlockState(pos, blockState, 2);
 	}
 
 	@Override
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		if (!state.canPlaceAt(world, pos)) {
+		if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
 			world.getBlockTickScheduler().schedule(pos, this, 1);
 		}
 

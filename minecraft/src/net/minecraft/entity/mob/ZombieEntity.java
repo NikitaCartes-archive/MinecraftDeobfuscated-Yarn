@@ -256,7 +256,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	protected void convertTo(EntityType<? extends ZombieEntity> entityType) {
-		ZombieEntity zombieEntity = this.method_29243(entityType, true);
+		ZombieEntity zombieEntity = this.convertTo(entityType, true);
 		if (zombieEntity != null) {
 			zombieEntity.applyAttributeModifiers(zombieEntity.world.getLocalDifficulty(zombieEntity.getBlockPos()).getClampedLocalDifficulty());
 			zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
@@ -404,7 +404,7 @@ public class ZombieEntity extends HostileEntity {
 			}
 
 			VillagerEntity villagerEntity = (VillagerEntity)other;
-			ZombieVillagerEntity zombieVillagerEntity = villagerEntity.method_29243(EntityType.ZOMBIE_VILLAGER, false);
+			ZombieVillagerEntity zombieVillagerEntity = villagerEntity.convertTo(EntityType.ZOMBIE_VILLAGER, false);
 			zombieVillagerEntity.initialize(
 				world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieEntity.ZombieData(false, true), null
 			);

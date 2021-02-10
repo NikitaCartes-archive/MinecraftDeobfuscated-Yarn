@@ -43,6 +43,8 @@ public class NoiseColumnSampler {
 	private final double bottomSlideOffset;
 	private final double densityFactor;
 	private final double densityOffset;
+	@Nullable
+	private final NoiseCaveSampler noiseCaveSampler;
 
 	public NoiseColumnSampler(
 		BiomeSource biomeSource,
@@ -52,7 +54,8 @@ public class NoiseColumnSampler {
 		GenerationShapeConfig config,
 		InterpolatedNoise noise,
 		@Nullable SimplexNoiseSampler islandNoise,
-		OctavePerlinNoiseSampler densityNoise
+		OctavePerlinNoiseSampler densityNoise,
+		@Nullable NoiseCaveSampler noiseCaveSampler
 	) {
 		this.horizontalNoiseResolution = horizontalNoiseResolution;
 		this.verticalNoiseResolution = verticalNoiseResolution;
@@ -70,6 +73,7 @@ public class NoiseColumnSampler {
 		this.bottomSlideOffset = (double)config.getBottomSlide().getOffset();
 		this.densityFactor = config.getDensityFactor();
 		this.densityOffset = config.getDensityOffset();
+		this.noiseCaveSampler = noiseCaveSampler;
 	}
 
 	/**
@@ -134,9 +138,14 @@ public class NoiseColumnSampler {
 			int ae = ad + minY;
 			double af = this.noise.sample(x, ae, z, y, aa, ab, ac);
 			double ag = this.getOffset(ae, d, e, v) + af;
+			ag = this.sampleNoiseCaves(x * this.horizontalNoiseResolution, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, af, ag);
 			ag = this.applySlides(ag, ae);
 			buffer[ad] = ag;
 		}
+	}
+
+	private double sampleNoiseCaves(int x, int y, int z, double noise, double offset) {
+		return this.noiseCaveSampler != null ? this.noiseCaveSampler.sample(x, y, z, noise, offset) : offset;
 	}
 
 	/**

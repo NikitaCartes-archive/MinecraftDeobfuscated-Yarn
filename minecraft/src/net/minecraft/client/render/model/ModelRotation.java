@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.DirectionTransformation;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Quaternion;

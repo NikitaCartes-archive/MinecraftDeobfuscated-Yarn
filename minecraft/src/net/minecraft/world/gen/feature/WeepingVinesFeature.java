@@ -20,10 +20,10 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 	}
 
 	@Override
-	public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-		StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-		BlockPos blockPos = featureContext.getPos();
-		Random random = featureContext.getRandom();
+	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+		StructureWorldAccess structureWorldAccess = context.getWorld();
+		BlockPos blockPos = context.getPos();
+		Random random = context.getRandom();
 		if (!structureWorldAccess.isAir(blockPos)) {
 			return false;
 		} else {

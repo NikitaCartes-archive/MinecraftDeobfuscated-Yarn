@@ -51,7 +51,7 @@ public class DirectConnectScreen extends Screen {
 		this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 12, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
 		this.addressField = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 116, 200, 20, new TranslatableText("addServer.enterIp"));
 		this.addressField.setMaxLength(128);
-		this.addressField.setSelected(true);
+		this.addressField.setTextFieldFocused(true);
 		this.addressField.setText(this.client.options.lastServer);
 		this.addressField.setChangedListener(text -> this.onAddressFieldChanged());
 		this.children.add(this.addressField);
