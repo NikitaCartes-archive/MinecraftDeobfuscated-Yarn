@@ -24,7 +24,6 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.class_5459;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -133,6 +132,7 @@ import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldProperties;
@@ -383,7 +383,7 @@ implements ScreenHandlerListener {
 
     public void playerTick() {
         try {
-            if (!this.isSpectator() || this.world.isChunkLoaded(this.getBlockPos())) {
+            if (!this.isSpectator() || !this.method_33724()) {
                 super.tick();
             }
             for (int i = 0; i < this.getInventory().size(); ++i) {
@@ -636,13 +636,13 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
-        Optional<class_5459.class_5460> optional = super.method_30330(serverWorld, blockPos, bl);
+    protected Optional<PortalUtil.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether) {
+        Optional<PortalUtil.Rectangle> optional = super.getPortalRect(destWorld, destPos, destIsNether);
         if (optional.isPresent()) {
             return optional;
         }
         Direction.Axis axis = this.world.getBlockState(this.lastNetherPortalPosition).getOrEmpty(NetherPortalBlock.AXIS).orElse(Direction.Axis.X);
-        Optional<class_5459.class_5460> optional2 = serverWorld.getPortalForcer().method_30482(blockPos, axis);
+        Optional<PortalUtil.Rectangle> optional2 = destWorld.getPortalForcer().createPortal(destPos, axis);
         if (!optional2.isPresent()) {
             LOGGER.error("Unable to create a portal, likely target out of worldborder");
         }
@@ -803,10 +803,10 @@ implements ScreenHandlerListener {
     }
 
     public void handleFall(double heightDifference, boolean onGround) {
-        BlockPos blockPos = this.getLandingPos();
-        if (!this.world.isChunkLoaded(blockPos)) {
+        if (this.method_33724()) {
             return;
         }
+        BlockPos blockPos = this.getLandingPos();
         super.fall(heightDifference, onGround, this.world.getBlockState(blockPos), blockPos);
     }
 

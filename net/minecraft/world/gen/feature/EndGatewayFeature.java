@@ -20,10 +20,10 @@ extends Feature<EndGatewayFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<EndGatewayFeatureConfig> featureContext) {
-        BlockPos blockPos = featureContext.getPos();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        EndGatewayFeatureConfig endGatewayFeatureConfig = featureContext.getConfig();
+    public boolean generate(FeatureContext<EndGatewayFeatureConfig> context) {
+        BlockPos blockPos = context.getPos();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        EndGatewayFeatureConfig endGatewayFeatureConfig = context.getConfig();
         for (BlockPos blockPos22 : BlockPos.iterate(blockPos.add(-1, -2, -1), blockPos.add(1, 2, 1))) {
             boolean bl4;
             boolean bl = blockPos22.getX() == blockPos.getX();

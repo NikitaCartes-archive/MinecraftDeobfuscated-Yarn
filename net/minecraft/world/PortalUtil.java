@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft;
+package net.minecraft.world;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.util.Pair;
@@ -10,62 +10,66 @@ import java.util.function.Predicate;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
-public class class_5459 {
-    public static class_5460 method_30574(BlockPos blockPos, Direction.Axis axis, int i, Direction.Axis axis2, int j, Predicate<BlockPos> predicate) {
+public class PortalUtil {
+    /**
+     * Gets the largest rectangle of blocks along two axes for which all blocks meet a predicate.
+     * Used for getting rectangles of Nether portal blocks.
+     */
+    public static Rectangle getLargestRectangle(BlockPos center, Direction.Axis primaryAxis, int primaryMaxBlocks, Direction.Axis secondaryAxis, int secondaryMaxBlocks, Predicate<BlockPos> predicate) {
         IntBounds intBounds;
-        int o;
-        BlockPos.Mutable mutable = blockPos.mutableCopy();
-        Direction direction = Direction.get(Direction.AxisDirection.NEGATIVE, axis);
+        int m;
+        BlockPos.Mutable mutable = center.mutableCopy();
+        Direction direction = Direction.get(Direction.AxisDirection.NEGATIVE, primaryAxis);
         Direction direction2 = direction.getOpposite();
-        Direction direction3 = Direction.get(Direction.AxisDirection.NEGATIVE, axis2);
+        Direction direction3 = Direction.get(Direction.AxisDirection.NEGATIVE, secondaryAxis);
         Direction direction4 = direction3.getOpposite();
-        int k = class_5459.method_30575(predicate, mutable.set(blockPos), direction, i);
-        int l = class_5459.method_30575(predicate, mutable.set(blockPos), direction2, i);
-        int m = k;
-        IntBounds[] intBoundss = new IntBounds[m + 1 + l];
-        intBoundss[m] = new IntBounds(class_5459.method_30575(predicate, mutable.set(blockPos), direction3, j), class_5459.method_30575(predicate, mutable.set(blockPos), direction4, j));
-        int n = intBoundss[m].min;
-        for (o = 1; o <= k; ++o) {
-            intBounds = intBoundss[m - (o - 1)];
-            intBoundss[m - o] = new IntBounds(class_5459.method_30575(predicate, mutable.set(blockPos).move(direction, o), direction3, intBounds.min), class_5459.method_30575(predicate, mutable.set(blockPos).move(direction, o), direction4, intBounds.max));
+        int i = PortalUtil.moveWhile(predicate, mutable.set(center), direction, primaryMaxBlocks);
+        int j = PortalUtil.moveWhile(predicate, mutable.set(center), direction2, primaryMaxBlocks);
+        int k = i;
+        IntBounds[] intBoundss = new IntBounds[k + 1 + j];
+        intBoundss[k] = new IntBounds(PortalUtil.moveWhile(predicate, mutable.set(center), direction3, secondaryMaxBlocks), PortalUtil.moveWhile(predicate, mutable.set(center), direction4, secondaryMaxBlocks));
+        int l = intBoundss[k].min;
+        for (m = 1; m <= i; ++m) {
+            intBounds = intBoundss[k - (m - 1)];
+            intBoundss[k - m] = new IntBounds(PortalUtil.moveWhile(predicate, mutable.set(center).move(direction, m), direction3, intBounds.min), PortalUtil.moveWhile(predicate, mutable.set(center).move(direction, m), direction4, intBounds.max));
         }
-        for (o = 1; o <= l; ++o) {
-            intBounds = intBoundss[m + o - 1];
-            intBoundss[m + o] = new IntBounds(class_5459.method_30575(predicate, mutable.set(blockPos).move(direction2, o), direction3, intBounds.min), class_5459.method_30575(predicate, mutable.set(blockPos).move(direction2, o), direction4, intBounds.max));
+        for (m = 1; m <= j; ++m) {
+            intBounds = intBoundss[k + m - 1];
+            intBoundss[k + m] = new IntBounds(PortalUtil.moveWhile(predicate, mutable.set(center).move(direction2, m), direction3, intBounds.min), PortalUtil.moveWhile(predicate, mutable.set(center).move(direction2, m), direction4, intBounds.max));
         }
-        o = 0;
+        m = 0;
+        int n = 0;
+        int o = 0;
         int p = 0;
-        int q = 0;
-        int r = 0;
         int[] is = new int[intBoundss.length];
-        for (int s = n; s >= 0; --s) {
-            int v;
-            int u;
+        for (int q = l; q >= 0; --q) {
+            int t;
+            int s;
             IntBounds intBounds2;
-            for (int t = 0; t < intBoundss.length; ++t) {
-                intBounds2 = intBoundss[t];
-                u = n - intBounds2.min;
-                v = n + intBounds2.max;
-                is[t] = s >= u && s <= v ? v + 1 - s : 0;
+            for (int r = 0; r < intBoundss.length; ++r) {
+                intBounds2 = intBoundss[r];
+                s = l - intBounds2.min;
+                t = l + intBounds2.max;
+                is[r] = q >= s && q <= t ? t + 1 - q : 0;
             }
-            Pair<IntBounds, Integer> pair = class_5459.findLargestRectangle(is);
+            Pair<IntBounds, Integer> pair = PortalUtil.findLargestRectangle(is);
             intBounds2 = pair.getFirst();
-            u = 1 + intBounds2.max - intBounds2.min;
-            v = pair.getSecond();
-            if (u * v <= q * r) continue;
-            o = intBounds2.min;
-            p = s;
-            q = u;
-            r = v;
+            s = 1 + intBounds2.max - intBounds2.min;
+            t = pair.getSecond();
+            if (s * t <= o * p) continue;
+            m = intBounds2.min;
+            n = q;
+            o = s;
+            p = t;
         }
-        return new class_5460(blockPos.offset(axis, o - m).offset(axis2, p - n), q, r);
+        return new Rectangle(center.offset(primaryAxis, m - k).offset(secondaryAxis, n - l), o, p);
     }
 
-    private static int method_30575(Predicate<BlockPos> predicate, BlockPos.Mutable mutable, Direction direction, int i) {
-        int j;
-        for (j = 0; j < i && predicate.test(mutable.move(direction)); ++j) {
+    private static int moveWhile(Predicate<BlockPos> predicate, BlockPos.Mutable mutable, Direction direction, int max) {
+        int i;
+        for (i = 0; i < max && predicate.test(mutable.move(direction)); ++i) {
         }
-        return j;
+        return i;
     }
 
     /**
@@ -119,15 +123,15 @@ public class class_5459 {
         return new Pair<IntBounds, Integer>(new IntBounds(i, j - 1), k);
     }
 
-    public static class class_5460 {
-        public final BlockPos field_25936;
-        public final int field_25937;
-        public final int field_25938;
+    public static class Rectangle {
+        public final BlockPos lowerLeft;
+        public final int width;
+        public final int height;
 
-        public class_5460(BlockPos blockPos, int i, int j) {
-            this.field_25936 = blockPos;
-            this.field_25937 = i;
-            this.field_25938 = j;
+        public Rectangle(BlockPos lowerLeft, int width, int height) {
+            this.lowerLeft = lowerLeft;
+            this.width = width;
+            this.height = height;
         }
     }
 

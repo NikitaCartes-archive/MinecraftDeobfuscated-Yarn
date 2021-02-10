@@ -19,9 +19,9 @@ import net.minecraft.world.World;
 
 public class SkeletonEntity
 extends AbstractSkeletonEntity {
-    private static final TrackedData<Boolean> field_28642 = DataTracker.registerData(SkeletonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
+    private static final TrackedData<Boolean> CONVERTING = DataTracker.registerData(SkeletonEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
     private int field_28643;
-    private int field_28644;
+    private int conversionTime;
 
     public SkeletonEntity(EntityType<? extends SkeletonEntity> entityType, World world) {
         super((EntityType<? extends AbstractSkeletonEntity>)entityType, world);
@@ -30,25 +30,28 @@ extends AbstractSkeletonEntity {
     @Override
     protected void initDataTracker() {
         super.initDataTracker();
-        this.getDataTracker().startTracking(field_28642, false);
+        this.getDataTracker().startTracking(CONVERTING, false);
     }
 
-    public boolean method_33590() {
-        return this.getDataTracker().get(field_28642);
+    /**
+     * Returns whether this skeleton is currently converting to a stray.
+     */
+    public boolean isConverting() {
+        return this.getDataTracker().get(CONVERTING);
     }
 
     @Override
     public void tick() {
         if (!this.world.isClient && this.isAlive() && !this.isAiDisabled()) {
-            if (this.method_33590()) {
-                --this.field_28644;
-                if (this.field_28644 < 0) {
-                    this.method_33591();
+            if (this.isConverting()) {
+                --this.conversionTime;
+                if (this.conversionTime < 0) {
+                    this.convertToStray();
                 }
             } else if (this.inPowderSnow) {
                 ++this.field_28643;
                 if (this.field_28643 >= 600) {
-                    this.method_33589(300);
+                    this.setConversionTime(300);
                 }
             } else {
                 this.field_28643 = -1;
@@ -60,24 +63,27 @@ extends AbstractSkeletonEntity {
     @Override
     public void writeCustomDataToTag(CompoundTag tag) {
         super.writeCustomDataToTag(tag);
-        tag.putInt("StrayConversionTime", this.method_33590() ? this.field_28644 : -1);
+        tag.putInt("StrayConversionTime", this.isConverting() ? this.conversionTime : -1);
     }
 
     @Override
     public void readCustomDataFromTag(CompoundTag tag) {
         super.readCustomDataFromTag(tag);
         if (tag.contains("StrayConversionTime", 99) && tag.getInt("StrayConversionTime") > -1) {
-            this.method_33589(tag.getInt("StrayConversionTime"));
+            this.setConversionTime(tag.getInt("StrayConversionTime"));
         }
     }
 
-    private void method_33589(int i) {
-        this.field_28644 = i;
-        this.dataTracker.set(field_28642, true);
+    private void setConversionTime(int time) {
+        this.conversionTime = time;
+        this.dataTracker.set(CONVERTING, true);
     }
 
-    protected void method_33591() {
-        this.method_29243(EntityType.STRAY, true);
+    /**
+     * Converts this skeleton to a stray and plays a sound if it is not silent.
+     */
+    protected void convertToStray() {
+        this.convertTo(EntityType.STRAY, true);
         if (!this.isSilent()) {
             this.world.syncWorldEvent(null, 1048, this.getBlockPos(), 0);
         }

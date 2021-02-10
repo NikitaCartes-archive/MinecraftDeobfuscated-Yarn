@@ -19,12 +19,12 @@ extends Feature<SingleStateFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<SingleStateFeatureConfig> featureContext) {
+    public boolean generate(FeatureContext<SingleStateFeatureConfig> context) {
         BlockState blockState;
-        BlockPos blockPos = featureContext.getPos();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        Random random = featureContext.getRandom();
-        SingleStateFeatureConfig singleStateFeatureConfig = featureContext.getConfig();
+        BlockPos blockPos = context.getPos();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        Random random = context.getRandom();
+        SingleStateFeatureConfig singleStateFeatureConfig = context.getConfig();
         while (blockPos.getY() > structureWorldAccess.getBottomY() + 3 && (structureWorldAccess.isAir(blockPos.down()) || !ForestRockFeature.isSoil(blockState = structureWorldAccess.getBlockState(blockPos.down())) && !ForestRockFeature.isStone(blockState))) {
             blockPos = blockPos.down();
         }

@@ -29,6 +29,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.MineshaftFeature;
@@ -140,7 +141,7 @@ public class MineshaftGenerator {
 
         @Override
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            if (this.isTouchingLiquid(world, boundingBox)) {
+            if (this.containsLiquid(world, boundingBox)) {
                 return false;
             }
             this.fillWithOutline(world, boundingBox, 0, 5, 0, 2, 7, 1, AIR, AIR, false);
@@ -259,10 +260,10 @@ public class MineshaftGenerator {
 
         @Override
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            if (this.isTouchingLiquid(world, boundingBox)) {
+            if (this.containsLiquid(world, boundingBox)) {
                 return false;
             }
-            BlockState blockState = this.getPlanksType();
+            BlockState blockState = this.mineshaftType.getPlanks();
             if (this.twoFloors) {
                 this.fillWithOutline(world, boundingBox, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.minZ, this.boundingBox.maxX - 1, this.boundingBox.minY + 3 - 1, this.boundingBox.maxZ, AIR, AIR, false);
                 this.fillWithOutline(world, boundingBox, this.boundingBox.minX, this.boundingBox.minY, this.boundingBox.minZ + 1, this.boundingBox.maxX, this.boundingBox.minY + 3 - 1, this.boundingBox.maxZ - 1, AIR, AIR, false);
@@ -288,7 +289,7 @@ public class MineshaftGenerator {
 
         private void generateCrossingPillar(StructureWorldAccess world, BlockBox boundingBox, int x, int minY, int z, int maxY) {
             if (!this.getBlockAt(world, x, maxY + 1, z, boundingBox).isAir()) {
-                this.fillWithOutline(world, boundingBox, x, minY, z, x, maxY, z, this.getPlanksType(), AIR, false);
+                this.fillWithOutline(world, boundingBox, x, minY, z, x, maxY, z, this.mineshaftType.getPlanks(), AIR, false);
             }
         }
     }
@@ -464,7 +465,7 @@ public class MineshaftGenerator {
             int p;
             int o;
             int n;
-            if (this.isTouchingLiquid(world, boundingBox)) {
+            if (this.containsLiquid(world, boundingBox)) {
                 return false;
             }
             boolean i = false;
@@ -472,7 +473,7 @@ public class MineshaftGenerator {
             boolean k = false;
             int l = 2;
             int m = this.length * 5 - 1;
-            BlockState blockState = this.getPlanksType();
+            BlockState blockState = this.mineshaftType.getPlanks();
             this.fillWithOutline(world, boundingBox, 0, 0, 0, 2, 1, m, AIR, AIR, false);
             this.fillWithOutlineUnderSeaLevel(world, boundingBox, random, 0.8f, 0, 2, 0, 2, 2, m, AIR, AIR, false, false);
             if (this.hasCobwebs) {
@@ -517,24 +518,71 @@ public class MineshaftGenerator {
                     this.addBlock(world, blockState, n, -1, o, boundingBox);
                 }
             }
+            n = 2;
+            this.fillSupportBeam(world, boundingBox, 0, -1, 2);
+            if (this.length > 1) {
+                o = m - 2;
+                this.fillSupportBeam(world, boundingBox, 0, -1, o);
+            }
             if (this.hasRails) {
                 BlockState blockState3 = (BlockState)Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, RailShape.NORTH_SOUTH);
-                for (o = 0; o <= m; ++o) {
-                    BlockState blockState4 = this.getBlockAt(world, 1, -1, o, boundingBox);
-                    if (blockState4.isAir() || !blockState4.isOpaqueFullCube(world, new BlockPos(this.applyXTransform(1, o), this.applyYTransform(-1), this.applyZTransform(1, o)))) continue;
-                    float f = this.isUnderSeaLevel(world, 1, 0, o, boundingBox) ? 0.7f : 0.9f;
-                    this.addBlockWithRandomThreshold(world, boundingBox, random, f, 1, 0, o, blockState3);
+                for (p = 0; p <= m; ++p) {
+                    BlockState blockState2 = this.getBlockAt(world, 1, -1, p, boundingBox);
+                    if (blockState2.isAir() || !blockState2.isOpaqueFullCube(world, new BlockPos(this.applyXTransform(1, p), this.applyYTransform(-1), this.applyZTransform(1, p)))) continue;
+                    float f = this.isUnderSeaLevel(world, 1, 0, p, boundingBox) ? 0.7f : 0.9f;
+                    this.addBlockWithRandomThreshold(world, boundingBox, random, f, 1, 0, p, blockState3, false);
                 }
             }
             return true;
+        }
+
+        private void fillSupportBeam(StructureWorldAccess world, BlockBox box, int x, int y, int z) {
+            BlockState blockState = this.mineshaftType.getWood();
+            BlockState blockState2 = this.mineshaftType.getPlanks();
+            if (this.getBlockAt(world, x, y, z, box).isOf(blockState2.getBlock())) {
+                this.fillDownwards(world, blockState, x, y - 1, z, box);
+            }
+            if (this.getBlockAt(world, x + 2, y, z, box).isOf(blockState2.getBlock())) {
+                this.fillDownwards(world, blockState, x + 2, y - 1, z, box);
+            }
+        }
+
+        @Override
+        protected void fillDownwards(StructureWorldAccess world, BlockState state, int x, int y, int z, BlockBox box) {
+            int k;
+            int j;
+            int i = this.applyXTransform(x, z);
+            BlockPos.Mutable mutable = new BlockPos.Mutable(i, j = this.applyYTransform(y), k = this.applyZTransform(x, z));
+            if (!box.contains(mutable)) {
+                return;
+            }
+            while (this.isAirOrWater(world, mutable) && mutable.getY() > world.getBottomY() + 1) {
+                mutable.move(Direction.DOWN);
+            }
+            if (!this.isNotRailOrLava(world.getBlockState(mutable))) {
+                return;
+            }
+            while (mutable.getY() < j) {
+                mutable.move(Direction.UP);
+                world.setBlockState(mutable, state, 2);
+            }
+        }
+
+        private boolean isNotRailOrLava(BlockState state) {
+            return !state.isOf(Blocks.RAIL) && !state.isOf(Blocks.LAVA);
+        }
+
+        private boolean isAirOrWater(WorldView world, BlockPos pos) {
+            BlockState blockState = world.getBlockState(pos);
+            return blockState.isAir() || blockState.isOf(Blocks.WATER);
         }
 
         private void generateSupports(StructureWorldAccess world, BlockBox boundingBox, int minX, int minY, int z, int maxY, int maxX, Random random) {
             if (!this.isSolidCeiling(world, boundingBox, minX, maxX, maxY, z)) {
                 return;
             }
-            BlockState blockState = this.getPlanksType();
-            BlockState blockState2 = this.getFenceType();
+            BlockState blockState = this.mineshaftType.getPlanks();
+            BlockState blockState2 = this.mineshaftType.getFence();
             this.fillWithOutline(world, boundingBox, minX, minY, z, minX, maxY - 1, z, (BlockState)blockState2.with(FenceBlock.WEST, true), AIR, false);
             this.fillWithOutline(world, boundingBox, maxX, minY, z, maxX, maxY - 1, z, (BlockState)blockState2.with(FenceBlock.EAST, true), AIR, false);
             if (random.nextInt(4) == 0) {
@@ -542,14 +590,14 @@ public class MineshaftGenerator {
                 this.fillWithOutline(world, boundingBox, maxX, maxY, z, maxX, maxY, z, blockState, AIR, false);
             } else {
                 this.fillWithOutline(world, boundingBox, minX, maxY, z, maxX, maxY, z, blockState, AIR, false);
-                this.addBlockWithRandomThreshold(world, boundingBox, random, 0.05f, minX + 1, maxY, z - 1, (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH));
-                this.addBlockWithRandomThreshold(world, boundingBox, random, 0.05f, minX + 1, maxY, z + 1, (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH));
+                this.addBlockWithRandomThreshold(world, boundingBox, random, 0.05f, minX + 1, maxY, z - 1, (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.NORTH), false);
+                this.addBlockWithRandomThreshold(world, boundingBox, random, 0.05f, minX + 1, maxY, z + 1, (BlockState)Blocks.WALL_TORCH.getDefaultState().with(WallTorchBlock.FACING, Direction.SOUTH), false);
             }
         }
 
         private void addCobwebsUnderground(StructureWorldAccess world, BlockBox boundingBox, Random random, float threshold, int x, int y, int z) {
             if (this.isUnderSeaLevel(world, x, y, z, boundingBox)) {
-                this.addBlockWithRandomThreshold(world, boundingBox, random, threshold, x, y, z, Blocks.COBWEB.getDefaultState());
+                this.addBlockWithRandomThreshold(world, boundingBox, random, threshold, x, y, z, Blocks.COBWEB.getDefaultState(), true);
             }
         }
     }
@@ -610,7 +658,7 @@ public class MineshaftGenerator {
 
         @Override
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            if (this.isTouchingLiquid(world, boundingBox)) {
+            if (this.containsLiquid(world, boundingBox)) {
                 return false;
             }
             this.fillWithOutline(world, boundingBox, this.boundingBox.minX, this.boundingBox.minY, this.boundingBox.minZ, this.boundingBox.maxX, this.boundingBox.minY, this.boundingBox.maxZ, Blocks.DIRT.getDefaultState(), AIR, true);
@@ -656,28 +704,14 @@ public class MineshaftGenerator {
         }
 
         @Override
+        protected boolean canAddBlock(WorldView world, int x, int y, int z, BlockBox box) {
+            BlockState blockState = this.getBlockAt(world, x, y, z, box);
+            return !blockState.isOf(this.mineshaftType.getPlanks().getBlock()) && !blockState.isOf(this.mineshaftType.getWood().getBlock()) && !blockState.isOf(this.mineshaftType.getFence().getBlock());
+        }
+
+        @Override
         protected void toNbt(CompoundTag tag) {
             tag.putInt("MST", this.mineshaftType.ordinal());
-        }
-
-        protected BlockState getPlanksType() {
-            switch (this.mineshaftType) {
-                default: {
-                    return Blocks.OAK_PLANKS.getDefaultState();
-                }
-                case MESA: 
-            }
-            return Blocks.DARK_OAK_PLANKS.getDefaultState();
-        }
-
-        protected BlockState getFenceType() {
-            switch (this.mineshaftType) {
-                default: {
-                    return Blocks.OAK_FENCE.getDefaultState();
-                }
-                case MESA: 
-            }
-            return Blocks.DARK_OAK_FENCE.getDefaultState();
         }
 
         protected boolean isSolidCeiling(BlockView world, BlockBox boundingBox, int minX, int maxX, int y, int z) {
@@ -686,6 +720,54 @@ public class MineshaftGenerator {
                 return false;
             }
             return true;
+        }
+
+        protected boolean containsLiquid(BlockView world, BlockBox box) {
+            int p;
+            int o;
+            int i = Math.max(this.boundingBox.minX - 1, box.minX);
+            int j = Math.max(this.boundingBox.minY - 1, box.minY);
+            int k = Math.max(this.boundingBox.minZ - 1, box.minZ);
+            int l = Math.min(this.boundingBox.maxX + 1, box.maxX);
+            int m = Math.min(this.boundingBox.maxY + 1, box.maxY);
+            int n = Math.min(this.boundingBox.maxZ + 1, box.maxZ);
+            BlockPos.Mutable mutable = new BlockPos.Mutable();
+            if (this.isAir(world, mutable, i, j, k) && this.isAir(world, mutable, i, j, n) && this.isAir(world, mutable, l, j, k) && this.isAir(world, mutable, l, j, n)) {
+                return true;
+            }
+            for (o = i; o <= l; ++o) {
+                for (p = k; p <= n; ++p) {
+                    if (world.getBlockState(mutable.set(o, j, p)).getMaterial().isLiquid()) {
+                        return true;
+                    }
+                    if (!world.getBlockState(mutable.set(o, m, p)).getMaterial().isLiquid()) continue;
+                    return true;
+                }
+            }
+            for (o = i; o <= l; ++o) {
+                for (p = j; p <= m; ++p) {
+                    if (world.getBlockState(mutable.set(o, p, k)).getMaterial().isLiquid()) {
+                        return true;
+                    }
+                    if (!world.getBlockState(mutable.set(o, p, n)).getMaterial().isLiquid()) continue;
+                    return true;
+                }
+            }
+            for (o = k; o <= n; ++o) {
+                for (p = j; p <= m; ++p) {
+                    if (world.getBlockState(mutable.set(i, p, o)).getMaterial().isLiquid()) {
+                        return true;
+                    }
+                    if (!world.getBlockState(mutable.set(l, p, o)).getMaterial().isLiquid()) continue;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean isAir(BlockView world, BlockPos.Mutable pos, int x, int y, int z) {
+            pos.set(x, y, z);
+            return world.getBlockState(pos).isAir();
         }
     }
 }

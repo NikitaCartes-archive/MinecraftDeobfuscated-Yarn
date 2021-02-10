@@ -126,7 +126,7 @@ extends Screen {
             }
         };
         this.searchBox.setMaxLength(16);
-        this.searchBox.setHasBorder(false);
+        this.searchBox.setDrawsBackground(false);
         this.searchBox.setVisible(true);
         this.searchBox.setEditableColor(0xFFFFFF);
         this.searchBox.setText(string);

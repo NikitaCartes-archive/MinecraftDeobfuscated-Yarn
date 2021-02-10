@@ -39,7 +39,7 @@ implements AutoCloseable {
     private final int height;
     protected final NativeImage[] images;
     @Nullable
-    private final class_5790 field_28468;
+    private final Animation animation;
     private final int x;
     private final int y;
     private final float uMin;
@@ -58,7 +58,7 @@ implements AutoCloseable {
         this.uMax = (float)(x + this.width) / (float)atlasWidth;
         this.vMin = (float)y / (float)atlasHeight;
         this.vMax = (float)(y + this.height) / (float)atlasHeight;
-        this.field_28468 = this.method_33437(info, nativeImage.getWidth(), nativeImage.getHeight(), maxLevel);
+        this.animation = this.method_33437(info, nativeImage.getWidth(), nativeImage.getHeight(), maxLevel);
         try {
             try {
                 this.images = MipmapHelper.getMipmapLevelsImages(nativeImage, maxLevel);
@@ -87,45 +87,45 @@ implements AutoCloseable {
     }
 
     private int getFrameCount() {
-        return this.field_28468 != null ? this.field_28468.field_28472.size() : 1;
+        return this.animation != null ? this.animation.frames.size() : 1;
     }
 
     @Nullable
-    private class_5790 method_33437(Info info, int i2, int j2, int k) {
-        int o;
+    private Animation method_33437(Info info, int nativeImageWidth, int nativeImageHeight, int maxLevel) {
+        int l;
         AnimationResourceMetadata animationResourceMetadata = info.animationData;
-        int l = i2 / animationResourceMetadata.getWidth(info.width);
-        int m = j2 / animationResourceMetadata.getHeight(info.height);
-        int n = l * m;
-        ArrayList<class_5791> list = Lists.newArrayList();
-        animationResourceMetadata.method_33460((i, j) -> list.add(new class_5791(i, j)));
+        int i2 = nativeImageWidth / animationResourceMetadata.getWidth(info.width);
+        int j = nativeImageHeight / animationResourceMetadata.getHeight(info.height);
+        int k = i2 * j;
+        ArrayList<AnimationFrame> list = Lists.newArrayList();
+        animationResourceMetadata.forEachFrame((index, time) -> list.add(new AnimationFrame(index, time)));
         if (list.isEmpty()) {
-            for (o = 0; o < n; ++o) {
-                list.add(new class_5791(o, animationResourceMetadata.getDefaultFrameTime()));
+            for (l = 0; l < k; ++l) {
+                list.add(new AnimationFrame(l, animationResourceMetadata.getDefaultFrameTime()));
             }
         } else {
-            o = 0;
+            l = 0;
             IntOpenHashSet intSet = new IntOpenHashSet();
             Iterator iterator = list.iterator();
             while (iterator.hasNext()) {
-                class_5791 lv = (class_5791)iterator.next();
+                AnimationFrame animationFrame = (AnimationFrame)iterator.next();
                 boolean bl = true;
-                if (lv.field_28476 <= 0) {
-                    LOGGER.warn("Invalid frame duration on sprite {} frame {}: {}", (Object)this.id, (Object)o, (Object)lv.field_28476);
+                if (animationFrame.time <= 0) {
+                    LOGGER.warn("Invalid frame duration on sprite {} frame {}: {}", (Object)this.id, (Object)l, (Object)animationFrame.time);
                     bl = false;
                 }
-                if (lv.field_28475 < 0 || lv.field_28475 >= n) {
-                    LOGGER.warn("Invalid frame index on sprite {} frame {}: {}", (Object)this.id, (Object)o, (Object)lv.field_28475);
+                if (animationFrame.index < 0 || animationFrame.index >= k) {
+                    LOGGER.warn("Invalid frame index on sprite {} frame {}: {}", (Object)this.id, (Object)l, (Object)animationFrame.index);
                     bl = false;
                 }
                 if (bl) {
-                    intSet.add(lv.field_28475);
+                    intSet.add(animationFrame.index);
                 } else {
                     iterator.remove();
                 }
-                ++o;
+                ++l;
             }
-            int[] is = IntStream.range(0, n).filter(i -> !intSet.contains(i)).toArray();
+            int[] is = IntStream.range(0, k).filter(i -> !intSet.contains(i)).toArray();
             if (is.length > 0) {
                 LOGGER.warn("Unused frames in sprite {}: {}", (Object)this.id, (Object)Arrays.toString(is));
             }
@@ -133,8 +133,8 @@ implements AutoCloseable {
         if (list.size() <= 1) {
             return null;
         }
-        Interpolation interpolation = animationResourceMetadata.shouldInterpolate() ? new Interpolation(info, k) : null;
-        return new class_5790(ImmutableList.copyOf(list), l, interpolation);
+        Interpolation interpolation = animationResourceMetadata.shouldInterpolate() ? new Interpolation(info, maxLevel) : null;
+        return new Animation(ImmutableList.copyOf(list), i2, interpolation);
     }
 
     private void upload(int frameX, int frameY, NativeImage[] output) {
@@ -186,7 +186,7 @@ implements AutoCloseable {
     }
 
     public IntStream method_33442() {
-        return this.field_28468 != null ? this.field_28468.method_33450() : IntStream.of(1);
+        return this.animation != null ? this.animation.method_33450() : IntStream.of(1);
     }
 
     @Override
@@ -195,8 +195,8 @@ implements AutoCloseable {
             if (nativeImage == null) continue;
             nativeImage.close();
         }
-        if (this.field_28468 != null) {
-            this.field_28468.close();
+        if (this.animation != null) {
+            this.animation.close();
         }
     }
 
@@ -207,16 +207,16 @@ implements AutoCloseable {
     public boolean isPixelTransparent(int frame, int x, int y) {
         int i = x;
         int j = y;
-        if (this.field_28468 != null) {
-            i += this.field_28468.method_33446(frame) * this.width;
-            j += this.field_28468.method_33451(frame) * this.height;
+        if (this.animation != null) {
+            i += this.animation.getFrameX(frame) * this.width;
+            j += this.animation.getFrameY(frame) * this.height;
         }
         return (this.images[0].getPixelColor(i, j) >> 24 & 0xFF) == 0;
     }
 
     public void upload() {
-        if (this.field_28468 != null) {
-            this.field_28468.method_33445();
+        if (this.animation != null) {
+            this.animation.upload();
         } else {
             this.upload(0, 0, this.images);
         }
@@ -234,7 +234,7 @@ implements AutoCloseable {
 
     @Nullable
     public TextureTickListener method_33443() {
-        return this.field_28468;
+        return this.animation;
     }
 
     public VertexConsumer getTextureSpecificVertexConsumer(VertexConsumer vertexConsumer) {
@@ -242,81 +242,81 @@ implements AutoCloseable {
     }
 
     @Environment(value=EnvType.CLIENT)
-    class class_5790
+    class Animation
     implements TextureTickListener,
     AutoCloseable {
-        private int field_28470;
-        private int field_28471;
-        private final List<class_5791> field_28472;
-        private final int field_28473;
+        private int frameIndex;
+        private int frameTicks;
+        private final List<AnimationFrame> frames;
+        private final int frameCount;
         @Nullable
-        private final Interpolation field_28474;
+        private final Interpolation interpolation;
 
-        private class_5790(List<class_5791> list, @Nullable int i, Interpolation interpolation) {
-            this.field_28472 = list;
-            this.field_28473 = i;
-            this.field_28474 = interpolation;
+        private Animation(List<AnimationFrame> frames, @Nullable int frameCount, Interpolation interpolation) {
+            this.frames = frames;
+            this.frameCount = frameCount;
+            this.interpolation = interpolation;
         }
 
-        private int method_33446(int i) {
-            return i % this.field_28473;
+        private int getFrameX(int frame) {
+            return frame % this.frameCount;
         }
 
-        private int method_33451(int i) {
-            return i / this.field_28473;
+        private int getFrameY(int frame) {
+            return frame / this.frameCount;
         }
 
-        private void method_33455(int i) {
-            int j = this.method_33446(i) * Sprite.this.width;
-            int k = this.method_33451(i) * Sprite.this.height;
-            Sprite.this.upload(j, k, Sprite.this.images);
+        private void upload(int frameIndex) {
+            int i = this.getFrameX(frameIndex) * Sprite.this.width;
+            int j = this.getFrameY(frameIndex) * Sprite.this.height;
+            Sprite.this.upload(i, j, Sprite.this.images);
         }
 
         @Override
         public void close() {
-            if (this.field_28474 != null) {
-                this.field_28474.close();
+            if (this.interpolation != null) {
+                this.interpolation.close();
             }
         }
 
         @Override
         public void tick() {
-            ++this.field_28471;
-            class_5791 lv = this.field_28472.get(this.field_28470);
-            if (this.field_28471 >= lv.field_28476) {
-                int i = lv.field_28475;
-                this.field_28470 = (this.field_28470 + 1) % this.field_28472.size();
-                this.field_28471 = 0;
-                int j = this.field_28472.get(this.field_28470).field_28475;
+            ++this.frameTicks;
+            AnimationFrame animationFrame = this.frames.get(this.frameIndex);
+            if (this.frameTicks >= animationFrame.time) {
+                int i = animationFrame.index;
+                this.frameIndex = (this.frameIndex + 1) % this.frames.size();
+                this.frameTicks = 0;
+                int j = this.frames.get(this.frameIndex).index;
                 if (i != j) {
-                    this.method_33455(j);
+                    this.upload(j);
                 }
-            } else if (this.field_28474 != null) {
+            } else if (this.interpolation != null) {
                 if (!RenderSystem.isOnRenderThread()) {
-                    RenderSystem.recordRenderCall(() -> this.field_28474.apply(this));
+                    RenderSystem.recordRenderCall(() -> this.interpolation.apply(this));
                 } else {
-                    this.field_28474.apply(this);
+                    this.interpolation.apply(this);
                 }
             }
         }
 
-        public void method_33445() {
-            this.method_33455(this.field_28472.get(0).field_28475);
+        public void upload() {
+            this.upload(this.frames.get(0).index);
         }
 
         public IntStream method_33450() {
-            return this.field_28472.stream().mapToInt(arg -> ((class_5791)arg).field_28475).distinct();
+            return this.frames.stream().mapToInt(animationFrame -> ((AnimationFrame)animationFrame).index).distinct();
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    static class class_5791 {
-        private final int field_28475;
-        private final int field_28476;
+    static class AnimationFrame {
+        private final int index;
+        private final int time;
 
-        private class_5791(int i, int j) {
-            this.field_28475 = i;
-            this.field_28476 = j;
+        private AnimationFrame(int index, int time) {
+            this.index = index;
+            this.time = time;
         }
     }
 
@@ -335,19 +335,19 @@ implements AutoCloseable {
             }
         }
 
-        private void apply(class_5790 arg) {
+        private void apply(Animation animation) {
             int j;
-            class_5791 lv = (class_5791)arg.field_28472.get(arg.field_28470);
-            double d = 1.0 - (double)arg.field_28471 / (double)lv.field_28476;
-            int i = lv.field_28475;
-            if (i != (j = ((class_5791)arg.field_28472.get((arg.field_28470 + 1) % arg.field_28472.size())).field_28475)) {
+            AnimationFrame animationFrame = (AnimationFrame)animation.frames.get(animation.frameIndex);
+            double d = 1.0 - (double)animation.frameTicks / (double)animationFrame.time;
+            int i = animationFrame.index;
+            if (i != (j = ((AnimationFrame)animation.frames.get((animation.frameIndex + 1) % animation.frames.size())).index)) {
                 for (int k = 0; k < this.images.length; ++k) {
                     int l = Sprite.this.width >> k;
                     int m = Sprite.this.height >> k;
                     for (int n = 0; n < m; ++n) {
                         for (int o = 0; o < l; ++o) {
-                            int p = this.getPixelColor(arg, i, k, o, n);
-                            int q = this.getPixelColor(arg, j, k, o, n);
+                            int p = this.getPixelColor(animation, i, k, o, n);
+                            int q = this.getPixelColor(animation, j, k, o, n);
                             int r = this.lerp(d, p >> 16 & 0xFF, q >> 16 & 0xFF);
                             int s = this.lerp(d, p >> 8 & 0xFF, q >> 8 & 0xFF);
                             int t = this.lerp(d, p & 0xFF, q & 0xFF);
@@ -359,8 +359,8 @@ implements AutoCloseable {
             }
         }
 
-        private int getPixelColor(class_5790 arg, int i, int j, int k, int l) {
-            return Sprite.this.images[j].getPixelColor(k + (arg.method_33446(i) * Sprite.this.width >> j), l + (arg.method_33451(i) * Sprite.this.height >> j));
+        private int getPixelColor(Animation animation, int frameIndex, int i, int j, int k) {
+            return Sprite.this.images[i].getPixelColor(j + (animation.getFrameX(frameIndex) * Sprite.this.width >> i), k + (animation.getFrameY(frameIndex) * Sprite.this.height >> i));
         }
 
         private int lerp(double delta, int to, int from) {

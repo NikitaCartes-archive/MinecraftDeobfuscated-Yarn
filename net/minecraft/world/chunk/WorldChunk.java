@@ -30,8 +30,6 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.class_5711;
-import net.minecraft.class_5713;
 import net.minecraft.client.world.DummyClientTickScheduler;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
@@ -64,7 +62,9 @@ import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.chunk.UpgradeData;
+import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.event.listener.GameEventListener;
+import net.minecraft.world.event.listener.SimpleGameEventDispatcher;
 import net.minecraft.world.gen.chunk.DebugChunkGenerator;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
@@ -119,7 +119,7 @@ implements Chunk {
     private Consumer<WorldChunk> loadToWorldConsumer;
     private final ChunkPos pos;
     private volatile boolean lightOn;
-    private final Int2ObjectMap<class_5713> field_28129;
+    private final Int2ObjectMap<GameEventDispatcher> gameEventDispatchers;
 
     public WorldChunk(World world, ChunkPos pos, BiomeArray biomes) {
         this(world, pos, biomes, UpgradeData.NO_UPGRADE_DATA, DummyClientTickScheduler.get(), DummyClientTickScheduler.get(), 0L, null, null);
@@ -129,7 +129,7 @@ implements Chunk {
         this.world = world;
         this.pos = pos;
         this.upgradeData = upgradeData;
-        this.field_28129 = new Int2ObjectOpenHashMap<class_5713>();
+        this.gameEventDispatchers = new Int2ObjectOpenHashMap<GameEventDispatcher>();
         for (Heightmap.Type type : Heightmap.Type.values()) {
             if (!ChunkStatus.FULL.getHeightmapTypes().contains(type)) continue;
             this.heightmaps.put(type, new Heightmap(this, type));
@@ -170,8 +170,8 @@ implements Chunk {
     }
 
     @Override
-    public class_5713 method_32914(int i2) {
-        return this.field_28129.computeIfAbsent(i2, i -> new class_5711(this.world));
+    public GameEventDispatcher getGameEventDispatcher(int ySectionCoord) {
+        return this.gameEventDispatchers.computeIfAbsent(ySectionCoord, sectionCoord -> new SimpleGameEventDispatcher(this.world));
     }
 
     @Override
@@ -418,10 +418,10 @@ implements Chunk {
         Block block = blockEntity.getCachedState().getBlock();
         if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(this.world, blockEntity)) != null) {
             int i = ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY());
-            class_5713 lv = this.method_32914(i);
-            lv.removeListener(gameEventListener);
-            if (lv.isEmpty()) {
-                this.field_28129.remove(i);
+            GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(i);
+            gameEventDispatcher.removeListener(gameEventListener);
+            if (gameEventDispatcher.isEmpty()) {
+                this.gameEventDispatchers.remove(i);
             }
         }
     }
@@ -738,8 +738,8 @@ implements Chunk {
         }
         Block block = blockEntity.getCachedState().getBlock();
         if (block instanceof BlockEntityProvider && (gameEventListener = ((BlockEntityProvider)((Object)block)).getGameEventListener(this.world, blockEntity)) != null) {
-            class_5713 lv = this.method_32914(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY()));
-            lv.addListener(gameEventListener);
+            GameEventDispatcher gameEventDispatcher = this.getGameEventDispatcher(ChunkSectionPos.getSectionCoord(blockEntity.getPos().getY()));
+            gameEventDispatcher.addListener(gameEventListener);
         }
     }
 

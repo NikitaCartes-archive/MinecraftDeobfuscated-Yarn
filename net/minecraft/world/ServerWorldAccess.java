@@ -18,7 +18,7 @@ extends WorldAccess {
      * Spawns an entity and all its passengers (recursively) into the world.
      */
     default public void spawnEntityAndPassengers(Entity entity) {
-        entity.streamPassengersRecursively().forEach(this::spawnEntity);
+        entity.streamSelfAndPassengers().forEach(this::spawnEntity);
     }
 }
 

@@ -60,12 +60,12 @@ extends Feature<HugeMushroomFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<HugeMushroomFeatureConfig> featureContext) {
+    public boolean generate(FeatureContext<HugeMushroomFeatureConfig> context) {
         BlockPos.Mutable mutable;
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        BlockPos blockPos = featureContext.getPos();
-        Random random = featureContext.getRandom();
-        HugeMushroomFeatureConfig hugeMushroomFeatureConfig = featureContext.getConfig();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        BlockPos blockPos = context.getPos();
+        Random random = context.getRandom();
+        HugeMushroomFeatureConfig hugeMushroomFeatureConfig = context.getConfig();
         int i = this.getHeight(random);
         if (!this.canGenerate(structureWorldAccess, blockPos, i, mutable = new BlockPos.Mutable(), hugeMushroomFeatureConfig)) {
             return false;

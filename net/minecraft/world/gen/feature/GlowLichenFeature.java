@@ -27,11 +27,11 @@ extends Feature<GlowLichenFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<GlowLichenFeatureConfig> featureContext) {
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        BlockPos blockPos = featureContext.getPos();
-        Random random = featureContext.getRandom();
-        GlowLichenFeatureConfig glowLichenFeatureConfig = featureContext.getConfig();
+    public boolean generate(FeatureContext<GlowLichenFeatureConfig> context) {
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        BlockPos blockPos = context.getPos();
+        Random random = context.getRandom();
+        GlowLichenFeatureConfig glowLichenFeatureConfig = context.getConfig();
         if (!GlowLichenFeature.isAirOrWater(structureWorldAccess.getBlockState(blockPos))) {
             return false;
         }

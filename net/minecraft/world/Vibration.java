@@ -15,7 +15,7 @@ import net.minecraft.world.event.PositionSource;
 import net.minecraft.world.event.PositionSourceType;
 
 public class Vibration {
-    public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.CODEC.fieldOf("origin")).forGetter(vibration -> vibration.origin), ((MapCodec)PositionSource.TYPE_CODEC.fieldOf("destination")).forGetter(vibration -> vibration.destination), ((MapCodec)Codec.INT.fieldOf("arrival_in_ticks")).forGetter(vibration -> vibration.arrivalInTicks)).apply((Applicative<Vibration, ?>)instance, Vibration::new));
+    public static final Codec<Vibration> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)BlockPos.CODEC.fieldOf("origin")).forGetter(vibration -> vibration.origin), ((MapCodec)PositionSource.CODEC.fieldOf("destination")).forGetter(vibration -> vibration.destination), ((MapCodec)Codec.INT.fieldOf("arrival_in_ticks")).forGetter(vibration -> vibration.arrivalInTicks)).apply((Applicative<Vibration, ?>)instance, Vibration::new));
     private final BlockPos origin;
     private final PositionSource destination;
     private final int arrivalInTicks;

@@ -22,11 +22,11 @@ extends Feature<RandomPatchFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<RandomPatchFeatureConfig> featureContext) {
-        RandomPatchFeatureConfig randomPatchFeatureConfig = featureContext.getConfig();
-        Random random = featureContext.getRandom();
-        BlockPos blockPos = featureContext.getPos();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+    public boolean generate(FeatureContext<RandomPatchFeatureConfig> context) {
+        RandomPatchFeatureConfig randomPatchFeatureConfig = context.getConfig();
+        Random random = context.getRandom();
+        BlockPos blockPos = context.getPos();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockState blockState = randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
         BlockPos blockPos2 = randomPatchFeatureConfig.project ? structureWorldAccess.getTopPosition(Heightmap.Type.WORLD_SURFACE_WG, blockPos) : blockPos;
         int i = 0;

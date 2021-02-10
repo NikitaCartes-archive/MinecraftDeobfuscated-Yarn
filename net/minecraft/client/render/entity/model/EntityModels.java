@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BedBlockEntityRenderer;
@@ -92,7 +93,6 @@ import net.minecraft.client.render.entity.model.WitchEntityModel;
 import net.minecraft.client.render.entity.model.WitherEntityModel;
 import net.minecraft.client.render.entity.model.WolfEntityModel;
 import net.minecraft.client.render.entity.model.ZombieVillagerEntityModel;
-import net.minecraft.client.util.math.Dilation;
 import net.minecraft.entity.vehicle.BoatEntity;
 import net.minecraft.util.SignType;
 

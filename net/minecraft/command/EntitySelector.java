@@ -12,7 +12,6 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.class_5575;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -22,20 +21,21 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Texts;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 public class EntitySelector {
-    private static final class_5575<Entity, ?> field_27774 = new class_5575<Entity, Entity>(){
+    private static final TypeFilter<Entity, ?> PASSTHROUGH_FILTER = new TypeFilter<Entity, Entity>(){
 
         @Override
-        public Entity method_31796(Entity entity) {
+        public Entity downcast(Entity entity) {
             return entity;
         }
 
         @Override
-        public Class<? extends Entity> method_31794() {
+        public Class<? extends Entity> getBaseClass() {
             return Entity.class;
         }
     };
@@ -53,7 +53,7 @@ public class EntitySelector {
     private final String playerName;
     @Nullable
     private final UUID uuid;
-    private class_5575<Entity, ?> type;
+    private TypeFilter<Entity, ?> entityFilter;
     private final boolean usesAt;
 
     public EntitySelector(int count, boolean includesNonPlayers, boolean localWorldOnly, Predicate<Entity> basePredicate, NumberRange.FloatRange distance, Function<Vec3d, Vec3d> positionOffset, @Nullable Box box, BiConsumer<Vec3d, List<? extends Entity>> sorter, boolean senderOnly, @Nullable String playerName, @Nullable UUID uuid, @Nullable EntityType<?> type, boolean usesAt) {
@@ -68,7 +68,7 @@ public class EntitySelector {
         this.senderOnly = senderOnly;
         this.playerName = playerName;
         this.uuid = uuid;
-        this.type = type == null ? field_27774 : type;
+        this.entityFilter = type == null ? PASSTHROUGH_FILTER : type;
         this.usesAt = usesAt;
     }
 
@@ -147,9 +147,9 @@ public class EntitySelector {
 
     private void appendEntitiesFromWorld(List<Entity> list, ServerWorld serverWorld, Vec3d vec3d, Predicate<Entity> predicate) {
         if (this.box != null) {
-            list.addAll(serverWorld.getEntitiesByType(this.type, this.box.offset(vec3d), predicate));
+            list.addAll(serverWorld.getEntitiesByType(this.entityFilter, this.box.offset(vec3d), predicate));
         } else {
-            list.addAll(serverWorld.getEntitiesByType(this.type, predicate));
+            list.addAll(serverWorld.getEntitiesByType(this.entityFilter, predicate));
         }
     }
 

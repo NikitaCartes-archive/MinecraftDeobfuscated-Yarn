@@ -12,7 +12,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LilyPadBlock;
-import net.minecraft.class_5459;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -51,6 +50,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
@@ -143,8 +143,8 @@ extends Entity {
     }
 
     @Override
-    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-        return LivingEntity.method_31079(super.method_30633(axis, arg));
+    protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
+        return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
     }
 
     @Override
@@ -476,7 +476,7 @@ extends Entity {
         int m = MathHelper.floor(box.minZ);
         int n = MathHelper.ceil(box.maxZ);
         boolean bl = false;
-        this.waterLevel = Double.MIN_VALUE;
+        this.waterLevel = -1.7976931348623157E308;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int o = i; o < j; ++o) {
             for (int p = k; p < l; ++p) {

@@ -15,7 +15,6 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_5575;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
@@ -27,6 +26,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -363,7 +363,7 @@ implements StructureWorldAccess {
     }
 
     @Override
-    public <T extends Entity> List<T> getEntitiesByType(class_5575<Entity, T> arg, Box box, Predicate<? super T> predicate) {
+    public <T extends Entity> List<T> getEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate) {
         return Collections.emptyList();
     }
 

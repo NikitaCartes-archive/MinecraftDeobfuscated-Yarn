@@ -1,15 +1,15 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.util.math;
+package net.minecraft.util.math;
 
 import com.google.common.collect.Maps;
 import java.util.Map;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;

@@ -17,8 +17,8 @@ public class AnimationResourceMetadata {
     public static final AnimationResourceMetadata EMPTY = new AnimationResourceMetadata((List)Lists.newArrayList(), -1, -1, 1, false){
 
         @Override
-        public Pair<Integer, Integer> method_24141(int i, int j) {
-            return Pair.of(i, j);
+        public Pair<Integer, Integer> ensureImageSize(int x, int y) {
+            return Pair.of(x, y);
         }
     };
     private final List<AnimationFrameResourceMetadata> frames;
@@ -35,16 +35,16 @@ public class AnimationResourceMetadata {
         this.interpolate = interpolate;
     }
 
-    private static boolean method_24142(int i, int j) {
-        return i / j * j == i;
+    private static boolean isMultipleOf(int dividend, int divisor) {
+        return dividend / divisor * divisor == dividend;
     }
 
-    public Pair<Integer, Integer> method_24141(int i, int j) {
-        Pair<Integer, Integer> pair = this.getSize(i, j);
-        int k = pair.getFirst();
-        int l = pair.getSecond();
-        if (!AnimationResourceMetadata.method_24142(i, k) || !AnimationResourceMetadata.method_24142(j, l)) {
-            throw new IllegalArgumentException(String.format("Image size %s,%s is not multiply of frame size %s,%s", i, j, k, l));
+    public Pair<Integer, Integer> ensureImageSize(int x, int y) {
+        Pair<Integer, Integer> pair = this.getSize(x, y);
+        int i = pair.getFirst();
+        int j = pair.getSecond();
+        if (!AnimationResourceMetadata.isMultipleOf(x, i) || !AnimationResourceMetadata.isMultipleOf(y, j)) {
+            throw new IllegalArgumentException(String.format("Image size %s,%s is not multiply of frame size %s,%s", x, y, i, j));
         }
         return pair;
     }
@@ -79,15 +79,15 @@ public class AnimationResourceMetadata {
         return this.interpolate;
     }
 
-    public void method_33460(class_5792 arg) {
+    public void forEachFrame(FrameConsumer consumer) {
         for (AnimationFrameResourceMetadata animationFrameResourceMetadata : this.frames) {
-            arg.accept(animationFrameResourceMetadata.getIndex(), animationFrameResourceMetadata.getTime(this.defaultFrameTime));
+            consumer.accept(animationFrameResourceMetadata.getIndex(), animationFrameResourceMetadata.getTime(this.defaultFrameTime));
         }
     }
 
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
-    public static interface class_5792 {
+    public static interface FrameConsumer {
         public void accept(int var1, int var2);
     }
 }

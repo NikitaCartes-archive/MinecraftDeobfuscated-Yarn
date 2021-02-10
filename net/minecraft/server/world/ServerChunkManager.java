@@ -23,7 +23,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5567;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.Packet;
 import net.minecraft.server.WorldGenerationProgressListener;
@@ -51,6 +50,7 @@ import net.minecraft.world.WorldProperties;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkManager;
 import net.minecraft.world.chunk.ChunkStatus;
+import net.minecraft.world.chunk.ChunkStatusChangeListener;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -78,7 +78,7 @@ extends ChunkManager {
     @Nullable
     private SpawnHelper.Info spawnEntry;
 
-    public ServerChunkManager(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, class_5567 arg, Supplier<PersistentStateManager> supplier) {
+    public ServerChunkManager(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> supplier) {
         this.world = serverWorld;
         this.mainThreadExecutor = new MainThreadExecutor(serverWorld);
         this.chunkGenerator = chunkGenerator;
@@ -87,7 +87,7 @@ extends ChunkManager {
         File file2 = new File(file, "data");
         file2.mkdirs();
         this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
-        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, arg, supplier, viewDistance, bl);
+        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, chunkStatusChangeListener, supplier, viewDistance, bl);
         this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
         this.initChunkCaches();

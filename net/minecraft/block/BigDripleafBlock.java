@@ -8,8 +8,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
+import net.minecraft.block.BigDripleafStemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -20,11 +20,9 @@ import net.minecraft.block.Waterloggable;
 import net.minecraft.block.enums.Tilt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -33,11 +31,9 @@ import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
-import net.minecraft.tag.FluidTags;
 import net.minecraft.util.Util;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
@@ -57,11 +53,10 @@ Waterloggable {
     private static final EnumProperty<Tilt> TILT = Properties.TILT;
     private static final Object2IntMap<Tilt> NEXT_TILT_DELAYS = Util.make(new Object2IntArrayMap(), object2IntArrayMap -> {
         object2IntArrayMap.defaultReturnValue(-1);
-        object2IntArrayMap.put(Tilt.UNSTABLE, 20);
+        object2IntArrayMap.put(Tilt.UNSTABLE, 10);
         object2IntArrayMap.put(Tilt.PARTIAL, 10);
         object2IntArrayMap.put(Tilt.FULL, 100);
     });
-    private static final Box UNTILTED_SHAPE = Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 16.0, 16.0).getBoundingBox();
     private static final Map<Tilt, VoxelShape> SHAPES_FOR_TILT = ImmutableMap.of(Tilt.NONE, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0), Tilt.UNSTABLE, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0), Tilt.PARTIAL, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 13.0, 16.0), Tilt.FULL, VoxelShapes.empty());
     private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTION = ImmutableMap.of(Direction.NORTH, Block.createCuboidShape(5.0, 0.0, 8.0, 11.0, 11.0, 14.0), Direction.SOUTH, Block.createCuboidShape(5.0, 0.0, 2.0, 11.0, 11.0, 8.0), Direction.EAST, Block.createCuboidShape(2.0, 0.0, 5.0, 8.0, 11.0, 11.0), Direction.WEST, Block.createCuboidShape(8.0, 0.0, 5.0, 14.0, 11.0, 11.0));
     private final Map<BlockState, VoxelShape> shapes;
@@ -72,7 +67,7 @@ Waterloggable {
         this.shapes = this.getShapesForStates(BigDripleafBlock::getShapeForState);
     }
 
-    protected static VoxelShape getShapeForState(BlockState state) {
+    private static VoxelShape getShapeForState(BlockState state) {
         return VoxelShapes.union(BigDripleafBlock.getShapeForStateTilt(state), BigDripleafBlock.getShapeForStateDirection(state));
     }
 
@@ -85,22 +80,38 @@ Waterloggable {
     }
 
     protected static void grow(World world, Random random, BlockPos pos) {
-        int i = world.getTopY() - pos.getY();
-        int j = 1 + random.nextInt(5);
-        int k = Math.min(j, i);
+        int j;
+        int i = 1 + random.nextInt(5);
         Direction direction = Direction.Type.HORIZONTAL.random(random);
         BlockPos.Mutable mutable = pos.mutableCopy();
-        for (int l = 0; l < k; ++l) {
-            Block block = l == k - 1 ? Blocks.BIG_DRIPLEAF : Blocks.BIG_DRIPLEAF_STEM;
-            BlockState blockState = (BlockState)((BlockState)block.getDefaultState().with(WATERLOGGED, world.getFluidState(mutable).getFluid() == Fluids.WATER)).with(HorizontalFacingBlock.FACING, direction);
-            world.setBlockState(mutable, blockState, 2);
+        for (j = 0; j < i && BigDripleafBlock.canGrowInto(world, mutable, world.getBlockState(mutable)); ++j) {
             mutable.move(Direction.UP);
         }
+        int k = pos.getY() + j - 1;
+        mutable.setY(pos.getY());
+        while (mutable.getY() < k) {
+            BigDripleafStemBlock.placeStemAt(world, mutable, world.getFluidState(mutable), direction);
+            mutable.move(Direction.UP);
+        }
+        BigDripleafBlock.placeDripleafAt(world, mutable, world.getFluidState(mutable), direction);
+    }
+
+    private static boolean canGrowInto(BlockState state) {
+        return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.SMALL_DRIPLEAF);
+    }
+
+    private static boolean canGrowInto(World world, BlockPos pos, BlockState state) {
+        return world.isInBuildLimit(pos) && BigDripleafBlock.canGrowInto(state);
+    }
+
+    protected static boolean placeDripleafAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
+        BlockState blockState = (BlockState)((BlockState)Blocks.BIG_DRIPLEAF.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
+        return world.setBlockState(pos, blockState, 2);
     }
 
     @Override
     public void onProjectileHit(World world, BlockState state, BlockHitResult hit, ProjectileEntity projectile) {
-        world.breakBlock(hit.getBlockPos(), true, projectile);
+        this.changeTilt(state, world, hit.getBlockPos(), Tilt.FULL, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_DOWN);
     }
 
     @Override
@@ -120,8 +131,8 @@ Waterloggable {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (!state.canPlaceAt(world, pos)) {
-            world.breakBlock(pos, true);
+        if (direction == Direction.DOWN && !state.canPlaceAt(world, pos)) {
+            return state.get(WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
         }
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
@@ -132,7 +143,7 @@ Waterloggable {
     @Override
     public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
         BlockState blockState = world.getBlockState(pos.up());
-        return blockState.isAir() || blockState.getFluidState().isIn(FluidTags.WATER);
+        return BigDripleafBlock.canGrowInto(blockState);
     }
 
     @Override
@@ -142,22 +153,13 @@ Waterloggable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        boolean bl;
+        BlockState blockState;
         BlockPos blockPos = pos.up();
-        if (!world.isInBuildLimit(blockPos)) {
-            return;
+        if (BigDripleafBlock.canGrowInto(world, blockPos, blockState = world.getBlockState(blockPos))) {
+            Direction direction = state.get(FACING);
+            BigDripleafStemBlock.placeStemAt(world, pos, state.getFluidState(), direction);
+            BigDripleafBlock.placeDripleafAt(world, blockPos, blockState.getFluidState(), direction);
         }
-        BlockState blockState = world.getBlockState(blockPos);
-        Fluid fluid = blockState.getFluidState().getFluid();
-        if (blockState.isAir() || fluid == Fluids.FLOWING_WATER) {
-            bl = false;
-        } else if (fluid == Fluids.WATER) {
-            bl = true;
-        } else {
-            return;
-        }
-        world.setBlockState(blockPos, (BlockState)((BlockState)Blocks.BIG_DRIPLEAF.getDefaultState().with(FACING, state.get(FACING))).with(WATERLOGGED, bl), 2);
-        world.setBlockState(pos, (BlockState)((BlockState)Blocks.BIG_DRIPLEAF_STEM.getDefaultState().with(FACING, state.get(FACING))).with(WATERLOGGED, state.get(WATERLOGGED)), 2);
     }
 
     @Override
@@ -165,46 +167,37 @@ Waterloggable {
         if (world.isClient) {
             return;
         }
-        if (state.get(TILT) == Tilt.NONE && BigDripleafBlock.shouldEntityTilt(pos, entity, true)) {
+        if (state.get(TILT) == Tilt.NONE && BigDripleafBlock.isEntityAbove(pos, entity)) {
             this.changeTilt(state, world, pos, Tilt.UNSTABLE, null);
         }
     }
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        if (world.isReceivingRedstonePower(pos)) {
+            BigDripleafBlock.resetTilt(state, world, pos);
+            return;
+        }
         Tilt tilt = state.get(TILT);
         if (tilt == Tilt.UNSTABLE) {
-            if (BigDripleafBlock.shouldTilt(world, pos, true)) {
-                this.changeTilt(state, world, pos, Tilt.PARTIAL, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_DOWN);
-            } else {
-                this.resetTilt(state, world, pos);
-            }
+            this.changeTilt(state, world, pos, Tilt.PARTIAL, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_DOWN);
         } else if (tilt == Tilt.PARTIAL) {
-            if (BigDripleafBlock.shouldTilt(world, pos, false)) {
-                this.changeTilt(state, world, pos, Tilt.FULL, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_DOWN);
-            } else {
-                this.changeTilt(state, world, pos, Tilt.UNSTABLE, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
-            }
+            this.changeTilt(state, world, pos, Tilt.FULL, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_DOWN);
         } else if (tilt == Tilt.FULL) {
-            this.resetTilt(state, world, pos);
+            BigDripleafBlock.resetTilt(state, world, pos);
         }
     }
 
-    private void playTiltSound(World world, BlockPos pos, SoundEvent sound) {
+    @Override
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block block, BlockPos fromPos, boolean notify) {
+        if (world.isReceivingRedstonePower(pos)) {
+            BigDripleafBlock.resetTilt(state, world, pos);
+        }
+    }
+
+    private static void playTiltSound(World world, BlockPos blockPos, SoundEvent soundEvent) {
         float f = MathHelper.nextBetween(world.random, 0.8f, 1.2f);
-        world.playSound(null, pos, sound, SoundCategory.BLOCKS, 1.0f, f);
-    }
-
-    private static boolean shouldTilt(World world, BlockPos pos, boolean bl) {
-        Predicate<Entity> predicate = EntityPredicates.EXCEPT_SPECTATOR.and(entity -> BigDripleafBlock.shouldEntityTilt(pos, entity, bl));
-        return !world.getOtherEntities(null, UNTILTED_SHAPE.offset(pos), predicate).isEmpty();
-    }
-
-    private static boolean shouldEntityTilt(BlockPos pos, Entity entity, boolean bl) {
-        if (bl && entity.bypassesSteppingEffects()) {
-            return false;
-        }
-        return BigDripleafBlock.isEntityAbove(pos, entity);
+        world.playSound(null, blockPos, soundEvent, SoundCategory.BLOCKS, 1.0f, f);
     }
 
     private static boolean isEntityAbove(BlockPos pos, Entity entity) {
@@ -213,24 +206,24 @@ Waterloggable {
 
     private void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt, @Nullable SoundEvent sound) {
         int i;
-        this.changeTilt(state, world, pos, tilt);
+        BigDripleafBlock.changeTilt(state, world, pos, tilt);
         if (sound != null) {
-            this.playTiltSound(world, pos, sound);
+            BigDripleafBlock.playTiltSound(world, pos, sound);
         }
         if ((i = NEXT_TILT_DELAYS.getInt(tilt)) != -1) {
             world.getBlockTickScheduler().schedule(pos, this, i);
         }
     }
 
-    private void resetTilt(BlockState state, World world, BlockPos pos) {
-        this.changeTilt(state, world, pos, Tilt.NONE);
-        this.playTiltSound(world, pos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
+    private static void resetTilt(BlockState blockState, World world, BlockPos blockPos) {
+        BigDripleafBlock.changeTilt(blockState, world, blockPos, Tilt.NONE);
+        BigDripleafBlock.playTiltSound(world, blockPos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
     }
 
-    private void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt) {
-        world.setBlockState(pos, (BlockState)state.with(TILT, tilt), 2);
+    private static void changeTilt(BlockState blockState, World world, BlockPos blockPos, Tilt tilt) {
+        world.setBlockState(blockPos, (BlockState)blockState.with(TILT, tilt), 2);
         if (tilt.isStable()) {
-            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos);
         }
     }
 

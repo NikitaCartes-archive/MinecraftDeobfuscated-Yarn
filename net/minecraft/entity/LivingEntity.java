@@ -33,7 +33,6 @@ import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.PowderSnowBlock;
 import net.minecraft.block.TrapdoorBlock;
-import net.minecraft.class_5459;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -127,6 +126,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
@@ -2443,8 +2443,8 @@ extends Entity {
     }
 
     @Override
-    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-        return LivingEntity.method_31079(super.method_30633(axis, arg));
+    protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
+        return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
     }
 
     public static Vec3d method_31079(Vec3d vec3d) {

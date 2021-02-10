@@ -10,11 +10,12 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5742;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -32,12 +33,12 @@ import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.GenerationSettings;
 import net.minecraft.world.biome.SpawnSettings;
 import net.minecraft.world.biome.source.BiomeAccess;
 import net.minecraft.world.biome.source.BiomeArray;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ProtoChunk;
@@ -146,7 +147,7 @@ public abstract class ChunkGenerator {
         ChunkPos chunkPos = chunk.getPos();
         int j = chunkPos.x;
         int k = chunkPos.z;
-        GenerationSettings generationSettings = this.populationSource.getBiomeForNoiseGen(class_5742.method_33100(chunkPos.getStartX()), 0, class_5742.method_33100(chunkPos.getStartZ())).getGenerationSettings();
+        GenerationSettings generationSettings = this.populationSource.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getStartX()), 0, BiomeCoords.fromBlock(chunkPos.getStartZ())).getGenerationSettings();
         BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
         for (int l = j - 8; l <= j + 8; ++l) {
             for (int m = k - 8; m <= k + 8; ++m) {
@@ -243,7 +244,7 @@ public abstract class ChunkGenerator {
     }
 
     public int getWorldHeight() {
-        return 256;
+        return 384;
     }
 
     public List<SpawnSettings.SpawnEntry> getEntitySpawnList(Biome biome, StructureAccessor accessor, SpawnGroup group, BlockPos pos) {
@@ -309,10 +310,14 @@ public abstract class ChunkGenerator {
     /**
      * Generates the base shape of the chunk out of the basic block states as decided by this chunk generator's config.
      */
-    public abstract void populateNoise(WorldAccess var1, StructureAccessor var2, Chunk var3);
+    public abstract CompletableFuture<Chunk> populateNoise(Executor var1, StructureAccessor var2, Chunk var3);
 
     public int getSeaLevel() {
         return 63;
+    }
+
+    public int getMinimumY() {
+        return 0;
     }
 
     /**

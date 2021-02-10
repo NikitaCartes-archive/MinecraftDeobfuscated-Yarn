@@ -7,11 +7,11 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.FixedColorVertexConsumer;
 import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vector4f;
 
 @Environment(value=EnvType.CLIENT)
 public class OverlayVertexConsumer

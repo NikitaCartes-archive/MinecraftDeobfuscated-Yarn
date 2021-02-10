@@ -11,6 +11,7 @@ import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeSource;
 import net.minecraft.world.biome.source.TheEndBiomeSource;
+import net.minecraft.world.gen.NoiseCaveSampler;
 import net.minecraft.world.gen.chunk.GenerationShapeConfig;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,8 +47,10 @@ public class NoiseColumnSampler {
     private final double bottomSlideOffset;
     private final double densityFactor;
     private final double densityOffset;
+    @Nullable
+    private final NoiseCaveSampler noiseCaveSampler;
 
-    public NoiseColumnSampler(BiomeSource biomeSource, int horizontalNoiseResolution, int verticalNoiseResolution, int noiseSizeY, GenerationShapeConfig config, InterpolatedNoise noise, @Nullable SimplexNoiseSampler islandNoise, OctavePerlinNoiseSampler densityNoise) {
+    public NoiseColumnSampler(BiomeSource biomeSource, int horizontalNoiseResolution, int verticalNoiseResolution, int noiseSizeY, GenerationShapeConfig config, InterpolatedNoise noise, @Nullable SimplexNoiseSampler islandNoise, OctavePerlinNoiseSampler densityNoise, @Nullable NoiseCaveSampler noiseCaveSampler) {
         this.horizontalNoiseResolution = horizontalNoiseResolution;
         this.verticalNoiseResolution = verticalNoiseResolution;
         this.biomeSource = biomeSource;
@@ -64,6 +67,7 @@ public class NoiseColumnSampler {
         this.bottomSlideOffset = config.getBottomSlide().getOffset();
         this.densityFactor = config.getDensityFactor();
         this.densityOffset = config.getDensityOffset();
+        this.noiseCaveSampler = noiseCaveSampler;
     }
 
     /**
@@ -120,8 +124,16 @@ public class NoiseColumnSampler {
             int ae = ad + minY;
             double af = this.noise.sample(x, ae, z, y, aa, ab, ac);
             double ag = this.getOffset(ae, d, e, v) + af;
+            ag = this.sampleNoiseCaves(x * this.horizontalNoiseResolution, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, af, ag);
             buffer[ad] = ag = this.applySlides(ag, ae);
         }
+    }
+
+    private double sampleNoiseCaves(int x, int y, int z, double noise, double offset) {
+        if (this.noiseCaveSampler == null) {
+            return offset;
+        }
+        return this.noiseCaveSampler.sample(x, y, z, noise, offset);
     }
 
     /**

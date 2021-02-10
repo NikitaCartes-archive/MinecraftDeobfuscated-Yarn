@@ -32,14 +32,10 @@ import net.minecraft.block.FenceGateBlock;
 import net.minecraft.block.HoneyBlock;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.piston.PistonBehavior;
-import net.minecraft.class_5459;
-import net.minecraft.class_5569;
-import net.minecraft.class_5715;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.ProtectionEnchantment;
 import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityLike;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -112,6 +108,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.TeleportTarget;
 import net.minecraft.world.World;
@@ -119,7 +116,10 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.border.WorldBorder;
 import net.minecraft.world.dimension.AreaHelper;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.entity.EntityChangeListener;
+import net.minecraft.world.entity.EntityLike;
 import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.event.listener.EntityGameEventHandler;
 import net.minecraft.world.explosion.Explosion;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -191,7 +191,7 @@ CommandOutput {
     private static final TrackedData<Boolean> NO_GRAVITY = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.BOOLEAN);
     protected static final TrackedData<EntityPose> POSE = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.ENTITY_POSE);
     private static final TrackedData<Integer> FROZEN_TICKS = DataTracker.registerData(Entity.class, TrackedDataHandlerRegistry.INTEGER);
-    private class_5569 field_26996 = class_5569.field_27243;
+    private EntityChangeListener entityChangeListener = EntityChangeListener.NONE;
     private Vec3d trackedPosition;
     public boolean ignoreCameraFrustum;
     public boolean velocityDirty;
@@ -851,20 +851,20 @@ CommandOutput {
     protected void onBlockCollision(BlockState state) {
     }
 
-    public void method_33568(GameEvent gameEvent, @Nullable Entity entity, BlockPos blockPos) {
-        this.world.emitGameEvent(entity, gameEvent, blockPos);
+    public void emitGameEvent(GameEvent event, @Nullable Entity entity, BlockPos pos) {
+        this.world.emitGameEvent(entity, event, pos);
     }
 
-    public void emitGameEvent(GameEvent gameEvent, @Nullable Entity entity) {
-        this.method_33568(gameEvent, entity, this.blockPos);
+    public void emitGameEvent(GameEvent event, @Nullable Entity entity) {
+        this.emitGameEvent(event, entity, this.blockPos);
     }
 
-    public void method_33569(GameEvent gameEvent, BlockPos blockPos) {
-        this.method_33568(gameEvent, this, blockPos);
+    public void emitGameEvent(GameEvent event, BlockPos pos) {
+        this.emitGameEvent(event, this, pos);
     }
 
-    public void emitGameEvent(GameEvent gameEvent) {
-        this.method_33569(gameEvent, this.blockPos);
+    public void emitGameEvent(GameEvent event) {
+        this.emitGameEvent(event, this.blockPos);
     }
 
     protected void playStepSound(BlockPos pos, BlockState state) {
@@ -1295,7 +1295,7 @@ CommandOutput {
         return this.getRotationVector(pitch - 90.0f, yaw);
     }
 
-    public final Vec3d method_33571() {
+    public final Vec3d getEyePos() {
         return new Vec3d(this.getX(), this.getEyeY(), this.getZ());
     }
 
@@ -1581,7 +1581,7 @@ CommandOutput {
             return false;
         }
         float f = this.dimensions.width * 0.8f;
-        Box box = Box.of(this.method_33571(), f, 1.0E-6, f);
+        Box box = Box.of(this.getEyePos(), f, 1.0E-6, f);
         return this.world.getBlockCollisions(this, box, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos)).findAny().isPresent();
     }
 
@@ -1939,8 +1939,17 @@ CommandOutput {
         return this.isInvisible();
     }
 
+    /**
+     * Returns the game event handler for this entity.
+     * 
+     * <p>Subclasses interested in listening to game events as an entity should return a
+     * handler so the {@link net.minecraft.world.event.listener.GameEventListener listener}
+     * used to receive game events can be registered to the correct dispatchers.
+     * 
+     * @implNote The vanilla implementation always returns {@code null}.
+     */
     @Nullable
-    public class_5715 method_32877() {
+    public EntityGameEventHandler getGameEventHandler() {
         return null;
     }
 
@@ -2201,28 +2210,28 @@ CommandOutput {
         double g = Math.min(2.9999872E7, worldBorder.getBoundSouth() - 16.0);
         double h = DimensionType.getCoordinateScaleFactor(this.world.getDimension(), destination.getDimension());
         BlockPos blockPos2 = new BlockPos(MathHelper.clamp(this.getX() * h, d, f), this.getY(), MathHelper.clamp(this.getZ() * h, e, g));
-        return this.method_30330(destination, blockPos2, bl3).map(arg -> {
+        return this.getPortalRect(destination, blockPos2, bl3).map(rectangle -> {
             Vec3d vec3d;
             Direction.Axis axis;
             BlockState blockState = this.world.getBlockState(this.lastNetherPortalPosition);
             if (blockState.contains(Properties.HORIZONTAL_AXIS)) {
                 axis = blockState.get(Properties.HORIZONTAL_AXIS);
-                class_5459.class_5460 lv = class_5459.method_30574(this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
-                vec3d = this.method_30633(axis, lv);
+                PortalUtil.Rectangle rectangle2 = PortalUtil.getLargestRectangle(this.lastNetherPortalPosition, axis, 21, Direction.Axis.Y, 21, blockPos -> this.world.getBlockState((BlockPos)blockPos) == blockState);
+                vec3d = this.positionInPortal(axis, rectangle2);
             } else {
                 axis = Direction.Axis.X;
                 vec3d = new Vec3d(0.5, 0.0, 0.0);
             }
-            return AreaHelper.method_30484(destination, arg, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
+            return AreaHelper.getNetherTeleportTarget(destination, rectangle, axis, vec3d, this.getDimensions(this.getPose()), this.getVelocity(), this.yaw, this.pitch);
         }).orElse(null);
     }
 
-    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-        return AreaHelper.method_30494(arg, axis, this.getPos(), this.getDimensions(this.getPose()));
+    protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
+        return AreaHelper.entityPosInPortal(portalRect, portalAxis, this.getPos(), this.getDimensions(this.getPose()));
     }
 
-    protected Optional<class_5459.class_5460> method_30330(ServerWorld serverWorld, BlockPos blockPos, boolean bl) {
-        return serverWorld.getPortalForcer().method_30483(blockPos, bl);
+    protected Optional<PortalUtil.Rectangle> getPortalRect(ServerWorld destWorld, BlockPos destPos, boolean destIsNether) {
+        return destWorld.getPortalForcer().getPortalRect(destPos, destIsNether);
     }
 
     public boolean canUsePortals() {
@@ -2341,7 +2350,7 @@ CommandOutput {
             return;
         }
         this.refreshPositionAndAngles(destX, destY, destZ, this.yaw, this.pitch);
-        this.streamPassengersRecursively().forEach(entity -> {
+        this.streamSelfAndPassengers().forEach(entity -> {
             for (Entity entity2 : entity.passengerList) {
                 entity.updatePassengerPosition(entity2, Entity::refreshPositionAfterTeleport);
             }
@@ -2536,24 +2545,48 @@ CommandOutput {
         return false;
     }
 
-    private Stream<Entity> getPassengersStream() {
-        return this.passengerList.stream().flatMap(Entity::streamPassengersRecursively);
+    private Stream<Entity> streamIntoPassengers() {
+        return this.passengerList.stream().flatMap(Entity::streamSelfAndPassengers);
     }
 
-    public Stream<Entity> streamPassengersRecursively() {
-        return Stream.concat(Stream.of(this), this.getPassengersStream());
+    /**
+     * Returns a stream consisting of this entity and its passengers recursively.
+     * Each entity will appear before any of its passengers.
+     * 
+     * <p>This may be less costly than {@link #streamPassengersAndSelf()} if the
+     * stream's iteration would terminates fast, such as finding an arbitrary
+     * match of entity in the passengers tree.
+     * 
+     * @implNote The default implementation is not very efficient.
+     * 
+     * @see #streamPassengersAndSelf()
+     */
+    public Stream<Entity> streamSelfAndPassengers() {
+        return Stream.concat(Stream.of(this), this.streamIntoPassengers());
     }
 
-    public Stream<Entity> streamPassengers() {
-        return Stream.concat(this.passengerList.stream().flatMap(Entity::streamPassengers), Stream.of(this));
+    /**
+     * Returns a stream consisting of this entity and its passengers recursively
+     * in which any entity appears only after all its passengers have appeared.
+     * 
+     * <p>This is useful for actions that must be applied on passengers before
+     * applying on an entity, such as writing each entity to NBT data.
+     * 
+     * @implNote The default implementation is very costly. I bet Mojangsta
+     * haven't used Java's FileTreeVisitor or any objectweb asm visitors!
+     * 
+     * @see net.minecraft.entity.Entity#streamSelfAndPassengers()
+     */
+    public Stream<Entity> streamPassengersAndSelf() {
+        return Stream.concat(this.passengerList.stream().flatMap(Entity::streamPassengersAndSelf), Stream.of(this));
     }
 
     public Iterable<Entity> getPassengersDeep() {
-        return () -> this.getPassengersStream().iterator();
+        return () -> this.streamIntoPassengers().iterator();
     }
 
     public boolean hasPlayerRider() {
-        return this.getPassengersStream().filter(entity -> entity instanceof PlayerEntity).count() == 1L;
+        return this.streamIntoPassengers().filter(entity -> entity instanceof PlayerEntity).count() == 1L;
     }
 
     /**
@@ -2578,7 +2611,7 @@ CommandOutput {
 
     @Environment(value=EnvType.CLIENT)
     public boolean hasPassengerDeep(Entity passenger) {
-        return this.getPassengersStream().anyMatch(entity2 -> entity2 == passenger);
+        return this.streamIntoPassengers().anyMatch(entity2 -> entity2 == passenger);
     }
 
     public boolean isLogicalSideForUpdatingMovement() {
@@ -2659,16 +2692,16 @@ CommandOutput {
     }
 
     public boolean updateMovementInFluid(Tag<Fluid> tag, double d) {
-        int n;
+        if (this.method_33724()) {
+            return false;
+        }
         Box box = this.getBoundingBox().contract(0.001);
         int i = MathHelper.floor(box.minX);
         int j = MathHelper.ceil(box.maxX);
         int k = MathHelper.floor(box.minY);
         int l = MathHelper.ceil(box.maxY);
         int m = MathHelper.floor(box.minZ);
-        if (!this.world.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ))) {
-            return false;
-        }
+        int n = MathHelper.ceil(box.maxZ);
         double e = 0.0;
         boolean bl = this.canFly();
         boolean bl2 = false;
@@ -2711,6 +2744,17 @@ CommandOutput {
         }
         this.fluidHeight.put(tag, e);
         return bl2;
+    }
+
+    public boolean method_33724() {
+        int n;
+        Box box = this.getBoundingBox().expand(1.0);
+        int i = MathHelper.floor(box.minX);
+        int j = MathHelper.ceil(box.maxX);
+        int k = MathHelper.floor(box.minY);
+        int l = MathHelper.ceil(box.maxY);
+        int m = MathHelper.floor(box.minZ);
+        return !this.world.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ));
     }
 
     public double getFluidHeight(Tag<Fluid> fluid) {
@@ -2825,10 +2869,10 @@ CommandOutput {
             if (i != this.blockPos.getX() || j != this.blockPos.getY() || k != this.blockPos.getZ()) {
                 this.blockPos = new BlockPos(i, j, k);
             }
-            this.field_26996.updateEntityPosition();
-            class_5715 lv = this.method_32877();
-            if (lv != null) {
-                lv.method_32952(this.world);
+            this.entityChangeListener.updateEntityPosition();
+            EntityGameEventHandler entityGameEventHandler = this.getGameEventHandler();
+            if (entityGameEventHandler != null) {
+                entityGameEventHandler.onEntitySetPos(this.world);
             }
         }
     }
@@ -2879,7 +2923,7 @@ CommandOutput {
             this.removalReason = reason;
         }
         this.getPassengerList().forEach(Entity::stopRiding);
-        this.field_26996.remove(reason);
+        this.entityChangeListener.remove(reason);
     }
 
     protected void unsetRemoved() {
@@ -2887,8 +2931,8 @@ CommandOutput {
     }
 
     @Override
-    public void method_31744(class_5569 arg) {
-        this.field_26996 = arg;
+    public void setListener(EntityChangeListener listener) {
+        this.entityChangeListener = listener;
     }
 
     @Override

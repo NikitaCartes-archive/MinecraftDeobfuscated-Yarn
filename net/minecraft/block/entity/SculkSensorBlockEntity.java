@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class SculkSensorBlockEntity
 extends BlockEntity
-implements SculkSensorListener.Listener {
+implements SculkSensorListener.Callback {
     private final SculkSensorListener listener;
     private int lastVibrationFrequency;
 
@@ -51,18 +51,18 @@ implements SculkSensorListener.Listener {
     }
 
     @Override
-    public boolean shouldListen(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
+    public boolean accepts(World world, GameEventListener listener, BlockPos pos, GameEvent event, @Nullable Entity entity) {
         boolean bl = event == GameEvent.BLOCK_DESTROY && pos.equals(this.getPos());
         boolean bl2 = event == GameEvent.BLOCK_PLACE && pos.equals(this.getPos());
         return !bl && !bl2 && SculkSensorBlock.isInactive(this.getCachedState());
     }
 
     @Override
-    public void listen(World world, GameEventListener listener, GameEvent event, int i) {
+    public void accept(World world, GameEventListener listener, GameEvent event, int distance) {
         BlockState blockState = this.getCachedState();
         if (!world.isClient() && SculkSensorBlock.isInactive(blockState)) {
             this.lastVibrationFrequency = SculkSensorBlock.FREQUENCIES.getInt(event);
-            SculkSensorBlock.setActive(world, this.pos, blockState, SculkSensorBlockEntity.method_32910(i, listener.getRange()));
+            SculkSensorBlock.setActive(world, this.pos, blockState, SculkSensorBlockEntity.method_32910(distance, listener.getRange()));
         }
     }
 

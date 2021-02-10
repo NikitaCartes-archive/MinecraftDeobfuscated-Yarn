@@ -7,6 +7,9 @@ import com.mojang.serialization.Codec;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.structure.MineshaftGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -62,22 +65,28 @@ extends StructureFeature<MineshaftFeatureConfig> {
                     structurePiece.translate(0, l, 0);
                 }
             } else {
-                this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), this.random, 10);
+                this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
             }
         }
     }
 
     public static enum Type implements StringIdentifiable
     {
-        NORMAL("normal"),
-        MESA("mesa");
+        NORMAL("normal", Blocks.OAK_WOOD, Blocks.OAK_PLANKS, Blocks.OAK_FENCE),
+        MESA("mesa", Blocks.DARK_OAK_WOOD, Blocks.DARK_OAK_PLANKS, Blocks.DARK_OAK_FENCE);
 
         public static final Codec<Type> CODEC;
         private static final Map<String, Type> BY_NAME;
         private final String name;
+        private final BlockState wood;
+        private final BlockState planks;
+        private final BlockState fence;
 
-        private Type(String name) {
+        private Type(String name, Block wood, Block planks, Block fence) {
             this.name = name;
+            this.wood = wood.getDefaultState();
+            this.planks = planks.getDefaultState();
+            this.fence = fence.getDefaultState();
         }
 
         public String getName() {
@@ -93,6 +102,18 @@ extends StructureFeature<MineshaftFeatureConfig> {
                 return NORMAL;
             }
             return Type.values()[index];
+        }
+
+        public BlockState getWood() {
+            return this.wood;
+        }
+
+        public BlockState getPlanks() {
+            return this.planks;
+        }
+
+        public BlockState getFence() {
+            return this.fence;
         }
 
         @Override

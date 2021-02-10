@@ -23,9 +23,9 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        BlockPos blockPos = featureContext.getPos();
+    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        BlockPos blockPos = context.getPos();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         for (int i = 0; i < 16; ++i) {

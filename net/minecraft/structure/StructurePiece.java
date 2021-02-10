@@ -100,44 +100,8 @@ public abstract class StructurePiece {
         return null;
     }
 
-    protected boolean isTouchingLiquid(BlockView world, BlockBox pos) {
-        int p;
-        int o;
-        int i = Math.max(this.boundingBox.minX - 1, pos.minX);
-        int j = Math.max(this.boundingBox.minY - 1, pos.minY);
-        int k = Math.max(this.boundingBox.minZ - 1, pos.minZ);
-        int l = Math.min(this.boundingBox.maxX + 1, pos.maxX);
-        int m = Math.min(this.boundingBox.maxY + 1, pos.maxY);
-        int n = Math.min(this.boundingBox.maxZ + 1, pos.maxZ);
-        BlockPos.Mutable mutable = new BlockPos.Mutable();
-        for (o = i; o <= l; ++o) {
-            for (p = k; p <= n; ++p) {
-                if (world.getBlockState(mutable.set(o, j, p)).getMaterial().isLiquid()) {
-                    return true;
-                }
-                if (!world.getBlockState(mutable.set(o, m, p)).getMaterial().isLiquid()) continue;
-                return true;
-            }
-        }
-        for (o = i; o <= l; ++o) {
-            for (p = j; p <= m; ++p) {
-                if (world.getBlockState(mutable.set(o, p, k)).getMaterial().isLiquid()) {
-                    return true;
-                }
-                if (!world.getBlockState(mutable.set(o, p, n)).getMaterial().isLiquid()) continue;
-                return true;
-            }
-        }
-        for (o = k; o <= n; ++o) {
-            for (p = j; p <= m; ++p) {
-                if (world.getBlockState(mutable.set(i, p, o)).getMaterial().isLiquid()) {
-                    return true;
-                }
-                if (!world.getBlockState(mutable.set(l, p, o)).getMaterial().isLiquid()) continue;
-                return true;
-            }
-        }
-        return false;
+    protected BlockPos method_33781(int i, int j, int k) {
+        return new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
     }
 
     protected int applyXTransform(int x, int z) {
@@ -192,6 +156,9 @@ public abstract class StructurePiece {
         if (!box.contains(blockPos)) {
             return;
         }
+        if (!this.canAddBlock(world, x, y, z, box)) {
+            return;
+        }
         if (this.mirror != BlockMirror.NONE) {
             block = block.mirror(this.mirror);
         }
@@ -206,6 +173,10 @@ public abstract class StructurePiece {
         if (BLOCKS_NEEDING_POST_PROCESSING.contains(block.getBlock())) {
             world.getChunk(blockPos).markBlockForPostProcessing(blockPos);
         }
+    }
+
+    protected boolean canAddBlock(WorldView world, int x, int y, int z, BlockBox box) {
+        return true;
     }
 
     protected BlockState getBlockAt(BlockView world, int x, int y, int z, BlockBox box) {
@@ -282,9 +253,22 @@ public abstract class StructurePiece {
         }
     }
 
-    protected void addBlockWithRandomThreshold(StructureWorldAccess world, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState state) {
+    protected void addBlockWithRandomThreshold(StructureWorldAccess world, BlockBox bounds, Random random, float threshold, int x, int y, int z, BlockState state, boolean bl) {
         if (random.nextFloat() < threshold) {
-            this.addBlock(world, state, x, y, z, bounds);
+            if (!bl) {
+                this.addBlock(world, state, x, y, z, bounds);
+                return;
+            }
+            Direction[] directions = Direction.values();
+            BlockPos.Mutable mutable = this.method_33781(x, y, z).mutableCopy();
+            for (Direction direction : directions) {
+                mutable.move(direction);
+                if (bounds.contains(mutable) && !world.isAir(mutable)) {
+                    this.addBlock(world, state, x, y, z, bounds);
+                    return;
+                }
+                mutable.move(direction.getOpposite());
+            }
         }
     }
 

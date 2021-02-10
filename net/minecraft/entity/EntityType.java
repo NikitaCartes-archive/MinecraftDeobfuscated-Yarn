@@ -18,7 +18,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
-import net.minecraft.class_5575;
 import net.minecraft.datafixer.TypeReferences;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
@@ -146,6 +145,7 @@ import net.minecraft.tag.BlockTags;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -161,7 +161,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class EntityType<T extends Entity>
-implements class_5575<Entity, T> {
+implements TypeFilter<Entity, T> {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final EntityType<AreaEffectCloudEntity> AREA_EFFECT_CLOUD = EntityType.register("area_effect_cloud", Builder.create(AreaEffectCloudEntity::new, SpawnGroup.MISC).makeFireImmune().setDimensions(6.0f, 0.5f).maxTrackingRange(10).trackingTickInterval(Integer.MAX_VALUE));
     public static final EntityType<ArmorStandEntity> ARMOR_STAND = EntityType.register("armor_stand", Builder.create(ArmorStandEntity::new, SpawnGroup.MISC).setDimensions(0.5f, 1.975f).maxTrackingRange(10));
@@ -506,8 +506,8 @@ implements class_5575<Entity, T> {
         }).orElse(null);
     }
 
-    public static Stream<Entity> method_31489(final List<? extends Tag> list, final World world) {
-        final Spliterator<? extends Tag> spliterator = list.spliterator();
+    public static Stream<Entity> streamFromNbt(final List<? extends Tag> entityNbtList, final World world) {
+        final Spliterator<? extends Tag> spliterator = entityNbtList.spliterator();
         return StreamSupport.stream(new Spliterator<Entity>(){
 
             @Override
@@ -525,7 +525,7 @@ implements class_5575<Entity, T> {
 
             @Override
             public long estimateSize() {
-                return list.size();
+                return entityNbtList.size();
             }
 
             @Override
@@ -567,12 +567,12 @@ implements class_5575<Entity, T> {
 
     @Override
     @Nullable
-    public T method_31796(Entity entity) {
+    public T downcast(Entity entity) {
         return (T)(entity.getType() == this ? entity : null);
     }
 
     @Override
-    public Class<? extends Entity> method_31794() {
+    public Class<? extends Entity> getBaseClass() {
         return Entity.class;
     }
 

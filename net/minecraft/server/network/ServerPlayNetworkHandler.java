@@ -36,7 +36,6 @@ import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.block.entity.StructureBlockBlockEntity;
-import net.minecraft.class_5629;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -128,6 +127,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.EntityTrackingListener;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -162,7 +162,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerPlayNetworkHandler
-implements class_5629,
+implements EntityTrackingListener,
 ServerPlayPacketListener {
     private static final Logger LOGGER = LogManager.getLogger();
     public final ClientConnection connection;
@@ -1422,7 +1422,7 @@ ServerPlayPacketListener {
     }
 
     @Override
-    public ServerPlayerEntity method_32311() {
+    public ServerPlayerEntity getPlayer() {
         return this.player;
     }
 }

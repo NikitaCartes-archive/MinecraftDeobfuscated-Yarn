@@ -12,7 +12,6 @@ import java.util.stream.Stream;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_5713;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundTag;
@@ -27,6 +26,8 @@ import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.UpgradeData;
+import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.event.listener.GameEventDispatcher;
 import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
@@ -37,8 +38,8 @@ import org.jetbrains.annotations.Nullable;
 public interface Chunk
 extends BlockView,
 StructureHolder {
-    default public class_5713 method_32914(int i) {
-        return class_5713.EMPTY;
+    default public GameEventDispatcher getGameEventDispatcher(int ySectionCoord) {
+        return GameEventDispatcher.EMPTY;
     }
 
     @Nullable
@@ -67,6 +68,14 @@ StructureHolder {
     public Set<BlockPos> getBlockEntityPositions();
 
     public ChunkSection[] getSectionArray();
+
+    default public ChunkSection getSection(int yIndex) {
+        ChunkSection[] chunkSections = this.getSectionArray();
+        if (chunkSections[yIndex] == WorldChunk.EMPTY_SECTION) {
+            chunkSections[yIndex] = new ChunkSection(this.sectionIndexToCoord(yIndex));
+        }
+        return chunkSections[yIndex];
+    }
 
     public Collection<Map.Entry<Heightmap.Type, Heightmap>> getHeightmaps();
 

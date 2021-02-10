@@ -44,7 +44,7 @@ extends Screen {
             }
         };
         this.chatField.setMaxLength(256);
-        this.chatField.setHasBorder(false);
+        this.chatField.setDrawsBackground(false);
         this.chatField.setText(this.originalChatText);
         this.chatField.setChangedListener(this::onChatFieldUpdate);
         this.children.add(this.chatField);
@@ -187,7 +187,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.setFocused(this.chatField);
-        this.chatField.setSelected(true);
+        this.chatField.setTextFieldFocused(true);
         ChatScreen.fill(matrices, 2, this.height - 14, this.width - 2, this.height - 2, this.client.options.getTextBackgroundColor(Integer.MIN_VALUE));
         this.chatField.render(matrices, mouseX, mouseY, delta);
         this.commandSuggestor.render(matrices, mouseX, mouseY);

@@ -5,6 +5,7 @@ package net.minecraft.client.render.entity.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.model.ModelPartBuilder;
@@ -15,7 +16,6 @@ import net.minecraft.client.render.entity.model.CrossbowPosing;
 import net.minecraft.client.render.entity.model.ModelWithArms;
 import net.minecraft.client.render.entity.model.ModelWithHead;
 import net.minecraft.client.render.entity.model.SinglePartEntityModel;
-import net.minecraft.client.util.math.Dilation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.IllagerEntity;

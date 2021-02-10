@@ -98,6 +98,8 @@ import net.minecraft.world.gen.feature.TreeFeature;
 import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.feature.TwistingVinesFeature;
 import net.minecraft.world.gen.feature.UnderwaterDiskFeature;
+import net.minecraft.world.gen.feature.UnderwaterMagmaFeature;
+import net.minecraft.world.gen.feature.UnderwaterMagmaFeatureConfig;
 import net.minecraft.world.gen.feature.VinesFeature;
 import net.minecraft.world.gen.feature.VoidStartPlatformFeature;
 import net.minecraft.world.gen.feature.WeepingVinesFeature;
@@ -123,6 +125,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DefaultFeatureConfig> FREEZE_TOP_LAYER = Feature.register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> VINES = Feature.register("vines", new VinesFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<GlowLichenFeatureConfig> GLOW_LICHEN = Feature.register("glow_lichen", new GlowLichenFeature(GlowLichenFeatureConfig.CODEC));
+    public static final Feature<UnderwaterMagmaFeatureConfig> UNDERWATER_MAGMA = Feature.register("underwater_magma", new UnderwaterMagmaFeature(UnderwaterMagmaFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = Feature.register("monster_room", new DungeonFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> BLUE_ICE = Feature.register("blue_ice", new BlueIceFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<SingleStateFeatureConfig> ICEBERG = Feature.register("iceberg", new IcebergFeature(SingleStateFeatureConfig.CODEC));

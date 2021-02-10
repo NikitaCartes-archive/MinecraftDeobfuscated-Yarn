@@ -154,7 +154,12 @@ extends SpellcastingIllagerEntity {
 
     public class WololoGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
-        private final TargetPredicate convertibleSheepPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
+        private final TargetPredicate convertibleSheepPredicate;
+
+        public WololoGoal() {
+            super(EvokerEntity.this);
+            this.convertibleSheepPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeInvulnerable().setPredicate(livingEntity -> ((SheepEntity)livingEntity).getColor() == DyeColor.BLUE);
+        }
 
         @Override
         public boolean canStart() {
@@ -225,9 +230,11 @@ extends SpellcastingIllagerEntity {
 
     class SummonVexGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
-        private final TargetPredicate closeVexPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeHidden().ignoreDistanceScalingFactor().includeInvulnerable().includeTeammates();
+        private final TargetPredicate closeVexPredicate;
 
         private SummonVexGoal() {
+            super(EvokerEntity.this);
+            this.closeVexPredicate = new TargetPredicate().setBaseMaxDistance(16.0).includeHidden().ignoreDistanceScalingFactor().includeInvulnerable().includeTeammates();
         }
 
         @Override
@@ -278,6 +285,7 @@ extends SpellcastingIllagerEntity {
     class ConjureFangsGoal
     extends SpellcastingIllagerEntity.CastSpellGoal {
         private ConjureFangsGoal() {
+            super(EvokerEntity.this);
         }
 
         @Override
@@ -351,6 +359,7 @@ extends SpellcastingIllagerEntity {
     class LookAtTargetOrWololoTarget
     extends SpellcastingIllagerEntity.LookAtTargetGoal {
         private LookAtTargetOrWololoTarget() {
+            super(EvokerEntity.this);
         }
 
         @Override

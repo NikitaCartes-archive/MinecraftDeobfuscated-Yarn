@@ -97,7 +97,7 @@ RecipeGridAligner<Ingredient> {
         String string = this.searchField != null ? this.searchField.getText() : "";
         this.searchField = new TextFieldWidget(this.client.textRenderer, i + 25, j + 14, 80, this.client.textRenderer.fontHeight + 5, new TranslatableText("itemGroup.search"));
         this.searchField.setMaxLength(50);
-        this.searchField.setHasBorder(false);
+        this.searchField.setDrawsBackground(false);
         this.searchField.setVisible(true);
         this.searchField.setEditableColor(0xFFFFFF);
         this.searchField.setText(string);
@@ -361,7 +361,7 @@ RecipeGridAligner<Ingredient> {
         }
         if (this.client.options.keyChat.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {
             this.searching = true;
-            this.searchField.setSelected(true);
+            this.searchField.setTextFieldFocused(true);
             return true;
         }
         return false;

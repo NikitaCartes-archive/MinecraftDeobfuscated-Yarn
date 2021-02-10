@@ -29,16 +29,12 @@ import net.minecraft.world.gen.carver.CaveCarver;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.carver.NetherCaveCarver;
 import net.minecraft.world.gen.carver.RavineCarver;
-import net.minecraft.world.gen.carver.UnderwaterCaveCarver;
-import net.minecraft.world.gen.carver.UnderwaterRavineCarver;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public abstract class Carver<C extends CarverConfig> {
-    public static final Carver<ProbabilityConfig> CAVE = Carver.register("cave", new CaveCarver(ProbabilityConfig.CODEC, 256));
+    public static final Carver<ProbabilityConfig> CAVE = Carver.register("cave", new CaveCarver(ProbabilityConfig.CODEC, 384));
     public static final Carver<ProbabilityConfig> NETHER_CAVE = Carver.register("nether_cave", new NetherCaveCarver(ProbabilityConfig.CODEC));
     public static final Carver<ProbabilityConfig> CANYON = Carver.register("canyon", new RavineCarver(ProbabilityConfig.CODEC));
-    public static final Carver<ProbabilityConfig> UNDERWATER_CANYON = Carver.register("underwater_canyon", new UnderwaterRavineCarver(ProbabilityConfig.CODEC));
-    public static final Carver<ProbabilityConfig> UNDERWATER_CAVE = Carver.register("underwater_cave", new UnderwaterCaveCarver(ProbabilityConfig.CODEC));
     protected static final BlockState AIR = Blocks.AIR.getDefaultState();
     protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
     protected static final FluidState WATER = Fluids.WATER.getDefaultState();
@@ -122,7 +118,7 @@ public abstract class Carver<C extends CarverConfig> {
         if (!this.canCarveBlock(blockState, blockState2)) {
             return false;
         }
-        if (y < 11) {
+        if (y < -53) {
             chunk.setBlockState(currentPos, LAVA.getBlockState(), false);
         } else {
             chunk.setBlockState(currentPos, CAVE_AIR, false);

@@ -20,10 +20,10 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        Random random = featureContext.getRandom();
-        BlockPos blockPos = featureContext.getPos();
+    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        Random random = context.getRandom();
+        BlockPos blockPos = context.getPos();
         float f = random.nextInt(3) + 4;
         int i = 0;
         while (f > 0.5f) {

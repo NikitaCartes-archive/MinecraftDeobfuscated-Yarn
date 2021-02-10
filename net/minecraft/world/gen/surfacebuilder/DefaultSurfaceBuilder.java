@@ -32,7 +32,7 @@ extends SurfaceBuilder<TernarySurfaceConfig> {
         int j = (int)(noise / 3.0 + 3.0 + random.nextDouble() * 0.25);
         int k = x & 0xF;
         int l = z & 0xF;
-        for (int m = height; m >= 0; --m) {
+        for (int m = height; m >= 50; --m) {
             mutable.set(k, m, l);
             BlockState blockState3 = chunk.getBlockState(mutable);
             if (blockState3.isAir()) {

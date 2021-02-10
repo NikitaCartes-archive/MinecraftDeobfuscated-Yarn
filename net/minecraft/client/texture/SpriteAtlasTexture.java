@@ -153,7 +153,7 @@ implements TextureTickListener {
                     if (animationResourceMetadata == null) {
                         animationResourceMetadata = AnimationResourceMetadata.EMPTY;
                     }
-                    Pair<Integer, Integer> pair = animationResourceMetadata.method_24141(pngFile.width, pngFile.height);
+                    Pair<Integer, Integer> pair = animationResourceMetadata.ensureImageSize(pngFile.width, pngFile.height);
                     info = new Sprite.Info(identifier, pair.getFirst(), pair.getSecond(), animationResourceMetadata);
                 } catch (RuntimeException runtimeException) {
                     LOGGER.error("Unable to parse metadata from {} : {}", (Object)identifier2, (Object)runtimeException);

@@ -36,8 +36,6 @@ public class DefaultBiomeFeatures {
     public static void addOceanCarvers(GenerationSettings.Builder builder) {
         builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.OCEAN_CAVE);
         builder.carver(GenerationStep.Carver.AIR, ConfiguredCarvers.CANYON);
-        builder.carver(GenerationStep.Carver.LIQUID, ConfiguredCarvers.UNDERWATER_CANYON);
-        builder.carver(GenerationStep.Carver.LIQUID, ConfiguredCarvers.UNDERWATER_CAVE);
     }
 
     public static void addDefaultLakes(GenerationSettings.Builder builder) {
@@ -76,6 +74,7 @@ public class DefaultBiomeFeatures {
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_DIAMOND);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_LAPIS);
         builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_COPPER);
+        builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.UNDERWATER_MAGMA);
     }
 
     public static void addExtraGoldOre(GenerationSettings.Builder builder) {

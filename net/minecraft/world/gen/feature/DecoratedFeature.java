@@ -23,13 +23,13 @@ extends Feature<DecoratedFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<DecoratedFeatureConfig> featureContext) {
+    public boolean generate(FeatureContext<DecoratedFeatureConfig> context) {
         MutableBoolean mutableBoolean = new MutableBoolean();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        DecoratedFeatureConfig decoratedFeatureConfig = featureContext.getConfig();
-        ChunkGenerator chunkGenerator = featureContext.getGenerator();
-        Random random = featureContext.getRandom();
-        BlockPos blockPos2 = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        DecoratedFeatureConfig decoratedFeatureConfig = context.getConfig();
+        ChunkGenerator chunkGenerator = context.getGenerator();
+        Random random = context.getRandom();
+        BlockPos blockPos2 = context.getPos();
         ConfiguredFeature<?, ?> configuredFeature = decoratedFeatureConfig.feature.get();
         decoratedFeatureConfig.decorator.getPositions(new DecoratorContext(structureWorldAccess, chunkGenerator), random, blockPos2).forEach(blockPos -> {
             if (configuredFeature.generate(structureWorldAccess, chunkGenerator, random, (BlockPos)blockPos)) {

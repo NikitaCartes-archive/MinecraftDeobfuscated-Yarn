@@ -111,7 +111,7 @@ public class ChunkSerializer {
         if (chunkType == ChunkStatus.ChunkType.field_12807) {
             TickScheduler<Block> tickScheduler = compoundTag.contains("TileTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get) : chunkTickScheduler;
             TickScheduler<Fluid> tickScheduler2 = compoundTag.contains("LiquidTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get) : chunkTickScheduler2;
-            chunk = new WorldChunk(world.toServerWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, worldChunk -> ChunkSerializer.writeEntities(world, compoundTag, worldChunk));
+            chunk = new WorldChunk(world.toServerWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, worldChunk -> ChunkSerializer.loadEntities(world, compoundTag, worldChunk));
         } else {
             ProtoChunk protoChunk = new ProtoChunk(pos, upgradeData, chunkSections, chunkTickScheduler, chunkTickScheduler2, world);
             protoChunk.setBiomes(biomeArray);
@@ -284,10 +284,10 @@ public class ChunkSerializer {
         return ChunkStatus.ChunkType.field_12808;
     }
 
-    private static void writeEntities(ServerWorld world, CompoundTag tag, WorldChunk chunk) {
+    private static void loadEntities(ServerWorld world, CompoundTag tag, WorldChunk chunk) {
         ListTag listTag;
         if (tag.contains("Entities", 9) && !(listTag = tag.getList("Entities", 10)).isEmpty()) {
-            world.method_31423(EntityType.method_31489(listTag, world));
+            world.loadEntities(EntityType.streamFromNbt(listTag, world));
         }
         listTag = tag.getList("TileEntities", 10);
         for (int i = 0; i < listTag.size(); ++i) {

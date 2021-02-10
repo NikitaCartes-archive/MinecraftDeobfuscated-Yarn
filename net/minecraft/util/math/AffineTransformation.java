@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.util.math;
+package net.minecraft.util.math;
 
 import com.mojang.datafixers.util.Pair;
 import java.util.Objects;
@@ -15,6 +15,10 @@ import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.tuple.Triple;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * @implNote Even though this is used only on the client, it accesses protected
+ * fields from {@link Matrix4f}, which requires them to be in the same package.
+ */
 @Environment(value=EnvType.CLIENT)
 public final class AffineTransformation {
     private final Matrix4f matrix;

@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.gui.screen;
+package net.minecraft.client.gui.screen.option;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

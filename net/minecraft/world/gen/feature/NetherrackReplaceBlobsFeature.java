@@ -23,12 +23,12 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<NetherrackReplaceBlobsFeatureConfig> featureContext) {
-        NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig = featureContext.getConfig();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        Random random = featureContext.getRandom();
+    public boolean generate(FeatureContext<NetherrackReplaceBlobsFeatureConfig> context) {
+        NetherrackReplaceBlobsFeatureConfig netherrackReplaceBlobsFeatureConfig = context.getConfig();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        Random random = context.getRandom();
         Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
-        BlockPos blockPos = NetherrackReplaceBlobsFeature.method_27107(structureWorldAccess, featureContext.getPos().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopY() - 1), block);
+        BlockPos blockPos = NetherrackReplaceBlobsFeature.method_27107(structureWorldAccess, context.getPos().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopY() - 1), block);
         if (blockPos == null) {
             return false;
         }

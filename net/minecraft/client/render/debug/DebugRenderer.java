@@ -36,11 +36,11 @@ import net.minecraft.client.render.debug.VillageDebugRenderer;
 import net.minecraft.client.render.debug.VillageSectionsDebugRenderer;
 import net.minecraft.client.render.debug.WaterDebugRenderer;
 import net.minecraft.client.render.debug.WorldGenAttemptDebugRenderer;
-import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Matrix4f;
@@ -134,7 +134,7 @@ public class DebugRenderer {
         if (entity2 == null) {
             return Optional.empty();
         }
-        Vec3d vec3d = entity2.method_33571();
+        Vec3d vec3d = entity2.getEyePos();
         EntityHitResult entityHitResult = ProjectileUtil.raycast(entity2, vec3d, vec3d3 = vec3d.add(vec3d2 = entity2.getRotationVec(1.0f).multiply(maxDistance)), box = entity2.getBoundingBox().stretch(vec3d2).expand(1.0), predicate = entity -> !entity.isSpectator() && entity.collides(), i = maxDistance * maxDistance);
         if (entityHitResult == null) {
             return Optional.empty();

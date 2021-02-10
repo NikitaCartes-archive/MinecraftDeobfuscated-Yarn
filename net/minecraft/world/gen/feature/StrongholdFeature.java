@@ -65,7 +65,7 @@ extends StructureFeature<DefaultFeatureConfig> {
                     structurePiece.fillOpenings(start, this.children, this.random);
                 }
                 this.setBoundingBoxFromChildren();
-                this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), this.random, 10);
+                this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);
             } while (this.children.isEmpty() || start.portalRoom == null);
         }
     }

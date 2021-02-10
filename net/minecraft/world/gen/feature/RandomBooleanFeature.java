@@ -19,12 +19,12 @@ extends Feature<RandomBooleanFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<RandomBooleanFeatureConfig> featureContext) {
-        Random random = featureContext.getRandom();
-        RandomBooleanFeatureConfig randomBooleanFeatureConfig = featureContext.getConfig();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        ChunkGenerator chunkGenerator = featureContext.getGenerator();
-        BlockPos blockPos = featureContext.getPos();
+    public boolean generate(FeatureContext<RandomBooleanFeatureConfig> context) {
+        Random random = context.getRandom();
+        RandomBooleanFeatureConfig randomBooleanFeatureConfig = context.getConfig();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        ChunkGenerator chunkGenerator = context.getGenerator();
+        BlockPos blockPos = context.getPos();
         boolean bl = random.nextBoolean();
         if (bl) {
             return randomBooleanFeatureConfig.featureTrue.get().generate(structureWorldAccess, chunkGenerator, random, blockPos);

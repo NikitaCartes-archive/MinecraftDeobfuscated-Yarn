@@ -50,7 +50,7 @@ implements AutoCloseable {
 
     @Nullable
     public CompoundTag getNbt(ChunkPos pos) throws IOException {
-        CompletableFuture<CompoundTag> completableFuture = this.method_31738(pos);
+        CompletableFuture<CompoundTag> completableFuture = this.readChunkData(pos);
         try {
             return completableFuture.join();
         } catch (CompletionException completionException) {
@@ -61,17 +61,17 @@ implements AutoCloseable {
         }
     }
 
-    protected CompletableFuture<CompoundTag> method_31738(ChunkPos chunkPos) {
+    protected CompletableFuture<CompoundTag> readChunkData(ChunkPos pos) {
         return this.run(() -> {
-            Result result = this.results.get(chunkPos);
+            Result result = this.results.get(pos);
             if (result != null) {
                 return Either.left(result.nbt);
             }
             try {
-                CompoundTag compoundTag = this.storage.getTagAt(chunkPos);
+                CompoundTag compoundTag = this.storage.getTagAt(pos);
                 return Either.left(compoundTag);
             } catch (Exception exception) {
-                LOGGER.warn("Failed to read chunk {}", (Object)chunkPos, (Object)exception);
+                LOGGER.warn("Failed to read chunk {}", (Object)pos, (Object)exception);
                 return Either.right(exception);
             }
         });
@@ -90,8 +90,8 @@ implements AutoCloseable {
         }));
     }
 
-    private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> supplier) {
-        return this.executor.method_27918(messageListener -> new TaskQueue.PrioritizedTask(Priority.FOREGROUND.ordinal(), () -> this.method_27939(messageListener, (Supplier)supplier)));
+    private <T> CompletableFuture<T> run(Supplier<Either<T, Exception>> task) {
+        return this.executor.askFallible(messageListener -> new TaskQueue.PrioritizedTask(Priority.FOREGROUND.ordinal(), () -> this.method_27939(messageListener, (Supplier)task)));
     }
 
     private void writeResult() {
@@ -102,10 +102,10 @@ implements AutoCloseable {
         Map.Entry<ChunkPos, Result> entry = iterator.next();
         iterator.remove();
         this.write(entry.getKey(), entry.getValue());
-        this.method_27945();
+        this.writeRemainingResults();
     }
 
-    private void method_27945() {
+    private void writeRemainingResults() {
         this.executor.send(new TaskQueue.PrioritizedTask(Priority.BACKGROUND.ordinal(), this::writeResult));
     }
 
@@ -137,7 +137,7 @@ implements AutoCloseable {
         if (!this.closed.get()) {
             messageListener.send(supplier.get());
         }
-        this.method_27945();
+        this.writeRemainingResults();
     }
 
     static class Result {
@@ -145,8 +145,8 @@ implements AutoCloseable {
         private CompoundTag nbt;
         private final CompletableFuture<Void> future = new CompletableFuture();
 
-        public Result(@Nullable CompoundTag compoundTag) {
-            this.nbt = compoundTag;
+        public Result(@Nullable CompoundTag nbt) {
+            this.nbt = nbt;
         }
     }
 

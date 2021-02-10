@@ -19,7 +19,7 @@ extends Carver<ProbabilityConfig> {
     private final float[] heightToHorizontalStretchFactor = new float[1024];
 
     public RavineCarver(Codec<ProbabilityConfig> configCodec) {
-        super(configCodec, 256);
+        super(configCodec, 384);
     }
 
     @Override
@@ -46,7 +46,7 @@ extends Carver<ProbabilityConfig> {
     private void carveRavine(Chunk chunk, Function<BlockPos, Biome> posToBiome, long seed, int seaLevel, int mainChunkX, int mainChunkZ, double x, double y, double z, float width, float yaw, float pitch, int branchStartIndex, int branchCount, double yawPitchRatio, BitSet carvingMask) {
         Random random = new Random(seed);
         float f = 1.0f;
-        for (int i = 0; i < 256; ++i) {
+        for (int i = 0; i < 384; ++i) {
             if (i == 0 || random.nextInt(3) == 0) {
                 f = 1.0f + random.nextFloat() * random.nextFloat();
             }

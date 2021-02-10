@@ -29,10 +29,10 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-        Random random = featureContext.getRandom();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        ChunkPos chunkPos = new ChunkPos(featureContext.getPos());
+    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+        Random random = context.getRandom();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        ChunkPos chunkPos = new ChunkPos(context.getPos());
         List list = IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()).boxed().collect(Collectors.toList());
         Collections.shuffle(list, random);
         List list2 = IntStream.rangeClosed(chunkPos.getStartZ(), chunkPos.getEndZ()).boxed().collect(Collectors.toList());

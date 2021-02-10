@@ -16,11 +16,11 @@ extends DiskFeature {
     }
 
     @Override
-    public boolean generate(FeatureContext<DiskFeatureConfig> featureContext) {
-        if (!featureContext.getWorld().getFluidState(featureContext.getPos()).isIn(FluidTags.WATER)) {
+    public boolean generate(FeatureContext<DiskFeatureConfig> context) {
+        if (!context.getWorld().getFluidState(context.getPos()).isIn(FluidTags.WATER)) {
             return false;
         }
-        return super.generate(featureContext);
+        return super.generate(context);
     }
 }
 

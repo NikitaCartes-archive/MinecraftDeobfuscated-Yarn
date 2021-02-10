@@ -254,7 +254,7 @@ extends HostileEntity {
     }
 
     protected void convertTo(EntityType<? extends ZombieEntity> entityType) {
-        ZombieEntity zombieEntity = this.method_29243(entityType, true);
+        ZombieEntity zombieEntity = this.convertTo(entityType, true);
         if (zombieEntity != null) {
             zombieEntity.applyAttributeModifiers(zombieEntity.world.getLocalDifficulty(zombieEntity.getBlockPos()).getClampedLocalDifficulty());
             zombieEntity.setCanBreakDoors(zombieEntity.shouldBreakDoors() && this.canBreakDoors());
@@ -388,7 +388,7 @@ extends HostileEntity {
                 return;
             }
             VillagerEntity villagerEntity = (VillagerEntity)other;
-            ZombieVillagerEntity zombieVillagerEntity = villagerEntity.method_29243(EntityType.ZOMBIE_VILLAGER, false);
+            ZombieVillagerEntity zombieVillagerEntity = villagerEntity.convertTo(EntityType.ZOMBIE_VILLAGER, false);
             zombieVillagerEntity.initialize(world, world.getLocalDifficulty(zombieVillagerEntity.getBlockPos()), SpawnReason.CONVERSION, new ZombieData(false, true), null);
             zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
             zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());

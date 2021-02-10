@@ -8,8 +8,8 @@ import com.google.common.collect.Lists;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelCuboidData;
-import net.minecraft.client.util.math.Dilation;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelPartBuilder {

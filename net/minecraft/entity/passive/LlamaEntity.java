@@ -223,7 +223,7 @@ implements RangedAttackMob {
         }
         if (bl) {
             SoundEvent soundEvent;
-            this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
+            this.emitGameEvent(GameEvent.MOB_INTERACT, this.method_33575());
             if (!this.isSilent() && (soundEvent = this.getEatSound()) != null) {
                 this.world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(), this.getSoundCategory(), 1.0f, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.2f);
             }

@@ -24,23 +24,23 @@ public class SculkSensorListener
 implements GameEventListener {
     protected final PositionSource positionSource;
     protected final int range;
-    protected final Listener listener;
+    protected final Callback callback;
     protected Optional<GameEvent> event = Optional.empty();
     protected int distance;
-    protected int cooldown = 0;
+    protected int delay = 0;
 
-    public SculkSensorListener(PositionSource positionSource, int range, Listener listener) {
+    public SculkSensorListener(PositionSource positionSource, int range, Callback listener) {
         this.positionSource = positionSource;
         this.range = range;
-        this.listener = listener;
+        this.callback = listener;
     }
 
-    public void listen(World world) {
+    public void tick(World world) {
         if (this.event.isPresent()) {
-            --this.cooldown;
-            if (this.cooldown <= 0) {
-                this.cooldown = 0;
-                this.listener.listen(world, this, this.event.get(), this.distance);
+            --this.delay;
+            if (this.delay <= 0) {
+                this.delay = 0;
+                this.callback.accept(world, this, this.event.get(), this.distance);
                 this.event = Optional.empty();
             }
         }
@@ -66,7 +66,7 @@ implements GameEventListener {
             return false;
         }
         BlockPos blockPos = optional.get();
-        if (!this.listener.shouldListen(world, this, pos, event, entity)) {
+        if (!this.callback.accepts(world, this, pos, event, entity)) {
             return false;
         }
         if (this.isOccluded(world, pos, blockPos)) {
@@ -97,8 +97,8 @@ implements GameEventListener {
     private void listen(World world, GameEvent event, BlockPos pos, BlockPos sourcePos) {
         this.event = Optional.of(event);
         if (world instanceof ServerWorld) {
-            this.cooldown = this.distance = MathHelper.floor(MathHelper.sqrt(pos.getSquaredDistance(sourcePos, false)));
-            ((ServerWorld)world).sendVibrationPacket(new Vibration(pos, this.positionSource, this.cooldown));
+            this.delay = this.distance = MathHelper.floor(MathHelper.sqrt(pos.getSquaredDistance(sourcePos, false)));
+            ((ServerWorld)world).sendVibrationPacket(new Vibration(pos, this.positionSource, this.delay));
         }
     }
 
@@ -106,10 +106,10 @@ implements GameEventListener {
         return world.raycast(new BlockStateRaycastContext(Vec3d.ofCenter(pos), Vec3d.ofCenter(sourcePos), state -> state.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS))).getType() == HitResult.Type.BLOCK;
     }
 
-    public static interface Listener {
-        public boolean shouldListen(World var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5);
+    public static interface Callback {
+        public boolean accepts(World var1, GameEventListener var2, BlockPos var3, GameEvent var4, @Nullable Entity var5);
 
-        public void listen(World var1, GameEventListener var2, GameEvent var3, int var4);
+        public void accept(World var1, GameEventListener var2, GameEvent var3, int var4);
     }
 }
 

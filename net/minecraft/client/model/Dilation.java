@@ -1,11 +1,15 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.util.math;
+package net.minecraft.client.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
+/**
+ * @implNote This should be in same package as {@link ModelCuboidData} as
+ * its package private static fields are accessed by it.
+ */
 @Environment(value=EnvType.CLIENT)
 public class Dilation {
     public static final Dilation NONE = new Dilation(0.0f);

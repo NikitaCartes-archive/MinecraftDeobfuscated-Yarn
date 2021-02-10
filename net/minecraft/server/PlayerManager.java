@@ -304,7 +304,7 @@ public abstract class PlayerManager {
         if (player.hasVehicle() && (entity2 = player.getRootVehicle()).hasPlayerRider()) {
             LOGGER.debug("Removing player mount");
             player.stopRiding();
-            entity2.streamPassengers().forEach(entity -> entity.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
+            entity2.streamPassengersAndSelf().forEach(entity -> entity.setRemoved(Entity.RemovalReason.UNLOADED_WITH_PLAYER));
         }
         player.detach();
         serverWorld.removePlayer(player, Entity.RemovalReason.UNLOADED_WITH_PLAYER);

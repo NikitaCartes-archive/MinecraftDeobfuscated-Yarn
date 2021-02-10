@@ -75,6 +75,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
     private static final Text SNAPSHOT_ONE_TOOLTIP = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
     private static final Text SNAPSHOT_TWO_TOOLTIP = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
     private static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
+    private static final Text PRE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
     private final SelectWorldScreen parent;
     @Nullable
     private List<LevelSummary> levels;
@@ -134,12 +135,12 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             LevelSummary levelSummary = entry.level;
             NarratorManager.INSTANCE.narrate(new TranslatableText("narrator.select", new TranslatableText("narrator.select.world", levelSummary.getDisplayName(), new Date(levelSummary.getLastPlayed()), levelSummary.isHardcore() ? new TranslatableText("gameMode.hardcore") : new TranslatableText("gameMode." + levelSummary.getGameMode().getName()), levelSummary.hasCheats() ? new TranslatableText("selectWorld.cheats") : LiteralText.EMPTY, levelSummary.getVersion())).getString());
         }
-        this.parent.worldSelected(entry != null && !entry.level.isLocked());
+        this.parent.worldSelected(entry != null && !entry.level.isUnavailable());
     }
 
     @Override
     protected void moveSelection(EntryListWidget.MoveDirection direction) {
-        this.moveSelectionIf(direction, entry -> !((Entry)entry).level.isLocked());
+        this.moveSelectionIf(direction, entry -> !((Entry)entry).level.isUnavailable());
     }
 
     public Optional<Entry> method_20159() {
@@ -205,6 +206,11 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     if (bl) {
                         this.screen.setTooltip(this.client.textRenderer.wrapLines(LOCKED_TEXT, 175));
                     }
+                } else if (this.level.isPreWorldHeightChangeVersion()) {
+                    DrawableHelper.drawTexture(matrices, x, y, 96.0f, 32.0f, 32, 32, 256, 256);
+                    if (bl) {
+                        this.screen.setTooltip(this.client.textRenderer.wrapLines(PRE_WORLDHEIGHT_TEXT, 175));
+                    }
                 } else if (this.level.isDifferentVersion()) {
                     DrawableHelper.drawTexture(matrices, x, y, 32.0f, j, 32, 32, 256, 256);
                     if (this.level.isFutureLevel()) {
@@ -226,7 +232,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (this.level.isLocked()) {
+            if (this.level.isUnavailable()) {
                 return true;
             }
             WorldListWidget.this.setSelected(this);
@@ -244,15 +250,15 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         }
 
         public void play() {
-            if (this.level.isLocked()) {
+            if (this.level.isUnavailable()) {
                 return;
             }
-            LevelSummary.class_5781 lv = this.level.method_33405();
-            if (lv.method_33406()) {
-                String string = "selectWorld.backupQuestion." + lv.method_33408();
-                String string2 = "selectWorld.backupWarning." + lv.method_33408();
+            LevelSummary.ConversionWarning conversionWarning = this.level.getConversionWarning();
+            if (conversionWarning.promptsBackup()) {
+                String string = "selectWorld.backupQuestion." + conversionWarning.getTranslationKeySuffix();
+                String string2 = "selectWorld.backupWarning." + conversionWarning.getTranslationKeySuffix();
                 TranslatableText mutableText = new TranslatableText(string);
-                if (lv.method_33407()) {
+                if (conversionWarning.needsBoldRedFormatting()) {
                     mutableText.formatted(Formatting.BOLD, Formatting.RED);
                 }
                 TranslatableText text = new TranslatableText(string2, this.level.getVersion(), SharedConstants.getGameVersion().getName());

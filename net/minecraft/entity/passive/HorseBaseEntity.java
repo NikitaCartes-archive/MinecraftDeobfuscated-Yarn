@@ -460,7 +460,7 @@ Saddleable {
         }
         if (bl) {
             this.playEatingAnimation();
-            this.method_33569(GameEvent.EAT, this.method_33575());
+            this.emitGameEvent(GameEvent.EAT, this.method_33575());
         }
         return bl;
     }

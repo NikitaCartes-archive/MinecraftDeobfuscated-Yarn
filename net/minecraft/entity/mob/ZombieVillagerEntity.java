@@ -135,7 +135,7 @@ implements VillagerDataContainer {
                 if (!this.world.isClient) {
                     this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
                 }
-                this.method_33569(GameEvent.MOB_INTERACT, this.method_33575());
+                this.emitGameEvent(GameEvent.MOB_INTERACT, this.method_33575());
                 return ActionResult.SUCCESS;
             }
             return ActionResult.CONSUME;
@@ -180,7 +180,7 @@ implements VillagerDataContainer {
 
     private void finishConversion(ServerWorld world) {
         PlayerEntity playerEntity;
-        VillagerEntity villagerEntity = this.method_29243(EntityType.VILLAGER, false);
+        VillagerEntity villagerEntity = this.convertTo(EntityType.VILLAGER, false);
         for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
             ItemStack itemStack = this.getEquippedStack(equipmentSlot);
             if (itemStack.isEmpty()) continue;

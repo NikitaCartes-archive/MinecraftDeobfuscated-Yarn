@@ -237,7 +237,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             this.client.keyboard.setRepeatEvents(true);
             this.searchBox = new TextFieldWidget(this.textRenderer, this.x + 82, this.y + 6, 80, this.textRenderer.fontHeight, new TranslatableText("itemGroup.search"));
             this.searchBox.setMaxLength(50);
-            this.searchBox.setHasBorder(false);
+            this.searchBox.setDrawsBackground(false);
             this.searchBox.setVisible(false);
             this.searchBox.setEditableColor(0xFFFFFF);
             this.children.add(this.searchBox);
@@ -481,7 +481,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             if (group == ItemGroup.SEARCH) {
                 this.searchBox.setVisible(true);
                 this.searchBox.setFocusUnlocked(false);
-                this.searchBox.setSelected(true);
+                this.searchBox.setTextFieldFocused(true);
                 if (i != group.getIndex()) {
                     this.searchBox.setText("");
                 }
@@ -489,7 +489,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             } else {
                 this.searchBox.setVisible(false);
                 this.searchBox.setFocusUnlocked(true);
-                this.searchBox.setSelected(false);
+                this.searchBox.setTextFieldFocused(false);
                 this.searchBox.setText("");
             }
         }

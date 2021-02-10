@@ -18,7 +18,7 @@ implements WorldGenRandom {
 
     public void setSeed(long seed) {
         if (!this.seed.compareAndSet(this.seed.get(), (seed ^ 0x5DEECE66DL) & 0xFFFFFFFFFFFFL)) {
-            throw LockHelper.crash("SimpleRandomSource");
+            throw LockHelper.crash("SimpleRandomSource", null);
         }
     }
 
@@ -26,7 +26,7 @@ implements WorldGenRandom {
         long m;
         long l = this.seed.get();
         if (!this.seed.compareAndSet(l, m = l * 25214903917L + 11L & 0xFFFFFFFFFFFFL)) {
-            throw LockHelper.crash("SimpleRandomSource");
+            throw LockHelper.crash("SimpleRandomSource", null);
         }
         return (int)(m >> 48 - bits);
     }
@@ -49,6 +49,11 @@ implements WorldGenRandom {
         while ((j = this.next(31)) - (k = j % i) + (i - 1) < 0) {
         }
         return k;
+    }
+
+    @Override
+    public long nextLong() {
+        return ((long)this.nextInt() << 32) + (long)this.nextInt();
     }
 
     @Override

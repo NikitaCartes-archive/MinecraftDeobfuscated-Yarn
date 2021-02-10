@@ -5,7 +5,7 @@ package net.minecraft.client.render.model;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.AffineTransformation;
+import net.minecraft.util.math.AffineTransformation;
 
 @Environment(value=EnvType.CLIENT)
 public interface ModelBakeSettings {

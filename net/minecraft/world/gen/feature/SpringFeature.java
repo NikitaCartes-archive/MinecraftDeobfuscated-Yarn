@@ -18,11 +18,11 @@ extends Feature<SpringFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<SpringFeatureConfig> featureContext) {
+    public boolean generate(FeatureContext<SpringFeatureConfig> context) {
         BlockPos blockPos;
-        SpringFeatureConfig springFeatureConfig = featureContext.getConfig();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState((blockPos = featureContext.getPos()).up()).getBlock())) {
+        SpringFeatureConfig springFeatureConfig = context.getConfig();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState((blockPos = context.getPos()).up()).getBlock())) {
             return false;
         }
         if (springFeatureConfig.requiresBlockBelow && !springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.down()).getBlock())) {

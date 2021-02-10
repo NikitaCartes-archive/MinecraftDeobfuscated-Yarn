@@ -4,9 +4,9 @@
 package net.minecraft.block.entity;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5575;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
@@ -63,7 +63,7 @@ public abstract class ChestStateManager {
         int k = pos.getZ();
         float f = 5.0f;
         Box box = new Box((float)i - 5.0f, (float)j - 5.0f, (float)k - 5.0f, (float)(i + 1) + 5.0f, (float)(j + 1) + 5.0f, (float)(k + 1) + 5.0f);
-        return world.getEntitiesByType(class_5575.method_31795(PlayerEntity.class), box, this::isPlayerViewing).size();
+        return world.getEntitiesByType(TypeFilter.instanceOf(PlayerEntity.class), box, this::isPlayerViewing).size();
     }
 
     public void updateViewerCount(World world, BlockPos pos, BlockState state) {

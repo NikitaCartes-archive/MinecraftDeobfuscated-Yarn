@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.client.util.math;
+package net.minecraft.util.math;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,6 +10,10 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
+/**
+ * @implNote Even though this is used only on the client, it accesses protected
+ * fields from {@link Matrix4f}, which requires them to be in the same package.
+ */
 @Environment(value=EnvType.CLIENT)
 public class Vector4f {
     private float x;

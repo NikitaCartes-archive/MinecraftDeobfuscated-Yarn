@@ -104,7 +104,7 @@ implements DataProvider {
             CompressedData compressedData = new CompressedData(name, bs, string3, string2);
             return compressedData;
         } catch (Throwable throwable) {
-            throw new class_5621(path, throwable);
+            throw new CompressionException(path, throwable);
         }
     }
 
@@ -113,7 +113,7 @@ implements DataProvider {
         if (compressedData.field_24616 != null) {
             path2 = field_24615.resolve(compressedData.name + ".snbt");
             try {
-                NbtProvider.method_32234(path2, compressedData.field_24616);
+                NbtProvider.writeTo(path2, compressedData.field_24616);
             } catch (IOException iOException) {
                 LOGGER.error("Couldn't write structure SNBT {} at {}", (Object)compressedData.name, (Object)path2, (Object)iOException);
             }
@@ -132,10 +132,10 @@ implements DataProvider {
         }
     }
 
-    static class class_5621
+    static class CompressionException
     extends RuntimeException {
-        public class_5621(Path path, Throwable throwable) {
-            super(path.toAbsolutePath().toString(), throwable);
+        public CompressionException(Path path, Throwable cause) {
+            super(path.toAbsolutePath().toString(), cause);
         }
     }
 

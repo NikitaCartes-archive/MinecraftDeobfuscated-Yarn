@@ -184,13 +184,6 @@ implements Chunk {
         return blockState;
     }
 
-    public ChunkSection getSection(int y) {
-        if (this.sections[y] == WorldChunk.EMPTY_SECTION) {
-            this.sections[y] = new ChunkSection(this.sectionIndexToCoord(y));
-        }
-        return this.sections[y];
-    }
-
     @Override
     public void setBlockEntity(BlockEntity blockEntity) {
         this.blockEntities.put(blockEntity.getPos(), blockEntity);
@@ -436,7 +429,7 @@ implements Chunk {
     }
 
     public BitSet getOrCreateCarvingMask(GenerationStep.Carver carver2) {
-        return this.carvingMasks.computeIfAbsent(carver2, carver -> new BitSet(65536));
+        return this.carvingMasks.computeIfAbsent(carver2, carver -> new BitSet(98304));
     }
 
     public void setCarvingMask(GenerationStep.Carver carver, BitSet mask) {

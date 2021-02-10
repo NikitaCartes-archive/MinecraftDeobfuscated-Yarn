@@ -14,9 +14,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.model.ModelBakeSettings;
 import net.minecraft.client.render.model.ModelRotation;
-import net.minecraft.client.util.math.AffineTransformation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.AffineTransformation;
 
 @Environment(value=EnvType.CLIENT)
 public class ModelVariant

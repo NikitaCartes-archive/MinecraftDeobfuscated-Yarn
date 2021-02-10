@@ -22,10 +22,10 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
-        BlockPos blockPos = featureContext.getPos();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        Random random = featureContext.getRandom();
+    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
+        BlockPos blockPos = context.getPos();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        Random random = context.getRandom();
         if (!structureWorldAccess.isAir(blockPos) || structureWorldAccess.isAir(blockPos.up())) {
             return false;
         }

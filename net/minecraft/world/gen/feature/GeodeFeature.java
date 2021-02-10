@@ -38,13 +38,13 @@ extends Feature<GeodeFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<GeodeFeatureConfig> featureContext) {
+    public boolean generate(FeatureContext<GeodeFeatureConfig> context) {
         int n;
         int m;
-        GeodeFeatureConfig geodeFeatureConfig = featureContext.getConfig();
-        Random random = featureContext.getRandom();
-        BlockPos blockPos = featureContext.getPos();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
+        GeodeFeatureConfig geodeFeatureConfig = context.getConfig();
+        Random random = context.getRandom();
+        BlockPos blockPos = context.getPos();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
         int i = geodeFeatureConfig.minGenOffset;
         int j = geodeFeatureConfig.maxGenOffset;
         if (structureWorldAccess.getFluidState(blockPos.add(0, j / 3, 0)).isStill()) {

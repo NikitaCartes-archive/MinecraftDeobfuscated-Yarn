@@ -122,7 +122,7 @@ public abstract class SkyProperties {
     public static class Overworld
     extends SkyProperties {
         public Overworld() {
-            super(128.0f, true, SkyType.NORMAL, false, false);
+            super(192.0f, true, SkyType.NORMAL, false, false);
         }
 
         @Override

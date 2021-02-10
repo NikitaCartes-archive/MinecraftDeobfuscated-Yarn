@@ -26,12 +26,12 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         int i;
         int j;
         int i2;
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        BlockPos blockPos = featureContext.getPos();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        BlockPos blockPos = context.getPos();
         blockPos = blockPos.up();
         while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
             blockPos = blockPos.down();

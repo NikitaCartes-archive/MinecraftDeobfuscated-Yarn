@@ -279,7 +279,7 @@ extends HostileEntity {
         @Override
         public void start() {
             LivingEntity livingEntity = VexEntity.this.getTarget();
-            Vec3d vec3d = livingEntity.method_33571();
+            Vec3d vec3d = livingEntity.getEyePos();
             VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
             VexEntity.this.setCharging(true);
             VexEntity.this.playSound(SoundEvents.ENTITY_VEX_CHARGE, 1.0f, 1.0f);
@@ -299,7 +299,7 @@ extends HostileEntity {
             } else {
                 double d = VexEntity.this.squaredDistanceTo(livingEntity);
                 if (d < 9.0) {
-                    Vec3d vec3d = livingEntity.method_33571();
+                    Vec3d vec3d = livingEntity.getEyePos();
                     VexEntity.this.moveControl.moveTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
                 }
             }

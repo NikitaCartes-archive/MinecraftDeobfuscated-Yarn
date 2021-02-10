@@ -58,6 +58,7 @@ import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.LevelInfo;
 import net.minecraft.world.level.LevelProperties;
 import net.minecraft.world.level.storage.LevelStorage;
+import net.minecraft.world.level.storage.LevelSummary;
 import net.minecraft.world.updater.WorldUpdater;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -115,6 +116,11 @@ public class Main {
             LevelStorage levelStorage = LevelStorage.create(file.toPath());
             LevelStorage.Session session = levelStorage.createSession(string);
             MinecraftServer.convertLevel(session);
+            LevelSummary levelSummary = session.getLevelSummary();
+            if (levelSummary != null && levelSummary.isPreWorldHeightChangeVersion()) {
+                LOGGER.info("Loading of old worlds is temporarily disabled.");
+                return;
+            }
             DataPackSettings dataPackSettings = session.getDataPackSettings();
             boolean bl = optionSet.has(optionSpec7);
             if (bl) {

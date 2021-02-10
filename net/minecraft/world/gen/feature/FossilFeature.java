@@ -48,11 +48,11 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     @Override
-    public boolean generate(FeatureContext<DefaultFeatureConfig> featureContext) {
+    public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         int m;
-        Random random = featureContext.getRandom();
-        StructureWorldAccess structureWorldAccess = featureContext.getWorld();
-        BlockPos blockPos = featureContext.getPos();
+        Random random = context.getRandom();
+        StructureWorldAccess structureWorldAccess = context.getWorld();
+        BlockPos blockPos = context.getPos();
         BlockRotation blockRotation = BlockRotation.random(random);
         int i = random.nextInt(FOSSILS.length);
         StructureManager structureManager = structureWorldAccess.toServerWorld().getServer().getStructureManager();

@@ -9,12 +9,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-import net.minecraft.class_5575;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.predicate.entity.EntityPredicates;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
@@ -33,7 +33,7 @@ public interface EntityView {
      */
     public List<Entity> getOtherEntities(@Nullable Entity var1, Box var2, Predicate<? super Entity> var3);
 
-    public <T extends Entity> List<T> getEntitiesByType(class_5575<Entity, T> var1, Box var2, Predicate<? super T> var3);
+    public <T extends Entity> List<T> getEntitiesByType(TypeFilter<Entity, T> var1, Box var2, Predicate<? super T> var3);
 
     /**
      * Computes a list of entities within some box whose runtime Java class is the same as or is
@@ -46,7 +46,7 @@ public interface EntityView {
      * @param predicate a predicate which entities must satisfy in order to be included in the returned list
      */
     default public <T extends Entity> List<T> getEntitiesByClass(Class<T> entityClass, Box box, Predicate<? super T> predicate) {
-        return this.getEntitiesByType(class_5575.method_31795(entityClass), box, predicate);
+        return this.getEntitiesByType(TypeFilter.instanceOf(entityClass), box, predicate);
     }
 
     public List<? extends PlayerEntity> getPlayers();

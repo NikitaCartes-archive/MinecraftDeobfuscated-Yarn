@@ -253,8 +253,8 @@ public class Brain<E extends LivingEntity> {
         }
     }
 
-    public void resetPossibleActivities(List<Activity> list) {
-        for (Activity activity : list) {
+    public void resetPossibleActivities(List<Activity> activities) {
+        for (Activity activity : activities) {
             if (!this.canDoActivity(activity)) continue;
             this.resetPossibleActivities(activity);
             break;

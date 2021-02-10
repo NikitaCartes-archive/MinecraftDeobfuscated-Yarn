@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5742;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -20,6 +19,7 @@ import net.minecraft.world.CollisionView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.source.BiomeAccess;
+import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.dimension.DimensionType;
@@ -70,7 +70,7 @@ BiomeAccess.Storage {
 
     @Override
     default public Biome getBiomeForNoiseGen(int biomeX, int biomeY, int biomeZ) {
-        Chunk chunk = this.getChunk(class_5742.method_33103(biomeX), class_5742.method_33103(biomeZ), ChunkStatus.BIOMES, false);
+        Chunk chunk = this.getChunk(BiomeCoords.toChunk(biomeX), BiomeCoords.toChunk(biomeZ), ChunkStatus.BIOMES, false);
         if (chunk != null && chunk.getBiomeArray() != null) {
             return chunk.getBiomeArray().getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
         }

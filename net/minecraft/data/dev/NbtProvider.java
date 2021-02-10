@@ -49,7 +49,7 @@ implements DataProvider {
     @Nullable
     public static Path convertNbtToSnbt(Path inputPath, String location, Path outputPath) {
         try {
-            NbtProvider.method_32234(outputPath.resolve(location + ".snbt"), NbtHelper.toPrettyPrintedString(NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]))));
+            NbtProvider.writeTo(outputPath.resolve(location + ".snbt"), NbtHelper.toPrettyPrintedString(NbtIo.readCompressed(Files.newInputStream(inputPath, new OpenOption[0]))));
             LOGGER.info("Converted {} from NBT to SNBT", (Object)location);
             return outputPath.resolve(location + ".snbt");
         } catch (IOException iOException) {
@@ -58,10 +58,10 @@ implements DataProvider {
         }
     }
 
-    public static void method_32234(Path path, String string) throws IOException {
-        Files.createDirectories(path.getParent(), new FileAttribute[0]);
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, new OpenOption[0]);){
-            bufferedWriter.write(string);
+    public static void writeTo(Path file, String content) throws IOException {
+        Files.createDirectories(file.getParent(), new FileAttribute[0]);
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(file, new OpenOption[0]);){
+            bufferedWriter.write(content);
             bufferedWriter.write(10);
         }
     }

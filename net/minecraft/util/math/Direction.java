@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.util.math.Vector4f;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
@@ -28,6 +27,7 @@ import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.math.Vec3i;
+import net.minecraft.util.math.Vector4f;
 import org.jetbrains.annotations.Nullable;
 
 public enum Direction implements StringIdentifiable

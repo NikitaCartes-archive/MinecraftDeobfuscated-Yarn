@@ -8,6 +8,8 @@ public interface WorldGenRandom {
 
     public int nextInt(int var1);
 
+    public long nextLong();
+
     public double nextDouble();
 
     default public void skip(int count) {

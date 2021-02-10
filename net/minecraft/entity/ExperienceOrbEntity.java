@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5575;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
@@ -24,6 +23,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.tag.FluidTags;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -108,7 +108,7 @@ extends Entity {
             this.target = this.world.getClosestPlayer(this, 8.0);
         }
         if (this.world instanceof ServerWorld) {
-            List<ExperienceOrbEntity> list = this.world.getEntitiesByType(class_5575.method_31795(ExperienceOrbEntity.class), this.getBoundingBox().expand(0.5), this::isMergeable);
+            List<ExperienceOrbEntity> list = this.world.getEntitiesByType(TypeFilter.instanceOf(ExperienceOrbEntity.class), this.getBoundingBox().expand(0.5), this::isMergeable);
             for (ExperienceOrbEntity experienceOrbEntity : list) {
                 this.merge(experienceOrbEntity);
             }
@@ -127,7 +127,7 @@ extends Entity {
     private static boolean wasMergedIntoExistingOrb(ServerWorld world, Vec3d pos, int amount) {
         Box box = Box.of(pos, 1.0, 1.0, 1.0);
         int i = world.getRandom().nextInt(40);
-        List<ExperienceOrbEntity> list = world.getEntitiesByType(class_5575.method_31795(ExperienceOrbEntity.class), box, experienceOrbEntity -> ExperienceOrbEntity.isMergeable(experienceOrbEntity, i, amount));
+        List<ExperienceOrbEntity> list = world.getEntitiesByType(TypeFilter.instanceOf(ExperienceOrbEntity.class), box, experienceOrbEntity -> ExperienceOrbEntity.isMergeable(experienceOrbEntity, i, amount));
         if (!list.isEmpty()) {
             ExperienceOrbEntity experienceOrbEntity2 = list.get(0);
             ++experienceOrbEntity2.pickingCount;

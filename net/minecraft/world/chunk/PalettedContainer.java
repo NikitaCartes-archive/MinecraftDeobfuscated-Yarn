@@ -3,8 +3,9 @@
  */
 package net.minecraft.world.chunk;
 
+import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
@@ -15,11 +16,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.collection.PackedIntegerArray;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.thread.AtomicStack;
 import net.minecraft.util.thread.LockHelper;
 import net.minecraft.world.chunk.ArrayPalette;
 import net.minecraft.world.chunk.BiMapPalette;
 import net.minecraft.world.chunk.Palette;
 import net.minecraft.world.chunk.PaletteResizeListener;
+import org.jetbrains.annotations.Nullable;
 
 public class PalettedContainer<T>
 implements PaletteResizeListener<T> {
@@ -32,18 +35,24 @@ implements PaletteResizeListener<T> {
     protected PackedIntegerArray data;
     private Palette<T> palette;
     private int paletteSize;
-    private final ReentrantLock writeLock = new ReentrantLock();
+    private final Semaphore writeLock = new Semaphore(1);
+    @Nullable
+    private final AtomicStack<Pair<Thread, StackTraceElement[]>> lockStack = null;
 
     public void lock() {
-        LockHelper.checkLock(this.writeLock, "PalettedContainer");
+        if (this.lockStack != null) {
+            Thread thread = Thread.currentThread();
+            this.lockStack.push(Pair.of(thread, thread.getStackTrace()));
+        }
+        LockHelper.checkLock(this.writeLock, this.lockStack, "PalettedContainer");
     }
 
     public void unlock() {
-        this.writeLock.unlock();
+        this.writeLock.release();
     }
 
-    public PalettedContainer(Palette<T> fallbackPalette, IdList<T> idList, Function<CompoundTag, T> elementDeserializer, Function<T, CompoundTag> elementSerializer, T defaultElement) {
-        this.fallbackPalette = fallbackPalette;
+    public PalettedContainer(Palette<T> palette, IdList<T> idList, Function<CompoundTag, T> elementDeserializer, Function<T, CompoundTag> elementSerializer, T defaultElement) {
+        this.fallbackPalette = palette;
         this.idList = idList;
         this.elementDeserializer = elementDeserializer;
         this.elementSerializer = elementSerializer;
@@ -75,19 +84,15 @@ implements PaletteResizeListener<T> {
 
     @Override
     public int onResize(int i, T object) {
-        int j;
-        this.lock();
         PackedIntegerArray packedIntegerArray = this.data;
         Palette<T> palette = this.palette;
         this.setPaletteSize(i);
-        for (j = 0; j < packedIntegerArray.getSize(); ++j) {
+        for (int j = 0; j < packedIntegerArray.getSize(); ++j) {
             T object2 = palette.getByIndex(packedIntegerArray.get(j));
             if (object2 == null) continue;
             this.set(j, object2);
         }
-        j = this.palette.getIndex(object);
-        this.unlock();
-        return j;
+        return this.palette.getIndex(object);
     }
 
     public T setSync(int x, int y, int z, T value) {
@@ -101,14 +106,14 @@ implements PaletteResizeListener<T> {
         return this.setAndGetOldValue(PalettedContainer.toIndex(x, y, z), value);
     }
 
-    protected T setAndGetOldValue(int index, T value) {
+    private T setAndGetOldValue(int index, T value) {
         int i = this.palette.getIndex(value);
         int j = this.data.setAndGetOldValue(index, i);
         T object = this.palette.getByIndex(j);
         return object == null ? this.defaultValue : object;
     }
 
-    protected void set(int index, T object) {
+    private void set(int index, T object) {
         int i = this.palette.getIndex(object);
         this.data.set(index, i);
     }

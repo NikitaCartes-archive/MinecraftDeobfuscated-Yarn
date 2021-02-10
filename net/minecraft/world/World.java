@@ -20,8 +20,6 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.class_5575;
-import net.minecraft.class_5577;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonPart;
@@ -42,6 +40,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.tag.TagManager;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypeFilter;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -69,6 +68,7 @@ import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.chunk.light.LightingProvider;
 import net.minecraft.world.dimension.DimensionType;
+import net.minecraft.world.entity.EntityLookup;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.explosion.Explosion;
 import net.minecraft.world.explosion.ExplosionBehavior;
@@ -520,7 +520,7 @@ AutoCloseable {
     public List<Entity> getOtherEntities(@Nullable Entity except, Box box, Predicate<? super Entity> predicate) {
         this.getProfiler().visit("getEntities");
         ArrayList<Entity> list = Lists.newArrayList();
-        this.getEntityIdMap().method_31807(box, entity2 -> {
+        this.getEntityLookup().forEachIntersects(box, entity2 -> {
             if (entity2 != except && predicate.test((Entity)entity2)) {
                 list.add((Entity)entity2);
             }
@@ -535,16 +535,16 @@ AutoCloseable {
     }
 
     @Override
-    public <T extends Entity> List<T> getEntitiesByType(class_5575<Entity, T> arg, Box box, Predicate<? super T> predicate) {
+    public <T extends Entity> List<T> getEntitiesByType(TypeFilter<Entity, T> filter, Box box, Predicate<? super T> predicate) {
         this.getProfiler().visit("getEntities");
         ArrayList list = Lists.newArrayList();
-        this.getEntityIdMap().method_31805(arg, box, entity -> {
+        this.getEntityLookup().forEachIntersects(filter, box, entity -> {
             if (predicate.test(entity)) {
                 list.add(entity);
             }
             if (entity instanceof EnderDragonEntity) {
                 for (EnderDragonPart enderDragonPart : ((EnderDragonEntity)entity).getBodyParts()) {
-                    Entity entity2 = (Entity)arg.method_31796(enderDragonPart);
+                    Entity entity2 = (Entity)filter.downcast(enderDragonPart);
                     if (entity2 == null || !predicate.test(entity2)) continue;
                     list.add(entity2);
                 }
@@ -846,7 +846,7 @@ AutoCloseable {
         return this.debugWorld;
     }
 
-    protected abstract class_5577<Entity> getEntityIdMap();
+    protected abstract EntityLookup<Entity> getEntityLookup();
 
     protected void emitGameEvent(@Nullable Entity entity, GameEvent gameEvent, BlockPos pos, int range) {
         int i = ChunkSectionPos.getSectionCoord(pos.getX() - range);
@@ -860,7 +860,7 @@ AutoCloseable {
                 WorldChunk chunk = this.getChunkManager().getWorldChunk(o, p);
                 if (chunk == null) continue;
                 for (int q = m; q <= n; ++q) {
-                    chunk.method_32914(q).listen(gameEvent, entity, pos);
+                    chunk.getGameEventDispatcher(q).dispatch(gameEvent, entity, pos);
                 }
             }
         }

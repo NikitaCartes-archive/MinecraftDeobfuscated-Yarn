@@ -18,7 +18,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.PoweredRailBlock;
 import net.minecraft.block.enums.RailShape;
-import net.minecraft.class_5459;
 import net.minecraft.entity.Dismounting;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityDimensions;
@@ -57,6 +56,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.GameRules;
+import net.minecraft.world.PortalUtil;
 import net.minecraft.world.World;
 import net.minecraft.world.event.GameEvent;
 import org.jetbrains.annotations.Nullable;
@@ -165,8 +165,8 @@ extends Entity {
     }
 
     @Override
-    protected Vec3d method_30633(Direction.Axis axis, class_5459.class_5460 arg) {
-        return LivingEntity.method_31079(super.method_30633(axis, arg));
+    protected Vec3d positionInPortal(Direction.Axis portalAxis, PortalUtil.Rectangle portalRect) {
+        return LivingEntity.method_31079(super.positionInPortal(portalAxis, portalRect));
     }
 
     @Override

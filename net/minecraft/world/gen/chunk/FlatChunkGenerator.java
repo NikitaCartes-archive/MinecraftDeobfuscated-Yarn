@@ -6,6 +6,8 @@ package net.minecraft.world.gen.chunk;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -14,7 +16,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ChunkRegion;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
-import net.minecraft.world.WorldAccess;
 import net.minecraft.world.biome.source.FixedBiomeSource;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
@@ -64,7 +65,7 @@ extends ChunkGenerator {
     }
 
     @Override
-    public void populateNoise(WorldAccess world, StructureAccessor accessor, Chunk chunk) {
+    public CompletableFuture<Chunk> populateNoise(Executor executor, StructureAccessor accessor, Chunk chunk) {
         BlockState[] blockStates = this.config.getLayerBlocks();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
@@ -72,7 +73,7 @@ extends ChunkGenerator {
         for (int i = 0; i < blockStates.length; ++i) {
             BlockState blockState = blockStates[i];
             if (blockState == null) continue;
-            int j = world.getBottomY() + i;
+            int j = chunk.getBottomY() + i;
             for (int k = 0; k < 16; ++k) {
                 for (int l = 0; l < 16; ++l) {
                     chunk.setBlockState(mutable.set(k, j, l), blockState, false);
@@ -81,6 +82,7 @@ extends ChunkGenerator {
                 }
             }
         }
+        return CompletableFuture.completedFuture(chunk);
     }
 
     @Override
