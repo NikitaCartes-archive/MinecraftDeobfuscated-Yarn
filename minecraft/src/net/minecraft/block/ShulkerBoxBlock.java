@@ -194,7 +194,7 @@ public class ShulkerBoxBlock extends BlockWithEntity {
 
 			if (compoundTag.contains("Items", 9)) {
 				DefaultedList<ItemStack> defaultedList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-				Inventories.fromTag(compoundTag, defaultedList);
+				Inventories.readNbt(compoundTag, defaultedList);
 				int i = 0;
 				int j = 0;
 

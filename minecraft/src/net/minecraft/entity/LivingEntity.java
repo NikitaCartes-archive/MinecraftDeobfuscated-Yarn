@@ -317,7 +317,7 @@ public abstract class LivingEntity extends Entity {
 			if (this.isInsideWall()) {
 				this.damage(DamageSource.IN_WALL, 1.0F);
 			} else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox())) {
-				double d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getBuffer();
+				double d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone();
 				if (d < 0.0) {
 					double e = this.world.getWorldBorder().getDamagePerBlock();
 					if (e > 0.0) {
@@ -633,18 +633,18 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
+	public void writeCustomDataToNbt(CompoundTag tag) {
 		tag.putFloat("Health", this.getHealth());
 		tag.putShort("HurtTime", (short)this.hurtTime);
 		tag.putInt("HurtByTimestamp", this.lastAttackedTime);
 		tag.putShort("DeathTime", (short)this.deathTime);
 		tag.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
-		tag.put("Attributes", this.getAttributes().toTag());
+		tag.put("Attributes", this.getAttributes().toNbt());
 		if (!this.activeStatusEffects.isEmpty()) {
 			ListTag listTag = new ListTag();
 
 			for (StatusEffectInstance statusEffectInstance : this.activeStatusEffects.values()) {
-				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+				listTag.add(statusEffectInstance.writeNbt(new CompoundTag()));
 			}
 
 			tag.put("ActiveEffects", listTag);
@@ -661,10 +661,10 @@ public abstract class LivingEntity extends Entity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
+	public void readCustomDataFromNbt(CompoundTag tag) {
 		this.setAbsorptionAmount(tag.getFloat("AbsorptionAmount"));
 		if (tag.contains("Attributes", 9) && this.world != null && !this.world.isClient) {
-			this.getAttributes().fromTag(tag.getList("Attributes", 10));
+			this.getAttributes().readNbt(tag.getList("Attributes", 10));
 		}
 
 		if (tag.contains("ActiveEffects", 9)) {
@@ -672,7 +672,7 @@ public abstract class LivingEntity extends Entity {
 
 			for (int i = 0; i < listTag.size(); i++) {
 				CompoundTag compoundTag = listTag.getCompound(i);
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(compoundTag);
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(compoundTag);
 				if (statusEffectInstance != null) {
 					this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
 				}
@@ -1912,7 +1912,7 @@ public abstract class LivingEntity extends Entity {
 			vec3d = new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ());
 		}
 
-		this.method_33567(vec3d.x, vec3d.y, vec3d.z);
+		this.requestTeleportAndDismount(vec3d.x, vec3d.y, vec3d.z);
 	}
 
 	@Environment(EnvType.CLIENT)

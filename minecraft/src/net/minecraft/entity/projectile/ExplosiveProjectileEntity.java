@@ -120,14 +120,14 @@ public abstract class ExplosiveProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.put("power", this.toListTag(new double[]{this.powerX, this.powerY, this.powerZ}));
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("power", 9)) {
 			ListTag listTag = tag.getList("power", 6);
 			if (listTag.size() == 3) {

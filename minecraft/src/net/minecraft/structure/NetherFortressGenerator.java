@@ -258,8 +258,8 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
-			super.toNbt(tag);
+		protected void writeNbt(CompoundTag tag) {
+			super.writeNbt(tag);
 			tag.putInt("Seed", this.seed);
 		}
 
@@ -318,8 +318,8 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
-			super.toNbt(tag);
+		protected void writeNbt(CompoundTag tag) {
+			super.writeNbt(tag);
 			tag.putBoolean("Mob", this.hasBlazeSpawner);
 		}
 
@@ -900,8 +900,8 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
-			super.toNbt(tag);
+		protected void writeNbt(CompoundTag tag) {
+			super.writeNbt(tag);
 			tag.putBoolean("Chest", this.containsChest);
 		}
 
@@ -1162,8 +1162,8 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
-			super.toNbt(tag);
+		protected void writeNbt(CompoundTag tag) {
+			super.writeNbt(tag);
 			tag.putBoolean("Chest", this.containsChest);
 		}
 
@@ -1303,7 +1303,7 @@ public class NetherFortressGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
+		protected void writeNbt(CompoundTag tag) {
 		}
 
 		private int checkRemainingPieces(List<NetherFortressGenerator.PieceData> possiblePieces) {

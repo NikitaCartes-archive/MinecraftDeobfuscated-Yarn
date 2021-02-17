@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5532;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -19,6 +18,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.control.AquaticLookControl;
 import net.minecraft.entity.ai.control.AquaticMoveControl;
@@ -141,8 +141,8 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("TreasurePosX", this.getTreasurePos().getX());
 		tag.putInt("TreasurePosY", this.getTreasurePos().getY());
 		tag.putInt("TreasurePosZ", this.getTreasurePos().getZ());
@@ -151,12 +151,12 @@ public class DolphinEntity extends WaterCreatureEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
+	public void readCustomDataFromNbt(CompoundTag tag) {
 		int i = tag.getInt("TreasurePosX");
 		int j = tag.getInt("TreasurePosY");
 		int k = tag.getInt("TreasurePosZ");
 		this.setTreasurePos(new BlockPos(i, j, k));
-		super.readCustomDataFromTag(tag);
+		super.readCustomDataFromNbt(tag);
 		this.setHasFish(tag.getBoolean("GotFish"));
 		this.setMoistness(tag.getInt("Moistness"));
 	}
@@ -474,15 +474,15 @@ public class DolphinEntity extends WaterCreatureEntity {
 			World world = this.dolphin.world;
 			if (this.dolphin.isNearTarget() || this.dolphin.getNavigation().isIdle()) {
 				Vec3d vec3d = Vec3d.ofCenter(this.dolphin.getTreasurePos());
-				Vec3d vec3d2 = class_5532.method_31512(this.dolphin, 16, 1, vec3d, (float) (Math.PI / 8));
+				Vec3d vec3d2 = NoPenaltyTargeting.find(this.dolphin, 16, 1, vec3d, (float) (Math.PI / 8));
 				if (vec3d2 == null) {
-					vec3d2 = class_5532.method_31512(this.dolphin, 8, 4, vec3d, (float) (Math.PI / 2));
+					vec3d2 = NoPenaltyTargeting.find(this.dolphin, 8, 4, vec3d, (float) (Math.PI / 2));
 				}
 
 				if (vec3d2 != null) {
 					BlockPos blockPos = new BlockPos(vec3d2);
 					if (!world.getFluidState(blockPos).isIn(FluidTags.WATER) || !world.getBlockState(blockPos).canPathfindThrough(world, blockPos, NavigationType.WATER)) {
-						vec3d2 = class_5532.method_31512(this.dolphin, 8, 5, vec3d, (float) (Math.PI / 2));
+						vec3d2 = NoPenaltyTargeting.find(this.dolphin, 8, 5, vec3d, (float) (Math.PI / 2));
 					}
 				}
 

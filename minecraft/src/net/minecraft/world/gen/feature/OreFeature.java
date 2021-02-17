@@ -23,7 +23,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<OreFeatureConfig> context) {
 		Random random = context.getRandom();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		OreFeatureConfig oreFeatureConfig = context.getConfig();
 		float f = random.nextFloat() * (float) Math.PI;
@@ -66,41 +66,41 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 		int x,
 		int y,
 		int z,
-		int size,
-		int i
+		int horizontalSize,
+		int verticalSize
 	) {
-		int j = 0;
-		BitSet bitSet = new BitSet(size * i * size);
+		int i = 0;
+		BitSet bitSet = new BitSet(horizontalSize * verticalSize * horizontalSize);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
-		int k = config.size;
-		double[] ds = new double[k * 4];
+		int j = config.size;
+		double[] ds = new double[j * 4];
 
-		for (int l = 0; l < k; l++) {
-			float f = (float)l / (float)k;
+		for (int k = 0; k < j; k++) {
+			float f = (float)k / (float)j;
 			double d = MathHelper.lerp((double)f, startX, endX);
 			double e = MathHelper.lerp((double)f, startY, endY);
 			double g = MathHelper.lerp((double)f, startZ, endZ);
-			double h = random.nextDouble() * (double)k / 16.0;
-			double m = ((double)(MathHelper.sin((float) Math.PI * f) + 1.0F) * h + 1.0) / 2.0;
-			ds[l * 4 + 0] = d;
-			ds[l * 4 + 1] = e;
-			ds[l * 4 + 2] = g;
-			ds[l * 4 + 3] = m;
+			double h = random.nextDouble() * (double)j / 16.0;
+			double l = ((double)(MathHelper.sin((float) Math.PI * f) + 1.0F) * h + 1.0) / 2.0;
+			ds[k * 4 + 0] = d;
+			ds[k * 4 + 1] = e;
+			ds[k * 4 + 2] = g;
+			ds[k * 4 + 3] = l;
 		}
 
-		for (int l = 0; l < k - 1; l++) {
-			if (!(ds[l * 4 + 3] <= 0.0)) {
-				for (int n = l + 1; n < k; n++) {
-					if (!(ds[n * 4 + 3] <= 0.0)) {
-						double d = ds[l * 4 + 0] - ds[n * 4 + 0];
-						double e = ds[l * 4 + 1] - ds[n * 4 + 1];
-						double g = ds[l * 4 + 2] - ds[n * 4 + 2];
-						double h = ds[l * 4 + 3] - ds[n * 4 + 3];
+		for (int k = 0; k < j - 1; k++) {
+			if (!(ds[k * 4 + 3] <= 0.0)) {
+				for (int m = k + 1; m < j; m++) {
+					if (!(ds[m * 4 + 3] <= 0.0)) {
+						double d = ds[k * 4 + 0] - ds[m * 4 + 0];
+						double e = ds[k * 4 + 1] - ds[m * 4 + 1];
+						double g = ds[k * 4 + 2] - ds[m * 4 + 2];
+						double h = ds[k * 4 + 3] - ds[m * 4 + 3];
 						if (h * h > d * d + e * e + g * g) {
 							if (h > 0.0) {
-								ds[n * 4 + 3] = -1.0;
+								ds[m * 4 + 3] = -1.0;
 							} else {
-								ds[l * 4 + 3] = -1.0;
+								ds[k * 4 + 3] = -1.0;
 							}
 						}
 					}
@@ -110,44 +110,44 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 
 		Set<ChunkSection> set = Sets.<ChunkSection>newHashSet();
 
-		for (int nx = 0; nx < k; nx++) {
-			double d = ds[nx * 4 + 3];
+		for (int mx = 0; mx < j; mx++) {
+			double d = ds[mx * 4 + 3];
 			if (!(d < 0.0)) {
-				double e = ds[nx * 4 + 0];
-				double g = ds[nx * 4 + 1];
-				double h = ds[nx * 4 + 2];
-				int o = Math.max(MathHelper.floor(e - d), x);
-				int p = Math.max(MathHelper.floor(g - d), y);
-				int q = Math.max(MathHelper.floor(h - d), z);
-				int r = Math.max(MathHelper.floor(e + d), o);
-				int s = Math.max(MathHelper.floor(g + d), p);
-				int t = Math.max(MathHelper.floor(h + d), q);
+				double e = ds[mx * 4 + 0];
+				double g = ds[mx * 4 + 1];
+				double h = ds[mx * 4 + 2];
+				int n = Math.max(MathHelper.floor(e - d), x);
+				int o = Math.max(MathHelper.floor(g - d), y);
+				int p = Math.max(MathHelper.floor(h - d), z);
+				int q = Math.max(MathHelper.floor(e + d), n);
+				int r = Math.max(MathHelper.floor(g + d), o);
+				int s = Math.max(MathHelper.floor(h + d), p);
 
-				for (int u = o; u <= r; u++) {
-					double v = ((double)u + 0.5 - e) / d;
-					if (v * v < 1.0) {
-						for (int w = p; w <= s; w++) {
-							double aa = ((double)w + 0.5 - g) / d;
-							if (v * v + aa * aa < 1.0) {
-								for (int ab = q; ab <= t; ab++) {
-									double ac = ((double)ab + 0.5 - h) / d;
-									if (v * v + aa * aa + ac * ac < 1.0 && !world.isOutOfHeightLimit(w)) {
-										int ad = u - x + (w - y) * size + (ab - z) * size * i;
-										if (!bitSet.get(ad)) {
-											bitSet.set(ad);
-											mutable.set(u, w, ab);
-											Chunk chunk = world.getChunk(ChunkSectionPos.getSectionCoord(u), ChunkSectionPos.getSectionCoord(ab));
-											ChunkSection chunkSection = chunk.getSection(chunk.getSectionIndex(w));
+				for (int t = n; t <= q; t++) {
+					double u = ((double)t + 0.5 - e) / d;
+					if (u * u < 1.0) {
+						for (int v = o; v <= r; v++) {
+							double w = ((double)v + 0.5 - g) / d;
+							if (u * u + w * w < 1.0) {
+								for (int aa = p; aa <= s; aa++) {
+									double ab = ((double)aa + 0.5 - h) / d;
+									if (u * u + w * w + ab * ab < 1.0 && !world.isOutOfHeightLimit(v)) {
+										int ac = t - x + (v - y) * horizontalSize + (aa - z) * horizontalSize * verticalSize;
+										if (!bitSet.get(ac)) {
+											bitSet.set(ac);
+											mutable.set(t, v, aa);
+											Chunk chunk = world.getChunk(ChunkSectionPos.getSectionCoord(t), ChunkSectionPos.getSectionCoord(aa));
+											ChunkSection chunkSection = chunk.getSection(chunk.getSectionIndex(v));
 											if (set.add(chunkSection)) {
 												chunkSection.lock();
 											}
 
-											int ae = ChunkSectionPos.getLocalCoord(u);
-											int af = ChunkSectionPos.getLocalCoord(w);
-											int ag = ChunkSectionPos.getLocalCoord(ab);
-											if (config.target.test(chunkSection.getBlockState(ae, af, ag), random)) {
-												chunkSection.setBlockState(ae, af, ag, config.state, false);
-												j++;
+											int ad = ChunkSectionPos.getLocalCoord(t);
+											int ae = ChunkSectionPos.getLocalCoord(v);
+											int af = ChunkSectionPos.getLocalCoord(aa);
+											if (config.target.test(chunkSection.getBlockState(ad, ae, af), random)) {
+												chunkSection.setBlockState(ad, ae, af, config.state, false);
+												i++;
 											}
 										}
 									}
@@ -163,6 +163,6 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			chunkSection2.unlock();
 		}
 
-		return j > 0;
+		return i > 0;
 	}
 }

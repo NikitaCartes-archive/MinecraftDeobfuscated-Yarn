@@ -204,10 +204,10 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		if (tag.contains("Book", 10)) {
-			this.book = this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null);
+			this.book = this.resolveBook(ItemStack.fromNbt(tag.getCompound("Book")), null);
 		} else {
 			this.book = ItemStack.EMPTY;
 		}
@@ -217,10 +217,10 @@ public class LecternBlockEntity extends BlockEntity implements Clearable, NamedS
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		if (!this.getBook().isEmpty()) {
-			tag.put("Book", this.getBook().toTag(new CompoundTag()));
+			tag.put("Book", this.getBook().writeNbt(new CompoundTag()));
 			tag.putInt("Page", this.currentPage);
 		}
 

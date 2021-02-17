@@ -399,7 +399,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.main.get(i).isEmpty()) {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putByte("Slot", (byte)i);
-				this.main.get(i).toTag(compoundTag);
+				this.main.get(i).writeNbt(compoundTag);
 				tag.add(compoundTag);
 			}
 		}
@@ -408,7 +408,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.armor.get(ix).isEmpty()) {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putByte("Slot", (byte)(ix + 100));
-				this.armor.get(ix).toTag(compoundTag);
+				this.armor.get(ix).writeNbt(compoundTag);
 				tag.add(compoundTag);
 			}
 		}
@@ -417,7 +417,7 @@ public class PlayerInventory implements Inventory, Nameable {
 			if (!this.offHand.get(ixx).isEmpty()) {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putByte("Slot", (byte)(ixx + 150));
-				this.offHand.get(ixx).toTag(compoundTag);
+				this.offHand.get(ixx).writeNbt(compoundTag);
 				tag.add(compoundTag);
 			}
 		}
@@ -433,7 +433,7 @@ public class PlayerInventory implements Inventory, Nameable {
 		for (int i = 0; i < tag.size(); i++) {
 			CompoundTag compoundTag = tag.getCompound(i);
 			int j = compoundTag.getByte("Slot") & 255;
-			ItemStack itemStack = ItemStack.fromTag(compoundTag);
+			ItemStack itemStack = ItemStack.fromNbt(compoundTag);
 			if (!itemStack.isEmpty()) {
 				if (j >= 0 && j < this.main.size()) {
 					this.main.set(j, itemStack);

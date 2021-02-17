@@ -25,18 +25,18 @@ import net.minecraft.world.biome.Biome;
 public class CustomizeBuffetLevelScreen extends Screen {
 	private static final Text BUFFET_BIOME_TEXT = new TranslatableText("createWorld.customize.buffet.biome");
 	private final Screen parent;
-	private final Consumer<Biome> field_24563;
+	private final Consumer<Biome> onDone;
 	private final Registry<Biome> biomeRegistry;
 	private CustomizeBuffetLevelScreen.BuffetBiomesListWidget biomeSelectionList;
 	private Biome biome;
 	private ButtonWidget confirmButton;
 
-	public CustomizeBuffetLevelScreen(Screen parent, DynamicRegistryManager dynamicRegistryManager, Consumer<Biome> consumer, Biome biome) {
+	public CustomizeBuffetLevelScreen(Screen parent, DynamicRegistryManager registryManager, Consumer<Biome> onDone, Biome biome) {
 		super(new TranslatableText("createWorld.customize.buffet.title"));
 		this.parent = parent;
-		this.field_24563 = consumer;
+		this.onDone = onDone;
 		this.biome = biome;
-		this.biomeRegistry = dynamicRegistryManager.get(Registry.BIOME_KEY);
+		this.biomeRegistry = registryManager.get(Registry.BIOME_KEY);
 	}
 
 	@Override
@@ -50,7 +50,7 @@ public class CustomizeBuffetLevelScreen extends Screen {
 		this.biomeSelectionList = new CustomizeBuffetLevelScreen.BuffetBiomesListWidget();
 		this.children.add(this.biomeSelectionList);
 		this.confirmButton = this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, ScreenTexts.DONE, buttonWidget -> {
-			this.field_24563.accept(this.biome);
+			this.onDone.accept(this.biome);
 			this.client.openScreen(this.parent);
 		}));
 		this.addButton(new ButtonWidget(this.width / 2 + 5, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));

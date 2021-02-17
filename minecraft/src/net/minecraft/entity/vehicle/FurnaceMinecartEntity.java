@@ -139,16 +139,16 @@ public class FurnaceMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	protected void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putDouble("PushX", this.pushX);
 		tag.putDouble("PushZ", this.pushZ);
 		tag.putShort("Fuel", (short)this.fuel);
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	protected void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.pushX = tag.getDouble("PushX");
 		this.pushZ = tag.getDouble("PushZ");
 		this.fuel = tag.getShort("Fuel");

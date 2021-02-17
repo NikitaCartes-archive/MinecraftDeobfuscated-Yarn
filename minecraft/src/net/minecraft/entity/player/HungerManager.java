@@ -75,7 +75,7 @@ public class HungerManager {
 		}
 	}
 
-	public void fromTag(CompoundTag tag) {
+	public void readNbt(CompoundTag tag) {
 		if (tag.contains("foodLevel", 99)) {
 			this.foodLevel = tag.getInt("foodLevel");
 			this.foodStarvationTimer = tag.getInt("foodTickTimer");
@@ -84,7 +84,7 @@ public class HungerManager {
 		}
 	}
 
-	public void toTag(CompoundTag tag) {
+	public void writeNbt(CompoundTag tag) {
 		tag.putInt("foodLevel", this.foodLevel);
 		tag.putInt("foodTickTimer", this.foodStarvationTimer);
 		tag.putFloat("foodSaturationLevel", this.foodSaturationLevel);

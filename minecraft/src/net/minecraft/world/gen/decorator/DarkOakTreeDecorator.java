@@ -5,15 +5,10 @@ import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Heightmap;
 
-public class DarkOakTreeDecorator extends AbstractHeightmapDecorator<NopeDecoratorConfig> {
+public class DarkOakTreeDecorator extends Decorator<NopeDecoratorConfig> {
 	public DarkOakTreeDecorator(Codec<NopeDecoratorConfig> codec) {
 		super(codec);
-	}
-
-	protected Heightmap.Type getHeightmapType(NopeDecoratorConfig nopeDecoratorConfig) {
-		return Heightmap.Type.MOTION_BLOCKING;
 	}
 
 	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
@@ -22,8 +17,7 @@ public class DarkOakTreeDecorator extends AbstractHeightmapDecorator<NopeDecorat
 			int k = i % 4;
 			int l = j * 4 + 1 + random.nextInt(3) + blockPos.getX();
 			int m = k * 4 + 1 + random.nextInt(3) + blockPos.getZ();
-			int n = decoratorContext.getTopY(this.getHeightmapType(nopeDecoratorConfig), l, m);
-			return new BlockPos(l, n, m);
+			return new BlockPos(l, blockPos.getY(), m);
 		});
 	}
 }

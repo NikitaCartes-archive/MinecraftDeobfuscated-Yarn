@@ -20,8 +20,9 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		BlockPos.Mutable mutable = blockPos.mutableCopy();
+		BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
 		for (int i = 64; i < 384; i++) {
 			mutable.set(blockPos);
@@ -29,9 +30,12 @@ public class VinesFeature extends Feature<DefaultFeatureConfig> {
 			mutable.setY(i);
 			if (structureWorldAccess.isAir(mutable)) {
 				for (Direction direction : DIRECTIONS) {
-					if (direction != Direction.DOWN && VineBlock.shouldConnectTo(structureWorldAccess, mutable, direction)) {
-						structureWorldAccess.setBlockState(mutable, Blocks.VINE.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
-						break;
+					if (direction != Direction.DOWN) {
+						mutable2.set(mutable, direction);
+						if (VineBlock.shouldConnectTo(structureWorldAccess, mutable2, direction)) {
+							structureWorldAccess.setBlockState(mutable, Blocks.VINE.getDefaultState().with(VineBlock.getFacingProperty(direction), Boolean.valueOf(true)), 2);
+							break;
+						}
 					}
 				}
 			}

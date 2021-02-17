@@ -63,14 +63,14 @@ public class EnchantmentHelper {
 	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentTag(net.minecraft.item.ItemStack)
 	 */
 	public static Map<Enchantment, Integer> get(ItemStack stack) {
-		ListTag listTag = stack.isOf(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantmentTag(stack) : stack.getEnchantments();
-		return fromTag(listTag);
+		ListTag listTag = stack.isOf(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantmentNbt(stack) : stack.getEnchantments();
+		return fromNbt(listTag);
 	}
 
 	/**
 	 * Loads enchantments from an NBT list.
 	 */
-	public static Map<Enchantment, Integer> fromTag(ListTag tag) {
+	public static Map<Enchantment, Integer> fromNbt(ListTag tag) {
 		Map<Enchantment, Integer> map = Maps.<Enchantment, Integer>newLinkedHashMap();
 
 		for (int i = 0; i < tag.size(); i++) {

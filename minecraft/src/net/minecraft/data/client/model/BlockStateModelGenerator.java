@@ -55,7 +55,7 @@ public class BlockStateModelGenerator {
 	private final BiConsumer<Identifier, Supplier<JsonElement>> modelCollector;
 	private final Consumer<Item> simpleItemModelExemptionCollector;
 	private final List<Block> field_28549 = ImmutableList.of(Blocks.OAK_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, Blocks.IRON_TRAPDOOR);
-	private final List<Block> field_28550 = ImmutableList.of(Blocks.STONE);
+	private final List<Block> field_28550 = ImmutableList.of(Blocks.STONE, Blocks.GRIMSTONE);
 	private final Map<Block, TexturedModel> field_28551 = ImmutableMap.<Block, TexturedModel>builder()
 		.put(Blocks.SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP.get(Blocks.SANDSTONE))
 		.put(Blocks.RED_SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP.get(Blocks.RED_SANDSTONE))
@@ -3483,6 +3483,7 @@ public class BlockStateModelGenerator {
 		this.registerSingleton(Blocks.CALCITE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.TUFF, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.DRIPSTONE_BLOCK, TexturedModel.CUBE_ALL);
+		this.registerSingleton(Blocks.CHISELED_GRIMSTONE, TexturedModel.CUBE_ALL);
 		this.method_33504();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.COPPER_BLOCK);

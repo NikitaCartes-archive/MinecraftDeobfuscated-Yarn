@@ -45,8 +45,8 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putLong("Age", this.age);
 		if (this.exitPortalPos != null) {
 			tag.put("ExitPortal", NbtHelper.fromBlockPos(this.exitPortalPos));
@@ -60,20 +60,14 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.age = tag.getLong("Age");
 		if (tag.contains("ExitPortal", 10)) {
 			this.exitPortalPos = NbtHelper.toBlockPos(tag.getCompound("ExitPortal"));
 		}
 
 		this.exactTeleport = tag.getBoolean("ExactTeleport");
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public double getSquaredRenderDistance() {
-		return 256.0;
 	}
 
 	public static void clientTick(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {
@@ -130,12 +124,12 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 8, this.toInitialChunkDataTag());
+		return new BlockEntityUpdateS2CPacket(this.pos, 8, this.toInitialChunkDataNbt());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public CompoundTag toInitialChunkDataNbt() {
+		return this.writeNbt(new CompoundTag());
 	}
 
 	private static void startTeleportCooldown(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {

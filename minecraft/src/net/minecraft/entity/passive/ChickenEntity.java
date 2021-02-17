@@ -100,7 +100,7 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	protected void playFlySound() {
+	protected void addFlapEffects() {
 		this.field_28639 = this.field_28627 + this.maxWingDeviation / 2.0F;
 	}
 
@@ -144,8 +144,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.jockey = tag.getBoolean("IsChickenJockey");
 		if (tag.contains("EggLayTime")) {
 			this.eggLayTime = tag.getInt("EggLayTime");
@@ -153,8 +153,8 @@ public class ChickenEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("IsChickenJockey", this.jockey);
 		tag.putInt("EggLayTime", this.eggLayTime);
 	}

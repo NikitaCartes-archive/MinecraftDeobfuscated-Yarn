@@ -718,11 +718,11 @@ public class ExecuteCommand {
 									return OptionalInt.empty();
 								}
 
-								CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+								CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
 								compoundTag.remove("x");
 								compoundTag.remove("y");
 								compoundTag.remove("z");
-								CompoundTag compoundTag2 = blockEntity2.toTag(new CompoundTag());
+								CompoundTag compoundTag2 = blockEntity2.writeNbt(new CompoundTag());
 								compoundTag2.remove("x");
 								compoundTag2.remove("y");
 								compoundTag2.remove("z");

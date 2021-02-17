@@ -132,7 +132,7 @@ public class CommandBossBar extends ServerBossBar {
 		return !set.isEmpty() || !set2.isEmpty();
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", Text.Serializer.toJson(this.name));
 		compoundTag.putBoolean("Visible", this.isVisible());
@@ -153,7 +153,7 @@ public class CommandBossBar extends ServerBossBar {
 		return compoundTag;
 	}
 
-	public static CommandBossBar fromTag(CompoundTag tag, Identifier id) {
+	public static CommandBossBar fromNbt(CompoundTag tag, Identifier id) {
 		CommandBossBar commandBossBar = new CommandBossBar(id, Text.Serializer.fromJson(tag.getString("Name")));
 		commandBossBar.setVisible(tag.getBoolean("Visible"));
 		commandBossBar.setValue(tag.getInt("Value"));

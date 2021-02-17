@@ -58,14 +58,14 @@ public class BlockDataObject implements DataCommandObject {
 		tag.putInt("y", this.pos.getY());
 		tag.putInt("z", this.pos.getZ());
 		BlockState blockState = this.blockEntity.getWorld().getBlockState(this.pos);
-		this.blockEntity.fromTag(tag);
+		this.blockEntity.readNbt(tag);
 		this.blockEntity.markDirty();
 		this.blockEntity.getWorld().updateListeners(this.pos, blockState, blockState, 3);
 	}
 
 	@Override
 	public CompoundTag getTag() {
-		return this.blockEntity.toTag(new CompoundTag());
+		return this.blockEntity.writeNbt(new CompoundTag());
 	}
 
 	@Override

@@ -4,14 +4,13 @@ import java.util.BitSet;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
-public class DecoratorContext implements HeightLimitView {
+public class DecoratorContext {
 	private final StructureWorldAccess world;
 	private final ChunkGenerator generator;
 
@@ -24,12 +23,12 @@ public class DecoratorContext implements HeightLimitView {
 		return this.world.getTopY(heightmap, x, z);
 	}
 
-	public int getMaxY() {
-		return this.generator.getWorldHeight();
+	public int getMinY() {
+		return this.generator.getMinimumY();
 	}
 
-	public int getSeaLevel() {
-		return this.generator.getSeaLevel();
+	public int getMaxY() {
+		return this.generator.getWorldHeight();
 	}
 
 	public BitSet getOrCreateCarvingMask(ChunkPos chunkPos, GenerationStep.Carver carver) {
@@ -40,13 +39,7 @@ public class DecoratorContext implements HeightLimitView {
 		return this.world.getBlockState(pos);
 	}
 
-	@Override
-	public int getBottomY() {
+	public int method_33868() {
 		return this.world.getBottomY();
-	}
-
-	@Override
-	public int getHeight() {
-		return this.world.getHeight();
 	}
 }

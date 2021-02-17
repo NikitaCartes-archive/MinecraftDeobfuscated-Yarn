@@ -28,7 +28,7 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		DeltaFeatureConfig deltaFeatureConfig = context.getConfig();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		boolean bl2 = random.nextDouble() < 0.9;
 		int i = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;
 		int j = bl2 ? deltaFeatureConfig.getRimSize().getValue(random) : 0;

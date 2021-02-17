@@ -165,8 +165,8 @@ public class ItemTagsProvider extends AbstractTagProvider<Item> {
 				Items.CRIMSON_SIGN,
 				Items.WARPED_SIGN
 			);
-		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
-		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE);
+		this.getOrCreateTagBuilder(ItemTags.STONE_TOOL_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.GRIMSTONE);
+		this.getOrCreateTagBuilder(ItemTags.STONE_CRAFTING_MATERIALS).add(Items.COBBLESTONE, Items.BLACKSTONE, Items.GRIMSTONE);
 		this.getOrCreateTagBuilder(ItemTags.FREEZE_IMMUNE_WEARABLES).add(Items.LEATHER_BOOTS, Items.LEATHER_LEGGINGS, Items.LEATHER_CHESTPLATE, Items.LEATHER_HELMET);
 		this.getOrCreateTagBuilder(ItemTags.AXOLOTL_TEMPT_ITEMS).add(Items.TROPICAL_FISH, Items.TROPICAL_FISH_BUCKET);
 	}

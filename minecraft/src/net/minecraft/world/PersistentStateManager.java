@@ -61,7 +61,7 @@ public class PersistentStateManager {
 		try {
 			File file = this.getFile(id);
 			if (file.exists()) {
-				CompoundTag compoundTag = this.readTag(id, SharedConstants.getGameVersion().getWorldVersion());
+				CompoundTag compoundTag = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
 				return (T)function.apply(compoundTag.getCompound("data"));
 			}
 		} catch (Exception var5) {
@@ -75,7 +75,7 @@ public class PersistentStateManager {
 		this.loadedStates.put(string, persistentState);
 	}
 
-	public CompoundTag readTag(String id, int dataVersion) throws IOException {
+	public CompoundTag readNbt(String id, int dataVersion) throws IOException {
 		File file = this.getFile(id);
 		FileInputStream fileInputStream = new FileInputStream(file);
 		Throwable var5 = null;

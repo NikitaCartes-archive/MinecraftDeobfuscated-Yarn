@@ -86,8 +86,8 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putString("name", this.name.toString());
 		tag.putString("target", this.target.toString());
 		tag.putString("pool", this.pool.toString());
@@ -97,8 +97,8 @@ public class JigsawBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.name = new Identifier(tag.getString("name"));
 		this.target = new Identifier(tag.getString("target"));
 		this.pool = new Identifier(tag.getString("pool"));
@@ -110,12 +110,12 @@ public class JigsawBlockEntity extends BlockEntity {
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 12, this.toInitialChunkDataTag());
+		return new BlockEntityUpdateS2CPacket(this.pos, 12, this.toInitialChunkDataNbt());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public CompoundTag toInitialChunkDataNbt() {
+		return this.writeNbt(new CompoundTag());
 	}
 
 	public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {

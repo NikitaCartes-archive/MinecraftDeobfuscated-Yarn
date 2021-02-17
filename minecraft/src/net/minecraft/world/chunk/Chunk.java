@@ -126,15 +126,15 @@ public interface Chunk extends BlockView, StructureHolder {
 		getList(this.getPostProcessingLists(), index).add(packedPos);
 	}
 
-	default void addPendingBlockEntityTag(CompoundTag tag) {
+	default void addPendingBlockEntityNbt(CompoundTag tag) {
 		LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
 	}
 
 	@Nullable
-	CompoundTag getBlockEntityTag(BlockPos pos);
+	CompoundTag getBlockEntityNbt(BlockPos pos);
 
 	@Nullable
-	CompoundTag getPackedBlockEntityTag(BlockPos pos);
+	CompoundTag getPackedBlockEntityNbt(BlockPos pos);
 
 	Stream<BlockPos> getLightSourcesStream();
 

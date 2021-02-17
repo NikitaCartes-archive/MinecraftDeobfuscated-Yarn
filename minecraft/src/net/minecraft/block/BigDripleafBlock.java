@@ -206,9 +206,9 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		}
 	}
 
-	private static void playTiltSound(World world, BlockPos blockPos, SoundEvent soundEvent) {
+	private static void playTiltSound(World world, BlockPos pos, SoundEvent soundEvent) {
 		float f = MathHelper.nextBetween(world.random, 0.8F, 1.2F);
-		world.playSound(null, blockPos, soundEvent, SoundCategory.BLOCKS, 1.0F, f);
+		world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0F, f);
 	}
 
 	private static boolean isEntityAbove(BlockPos pos, Entity entity) {
@@ -227,15 +227,15 @@ public class BigDripleafBlock extends HorizontalFacingBlock implements Fertiliza
 		}
 	}
 
-	private static void resetTilt(BlockState blockState, World world, BlockPos blockPos) {
-		changeTilt(blockState, world, blockPos, Tilt.NONE);
-		playTiltSound(world, blockPos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
+	private static void resetTilt(BlockState state, World world, BlockPos pos) {
+		changeTilt(state, world, pos, Tilt.NONE);
+		playTiltSound(world, pos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
 	}
 
-	private static void changeTilt(BlockState blockState, World world, BlockPos blockPos, Tilt tilt) {
-		world.setBlockState(blockPos, blockState.with(TILT, tilt), 2);
+	private static void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt) {
+		world.setBlockState(pos, state.with(TILT, tilt), 2);
 		if (tilt.isStable()) {
-			world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos);
+			world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos);
 		}
 	}
 

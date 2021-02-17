@@ -177,15 +177,15 @@ public class ZombifiedPiglinEntity extends ZombieEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		this.angerToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
+		this.writeAngerToNbt(tag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.angerFromTag(this.world, tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
+		this.readAngerFromNbt(this.world, tag);
 	}
 
 	@Override

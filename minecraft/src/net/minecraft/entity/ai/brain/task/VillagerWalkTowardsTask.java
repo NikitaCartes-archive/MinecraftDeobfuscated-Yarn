@@ -2,7 +2,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.class_5532;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -60,7 +60,7 @@ public class VillagerWalkTowardsTask extends Task<VillagerEntity> {
 							i < 1000 && (vec3d == null || this.exceedsMaxRange(villagerEntity, GlobalPos.create(serverWorld.getRegistryKey(), new BlockPos(vec3d))));
 							i++
 						) {
-							vec3d = class_5532.method_31512(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), (float) (Math.PI / 2));
+							vec3d = NoPenaltyTargeting.find(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), (float) (Math.PI / 2));
 						}
 
 						if (i == 1000) {

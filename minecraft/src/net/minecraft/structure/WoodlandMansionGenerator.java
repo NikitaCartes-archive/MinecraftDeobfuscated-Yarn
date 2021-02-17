@@ -1030,8 +1030,8 @@ public class WoodlandMansionGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
-			super.toNbt(tag);
+		protected void writeNbt(CompoundTag tag) {
+			super.writeNbt(tag);
 			tag.putString("Template", this.template);
 			tag.putString("Rot", this.placementData.getRotation().name());
 			tag.putString("Mi", this.placementData.getMirror().name());

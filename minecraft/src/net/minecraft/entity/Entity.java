@@ -573,8 +573,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				block.onSteppedOn(this.world, blockPos, this);
 			}
 
-			Entity.class_5799 lv = this.method_33570();
-			if (lv.method_33576() && !this.hasVehicle()) {
+			Entity.MoveEffect moveEffect = this.getMoveEffect();
+			if (moveEffect.hasAny() && !this.hasVehicle()) {
 				double d = vec3d.x;
 				double e = vec3d.y;
 				double f = vec3d.z;
@@ -588,7 +588,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				if (this.distanceTraveled > this.nextStepSoundDistance && !blockState.isAir()) {
 					this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
 					if (this.isTouchingWater()) {
-						if (lv.method_33578()) {
+						if (moveEffect.playsSounds()) {
 							Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
 							float g = entity == this ? 0.35F : 0.4F;
 							Vec3d vec3d3 = entity.getVelocity();
@@ -600,20 +600,20 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 							this.playSwimSound(h);
 						}
 
-						if (lv.method_33577()) {
+						if (moveEffect.emitsGameEvents()) {
 							this.emitGameEvent(GameEvent.SWIM);
 						}
 					} else {
-						if (lv.method_33578()) {
+						if (moveEffect.playsSounds()) {
 							this.playStepSound(blockPos, blockState);
 						}
 
-						if (lv.method_33577() && !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
+						if (moveEffect.emitsGameEvents() && !blockState.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
 							this.emitGameEvent(GameEvent.STEP);
 						}
 					}
 				} else if (blockState.isAir()) {
-					this.method_33573();
+					this.addAirTravelEffects();
 				}
 			}
 
@@ -647,10 +647,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	protected void method_33573() {
+	/**
+	 * Adds the effects of this entity when it travels in air, usually to the
+	 * world the entity is in.
+	 * 
+	 * <p>This is only called when the entity {@linkplain #getMoveEffect() has
+	 * any move effect}, from {@link #move(MovementType, Vec3d)}
+	 */
+	protected void addAirTravelEffects() {
 		if (this.hasWings()) {
-			this.playFlySound();
-			if (this.method_33570().method_33577()) {
+			this.addFlapEffects();
+			if (this.getMoveEffect().emitsGameEvents()) {
 				this.emitGameEvent(GameEvent.FLAP);
 			}
 		}
@@ -938,7 +945,17 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.playSound(this.getSwimSound(), volume, 1.0F + (this.random.nextFloat() - this.random.nextFloat()) * 0.4F);
 	}
 
-	protected void playFlySound() {
+	/**
+	 * Adds the effects of this entity flapping, usually to the world the entity
+	 * is in.
+	 * 
+	 * <p>The actual flapping logic should be done in {@link #tick()} instead.
+	 * 
+	 * <p>This is only called when the entity {@linkplain #hasWings() has wings}
+	 * and the entity {@linkplain #getMoveEffect() has any move effect}, from
+	 * {@link #addAirTravelEffects()}.
+	 */
+	protected void addFlapEffects() {
 	}
 
 	protected boolean hasWings() {
@@ -967,8 +984,16 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		this.dataTracker.set(NO_GRAVITY, noGravity);
 	}
 
-	protected Entity.class_5799 method_33570() {
-		return Entity.class_5799.ALL;
+	/**
+	 * Returns the possible effect(s) of an entity moving.
+	 * 
+	 * @implNote If an entity does not emit game events or play move sounds, this
+	 * method should be overridden as returning a value other than
+	 * {@linkplain Entity.MoveEffect#ALL ALL} allows skipping some movement logic
+	 * and boost ticking performance.
+	 */
+	protected Entity.MoveEffect getMoveEffect() {
+		return Entity.MoveEffect.ALL;
 	}
 
 	public boolean occludeVibrationSignals() {
@@ -1435,7 +1460,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				return false;
 			} else {
 				tag.putString("id", string);
-				this.toTag(tag);
+				this.writeNbt(tag);
 				return true;
 			}
 		}
@@ -1445,7 +1470,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return this.hasVehicle() ? false : this.saveSelfToTag(tag);
 	}
 
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag writeNbt(CompoundTag tag) {
 		try {
 			if (this.vehicle != null) {
 				tag.put("Pos", this.toListTag(this.vehicle.getX(), this.getY(), this.vehicle.getZ()));
@@ -1499,7 +1524,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 				tag.put("Tags", listTag);
 			}
 
-			this.writeCustomDataToTag(tag);
+			this.writeCustomDataToNbt(tag);
 			if (this.hasPassengers()) {
 				ListTag listTag = new ListTag();
 
@@ -1524,7 +1549,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void fromTag(CompoundTag tag) {
+	public void readNbt(CompoundTag tag) {
 		try {
 			ListTag listTag = tag.getList("Pos", 6);
 			ListTag listTag2 = tag.getList("Motion", 6);
@@ -1583,7 +1608,7 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 					}
 				}
 
-				this.readCustomDataFromTag(tag);
+				this.readCustomDataFromNbt(tag);
 				if (this.shouldSetPositionOnLoad()) {
 					this.refreshPosition();
 				}
@@ -1609,9 +1634,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return entityType.isSaveable() && identifier != null ? identifier.toString() : null;
 	}
 
-	protected abstract void readCustomDataFromTag(CompoundTag tag);
+	protected abstract void readCustomDataFromNbt(CompoundTag tag);
 
-	protected abstract void writeCustomDataToTag(CompoundTag tag);
+	protected abstract void writeCustomDataToNbt(CompoundTag tag);
 
 	protected ListTag toListTag(double... values) {
 		ListTag listTag = new ListTag();
@@ -2262,9 +2287,9 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 	}
 
 	public void copyFrom(Entity original) {
-		CompoundTag compoundTag = original.toTag(new CompoundTag());
+		CompoundTag compoundTag = original.writeNbt(new CompoundTag());
 		compoundTag.remove("Dimension");
-		this.fromTag(compoundTag);
+		this.readNbt(compoundTag);
 		this.netherPortalCooldown = original.netherPortalCooldown;
 		this.lastNetherPortalPosition = original.lastNetherPortalPosition;
 	}
@@ -2486,8 +2511,8 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		}
 	}
 
-	public void method_33567(double d, double e, double f) {
-		this.requestTeleport(d, e, f);
+	public void requestTeleportAndDismount(double destX, double destY, double destZ) {
+		this.requestTeleport(destX, destY, destZ);
 	}
 
 	public void requestTeleport(double destX, double destY, double destZ) {
@@ -2714,18 +2739,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return Stream.concat(Stream.of(this), this.streamIntoPassengers());
 	}
 
-	/**
-	 * Returns a stream consisting of this entity and its passengers recursively
-	 * in which any entity appears only after all its passengers have appeared.
-	 * 
-	 * <p>This is useful for actions that must be applied on passengers before
-	 * applying on an entity, such as writing each entity to NBT data.
-	 * 
-	 * @implNote The default implementation is very costly. I bet Mojangsta
-	 * haven't used Java's FileTreeVisitor or any objectweb asm visitors!
-	 * 
-	 * @see net.minecraft.entity.Entity#streamSelfAndPassengers()
-	 */
 	@Override
 	public Stream<Entity> streamPassengersAndSelf() {
 		return Stream.concat(this.passengerList.stream().flatMap(Entity::streamPassengersAndSelf), Stream.of(this));
@@ -3122,6 +3135,49 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		return false;
 	}
 
+	/**
+	 * The move effect represents possible effects of an entity moving, such as
+	 * playing sounds, emitting game events, none, or both.
+	 * 
+	 * @see Entity#getMoveEffect()
+	 */
+	public static enum MoveEffect {
+		NONE(false, false),
+		SOUNDS(true, false),
+		EVENTS(false, true),
+		ALL(true, true);
+
+		final boolean sounds;
+		final boolean events;
+
+		private MoveEffect(boolean sounds, boolean events) {
+			this.sounds = sounds;
+			this.events = events;
+		}
+
+		/**
+		 * Returns whether this means an entity may emit game events or play sounds
+		 * as it moves.
+		 */
+		public boolean hasAny() {
+			return this.events || this.sounds;
+		}
+
+		/**
+		 * Returns whether this means an entity may emit game events as it moves.
+		 */
+		public boolean emitsGameEvents() {
+			return this.events;
+		}
+
+		/**
+		 * Returns whether this means an entity may play sounds as it moves.
+		 */
+		public boolean playsSounds() {
+			return this.sounds;
+		}
+	}
+
 	@FunctionalInterface
 	public interface PositionUpdater {
 		void accept(Entity entity, double x, double y, double z);
@@ -3167,33 +3223,6 @@ public abstract class Entity implements Nameable, EntityLike, CommandOutput {
 		 */
 		public boolean shouldSave() {
 			return this.save;
-		}
-	}
-
-	public static enum class_5799 {
-		NONE(false, false),
-		SOUNDS(true, false),
-		EVENTS(false, true),
-		ALL(true, true);
-
-		final boolean sounds;
-		final boolean events;
-
-		private class_5799(boolean sounds, boolean events) {
-			this.sounds = sounds;
-			this.events = events;
-		}
-
-		public boolean method_33576() {
-			return this.events || this.sounds;
-		}
-
-		public boolean method_33577() {
-			return this.events;
-		}
-
-		public boolean method_33578() {
-			return this.sounds;
 		}
 	}
 }

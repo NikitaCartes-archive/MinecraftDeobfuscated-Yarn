@@ -10,8 +10,8 @@ import net.minecraft.world.dimension.DimensionType;
 public class GenerationShapeConfig {
 	public static final Codec<GenerationShapeConfig> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
-						Codec.intRange(DimensionType.field_28136, DimensionType.field_28135).fieldOf("min_y").forGetter(GenerationShapeConfig::getMinimumY),
-						Codec.intRange(0, DimensionType.field_28134).fieldOf("height").forGetter(GenerationShapeConfig::getHeight),
+						Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT).fieldOf("min_y").forGetter(GenerationShapeConfig::getMinimumY),
+						Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height").forGetter(GenerationShapeConfig::getHeight),
 						NoiseSamplingConfig.CODEC.fieldOf("sampling").forGetter(GenerationShapeConfig::getSampling),
 						SlideConfig.CODEC.fieldOf("top_slide").forGetter(GenerationShapeConfig::getTopSlide),
 						SlideConfig.CODEC.fieldOf("bottom_slide").forGetter(GenerationShapeConfig::getBottomSlide),
@@ -46,8 +46,8 @@ public class GenerationShapeConfig {
 	private final boolean amplified;
 
 	private static DataResult<GenerationShapeConfig> checkHeight(GenerationShapeConfig config) {
-		if (config.getMinimumY() + config.getHeight() > DimensionType.field_28135 + 1) {
-			return DataResult.error("min_y + height cannot be higher than: " + (DimensionType.field_28135 + 1));
+		if (config.getMinimumY() + config.getHeight() > DimensionType.MAX_COLUMN_HEIGHT + 1) {
+			return DataResult.error("min_y + height cannot be higher than: " + (DimensionType.MAX_COLUMN_HEIGHT + 1));
 		} else if (config.getHeight() % 16 != 0) {
 			return DataResult.error("height has to be a multiple of 16");
 		} else {

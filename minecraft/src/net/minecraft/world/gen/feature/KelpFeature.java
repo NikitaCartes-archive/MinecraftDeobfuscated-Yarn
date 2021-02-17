@@ -19,7 +19,7 @@ public class KelpFeature extends Feature<DefaultFeatureConfig> {
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		int i = 0;
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		Random random = context.getRandom();
 		int j = structureWorldAccess.getTopY(Heightmap.Type.OCEAN_FLOOR, blockPos.getX(), blockPos.getZ());
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), j, blockPos.getZ());

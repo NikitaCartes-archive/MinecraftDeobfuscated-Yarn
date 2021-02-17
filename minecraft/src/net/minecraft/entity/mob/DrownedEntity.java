@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
-import net.minecraft.class_5532;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -13,6 +12,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.RangedAttackMob;
 import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
@@ -379,7 +379,7 @@ public class DrownedEntity extends ZombieEntity implements RangedAttackMob {
 		@Override
 		public void tick() {
 			if (this.drowned.getY() < (double)(this.minY - 1) && (this.drowned.getNavigation().isIdle() || this.drowned.hasFinishedCurrentPath())) {
-				Vec3d vec3d = class_5532.method_31512(
+				Vec3d vec3d = NoPenaltyTargeting.find(
 					this.drowned, 4, 8, new Vec3d(this.drowned.getX(), (double)(this.minY - 1), this.drowned.getZ()), (float) (Math.PI / 2)
 				);
 				if (vec3d == null) {

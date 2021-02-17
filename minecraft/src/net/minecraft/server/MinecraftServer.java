@@ -384,7 +384,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 
 		this.getPlayerManager().setMainWorld(serverWorld);
 		if (this.saveProperties.getCustomBossEvents() != null) {
-			this.getBossBarManager().fromTag(this.saveProperties.getCustomBossEvents());
+			this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
 		}
 
 		for (Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
@@ -578,7 +578,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		ServerWorld serverWorld2 = this.getOverworld();
 		ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
 		serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
-		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
+		this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
 		this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
 		return bl;
 	}
@@ -1753,9 +1753,8 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		return this.registryManager;
 	}
 
-	@Nullable
 	public TextStream createFilterer(ServerPlayerEntity player) {
-		return null;
+		return TextStream.field_28862;
 	}
 
 	public boolean requireResourcePack() {

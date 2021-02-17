@@ -18,7 +18,7 @@ public class SimpleRandomFeature extends Feature<SimpleRandomFeatureConfig> {
 		Random random = context.getRandom();
 		SimpleRandomFeatureConfig simpleRandomFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		ChunkGenerator chunkGenerator = context.getGenerator();
 		int i = random.nextInt(simpleRandomFeatureConfig.features.size());
 		ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)((Supplier)simpleRandomFeatureConfig.features.get(i)).get();

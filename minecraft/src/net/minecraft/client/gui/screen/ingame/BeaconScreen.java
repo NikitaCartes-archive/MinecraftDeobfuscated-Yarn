@@ -241,14 +241,14 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		private final StatusEffect effect;
 		private final Sprite sprite;
 		private final boolean primary;
-		private final Text text;
+		private final Text tooltip;
 
 		public EffectButtonWidget(int x, int y, StatusEffect statusEffect, boolean primary) {
 			super(x, y);
 			this.effect = statusEffect;
 			this.sprite = MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(statusEffect);
 			this.primary = primary;
-			this.text = this.getTextForEffect(statusEffect, primary);
+			this.tooltip = this.getTextForEffect(statusEffect, primary);
 		}
 
 		private Text getTextForEffect(StatusEffect effect, boolean primary) {
@@ -278,7 +278,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
-			BeaconScreen.this.renderTooltip(matrices, this.text, mouseX, mouseY);
+			BeaconScreen.this.renderTooltip(matrices, this.tooltip, mouseX, mouseY);
 		}
 
 		@Override

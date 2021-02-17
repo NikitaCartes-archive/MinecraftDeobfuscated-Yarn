@@ -105,24 +105,24 @@ public class AttributeContainer {
 		});
 	}
 
-	public ListTag toTag() {
+	public ListTag toNbt() {
 		ListTag listTag = new ListTag();
 
 		for (EntityAttributeInstance entityAttributeInstance : this.custom.values()) {
-			listTag.add(entityAttributeInstance.toTag());
+			listTag.add(entityAttributeInstance.toNbt());
 		}
 
 		return listTag;
 	}
 
-	public void fromTag(ListTag tag) {
+	public void readNbt(ListTag tag) {
 		for (int i = 0; i < tag.size(); i++) {
 			CompoundTag compoundTag = tag.getCompound(i);
 			String string = compoundTag.getString("Name");
 			Util.ifPresentOrElse(Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(string)), entityAttribute -> {
 				EntityAttributeInstance entityAttributeInstance = this.getCustomInstance(entityAttribute);
 				if (entityAttributeInstance != null) {
-					entityAttributeInstance.fromTag(compoundTag);
+					entityAttributeInstance.readNbt(compoundTag);
 				}
 			}, () -> LOGGER.warn("Ignoring unknown attribute '{}'", string));
 		}

@@ -1,7 +1,7 @@
 package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
-import net.minecraft.class_5534;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -32,7 +32,7 @@ public class GoToPointOfInterestTask extends Task<VillagerEntity> {
 		Vec3d vec3d = null;
 
 		for (int j = 0; j < 5; j++) {
-			Vec3d vec3d2 = class_5534.method_31530(
+			Vec3d vec3d2 = FuzzyTargeting.find(
 				villagerEntity, 15, 7, blockPos -> (double)(-pointOfInterestStorage.getDistanceFromNearestOccupied(ChunkSectionPos.from(blockPos)))
 			);
 			if (vec3d2 != null) {

@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5532;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -17,6 +16,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.MoveToRaidCenterGoal;
@@ -203,8 +203,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("Wave", this.wave);
 		tag.putBoolean("CanJoinRaid", this.ableToJoinRaid);
 		if (this.raid != null) {
@@ -213,8 +213,8 @@ public abstract class RaiderEntity extends PatrolEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.wave = tag.getInt("Wave");
 		this.ableToJoinRaid = tag.getBoolean("CanJoinRaid");
 		if (tag.contains("RaidId", 3)) {
@@ -365,9 +365,9 @@ public abstract class RaiderEntity extends PatrolEntity {
 		public void tick() {
 			if (this.raider.getNavigation().isIdle()) {
 				Vec3d vec3d = Vec3d.ofBottomCenter(this.home);
-				Vec3d vec3d2 = class_5532.method_31512(this.raider, 16, 7, vec3d, (float) (Math.PI / 10));
+				Vec3d vec3d2 = NoPenaltyTargeting.find(this.raider, 16, 7, vec3d, (float) (Math.PI / 10));
 				if (vec3d2 == null) {
-					vec3d2 = class_5532.method_31512(this.raider, 8, 7, vec3d, (float) (Math.PI / 2));
+					vec3d2 = NoPenaltyTargeting.find(this.raider, 8, 7, vec3d, (float) (Math.PI / 2));
 				}
 
 				if (vec3d2 == null) {

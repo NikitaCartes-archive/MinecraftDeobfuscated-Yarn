@@ -57,7 +57,7 @@ public class PoolStructurePiece extends StructurePiece {
 	}
 
 	@Override
-	protected void toNbt(CompoundTag tag) {
+	protected void writeNbt(CompoundTag tag) {
 		tag.putInt("PosX", this.pos.getX());
 		tag.putInt("PosY", this.pos.getY());
 		tag.putInt("PosZ", this.pos.getZ());

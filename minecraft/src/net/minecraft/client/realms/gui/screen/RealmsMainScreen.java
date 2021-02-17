@@ -1224,7 +1224,7 @@ public class RealmsMainScreen extends RealmsScreen {
 				int j = this.getScrollbarPositionX();
 				int k = (int)Math.floor(mouseY - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
 				int l = k / this.itemHeight;
-				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getItemCount()) {
+				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getEntryCount()) {
 					this.itemClicked(k, l, mouseX, mouseY, this.width);
 					RealmsMainScreen.this.clicks = RealmsMainScreen.this.clicks + 7;
 					this.setSelected(l);
@@ -1328,7 +1328,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 		@Override
 		public int getMaxPosition() {
-			return this.getItemCount() * 36;
+			return this.getEntryCount() * 36;
 		}
 
 		@Override

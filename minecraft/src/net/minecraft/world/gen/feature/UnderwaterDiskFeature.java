@@ -11,6 +11,6 @@ public class UnderwaterDiskFeature extends DiskFeature {
 
 	@Override
 	public boolean generate(FeatureContext<DiskFeatureConfig> context) {
-		return !context.getWorld().getFluidState(context.getPos()).isIn(FluidTags.WATER) ? false : super.generate(context);
+		return !context.getWorld().getFluidState(context.getOrigin()).isIn(FluidTags.WATER) ? false : super.generate(context);
 	}
 }

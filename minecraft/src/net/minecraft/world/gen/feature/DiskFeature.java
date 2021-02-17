@@ -17,7 +17,7 @@ public class DiskFeature extends Feature<DiskFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<DiskFeatureConfig> context) {
 		DiskFeatureConfig diskFeatureConfig = context.getConfig();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		boolean bl = false;
 		int i = blockPos.getY();

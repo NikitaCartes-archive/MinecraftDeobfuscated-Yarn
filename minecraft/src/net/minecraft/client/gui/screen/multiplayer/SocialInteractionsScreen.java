@@ -50,13 +50,13 @@ public class SocialInteractionsScreen extends Screen {
 	@Nullable
 	private Text serverLabel;
 	private int playerCount;
-	private boolean field_26873;
+	private boolean initialized;
 	@Nullable
-	private Runnable field_26874;
+	private Runnable onRendered;
 
 	public SocialInteractionsScreen() {
 		super(new TranslatableText("gui.socialInteractions.title"));
-		this.method_31350(MinecraftClient.getInstance());
+		this.updateServerLabel(MinecraftClient.getInstance());
 	}
 
 	private int method_31359() {
@@ -89,7 +89,7 @@ public class SocialInteractionsScreen extends Screen {
 	@Override
 	protected void init() {
 		this.client.keyboard.setRepeatEvents(true);
-		if (this.field_26873) {
+		if (this.initialized) {
 			this.playerList.updateSize(this.width, this.height, 88, this.method_31361());
 		} else {
 			this.playerList = new SocialInteractionsPlayerListWidget(this, this.client, this.width, this.height, 88, this.method_31361(), 36);
@@ -97,7 +97,7 @@ public class SocialInteractionsScreen extends Screen {
 
 		int i = this.playerList.getRowWidth() / 3;
 		int j = this.playerList.getRowLeft();
-		int k = this.playerList.method_31383();
+		int k = this.playerList.getRowRight();
 		int l = this.textRenderer.getWidth(BLOCKING_TEXT) + 40;
 		int m = 64 + 16 * this.method_31360();
 		int n = (this.width - l) / 2;
@@ -132,7 +132,7 @@ public class SocialInteractionsScreen extends Screen {
 		this.searchBox.setChangedListener(this::onSearchChange);
 		this.children.add(this.searchBox);
 		this.children.add(this.playerList);
-		this.field_26873 = true;
+		this.initialized = true;
 		this.setCurrentTab(this.currentTab);
 	}
 
@@ -202,7 +202,7 @@ public class SocialInteractionsScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-		this.method_31350(this.client);
+		this.updateServerLabel(this.client);
 		this.renderBackground(matrices);
 		if (this.serverLabel != null) {
 			drawTextWithShadow(matrices, this.client.textRenderer, this.serverLabel, this.method_31362() + 8, 35, -1);
@@ -230,8 +230,8 @@ public class SocialInteractionsScreen extends Screen {
 
 		this.blockingButton.visible = this.currentTab == SocialInteractionsScreen.Tab.BLOCKED;
 		super.render(matrices, mouseX, mouseY, delta);
-		if (this.field_26874 != null) {
-			this.field_26874.run();
+		if (this.onRendered != null) {
+			this.onRendered.run();
 		}
 	}
 
@@ -268,13 +268,13 @@ public class SocialInteractionsScreen extends Screen {
 		}
 	}
 
-	private void method_31350(MinecraftClient minecraftClient) {
-		int i = minecraftClient.getNetworkHandler().getPlayerList().size();
+	private void updateServerLabel(MinecraftClient client) {
+		int i = client.getNetworkHandler().getPlayerList().size();
 		if (this.playerCount != i) {
 			String string = "";
-			ServerInfo serverInfo = minecraftClient.getCurrentServerEntry();
-			if (minecraftClient.isInSingleplayer()) {
-				string = minecraftClient.getServer().getServerMotd();
+			ServerInfo serverInfo = client.getCurrentServerEntry();
+			if (client.isInSingleplayer()) {
+				string = client.getServer().getServerMotd();
 			} else if (serverInfo != null) {
 				string = serverInfo.name;
 			}
@@ -297,8 +297,8 @@ public class SocialInteractionsScreen extends Screen {
 		this.playerList.setPlayerOffline(uuid);
 	}
 
-	public void method_31354(@Nullable Runnable runnable) {
-		this.field_26874 = runnable;
+	public void setOnRendered(@Nullable Runnable onRendered) {
+		this.onRendered = onRendered;
 	}
 
 	@Environment(EnvType.CLIENT)

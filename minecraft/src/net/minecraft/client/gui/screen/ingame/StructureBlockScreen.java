@@ -90,7 +90,7 @@ public class StructureBlockScreen extends Screen {
 	}
 
 	private void done() {
-		if (this.method_2516(StructureBlockBlockEntity.Action.UPDATE_DATA)) {
+		if (this.updateStructureBlock(StructureBlockBlockEntity.Action.UPDATE_DATA)) {
 			this.client.openScreen(null);
 		}
 	}
@@ -119,7 +119,7 @@ public class StructureBlockScreen extends Screen {
 		this.buttonSave = this.addButton(
 			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.save"), buttonWidget -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
-					this.method_2516(StructureBlockBlockEntity.Action.SAVE_AREA);
+					this.updateStructureBlock(StructureBlockBlockEntity.Action.SAVE_AREA);
 					this.client.openScreen(null);
 				}
 			})
@@ -127,7 +127,7 @@ public class StructureBlockScreen extends Screen {
 		this.buttonLoad = this.addButton(
 			new ButtonWidget(this.width / 2 + 4 + 100, 185, 50, 20, new TranslatableText("structure_block.button.load"), buttonWidget -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.LOAD) {
-					this.method_2516(StructureBlockBlockEntity.Action.LOAD_AREA);
+					this.updateStructureBlock(StructureBlockBlockEntity.Action.LOAD_AREA);
 					this.client.openScreen(null);
 				}
 			})
@@ -145,7 +145,7 @@ public class StructureBlockScreen extends Screen {
 		this.buttonDetect = this.addButton(
 			new ButtonWidget(this.width / 2 + 4 + 100, 120, 50, 20, new TranslatableText("structure_block.button.detect_size"), buttonWidget -> {
 				if (this.structureBlock.getMode() == StructureBlockMode.SAVE) {
-					this.method_2516(StructureBlockBlockEntity.Action.SCAN_AREA);
+					this.updateStructureBlock(StructureBlockBlockEntity.Action.SCAN_AREA);
 					this.client.openScreen(null);
 				}
 			})
@@ -351,7 +351,7 @@ public class StructureBlockScreen extends Screen {
 		}
 	}
 
-	private boolean method_2516(StructureBlockBlockEntity.Action action) {
+	private boolean updateStructureBlock(StructureBlockBlockEntity.Action action) {
 		BlockPos blockPos = new BlockPos(this.parseInt(this.inputPosX.getText()), this.parseInt(this.inputPosY.getText()), this.parseInt(this.inputPosZ.getText()));
 		BlockPos blockPos2 = new BlockPos(
 			this.parseInt(this.inputSizeX.getText()), this.parseInt(this.inputSizeY.getText()), this.parseInt(this.inputSizeZ.getText())

@@ -68,14 +68,14 @@ public class SnowGolemEntity extends GolemEntity implements Shearable, RangedAtt
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("Pumpkin", this.hasPumpkin());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("Pumpkin")) {
 			this.setHasPumpkin(tag.getBoolean("Pumpkin"));
 		}

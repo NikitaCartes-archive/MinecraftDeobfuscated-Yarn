@@ -25,11 +25,11 @@ public class RecipeResultCollection {
 		if (list.size() <= 1) {
 			this.singleOutput = true;
 		} else {
-			this.singleOutput = method_30295(list);
+			this.singleOutput = shouldHaveSingleOutput(list);
 		}
 	}
 
-	private static boolean method_30295(List<Recipe<?>> list) {
+	private static boolean shouldHaveSingleOutput(List<Recipe<?>> list) {
 		int i = list.size();
 		ItemStack itemStack = ((Recipe)list.get(0)).getOutput();
 

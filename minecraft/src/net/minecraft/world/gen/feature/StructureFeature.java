@@ -97,7 +97,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
 	public static final StructureFeature<StructurePoolFeatureConfig> BASTION_REMNANT = register(
 		"Bastion_Remnant", new BastionRemnantFeature(StructurePoolFeatureConfig.CODEC), GenerationStep.Feature.SURFACE_STRUCTURES
 	);
-	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL);
+	public static final List<StructureFeature<?>> JIGSAW_STRUCTURES = ImmutableList.of(PILLAGER_OUTPOST, VILLAGE, NETHER_FOSSIL, STRONGHOLD);
 	private static final Identifier JIGSAW_ID = new Identifier("jigsaw");
 	private static final Map<Identifier, Identifier> field_25839 = ImmutableMap.<Identifier, Identifier>builder()
 		.put(new Identifier("nvi"), JIGSAW_ID)

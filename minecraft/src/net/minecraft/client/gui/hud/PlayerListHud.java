@@ -50,6 +50,10 @@ public class PlayerListHud extends DrawableHelper {
 			: this.applyGameModeFormatting(entry, Team.decorateName(entry.getScoreboardTeam(), new LiteralText(entry.getProfile().getName())));
 	}
 
+	/**
+	 * {@linkplain net.minecraft.util.Formatting#ITALIC Italicizes} the given text if
+	 * the given player is in {@linkplain net.minecraft.world.GameMode#SPECTATOR spectator mode}.
+	 */
 	private Text applyGameModeFormatting(PlayerListEntry entry, MutableText name) {
 		return entry.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name;
 	}
@@ -195,20 +199,20 @@ public class PlayerListHud extends DrawableHelper {
 		}
 	}
 
-	protected void renderLatencyIcon(MatrixStack matrices, int i, int j, int k, PlayerListEntry playerListEntry) {
+	protected void renderLatencyIcon(MatrixStack matrices, int i, int j, int k, PlayerListEntry entry) {
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 		this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
 		int l = 0;
 		int m;
-		if (playerListEntry.getLatency() < 0) {
+		if (entry.getLatency() < 0) {
 			m = 5;
-		} else if (playerListEntry.getLatency() < 150) {
+		} else if (entry.getLatency() < 150) {
 			m = 0;
-		} else if (playerListEntry.getLatency() < 300) {
+		} else if (entry.getLatency() < 300) {
 			m = 1;
-		} else if (playerListEntry.getLatency() < 600) {
+		} else if (entry.getLatency() < 600) {
 			m = 2;
-		} else if (playerListEntry.getLatency() < 1000) {
+		} else if (entry.getLatency() < 1000) {
 			m = 3;
 		} else {
 			m = 4;
@@ -219,60 +223,57 @@ public class PlayerListHud extends DrawableHelper {
 		this.setZOffset(this.getZOffset() - 100);
 	}
 
-	private void renderScoreboardObjective(
-		ScoreboardObjective objective, int i, String string, int j, int k, PlayerListEntry playerListEntry, MatrixStack matrixStack
-	) {
+	private void renderScoreboardObjective(ScoreboardObjective objective, int i, String string, int j, int k, PlayerListEntry entry, MatrixStack matrices) {
 		int l = objective.getScoreboard().getPlayerScore(string, objective).getScore();
 		if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
 			this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
 			long m = Util.getMeasuringTimeMs();
-			if (this.showTime == playerListEntry.method_2976()) {
-				if (l < playerListEntry.method_2973()) {
-					playerListEntry.method_2978(m);
-					playerListEntry.method_2975((long)(this.inGameHud.getTicks() + 20));
-				} else if (l > playerListEntry.method_2973()) {
-					playerListEntry.method_2978(m);
-					playerListEntry.method_2975((long)(this.inGameHud.getTicks() + 10));
+			if (this.showTime == entry.method_2976()) {
+				if (l < entry.method_2973()) {
+					entry.method_2978(m);
+					entry.method_2975((long)(this.inGameHud.getTicks() + 20));
+				} else if (l > entry.method_2973()) {
+					entry.method_2978(m);
+					entry.method_2975((long)(this.inGameHud.getTicks() + 10));
 				}
 			}
 
-			if (m - playerListEntry.method_2974() > 1000L || this.showTime != playerListEntry.method_2976()) {
-				playerListEntry.method_2972(l);
-				playerListEntry.method_2965(l);
-				playerListEntry.method_2978(m);
+			if (m - entry.method_2974() > 1000L || this.showTime != entry.method_2976()) {
+				entry.method_2972(l);
+				entry.method_2965(l);
+				entry.method_2978(m);
 			}
 
-			playerListEntry.method_2964(this.showTime);
-			playerListEntry.method_2972(l);
-			int n = MathHelper.ceil((float)Math.max(l, playerListEntry.method_2960()) / 2.0F);
-			int o = Math.max(MathHelper.ceil((float)(l / 2)), Math.max(MathHelper.ceil((float)(playerListEntry.method_2960() / 2)), 10));
-			boolean bl = playerListEntry.method_2961() > (long)this.inGameHud.getTicks()
-				&& (playerListEntry.method_2961() - (long)this.inGameHud.getTicks()) / 3L % 2L == 1L;
+			entry.method_2964(this.showTime);
+			entry.method_2972(l);
+			int n = MathHelper.ceil((float)Math.max(l, entry.method_2960()) / 2.0F);
+			int o = Math.max(MathHelper.ceil((float)(l / 2)), Math.max(MathHelper.ceil((float)(entry.method_2960() / 2)), 10));
+			boolean bl = entry.method_2961() > (long)this.inGameHud.getTicks() && (entry.method_2961() - (long)this.inGameHud.getTicks()) / 3L % 2L == 1L;
 			if (n > 0) {
 				int p = MathHelper.floor(Math.min((float)(k - j - 4) / (float)o, 9.0F));
 				if (p > 3) {
 					for (int q = n; q < o; q++) {
-						this.drawTexture(matrixStack, j + q * p, i, bl ? 25 : 16, 0, 9, 9);
+						this.drawTexture(matrices, j + q * p, i, bl ? 25 : 16, 0, 9, 9);
 					}
 
 					for (int q = 0; q < n; q++) {
-						this.drawTexture(matrixStack, j + q * p, i, bl ? 25 : 16, 0, 9, 9);
+						this.drawTexture(matrices, j + q * p, i, bl ? 25 : 16, 0, 9, 9);
 						if (bl) {
-							if (q * 2 + 1 < playerListEntry.method_2960()) {
-								this.drawTexture(matrixStack, j + q * p, i, 70, 0, 9, 9);
+							if (q * 2 + 1 < entry.method_2960()) {
+								this.drawTexture(matrices, j + q * p, i, 70, 0, 9, 9);
 							}
 
-							if (q * 2 + 1 == playerListEntry.method_2960()) {
-								this.drawTexture(matrixStack, j + q * p, i, 79, 0, 9, 9);
+							if (q * 2 + 1 == entry.method_2960()) {
+								this.drawTexture(matrices, j + q * p, i, 79, 0, 9, 9);
 							}
 						}
 
 						if (q * 2 + 1 < l) {
-							this.drawTexture(matrixStack, j + q * p, i, q >= 10 ? 160 : 52, 0, 9, 9);
+							this.drawTexture(matrices, j + q * p, i, q >= 10 ? 160 : 52, 0, 9, 9);
 						}
 
 						if (q * 2 + 1 == l) {
-							this.drawTexture(matrixStack, j + q * p, i, q >= 10 ? 169 : 61, 0, 9, 9);
+							this.drawTexture(matrices, j + q * p, i, q >= 10 ? 169 : 61, 0, 9, 9);
 						}
 					}
 				} else {
@@ -283,12 +284,12 @@ public class PlayerListHud extends DrawableHelper {
 						string2 = string2 + "hp";
 					}
 
-					this.client.textRenderer.drawWithShadow(matrixStack, string2, (float)((k + j) / 2 - this.client.textRenderer.getWidth(string2) / 2), (float)i, r);
+					this.client.textRenderer.drawWithShadow(matrices, string2, (float)((k + j) / 2 - this.client.textRenderer.getWidth(string2) / 2), (float)i, r);
 				}
 			}
 		} else {
 			String string3 = Formatting.YELLOW + "" + l;
-			this.client.textRenderer.drawWithShadow(matrixStack, string3, (float)(k - this.client.textRenderer.getWidth(string3)), (float)i, 16777215);
+			this.client.textRenderer.drawWithShadow(matrices, string3, (float)(k - this.client.textRenderer.getWidth(string3)), (float)i, 16777215);
 		}
 	}
 

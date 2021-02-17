@@ -38,7 +38,7 @@ public class StructureValidatorProvider implements SnbtProvider.Tweaker {
 		}
 
 		CompoundTag compoundTag = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, tag, i);
-		structure.fromTag(compoundTag);
-		return structure.toTag(new CompoundTag());
+		structure.readNbt(compoundTag);
+		return structure.writeNbt(new CompoundTag());
 	}
 }

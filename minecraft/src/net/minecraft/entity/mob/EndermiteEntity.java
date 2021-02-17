@@ -59,8 +59,8 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	protected Entity.class_5799 method_33570() {
-		return Entity.class_5799.EVENTS;
+	protected Entity.MoveEffect getMoveEffect() {
+		return Entity.MoveEffect.EVENTS;
 	}
 
 	@Override
@@ -84,14 +84,14 @@ public class EndermiteEntity extends HostileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.lifeTime = tag.getInt("Lifetime");
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("Lifetime", this.lifeTime);
 	}
 

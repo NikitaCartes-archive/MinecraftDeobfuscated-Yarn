@@ -320,7 +320,7 @@ public class HoverEvent {
 		private static HoverEvent.ItemStackContent parse(Text text) {
 			try {
 				CompoundTag compoundTag = StringNbtReader.parse(text.getString());
-				return new HoverEvent.ItemStackContent(ItemStack.fromTag(compoundTag));
+				return new HoverEvent.ItemStackContent(ItemStack.fromNbt(compoundTag));
 			} catch (CommandSyntaxException var2) {
 				HoverEvent.LOGGER.warn("Failed to parse item tag: {}", text, var2);
 				return null;

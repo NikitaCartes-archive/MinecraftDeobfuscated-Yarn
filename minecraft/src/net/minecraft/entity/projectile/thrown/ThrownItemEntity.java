@@ -58,18 +58,18 @@ public abstract class ThrownItemEntity extends ThrownEntity implements FlyingIte
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		ItemStack itemStack = this.getItem();
 		if (!itemStack.isEmpty()) {
-			tag.put("Item", itemStack.toTag(new CompoundTag()));
+			tag.put("Item", itemStack.writeNbt(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Item"));
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
+		ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("Item"));
 		this.setItem(itemStack);
 	}
 }

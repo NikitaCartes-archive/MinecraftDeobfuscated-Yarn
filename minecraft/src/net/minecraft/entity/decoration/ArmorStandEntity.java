@@ -156,14 +156,14 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		ListTag listTag = new ListTag();
 
 		for (ItemStack itemStack : this.armorItems) {
 			CompoundTag compoundTag = new CompoundTag();
 			if (!itemStack.isEmpty()) {
-				itemStack.toTag(compoundTag);
+				itemStack.writeNbt(compoundTag);
 			}
 
 			listTag.add(compoundTag);
@@ -175,7 +175,7 @@ public class ArmorStandEntity extends LivingEntity {
 		for (ItemStack itemStack2 : this.heldItems) {
 			CompoundTag compoundTag2 = new CompoundTag();
 			if (!itemStack2.isEmpty()) {
-				itemStack2.toTag(compoundTag2);
+				itemStack2.writeNbt(compoundTag2);
 			}
 
 			listTag2.add(compoundTag2);
@@ -195,13 +195,13 @@ public class ArmorStandEntity extends LivingEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("ArmorItems", 9)) {
 			ListTag listTag = tag.getList("ArmorItems", 10);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+				this.armorItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
 			}
 		}
 
@@ -209,7 +209,7 @@ public class ArmorStandEntity extends LivingEntity {
 			ListTag listTag = tag.getList("HandItems", 10);
 
 			for (int i = 0; i < this.heldItems.size(); i++) {
-				this.heldItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+				this.heldItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
 			}
 		}
 

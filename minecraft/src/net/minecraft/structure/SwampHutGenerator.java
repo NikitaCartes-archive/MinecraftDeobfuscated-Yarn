@@ -34,8 +34,8 @@ public class SwampHutGenerator extends StructurePieceWithDimensions {
 	}
 
 	@Override
-	protected void toNbt(CompoundTag tag) {
-		super.toNbt(tag);
+	protected void writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putBoolean("Witch", this.hasWitch);
 		tag.putBoolean("Cat", this.hasCat);
 	}

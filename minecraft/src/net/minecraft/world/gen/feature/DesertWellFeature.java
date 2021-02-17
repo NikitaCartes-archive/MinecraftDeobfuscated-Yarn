@@ -22,7 +22,7 @@ public class DesertWellFeature extends Feature<DefaultFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		blockPos = blockPos.up();
 
 		while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {

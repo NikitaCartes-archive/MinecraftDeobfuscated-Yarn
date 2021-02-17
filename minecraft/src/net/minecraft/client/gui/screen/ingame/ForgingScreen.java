@@ -47,7 +47,7 @@ public class ForgingScreen<T extends ForgingScreenHandler> extends HandledScreen
 		this.drawMouseoverTooltip(matrices, mouseX, mouseY);
 	}
 
-	protected void renderForeground(MatrixStack matrices, int mouseY, int i, float f) {
+	protected void renderForeground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 	}
 
 	@Override

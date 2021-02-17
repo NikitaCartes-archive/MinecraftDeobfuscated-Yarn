@@ -183,9 +183,7 @@ public class SculkSensorBlock extends BlockWithEntity implements Waterloggable {
 	@Override
 	public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
 		return !world.isClient
-			? checkType(
-				type, BlockEntityType.SCULK_SENSOR, (worldx, blockPos, blockState, sculkSensorBlockEntity) -> sculkSensorBlockEntity.getEventListener().tick(worldx)
-			)
+			? checkType(type, BlockEntityType.SCULK_SENSOR, (worldx, pos, statex, blockEntity) -> blockEntity.getEventListener().tick(worldx))
 			: null;
 	}
 

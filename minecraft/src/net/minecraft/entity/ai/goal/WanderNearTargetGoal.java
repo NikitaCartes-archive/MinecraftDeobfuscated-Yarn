@@ -1,8 +1,8 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.class_5532;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
 
@@ -30,7 +30,7 @@ public class WanderNearTargetGoal extends Goal {
 		} else if (this.target.squaredDistanceTo(this.mob) > (double)(this.maxDistance * this.maxDistance)) {
 			return false;
 		} else {
-			Vec3d vec3d = class_5532.method_31512(this.mob, 16, 7, this.target.getPos(), (float) (Math.PI / 2));
+			Vec3d vec3d = NoPenaltyTargeting.find(this.mob, 16, 7, this.target.getPos(), (float) (Math.PI / 2));
 			if (vec3d == null) {
 				return false;
 			} else {

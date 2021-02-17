@@ -83,7 +83,7 @@ public class Structure {
 					BlockEntity blockEntity = world.getBlockEntity(blockPos4);
 					Structure.StructureBlockInfo structureBlockInfo;
 					if (blockEntity != null) {
-						CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+						CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
 						compoundTag.remove("x");
 						compoundTag.remove("y");
 						compoundTag.remove("z");
@@ -237,7 +237,7 @@ public class Structure {
 										structureBlockInfo.tag.putLong("LootTableSeed", random.nextLong());
 									}
 
-									blockEntity.fromTag(structureBlockInfo.tag);
+									blockEntity.readNbt(structureBlockInfo.tag);
 								}
 							}
 
@@ -406,7 +406,7 @@ public class Structure {
 
 	private static Optional<Entity> getEntity(ServerWorldAccess world, CompoundTag nbt) {
 		try {
-			return EntityType.getEntityFromTag(nbt, world.toServerWorld());
+			return EntityType.getEntityFromNbt(nbt, world.toServerWorld());
 		} catch (Exception var3) {
 			return Optional.empty();
 		}
@@ -561,7 +561,7 @@ public class Structure {
 		boundingBox.move(blockPos.getX(), 0, blockPos.getZ());
 	}
 
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag writeNbt(CompoundTag tag) {
 		if (this.blockInfoLists.isEmpty()) {
 			tag.put("blocks", new ListTag());
 			tag.put("palette", new ListTag());
@@ -642,7 +642,7 @@ public class Structure {
 		return tag;
 	}
 
-	public void fromTag(CompoundTag tag) {
+	public void readNbt(CompoundTag tag) {
 		this.blockInfoLists.clear();
 		this.entities.clear();
 		ListTag listTag = tag.getList("size", 3);

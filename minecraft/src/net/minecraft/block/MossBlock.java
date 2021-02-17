@@ -54,7 +54,7 @@ public class MossBlock extends Block implements Fertilizable {
 		BlockPos blockPos = pos.down();
 		BlockState blockState = world.getBlockState(blockPos);
 		if (world.isAir(pos) && blockState.isSideSolidFullSquare(world, blockPos, Direction.UP)) {
-			method_33631(world, random, pos.down());
+			replace(world, random, pos.down());
 			if (random.nextFloat() < 0.8F) {
 				BlockState blockState2 = getPlant(random);
 				if (blockState2.canPlaceAt(world, pos)) {
@@ -73,7 +73,7 @@ public class MossBlock extends Block implements Fertilizable {
 		return i;
 	}
 
-	private static void method_33631(StructureWorldAccess world, Random random, BlockPos pos) {
+	private static void replace(StructureWorldAccess world, Random random, BlockPos pos) {
 		if (world.getBlockState(pos).isIn(BlockTags.LUSH_PLANTS_REPLACEABLE)) {
 			world.setBlockState(pos, Blocks.MOSS_BLOCK.getDefaultState(), 2);
 		}

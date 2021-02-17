@@ -31,7 +31,7 @@ public class ContainerLock {
 	/**
 	 * Inserts the key string of this lock into the {@code Lock} key of the compound tag.
 	 */
-	public void toTag(CompoundTag tag) {
+	public void writeNbt(CompoundTag tag) {
 		if (!this.key.isEmpty()) {
 			tag.putString("Lock", this.key);
 		}
@@ -42,7 +42,7 @@ public class ContainerLock {
 	 * <p>
 	 * If the {@code Lock} key is not present, returns an empty lock.
 	 */
-	public static ContainerLock fromTag(CompoundTag tag) {
+	public static ContainerLock fromNbt(CompoundTag tag) {
 		return tag.contains("Lock", 8) ? new ContainerLock(tag.getString("Lock")) : EMPTY;
 	}
 }

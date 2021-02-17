@@ -112,14 +112,14 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		ListTag listTag = new ListTag();
 
 		for (int i = 0; i < this.inventory.size(); i++) {
 			ItemStack itemStack = this.inventory.getStack(i);
 			if (!itemStack.isEmpty()) {
-				listTag.add(itemStack.toTag(new CompoundTag()));
+				listTag.add(itemStack.writeNbt(new CompoundTag()));
 			}
 		}
 
@@ -139,12 +139,12 @@ public class PillagerEntity extends IllagerEntity implements CrossbowUser {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		ListTag listTag = tag.getList("Inventory", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(listTag.getCompound(i));
+			ItemStack itemStack = ItemStack.fromNbt(listTag.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.inventory.addStack(itemStack);
 			}

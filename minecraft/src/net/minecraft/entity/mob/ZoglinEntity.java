@@ -313,16 +313,16 @@ public class ZoglinEntity extends HostileEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		if (this.isBaby()) {
 			tag.putBoolean("IsBaby", true);
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.getBoolean("IsBaby")) {
 			this.setBaby(true);
 		}

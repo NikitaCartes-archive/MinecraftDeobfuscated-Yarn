@@ -46,7 +46,7 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 		EndSpikeFeatureConfig endSpikeFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		Random random = context.getRandom();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		List<EndSpikeFeature.Spike> list = endSpikeFeatureConfig.getSpikes();
 		if (list.isEmpty()) {
 			list = getSpikes(structureWorldAccess);
@@ -140,10 +140,10 @@ public class EndSpikeFeature extends Feature<EndSpikeFeatureConfig> {
 			this.guarded = guarded;
 			this.boundingBox = new Box(
 				(double)(centerX - radius),
-				(double)DimensionType.field_28136,
+				(double)DimensionType.MIN_HEIGHT,
 				(double)(centerZ - radius),
 				(double)(centerX + radius),
-				(double)DimensionType.field_28135,
+				(double)DimensionType.MAX_COLUMN_HEIGHT,
 				(double)(centerZ + radius)
 			);
 		}

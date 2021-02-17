@@ -24,7 +24,7 @@ public class NetherrackReplaceBlobsFeature extends Feature<NetherrackReplaceBlob
 		Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
 		BlockPos blockPos = method_27107(
 			structureWorldAccess,
-			context.getPos().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopY() - 1),
+			context.getOrigin().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopY() - 1),
 			block
 		);
 		if (blockPos == null) {

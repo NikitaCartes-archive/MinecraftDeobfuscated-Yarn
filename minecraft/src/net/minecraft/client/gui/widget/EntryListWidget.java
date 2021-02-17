@@ -116,11 +116,11 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.children.size() - 1;
 	}
 
-	protected int getItemCount() {
+	protected int getEntryCount() {
 		return this.children().size();
 	}
 
-	protected boolean isSelectedItem(int index) {
+	protected boolean isSelectedEntry(int index) {
 		return Objects.equals(this.getSelected(), this.children().get(index));
 	}
 
@@ -132,7 +132,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		int l = j + i;
 		int m = MathHelper.floor(y - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
 		int n = m / this.itemHeight;
-		return (E)(x < (double)this.getScrollbarPositionX() && x >= (double)k && x <= (double)l && n >= 0 && m >= 0 && n < this.getItemCount()
+		return (E)(x < (double)this.getScrollbarPositionX() && x >= (double)k && x <= (double)l && n >= 0 && m >= 0 && n < this.getEntryCount()
 			? this.children().get(n)
 			: null);
 	}
@@ -152,7 +152,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	protected int getMaxPosition() {
-		return this.getItemCount() * this.itemHeight + this.headerHeight;
+		return this.getEntryCount() * this.itemHeight + this.headerHeight;
 	}
 
 	protected void clickedHeader(int x, int y) {
@@ -164,7 +164,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	protected void renderBackground(MatrixStack matrices) {
 	}
 
-	protected void renderDecorations(MatrixStack matrices, int i, int j) {
+	protected void renderDecorations(MatrixStack matrices, int mouseX, int mouseY) {
 	}
 
 	@Override
@@ -407,7 +407,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		this.moveSelectionIf(direction, entry -> true);
 	}
 
-	protected void method_30015() {
+	protected void ensureSelectedEntryVisible() {
 		E entry = this.getSelected();
 		if (entry != null) {
 			this.setSelected(entry);
@@ -426,7 +426,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 			int j = this.children().indexOf(this.getSelected());
 
 			while (true) {
-				int k = MathHelper.clamp(j + i, 0, this.getItemCount() - 1);
+				int k = MathHelper.clamp(j + i, 0, this.getEntryCount() - 1);
 				if (j == k) {
 					break;
 				}
@@ -449,7 +449,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	}
 
 	protected void renderList(MatrixStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
-		int i = this.getItemCount();
+		int i = this.getEntryCount();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 
@@ -461,7 +461,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 				int n = this.itemHeight - 4;
 				E entry = this.getEntry(j);
 				int o = this.getRowWidth();
-				if (this.renderSelection && this.isSelectedItem(j)) {
+				if (this.renderSelection && this.isSelectedEntry(j)) {
 					int p = this.left + this.width / 2 - o / 2;
 					int q = this.left + this.width / 2 + o / 2;
 					RenderSystem.disableTexture();
@@ -504,7 +504,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return this.left + this.width / 2 - this.getRowWidth() / 2 + 2;
 	}
 
-	public int method_31383() {
+	public int getRowRight() {
 		return this.getRowLeft() + this.getRowWidth();
 	}
 
@@ -534,8 +534,8 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 		return bl;
 	}
 
-	private void method_29621(EntryListWidget.Entry<E> entry) {
-		entry.list = this;
+	private void setEntryParentList(EntryListWidget.Entry<E> entry) {
+		entry.parentList = this;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -555,13 +555,13 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 		public E set(int i, E entry) {
 			E entry2 = (E)this.entries.set(i, entry);
-			EntryListWidget.this.method_29621(entry);
+			EntryListWidget.this.setEntryParentList(entry);
 			return entry2;
 		}
 
 		public void add(int i, E entry) {
 			this.entries.add(i, entry);
-			EntryListWidget.this.method_29621(entry);
+			EntryListWidget.this.setEntryParentList(entry);
 		}
 
 		public E remove(int i) {
@@ -572,7 +572,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 	@Environment(EnvType.CLIENT)
 	public abstract static class Entry<E extends EntryListWidget.Entry<E>> implements Element {
 		@Deprecated
-		private EntryListWidget<E> list;
+		private EntryListWidget<E> parentList;
 
 		/**
 		 * Renders an entry in a list.
@@ -593,7 +593,7 @@ public abstract class EntryListWidget<E extends EntryListWidget.Entry<E>> extend
 
 		@Override
 		public boolean isMouseOver(double mouseX, double mouseY) {
-			return Objects.equals(this.list.getEntryAtPosition(mouseX, mouseY), this);
+			return Objects.equals(this.parentList.getEntryAtPosition(mouseX, mouseY), this);
 		}
 	}
 

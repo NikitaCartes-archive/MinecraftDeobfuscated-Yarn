@@ -122,7 +122,7 @@ public enum BannerPattern {
 			return this;
 		}
 
-		public ListTag toTag() {
+		public ListTag toNbt() {
 			ListTag listTag = new ListTag();
 
 			for (Pair<BannerPattern, DyeColor> pair : this.entries) {

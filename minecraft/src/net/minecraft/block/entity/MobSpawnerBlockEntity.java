@@ -33,15 +33,15 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
-		this.logic.fromTag(this.world, this.pos, tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
+		this.logic.readNbt(this.world, this.pos, tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
-		this.logic.toTag(this.world, this.pos, tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
+		this.logic.writeNbt(this.world, this.pos, tag);
 		return tag;
 	}
 
@@ -56,12 +56,12 @@ public class MobSpawnerBlockEntity extends BlockEntity {
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 1, this.toInitialChunkDataTag());
+		return new BlockEntityUpdateS2CPacket(this.pos, 1, this.toInitialChunkDataNbt());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		CompoundTag compoundTag = this.toTag(new CompoundTag());
+	public CompoundTag toInitialChunkDataNbt() {
+		CompoundTag compoundTag = this.writeNbt(new CompoundTag());
 		compoundTag.remove("SpawnPotentials");
 		return compoundTag;
 	}

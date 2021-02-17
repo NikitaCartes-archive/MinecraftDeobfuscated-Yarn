@@ -153,7 +153,7 @@ public class StructureManager {
 		}
 
 		Structure structure = new Structure();
-		structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
+		structure.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
 		return structure;
 	}
 
@@ -174,7 +174,7 @@ public class StructureManager {
 					return false;
 				}
 
-				CompoundTag compoundTag = structure.toTag(new CompoundTag());
+				CompoundTag compoundTag = structure.writeNbt(new CompoundTag());
 
 				try {
 					OutputStream outputStream = new FileOutputStream(path.toFile());

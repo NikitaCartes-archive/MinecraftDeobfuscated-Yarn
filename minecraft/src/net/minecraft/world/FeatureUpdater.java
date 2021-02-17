@@ -152,7 +152,7 @@ public class FeatureUpdater {
 				CompoundTag compoundTag = new CompoundTag();
 
 				try {
-					compoundTag = persistentStateManager.readTag(string, 1493).getCompound("data").getCompound("Features");
+					compoundTag = persistentStateManager.readNbt(string, 1493).getCompound("data").getCompound("Features");
 					if (compoundTag.isEmpty()) {
 						continue;
 					}

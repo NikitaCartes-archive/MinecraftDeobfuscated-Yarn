@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BooleanSupplier;
-import net.minecraft.class_5493;
-import net.minecraft.class_5532;
-import net.minecraft.class_5534;
 import net.minecraft.block.DoorBlock;
+import net.minecraft.entity.ai.FuzzyTargeting;
+import net.minecraft.entity.ai.NavigationConditions;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.ai.pathing.PathNode;
@@ -37,14 +37,14 @@ public class MoveThroughVillageGoal extends Goal {
 		this.distance = distance;
 		this.doorPassingThroughGetter = doorPassingThroughGetter;
 		this.setControls(EnumSet.of(Goal.Control.MOVE));
-		if (!class_5493.method_30955(entity)) {
+		if (!NavigationConditions.hasMobNavigation(entity)) {
 			throw new IllegalArgumentException("Unsupported mob for MoveThroughVillageGoal");
 		}
 	}
 
 	@Override
 	public boolean canStart() {
-		if (!class_5493.method_30955(this.mob)) {
+		if (!NavigationConditions.hasMobNavigation(this.mob)) {
 			return false;
 		} else {
 			this.forgetOldTarget();
@@ -56,7 +56,7 @@ public class MoveThroughVillageGoal extends Goal {
 				if (!serverWorld.isNearOccupiedPointOfInterest(blockPos, 6)) {
 					return false;
 				} else {
-					Vec3d vec3d = class_5534.method_31530(
+					Vec3d vec3d = FuzzyTargeting.find(
 						this.mob,
 						15,
 						7,
@@ -85,7 +85,7 @@ public class MoveThroughVillageGoal extends Goal {
 							this.targetPath = mobNavigation.findPathTo(this.target, 0);
 							mobNavigation.setCanPathThroughDoors(bl);
 							if (this.targetPath == null) {
-								Vec3d vec3d2 = class_5532.method_31512(this.mob, 10, 7, Vec3d.ofBottomCenter(this.target), (float) (Math.PI / 2));
+								Vec3d vec3d2 = NoPenaltyTargeting.find(this.mob, 10, 7, Vec3d.ofBottomCenter(this.target), (float) (Math.PI / 2));
 								if (vec3d2 == null) {
 									return false;
 								}

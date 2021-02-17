@@ -71,7 +71,7 @@ public class CompassItem extends Item implements Vanishable {
 			ItemStack itemStack = context.getStack();
 			boolean bl = !playerEntity.getAbilities().creativeMode && itemStack.getCount() == 1;
 			if (bl) {
-				this.writeToTag(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
+				this.writeToNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
 			} else {
 				ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
 				CompoundTag compoundTag = itemStack.hasTag() ? itemStack.getTag().copy() : new CompoundTag();
@@ -80,7 +80,7 @@ public class CompassItem extends Item implements Vanishable {
 					itemStack.decrement(1);
 				}
 
-				this.writeToTag(world.getRegistryKey(), blockPos, compoundTag);
+				this.writeToNbt(world.getRegistryKey(), blockPos, compoundTag);
 				if (!playerEntity.getInventory().insertStack(itemStack2)) {
 					playerEntity.dropItem(itemStack2, false);
 				}
@@ -90,7 +90,7 @@ public class CompassItem extends Item implements Vanishable {
 		}
 	}
 
-	private void writeToTag(RegistryKey<World> worldKey, BlockPos pos, CompoundTag tag) {
+	private void writeToNbt(RegistryKey<World> worldKey, BlockPos pos, CompoundTag tag) {
 		tag.put("LodestonePos", NbtHelper.fromBlockPos(pos));
 		World.CODEC.encodeStart(NbtOps.INSTANCE, worldKey).resultOrPartial(LOGGER::error).ifPresent(tagx -> tag.put("LodestoneDimension", tagx));
 		tag.putBoolean("LodestoneTracked", true);

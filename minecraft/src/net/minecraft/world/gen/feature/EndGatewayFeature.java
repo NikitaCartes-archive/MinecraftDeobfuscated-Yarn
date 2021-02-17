@@ -15,7 +15,7 @@ public class EndGatewayFeature extends Feature<EndGatewayFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<EndGatewayFeatureConfig> context) {
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		EndGatewayFeatureConfig endGatewayFeatureConfig = context.getConfig();
 

@@ -43,9 +43,10 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 	public final ClientConnection connection;
 	private ServerLoginNetworkHandler.State state = ServerLoginNetworkHandler.State.HELLO;
 	private int loginTicks;
+	@Nullable
 	private GameProfile profile;
 	private final String serverId = "";
-	private SecretKey secretKey;
+	@Nullable
 	private ServerPlayerEntity player;
 
 	public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
@@ -61,7 +62,7 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 			ServerPlayerEntity serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId());
 			if (serverPlayerEntity == null) {
 				this.state = ServerLoginNetworkHandler.State.READY_TO_ACCEPT;
-				this.server.getPlayerManager().onPlayerConnect(this.connection, this.player);
+				this.method_33800(this.player);
 				this.player = null;
 			}
 		}
@@ -110,9 +111,13 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 				this.state = ServerLoginNetworkHandler.State.DELAY_ACCEPT;
 				this.player = this.server.getPlayerManager().createPlayer(this.profile);
 			} else {
-				this.server.getPlayerManager().onPlayerConnect(this.connection, this.server.getPlayerManager().createPlayer(this.profile));
+				this.method_33800(this.server.getPlayerManager().createPlayer(this.profile));
 			}
 		}
+	}
+
+	private void method_33800(ServerPlayerEntity serverPlayerEntity) {
+		this.server.getPlayerManager().onPlayerConnect(this.connection, serverPlayerEntity);
 	}
 
 	@Override
@@ -147,14 +152,14 @@ public class ServerLoginNetworkHandler implements ServerLoginPacketListener {
 				throw new IllegalStateException("Protocol error");
 			}
 
-			this.secretKey = packet.decryptSecretKey(privateKey);
-			Cipher cipher = NetworkEncryptionUtils.cipherFromKey(2, this.secretKey);
-			Cipher cipher2 = NetworkEncryptionUtils.cipherFromKey(1, this.secretKey);
-			string = new BigInteger(NetworkEncryptionUtils.generateServerId("", this.server.getKeyPair().getPublic(), this.secretKey)).toString(16);
+			SecretKey secretKey = packet.decryptSecretKey(privateKey);
+			Cipher cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
+			Cipher cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
+			string = new BigInteger(NetworkEncryptionUtils.generateServerId("", this.server.getKeyPair().getPublic(), secretKey)).toString(16);
 			this.state = ServerLoginNetworkHandler.State.AUTHENTICATING;
 			this.connection.setupEncryption(cipher, cipher2);
-		} catch (NetworkEncryptionException var6) {
-			throw new IllegalStateException("Protocol error", var6);
+		} catch (NetworkEncryptionException var7) {
+			throw new IllegalStateException("Protocol error", var7);
 		}
 
 		Thread thread = new Thread("User Authenticator #" + authenticatorThreadId.incrementAndGet()) {

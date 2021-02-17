@@ -361,16 +361,16 @@ public abstract class HandledScreen<T extends ScreenHandler> extends Screen impl
 		}
 	}
 
-	private void method_30107(int i) {
+	private void method_30107(int button) {
 		if (this.focusedSlot != null && this.client.player.getInventory().getCursorStack().isEmpty()) {
-			if (this.client.options.keySwapHands.matchesMouse(i)) {
+			if (this.client.options.keySwapHands.matchesMouse(button)) {
 				this.onMouseClick(this.focusedSlot, this.focusedSlot.id, 40, SlotActionType.SWAP);
 				return;
 			}
 
-			for (int j = 0; j < 9; j++) {
-				if (this.client.options.keysHotbar[j].matchesMouse(i)) {
-					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, j, SlotActionType.SWAP);
+			for (int i = 0; i < 9; i++) {
+				if (this.client.options.keysHotbar[i].matchesMouse(button)) {
+					this.onMouseClick(this.focusedSlot, this.focusedSlot.id, i, SlotActionType.SWAP);
 				}
 			}
 		}

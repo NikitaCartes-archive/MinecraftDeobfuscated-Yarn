@@ -44,7 +44,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class PresetsScreen extends Screen {
-	private static final Logger field_25043 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	private static final List<PresetsScreen.SuperflatPreset> PRESETS = Lists.<PresetsScreen.SuperflatPreset>newArrayList();
 	private static final RegistryKey<Biome> BIOME_KEY = BiomeKeys.PLAINS;
 	private final CustomizeFlatLevelScreen parent;
@@ -60,50 +60,57 @@ public class PresetsScreen extends Screen {
 		this.parent = parent;
 	}
 
+	/**
+	 * Parse a string like {@code "60*minecraft:stone"} to a {@link FlatChunkGeneratorLayer}.
+	 */
 	@Nullable
-	private static FlatChunkGeneratorLayer method_29059(String string, int i) {
-		String[] strings = string.split("\\*", 2);
-		int j;
+	private static FlatChunkGeneratorLayer parseLayerString(String layer, int layerStartHeight) {
+		String[] strings = layer.split("\\*", 2);
+		int i;
 		if (strings.length == 2) {
 			try {
-				j = Math.max(Integer.parseInt(strings[0]), 0);
+				i = Math.max(Integer.parseInt(strings[0]), 0);
 			} catch (NumberFormatException var10) {
-				field_25043.error("Error while parsing flat world string => {}", var10.getMessage());
+				LOGGER.error("Error while parsing flat world string => {}", var10.getMessage());
 				return null;
 			}
 		} else {
-			j = 1;
+			i = 1;
 		}
 
-		int k = Math.min(i + j, 256);
-		int l = k - i;
-		String string2 = strings[strings.length - 1];
+		int j = Math.min(layerStartHeight + i, 256);
+		int k = j - layerStartHeight;
+		String string = strings[strings.length - 1];
 
 		Block block;
 		try {
-			block = (Block)Registry.BLOCK.getOrEmpty(new Identifier(string2)).orElse(null);
+			block = (Block)Registry.BLOCK.getOrEmpty(new Identifier(string)).orElse(null);
 		} catch (Exception var9) {
-			field_25043.error("Error while parsing flat world string => {}", var9.getMessage());
+			LOGGER.error("Error while parsing flat world string => {}", var9.getMessage());
 			return null;
 		}
 
 		if (block == null) {
-			field_25043.error("Error while parsing flat world string => Unknown block, {}", string2);
+			LOGGER.error("Error while parsing flat world string => Unknown block, {}", string);
 			return null;
 		} else {
-			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(l, block);
-			flatChunkGeneratorLayer.setStartY(i);
+			FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(k, block);
+			flatChunkGeneratorLayer.setStartY(layerStartHeight);
 			return flatChunkGeneratorLayer;
 		}
 	}
 
-	private static List<FlatChunkGeneratorLayer> method_29058(String string) {
+	/**
+	 * Parse a string like {@code "minecraft:bedrock,3*minecraft:dirt,minecraft:grass_block"}
+	 * to a list of {@link FlatChunkGeneratorLayer}.
+	 */
+	private static List<FlatChunkGeneratorLayer> parsePresetLayersString(String layers) {
 		List<FlatChunkGeneratorLayer> list = Lists.<FlatChunkGeneratorLayer>newArrayList();
-		String[] strings = string.split(",");
+		String[] strings = layers.split(",");
 		int i = 0;
 
-		for (String string2 : strings) {
-			FlatChunkGeneratorLayer flatChunkGeneratorLayer = method_29059(string2, i);
+		for (String string : strings) {
+			FlatChunkGeneratorLayer flatChunkGeneratorLayer = parseLayerString(string, i);
 			if (flatChunkGeneratorLayer == null) {
 				return Collections.emptyList();
 			}
@@ -115,48 +122,48 @@ public class PresetsScreen extends Screen {
 		return list;
 	}
 
-	public static FlatChunkGeneratorConfig method_29060(Registry<Biome> registry, String string, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
-		Iterator<String> iterator = Splitter.on(';').split(string).iterator();
+	public static FlatChunkGeneratorConfig parsePresetString(Registry<Biome> biomeRegistry, String preset, FlatChunkGeneratorConfig generatorConfig) {
+		Iterator<String> iterator = Splitter.on(';').split(preset).iterator();
 		if (!iterator.hasNext()) {
-			return FlatChunkGeneratorConfig.getDefaultConfig(registry);
+			return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry);
 		} else {
-			List<FlatChunkGeneratorLayer> list = method_29058((String)iterator.next());
+			List<FlatChunkGeneratorLayer> list = parsePresetLayersString((String)iterator.next());
 			if (list.isEmpty()) {
-				return FlatChunkGeneratorConfig.getDefaultConfig(registry);
+				return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry);
 			} else {
-				FlatChunkGeneratorConfig flatChunkGeneratorConfig2 = flatChunkGeneratorConfig.method_29965(list, flatChunkGeneratorConfig.getStructuresConfig());
+				FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.method_29965(list, generatorConfig.getStructuresConfig());
 				RegistryKey<Biome> registryKey = BIOME_KEY;
 				if (iterator.hasNext()) {
 					try {
 						Identifier identifier = new Identifier((String)iterator.next());
 						registryKey = RegistryKey.of(Registry.BIOME_KEY, identifier);
-						registry.getOrEmpty(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
+						biomeRegistry.getOrEmpty(registryKey).orElseThrow(() -> new IllegalArgumentException("Invalid Biome: " + identifier));
 					} catch (Exception var8) {
-						field_25043.error("Error while parsing flat world string => {}", var8.getMessage());
+						LOGGER.error("Error while parsing flat world string => {}", var8.getMessage());
 						registryKey = BIOME_KEY;
 					}
 				}
 
 				RegistryKey<Biome> registryKey2 = registryKey;
-				flatChunkGeneratorConfig2.setBiome(() -> registry.getOrThrow(registryKey2));
-				return flatChunkGeneratorConfig2;
+				flatChunkGeneratorConfig.setBiome(() -> biomeRegistry.getOrThrow(registryKey2));
+				return flatChunkGeneratorConfig;
 			}
 		}
 	}
 
-	private static String method_29062(Registry<Biome> registry, FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
+	private static String getGeneratorConfigString(Registry<Biome> biomeRegistry, FlatChunkGeneratorConfig generatorConfig) {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		for (int i = 0; i < flatChunkGeneratorConfig.getLayers().size(); i++) {
+		for (int i = 0; i < generatorConfig.getLayers().size(); i++) {
 			if (i > 0) {
 				stringBuilder.append(",");
 			}
 
-			stringBuilder.append(flatChunkGeneratorConfig.getLayers().get(i));
+			stringBuilder.append(generatorConfig.getLayers().get(i));
 		}
 
 		stringBuilder.append(";");
-		stringBuilder.append(registry.getId(flatChunkGeneratorConfig.getBiome()));
+		stringBuilder.append(biomeRegistry.getId(generatorConfig.getBiome()));
 		return stringBuilder.toString();
 	}
 
@@ -168,14 +175,14 @@ public class PresetsScreen extends Screen {
 		this.customPresetField = new TextFieldWidget(this.textRenderer, 50, 40, this.width - 100, 20, this.shareText);
 		this.customPresetField.setMaxLength(1230);
 		Registry<Biome> registry = this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
-		this.customPresetField.setText(method_29062(registry, this.parent.getConfig()));
+		this.customPresetField.setText(getGeneratorConfigString(registry, this.parent.getConfig()));
 		this.config = this.parent.getConfig();
 		this.children.add(this.customPresetField);
 		this.listWidget = new PresetsScreen.SuperflatPresetsListWidget();
 		this.children.add(this.listWidget);
 		this.selectPresetButton = this.addButton(
 			new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("createWorld.customize.presets.select"), buttonWidget -> {
-				FlatChunkGeneratorConfig flatChunkGeneratorConfig = method_29060(registry, this.customPresetField.getText(), this.config);
+				FlatChunkGeneratorConfig flatChunkGeneratorConfig = parsePresetString(registry, this.customPresetField.getText(), this.config);
 				this.parent.setConfig(flatChunkGeneratorConfig);
 				this.client.openScreen(this.parent);
 			})
@@ -231,37 +238,37 @@ public class PresetsScreen extends Screen {
 	}
 
 	private static void addPreset(
-		Text text,
+		Text presetName,
 		ItemConvertible icon,
-		RegistryKey<Biome> registryKey,
+		RegistryKey<Biome> presetBiome,
 		List<StructureFeature<?>> structures,
-		boolean bl,
-		boolean bl2,
-		boolean bl3,
-		FlatChunkGeneratorLayer... flatChunkGeneratorLayers
+		boolean generateStronghold,
+		boolean generateFeatures,
+		boolean generateLakes,
+		FlatChunkGeneratorLayer... layers
 	) {
-		PRESETS.add(new PresetsScreen.SuperflatPreset(icon.asItem(), text, registry -> {
+		PRESETS.add(new PresetsScreen.SuperflatPreset(icon.asItem(), presetName, registry -> {
 			Map<StructureFeature<?>, StructureConfig> map = Maps.<StructureFeature<?>, StructureConfig>newHashMap();
 
 			for (StructureFeature<?> structureFeature : structures) {
 				map.put(structureFeature, StructuresConfig.DEFAULT_STRUCTURES.get(structureFeature));
 			}
 
-			StructuresConfig structuresConfig = new StructuresConfig(bl ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
+			StructuresConfig structuresConfig = new StructuresConfig(generateStronghold ? Optional.of(StructuresConfig.DEFAULT_STRONGHOLD) : Optional.empty(), map);
 			FlatChunkGeneratorConfig flatChunkGeneratorConfig = new FlatChunkGeneratorConfig(structuresConfig, registry);
-			if (bl2) {
+			if (generateFeatures) {
 				flatChunkGeneratorConfig.enableFeatures();
 			}
 
-			if (bl3) {
+			if (generateLakes) {
 				flatChunkGeneratorConfig.enableLakes();
 			}
 
-			for (int i = flatChunkGeneratorLayers.length - 1; i >= 0; i--) {
-				flatChunkGeneratorConfig.getLayers().add(flatChunkGeneratorLayers[i]);
+			for (int i = layers.length - 1; i >= 0; i--) {
+				flatChunkGeneratorConfig.getLayers().add(layers[i]);
 			}
 
-			flatChunkGeneratorConfig.setBiome(() -> registry.getOrThrow(registryKey));
+			flatChunkGeneratorConfig.setBiome(() -> registry.getOrThrow(presetBiome));
 			flatChunkGeneratorConfig.updateLayerBlocks();
 			return flatChunkGeneratorConfig.withStructuresConfig(structuresConfig);
 		}));
@@ -387,12 +394,12 @@ public class PresetsScreen extends Screen {
 	static class SuperflatPreset {
 		public final Item icon;
 		public final Text name;
-		public final Function<Registry<Biome>, FlatChunkGeneratorConfig> field_25045;
+		public final Function<Registry<Biome>, FlatChunkGeneratorConfig> generatorConfigProvider;
 
-		public SuperflatPreset(Item icon, Text text, Function<Registry<Biome>, FlatChunkGeneratorConfig> function) {
+		public SuperflatPreset(Item icon, Text name, Function<Registry<Biome>, FlatChunkGeneratorConfig> generatorConfigProvider) {
 			this.icon = icon;
-			this.name = text;
-			this.field_25045 = function;
+			this.name = name;
+			this.generatorConfigProvider = generatorConfigProvider;
 		}
 
 		public Text getName() {
@@ -448,7 +455,7 @@ public class PresetsScreen extends Screen {
 			@Override
 			public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.PRESETS.get(index);
-				this.method_2200(matrices, x, y, superflatPreset.icon);
+				this.renderIcon(matrices, x, y, superflatPreset.icon);
 				PresetsScreen.this.textRenderer.draw(matrices, superflatPreset.name, (float)(x + 18 + 5), (float)(y + 6), 16777215);
 			}
 
@@ -466,22 +473,22 @@ public class PresetsScreen extends Screen {
 				PresetsScreen.SuperflatPreset superflatPreset = (PresetsScreen.SuperflatPreset)PresetsScreen.PRESETS
 					.get(SuperflatPresetsListWidget.this.children().indexOf(this));
 				Registry<Biome> registry = PresetsScreen.this.parent.parent.moreOptionsDialog.getRegistryManager().get(Registry.BIOME_KEY);
-				PresetsScreen.this.config = (FlatChunkGeneratorConfig)superflatPreset.field_25045.apply(registry);
-				PresetsScreen.this.customPresetField.setText(PresetsScreen.method_29062(registry, PresetsScreen.this.config));
+				PresetsScreen.this.config = (FlatChunkGeneratorConfig)superflatPreset.generatorConfigProvider.apply(registry);
+				PresetsScreen.this.customPresetField.setText(PresetsScreen.getGeneratorConfigString(registry, PresetsScreen.this.config));
 				PresetsScreen.this.customPresetField.setCursorToStart();
 			}
 
-			private void method_2200(MatrixStack matrixStack, int i, int j, Item item) {
-				this.method_2198(matrixStack, i + 1, j + 1);
+			private void renderIcon(MatrixStack matrices, int x, int y, Item iconItem) {
+				this.drawIconBackground(matrices, x + 1, y + 1);
 				RenderSystem.enableRescaleNormal();
-				PresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(item), i + 2, j + 2);
+				PresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(iconItem), x + 2, y + 2);
 				RenderSystem.disableRescaleNormal();
 			}
 
-			private void method_2198(MatrixStack matrixStack, int i, int j) {
+			private void drawIconBackground(MatrixStack matrices, int x, int y) {
 				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				SuperflatPresetsListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_TEXTURE);
-				DrawableHelper.drawTexture(matrixStack, i, j, PresetsScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
+				DrawableHelper.drawTexture(matrices, x, y, PresetsScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}
 	}

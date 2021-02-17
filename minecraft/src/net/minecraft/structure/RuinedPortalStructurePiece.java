@@ -85,8 +85,8 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	}
 
 	@Override
-	protected void toNbt(CompoundTag tag) {
-		super.toNbt(tag);
+	protected void writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putString("Template", this.template.toString());
 		tag.putString("Rotation", this.rotation.name());
 		tag.putString("Mirror", this.mirror.name());

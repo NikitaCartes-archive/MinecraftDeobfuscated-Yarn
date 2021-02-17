@@ -174,7 +174,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 	}
 
 	private boolean isSelectionValid() {
-		return this.selectedTemplate >= 0 && this.selectedTemplate < this.templateList.getItemCount();
+		return this.selectedTemplate >= 0 && this.selectedTemplate < this.templateList.getEntryCount();
 	}
 
 	private void onTrailer() {
@@ -356,10 +356,10 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 				int j = (int)Math.floor(mouseY - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
 				int k = j / this.itemHeight;
-				if (mouseX >= (double)i && mouseX < (double)this.getScrollbarPositionX() && k >= 0 && j >= 0 && k < this.getItemCount()) {
+				if (mouseX >= (double)i && mouseX < (double)this.getScrollbarPositionX() && k >= 0 && j >= 0 && k < this.getEntryCount()) {
 					this.setSelected(k);
 					this.itemClicked(j, k, mouseX, mouseY, this.width);
-					if (k >= RealmsSelectWorldTemplateScreen.this.templateList.getItemCount()) {
+					if (k >= RealmsSelectWorldTemplateScreen.this.templateList.getEntryCount()) {
 						return super.mouseClicked(mouseX, mouseY, button);
 					}
 
@@ -380,7 +380,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			this.setSelectedItem(index);
 			if (index != -1) {
 				WorldTemplate worldTemplate = RealmsSelectWorldTemplateScreen.this.templateList.getItem(index);
-				String string = I18n.translate("narrator.select.list.position", index + 1, RealmsSelectWorldTemplateScreen.this.templateList.getItemCount());
+				String string = I18n.translate("narrator.select.list.position", index + 1, RealmsSelectWorldTemplateScreen.this.templateList.getEntryCount());
 				String string2 = I18n.translate("mco.template.select.narrate.version", worldTemplate.version);
 				String string3 = I18n.translate("mco.template.select.narrate.authors", worldTemplate.author);
 				String string4 = Realms.joinNarrations(Arrays.asList(worldTemplate.name, string3, worldTemplate.recommendedPlayers, string2, string));
@@ -396,7 +396,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 		@Override
 		public int getMaxPosition() {
-			return this.getItemCount() * 46;
+			return this.getEntryCount() * 46;
 		}
 
 		@Override
@@ -415,7 +415,7 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 		}
 
 		public boolean isEmpty() {
-			return this.getItemCount() == 0;
+			return this.getEntryCount() == 0;
 		}
 
 		public WorldTemplate getItem(int index) {

@@ -109,15 +109,15 @@ public class PigEntity extends AnimalEntity implements ItemSteerable, Saddleable
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		this.saddledComponent.toTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
+		this.saddledComponent.writeNbt(tag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.saddledComponent.fromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
+		this.saddledComponent.readNbt(tag);
 	}
 
 	@Override

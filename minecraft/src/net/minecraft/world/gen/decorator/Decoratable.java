@@ -2,6 +2,7 @@ package net.minecraft.world.gen.decorator;
 
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.world.gen.YOffset;
 
 public interface Decoratable<R> {
 	R decorate(ConfiguredDecorator<?> decorator);
@@ -45,12 +46,12 @@ public interface Decoratable<R> {
 		return this.repeat(UniformIntDistribution.of(0, maxCount));
 	}
 
-	/**
-	 * Applies the {@code minecraft:range} decorator, which returns the input
-	 * position with a y value from zero to {@code max}.
-	 */
-	default R rangeOf(int i, int j) {
-		return this.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(i, i, j)));
+	default R rangeOf(YOffset bottom, YOffset top) {
+		return this.range(new RangeDecoratorConfig(bottom, top));
+	}
+
+	default R range(RangeDecoratorConfig config) {
+		return this.decorate(Decorator.RANGE.configure(config));
 	}
 
 	/**
@@ -59,5 +60,9 @@ public interface Decoratable<R> {
 	 */
 	default R spreadHorizontally() {
 		return this.decorate(Decorator.SQUARE.configure(NopeDecoratorConfig.INSTANCE));
+	}
+
+	default R averageDepth(YOffset baseline, int spread) {
+		return this.decorate(Decorator.DEPTH_AVERAGE.configure(new DepthAverageDecoratorConfig(baseline, spread)));
 	}
 }

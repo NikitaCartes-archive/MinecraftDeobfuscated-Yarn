@@ -57,7 +57,7 @@ public class GlowLichenBlock extends AbstractLichenBlock implements Fertilizable
 
 	@Override
 	public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-		this.method_33375(state, world, pos, random);
+		this.canSpreadRandomly(state, world, pos, random);
 	}
 
 	@Override

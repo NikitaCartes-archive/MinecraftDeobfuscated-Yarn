@@ -432,8 +432,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putShort("life", (short)this.life);
 		if (this.inBlockState != null) {
 			tag.put("inBlockState", NbtHelper.fromBlockState(this.inBlockState));
@@ -450,8 +450,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.life = tag.getShort("life");
 		if (tag.contains("inBlockState", 10)) {
 			this.inBlockState = NbtHelper.toBlockState(tag.getCompound("inBlockState"));
@@ -508,8 +508,8 @@ public abstract class PersistentProjectileEntity extends ProjectileEntity {
 	protected abstract ItemStack asItemStack();
 
 	@Override
-	protected Entity.class_5799 method_33570() {
-		return Entity.class_5799.NONE;
+	protected Entity.MoveEffect getMoveEffect() {
+		return Entity.MoveEffect.NONE;
 	}
 
 	public void setDamage(double damage) {

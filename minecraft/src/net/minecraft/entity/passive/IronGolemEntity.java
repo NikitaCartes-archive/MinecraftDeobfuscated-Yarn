@@ -161,17 +161,17 @@ public class IronGolemEntity extends GolemEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("PlayerCreated", this.isPlayerCreated());
-		this.angerToTag(tag);
+		this.writeAngerToNbt(tag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setPlayerCreated(tag.getBoolean("PlayerCreated"));
-		this.angerFromTag(this.world, tag);
+		this.readAngerFromNbt(this.world, tag);
 	}
 
 	@Override

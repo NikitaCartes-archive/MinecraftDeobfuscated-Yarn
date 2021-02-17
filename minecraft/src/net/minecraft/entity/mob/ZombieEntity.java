@@ -7,7 +7,6 @@ import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
 import javax.annotation.Nullable;
-import net.minecraft.class_5493;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -20,6 +19,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.SpawnRestriction;
+import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.goal.BreakDoorGoal;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
@@ -134,7 +134,7 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	public void setCanBreakDoors(boolean canBreakDoors) {
-		if (this.shouldBreakDoors() && class_5493.method_30955(this)) {
+		if (this.shouldBreakDoors() && NavigationConditions.hasMobNavigation(this)) {
 			if (this.canBreakDoors != canBreakDoors) {
 				this.canBreakDoors = canBreakDoors;
 				((MobNavigation)this.getNavigation()).setCanPathThroughDoors(canBreakDoors);
@@ -376,8 +376,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("IsBaby", this.isBaby());
 		tag.putBoolean("CanBreakDoors", this.canBreakDoors());
 		tag.putInt("InWaterTime", this.isTouchingWater() ? this.inWaterTime : -1);
@@ -385,8 +385,8 @@ public class ZombieEntity extends HostileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setBaby(tag.getBoolean("IsBaby"));
 		this.setCanBreakDoors(tag.getBoolean("CanBreakDoors"));
 		this.inWaterTime = tag.getInt("InWaterTime");
@@ -410,7 +410,7 @@ public class ZombieEntity extends HostileEntity {
 			);
 			zombieVillagerEntity.setVillagerData(villagerEntity.getVillagerData());
 			zombieVillagerEntity.setGossipData(villagerEntity.getGossip().serialize(NbtOps.INSTANCE).getValue());
-			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toTag());
+			zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
 			zombieVillagerEntity.setXp(villagerEntity.getExperience());
 			if (!this.isSilent()) {
 				world.syncWorldEvent(null, 1026, this.getBlockPos(), 0);

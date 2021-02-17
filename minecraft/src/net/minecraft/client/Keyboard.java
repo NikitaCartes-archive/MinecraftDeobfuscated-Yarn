@@ -219,7 +219,7 @@ public class Keyboard {
 							});
 						} else {
 							BlockEntity blockEntity = this.client.player.world.getBlockEntity(blockPos);
-							CompoundTag compoundTag = blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
+							CompoundTag compoundTag = blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : null;
 							this.copyBlock(blockState, blockPos, compoundTag);
 							this.debugWarn("debug.inspect.client.block");
 						}
@@ -238,7 +238,7 @@ public class Keyboard {
 								this.debugWarn("debug.inspect.server.entity");
 							});
 						} else {
-							CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
+							CompoundTag compoundTag2 = entity.writeNbt(new CompoundTag());
 							this.copyEntity(identifier, entity.getPos(), compoundTag2);
 							this.debugWarn("debug.inspect.client.entity");
 						}

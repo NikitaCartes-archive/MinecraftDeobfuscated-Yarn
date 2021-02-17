@@ -25,7 +25,7 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 		@Override
 		public Tag getNbt(LootContext context) {
 			BlockEntity blockEntity = context.get(LootContextParameters.BLOCK_ENTITY);
-			return blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
+			return blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : null;
 		}
 
 		@Override
@@ -47,7 +47,7 @@ public class ContextLootNbtProvider implements LootNbtProvider {
 			@Override
 			public Tag getNbt(LootContext context) {
 				Entity entity = context.get(entityTarget.getParameter());
-				return entity != null ? NbtPredicate.entityToTag(entity) : null;
+				return entity != null ? NbtPredicate.entityToNbt(entity) : null;
 			}
 
 			@Override

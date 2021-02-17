@@ -63,9 +63,9 @@ public class ServerRecipeBook extends RecipeBook {
 		player.networkHandler.sendPacket(new UnlockRecipesS2CPacket(action, recipeIds, Collections.emptyList(), this.getOptions()));
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
-		this.getOptions().toTag(compoundTag);
+		this.getOptions().writeNbt(compoundTag);
 		ListTag listTag = new ListTag();
 
 		for (Identifier identifier : this.recipes) {
@@ -83,8 +83,8 @@ public class ServerRecipeBook extends RecipeBook {
 		return compoundTag;
 	}
 
-	public void fromTag(CompoundTag tag, RecipeManager recipeManager) {
-		this.setOptions(RecipeBookOptions.fromTag(tag));
+	public void readNbt(CompoundTag tag, RecipeManager recipeManager) {
+		this.setOptions(RecipeBookOptions.fromNbt(tag));
 		ListTag listTag = tag.getList("recipes", 8);
 		this.handleList(listTag, this::add, recipeManager);
 		ListTag listTag2 = tag.getList("toBeDisplayed", 8);

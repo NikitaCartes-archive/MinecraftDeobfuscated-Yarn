@@ -120,7 +120,7 @@ public class EnderDragonFight {
 			.build();
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.dragonUuid != null) {
 			compoundTag.putUuid("Dragon", this.dragonUuid);

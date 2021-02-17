@@ -55,8 +55,8 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public CompoundTag toInitialChunkDataNbt() {
+		return this.writeNbt(new CompoundTag());
 	}
 
 	public boolean isExtending() {
@@ -319,8 +319,8 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
 		this.facing = Direction.byId(tag.getInt("facing"));
 		this.progress = tag.getFloat("progress");
@@ -330,8 +330,8 @@ public class PistonBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
 		tag.putInt("facing", this.facing.getId());
 		tag.putFloat("progress", this.lastProgress);
@@ -372,11 +372,5 @@ public class PistonBlockEntity extends BlockEntity {
 
 	public long getSavedWorldTime() {
 		return this.savedWorldTime;
-	}
-
-	@Environment(EnvType.CLIENT)
-	@Override
-	public double getSquaredRenderDistance() {
-		return 68.0;
 	}
 }

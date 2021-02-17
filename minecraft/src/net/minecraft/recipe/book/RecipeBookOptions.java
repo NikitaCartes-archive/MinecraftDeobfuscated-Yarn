@@ -78,7 +78,7 @@ public final class RecipeBookOptions {
 		}
 	}
 
-	public static RecipeBookOptions fromTag(CompoundTag tag) {
+	public static RecipeBookOptions fromNbt(CompoundTag tag) {
 		Map<RecipeBookCategory, RecipeBookOptions.CategoryOption> map = Maps.newEnumMap(RecipeBookCategory.class);
 		CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
 			boolean bl = tag.getBoolean((String)pair.getFirst());
@@ -88,7 +88,7 @@ public final class RecipeBookOptions {
 		return new RecipeBookOptions(map);
 	}
 
-	public void toTag(CompoundTag tag) {
+	public void writeNbt(CompoundTag tag) {
 		CATEGORY_OPTION_NAMES.forEach((category, pair) -> {
 			RecipeBookOptions.CategoryOption categoryOption = (RecipeBookOptions.CategoryOption)this.categoryOptions.get(category);
 			tag.putBoolean((String)pair.getFirst(), categoryOption.guiOpen);

@@ -121,7 +121,7 @@ public class WorldUpdater {
 							CompoundTag compoundTag = versionedChunkStorage.getNbt(chunkPos);
 							if (compoundTag != null) {
 								int i = VersionedChunkStorage.getDataVersion(compoundTag);
-								CompoundTag compoundTag2 = versionedChunkStorage.updateChunkTag(registryKey3, () -> this.persistentStateManager, compoundTag);
+								CompoundTag compoundTag2 = versionedChunkStorage.updateChunkNbt(registryKey3, () -> this.persistentStateManager, compoundTag);
 								CompoundTag compoundTag3 = compoundTag2.getCompound("Level");
 								ChunkPos chunkPos2 = new ChunkPos(compoundTag3.getInt("xPos"), compoundTag3.getInt("zPos"));
 								if (!chunkPos2.equals(chunkPos)) {

@@ -758,8 +758,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setUuid(getUuidFromProfile(this.gameProfile));
 		ListTag listTag = tag.getList("Inventory", 10);
 		this.inventory.deserialize(listTag);
@@ -774,7 +774,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		}
 
 		this.setScore(tag.getInt("Score"));
-		this.hungerManager.fromTag(tag);
+		this.hungerManager.readNbt(tag);
 		this.abilities.deserialize(tag);
 		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)this.abilities.getWalkSpeed());
 		if (tag.contains("EnderItems", 9)) {
@@ -791,8 +791,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
 		tag.put("Inventory", this.inventory.serialize(new ListTag()));
 		tag.putInt("SelectedItemSlot", this.inventory.selectedSlot);
@@ -802,7 +802,7 @@ public abstract class PlayerEntity extends LivingEntity {
 		tag.putInt("XpTotal", this.totalExperience);
 		tag.putInt("XpSeed", this.enchantmentTableSeed);
 		tag.putInt("Score", this.getScore());
-		this.hungerManager.toTag(tag);
+		this.hungerManager.writeNbt(tag);
 		this.abilities.serialize(tag);
 		tag.put("EnderItems", this.enderChestInventory.getTags());
 		if (!this.getShoulderEntityLeft().isEmpty()) {
@@ -1718,8 +1718,8 @@ public abstract class PlayerEntity extends LivingEntity {
 	}
 
 	@Override
-	protected Entity.class_5799 method_33570() {
-		return this.abilities.flying || this.onGround && this.isSneaky() ? Entity.class_5799.NONE : Entity.class_5799.ALL;
+	protected Entity.MoveEffect getMoveEffect() {
+		return this.abilities.flying || this.onGround && this.isSneaky() ? Entity.MoveEffect.NONE : Entity.MoveEffect.ALL;
 	}
 
 	public void sendAbilitiesUpdate() {
@@ -1801,7 +1801,7 @@ public abstract class PlayerEntity extends LivingEntity {
 
 	private void dropShoulderEntity(CompoundTag entityNbt) {
 		if (!this.world.isClient && !entityNbt.isEmpty()) {
-			EntityType.getEntityFromTag(entityNbt, this.world).ifPresent(entity -> {
+			EntityType.getEntityFromNbt(entityNbt, this.world).ifPresent(entity -> {
 				if (entity instanceof TameableEntity) {
 					((TameableEntity)entity).setOwnerUuid(this.uuid);
 				}
@@ -2076,6 +2076,11 @@ public abstract class PlayerEntity extends LivingEntity {
 	@Environment(EnvType.CLIENT)
 	public boolean isUsingSpyglass() {
 		return this.isUsingItem() && this.getActiveItem().isOf(Items.SPYGLASS);
+	}
+
+	@Override
+	public boolean shouldSave() {
+		return false;
 	}
 
 	public static enum SleepFailureReason {

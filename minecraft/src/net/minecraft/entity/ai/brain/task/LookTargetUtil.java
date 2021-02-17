@@ -7,11 +7,11 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
-import net.minecraft.class_5532;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.brain.BlockPosLookTarget;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.EntityLookTarget;
@@ -161,7 +161,7 @@ public class LookTargetUtil {
 
 	@Nullable
 	public static Vec3d method_33193(PathAwareEntity pathAwareEntity, int i, int j) {
-		Vec3d vec3d = class_5532.method_31510(pathAwareEntity, i, j);
+		Vec3d vec3d = NoPenaltyTargeting.find(pathAwareEntity, i, j);
 		int k = 0;
 
 		while (
@@ -169,7 +169,7 @@ public class LookTargetUtil {
 				&& !pathAwareEntity.world.getBlockState(new BlockPos(vec3d)).canPathfindThrough(pathAwareEntity.world, new BlockPos(vec3d), NavigationType.WATER)
 				&& k++ < 10
 		) {
-			vec3d = class_5532.method_31510(pathAwareEntity, i, j);
+			vec3d = NoPenaltyTargeting.find(pathAwareEntity, i, j);
 		}
 
 		return vec3d;

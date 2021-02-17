@@ -192,7 +192,7 @@ public class EntityAttributeInstance {
 		this.onUpdate();
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("Name", Registry.ATTRIBUTE.getId(this.type).toString());
 		compoundTag.putDouble("Base", this.baseValue);
@@ -200,7 +200,7 @@ public class EntityAttributeInstance {
 			ListTag listTag = new ListTag();
 
 			for (EntityAttributeModifier entityAttributeModifier : this.persistentModifiers) {
-				listTag.add(entityAttributeModifier.toTag());
+				listTag.add(entityAttributeModifier.toNbt());
 			}
 
 			compoundTag.put("Modifiers", listTag);
@@ -209,13 +209,13 @@ public class EntityAttributeInstance {
 		return compoundTag;
 	}
 
-	public void fromTag(CompoundTag tag) {
+	public void readNbt(CompoundTag tag) {
 		this.baseValue = tag.getDouble("Base");
 		if (tag.contains("Modifiers", 9)) {
 			ListTag listTag = tag.getList("Modifiers", 10);
 
 			for (int i = 0; i < listTag.size(); i++) {
-				EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromTag(listTag.getCompound(i));
+				EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(listTag.getCompound(i));
 				if (entityAttributeModifier != null) {
 					this.idToModifiers.put(entityAttributeModifier.getId(), entityAttributeModifier);
 					this.getModifiers(entityAttributeModifier.getOperation()).add(entityAttributeModifier);

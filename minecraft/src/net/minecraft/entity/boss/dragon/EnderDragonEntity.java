@@ -129,7 +129,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void playFlySound() {
+	public void addFlapEffects() {
 		if (this.world.isClient && !this.isSilent()) {
 			this.world
 				.playSound(
@@ -165,7 +165,7 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 
 	@Override
 	public void tickMovement() {
-		this.method_33573();
+		this.addAirTravelEffects();
 		if (this.world.isClient) {
 			this.setHealth(this.getHealth());
 			if (!this.isSilent() && !this.phaseManager.getCurrent().isSittingOrHovering() && --this.ticksUntilNextGrowl < 0) {
@@ -741,14 +741,14 @@ public class EnderDragonEntity extends MobEntity implements Monster {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("DragonPhase")) {
 			this.phaseManager.setPhase(PhaseType.getFromId(tag.getInt("DragonPhase")));
 		}

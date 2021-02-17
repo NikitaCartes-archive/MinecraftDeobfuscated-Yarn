@@ -753,8 +753,8 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("EatingHaystack", this.isEatingGrass());
 		tag.putBoolean("Bred", this.isBred());
 		tag.putInt("Temper", this.getTemper());
@@ -764,13 +764,13 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 
 		if (!this.items.getStack(0).isEmpty()) {
-			tag.put("SaddleItem", this.items.getStack(0).toTag(new CompoundTag()));
+			tag.put("SaddleItem", this.items.getStack(0).writeNbt(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setEatingGrass(tag.getBoolean("EatingHaystack"));
 		this.setBred(tag.getBoolean("Bred"));
 		this.setTemper(tag.getInt("Temper"));
@@ -788,7 +788,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 		}
 
 		if (tag.contains("SaddleItem", 10)) {
-			ItemStack itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"));
+			ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("SaddleItem"));
 			if (itemStack.isOf(Items.SADDLE)) {
 				this.items.setStack(0, itemStack);
 			}

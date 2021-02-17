@@ -73,11 +73,6 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-		update(world, pos.up(), calculateDrag(world, pos.down()));
-	}
-
-	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		update(world, pos.up(), calculateDrag(world, pos));
 	}
@@ -88,8 +83,11 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	}
 
 	public static void update(WorldAccess world, BlockPos pos, boolean drag) {
-		if (isStillWater(world, pos)) {
-			world.setBlockState(pos, Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(drag)), 2);
+		BlockPos.Mutable mutable = pos.mutableCopy();
+
+		while (isStillWater(world, mutable)) {
+			world.setBlockState(mutable, Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(drag)), 2);
+			mutable.move(Direction.UP);
 		}
 	}
 

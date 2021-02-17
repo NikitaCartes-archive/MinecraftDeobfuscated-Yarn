@@ -25,7 +25,7 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 	@Override
 	public boolean generate(FeatureContext<LargeDripstoneFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		LargeDripstoneFeatureConfig largeDripstoneFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
@@ -57,11 +57,11 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 
 					boolean bl = dripstoneGenerator.canGenerate(structureWorldAccess, windModifier);
 					boolean bl2 = dripstoneGenerator2.canGenerate(structureWorldAccess, windModifier);
-					if (bl && dripstoneGenerator.getStalactiteHeight() > 0) {
+					if (bl) {
 						dripstoneGenerator.generate(structureWorldAccess, random, windModifier);
 					}
 
-					if (bl2 && dripstoneGenerator2.getStalagmiteHeight() < 55) {
+					if (bl2) {
 						dripstoneGenerator2.generate(structureWorldAccess, random, windModifier);
 					}
 
@@ -96,14 +96,6 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 
 		private int getBaseScale() {
 			return this.scale(0.0F);
-		}
-
-		private int getStalactiteHeight() {
-			return this.isStalagmite ? this.pos.getY() : this.pos.getY() - this.getBaseScale();
-		}
-
-		private int getStalagmiteHeight() {
-			return !this.isStalagmite ? this.pos.getY() : this.pos.getY() + this.getBaseScale();
 		}
 
 		private boolean canGenerate(StructureWorldAccess world, LargeDripstoneFeature.WindModifier wind) {

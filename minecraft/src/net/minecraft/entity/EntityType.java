@@ -710,7 +710,7 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 				entity.setCustomName(name);
 			}
 
-			loadFromEntityTag(world, player, entity, itemTag);
+			loadFromEntityNbt(world, player, entity, itemTag);
 			return entity;
 		}
 	}
@@ -725,16 +725,16 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
 	}
 
-	public static void loadFromEntityTag(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
+	public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
 		if (itemTag != null && itemTag.contains("EntityTag", 10)) {
 			MinecraftServer minecraftServer = world.getServer();
 			if (minecraftServer != null && entity != null) {
 				if (world.isClient || !entity.entityDataRequiresOperator() || player != null && minecraftServer.getPlayerManager().isOperator(player.getGameProfile())) {
-					CompoundTag compoundTag = entity.toTag(new CompoundTag());
+					CompoundTag compoundTag = entity.writeNbt(new CompoundTag());
 					UUID uUID = entity.getUuid();
 					compoundTag.copyFrom(itemTag.getCompound("EntityTag"));
 					entity.setUuid(uUID);
-					entity.fromTag(compoundTag);
+					entity.readNbt(compoundTag);
 				}
 			}
 		}
@@ -808,10 +808,10 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		return newInstance(world, Registry.ENTITY_TYPE.get(type));
 	}
 
-	public static Optional<Entity> getEntityFromTag(CompoundTag tag, World world) {
+	public static Optional<Entity> getEntityFromNbt(CompoundTag tag, World world) {
 		return Util.ifPresentOrElse(
-			fromTag(tag).map(entityType -> entityType.create(world)),
-			entity -> entity.fromTag(tag),
+			fromNbt(tag).map(entityType -> entityType.create(world)),
+			entity -> entity.readNbt(tag),
 			() -> LOGGER.warn("Skipping Entity with id {}", tag.getString("id"))
 		);
 	}
@@ -849,13 +849,13 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		return this.dimensions;
 	}
 
-	public static Optional<EntityType<?>> fromTag(CompoundTag compoundTag) {
+	public static Optional<EntityType<?>> fromNbt(CompoundTag compoundTag) {
 		return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(compoundTag.getString("id")));
 	}
 
 	@Nullable
 	public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> entityProcessor) {
-		return (Entity)loadEntityFromTag(compoundTag, world).map(entityProcessor).map(entity -> {
+		return (Entity)loadEntityFromNbt(compoundTag, world).map(entityProcessor).map(entity -> {
 			if (compoundTag.contains("Passengers", 9)) {
 				ListTag listTag = compoundTag.getList("Passengers", 10);
 
@@ -895,9 +895,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 		}, false);
 	}
 
-	private static Optional<Entity> loadEntityFromTag(CompoundTag compoundTag, World world) {
+	private static Optional<Entity> loadEntityFromNbt(CompoundTag compoundTag, World world) {
 		try {
-			return getEntityFromTag(compoundTag, world);
+			return getEntityFromNbt(compoundTag, world);
 		} catch (RuntimeException var3) {
 			LOGGER.warn("Exception loading entity: ", (Throwable)var3);
 			return Optional.empty();

@@ -66,10 +66,10 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat();
 	private static final Identifier UNKNOWN_SERVER_LOCATION = new Identifier("textures/misc/unknown_server.png");
 	private static final Identifier WORLD_SELECTION_LOCATION = new Identifier("textures/gui/world_selection.png");
-	private static final Text FROM_NEWER_VERSION_ONE_TOOLTIP = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
-	private static final Text FROM_NEWER_VERSION_TWO_TOOLTIP = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
-	private static final Text SNAPSHOT_ONE_TOOLTIP = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
-	private static final Text SNAPSHOT_TWO_TOOLTIP = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
+	private static final Text FROM_NEWER_VERSION_FIRST_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion1").formatted(Formatting.RED);
+	private static final Text FROM_NEWER_VERSION_SECOND_LINE = new TranslatableText("selectWorld.tooltip.fromNewerVersion2").formatted(Formatting.RED);
+	private static final Text SNAPSHOT_FIRST_LINE = new TranslatableText("selectWorld.tooltip.snapshot1").formatted(Formatting.GOLD);
+	private static final Text SNAPSHOT_SECOND_LINE = new TranslatableText("selectWorld.tooltip.snapshot2").formatted(Formatting.GOLD);
 	private static final Text LOCKED_TEXT = new TranslatableText("selectWorld.locked").formatted(Formatting.RED);
 	private static final Text PRE_WORLDHEIGHT_TEXT = new TranslatableText("selectWorld.pre_worldheight").formatted(Formatting.RED);
 	private final SelectWorldScreen parent;
@@ -168,7 +168,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 		this.moveSelectionIf(direction, entry -> !entry.level.isUnavailable());
 	}
 
-	public Optional<WorldListWidget.Entry> method_20159() {
+	public Optional<WorldListWidget.Entry> getSelectedAsOptional() {
 		return Optional.ofNullable(this.getSelected());
 	}
 
@@ -244,13 +244,13 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 						if (bl) {
 							this.screen
 								.setTooltip(
-									ImmutableList.of(WorldListWidget.FROM_NEWER_VERSION_ONE_TOOLTIP.asOrderedText(), WorldListWidget.FROM_NEWER_VERSION_TWO_TOOLTIP.asOrderedText())
+									ImmutableList.of(WorldListWidget.FROM_NEWER_VERSION_FIRST_LINE.asOrderedText(), WorldListWidget.FROM_NEWER_VERSION_SECOND_LINE.asOrderedText())
 								);
 						}
 					} else if (!SharedConstants.getGameVersion().isStable()) {
 						DrawableHelper.drawTexture(matrices, x, y, 64.0F, (float)j, 32, 32, 256, 256);
 						if (bl) {
-							this.screen.setTooltip(ImmutableList.of(WorldListWidget.SNAPSHOT_ONE_TOOLTIP.asOrderedText(), WorldListWidget.SNAPSHOT_TWO_TOOLTIP.asOrderedText()));
+							this.screen.setTooltip(ImmutableList.of(WorldListWidget.SNAPSHOT_FIRST_LINE.asOrderedText(), WorldListWidget.SNAPSHOT_SECOND_LINE.asOrderedText()));
 						}
 					}
 				} else {
@@ -265,7 +265,7 @@ public class WorldListWidget extends AlwaysSelectedEntryListWidget<WorldListWidg
 				return true;
 			} else {
 				WorldListWidget.this.setSelected(this);
-				this.screen.worldSelected(WorldListWidget.this.method_20159().isPresent());
+				this.screen.worldSelected(WorldListWidget.this.getSelectedAsOptional().isPresent());
 				if (mouseX - (double)WorldListWidget.this.getRowLeft() <= 32.0) {
 					this.play();
 					return true;

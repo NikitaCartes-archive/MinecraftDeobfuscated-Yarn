@@ -60,12 +60,12 @@ public class PackScreen extends Screen {
 	private PackListWidget selectedPackList;
 	private final File file;
 	private ButtonWidget doneButton;
-	private final Map<String, Identifier> field_25789 = Maps.<String, Identifier>newHashMap();
+	private final Map<String, Identifier> iconTextures = Maps.<String, Identifier>newHashMap();
 
 	public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> consumer, File file, Text title) {
 		super(title);
 		this.parent = parent;
-		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, packManager, consumer);
+		this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::getPackIconTexture, packManager, consumer);
 		this.file = file;
 		this.directoryWatcher = PackScreen.DirectoryWatcher.create(file);
 	}
@@ -143,7 +143,7 @@ public class PackScreen extends Screen {
 		this.organizer.refresh();
 		this.updatePackLists();
 		this.field_25788 = 0L;
-		this.field_25789.clear();
+		this.iconTextures.clear();
 	}
 
 	@Override
@@ -211,7 +211,7 @@ public class PackScreen extends Screen {
 		}, new TranslatableText("pack.dropConfirm"), new LiteralText(string)));
 	}
 
-	private Identifier method_30289(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {
+	private Identifier loadPackIcon(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {
 		try (ResourcePack resourcePack = resourcePackProfile.createResourcePack()) {
 			InputStream inputStream = resourcePack.openRoot("pack.png");
 			Throwable var6 = null;
@@ -255,9 +255,9 @@ public class PackScreen extends Screen {
 		return UNKNOWN_PACK;
 	}
 
-	private Identifier method_30287(ResourcePackProfile resourcePackProfile) {
-		return (Identifier)this.field_25789
-			.computeIfAbsent(resourcePackProfile.getName(), string -> this.method_30289(this.client.getTextureManager(), resourcePackProfile));
+	private Identifier getPackIconTexture(ResourcePackProfile resourcePackProfile) {
+		return (Identifier)this.iconTextures
+			.computeIfAbsent(resourcePackProfile.getName(), string -> this.loadPackIcon(this.client.getTextureManager(), resourcePackProfile));
 	}
 
 	@Environment(EnvType.CLIENT)

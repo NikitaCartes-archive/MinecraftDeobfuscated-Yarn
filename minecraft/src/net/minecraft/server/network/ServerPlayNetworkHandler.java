@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
@@ -172,6 +173,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	private double updatedX;
 	private double updatedY;
 	private double updatedZ;
+	@Nullable
 	private Entity topmostRiddenEntity;
 	private double lastTickRiddenX;
 	private double lastTickRiddenY;
@@ -179,6 +181,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	private double updatedRiddenX;
 	private double updatedRiddenY;
 	private double updatedRiddenZ;
+	@Nullable
 	private Vec3d requestedTeleportPos;
 	private int requestedTeleportId;
 	private int teleportRequestTick;
@@ -195,10 +198,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		connection.setPacketListener(this);
 		this.player = player;
 		player.networkHandler = this;
-		TextStream textStream = player.getTextStream();
-		if (textStream != null) {
-			textStream.onConnect();
-		}
+		player.getTextStream().onConnect();
 	}
 
 	public void tick() {
@@ -298,28 +298,23 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.server.submitAndJoin(this.connection::handleDisconnection);
 	}
 
-	private <T> void filterText(T text, Consumer<T> consumer, BiFunction<TextStream, T, CompletableFuture<Optional<T>>> backingFilterer) {
+	private <T, R> void filterText(T text, Consumer<R> consumer, BiFunction<TextStream, T, CompletableFuture<R>> backingFilterer) {
 		ThreadExecutor<?> threadExecutor = this.player.getServerWorld().getServer();
-		Consumer<T> consumer2 = object -> {
+		Consumer<R> consumer2 = object -> {
 			if (this.getConnection().isOpen()) {
 				consumer.accept(object);
 			} else {
 				LOGGER.debug("Ignoring packet due to disconnection");
 			}
 		};
-		TextStream textStream = this.player.getTextStream();
-		if (textStream != null) {
-			((CompletableFuture)backingFilterer.apply(textStream, text)).thenAcceptAsync(optional -> optional.ifPresent(consumer2), threadExecutor);
-		} else {
-			threadExecutor.execute(() -> consumer2.accept(text));
-		}
+		((CompletableFuture)backingFilterer.apply(this.player.getTextStream(), text)).thenAcceptAsync(consumer2, threadExecutor);
 	}
 
-	private void filterText(String text, Consumer<String> consumer) {
+	private void filterText(String text, Consumer<TextStream.class_5837> consumer) {
 		this.filterText(text, consumer, TextStream::filterText);
 	}
 
-	private void filterTexts(List<String> texts, Consumer<List<String>> consumer) {
+	private void filterTexts(List<String> texts, Consumer<List<TextStream.class_5837>> consumer) {
 		this.filterText(texts, consumer, TextStream::filterTexts);
 	}
 
@@ -693,40 +688,40 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@Override
 	public void onBookUpdate(BookUpdateC2SPacket packet) {
-		ItemStack itemStack = packet.getBook();
-		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-			CompoundTag compoundTag = itemStack.getTag();
-			if (WritableBookItem.isValid(compoundTag)) {
-				List<String> list = Lists.<String>newArrayList();
-				boolean bl = packet.wasSigned();
-				if (bl) {
-					list.add(compoundTag.getString("title"));
-				}
+		int i = packet.getSlot();
+		if (PlayerInventory.isValidHotbarIndex(i) || i == 40) {
+			ItemStack itemStack = packet.getBook();
+			if (itemStack.isOf(Items.WRITABLE_BOOK)) {
+				CompoundTag compoundTag = itemStack.getTag();
+				if (WritableBookItem.isValid(compoundTag)) {
+					List<String> list = Lists.<String>newArrayList();
+					boolean bl = packet.wasSigned();
+					if (bl) {
+						list.add(compoundTag.getString("title"));
+					}
 
-				ListTag listTag = compoundTag.getList("pages", 8);
+					ListTag listTag = compoundTag.getList("pages", 8);
 
-				for (int i = 0; i < listTag.size(); i++) {
-					list.add(listTag.getString(i));
-				}
+					for (int j = 0; j < listTag.size(); j++) {
+						list.add(listTag.getString(j));
+					}
 
-				int i = packet.getSlot();
-				if (PlayerInventory.isValidHotbarIndex(i) || i == 40) {
-					this.filterTexts(list, bl ? listx -> this.method_31276((String)listx.get(0), listx.subList(1, listx.size()), i) : listx -> this.method_31278(listx, i));
+					this.filterTexts(
+						list, bl ? listx -> this.method_31276((TextStream.class_5837)listx.get(0), listx.subList(1, listx.size()), i) : listx -> this.method_31278(listx, i)
+					);
 				}
 			}
 		}
 	}
 
-	private void method_31278(List<String> list, int i) {
+	private void method_31278(List<TextStream.class_5837> list, int i) {
 		ItemStack itemStack = this.player.getInventory().getStack(i);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-			ListTag listTag = new ListTag();
-			list.stream().map(StringTag::of).forEach(listTag::add);
-			itemStack.putSubTag("pages", listTag);
+			this.method_33796(list, UnaryOperator.identity(), itemStack);
 		}
 	}
 
-	private void method_31276(String string, List<String> list, int i) {
+	private void method_31276(TextStream.class_5837 arg, List<TextStream.class_5837> list, int i) {
 		ItemStack itemStack = this.player.getInventory().getStack(i);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
 			ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
@@ -736,18 +731,42 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			}
 
 			itemStack2.putSubTag("author", StringTag.of(this.player.getName().getString()));
-			itemStack2.putSubTag("title", StringTag.of(string));
-			ListTag listTag = new ListTag();
-
-			for (String string2 : list) {
-				Text text = new LiteralText(string2);
-				String string3 = Text.Serializer.toJson(text);
-				listTag.add(StringTag.of(string3));
+			if (this.player.method_33793()) {
+				itemStack2.putSubTag("title", StringTag.of(arg.method_33803()));
+			} else {
+				itemStack2.putSubTag("filtered_title", StringTag.of(arg.method_33803()));
+				itemStack2.putSubTag("title", StringTag.of(arg.method_33801()));
 			}
 
-			itemStack2.putSubTag("pages", listTag);
+			this.method_33796(list, string -> Text.Serializer.toJson(new LiteralText(string)), itemStack2);
 			this.player.getInventory().setStack(i, itemStack2);
 		}
+	}
+
+	private void method_33796(List<TextStream.class_5837> list, UnaryOperator<String> unaryOperator, ItemStack itemStack) {
+		ListTag listTag = new ListTag();
+		if (this.player.method_33793()) {
+			list.stream().map(arg -> StringTag.of((String)unaryOperator.apply(arg.method_33803()))).forEach(listTag::add);
+		} else {
+			CompoundTag compoundTag = new CompoundTag();
+			int i = 0;
+
+			for (int j = list.size(); i < j; i++) {
+				TextStream.class_5837 lv = (TextStream.class_5837)list.get(i);
+				String string = lv.method_33801();
+				listTag.add(StringTag.of((String)unaryOperator.apply(string)));
+				String string2 = lv.method_33803();
+				if (!string.equals(string2)) {
+					compoundTag.putString(String.valueOf(i), (String)unaryOperator.apply(string2));
+				}
+			}
+
+			if (!compoundTag.isEmpty()) {
+				itemStack.putSubTag("filtered_pages", compoundTag);
+			}
+		}
+
+		itemStack.putSubTag("pages", listTag);
 	}
 
 	@Override
@@ -756,7 +775,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (this.player.hasPermissionLevel(2)) {
 			Entity entity = this.player.getServerWorld().getEntityById(packet.getEntityId());
 			if (entity != null) {
-				CompoundTag compoundTag = entity.toTag(new CompoundTag());
+				CompoundTag compoundTag = entity.writeNbt(new CompoundTag());
 				this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
 			}
 		}
@@ -767,7 +786,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		if (this.player.hasPermissionLevel(2)) {
 			BlockEntity blockEntity = this.player.getServerWorld().getBlockEntity(packet.getPos());
-			CompoundTag compoundTag = blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
+			CompoundTag compoundTag = blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : null;
 			this.player.networkHandler.sendPacket(new TagQueryResponseS2CPacket(packet.getTransactionId(), compoundTag));
 		}
 	}
@@ -898,32 +917,34 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		return stream.anyMatch(voxelShape2 -> !VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND));
 	}
 
-	public void method_33562(double d, double e, double f, float g, float h) {
-		this.method_33563(d, e, f, g, h, Collections.emptySet(), true);
+	public void requestTeleportAndDismount(double x, double y, double z, float yaw, float pitch) {
+		this.requestTeleport(x, y, z, yaw, pitch, Collections.emptySet(), true);
 	}
 
 	public void requestTeleport(double x, double y, double z, float yaw, float pitch) {
-		this.method_33563(x, y, z, yaw, pitch, Collections.emptySet(), false);
+		this.requestTeleport(x, y, z, yaw, pitch, Collections.emptySet(), false);
 	}
 
-	public void teleportRequest(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> set) {
-		this.method_33563(x, y, z, yaw, pitch, set, false);
+	public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> flags) {
+		this.requestTeleport(x, y, z, yaw, pitch, flags, false);
 	}
 
-	public void method_33563(double d, double e, double f, float g, float h, Set<PlayerPositionLookS2CPacket.Flag> set, boolean bl) {
-		double i = set.contains(PlayerPositionLookS2CPacket.Flag.X) ? this.player.getX() : 0.0;
-		double j = set.contains(PlayerPositionLookS2CPacket.Flag.Y) ? this.player.getY() : 0.0;
-		double k = set.contains(PlayerPositionLookS2CPacket.Flag.Z) ? this.player.getZ() : 0.0;
-		float l = set.contains(PlayerPositionLookS2CPacket.Flag.Y_ROT) ? this.player.yaw : 0.0F;
-		float m = set.contains(PlayerPositionLookS2CPacket.Flag.X_ROT) ? this.player.pitch : 0.0F;
-		this.requestedTeleportPos = new Vec3d(d, e, f);
+	public void requestTeleport(double x, double y, double z, float yaw, float pitch, Set<PlayerPositionLookS2CPacket.Flag> flags, boolean shouldDismount) {
+		double d = flags.contains(PlayerPositionLookS2CPacket.Flag.X) ? this.player.getX() : 0.0;
+		double e = flags.contains(PlayerPositionLookS2CPacket.Flag.Y) ? this.player.getY() : 0.0;
+		double f = flags.contains(PlayerPositionLookS2CPacket.Flag.Z) ? this.player.getZ() : 0.0;
+		float g = flags.contains(PlayerPositionLookS2CPacket.Flag.Y_ROT) ? this.player.yaw : 0.0F;
+		float h = flags.contains(PlayerPositionLookS2CPacket.Flag.X_ROT) ? this.player.pitch : 0.0F;
+		this.requestedTeleportPos = new Vec3d(x, y, z);
 		if (++this.requestedTeleportId == Integer.MAX_VALUE) {
 			this.requestedTeleportId = 0;
 		}
 
 		this.teleportRequestTick = this.ticks;
-		this.player.updatePositionAndAngles(d, e, f, g, h);
-		this.player.networkHandler.sendPacket(new PlayerPositionLookS2CPacket(d - i, e - j, f - k, g - l, h - m, set, this.requestedTeleportId, bl));
+		this.player.updatePositionAndAngles(x, y, z, yaw, pitch);
+		this.player
+			.networkHandler
+			.sendPacket(new PlayerPositionLookS2CPacket(x - d, y - e, z - f, yaw - g, pitch - h, flags, this.requestedTeleportId, shouldDismount));
 	}
 
 	@Override
@@ -999,14 +1020,14 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				ActionResult actionResult = this.player.interactionManager.interactBlock(this.player, serverWorld, itemStack, hand, blockHitResult);
 				if (direction == Direction.UP && !actionResult.isAccepted() && blockPos.getY() >= i - 1 && canPlace(this.player, itemStack)) {
 					Text text = new TranslatableText("build.tooHigh", i).formatted(Formatting.RED);
-					this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text, MessageType.GAME_INFO, Util.NIL_UUID));
+					this.player.sendMessage(text, MessageType.GAME_INFO, Util.NIL_UUID);
 				} else if (actionResult.shouldSwingHand()) {
 					this.player.swingHand(hand, true);
 				}
 			}
 		} else {
 			Text text2 = new TranslatableText("build.tooHigh", i).formatted(Formatting.RED);
-			this.player.networkHandler.sendPacket(new GameMessageS2CPacket(text2, MessageType.GAME_INFO, Util.NIL_UUID));
+			this.player.sendMessage(text2, MessageType.GAME_INFO, Util.NIL_UUID);
 		}
 
 		this.player.networkHandler.sendPacket(new BlockUpdateS2CPacket(serverWorld, blockPos));
@@ -1071,11 +1092,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			);
 		this.player.onDisconnect();
 		this.server.getPlayerManager().remove(this.player);
-		TextStream textStream = this.player.getTextStream();
-		if (textStream != null) {
-			textStream.onDisconnect();
-		}
-
+		this.player.getTextStream().onDisconnect();
 		if (this.isHost()) {
 			LOGGER.info("Stopping singleplayer server as player logged out");
 			this.server.stop(false);
@@ -1088,18 +1105,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	}
 
 	public void sendPacket(Packet<?> packet, @Nullable GenericFutureListener<? extends Future<? super Void>> listener) {
-		if (packet instanceof GameMessageS2CPacket) {
-			GameMessageS2CPacket gameMessageS2CPacket = (GameMessageS2CPacket)packet;
-			ChatVisibility chatVisibility = this.player.getClientChatVisibility();
-			if (chatVisibility == ChatVisibility.HIDDEN && gameMessageS2CPacket.getLocation() != MessageType.GAME_INFO) {
-				return;
-			}
-
-			if (chatVisibility == ChatVisibility.SYSTEM && !gameMessageS2CPacket.isNonChat()) {
-				return;
-			}
-		}
-
 		try {
 			this.connection.send(packet, listener);
 		} catch (Throwable var6) {
@@ -1128,32 +1133,37 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onGameMessage(ChatMessageC2SPacket packet) {
 		String string = StringUtils.normalizeSpace(packet.getChatMessage());
+
+		for (int i = 0; i < string.length(); i++) {
+			if (!SharedConstants.isValidChar(string.charAt(i))) {
+				this.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
+				return;
+			}
+		}
+
 		if (string.startsWith("/")) {
 			NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-			this.method_31286(string);
+			this.method_31286(TextStream.class_5837.method_33802(string));
 		} else {
 			this.filterText(string, this::method_31286);
 		}
 	}
 
-	private void method_31286(String string) {
+	private void method_31286(TextStream.class_5837 arg) {
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
-			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.cannotSend").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
+			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
 		} else {
 			this.player.updateLastActionTime();
-
-			for (int i = 0; i < string.length(); i++) {
-				if (!SharedConstants.isValidChar(string.charAt(i))) {
-					this.disconnect(new TranslatableText("multiplayer.disconnect.illegal_characters"));
-					return;
-				}
-			}
-
+			String string = arg.method_33801();
 			if (string.startsWith("/")) {
 				this.executeCommand(string);
 			} else {
-				Text text = new TranslatableText("chat.type.text", this.player.getDisplayName(), string);
-				this.server.getPlayerManager().broadcastChatMessage(text, MessageType.CHAT, this.player.getUuid());
+				String string2 = arg.method_33803();
+				Text text = string2.isEmpty() ? null : new TranslatableText("chat.type.text", this.player.getDisplayName(), string2);
+				Text text2 = new TranslatableText("chat.type.text", this.player.getDisplayName(), string);
+				this.server
+					.getPlayerManager()
+					.method_33810(text2, serverPlayerEntity -> this.player.method_33795(serverPlayerEntity) ? text : text2, MessageType.CHAT, this.player.getUuid());
 			}
 
 			this.messageCooldown += 20;
@@ -1374,7 +1384,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
 				BlockEntity blockEntity = this.player.world.getBlockEntity(blockPos);
 				if (blockEntity != null) {
-					CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
+					CompoundTag compoundTag2 = blockEntity.writeNbt(new CompoundTag());
 					compoundTag2.remove("x");
 					compoundTag2.remove("y");
 					compoundTag2.remove("z");
@@ -1418,7 +1428,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.filterTexts(list, listx -> this.method_31282(packet, listx));
 	}
 
-	private void method_31282(UpdateSignC2SPacket updateSignC2SPacket, List<String> list) {
+	private void method_31282(UpdateSignC2SPacket updateSignC2SPacket, List<TextStream.class_5837> list) {
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.player.getServerWorld();
 		BlockPos blockPos = updateSignC2SPacket.getPos();
@@ -1436,7 +1446,12 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			}
 
 			for (int i = 0; i < list.size(); i++) {
-				signBlockEntity.setTextOnRow(i, new LiteralText((String)list.get(i)));
+				TextStream.class_5837 lv = (TextStream.class_5837)list.get(i);
+				if (this.player.method_33793()) {
+					signBlockEntity.setTextOnRow(i, new LiteralText(lv.method_33803()));
+				} else {
+					signBlockEntity.method_33827(i, new LiteralText(lv.method_33801()), new LiteralText(lv.method_33803()));
+				}
 			}
 
 			signBlockEntity.markDirty();

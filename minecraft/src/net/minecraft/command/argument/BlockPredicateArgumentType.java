@@ -111,7 +111,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
+					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new CompoundTag()), true);
 				}
 			}
 		}
@@ -154,7 +154,7 @@ public class BlockPredicateArgumentType implements ArgumentType<BlockPredicateAr
 					return true;
 				} else {
 					BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
+					return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new CompoundTag()), true);
 				}
 			}
 		}

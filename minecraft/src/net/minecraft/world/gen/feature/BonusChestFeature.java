@@ -26,7 +26,7 @@ public class BonusChestFeature extends Feature<DefaultFeatureConfig> {
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		ChunkPos chunkPos = new ChunkPos(context.getPos());
+		ChunkPos chunkPos = new ChunkPos(context.getOrigin());
 		List<Integer> list = (List<Integer>)IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()).boxed().collect(Collectors.toList());
 		Collections.shuffle(list, random);
 		List<Integer> list2 = (List<Integer>)IntStream.rangeClosed(chunkPos.getStartZ(), chunkPos.getEndZ()).boxed().collect(Collectors.toList());

@@ -23,7 +23,7 @@ public class HotbarStorageEntry extends ForwardingList<ItemStack> {
 		ListTag listTag = new ListTag();
 
 		for (ItemStack itemStack : this.delegate()) {
-			listTag.add(itemStack.toTag(new CompoundTag()));
+			listTag.add(itemStack.writeNbt(new CompoundTag()));
 		}
 
 		return listTag;
@@ -33,7 +33,7 @@ public class HotbarStorageEntry extends ForwardingList<ItemStack> {
 		List<ItemStack> list = this.delegate();
 
 		for (int i = 0; i < list.size(); i++) {
-			list.set(i, ItemStack.fromTag(tag.getCompound(i)));
+			list.set(i, ItemStack.fromNbt(tag.getCompound(i)));
 		}
 	}
 

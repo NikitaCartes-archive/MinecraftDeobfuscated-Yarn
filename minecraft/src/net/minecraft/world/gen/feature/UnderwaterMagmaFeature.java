@@ -24,7 +24,7 @@ public class UnderwaterMagmaFeature extends Feature<UnderwaterMagmaFeatureConfig
 	@Override
 	public boolean generate(FeatureContext<UnderwaterMagmaFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		UnderwaterMagmaFeatureConfig underwaterMagmaFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
 		OptionalInt optionalInt = getFloorHeight(structureWorldAccess, blockPos, underwaterMagmaFeatureConfig);

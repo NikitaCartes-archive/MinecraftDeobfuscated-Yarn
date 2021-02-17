@@ -18,11 +18,11 @@ public class Inventories {
 		return slot >= 0 && slot < stacks.size() ? (ItemStack)stacks.set(slot, ItemStack.EMPTY) : ItemStack.EMPTY;
 	}
 
-	public static CompoundTag toTag(CompoundTag tag, DefaultedList<ItemStack> stacks) {
-		return toTag(tag, stacks, true);
+	public static CompoundTag writeNbt(CompoundTag tag, DefaultedList<ItemStack> stacks) {
+		return writeNbt(tag, stacks, true);
 	}
 
-	public static CompoundTag toTag(CompoundTag tag, DefaultedList<ItemStack> stacks, boolean setIfEmpty) {
+	public static CompoundTag writeNbt(CompoundTag tag, DefaultedList<ItemStack> stacks, boolean setIfEmpty) {
 		ListTag listTag = new ListTag();
 
 		for (int i = 0; i < stacks.size(); i++) {
@@ -30,7 +30,7 @@ public class Inventories {
 			if (!itemStack.isEmpty()) {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putByte("Slot", (byte)i);
-				itemStack.toTag(compoundTag);
+				itemStack.writeNbt(compoundTag);
 				listTag.add(compoundTag);
 			}
 		}
@@ -42,14 +42,14 @@ public class Inventories {
 		return tag;
 	}
 
-	public static void fromTag(CompoundTag tag, DefaultedList<ItemStack> stacks) {
+	public static void readNbt(CompoundTag tag, DefaultedList<ItemStack> stacks) {
 		ListTag listTag = tag.getList("Items", 10);
 
 		for (int i = 0; i < listTag.size(); i++) {
 			CompoundTag compoundTag = listTag.getCompound(i);
 			int j = compoundTag.getByte("Slot") & 255;
 			if (j >= 0 && j < stacks.size()) {
-				stacks.set(j, ItemStack.fromTag(compoundTag));
+				stacks.set(j, ItemStack.fromNbt(compoundTag));
 			}
 		}
 	}

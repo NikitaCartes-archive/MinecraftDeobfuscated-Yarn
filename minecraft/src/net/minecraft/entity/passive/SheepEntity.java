@@ -263,15 +263,15 @@ public class SheepEntity extends AnimalEntity implements Shearable {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("Sheared", this.isSheared());
 		tag.putByte("Color", (byte)this.getColor().getId());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setSheared(tag.getBoolean("Sheared"));
 		this.setColor(DyeColor.byId(tag.getByte("Color")));
 	}

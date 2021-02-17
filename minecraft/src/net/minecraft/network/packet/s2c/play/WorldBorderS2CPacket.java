@@ -10,12 +10,12 @@ import net.minecraft.world.border.WorldBorder;
 
 public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 	private WorldBorderS2CPacket.Type type;
-	private int portalTeleportPosLimit;
+	private int maxRadius;
 	private double centerX;
 	private double centerZ;
+	private double sizeLerpTarget;
 	private double size;
-	private double oldSize;
-	private long interpolationDuration;
+	private long sizeLerpTime;
 	private int warningTime;
 	private int warningBlocks;
 
@@ -26,10 +26,10 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.type = type;
 		this.centerX = border.getCenterX();
 		this.centerZ = border.getCenterZ();
-		this.oldSize = border.getSize();
-		this.size = border.getTargetSize();
-		this.interpolationDuration = border.getTargetRemainingTime();
-		this.portalTeleportPosLimit = border.getMaxWorldBorderRadius();
+		this.size = border.getSize();
+		this.sizeLerpTarget = border.getSizeLerpTarget();
+		this.sizeLerpTime = border.getSizeLerpTime();
+		this.maxRadius = border.getMaxRadius();
 		this.warningBlocks = border.getWarningBlocks();
 		this.warningTime = border.getWarningTime();
 	}
@@ -39,12 +39,12 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.type = buf.readEnumConstant(WorldBorderS2CPacket.Type.class);
 		switch (this.type) {
 			case SET_SIZE:
-				this.size = buf.readDouble();
+				this.sizeLerpTarget = buf.readDouble();
 				break;
 			case LERP_SIZE:
-				this.oldSize = buf.readDouble();
 				this.size = buf.readDouble();
-				this.interpolationDuration = buf.readVarLong();
+				this.sizeLerpTarget = buf.readDouble();
+				this.sizeLerpTime = buf.readVarLong();
 				break;
 			case SET_CENTER:
 				this.centerX = buf.readDouble();
@@ -59,10 +59,10 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 			case INITIALIZE:
 				this.centerX = buf.readDouble();
 				this.centerZ = buf.readDouble();
-				this.oldSize = buf.readDouble();
 				this.size = buf.readDouble();
-				this.interpolationDuration = buf.readVarLong();
-				this.portalTeleportPosLimit = buf.readVarInt();
+				this.sizeLerpTarget = buf.readDouble();
+				this.sizeLerpTime = buf.readVarLong();
+				this.maxRadius = buf.readVarInt();
 				this.warningBlocks = buf.readVarInt();
 				this.warningTime = buf.readVarInt();
 		}
@@ -73,12 +73,12 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeEnumConstant(this.type);
 		switch (this.type) {
 			case SET_SIZE:
-				buf.writeDouble(this.size);
+				buf.writeDouble(this.sizeLerpTarget);
 				break;
 			case LERP_SIZE:
-				buf.writeDouble(this.oldSize);
 				buf.writeDouble(this.size);
-				buf.writeVarLong(this.interpolationDuration);
+				buf.writeDouble(this.sizeLerpTarget);
+				buf.writeVarLong(this.sizeLerpTime);
 				break;
 			case SET_CENTER:
 				buf.writeDouble(this.centerX);
@@ -93,10 +93,10 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 			case INITIALIZE:
 				buf.writeDouble(this.centerX);
 				buf.writeDouble(this.centerZ);
-				buf.writeDouble(this.oldSize);
 				buf.writeDouble(this.size);
-				buf.writeVarLong(this.interpolationDuration);
-				buf.writeVarInt(this.portalTeleportPosLimit);
+				buf.writeDouble(this.sizeLerpTarget);
+				buf.writeVarLong(this.sizeLerpTime);
+				buf.writeVarInt(this.maxRadius);
 				buf.writeVarInt(this.warningBlocks);
 				buf.writeVarInt(this.warningTime);
 		}
@@ -110,10 +110,10 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void apply(WorldBorder border) {
 		switch (this.type) {
 			case SET_SIZE:
-				border.setSize(this.size);
+				border.setSize(this.sizeLerpTarget);
 				break;
 			case LERP_SIZE:
-				border.interpolateSize(this.oldSize, this.size, this.interpolationDuration);
+				border.interpolateSize(this.size, this.sizeLerpTarget, this.sizeLerpTime);
 				break;
 			case SET_CENTER:
 				border.setCenter(this.centerX, this.centerZ);
@@ -126,13 +126,13 @@ public class WorldBorderS2CPacket implements Packet<ClientPlayPacketListener> {
 				break;
 			case INITIALIZE:
 				border.setCenter(this.centerX, this.centerZ);
-				if (this.interpolationDuration > 0L) {
-					border.interpolateSize(this.oldSize, this.size, this.interpolationDuration);
+				if (this.sizeLerpTime > 0L) {
+					border.interpolateSize(this.size, this.sizeLerpTarget, this.sizeLerpTime);
 				} else {
-					border.setSize(this.size);
+					border.setSize(this.sizeLerpTarget);
 				}
 
-				border.setMaxWorldBorderRadius(this.portalTeleportPosLimit);
+				border.setMaxRadius(this.maxRadius);
 				border.setWarningBlocks(this.warningBlocks);
 				border.setWarningTime(this.warningTime);
 		}

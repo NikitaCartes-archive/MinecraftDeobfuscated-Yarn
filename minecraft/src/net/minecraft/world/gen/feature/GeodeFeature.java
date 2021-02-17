@@ -28,7 +28,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 	public boolean generate(FeatureContext<GeodeFeatureConfig> context) {
 		GeodeFeatureConfig geodeFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		int i = geodeFeatureConfig.minGenOffset;
 		int j = geodeFeatureConfig.maxGenOffset;

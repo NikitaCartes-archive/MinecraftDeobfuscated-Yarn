@@ -173,19 +173,19 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		BlockState blockState = this.getCarriedBlock();
 		if (blockState != null) {
 			tag.put("carriedBlockState", NbtHelper.fromBlockState(blockState));
 		}
 
-		this.angerToTag(tag);
+		this.writeAngerToNbt(tag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		BlockState blockState = null;
 		if (tag.contains("carriedBlockState", 10)) {
 			blockState = NbtHelper.toBlockState(tag.getCompound("carriedBlockState"));
@@ -195,7 +195,7 @@ public class EndermanEntity extends HostileEntity implements Angerable {
 		}
 
 		this.setCarriedBlock(blockState);
-		this.angerFromTag(this.world, tag);
+		this.readAngerFromNbt(this.world, tag);
 	}
 
 	private boolean isPlayerStaring(PlayerEntity player) {

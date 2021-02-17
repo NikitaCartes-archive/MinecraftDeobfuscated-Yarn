@@ -56,14 +56,14 @@ public class SkeletonEntity extends AbstractSkeletonEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("StrayConversionTime", this.isConverting() ? this.conversionTime : -1);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("StrayConversionTime", 99) && tag.getInt("StrayConversionTime") > -1) {
 			this.setConversionTime(tag.getInt("StrayConversionTime"));
 		}

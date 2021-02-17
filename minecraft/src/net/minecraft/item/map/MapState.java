@@ -133,7 +133,7 @@ public class MapState extends PersistentState {
 		ListTag listTag2 = tag.getList("frames", 10);
 
 		for (int l = 0; l < listTag2.size(); l++) {
-			MapFrameMarker mapFrameMarker = MapFrameMarker.fromTag(listTag2.getCompound(l));
+			MapFrameMarker mapFrameMarker = MapFrameMarker.fromNbt(listTag2.getCompound(l));
 			mapState.frames.put(mapFrameMarker.getKey(), mapFrameMarker);
 			mapState.addIcon(
 				MapIcon.Type.FRAME,
@@ -150,7 +150,7 @@ public class MapState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag toNbt(CompoundTag tag) {
+	public CompoundTag writeNbt(CompoundTag tag) {
 		Identifier.CODEC.encodeStart(NbtOps.INSTANCE, this.dimension.getValue()).resultOrPartial(field_25019::error).ifPresent(tagx -> tag.put("dimension", tagx));
 		tag.putInt("xCenter", this.xCenter);
 		tag.putInt("zCenter", this.zCenter);
@@ -169,7 +169,7 @@ public class MapState extends PersistentState {
 		ListTag listTag2 = new ListTag();
 
 		for (MapFrameMarker mapFrameMarker : this.frames.values()) {
-			listTag2.add(mapFrameMarker.toTag());
+			listTag2.add(mapFrameMarker.toNbt());
 		}
 
 		tag.put("frames", listTag2);

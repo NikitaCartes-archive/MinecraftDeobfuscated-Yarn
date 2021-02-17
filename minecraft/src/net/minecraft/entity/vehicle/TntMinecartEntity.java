@@ -161,16 +161,16 @@ public class TntMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	protected void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("TNTFuse", 99)) {
 			this.fuseTicks = tag.getInt("TNTFuse");
 		}
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	protected void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("TNTFuse", this.fuseTicks);
 	}
 }

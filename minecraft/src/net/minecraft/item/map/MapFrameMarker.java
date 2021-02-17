@@ -15,14 +15,14 @@ public class MapFrameMarker {
 		this.entityId = entityId;
 	}
 
-	public static MapFrameMarker fromTag(CompoundTag tag) {
+	public static MapFrameMarker fromNbt(CompoundTag tag) {
 		BlockPos blockPos = NbtHelper.toBlockPos(tag.getCompound("Pos"));
 		int i = tag.getInt("Rotation");
 		int j = tag.getInt("EntityId");
 		return new MapFrameMarker(blockPos, i, j);
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.put("Pos", NbtHelper.fromBlockPos(this.pos));
 		compoundTag.putInt("Rotation", this.rotation);

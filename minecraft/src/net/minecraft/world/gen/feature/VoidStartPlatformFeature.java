@@ -22,11 +22,11 @@ public class VoidStartPlatformFeature extends Feature<DefaultFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		ChunkPos chunkPos = new ChunkPos(context.getPos());
+		ChunkPos chunkPos = new ChunkPos(context.getOrigin());
 		if (getDistance(chunkPos.x, chunkPos.z, START_CHUNK.x, START_CHUNK.z) > 1) {
 			return true;
 		} else {
-			BlockPos blockPos = context.getPos().add(START_BLOCK);
+			BlockPos blockPos = context.getOrigin().add(START_BLOCK);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 			for (int i = chunkPos.getStartZ(); i <= chunkPos.getEndZ(); i++) {

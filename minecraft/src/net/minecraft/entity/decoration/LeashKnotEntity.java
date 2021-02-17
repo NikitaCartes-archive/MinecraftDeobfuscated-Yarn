@@ -74,11 +74,11 @@ public class LeashKnotEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
+	public void writeCustomDataToNbt(CompoundTag tag) {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
+	public void readCustomDataFromNbt(CompoundTag tag) {
 	}
 
 	@Override

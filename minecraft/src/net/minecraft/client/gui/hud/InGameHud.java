@@ -1016,7 +1016,7 @@ public class InGameHud extends DrawableHelper {
 		WorldBorder worldBorder = this.client.world.getWorldBorder();
 		float f = (float)worldBorder.getDistanceInsideBorder(entity);
 		double d = Math.min(
-			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getTargetSize() - worldBorder.getSize())
+			worldBorder.getShrinkingSpeed() * (double)worldBorder.getWarningTime() * 1000.0, Math.abs(worldBorder.getSizeLerpTarget() - worldBorder.getSize())
 		);
 		double e = Math.max((double)worldBorder.getWarningBlocks(), d);
 		if ((double)f < e) {

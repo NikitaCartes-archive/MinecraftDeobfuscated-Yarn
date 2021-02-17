@@ -217,7 +217,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 
 	public void readTags(ListTag tags) {
 		for (int i = 0; i < tags.size(); i++) {
-			ItemStack itemStack = ItemStack.fromTag(tags.getCompound(i));
+			ItemStack itemStack = ItemStack.fromNbt(tags.getCompound(i));
 			if (!itemStack.isEmpty()) {
 				this.addStack(itemStack);
 			}
@@ -230,7 +230,7 @@ public class SimpleInventory implements Inventory, RecipeInputProvider {
 		for (int i = 0; i < this.size(); i++) {
 			ItemStack itemStack = this.getStack(i);
 			if (!itemStack.isEmpty()) {
-				listTag.add(itemStack.toTag(new CompoundTag()));
+				listTag.add(itemStack.writeNbt(new CompoundTag()));
 			}
 		}
 

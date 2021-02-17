@@ -90,7 +90,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		this.textRenderer = textRenderer;
 		this.parentWidth = parent.width;
 		this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterSeed"));
-		this.seedTextField.setText(toSeedText(this.seed));
+		this.seedTextField.setText(seedToString(this.seed));
 		this.seedTextField.setChangedListener(string -> this.seed = this.getSeed());
 		parent.addChild(this.seedTextField);
 		int i = this.parentWidth / 2 - 155;
@@ -172,7 +172,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 						ResourcePackManager resourcePackManager = new ResourcePackManager(
 							ResourceType.SERVER_DATA,
 							new VanillaDataPackProvider(),
-							new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
+							new FileResourcePackProvider(parent.getDataPackTempDir().toFile(), ResourcePackSource.PACK_SOURCE_WORLD)
 						);
 
 						ServerResourceManager serverResourceManager;
@@ -277,7 +277,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		this.generatorType = GeneratorType.fromGeneratorOptions(generatorOptions);
 		this.method_32683(true);
 		this.seed = OptionalLong.of(generatorOptions.getSeed());
-		this.seedTextField.setText(toSeedText(this.seed));
+		this.seedTextField.setText(seedToString(this.seed));
 	}
 
 	@Override
@@ -301,7 +301,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		this.generatorOptions = generatorOptions;
 	}
 
-	private static String toSeedText(OptionalLong seed) {
+	private static String seedToString(OptionalLong seed) {
 		return seed.isPresent() ? Long.toString(seed.getAsLong()) : "";
 	}
 

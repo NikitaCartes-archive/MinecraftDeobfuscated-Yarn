@@ -42,4 +42,9 @@ public class EndGatewayBlockEntityRenderer extends EndPortalBlockEntityRenderer<
 	protected float getTopYOffset() {
 		return 1.0F;
 	}
+
+	@Override
+	public int method_33893() {
+		return 256;
+	}
 }

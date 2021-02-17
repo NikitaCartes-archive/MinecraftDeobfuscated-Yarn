@@ -48,6 +48,6 @@ public class IdListPalette<T> implements Palette<T> {
 	}
 
 	@Override
-	public void fromTag(ListTag tag) {
+	public void readNbt(ListTag tag) {
 	}
 }

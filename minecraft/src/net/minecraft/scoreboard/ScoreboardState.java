@@ -14,21 +14,21 @@ public class ScoreboardState extends PersistentState {
 		this.scoreboard = scoreboard;
 	}
 
-	public ScoreboardState fromTag(CompoundTag tag) {
-		this.objectivesFromTag(tag.getList("Objectives", 10));
-		this.scoreboard.fromTag(tag.getList("PlayerScores", 10));
+	public ScoreboardState readNbt(CompoundTag tag) {
+		this.readObjectivesFromNbt(tag.getList("Objectives", 10));
+		this.scoreboard.readNbt(tag.getList("PlayerScores", 10));
 		if (tag.contains("DisplaySlots", 10)) {
-			this.displaySlotsFromTag(tag.getCompound("DisplaySlots"));
+			this.readDisplaySlotsFromNbt(tag.getCompound("DisplaySlots"));
 		}
 
 		if (tag.contains("Teams", 9)) {
-			this.teamsFromTag(tag.getList("Teams", 10));
+			this.readTeamsFromNbt(tag.getList("Teams", 10));
 		}
 
 		return this;
 	}
 
-	private void teamsFromTag(ListTag tag) {
+	private void readTeamsFromNbt(ListTag tag) {
 		for (int i = 0; i < tag.size(); i++) {
 			CompoundTag compoundTag = tag.getCompound(i);
 			String string = compoundTag.getString("Name");
@@ -89,17 +89,17 @@ public class ScoreboardState extends PersistentState {
 				}
 			}
 
-			this.teamPlayersFromTag(team, compoundTag.getList("Players", 8));
+			this.readTeamPlayersFromNbt(team, compoundTag.getList("Players", 8));
 		}
 	}
 
-	private void teamPlayersFromTag(Team team, ListTag tag) {
+	private void readTeamPlayersFromNbt(Team team, ListTag tag) {
 		for (int i = 0; i < tag.size(); i++) {
 			this.scoreboard.addPlayerToTeam(tag.getString(i), team);
 		}
 	}
 
-	private void displaySlotsFromTag(CompoundTag tag) {
+	private void readDisplaySlotsFromNbt(CompoundTag tag) {
 		for (int i = 0; i < 19; i++) {
 			if (tag.contains("slot_" + i, 8)) {
 				String string = tag.getString("slot_" + i);
@@ -109,7 +109,7 @@ public class ScoreboardState extends PersistentState {
 		}
 	}
 
-	private void objectivesFromTag(ListTag tag) {
+	private void readObjectivesFromNbt(ListTag tag) {
 		for (int i = 0; i < tag.size(); i++) {
 			CompoundTag compoundTag = tag.getCompound(i);
 			ScoreboardCriterion.getOrCreateStatCriterion(compoundTag.getString("CriteriaName")).ifPresent(scoreboardCriterion -> {
@@ -126,15 +126,15 @@ public class ScoreboardState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag toNbt(CompoundTag tag) {
-		tag.put("Objectives", this.objectivesToTag());
-		tag.put("PlayerScores", this.scoreboard.toTag());
-		tag.put("Teams", this.teamsToTag());
-		this.displaySlotsToTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		tag.put("Objectives", this.objectivesToNbt());
+		tag.put("PlayerScores", this.scoreboard.toNbt());
+		tag.put("Teams", this.teamsToNbt());
+		this.writeDisplaySlotsToNbt(tag);
 		return tag;
 	}
 
-	private ListTag teamsToTag() {
+	private ListTag teamsToNbt() {
 		ListTag listTag = new ListTag();
 
 		for (Team team : this.scoreboard.getTeams()) {
@@ -165,7 +165,7 @@ public class ScoreboardState extends PersistentState {
 		return listTag;
 	}
 
-	private void displaySlotsToTag(CompoundTag tag) {
+	private void writeDisplaySlotsToNbt(CompoundTag tag) {
 		CompoundTag compoundTag = new CompoundTag();
 		boolean bl = false;
 
@@ -182,7 +182,7 @@ public class ScoreboardState extends PersistentState {
 		}
 	}
 
-	private ListTag objectivesToTag() {
+	private ListTag objectivesToNbt() {
 		ListTag listTag = new ListTag();
 
 		for (ScoreboardObjective scoreboardObjective : this.scoreboard.getObjectives()) {

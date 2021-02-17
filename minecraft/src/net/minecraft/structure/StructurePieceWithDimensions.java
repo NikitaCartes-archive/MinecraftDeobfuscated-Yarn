@@ -36,7 +36,7 @@ public abstract class StructurePieceWithDimensions extends StructurePiece {
 	}
 
 	@Override
-	protected void toNbt(CompoundTag tag) {
+	protected void writeNbt(CompoundTag tag) {
 		tag.putInt("Width", this.width);
 		tag.putInt("Height", this.height);
 		tag.putInt("Depth", this.depth);

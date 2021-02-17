@@ -195,8 +195,8 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putString("Type", this.getMooshroomType().name);
 		if (this.stewEffect != null) {
 			tag.putByte("EffectId", (byte)StatusEffect.getRawId(this.stewEffect));
@@ -205,8 +205,8 @@ public class MooshroomEntity extends CowEntity implements Shearable {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setType(MooshroomEntity.Type.fromName(tag.getString("Type")));
 		if (tag.contains("EffectId", 1)) {
 			this.stewEffect = StatusEffect.byRawId(tag.getByte("EffectId"));

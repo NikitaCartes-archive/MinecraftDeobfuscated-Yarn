@@ -15,7 +15,7 @@ public class SpringFeature extends Feature<SpringFeatureConfig> {
 	public boolean generate(FeatureContext<SpringFeatureConfig> context) {
 		SpringFeatureConfig springFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.up()).getBlock())) {
 			return false;
 		} else if (springFeatureConfig.requiresBlockBelow

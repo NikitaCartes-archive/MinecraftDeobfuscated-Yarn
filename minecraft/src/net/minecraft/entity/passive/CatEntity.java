@@ -170,15 +170,15 @@ public class CatEntity extends TameableEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("CatType", this.getCatType());
 		tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setCatType(tag.getInt("CatType"));
 		if (tag.contains("CollarColor", 99)) {
 			this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));

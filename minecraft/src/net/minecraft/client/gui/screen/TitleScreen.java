@@ -41,7 +41,7 @@ import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
 public class TitleScreen extends Screen {
-	private static final Logger field_23775 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 	public static final CubeMapRenderer PANORAMA_CUBE_MAP = new CubeMapRenderer(new Identifier("textures/gui/title/background/panorama"));
 	private static final Identifier PANORAMA_OVERLAY = new Identifier("textures/gui/title/background/panorama_overlay.png");
 	private static final Identifier ACCESSIBILITY_ICON_TEXTURE = new Identifier("textures/gui/accessibility.png");
@@ -199,7 +199,7 @@ public class TitleScreen extends Screen {
 	}
 
 	private void initWidgetsDemo(int y, int spacingY) {
-		boolean bl = this.method_31129();
+		boolean bl = this.canReadDemoWorldData();
 		this.addButton(new ButtonWidget(this.width / 2 - 100, y, 200, 20, new TranslatableText("menu.playdemo"), buttonWidget -> {
 			if (bl) {
 				this.client.startIntegratedServer("Demo_World");
@@ -234,7 +234,7 @@ public class TitleScreen extends Screen {
 						}
 					} catch (IOException var16) {
 						SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-						field_23775.warn("Failed to access demo world", (Throwable)var16);
+						LOGGER.warn("Failed to access demo world", (Throwable)var16);
 					}
 				}
 			)
@@ -242,12 +242,12 @@ public class TitleScreen extends Screen {
 		this.buttonResetDemo.active = bl;
 	}
 
-	private boolean method_31129() {
+	private boolean canReadDemoWorldData() {
 		try (LevelStorage.Session session = this.client.getLevelStorage().createSession("Demo_World")) {
 			return session.getLevelSummary() != null;
 		} catch (IOException var15) {
 			SystemToast.addWorldAccessFailureToast(this.client, "Demo_World");
-			field_23775.warn("Failed to read demo world data", (Throwable)var15);
+			LOGGER.warn("Failed to read demo world data", (Throwable)var15);
 			return false;
 		}
 	}
@@ -366,7 +366,7 @@ public class TitleScreen extends Screen {
 				session.deleteSessionLock();
 			} catch (IOException var15) {
 				SystemToast.addWorldDeleteFailureToast(this.client, "Demo_World");
-				field_23775.warn("Failed to delete demo world", (Throwable)var15);
+				LOGGER.warn("Failed to delete demo world", (Throwable)var15);
 			}
 		}
 

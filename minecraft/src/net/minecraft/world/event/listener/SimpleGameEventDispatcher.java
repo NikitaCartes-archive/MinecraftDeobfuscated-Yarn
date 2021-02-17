@@ -24,9 +24,6 @@ public class SimpleGameEventDispatcher implements GameEventDispatcher {
 		this.world = world;
 	}
 
-	/**
-	 * Returns whether this dispatcher has no listeners.
-	 */
 	@Override
 	public boolean isEmpty() {
 		return this.listeners.isEmpty();

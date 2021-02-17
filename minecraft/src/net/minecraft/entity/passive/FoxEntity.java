@@ -370,8 +370,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		List<UUID> list = this.getTrustedUuids();
 		ListTag listTag = new ListTag();
 
@@ -389,8 +389,8 @@ public class FoxEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		ListTag listTag = tag.getList("Trusted", 11);
 
 		for (int i = 0; i < listTag.size(); i++) {

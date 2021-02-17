@@ -148,7 +148,7 @@ public final class ItemStack {
 		this.updateEmptyState();
 	}
 
-	public static ItemStack fromTag(CompoundTag tag) {
+	public static ItemStack fromNbt(CompoundTag tag) {
 		try {
 			return new ItemStack(tag);
 		} catch (RuntimeException var2) {
@@ -214,7 +214,7 @@ public final class ItemStack {
 		return this.getItem().finishUsing(this, world, user);
 	}
 
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag writeNbt(CompoundTag tag) {
 		Identifier identifier = Registry.ITEM.getId(this.getItem());
 		tag.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
 		tag.putByte("Count", (byte)this.count);
@@ -585,18 +585,18 @@ public final class ItemStack {
 		}
 
 		int i = this.getHideFlags();
-		if (isSectionHidden(i, ItemStack.TooltipSection.ADDITIONAL)) {
+		if (isSectionVisible(i, ItemStack.TooltipSection.ADDITIONAL)) {
 			this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);
 		}
 
 		if (this.hasTag()) {
-			if (isSectionHidden(i, ItemStack.TooltipSection.ENCHANTMENTS)) {
+			if (isSectionVisible(i, ItemStack.TooltipSection.ENCHANTMENTS)) {
 				appendEnchantments(list, this.getEnchantments());
 			}
 
 			if (this.tag.contains("display", 10)) {
 				CompoundTag compoundTag = this.tag.getCompound("display");
-				if (isSectionHidden(i, ItemStack.TooltipSection.DYE) && compoundTag.contains("color", 99)) {
+				if (isSectionVisible(i, ItemStack.TooltipSection.DYE) && compoundTag.contains("color", 99)) {
 					if (context.isAdvanced()) {
 						list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.GRAY));
 					} else {
@@ -623,7 +623,7 @@ public final class ItemStack {
 			}
 		}
 
-		if (isSectionHidden(i, ItemStack.TooltipSection.MODIFIERS)) {
+		if (isSectionVisible(i, ItemStack.TooltipSection.MODIFIERS)) {
 			for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
 				Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
 				if (!multimap.isEmpty()) {
@@ -693,11 +693,11 @@ public final class ItemStack {
 		}
 
 		if (this.hasTag()) {
-			if (isSectionHidden(i, ItemStack.TooltipSection.UNBREAKABLE) && this.tag.getBoolean("Unbreakable")) {
+			if (isSectionVisible(i, ItemStack.TooltipSection.UNBREAKABLE) && this.tag.getBoolean("Unbreakable")) {
 				list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
 			}
 
-			if (isSectionHidden(i, ItemStack.TooltipSection.CAN_DESTROY) && this.tag.contains("CanDestroy", 9)) {
+			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_DESTROY) && this.tag.contains("CanDestroy", 9)) {
 				ListTag listTag2 = this.tag.getList("CanDestroy", 8);
 				if (!listTag2.isEmpty()) {
 					list.add(LiteralText.EMPTY);
@@ -709,7 +709,7 @@ public final class ItemStack {
 				}
 			}
 
-			if (isSectionHidden(i, ItemStack.TooltipSection.CAN_PLACE) && this.tag.contains("CanPlaceOn", 9)) {
+			if (isSectionVisible(i, ItemStack.TooltipSection.CAN_PLACE) && this.tag.contains("CanPlaceOn", 9)) {
 				ListTag listTag2 = this.tag.getList("CanPlaceOn", 8);
 				if (!listTag2.isEmpty()) {
 					list.add(LiteralText.EMPTY);
@@ -736,8 +736,11 @@ public final class ItemStack {
 		return list;
 	}
 
+	/**
+	 * Determines whether the given tooltip section will be visible according to the given flags.
+	 */
 	@Environment(EnvType.CLIENT)
-	private static boolean isSectionHidden(int flags, ItemStack.TooltipSection tooltipSection) {
+	private static boolean isSectionVisible(int flags, ItemStack.TooltipSection tooltipSection) {
 		return (flags & tooltipSection.getFlag()) == 0;
 	}
 
@@ -856,7 +859,7 @@ public final class ItemStack {
 				if (!compoundTag.contains("Slot", 8) || compoundTag.getString("Slot").equals(slot.getName())) {
 					Optional<EntityAttribute> optional = Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")));
 					if (optional.isPresent()) {
-						EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromTag(compoundTag);
+						EntityAttributeModifier entityAttributeModifier = EntityAttributeModifier.fromNbt(compoundTag);
 						if (entityAttributeModifier != null
 							&& entityAttributeModifier.getId().getLeastSignificantBits() != 0L
 							&& entityAttributeModifier.getId().getMostSignificantBits() != 0L) {
@@ -879,7 +882,7 @@ public final class ItemStack {
 		}
 
 		ListTag listTag = this.tag.getList("AttributeModifiers", 10);
-		CompoundTag compoundTag = modifier.toTag();
+		CompoundTag compoundTag = modifier.toNbt();
 		compoundTag.putString("AttributeName", Registry.ATTRIBUTE.getId(attribute).toString());
 		if (slot != null) {
 			compoundTag.putString("Slot", slot.getName());
@@ -910,7 +913,7 @@ public final class ItemStack {
 			return true;
 		} else {
 			return first.getBlockEntity() != null && second.getBlockEntity() != null
-				? Objects.equals(first.getBlockEntity().toTag(new CompoundTag()), second.getBlockEntity().toTag(new CompoundTag()))
+				? Objects.equals(first.getBlockEntity().writeNbt(new CompoundTag()), second.getBlockEntity().writeNbt(new CompoundTag()))
 				: false;
 		}
 	}

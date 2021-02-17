@@ -98,15 +98,15 @@ public abstract class PassiveEntity extends PathAwareEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("Age", this.getBreedingAge());
 		tag.putInt("ForcedAge", this.forcedAge);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setBreedingAge(tag.getInt("Age"));
 		this.forcedAge = tag.getInt("ForcedAge");
 	}

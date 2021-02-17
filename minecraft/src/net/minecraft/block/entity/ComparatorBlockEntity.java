@@ -12,15 +12,15 @@ public class ComparatorBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putInt("OutputSignal", this.outputSignal);
 		return tag;
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.outputSignal = tag.getInt("OutputSignal");
 	}
 

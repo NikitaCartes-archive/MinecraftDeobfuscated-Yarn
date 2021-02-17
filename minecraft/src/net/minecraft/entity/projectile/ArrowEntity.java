@@ -130,8 +130,8 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		if (this.potion != Potions.EMPTY && this.potion != null) {
 			tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
 		}
@@ -144,7 +144,7 @@ public class ArrowEntity extends PersistentProjectileEntity {
 			ListTag listTag = new ListTag();
 
 			for (StatusEffectInstance statusEffectInstance : this.effects) {
-				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+				listTag.add(statusEffectInstance.writeNbt(new CompoundTag()));
 			}
 
 			tag.put("CustomPotionEffects", listTag);
@@ -152,8 +152,8 @@ public class ArrowEntity extends PersistentProjectileEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("Potion", 8)) {
 			this.potion = PotionUtil.getPotion(tag);
 		}

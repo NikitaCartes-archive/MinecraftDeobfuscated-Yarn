@@ -15,7 +15,7 @@ public class NetherForestVegetationFeature extends Feature<BlockPileFeatureConfi
 
 	@Override
 	public boolean generate(FeatureContext<BlockPileFeatureConfig> context) {
-		return generate(context.getWorld(), context.getRandom(), context.getPos(), context.getConfig(), 8, 4);
+		return generate(context.getWorld(), context.getRandom(), context.getOrigin(), context.getConfig(), 8, 4);
 	}
 
 	public static boolean generate(WorldAccess world, Random random, BlockPos pos, BlockPileFeatureConfig config, int i, int j) {

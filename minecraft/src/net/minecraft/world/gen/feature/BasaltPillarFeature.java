@@ -17,7 +17,7 @@ public class BasaltPillarFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		Random random = context.getRandom();
 		if (structureWorldAccess.isAir(blockPos) && !structureWorldAccess.isAir(blockPos.up())) {

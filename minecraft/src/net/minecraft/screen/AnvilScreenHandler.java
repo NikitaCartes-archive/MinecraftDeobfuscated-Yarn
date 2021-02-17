@@ -101,7 +101,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			j += itemStack.getRepairCost() + (itemStack3.isEmpty() ? 0 : itemStack3.getRepairCost());
 			this.repairItemUsage = 0;
 			if (!itemStack3.isEmpty()) {
-				boolean bl = itemStack3.isOf(Items.ENCHANTED_BOOK) && !EnchantedBookItem.getEnchantmentTag(itemStack3).isEmpty();
+				boolean bl = itemStack3.isOf(Items.ENCHANTED_BOOK) && !EnchantedBookItem.getEnchantmentNbt(itemStack3).isEmpty();
 				if (itemStack2.isDamageable() && itemStack2.getItem().canRepair(itemStack, itemStack3)) {
 					int l = Math.min(itemStack2.getDamage(), itemStack2.getMaxDamage() / 4);
 					if (l <= 0) {

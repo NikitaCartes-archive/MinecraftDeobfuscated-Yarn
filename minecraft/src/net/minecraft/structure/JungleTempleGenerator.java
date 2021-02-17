@@ -43,8 +43,8 @@ public class JungleTempleGenerator extends StructurePieceWithDimensions {
 	}
 
 	@Override
-	protected void toNbt(CompoundTag tag) {
-		super.toNbt(tag);
+	protected void writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putBoolean("placedMainChest", this.placedMainChest);
 		tag.putBoolean("placedHiddenChest", this.placedHiddenChest);
 		tag.putBoolean("placedTrap1", this.placedTrap1);

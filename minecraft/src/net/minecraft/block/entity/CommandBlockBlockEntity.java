@@ -67,8 +67,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		this.commandExecutor.serialize(tag);
 		tag.putBoolean("powered", this.isPowered());
 		tag.putBoolean("conditionMet", this.isConditionMet());
@@ -77,8 +77,8 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.commandExecutor.deserialize(tag);
 		this.powered = tag.getBoolean("powered");
 		this.conditionMet = tag.getBoolean("conditionMet");
@@ -90,7 +90,7 @@ public class CommandBlockBlockEntity extends BlockEntity {
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
 		if (this.needsUpdatePacket()) {
 			this.setNeedsUpdatePacket(false);
-			CompoundTag compoundTag = this.toTag(new CompoundTag());
+			CompoundTag compoundTag = this.writeNbt(new CompoundTag());
 			return new BlockEntityUpdateS2CPacket(this.pos, 2, compoundTag);
 		} else {
 			return null;

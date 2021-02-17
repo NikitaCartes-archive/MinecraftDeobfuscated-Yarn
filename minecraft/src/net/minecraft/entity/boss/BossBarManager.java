@@ -35,20 +35,20 @@ public class BossBarManager {
 		return this.commandBossBars.values();
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 
 		for (CommandBossBar commandBossBar : this.commandBossBars.values()) {
-			compoundTag.put(commandBossBar.getId().toString(), commandBossBar.toTag());
+			compoundTag.put(commandBossBar.getId().toString(), commandBossBar.toNbt());
 		}
 
 		return compoundTag;
 	}
 
-	public void fromTag(CompoundTag tag) {
+	public void readNbt(CompoundTag tag) {
 		for (String string : tag.getKeys()) {
 			Identifier identifier = new Identifier(string);
-			this.commandBossBars.put(identifier, CommandBossBar.fromTag(tag.getCompound(string), identifier));
+			this.commandBossBars.put(identifier, CommandBossBar.fromNbt(tag.getCompound(string), identifier));
 		}
 	}
 

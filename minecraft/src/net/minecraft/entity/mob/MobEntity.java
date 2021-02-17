@@ -336,8 +336,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("CanPickUpLoot", this.canPickUpLoot());
 		tag.putBoolean("PersistenceRequired", this.persistent);
 		ListTag listTag = new ListTag();
@@ -345,7 +345,7 @@ public abstract class MobEntity extends LivingEntity {
 		for (ItemStack itemStack : this.armorItems) {
 			CompoundTag compoundTag = new CompoundTag();
 			if (!itemStack.isEmpty()) {
-				itemStack.toTag(compoundTag);
+				itemStack.writeNbt(compoundTag);
 			}
 
 			listTag.add(compoundTag);
@@ -357,7 +357,7 @@ public abstract class MobEntity extends LivingEntity {
 		for (ItemStack itemStack2 : this.handItems) {
 			CompoundTag compoundTag2 = new CompoundTag();
 			if (!itemStack2.isEmpty()) {
-				itemStack2.toTag(compoundTag2);
+				itemStack2.writeNbt(compoundTag2);
 			}
 
 			listTag2.add(compoundTag2);
@@ -409,8 +409,8 @@ public abstract class MobEntity extends LivingEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("CanPickUpLoot", 1)) {
 			this.setCanPickUpLoot(tag.getBoolean("CanPickUpLoot"));
 		}
@@ -420,7 +420,7 @@ public abstract class MobEntity extends LivingEntity {
 			ListTag listTag = tag.getList("ArmorItems", 10);
 
 			for (int i = 0; i < this.armorItems.size(); i++) {
-				this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+				this.armorItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
 			}
 		}
 
@@ -428,7 +428,7 @@ public abstract class MobEntity extends LivingEntity {
 			ListTag listTag = tag.getList("HandItems", 10);
 
 			for (int i = 0; i < this.handItems.size(); i++) {
-				this.handItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+				this.handItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
 			}
 		}
 

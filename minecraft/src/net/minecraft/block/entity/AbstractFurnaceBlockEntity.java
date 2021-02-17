@@ -196,10 +196,10 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-		Inventories.fromTag(tag, this.inventory);
+		Inventories.readNbt(tag, this.inventory);
 		this.burnTime = tag.getShort("BurnTime");
 		this.cookTime = tag.getShort("CookTime");
 		this.cookTimeTotal = tag.getShort("CookTimeTotal");
@@ -212,12 +212,12 @@ public abstract class AbstractFurnaceBlockEntity extends LockableContainerBlockE
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putShort("BurnTime", (short)this.burnTime);
 		tag.putShort("CookTime", (short)this.cookTime);
 		tag.putShort("CookTimeTotal", (short)this.cookTimeTotal);
-		Inventories.toTag(tag, this.inventory);
+		Inventories.writeNbt(tag, this.inventory);
 		CompoundTag compoundTag = new CompoundTag();
 		this.recipesUsed.forEach((identifier, integer) -> compoundTag.putInt(identifier.toString(), integer));
 		tag.put("RecipesUsed", compoundTag);

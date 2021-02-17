@@ -18,7 +18,7 @@ public class EndPortalFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 
 		for (BlockPos blockPos2 : BlockPos.iterate(

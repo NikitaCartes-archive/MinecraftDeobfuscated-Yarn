@@ -16,7 +16,7 @@ public class BiomeArray implements BiomeAccess.Storage {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final int HORIZONTAL_SECTION_COUNT = MathHelper.log2DeBruijn(16) - 2;
 	private static final int HORIZONTAL_BIT_MASK = (1 << HORIZONTAL_SECTION_COUNT) - 1;
-	public static final int DEFAULT_LENGTH = 1 << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT + DimensionType.field_28133 - 2;
+	public static final int DEFAULT_LENGTH = 1 << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT + DimensionType.SIZE_BITS_Y - 2;
 	private final IndexedIterable<Biome> field_25831;
 	private final Biome[] data;
 	private final int field_28126;

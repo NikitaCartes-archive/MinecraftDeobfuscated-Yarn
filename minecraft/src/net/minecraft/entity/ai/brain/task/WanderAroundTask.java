@@ -3,7 +3,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
 import javax.annotation.Nullable;
-import net.minecraft.class_5532;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -130,7 +130,7 @@ public class WanderAroundTask extends Task<MobEntity> {
 				return true;
 			}
 
-			Vec3d vec3d = class_5532.method_31512((PathAwareEntity)entity, 10, 7, Vec3d.ofBottomCenter(blockPos), (float) (Math.PI / 2));
+			Vec3d vec3d = NoPenaltyTargeting.find((PathAwareEntity)entity, 10, 7, Vec3d.ofBottomCenter(blockPos), (float) (Math.PI / 2));
 			if (vec3d != null) {
 				this.path = entity.getNavigation().findPathTo(vec3d.x, vec3d.y, vec3d.z, 0);
 				return this.path != null;

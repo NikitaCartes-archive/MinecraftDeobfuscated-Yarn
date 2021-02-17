@@ -474,7 +474,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		return CompletableFuture.supplyAsync(() -> {
 			try {
 				this.world.getProfiler().visit("chunkLoad");
-				CompoundTag compoundTag = this.getUpdatedChunkTag(pos);
+				CompoundTag compoundTag = this.getUpdatedChunkNbt(pos);
 				if (compoundTag != null) {
 					boolean bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
 					if (bl) {
@@ -527,6 +527,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 							this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
 							return completableFuturex;
 						} catch (Exception var9) {
+							var9.getStackTrace();
 							CrashReport crashReport = CrashReport.create(var9, "Exception generating new chunk");
 							CrashReportSection crashReportSection = crashReport.addElement("Chunk to be generated");
 							crashReportSection.add("Location", String.format("%d,%d", chunkPos.x, chunkPos.z));
@@ -665,7 +666,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		} else {
 			CompoundTag compoundTag;
 			try {
-				compoundTag = this.getUpdatedChunkTag(chunkPos);
+				compoundTag = this.getUpdatedChunkNbt(chunkPos);
 				if (compoundTag == null) {
 					this.method_27054(chunkPos);
 					return false;
@@ -783,9 +784,9 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	@Nullable
-	private CompoundTag getUpdatedChunkTag(ChunkPos pos) throws IOException {
+	private CompoundTag getUpdatedChunkNbt(ChunkPos pos) throws IOException {
 		CompoundTag compoundTag = this.getNbt(pos);
-		return compoundTag == null ? null : this.updateChunkTag(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
+		return compoundTag == null ? null : this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
 	}
 
 	boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {

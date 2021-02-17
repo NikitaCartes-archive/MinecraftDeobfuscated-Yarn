@@ -120,7 +120,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		}
 	}
 
-	public CompoundTag toTag(int chunkX, int chunkZ) {
+	public CompoundTag toNbt(int chunkX, int chunkZ) {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.hasChildren()) {
 			compoundTag.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
@@ -131,7 +131,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 			ListTag listTag = new ListTag();
 			synchronized (this.children) {
 				for (StructurePiece structurePiece : this.children) {
-					listTag.add(structurePiece.getTag());
+					listTag.add(structurePiece.toNbt());
 				}
 			}
 

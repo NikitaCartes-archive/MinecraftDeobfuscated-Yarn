@@ -170,7 +170,7 @@ public class UpgradeData {
 		return this.sidesToUpgrade.isEmpty();
 	}
 
-	public CompoundTag toTag() {
+	public CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 		CompoundTag compoundTag2 = new CompoundTag();
 

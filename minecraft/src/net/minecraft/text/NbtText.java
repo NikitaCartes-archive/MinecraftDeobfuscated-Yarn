@@ -127,7 +127,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 				if (serverWorld.canSetBlock(blockPos)) {
 					BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
 					if (blockEntity != null) {
-						return Stream.of(blockEntity.toTag(new CompoundTag()));
+						return Stream.of(blockEntity.writeNbt(new CompoundTag()));
 					}
 				}
 			}
@@ -192,7 +192,7 @@ public abstract class NbtText extends BaseText implements ParsableText {
 		protected Stream<CompoundTag> toNbt(ServerCommandSource source) throws CommandSyntaxException {
 			if (this.selector != null) {
 				List<? extends Entity> list = this.selector.getEntities(source);
-				return list.stream().map(NbtPredicate::entityToTag);
+				return list.stream().map(NbtPredicate::entityToNbt);
 			} else {
 				return Stream.empty();
 			}

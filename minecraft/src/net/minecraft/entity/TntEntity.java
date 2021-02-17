@@ -39,8 +39,8 @@ public class TntEntity extends Entity {
 	}
 
 	@Override
-	protected Entity.class_5799 method_33570() {
-		return Entity.class_5799.NONE;
+	protected Entity.MoveEffect getMoveEffect() {
+		return Entity.MoveEffect.NONE;
 	}
 
 	@Override
@@ -81,12 +81,12 @@ public class TntEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToNbt(CompoundTag tag) {
 		tag.putShort("Fuse", (short)this.getFuse());
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
+	protected void readCustomDataFromNbt(CompoundTag tag) {
 		this.setFuse(tag.getShort("Fuse"));
 	}
 

@@ -10,6 +10,7 @@ import net.minecraft.fluid.Fluids;
 import net.minecraft.item.DyeItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.property.BooleanProperty;
@@ -97,7 +98,7 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 						}
 					}
 
-					return signBlockEntity.onActivate(player) ? ActionResult.SUCCESS : ActionResult.PASS;
+					return signBlockEntity.onActivate((ServerPlayerEntity)player) ? ActionResult.SUCCESS : ActionResult.PASS;
 				} else {
 					return ActionResult.PASS;
 				}

@@ -342,11 +342,11 @@ public class EntitySelectorOptions {
 				boolean bl = entitySelectorReader.readNegationCharacter();
 				CompoundTag compoundTag = new StringNbtReader(entitySelectorReader.getReader()).parseCompoundTag();
 				entitySelectorReader.setPredicate(entity -> {
-					CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
+					CompoundTag compoundTag2 = entity.writeNbt(new CompoundTag());
 					if (entity instanceof ServerPlayerEntity) {
 						ItemStack itemStack = ((ServerPlayerEntity)entity).getInventory().getMainHandStack();
 						if (!itemStack.isEmpty()) {
-							compoundTag2.put("SelectedItem", itemStack.toTag(new CompoundTag()));
+							compoundTag2.put("SelectedItem", itemStack.writeNbt(new CompoundTag()));
 						}
 					}
 

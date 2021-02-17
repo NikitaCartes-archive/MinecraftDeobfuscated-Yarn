@@ -114,8 +114,8 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	}
 
 	@Override
-	public void renderForeground(MatrixStack matrices, int mouseY, int i, float f) {
-		this.nameField.render(matrices, mouseY, i, f);
+	public void renderForeground(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+		this.nameField.render(matrices, mouseX, mouseY, delta);
 	}
 
 	@Override

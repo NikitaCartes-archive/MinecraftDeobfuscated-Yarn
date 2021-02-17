@@ -29,6 +29,7 @@ import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.StructureWeightType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 public abstract class StructurePiece {
@@ -69,18 +70,22 @@ public abstract class StructurePiece {
 		this.setOrientation(i == -1 ? null : Direction.fromHorizontal(i));
 	}
 
-	public final CompoundTag getTag() {
+	public final CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
 		compoundTag.put("BB", this.boundingBox.toNbt());
 		Direction direction = this.getFacing();
 		compoundTag.putInt("O", direction == null ? -1 : direction.getHorizontal());
 		compoundTag.putInt("GD", this.chainLength);
-		this.toNbt(compoundTag);
+		this.writeNbt(compoundTag);
 		return compoundTag;
 	}
 
-	protected abstract void toNbt(CompoundTag tag);
+	protected abstract void writeNbt(CompoundTag tag);
+
+	public StructureWeightType method_33882() {
+		return StructureWeightType.BEARD;
+	}
 
 	public void fillOpenings(StructurePiece start, List<StructurePiece> pieces, Random random) {
 	}
@@ -362,12 +367,21 @@ public abstract class StructurePiece {
 		int i = this.applyXTransform(x, z);
 		int j = this.applyYTransform(y);
 		int k = this.applyZTransform(x, z);
-		if (box.contains(new BlockPos(i, j, k))) {
-			while ((world.isAir(new BlockPos(i, j, k)) || world.getBlockState(new BlockPos(i, j, k)).getMaterial().isLiquid()) && j > world.getBottomY() + 1) {
-				world.setBlockState(new BlockPos(i, j, k), state, 2);
-				j--;
+		BlockPos.Mutable mutable = new BlockPos.Mutable(i, j, k);
+		if (box.contains(mutable)) {
+			while (this.method_33881(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
+				world.setBlockState(mutable, state, 2);
+				mutable.move(Direction.DOWN);
 			}
 		}
+	}
+
+	protected boolean method_33881(BlockState blockState) {
+		return blockState.isAir()
+			|| blockState.getMaterial().isLiquid()
+			|| blockState.isOf(Blocks.GLOW_LICHEN)
+			|| blockState.isOf(Blocks.SEAGRASS)
+			|| blockState.isOf(Blocks.TALL_SEAGRASS);
 	}
 
 	protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {

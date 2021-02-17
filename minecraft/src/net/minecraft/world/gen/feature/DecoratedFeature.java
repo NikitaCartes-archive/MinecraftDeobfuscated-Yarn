@@ -22,7 +22,7 @@ public class DecoratedFeature extends Feature<DecoratedFeatureConfig> {
 		DecoratedFeatureConfig decoratedFeatureConfig = context.getConfig();
 		ChunkGenerator chunkGenerator = context.getGenerator();
 		Random random = context.getRandom();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		ConfiguredFeature<?, ?> configuredFeature = (ConfiguredFeature<?, ?>)decoratedFeatureConfig.feature.get();
 		decoratedFeatureConfig.decorator.getPositions(new DecoratorContext(structureWorldAccess, chunkGenerator), random, blockPos).forEach(blockPosx -> {
 			if (configuredFeature.generate(structureWorldAccess, chunkGenerator, random, blockPosx)) {

@@ -90,7 +90,12 @@ public class StructureWeightSampler {
 			int i = Math.max(0, Math.max(blockBox.minX - x, x - blockBox.maxX));
 			int j = y - (blockBox.minY + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
 			int k = Math.max(0, Math.max(blockBox.minZ - z, z - blockBox.maxZ));
-			d += getStructureWeight(i, j, k) * 0.8;
+			StructureWeightType structureWeightType = structurePiece.method_33882();
+			if (structureWeightType == StructureWeightType.BURY) {
+				d += getMagnitudeWeight(i, j, k);
+			} else if (structureWeightType == StructureWeightType.BEARD) {
+				d += getStructureWeight(i, j, k) * 0.8;
+			}
 		}
 
 		this.pieceIterator.back(this.pieces.size());
@@ -105,6 +110,11 @@ public class StructureWeightSampler {
 
 		this.junctionIterator.back(this.junctions.size());
 		return d;
+	}
+
+	private static double getMagnitudeWeight(int x, int y, int z) {
+		double d = MathHelper.magnitude(x, (double)y / 2.0, z);
+		return MathHelper.clampedLerpFromProgress(d, 0.0, 6.0, 1.0, 0.0);
 	}
 
 	/**

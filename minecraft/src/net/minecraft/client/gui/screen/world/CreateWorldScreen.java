@@ -77,7 +77,7 @@ public class CreateWorldScreen extends Screen {
 	public boolean hardcore;
 	protected DataPackSettings dataPackSettings;
 	@Nullable
-	private Path field_25477;
+	private Path dataPackTempDir;
 	@Nullable
 	private ResourcePackManager packManager;
 	private boolean moreOptionsOpen;
@@ -98,7 +98,7 @@ public class CreateWorldScreen extends Screen {
 		@Nullable Screen parent,
 		LevelInfo levelInfo,
 		GeneratorOptions generatorOptions,
-		@Nullable Path path,
+		@Nullable Path dataPackTempDir,
 		DataPackSettings dataPackSettings,
 		DynamicRegistryManager.Impl registryManager
 	) {
@@ -120,7 +120,7 @@ public class CreateWorldScreen extends Screen {
 			this.currentMode = CreateWorldScreen.Mode.CREATIVE;
 		}
 
-		this.field_25477 = path;
+		this.dataPackTempDir = dataPackTempDir;
 	}
 
 	public static CreateWorldScreen create(@Nullable Screen parent) {
@@ -222,7 +222,7 @@ public class CreateWorldScreen extends Screen {
 			new ButtonWidget(i, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.createLevel())
 		);
 		this.createLevelButton.active = !this.levelName.isEmpty();
-		this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.method_30297()));
+		this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCloseScreen()));
 		this.setMoreOptionsOpen();
 		this.setInitialFocus(this.levelNameField);
 		this.tweakDefaultsTo(this.currentMode);
@@ -264,8 +264,8 @@ public class CreateWorldScreen extends Screen {
 
 	private void createLevel() {
 		this.client.method_29970(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
-		if (this.method_29696()) {
-			this.method_30298();
+		if (this.copyTempDirDataPacks()) {
+			this.clearTempResources();
 			GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptions(this.hardcore);
 			LevelInfo levelInfo;
 			if (generatorOptions.isDebugWorld()) {
@@ -373,21 +373,21 @@ public class CreateWorldScreen extends Screen {
 		if (this.moreOptionsOpen) {
 			this.setMoreOptionsOpen(false);
 		} else {
-			this.method_30297();
+			this.onCloseScreen();
 		}
 	}
 
-	public void method_30297() {
+	public void onCloseScreen() {
 		this.client.openScreen(this.parent);
-		this.method_30298();
+		this.clearTempResources();
 	}
 
-	private void method_30298() {
+	private void clearTempResources() {
 		if (this.packManager != null) {
 			this.packManager.close();
 		}
 
-		this.method_29695();
+		this.clearDataPackTempDir();
 	}
 
 	@Override
@@ -425,18 +425,18 @@ public class CreateWorldScreen extends Screen {
 	}
 
 	@Nullable
-	protected Path method_29693() {
-		if (this.field_25477 == null) {
+	protected Path getDataPackTempDir() {
+		if (this.dataPackTempDir == null) {
 			try {
-				this.field_25477 = Files.createTempDirectory("mcworld-");
+				this.dataPackTempDir = Files.createTempDirectory("mcworld-");
 			} catch (IOException var2) {
 				LOGGER.warn("Failed to create temporary dir", (Throwable)var2);
 				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
-				this.method_30297();
+				this.onCloseScreen();
 			}
 		}
 
-		return this.field_25477;
+		return this.dataPackTempDir;
 	}
 
 	private void method_29694() {
@@ -501,10 +501,10 @@ public class CreateWorldScreen extends Screen {
 		}
 	}
 
-	private void method_29695() {
-		if (this.field_25477 != null) {
+	private void clearDataPackTempDir() {
+		if (this.dataPackTempDir != null) {
 			try {
-				Stream<Path> stream = Files.walk(this.field_25477);
+				Stream<Path> stream = Files.walk(this.dataPackTempDir);
 				Throwable var2 = null;
 
 				try {
@@ -532,32 +532,32 @@ public class CreateWorldScreen extends Screen {
 					}
 				}
 			} catch (IOException var14) {
-				LOGGER.warn("Failed to list temporary dir {}", this.field_25477);
+				LOGGER.warn("Failed to list temporary dir {}", this.dataPackTempDir);
 			}
 
-			this.field_25477 = null;
+			this.dataPackTempDir = null;
 		}
 	}
 
-	private static void method_29687(Path path, Path path2, Path path3) {
+	private static void copyDataPack(Path srcFolder, Path destFolder, Path dataPackFile) {
 		try {
-			Util.relativeCopy(path, path2, path3);
+			Util.relativeCopy(srcFolder, destFolder, dataPackFile);
 		} catch (IOException var4) {
-			LOGGER.warn("Failed to copy datapack file from {} to {}", path3, path2);
+			LOGGER.warn("Failed to copy datapack file from {} to {}", dataPackFile, destFolder);
 			throw new CreateWorldScreen.WorldCreationException(var4);
 		}
 	}
 
-	private boolean method_29696() {
-		if (this.field_25477 != null) {
+	private boolean copyTempDirDataPacks() {
+		if (this.dataPackTempDir != null) {
 			try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.saveDirectoryName)) {
-				Stream<Path> stream = Files.walk(this.field_25477);
+				Stream<Path> stream = Files.walk(this.dataPackTempDir);
 				Throwable var4 = null;
 
 				try {
 					Path path = session.getDirectory(WorldSavePath.DATAPACKS);
 					Files.createDirectories(path);
-					stream.filter(pathx -> !pathx.equals(this.field_25477)).forEach(path2 -> method_29687(this.field_25477, path, path2));
+					stream.filter(pathx -> !pathx.equals(this.dataPackTempDir)).forEach(path2 -> copyDataPack(this.dataPackTempDir, path, path2));
 				} catch (Throwable var29) {
 					var4 = var29;
 					throw var29;
@@ -577,7 +577,7 @@ public class CreateWorldScreen extends Screen {
 			} catch (CreateWorldScreen.WorldCreationException | IOException var33) {
 				LOGGER.warn("Failed to copy datapacks to world {}", this.saveDirectoryName, var33);
 				SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
-				this.method_30297();
+				this.onCloseScreen();
 				return false;
 			}
 		}
@@ -607,7 +607,7 @@ public class CreateWorldScreen extends Screen {
 						mutableObject.setValue(path3);
 					}
 
-					method_29687(path, path3, path2);
+					copyDataPack(path, path3, path2);
 				});
 			} catch (Throwable var14) {
 				var4 = var14;
@@ -636,7 +636,7 @@ public class CreateWorldScreen extends Screen {
 
 	@Nullable
 	private Pair<File, ResourcePackManager> method_30296() {
-		Path path = this.method_29693();
+		Path path = this.getDataPackTempDir();
 		if (path != null) {
 			File file = path.toFile();
 			if (this.packManager == null) {

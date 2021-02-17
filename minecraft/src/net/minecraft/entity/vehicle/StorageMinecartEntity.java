@@ -137,27 +137,27 @@ public abstract class StorageMinecartEntity extends AbstractMinecartEntity imple
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	protected void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		if (this.lootTableId != null) {
 			tag.putString("LootTable", this.lootTableId.toString());
 			if (this.lootSeed != 0L) {
 				tag.putLong("LootTableSeed", this.lootSeed);
 			}
 		} else {
-			Inventories.toTag(tag, this.inventory);
+			Inventories.writeNbt(tag, this.inventory);
 		}
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	protected void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (tag.contains("LootTable", 8)) {
 			this.lootTableId = new Identifier(tag.getString("LootTable"));
 			this.lootSeed = tag.getLong("LootTableSeed");
 		} else {
-			Inventories.fromTag(tag, this.inventory);
+			Inventories.readNbt(tag, this.inventory);
 		}
 	}
 

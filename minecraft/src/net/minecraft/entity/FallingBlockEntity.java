@@ -80,8 +80,8 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	protected Entity.class_5799 method_33570() {
-		return Entity.class_5799.NONE;
+	protected Entity.MoveEffect getMoveEffect() {
+		return Entity.MoveEffect.NONE;
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class FallingBlockEntity extends Entity {
 									if (this.blockEntityData != null && this.block.hasBlockEntity()) {
 										BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
 										if (blockEntity != null) {
-											CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+											CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
 
 											for (String string : this.blockEntityData.getKeys()) {
 												Tag tag = this.blockEntityData.get(string);
@@ -164,7 +164,7 @@ public class FallingBlockEntity extends Entity {
 												}
 											}
 
-											blockEntity.fromTag(compoundTag);
+											blockEntity.readNbt(compoundTag);
 											blockEntity.markDirty();
 										}
 									}
@@ -238,7 +238,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToNbt(CompoundTag tag) {
 		tag.put("BlockState", NbtHelper.fromBlockState(this.block));
 		tag.putInt("Time", this.timeFalling);
 		tag.putBoolean("DropItem", this.dropItem);
@@ -251,7 +251,7 @@ public class FallingBlockEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
+	protected void readCustomDataFromNbt(CompoundTag tag) {
 		this.block = NbtHelper.toBlockState(tag.getCompound("BlockState"));
 		this.timeFalling = tag.getInt("Time");
 		if (tag.contains("HurtEntities", 99)) {

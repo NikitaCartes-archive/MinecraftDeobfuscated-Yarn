@@ -45,8 +45,8 @@ public class ConfiguredFeature<FC extends FeatureConfig, F extends Feature<FC>> 
 		return new RandomFeatureEntry(this, chance);
 	}
 
-	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos pos) {
-		return this.feature.generate(new FeatureContext<>(world, chunkGenerator, random, pos, this.config));
+	public boolean generate(StructureWorldAccess world, ChunkGenerator chunkGenerator, Random random, BlockPos origin) {
+		return this.feature.generate(new FeatureContext<>(world, chunkGenerator, random, origin, this.config));
 	}
 
 	public Stream<ConfiguredFeature<?, ?>> method_30648() {

@@ -312,10 +312,10 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		if (!this.getHeldItemStack().isEmpty()) {
-			tag.put("Item", this.getHeldItemStack().toTag(new CompoundTag()));
+			tag.put("Item", this.getHeldItemStack().writeNbt(new CompoundTag()));
 			tag.putByte("ItemRotation", (byte)this.getRotation());
 			tag.putFloat("ItemDropChance", this.itemDropChance);
 		}
@@ -326,11 +326,11 @@ public class ItemFrameEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		CompoundTag compoundTag = tag.getCompound("Item");
 		if (compoundTag != null && !compoundTag.isEmpty()) {
-			ItemStack itemStack = ItemStack.fromTag(compoundTag);
+			ItemStack itemStack = ItemStack.fromNbt(compoundTag);
 			if (itemStack.isEmpty()) {
 				ITEM_FRAME_LOGGER.warn("Unable to load item from: {}", compoundTag);
 			}

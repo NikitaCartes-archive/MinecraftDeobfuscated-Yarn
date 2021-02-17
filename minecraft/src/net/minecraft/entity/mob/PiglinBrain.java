@@ -7,12 +7,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import net.minecraft.class_5534;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.Durations;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.brain.Activity;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -753,7 +753,7 @@ public class PiglinBrain {
 	}
 
 	private static Vec3d findGround(PiglinEntity piglin) {
-		Vec3d vec3d = class_5534.method_31527(piglin, 4, 2);
+		Vec3d vec3d = FuzzyTargeting.find(piglin, 4, 2);
 		return vec3d == null ? piglin.getPos() : vec3d;
 	}
 

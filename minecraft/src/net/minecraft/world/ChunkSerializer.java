@@ -202,7 +202,7 @@ public class ChunkSerializer {
 
 			for (int o = 0; o < listTag4.size(); o++) {
 				CompoundTag compoundTag5 = listTag4.getCompound(o);
-				chunk.addPendingBlockEntityTag(compoundTag5);
+				chunk.addPendingBlockEntityNbt(compoundTag5);
 			}
 
 			ListTag listTag5 = compoundTag.getList("Lights", 9);
@@ -239,7 +239,7 @@ public class ChunkSerializer {
 		compoundTag2.putString("Status", chunk.getStatus().getId());
 		UpgradeData upgradeData = chunk.getUpgradeData();
 		if (!upgradeData.isDone()) {
-			compoundTag2.put("UpgradeData", upgradeData.toTag());
+			compoundTag2.put("UpgradeData", upgradeData.toNbt());
 		}
 
 		ChunkSection[] chunkSections = chunk.getSectionArray();
@@ -287,7 +287,7 @@ public class ChunkSerializer {
 		ListTag listTag2 = new ListTag();
 
 		for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
-			CompoundTag compoundTag4 = chunk.getPackedBlockEntityTag(blockPos);
+			CompoundTag compoundTag4 = chunk.getPackedBlockEntityNbt(blockPos);
 			if (compoundTag4 != null) {
 				listTag2.add(compoundTag4);
 			}
@@ -318,7 +318,7 @@ public class ChunkSerializer {
 		} else if (tickScheduler instanceof SimpleTickScheduler) {
 			compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt());
 		} else {
-			compoundTag2.put("TileTicks", world.getBlockTickScheduler().toTag(chunkPos));
+			compoundTag2.put("TileTicks", world.getBlockTickScheduler().toNbt(chunkPos));
 		}
 
 		TickScheduler<Fluid> tickScheduler2 = chunk.getFluidTickScheduler();
@@ -327,7 +327,7 @@ public class ChunkSerializer {
 		} else if (tickScheduler2 instanceof SimpleTickScheduler) {
 			compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt());
 		} else {
-			compoundTag2.put("LiquidTicks", world.getFluidTickScheduler().toTag(chunkPos));
+			compoundTag2.put("LiquidTicks", world.getFluidTickScheduler().toNbt(chunkPos));
 		}
 
 		compoundTag2.put("PostProcessing", toNbt(chunk.getPostProcessingLists()));
@@ -369,10 +369,10 @@ public class ChunkSerializer {
 			CompoundTag compoundTag = listTag.getCompound(i);
 			boolean bl = compoundTag.getBoolean("keepPacked");
 			if (bl) {
-				chunk.addPendingBlockEntityTag(compoundTag);
+				chunk.addPendingBlockEntityNbt(compoundTag);
 			} else {
 				BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
-				BlockEntity blockEntity = BlockEntity.createFromTag(blockPos, chunk.getBlockState(blockPos), compoundTag);
+				BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, chunk.getBlockState(blockPos), compoundTag);
 				if (blockEntity != null) {
 					chunk.setBlockEntity(blockEntity);
 				}
@@ -387,7 +387,7 @@ public class ChunkSerializer {
 		CompoundTag compoundTag2 = new CompoundTag();
 
 		for (Entry<StructureFeature<?>, StructureStart<?>> entry : structureStarts.entrySet()) {
-			compoundTag2.put(((StructureFeature)entry.getKey()).getName(), ((StructureStart)entry.getValue()).toTag(pos.x, pos.z));
+			compoundTag2.put(((StructureFeature)entry.getKey()).getName(), ((StructureStart)entry.getValue()).toNbt(pos.x, pos.z));
 		}
 
 		compoundTag.put("Starts", compoundTag2);

@@ -5,9 +5,12 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -245,15 +248,28 @@ public class BookScreen extends Screen {
 		}
 	}
 
-	public static List<String> readPages(CompoundTag tag) {
-		ListTag listTag = tag.getList("pages", 8).copy();
+	private static List<String> readPages(CompoundTag tag) {
 		Builder<String> builder = ImmutableList.builder();
+		method_33888(tag, builder::add);
+		return builder.build();
+	}
 
-		for (int i = 0; i < listTag.size(); i++) {
-			builder.add(listTag.getString(i));
+	public static void method_33888(CompoundTag compoundTag, Consumer<String> consumer) {
+		ListTag listTag = compoundTag.getList("pages", 8).copy();
+		IntFunction<String> intFunction;
+		if (MinecraftClient.getInstance().method_33883() && compoundTag.contains("filtered_pages", 10)) {
+			CompoundTag compoundTag2 = compoundTag.getCompound("filtered_pages");
+			intFunction = ix -> {
+				String string = String.valueOf(ix);
+				return compoundTag2.contains(string) ? compoundTag2.getString(string) : listTag.getString(ix);
+			};
+		} else {
+			intFunction = listTag::getString;
 		}
 
-		return builder.build();
+		for (int i = 0; i < listTag.size(); i++) {
+			consumer.accept(intFunction.apply(i));
+		}
 	}
 
 	@Environment(EnvType.CLIENT)

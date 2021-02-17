@@ -111,7 +111,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	}
 
 	private void reject(int slot) {
-		if (slot < this.pendingInvitationSelectionList.getItemCount()) {
+		if (slot < this.pendingInvitationSelectionList.getEntryCount()) {
 			(new Thread("Realms-reject-invitation") {
 					public void run() {
 						try {
@@ -132,7 +132,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 	}
 
 	private void accept(int slot) {
-		if (slot < this.pendingInvitationSelectionList.getItemCount()) {
+		if (slot < this.pendingInvitationSelectionList.getEntryCount()) {
 			(new Thread("Realms-accept-invitation") {
 					public void run() {
 						try {
@@ -162,7 +162,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
 		}
 
-		if (this.pendingInvitationSelectionList.getItemCount() == 0 && this.loaded) {
+		if (this.pendingInvitationSelectionList.getEntryCount() == 0 && this.loaded) {
 			drawCenteredText(matrices, this.textRenderer, NO_PENDING_TEXT, this.width / 2, this.height / 2 - 20, 16777215);
 		}
 
@@ -200,7 +200,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 
 		@Override
 		public int getMaxPosition() {
-			return this.getItemCount() * 36;
+			return this.getEntryCount() * 36;
 		}
 
 		@Override

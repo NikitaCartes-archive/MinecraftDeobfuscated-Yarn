@@ -12,7 +12,7 @@ public class FillLayerFeature extends Feature<FillLayerFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<FillLayerFeatureConfig> context) {
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		FillLayerFeatureConfig fillLayerFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();

@@ -30,7 +30,7 @@ public class EnchantedBookItem extends Item {
 		return false;
 	}
 
-	public static ListTag getEnchantmentTag(ItemStack stack) {
+	public static ListTag getEnchantmentNbt(ItemStack stack) {
 		CompoundTag compoundTag = stack.getTag();
 		return compoundTag != null ? compoundTag.getList("StoredEnchantments", 10) : new ListTag();
 	}
@@ -39,11 +39,11 @@ public class EnchantedBookItem extends Item {
 	@Override
 	public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
 		super.appendTooltip(stack, world, tooltip, context);
-		ItemStack.appendEnchantments(tooltip, getEnchantmentTag(stack));
+		ItemStack.appendEnchantments(tooltip, getEnchantmentNbt(stack));
 	}
 
 	public static void addEnchantment(ItemStack stack, EnchantmentLevelEntry entry) {
-		ListTag listTag = getEnchantmentTag(stack);
+		ListTag listTag = getEnchantmentNbt(stack);
 		boolean bl = true;
 		Identifier identifier = Registry.ENCHANTMENT.getId(entry.enchantment);
 

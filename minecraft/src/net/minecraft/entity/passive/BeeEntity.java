@@ -12,9 +12,6 @@ import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5530;
-import net.minecraft.class_5531;
-import net.minecraft.class_5533;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -33,7 +30,10 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.Flutterer;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.AboveGroundTargeting;
 import net.minecraft.entity.ai.Durations;
+import net.minecraft.entity.ai.NoPenaltySolidTargeting;
+import net.minecraft.entity.ai.NoWaterTargeting;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.control.LookControl;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
@@ -156,8 +156,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		if (this.hasHive()) {
 			tag.put("HivePos", NbtHelper.fromBlockPos(this.getHivePos()));
 		}
@@ -171,11 +171,11 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 		tag.putInt("TicksSincePollination", this.ticksSincePollination);
 		tag.putInt("CannotEnterHiveTicks", this.cannotEnterHiveTicks);
 		tag.putInt("CropsGrownSincePollination", this.cropsGrownSincePollination);
-		this.angerToTag(tag);
+		this.writeAngerToNbt(tag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
+	public void readCustomDataFromNbt(CompoundTag tag) {
 		this.hivePos = null;
 		if (tag.contains("HivePos")) {
 			this.hivePos = NbtHelper.toBlockPos(tag.getCompound("HivePos"));
@@ -186,13 +186,13 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			this.flowerPos = NbtHelper.toBlockPos(tag.getCompound("FlowerPos"));
 		}
 
-		super.readCustomDataFromTag(tag);
+		super.readCustomDataFromNbt(tag);
 		this.setHasNectar(tag.getBoolean("HasNectar"));
 		this.setHasStung(tag.getBoolean("HasStung"));
 		this.ticksSincePollination = tag.getInt("TicksSincePollination");
 		this.cannotEnterHiveTicks = tag.getInt("CannotEnterHiveTicks");
 		this.cropsGrownSincePollination = tag.getInt("CropsGrownSincePollination");
-		this.angerFromTag(this.world, tag);
+		this.readAngerFromNbt(this.world, tag);
 	}
 
 	@Override
@@ -259,7 +259,7 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			l = m / 2;
 		}
 
-		Vec3d vec3d2 = class_5531.method_31508(this, k, l, i, vec3d, (float) (Math.PI / 10));
+		Vec3d vec3d2 = NoWaterTargeting.find(this, k, l, i, vec3d, (float) (Math.PI / 10));
 		if (vec3d2 != null) {
 			this.navigation.setRangeMultiplier(0.5F);
 			this.navigation.startMovingTo(vec3d2.x, vec3d2.y, vec3d2.z, 1.0);
@@ -711,8 +711,8 @@ public class BeeEntity extends AnimalEntity implements Angerable, Flutterer {
 			}
 
 			int i = 8;
-			Vec3d vec3d3 = class_5533.method_31524(BeeEntity.this, 8, 7, vec3d2.x, vec3d2.z, (float) (Math.PI / 2), 3, 1);
-			return vec3d3 != null ? vec3d3 : class_5530.method_31504(BeeEntity.this, 8, 4, -2, vec3d2.x, vec3d2.z, (float) (Math.PI / 2));
+			Vec3d vec3d3 = AboveGroundTargeting.find(BeeEntity.this, 8, 7, vec3d2.x, vec3d2.z, (float) (Math.PI / 2), 3, 1);
+			return vec3d3 != null ? vec3d3 : NoPenaltySolidTargeting.find(BeeEntity.this, 8, 4, -2, vec3d2.x, vec3d2.z, (float) (Math.PI / 2));
 		}
 	}
 

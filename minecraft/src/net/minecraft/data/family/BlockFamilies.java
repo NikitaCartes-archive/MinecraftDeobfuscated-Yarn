@@ -288,6 +288,28 @@ public class BlockFamilies {
 		.chsieled(Blocks.CHISELED_STONE_BRICKS)
 		.noGenerateRecipes()
 		.build();
+	public static final BlockFamily field_28946 = register(Blocks.GRIMSTONE)
+		.slab(Blocks.GRIMSTONE_SLAB)
+		.stairs(Blocks.GRIMSTONE_STAIRS)
+		.chsieled(Blocks.CHISELED_GRIMSTONE)
+		.polished(Blocks.POLISHED_GRIMSTONE)
+		.wall(Blocks.GRIMSTONE_WALL)
+		.build();
+	public static final BlockFamily field_28947 = register(Blocks.POLISHED_GRIMSTONE)
+		.slab(Blocks.POLISHED_GRIMSTONE_SLAB)
+		.stairs(Blocks.POLISHED_GRIMSTONE_STAIRS)
+		.wall(Blocks.POLISHED_GRIMSTONE_WALL)
+		.build();
+	public static final BlockFamily field_28948 = register(Blocks.GRIMSTONE_TILES)
+		.slab(Blocks.GRIMSTONE_TILE_SLAB)
+		.stairs(Blocks.GRIMSTONE_TILE_STAIRS)
+		.wall(Blocks.GRIMSTONE_TILE_WALL)
+		.build();
+	public static final BlockFamily field_28949 = register(Blocks.GRIMSTONE_BRICKS)
+		.slab(Blocks.GRIMSTONE_BRICK_SLAB)
+		.stairs(Blocks.GRIMSTONE_BRICK_STAIRS)
+		.wall(Blocks.GRIMSTONE_BRICK_WALL)
+		.build();
 
 	private static BlockFamily.Builder register(Block baseBlock) {
 		BlockFamily.Builder builder = new BlockFamily.Builder(baseBlock);

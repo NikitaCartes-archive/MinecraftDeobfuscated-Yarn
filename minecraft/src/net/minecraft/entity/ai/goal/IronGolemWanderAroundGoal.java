@@ -3,8 +3,8 @@ package net.minecraft.entity.ai.goal;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
-import net.minecraft.class_5534;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -45,7 +45,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 
 	@Nullable
 	private Vec3d method_27925() {
-		return class_5534.method_31527(this.mob, 10, 7);
+		return FuzzyTargeting.find(this.mob, 10, 7);
 	}
 
 	@Nullable
@@ -57,7 +57,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 		} else {
 			VillagerEntity villagerEntity = (VillagerEntity)list.get(this.mob.world.random.nextInt(list.size()));
 			Vec3d vec3d = villagerEntity.getPos();
-			return class_5534.method_31528(this.mob, 10, 7, vec3d);
+			return FuzzyTargeting.findTo(this.mob, 10, 7, vec3d);
 		}
 	}
 
@@ -68,7 +68,7 @@ public class IronGolemWanderAroundGoal extends WanderAroundGoal {
 			return null;
 		} else {
 			BlockPos blockPos = this.method_27923(chunkSectionPos);
-			return blockPos == null ? null : class_5534.method_31528(this.mob, 10, 7, Vec3d.ofBottomCenter(blockPos));
+			return blockPos == null ? null : FuzzyTargeting.findTo(this.mob, 10, 7, Vec3d.ofBottomCenter(blockPos));
 		}
 	}
 

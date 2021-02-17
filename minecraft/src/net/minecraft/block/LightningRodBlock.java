@@ -46,25 +46,25 @@ public class LightningRodBlock extends RodBlock {
 
 	public void setPowered(BlockState state, World world, BlockPos pos) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(true)), 3);
-		this.method_33627(state, world, pos);
+		this.updateNeighbors(state, world, pos);
 		world.getBlockTickScheduler().schedule(pos, this, 8);
 	}
 
-	private void method_33627(BlockState blockState, World world, BlockPos blockPos) {
-		world.updateNeighborsAlways(blockPos.offset(((Direction)blockState.get(FACING)).getOpposite()), this);
+	private void updateNeighbors(BlockState state, World world, BlockPos pos) {
+		world.updateNeighborsAlways(pos.offset(((Direction)state.get(FACING)).getOpposite()), this);
 	}
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
 		world.setBlockState(pos, state.with(POWERED, Boolean.valueOf(false)), 3);
-		this.method_33627(state, world, pos);
+		this.updateNeighbors(state, world, pos);
 	}
 
 	@Override
 	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
 		if (!moved && !state.isOf(newState.getBlock())) {
 			if ((Boolean)state.get(POWERED)) {
-				this.method_33627(state, world, pos);
+				this.updateNeighbors(state, world, pos);
 			}
 
 			super.onStateReplaced(state, world, pos, newState, moved);

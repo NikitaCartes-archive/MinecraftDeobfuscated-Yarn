@@ -300,7 +300,11 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.DIORITE_STAIRS,
 				Blocks.BLACKSTONE_STAIRS,
 				Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS,
-				Blocks.POLISHED_BLACKSTONE_STAIRS
+				Blocks.POLISHED_BLACKSTONE_STAIRS,
+				Blocks.GRIMSTONE_STAIRS,
+				Blocks.POLISHED_GRIMSTONE_STAIRS,
+				Blocks.GRIMSTONE_TILE_STAIRS,
+				Blocks.GRIMSTONE_BRICK_STAIRS
 			);
 		this.getOrCreateTagBuilder(BlockTags.SLABS)
 			.addTag(BlockTags.WOODEN_SLABS)
@@ -336,7 +340,11 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.CUT_RED_SANDSTONE_SLAB,
 				Blocks.BLACKSTONE_SLAB,
 				Blocks.POLISHED_BLACKSTONE_BRICK_SLAB,
-				Blocks.POLISHED_BLACKSTONE_SLAB
+				Blocks.POLISHED_BLACKSTONE_SLAB,
+				Blocks.GRIMSTONE_SLAB,
+				Blocks.POLISHED_GRIMSTONE_SLAB,
+				Blocks.GRIMSTONE_TILE_SLAB,
+				Blocks.GRIMSTONE_BRICK_SLAB
 			);
 		this.getOrCreateTagBuilder(BlockTags.WALLS)
 			.add(
@@ -356,7 +364,11 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 				Blocks.DIORITE_WALL,
 				Blocks.BLACKSTONE_WALL,
 				Blocks.POLISHED_BLACKSTONE_BRICK_WALL,
-				Blocks.POLISHED_BLACKSTONE_WALL
+				Blocks.POLISHED_BLACKSTONE_WALL,
+				Blocks.GRIMSTONE_WALL,
+				Blocks.POLISHED_GRIMSTONE_WALL,
+				Blocks.GRIMSTONE_TILE_WALL,
+				Blocks.GRIMSTONE_BRICK_WALL
 			);
 		this.getOrCreateTagBuilder(BlockTags.CORAL_PLANTS).add(Blocks.TUBE_CORAL, Blocks.BRAIN_CORAL, Blocks.BUBBLE_CORAL, Blocks.FIRE_CORAL, Blocks.HORN_CORAL);
 		this.getOrCreateTagBuilder(BlockTags.CORALS)
@@ -602,7 +614,12 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.NETHERRACK, Blocks.MAGMA_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_NETHER).addTag(BlockTags.INFINIBURN_OVERWORLD);
 		this.getOrCreateTagBuilder(BlockTags.INFINIBURN_END).addTag(BlockTags.INFINIBURN_OVERWORLD).add(Blocks.BEDROCK);
-		this.getOrCreateTagBuilder(BlockTags.BASE_STONE_OVERWORLD).add(Blocks.STONE).add(Blocks.GRANITE).add(Blocks.DIORITE).add(Blocks.ANDESITE);
+		this.getOrCreateTagBuilder(BlockTags.BASE_STONE_OVERWORLD)
+			.add(Blocks.STONE)
+			.add(Blocks.GRANITE)
+			.add(Blocks.DIORITE)
+			.add(Blocks.ANDESITE)
+			.add(Blocks.GRIMSTONE);
 		this.getOrCreateTagBuilder(BlockTags.BASE_STONE_NETHER).add(Blocks.NETHERRACK).add(Blocks.BASALT).add(Blocks.BLACKSTONE);
 		this.getOrCreateTagBuilder(BlockTags.CANDLES)
 			.add(
