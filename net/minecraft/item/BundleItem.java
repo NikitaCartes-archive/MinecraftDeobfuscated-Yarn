@@ -120,16 +120,16 @@ extends Item {
         Optional<CompoundTag> optional = BundleItem.method_32344(stack, listTag);
         if (optional.isPresent()) {
             CompoundTag compoundTag2 = optional.get();
-            ItemStack itemStack = ItemStack.fromTag(compoundTag2);
+            ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
             itemStack.increment(k);
-            itemStack.toTag(compoundTag2);
+            itemStack.writeNbt(compoundTag2);
             listTag.remove(compoundTag2);
             listTag.add(0, compoundTag2);
         } else {
             ItemStack itemStack2 = stack.copy();
             itemStack2.setCount(k);
             CompoundTag compoundTag3 = new CompoundTag();
-            itemStack2.toTag(compoundTag3);
+            itemStack2.writeNbt(compoundTag3);
             listTag.add(0, compoundTag3);
         }
         return k;
@@ -139,7 +139,7 @@ extends Item {
         if (itemStack.isOf(Items.BUNDLE)) {
             return Optional.empty();
         }
-        return listTag.stream().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).filter(compoundTag -> ItemStack.canCombine(ItemStack.fromTag(compoundTag), itemStack)).findFirst();
+        return listTag.stream().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).filter(compoundTag -> ItemStack.canCombine(ItemStack.fromNbt(compoundTag), itemStack)).findFirst();
     }
 
     private static int getItemOccupancy(ItemStack stack) {
@@ -164,7 +164,7 @@ extends Item {
         }
         boolean i = false;
         CompoundTag compoundTag2 = listTag.getCompound(0);
-        ItemStack itemStack = ItemStack.fromTag(compoundTag2);
+        ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
         listTag.remove(0);
         if (listTag.isEmpty()) {
             stack.removeSubTag("Items");
@@ -181,7 +181,7 @@ extends Item {
             ListTag listTag = compoundTag.getList("Items", 10);
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag2 = listTag.getCompound(i);
-                ItemStack itemStack = ItemStack.fromTag(compoundTag2);
+                ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
                 player.dropItem(itemStack, true);
             }
         }
@@ -195,7 +195,7 @@ extends Item {
             return Stream.empty();
         }
         ListTag listTag = compoundTag.getList("Items", 10);
-        return listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromTag);
+        return listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromNbt);
     }
 
     @Override

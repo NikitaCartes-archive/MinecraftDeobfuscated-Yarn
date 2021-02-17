@@ -56,7 +56,7 @@ public class BlockPredicate {
         if (!this.state.test(blockState)) {
             return false;
         }
-        return this.nbt == NbtPredicate.ANY || (blockEntity = world.getBlockEntity(pos)) != null && this.nbt.test(blockEntity.toTag(new CompoundTag()));
+        return this.nbt == NbtPredicate.ANY || (blockEntity = world.getBlockEntity(pos)) != null && this.nbt.test(blockEntity.writeNbt(new CompoundTag()));
     }
 
     public static BlockPredicate fromJson(@Nullable JsonElement json) {

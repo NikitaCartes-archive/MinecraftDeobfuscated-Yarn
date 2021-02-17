@@ -27,15 +27,18 @@ extends Feature<DefaultFeatureConfig> {
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         BlockPos.Mutable mutable = blockPos.mutableCopy();
+        BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         block0: for (int i = 64; i < 384; ++i) {
             mutable.set(blockPos);
             mutable.move(random.nextInt(4) - random.nextInt(4), 0, random.nextInt(4) - random.nextInt(4));
             mutable.setY(i);
             if (!structureWorldAccess.isAir(mutable)) continue;
             for (Direction direction : DIRECTIONS) {
-                if (direction == Direction.DOWN || !VineBlock.shouldConnectTo(structureWorldAccess, mutable, direction)) continue;
+                if (direction == Direction.DOWN) continue;
+                mutable2.set(mutable, direction);
+                if (!VineBlock.shouldConnectTo(structureWorldAccess, mutable2, direction)) continue;
                 structureWorldAccess.setBlockState(mutable, (BlockState)Blocks.VINE.getDefaultState().with(VineBlock.getFacingProperty(direction), true), 2);
                 continue block0;
             }

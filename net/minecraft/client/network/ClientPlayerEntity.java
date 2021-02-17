@@ -545,7 +545,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void openEditSignScreen(SignBlockEntity sign) {
-        this.client.openScreen(new SignEditScreen(sign));
+        this.client.openScreen(new SignEditScreen(sign, this.client.method_33883()));
     }
 
     @Override

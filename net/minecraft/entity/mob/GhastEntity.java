@@ -133,14 +133,14 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("ExplosionPower", this.fireballStrength);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("ExplosionPower", 99)) {
             this.fireballStrength = tag.getInt("ExplosionPower");
         }

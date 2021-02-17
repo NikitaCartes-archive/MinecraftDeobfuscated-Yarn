@@ -5,9 +5,11 @@ package net.minecraft.world.gen.decorator;
 
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.UniformIntDistribution;
+import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DepthAverageDecoratorConfig;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
 
@@ -53,12 +55,12 @@ public interface Decoratable<R> {
         return this.repeat(UniformIntDistribution.of(0, maxCount));
     }
 
-    /**
-     * Applies the {@code minecraft:range} decorator, which returns the input
-     * position with a y value from zero to {@code max}.
-     */
-    default public R rangeOf(int i, int j) {
-        return this.decorate(Decorator.RANGE.configure(new RangeDecoratorConfig(i, i, j)));
+    default public R rangeOf(YOffset bottom, YOffset top) {
+        return this.range(new RangeDecoratorConfig(bottom, top));
+    }
+
+    default public R range(RangeDecoratorConfig config) {
+        return this.decorate(Decorator.RANGE.configure(config));
     }
 
     /**
@@ -67,6 +69,10 @@ public interface Decoratable<R> {
      */
     default public R spreadHorizontally() {
         return this.decorate(Decorator.SQUARE.configure(NopeDecoratorConfig.INSTANCE));
+    }
+
+    default public R averageDepth(YOffset baseline, int spread) {
+        return this.decorate(Decorator.DEPTH_AVERAGE.configure(new DepthAverageDecoratorConfig(baseline, spread)));
     }
 }
 

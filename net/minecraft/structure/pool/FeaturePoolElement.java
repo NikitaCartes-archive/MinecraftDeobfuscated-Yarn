@@ -43,10 +43,10 @@ extends StructurePoolElement {
     protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> feature, StructurePool.Projection projection) {
         super(projection);
         this.feature = feature;
-        this.tag = this.createDefaultJigsawTag();
+        this.tag = this.createDefaultJigsawNbt();
     }
 
-    private CompoundTag createDefaultJigsawTag() {
+    private CompoundTag createDefaultJigsawNbt() {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putString("name", "minecraft:bottom");
         compoundTag.putString("final_state", "minecraft:air");

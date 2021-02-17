@@ -379,16 +379,16 @@ implements Chunk {
     }
 
     @Override
-    public void addPendingBlockEntityTag(CompoundTag tag) {
+    public void addPendingBlockEntityNbt(CompoundTag tag) {
         this.pendingBlockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
     }
 
     @Override
     @Nullable
-    public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+    public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
         BlockEntity blockEntity = this.getBlockEntity(pos);
         if (blockEntity != null && !blockEntity.isRemoved()) {
-            CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+            CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
             compoundTag.putBoolean("keepPacked", false);
             return compoundTag;
         }
@@ -520,7 +520,7 @@ implements Chunk {
     }
 
     @Override
-    public CompoundTag getBlockEntityTag(BlockPos pos) {
+    public CompoundTag getBlockEntityNbt(BlockPos pos) {
         return this.pendingBlockEntityTags.get(pos);
     }
 
@@ -634,7 +634,7 @@ implements Chunk {
                 LOGGER.warn("Tried to load a DUMMY block entity @ {} but found not block entity block {} at location", (Object)pos, (Object)blockState);
             }
         } else {
-            blockEntity = BlockEntity.createFromTag(pos, blockState, tag);
+            blockEntity = BlockEntity.createFromNbt(pos, blockState, tag);
         }
         if (blockEntity != null) {
             blockEntity.setWorld(this.world);

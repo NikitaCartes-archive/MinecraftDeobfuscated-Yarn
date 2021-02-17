@@ -33,6 +33,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.StructureWeightType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
@@ -186,8 +187,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putBoolean("Mob", this.spawnerPlaced);
         }
 
@@ -317,8 +318,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putBoolean("leftLow", this.lowerLeftExists);
             tag.putBoolean("leftHigh", this.upperLeftExists);
             tag.putBoolean("rightLow", this.lowerRightExists);
@@ -410,8 +411,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putBoolean("Tall", this.tall);
         }
 
@@ -594,8 +595,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putInt("Type", this.roomType);
         }
 
@@ -866,8 +867,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putBoolean("Chest", this.chestGenerated);
         }
 
@@ -926,8 +927,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putBoolean("Left", this.leftExitExists);
             tag.putBoolean("Right", this.rightExitExists);
         }
@@ -1018,8 +1019,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putBoolean("Source", this.isStructureStart);
         }
 
@@ -1082,8 +1083,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putInt("Steps", this.length);
         }
 
@@ -1143,7 +1144,12 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
+        public StructureWeightType method_33882() {
+            return StructureWeightType.BURY;
+        }
+
+        @Override
+        protected void writeNbt(CompoundTag tag) {
             tag.putString("EntryDoor", this.entryDoor.name());
         }
 

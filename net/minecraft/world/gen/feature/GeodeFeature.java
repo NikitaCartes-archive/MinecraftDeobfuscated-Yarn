@@ -43,7 +43,7 @@ extends Feature<GeodeFeatureConfig> {
         int m;
         GeodeFeatureConfig geodeFeatureConfig = context.getConfig();
         Random random = context.getRandom();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         int i = geodeFeatureConfig.minGenOffset;
         int j = geodeFeatureConfig.maxGenOffset;

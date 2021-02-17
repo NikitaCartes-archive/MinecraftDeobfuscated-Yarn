@@ -19,7 +19,7 @@ extends Feature<EmeraldOreFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<EmeraldOreFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         EmeraldOreFeatureConfig emeraldOreFeatureConfig = context.getConfig();
         if (structureWorldAccess.getBlockState(blockPos).isOf(emeraldOreFeatureConfig.target.getBlock())) {
             structureWorldAccess.setBlockState(blockPos, emeraldOreFeatureConfig.state, 2);

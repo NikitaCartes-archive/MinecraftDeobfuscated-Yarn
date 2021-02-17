@@ -32,10 +32,16 @@ import org.jetbrains.annotations.Nullable;
 
 public class SignBlockEntity
 extends BlockEntity {
+    private static final String[] field_28905 = new String[]{"Text1", "Text2", "Text3", "Text4"};
+    private static final String[] field_28906 = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
     private final Text[] text = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
+    private final Text[] field_28907 = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
     private boolean editable = true;
     private PlayerEntity editor;
-    private final OrderedText[] textBeingEdited = new OrderedText[4];
+    @Nullable
+    private OrderedText[] textBeingEdited;
+    @Environment(value=EnvType.CLIENT)
+    private boolean field_28908;
     private DyeColor textColor = DyeColor.BLACK;
 
     public SignBlockEntity(BlockPos pos, BlockState state) {
@@ -43,35 +49,45 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         for (int i = 0; i < 4; ++i) {
-            String string = Text.Serializer.toJson(this.text[i]);
-            tag.putString("Text" + (i + 1), string);
+            Text text = this.text[i];
+            String string = Text.Serializer.toJson(text);
+            tag.putString(field_28905[i], string);
+            Text text2 = this.field_28907[i];
+            if (text2.equals(text)) continue;
+            tag.putString(field_28906[i], Text.Serializer.toJson(text2));
         }
         tag.putString("Color", this.textColor.getName());
         return tag;
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void readNbt(CompoundTag tag) {
         this.editable = false;
-        super.fromTag(tag);
+        super.readNbt(tag);
         this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
         for (int i = 0; i < 4; ++i) {
-            String string = tag.getString("Text" + (i + 1));
-            Text text = this.method_33384(string);
-            if (this.world instanceof ServerWorld) {
-                try {
-                    this.text[i] = Texts.parse(this.getCommandSource(null), text, null, 0);
-                } catch (CommandSyntaxException commandSyntaxException) {
-                    this.text[i] = text;
-                }
-            } else {
-                this.text[i] = text;
-            }
-            this.textBeingEdited[i] = null;
+            Text text;
+            String string = tag.getString(field_28905[i]);
+            this.text[i] = text = this.method_33828(string);
+            String string2 = field_28906[i];
+            this.field_28907[i] = tag.contains(string2, 8) ? this.method_33828(tag.getString(string2)) : text;
         }
+        this.textBeingEdited = null;
+    }
+
+    private Text method_33828(String string) {
+        Text text = this.method_33384(string);
+        if (this.world instanceof ServerWorld) {
+            try {
+                return Texts.parse(this.getCommandSource(null), text, null, 0);
+            } catch (CommandSyntaxException commandSyntaxException) {
+                // empty catch block
+            }
+        }
+        return text;
     }
 
     private Text method_33384(String string) {
@@ -87,33 +103,45 @@ extends BlockEntity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Text getTextOnRow(int row) {
-        return this.text[row];
+    public Text getTextOnRow(int row, boolean bl) {
+        return this.method_33830(bl)[row];
     }
 
     public void setTextOnRow(int row, Text text) {
-        this.text[row] = text;
-        this.textBeingEdited[row] = null;
+        this.method_33827(row, text, text);
     }
 
-    @Nullable
+    public void method_33827(int i, Text text, Text text2) {
+        this.text[i] = text;
+        this.field_28907[i] = text2;
+        this.textBeingEdited = null;
+    }
+
     @Environment(value=EnvType.CLIENT)
-    public OrderedText getTextBeingEditedOnRow(int row, Function<Text, OrderedText> function) {
-        if (this.textBeingEdited[row] == null && this.text[row] != null) {
-            this.textBeingEdited[row] = function.apply(this.text[row]);
+    public OrderedText[] method_33829(boolean bl, Function<Text, OrderedText> function) {
+        if (this.textBeingEdited == null || this.field_28908 != bl) {
+            this.field_28908 = bl;
+            this.textBeingEdited = new OrderedText[4];
+            for (int i = 0; i < 4; ++i) {
+                this.textBeingEdited[i] = function.apply(this.getTextOnRow(i, bl));
+            }
         }
-        return this.textBeingEdited[row];
+        return this.textBeingEdited;
+    }
+
+    private Text[] method_33830(boolean bl) {
+        return bl ? this.field_28907 : this.text;
     }
 
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 9, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 9, this.toInitialChunkDataNbt());
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
+    public CompoundTag toInitialChunkDataNbt() {
+        return this.writeNbt(new CompoundTag());
     }
 
     @Override
@@ -141,13 +169,12 @@ extends BlockEntity {
         return this.editor;
     }
 
-    public boolean onActivate(PlayerEntity player) {
-        for (Text text : this.text) {
-            ClickEvent clickEvent;
-            Style style;
-            Style style2 = style = text == null ? null : text.getStyle();
-            if (style == null || style.getClickEvent() == null || (clickEvent = style.getClickEvent()).getAction() != ClickEvent.Action.RUN_COMMAND) continue;
-            player.getServer().getCommandManager().execute(this.getCommandSource((ServerPlayerEntity)player), clickEvent.getValue());
+    public boolean onActivate(ServerPlayerEntity serverPlayerEntity) {
+        for (Text text : this.method_33830(serverPlayerEntity.method_33793())) {
+            Style style = text.getStyle();
+            ClickEvent clickEvent = style.getClickEvent();
+            if (clickEvent == null || clickEvent.getAction() != ClickEvent.Action.RUN_COMMAND) continue;
+            serverPlayerEntity.getServer().getCommandManager().execute(this.getCommandSource(serverPlayerEntity), clickEvent.getValue());
         }
         return true;
     }

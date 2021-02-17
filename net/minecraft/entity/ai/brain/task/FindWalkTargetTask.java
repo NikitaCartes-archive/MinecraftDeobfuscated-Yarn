@@ -5,8 +5,8 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.class_5532;
-import net.minecraft.class_5534;
+import net.minecraft.entity.ai.FuzzyTargeting;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -52,12 +52,12 @@ extends Task<PathAwareEntity> {
     }
 
     private void updateWalkTarget(PathAwareEntity entity, ChunkSectionPos pos) {
-        Optional<Vec3d> optional = Optional.ofNullable(class_5532.method_31512(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.ofBottomCenter(pos.getCenterPos()), 1.5707963705062866));
+        Optional<Vec3d> optional = Optional.ofNullable(NoPenaltyTargeting.find(entity, this.maxHorizontalDistance, this.maxVerticalDistance, Vec3d.ofBottomCenter(pos.getCenterPos()), 1.5707963705062866));
         entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.walkSpeed, 0)));
     }
 
     private void updateWalkTarget(PathAwareEntity entity) {
-        Optional<Vec3d> optional = Optional.ofNullable(class_5534.method_31527(entity, this.maxHorizontalDistance, this.maxVerticalDistance));
+        Optional<Vec3d> optional = Optional.ofNullable(FuzzyTargeting.find(entity, this.maxHorizontalDistance, this.maxVerticalDistance));
         entity.getBrain().remember(MemoryModuleType.WALK_TARGET, optional.map(vec3d -> new WalkTarget((Vec3d)vec3d, this.walkSpeed, 0)));
     }
 }

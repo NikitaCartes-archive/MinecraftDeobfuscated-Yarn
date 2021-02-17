@@ -21,12 +21,12 @@ implements Packet<ClientPlayPacketListener> {
     private float pitch;
     private Set<Flag> flags;
     private int teleportId;
-    private boolean field_28805;
+    private boolean shouldDismount;
 
     public PlayerPositionLookS2CPacket() {
     }
 
-    public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<Flag> flags, int teleportId, boolean bl) {
+    public PlayerPositionLookS2CPacket(double x, double y, double z, float yaw, float pitch, Set<Flag> flags, int teleportId, boolean shouldDismount) {
         this.x = x;
         this.y = y;
         this.z = z;
@@ -34,7 +34,7 @@ implements Packet<ClientPlayPacketListener> {
         this.pitch = pitch;
         this.flags = flags;
         this.teleportId = teleportId;
-        this.field_28805 = bl;
+        this.shouldDismount = shouldDismount;
     }
 
     @Override
@@ -46,7 +46,7 @@ implements Packet<ClientPlayPacketListener> {
         this.pitch = buf.readFloat();
         this.flags = Flag.getFlags(buf.readUnsignedByte());
         this.teleportId = buf.readVarInt();
-        this.field_28805 = buf.readBoolean();
+        this.shouldDismount = buf.readBoolean();
     }
 
     @Override
@@ -58,7 +58,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeFloat(this.pitch);
         buf.writeByte(Flag.getBitfield(this.flags));
         buf.writeVarInt(this.teleportId);
-        buf.writeBoolean(this.field_28805);
+        buf.writeBoolean(this.shouldDismount);
     }
 
     @Override
@@ -97,8 +97,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_33718() {
-        return this.field_28805;
+    public boolean shouldDismount() {
+        return this.shouldDismount;
     }
 
     @Environment(value=EnvType.CLIENT)

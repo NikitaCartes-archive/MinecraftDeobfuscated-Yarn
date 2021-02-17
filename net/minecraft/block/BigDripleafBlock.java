@@ -195,9 +195,9 @@ Waterloggable {
         }
     }
 
-    private static void playTiltSound(World world, BlockPos blockPos, SoundEvent soundEvent) {
+    private static void playTiltSound(World world, BlockPos pos, SoundEvent soundEvent) {
         float f = MathHelper.nextBetween(world.random, 0.8f, 1.2f);
-        world.playSound(null, blockPos, soundEvent, SoundCategory.BLOCKS, 1.0f, f);
+        world.playSound(null, pos, soundEvent, SoundCategory.BLOCKS, 1.0f, f);
     }
 
     private static boolean isEntityAbove(BlockPos pos, Entity entity) {
@@ -215,15 +215,15 @@ Waterloggable {
         }
     }
 
-    private static void resetTilt(BlockState blockState, World world, BlockPos blockPos) {
-        BigDripleafBlock.changeTilt(blockState, world, blockPos, Tilt.NONE);
-        BigDripleafBlock.playTiltSound(world, blockPos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
+    private static void resetTilt(BlockState state, World world, BlockPos pos) {
+        BigDripleafBlock.changeTilt(state, world, pos, Tilt.NONE);
+        BigDripleafBlock.playTiltSound(world, pos, SoundEvents.BLOCK_BIG_DRIPLEAF_TILT_UP);
     }
 
-    private static void changeTilt(BlockState blockState, World world, BlockPos blockPos, Tilt tilt) {
-        world.setBlockState(blockPos, (BlockState)blockState.with(TILT, tilt), 2);
+    private static void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt) {
+        world.setBlockState(pos, (BlockState)state.with(TILT, tilt), 2);
         if (tilt.isStable()) {
-            world.emitGameEvent(GameEvent.BLOCK_CHANGE, blockPos);
+            world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos);
         }
     }
 

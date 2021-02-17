@@ -29,7 +29,7 @@ extends Feature<HugeFungusFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<HugeFungusFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         Random random = context.getRandom();
         ChunkGenerator chunkGenerator = context.getGenerator();
         HugeFungusFeatureConfig hugeFungusFeatureConfig = context.getConfig();

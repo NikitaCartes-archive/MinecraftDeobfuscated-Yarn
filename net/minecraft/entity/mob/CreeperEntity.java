@@ -110,8 +110,8 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         if (this.dataTracker.get(CHARGED).booleanValue()) {
             tag.putBoolean("powered", true);
         }
@@ -121,8 +121,8 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.dataTracker.set(CHARGED, tag.getBoolean("powered"));
         if (tag.contains("Fuse", 99)) {
             this.fuseTime = tag.getShort("Fuse");

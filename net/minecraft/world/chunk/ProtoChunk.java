@@ -394,7 +394,7 @@ implements Chunk {
     }
 
     @Override
-    public void addPendingBlockEntityTag(CompoundTag tag) {
+    public void addPendingBlockEntityNbt(CompoundTag tag) {
         this.blockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
     }
 
@@ -403,16 +403,16 @@ implements Chunk {
     }
 
     @Override
-    public CompoundTag getBlockEntityTag(BlockPos pos) {
+    public CompoundTag getBlockEntityNbt(BlockPos pos) {
         return this.blockEntityTags.get(pos);
     }
 
     @Override
     @Nullable
-    public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+    public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
         BlockEntity blockEntity = this.getBlockEntity(pos);
         if (blockEntity != null) {
-            return blockEntity.toTag(new CompoundTag());
+            return blockEntity.writeNbt(new CompoundTag());
         }
         return this.blockEntityTags.get(pos);
     }

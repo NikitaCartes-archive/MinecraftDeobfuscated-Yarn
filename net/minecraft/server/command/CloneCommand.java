@@ -72,7 +72,7 @@ public class CloneCommand {
                     if (!filter.test(cachedBlockPosition)) continue;
                     BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos3);
                     if (blockEntity != null) {
-                        CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+                        CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
                         list2.add(new BlockInfo(blockPos4, blockState, compoundTag));
                         deque.addLast(blockPos3);
                         continue;
@@ -118,7 +118,7 @@ public class CloneCommand {
                 blockInfo2.blockEntityTag.putInt("x", blockInfo2.pos.getX());
                 blockInfo2.blockEntityTag.putInt("y", blockInfo2.pos.getY());
                 blockInfo2.blockEntityTag.putInt("z", blockInfo2.pos.getZ());
-                blockEntity4.fromTag(blockInfo2.blockEntityTag);
+                blockEntity4.readNbt(blockInfo2.blockEntityTag);
                 blockEntity4.markDirty();
             }
             serverWorld.setBlockState(blockInfo2.pos, blockInfo2.state, 2);

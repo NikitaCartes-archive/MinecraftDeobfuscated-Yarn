@@ -700,8 +700,8 @@ Saddleable {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putBoolean("EatingHaystack", this.isEatingGrass());
         tag.putBoolean("Bred", this.isBred());
         tag.putInt("Temper", this.getTemper());
@@ -710,15 +710,15 @@ Saddleable {
             tag.putUuid("Owner", this.getOwnerUuid());
         }
         if (!this.items.getStack(0).isEmpty()) {
-            tag.put("SaddleItem", this.items.getStack(0).toTag(new CompoundTag()));
+            tag.put("SaddleItem", this.items.getStack(0).writeNbt(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         ItemStack itemStack;
         UUID uUID;
-        super.readCustomDataFromTag(tag);
+        super.readCustomDataFromNbt(tag);
         this.setEatingGrass(tag.getBoolean("EatingHaystack"));
         this.setBred(tag.getBoolean("Bred"));
         this.setTemper(tag.getInt("Temper"));
@@ -732,7 +732,7 @@ Saddleable {
         if (uUID != null) {
             this.setOwnerUuid(uUID);
         }
-        if (tag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromTag(tag.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
+        if (tag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromNbt(tag.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
             this.items.setStack(0, itemStack);
         }
         this.updateSaddle();

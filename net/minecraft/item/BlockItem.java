@@ -163,14 +163,14 @@ extends Item {
             if (!(world.isClient || !blockEntity.copyItemDataRequiresOperator() || player != null && player.isCreativeLevelTwoOp())) {
                 return false;
             }
-            CompoundTag compoundTag2 = blockEntity.toTag(new CompoundTag());
+            CompoundTag compoundTag2 = blockEntity.writeNbt(new CompoundTag());
             CompoundTag compoundTag3 = compoundTag2.copy();
             compoundTag2.copyFrom(compoundTag);
             compoundTag2.putInt("x", pos.getX());
             compoundTag2.putInt("y", pos.getY());
             compoundTag2.putInt("z", pos.getZ());
             if (!compoundTag2.equals(compoundTag3)) {
-                blockEntity.fromTag(compoundTag2);
+                blockEntity.readNbt(compoundTag2);
                 blockEntity.markDirty();
                 return true;
             }
@@ -215,7 +215,7 @@ extends Item {
         CompoundTag compoundTag;
         if (this.block instanceof ShulkerBoxBlock && (compoundTag = entity.getStack().getTag()) != null) {
             ListTag listTag = compoundTag.getCompound("BlockEntityTag").getList("Items", 10);
-            ItemUsage.spawnItemContents(entity, listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromTag));
+            ItemUsage.spawnItemContents(entity, listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromNbt));
         }
     }
 }

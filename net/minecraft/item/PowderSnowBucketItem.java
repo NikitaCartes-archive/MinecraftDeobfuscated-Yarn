@@ -53,7 +53,7 @@ implements FluidModificationItem {
 
     @Override
     public boolean placeFluid(@Nullable PlayerEntity player, World world, BlockPos pos, @Nullable BlockHitResult hitResult) {
-        if (world.isAir(pos)) {
+        if (world.isInBuildLimit(pos) && world.isAir(pos)) {
             if (!world.isClient) {
                 world.setBlockState(pos, this.getBlock().getDefaultState(), 3);
             }

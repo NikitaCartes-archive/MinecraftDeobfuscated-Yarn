@@ -58,7 +58,7 @@ public class PersistentStateManager {
         try {
             File file = this.getFile(id);
             if (file.exists()) {
-                CompoundTag compoundTag = this.readTag(id, SharedConstants.getGameVersion().getWorldVersion());
+                CompoundTag compoundTag = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
                 return (T)((PersistentState)function.apply(compoundTag.getCompound("data")));
             }
         } catch (Exception exception) {
@@ -74,7 +74,7 @@ public class PersistentStateManager {
     /*
      * Exception decompiling
      */
-    public CompoundTag readTag(String id, int dataVersion) throws IOException {
+    public CompoundTag readNbt(String id, int dataVersion) throws IOException {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
          * 

@@ -52,7 +52,7 @@ extends Feature<DefaultFeatureConfig> {
         int m;
         Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         BlockRotation blockRotation = BlockRotation.random(random);
         int i = random.nextInt(FOSSILS.length);
         StructureManager structureManager = structureWorldAccess.toServerWorld().getServer().getStructureManager();

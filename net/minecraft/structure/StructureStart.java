@@ -109,7 +109,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public CompoundTag toTag(int chunkX, int chunkZ) {
+    public CompoundTag toNbt(int chunkX, int chunkZ) {
         CompoundTag compoundTag = new CompoundTag();
         if (!this.hasChildren()) {
             compoundTag.putString("id", "INVALID");
@@ -124,7 +124,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
         List<StructurePiece> list = this.children;
         synchronized (list) {
             for (StructurePiece structurePiece : this.children) {
-                listTag.add(structurePiece.getTag());
+                listTag.add(structurePiece.toNbt());
             }
         }
         compoundTag.put("Children", listTag);

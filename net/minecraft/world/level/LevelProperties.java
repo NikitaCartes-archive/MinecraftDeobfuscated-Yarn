@@ -127,7 +127,7 @@ SaveProperties {
     }
 
     @Override
-    public CompoundTag cloneWorldTag(DynamicRegistryManager registryManager, @Nullable CompoundTag playerTag) {
+    public CompoundTag cloneWorldNbt(DynamicRegistryManager registryManager, @Nullable CompoundTag playerTag) {
         this.loadPlayerData();
         if (playerTag == null) {
             playerTag = this.playerData;
@@ -168,7 +168,7 @@ SaveProperties {
         levelTag.putBoolean("hardcore", this.levelInfo.isHardcore());
         levelTag.putBoolean("allowCommands", this.levelInfo.areCommandsAllowed());
         levelTag.putBoolean("initialized", this.initialized);
-        this.worldBorder.toTag(levelTag);
+        this.worldBorder.writeNbt(levelTag);
         levelTag.putByte("Difficulty", (byte)this.levelInfo.getDifficulty().getId());
         levelTag.putBoolean("DifficultyLocked", this.difficultyLocked);
         levelTag.put("GameRules", this.levelInfo.getGameRules().toNbt());
@@ -180,7 +180,7 @@ SaveProperties {
         if (this.customBossEvents != null) {
             levelTag.put("CustomBossEvents", this.customBossEvents);
         }
-        levelTag.put("ScheduledEvents", this.scheduledEvents.toTag());
+        levelTag.put("ScheduledEvents", this.scheduledEvents.toNbt());
         levelTag.putInt("WanderingTraderSpawnDelay", this.wanderingTraderSpawnDelay);
         levelTag.putInt("WanderingTraderSpawnChance", this.wanderingTraderSpawnChance);
         if (this.wanderingTraderId != null) {

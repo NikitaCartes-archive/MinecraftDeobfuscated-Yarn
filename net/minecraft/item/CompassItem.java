@@ -79,7 +79,7 @@ implements Vanishable {
             ItemStack itemStack = context.getStack();
             boolean bl2 = bl = !playerEntity.getAbilities().creativeMode && itemStack.getCount() == 1;
             if (bl) {
-                this.writeToTag(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
+                this.writeToNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
             } else {
                 ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
                 CompoundTag compoundTag = itemStack.hasTag() ? itemStack.getTag().copy() : new CompoundTag();
@@ -87,7 +87,7 @@ implements Vanishable {
                 if (!playerEntity.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
-                this.writeToTag(world.getRegistryKey(), blockPos, compoundTag);
+                this.writeToNbt(world.getRegistryKey(), blockPos, compoundTag);
                 if (!playerEntity.getInventory().insertStack(itemStack2)) {
                     playerEntity.dropItem(itemStack2, false);
                 }
@@ -97,7 +97,7 @@ implements Vanishable {
         return super.useOnBlock(context);
     }
 
-    private void writeToTag(RegistryKey<World> worldKey, BlockPos pos, CompoundTag tag2) {
+    private void writeToNbt(RegistryKey<World> worldKey, BlockPos pos, CompoundTag tag2) {
         tag2.put("LodestonePos", NbtHelper.fromBlockPos(pos));
         World.CODEC.encodeStart(NbtOps.INSTANCE, worldKey).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("LodestoneDimension", (Tag)tag));
         tag2.putBoolean("LodestoneTracked", true);

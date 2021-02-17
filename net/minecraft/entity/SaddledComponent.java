@@ -39,11 +39,11 @@ public class SaddledComponent {
         return true;
     }
 
-    public void toTag(CompoundTag tag) {
+    public void writeNbt(CompoundTag tag) {
         tag.putBoolean("Saddle", this.isSaddled());
     }
 
-    public void fromTag(CompoundTag tag) {
+    public void readNbt(CompoundTag tag) {
         this.setSaddled(tag.getBoolean("Saddle"));
     }
 

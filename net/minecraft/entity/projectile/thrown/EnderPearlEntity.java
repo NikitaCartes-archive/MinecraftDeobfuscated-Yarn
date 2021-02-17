@@ -59,7 +59,7 @@ extends ThrownItemEntity {
                         this.world.spawnEntity(endermiteEntity);
                     }
                     if (entity.hasVehicle()) {
-                        serverPlayerEntity.method_33567(this.getX(), this.getY(), this.getZ());
+                        serverPlayerEntity.requestTeleportAndDismount(this.getX(), this.getY(), this.getZ());
                     } else {
                         entity.requestTeleport(this.getX(), this.getY(), this.getZ());
                     }

@@ -23,7 +23,7 @@ extends Feature<DefaultFeatureConfig> {
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         float f = random.nextInt(3) + 4;
         int i = 0;
         while (f > 0.5f) {

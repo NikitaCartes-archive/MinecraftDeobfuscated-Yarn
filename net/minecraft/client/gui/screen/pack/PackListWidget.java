@@ -65,26 +65,26 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         protected final MinecraftClient client;
         protected final Screen screen;
         private final ResourcePackOrganizer.Pack pack;
-        private final OrderedText field_26590;
-        private final MultilineText field_26591;
-        private final OrderedText field_26784;
-        private final MultilineText field_26785;
+        private final OrderedText displayName;
+        private final MultilineText description;
+        private final OrderedText incompatibleText;
+        private final MultilineText compatibilityNotificationTExt;
 
         public ResourcePackEntry(MinecraftClient client, PackListWidget widget, Screen screen, ResourcePackOrganizer.Pack pack) {
             this.client = client;
             this.screen = screen;
             this.pack = pack;
             this.widget = widget;
-            this.field_26590 = ResourcePackEntry.method_31229(client, pack.getDisplayName());
-            this.field_26591 = ResourcePackEntry.method_31230(client, pack.getDecoratedDescription());
-            this.field_26784 = ResourcePackEntry.method_31229(client, INCOMPATIBLE);
-            this.field_26785 = ResourcePackEntry.method_31230(client, pack.getCompatibility().getNotification());
+            this.displayName = ResourcePackEntry.trimTextToWidth(client, pack.getDisplayName());
+            this.description = ResourcePackEntry.method_31230(client, pack.getDecoratedDescription());
+            this.incompatibleText = ResourcePackEntry.trimTextToWidth(client, INCOMPATIBLE);
+            this.compatibilityNotificationTExt = ResourcePackEntry.method_31230(client, pack.getCompatibility().getNotification());
         }
 
-        private static OrderedText method_31229(MinecraftClient minecraftClient, Text text) {
-            int i = minecraftClient.textRenderer.getWidth(text);
+        private static OrderedText trimTextToWidth(MinecraftClient client, Text text) {
+            int i = client.textRenderer.getWidth(text);
             if (i > 157) {
-                StringVisitable stringVisitable = StringVisitable.concat(minecraftClient.textRenderer.trimToWidth(text, 157 - minecraftClient.textRenderer.getWidth("...")), StringVisitable.plain("..."));
+                StringVisitable stringVisitable = StringVisitable.concat(client.textRenderer.trimToWidth(text, 157 - client.textRenderer.getWidth("...")), StringVisitable.plain("..."));
                 return Language.getInstance().reorder(stringVisitable);
             }
             return text.asOrderedText();
@@ -104,8 +104,8 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
             this.client.getTextureManager().bindTexture(this.pack.method_30286());
             RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
-            OrderedText orderedText = this.field_26590;
-            MultilineText multilineText = this.field_26591;
+            OrderedText orderedText = this.displayName;
+            MultilineText multilineText = this.description;
             if (this.isSelectable() && (this.client.options.touchscreen || hovered)) {
                 this.client.getTextureManager().bindTexture(RESOURCE_PACKS_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
@@ -113,8 +113,8 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
                 int i = mouseX - x;
                 int j = mouseY - y;
                 if (!this.pack.getCompatibility().isCompatible()) {
-                    orderedText = this.field_26784;
-                    multilineText = this.field_26785;
+                    orderedText = this.incompatibleText;
+                    multilineText = this.compatibilityNotificationTExt;
                 }
                 if (this.pack.canBeEnabled()) {
                     if (i < 32) {

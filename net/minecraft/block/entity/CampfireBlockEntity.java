@@ -96,11 +96,11 @@ implements Clearable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void readNbt(CompoundTag tag) {
         int[] is;
-        super.fromTag(tag);
+        super.readNbt(tag);
         this.itemsBeingCooked.clear();
-        Inventories.fromTag(tag, this.itemsBeingCooked);
+        Inventories.readNbt(tag, this.itemsBeingCooked);
         if (tag.contains("CookingTimes", 11)) {
             is = tag.getIntArray("CookingTimes");
             System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
@@ -112,7 +112,7 @@ implements Clearable {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
+    public CompoundTag writeNbt(CompoundTag tag) {
         this.saveInitialChunkData(tag);
         tag.putIntArray("CookingTimes", this.cookingTimes);
         tag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
@@ -120,19 +120,19 @@ implements Clearable {
     }
 
     private CompoundTag saveInitialChunkData(CompoundTag tag) {
-        super.toTag(tag);
-        Inventories.toTag(tag, this.itemsBeingCooked, true);
+        super.writeNbt(tag);
+        Inventories.writeNbt(tag, this.itemsBeingCooked, true);
         return tag;
     }
 
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 13, this.toInitialChunkDataNbt());
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
+    public CompoundTag toInitialChunkDataNbt() {
         return this.saveInitialChunkData(new CompoundTag());
     }
 

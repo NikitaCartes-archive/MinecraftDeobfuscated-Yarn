@@ -42,14 +42,14 @@ import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 import net.minecraft.world.gen.chunk.NoiseChunkGenerator;
 
 public class DimensionType {
-    public static final int field_28133 = BlockPos.SIZE_BITS_Y;
-    public static final int field_28134 = (1 << field_28133) - 32;
-    public static final int field_28135 = (field_28134 >> 1) - 1;
-    public static final int field_28136 = field_28135 - field_28134 + 1;
+    public static final int SIZE_BITS_Y = BlockPos.SIZE_BITS_Y;
+    public static final int MAX_HEIGHT = (1 << SIZE_BITS_Y) - 32;
+    public static final int MAX_COLUMN_HEIGHT = (MAX_HEIGHT >> 1) - 1;
+    public static final int MIN_HEIGHT = MAX_COLUMN_HEIGHT - MAX_HEIGHT + 1;
     public static final Identifier OVERWORLD_ID = new Identifier("overworld");
     public static final Identifier THE_NETHER_ID = new Identifier("the_nether");
     public static final Identifier THE_END_ID = new Identifier("the_end");
-    public static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.LONG.optionalFieldOf("fixed_time").xmap(optional -> optional.map(OptionalLong::of).orElseGet(OptionalLong::empty), optionalLong -> optionalLong.isPresent() ? Optional.of(optionalLong.getAsLong()) : Optional.empty()).forGetter(dimensionType -> dimensionType.fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::isUltrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::isNatural), ((MapCodec)Codec.doubleRange(1.0E-5f, 3.0E7).fieldOf("coordinate_scale")).forGetter(DimensionType::getCoordinateScale), ((MapCodec)Codec.BOOL.fieldOf("piglin_safe")).forGetter(DimensionType::isPiglinSafe), ((MapCodec)Codec.BOOL.fieldOf("bed_works")).forGetter(DimensionType::isBedWorking), ((MapCodec)Codec.BOOL.fieldOf("respawn_anchor_works")).forGetter(DimensionType::isRespawnAnchorWorking), ((MapCodec)Codec.BOOL.fieldOf("has_raids")).forGetter(DimensionType::hasRaids), ((MapCodec)Codec.intRange(field_28136, field_28135).fieldOf("min_y")).forGetter(DimensionType::getMinimumY), ((MapCodec)Codec.intRange(0, field_28134).fieldOf("height")).forGetter(DimensionType::getHeight), ((MapCodec)Codec.intRange(0, field_28134).fieldOf("logical_height")).forGetter(DimensionType::getLogicalHeight), ((MapCodec)Identifier.CODEC.fieldOf("infiniburn")).forGetter(dimensionType -> dimensionType.infiniburn), ((MapCodec)Identifier.CODEC.fieldOf("effects")).orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.skyProperties), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(dimensionType -> Float.valueOf(dimensionType.ambientLight))).apply((Applicative<DimensionType, ?>)instance, DimensionType::new)).comapFlatMap(DimensionType::checkHeight, Function.identity());
+    public static final Codec<DimensionType> CODEC = RecordCodecBuilder.create(instance -> instance.group(Codec.LONG.optionalFieldOf("fixed_time").xmap(optional -> optional.map(OptionalLong::of).orElseGet(OptionalLong::empty), optionalLong -> optionalLong.isPresent() ? Optional.of(optionalLong.getAsLong()) : Optional.empty()).forGetter(dimensionType -> dimensionType.fixedTime), ((MapCodec)Codec.BOOL.fieldOf("has_skylight")).forGetter(DimensionType::hasSkyLight), ((MapCodec)Codec.BOOL.fieldOf("has_ceiling")).forGetter(DimensionType::hasCeiling), ((MapCodec)Codec.BOOL.fieldOf("ultrawarm")).forGetter(DimensionType::isUltrawarm), ((MapCodec)Codec.BOOL.fieldOf("natural")).forGetter(DimensionType::isNatural), ((MapCodec)Codec.doubleRange(1.0E-5f, 3.0E7).fieldOf("coordinate_scale")).forGetter(DimensionType::getCoordinateScale), ((MapCodec)Codec.BOOL.fieldOf("piglin_safe")).forGetter(DimensionType::isPiglinSafe), ((MapCodec)Codec.BOOL.fieldOf("bed_works")).forGetter(DimensionType::isBedWorking), ((MapCodec)Codec.BOOL.fieldOf("respawn_anchor_works")).forGetter(DimensionType::isRespawnAnchorWorking), ((MapCodec)Codec.BOOL.fieldOf("has_raids")).forGetter(DimensionType::hasRaids), ((MapCodec)Codec.intRange(MIN_HEIGHT, MAX_COLUMN_HEIGHT).fieldOf("min_y")).forGetter(DimensionType::getMinimumY), ((MapCodec)Codec.intRange(0, MAX_HEIGHT).fieldOf("height")).forGetter(DimensionType::getHeight), ((MapCodec)Codec.intRange(0, MAX_HEIGHT).fieldOf("logical_height")).forGetter(DimensionType::getLogicalHeight), ((MapCodec)Identifier.CODEC.fieldOf("infiniburn")).forGetter(dimensionType -> dimensionType.infiniburn), ((MapCodec)Identifier.CODEC.fieldOf("effects")).orElse(OVERWORLD_ID).forGetter(dimensionType -> dimensionType.skyProperties), ((MapCodec)Codec.FLOAT.fieldOf("ambient_light")).forGetter(dimensionType -> Float.valueOf(dimensionType.ambientLight))).apply((Applicative<DimensionType, ?>)instance, DimensionType::new)).comapFlatMap(DimensionType::checkHeight, Function.identity());
     public static final float[] MOON_SIZES = new float[]{1.0f, 0.75f, 0.5f, 0.25f, 0.0f, 0.25f, 0.5f, 0.75f};
     public static final RegistryKey<DimensionType> OVERWORLD_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("overworld"));
     public static final RegistryKey<DimensionType> THE_NETHER_REGISTRY_KEY = RegistryKey.of(Registry.DIMENSION_TYPE_KEY, new Identifier("the_nether"));
@@ -81,8 +81,8 @@ public class DimensionType {
     private final transient float[] brightnessByLightLevel;
 
     private static DataResult<DimensionType> checkHeight(DimensionType type) {
-        if (type.getMinimumY() + type.getHeight() > field_28135 + 1) {
-            return DataResult.error("min_y + height cannot be higher than: " + (field_28135 + 1));
+        if (type.getMinimumY() + type.getHeight() > MAX_COLUMN_HEIGHT + 1) {
+            return DataResult.error("min_y + height cannot be higher than: " + (MAX_COLUMN_HEIGHT + 1));
         }
         if (type.getLogicalHeight() > type.getHeight()) {
             return DataResult.error("logical_height cannot be higher than height");

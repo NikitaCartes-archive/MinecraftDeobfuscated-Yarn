@@ -93,6 +93,16 @@ implements WorldGenRandom {
         return n;
     }
 
+    public long setGrimstoneSeed(long worldSeed, int x, int y, int z) {
+        this.setSeed(worldSeed);
+        long l = this.nextLong();
+        long m = this.nextLong();
+        long n = this.nextLong();
+        long o = (long)x * l ^ (long)y * m ^ (long)z * n ^ worldSeed;
+        this.setSeed(o);
+        return o;
+    }
+
     /**
      * Seeds the randomizer to determine the start position of structure features such as
      * temples, monuments and buried treasures within a region.

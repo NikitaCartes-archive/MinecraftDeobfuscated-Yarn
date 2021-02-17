@@ -147,7 +147,7 @@ public final class ItemStack {
         this.updateEmptyState();
     }
 
-    public static ItemStack fromTag(CompoundTag tag) {
+    public static ItemStack fromNbt(CompoundTag tag) {
         try {
             return new ItemStack(tag);
         } catch (RuntimeException runtimeException) {
@@ -213,7 +213,7 @@ public final class ItemStack {
         return this.getItem().finishUsing(this, world, user);
     }
 
-    public CompoundTag toTag(CompoundTag tag) {
+    public CompoundTag writeNbt(CompoundTag tag) {
         Identifier identifier = Registry.ITEM.getId(this.getItem());
         tag.putString("id", identifier == null ? "minecraft:air" : identifier.toString());
         tag.putByte("Count", (byte)this.count);
@@ -585,16 +585,16 @@ public final class ItemStack {
         if (!context.isAdvanced() && !this.hasCustomName() && this.isOf(Items.FILLED_MAP) && (integer = FilledMapItem.getMapId(this)) != null) {
             list.add(new LiteralText("#" + integer).formatted(Formatting.GRAY));
         }
-        if (ItemStack.isSectionHidden(i = this.getHideFlags(), TooltipSection.ADDITIONAL)) {
+        if (ItemStack.isSectionVisible(i = this.getHideFlags(), TooltipSection.ADDITIONAL)) {
             this.getItem().appendTooltip(this, player == null ? null : player.world, list, context);
         }
         if (this.hasTag()) {
-            if (ItemStack.isSectionHidden(i, TooltipSection.ENCHANTMENTS)) {
+            if (ItemStack.isSectionVisible(i, TooltipSection.ENCHANTMENTS)) {
                 ItemStack.appendEnchantments(list, this.getEnchantments());
             }
             if (this.tag.contains("display", 10)) {
                 CompoundTag compoundTag = this.tag.getCompound("display");
-                if (ItemStack.isSectionHidden(i, TooltipSection.DYE) && compoundTag.contains("color", 99)) {
+                if (ItemStack.isSectionVisible(i, TooltipSection.DYE) && compoundTag.contains("color", 99)) {
                     if (context.isAdvanced()) {
                         list.add(new TranslatableText("item.color", String.format("#%06X", compoundTag.getInt("color"))).formatted(Formatting.GRAY));
                     } else {
@@ -617,7 +617,7 @@ public final class ItemStack {
                 }
             }
         }
-        if (ItemStack.isSectionHidden(i, TooltipSection.MODIFIERS)) {
+        if (ItemStack.isSectionVisible(i, TooltipSection.MODIFIERS)) {
             for (EquipmentSlot equipmentSlot : EquipmentSlot.values()) {
                 Multimap<EntityAttribute, EntityAttributeModifier> multimap = this.getAttributeModifiers(equipmentSlot);
                 if (multimap.isEmpty()) continue;
@@ -653,17 +653,17 @@ public final class ItemStack {
         }
         if (this.hasTag()) {
             ListTag listTag2;
-            if (ItemStack.isSectionHidden(i, TooltipSection.UNBREAKABLE) && this.tag.getBoolean("Unbreakable")) {
+            if (ItemStack.isSectionVisible(i, TooltipSection.UNBREAKABLE) && this.tag.getBoolean("Unbreakable")) {
                 list.add(new TranslatableText("item.unbreakable").formatted(Formatting.BLUE));
             }
-            if (ItemStack.isSectionHidden(i, TooltipSection.CAN_DESTROY) && this.tag.contains("CanDestroy", 9) && !(listTag2 = this.tag.getList("CanDestroy", 8)).isEmpty()) {
+            if (ItemStack.isSectionVisible(i, TooltipSection.CAN_DESTROY) && this.tag.contains("CanDestroy", 9) && !(listTag2 = this.tag.getList("CanDestroy", 8)).isEmpty()) {
                 list.add(LiteralText.EMPTY);
                 list.add(new TranslatableText("item.canBreak").formatted(Formatting.GRAY));
                 for (int k = 0; k < listTag2.size(); ++k) {
                     list.addAll(ItemStack.parseBlockTag(listTag2.getString(k)));
                 }
             }
-            if (ItemStack.isSectionHidden(i, TooltipSection.CAN_PLACE) && this.tag.contains("CanPlaceOn", 9) && !(listTag2 = this.tag.getList("CanPlaceOn", 8)).isEmpty()) {
+            if (ItemStack.isSectionVisible(i, TooltipSection.CAN_PLACE) && this.tag.contains("CanPlaceOn", 9) && !(listTag2 = this.tag.getList("CanPlaceOn", 8)).isEmpty()) {
                 list.add(LiteralText.EMPTY);
                 list.add(new TranslatableText("item.canPlace").formatted(Formatting.GRAY));
                 for (int k = 0; k < listTag2.size(); ++k) {
@@ -683,8 +683,11 @@ public final class ItemStack {
         return list;
     }
 
+    /**
+     * Determines whether the given tooltip section will be visible according to the given flags.
+     */
     @Environment(value=EnvType.CLIENT)
-    private static boolean isSectionHidden(int flags, TooltipSection tooltipSection) {
+    private static boolean isSectionVisible(int flags, TooltipSection tooltipSection) {
         return (flags & tooltipSection.getFlag()) == 0;
     }
 
@@ -810,7 +813,7 @@ public final class ItemStack {
                 EntityAttributeModifier entityAttributeModifier;
                 Optional<EntityAttribute> optional;
                 CompoundTag compoundTag = listTag.getCompound(i);
-                if (compoundTag.contains("Slot", 8) && !compoundTag.getString("Slot").equals(slot.getName()) || !(optional = Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")))).isPresent() || (entityAttributeModifier = EntityAttributeModifier.fromTag(compoundTag)) == null || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
+                if (compoundTag.contains("Slot", 8) && !compoundTag.getString("Slot").equals(slot.getName()) || !(optional = Registry.ATTRIBUTE.getOrEmpty(Identifier.tryParse(compoundTag.getString("AttributeName")))).isPresent() || (entityAttributeModifier = EntityAttributeModifier.fromNbt(compoundTag)) == null || entityAttributeModifier.getId().getLeastSignificantBits() == 0L || entityAttributeModifier.getId().getMostSignificantBits() == 0L) continue;
                 multimap.put(optional.get(), entityAttributeModifier);
             }
         } else {
@@ -825,7 +828,7 @@ public final class ItemStack {
             this.tag.put("AttributeModifiers", new ListTag());
         }
         ListTag listTag = this.tag.getList("AttributeModifiers", 10);
-        CompoundTag compoundTag = modifier.toTag();
+        CompoundTag compoundTag = modifier.toNbt();
         compoundTag.putString("AttributeName", Registry.ATTRIBUTE.getId(attribute).toString());
         if (slot != null) {
             compoundTag.putString("Slot", slot.getName());
@@ -855,7 +858,7 @@ public final class ItemStack {
         if (first.getBlockEntity() == null || second.getBlockEntity() == null) {
             return false;
         }
-        return Objects.equals(first.getBlockEntity().toTag(new CompoundTag()), second.getBlockEntity().toTag(new CompoundTag()));
+        return Objects.equals(first.getBlockEntity().writeNbt(new CompoundTag()), second.getBlockEntity().writeNbt(new CompoundTag()));
     }
 
     public boolean canDestroy(TagManager tagManager, CachedBlockPosition pos) {

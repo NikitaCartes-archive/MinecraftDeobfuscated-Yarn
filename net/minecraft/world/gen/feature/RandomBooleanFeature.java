@@ -24,7 +24,7 @@ extends Feature<RandomBooleanFeatureConfig> {
         RandomBooleanFeatureConfig randomBooleanFeatureConfig = context.getConfig();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         ChunkGenerator chunkGenerator = context.getGenerator();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         boolean bl = random.nextBoolean();
         if (bl) {
             return randomBooleanFeatureConfig.featureTrue.get().generate(structureWorldAccess, chunkGenerator, random, blockPos);

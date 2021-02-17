@@ -29,7 +29,7 @@ extends Feature<GlowLichenFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<GlowLichenFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         Random random = context.getRandom();
         GlowLichenFeatureConfig glowLichenFeatureConfig = context.getConfig();
         if (!GlowLichenFeature.isAirOrWater(structureWorldAccess.getBlockState(blockPos))) {
@@ -60,13 +60,13 @@ extends Feature<GlowLichenFeatureConfig> {
             BlockState blockState = world.getBlockState(mutable.set(pos, direction));
             if (!config.canGrowOn(blockState.getBlock())) continue;
             GlowLichenBlock glowLichenBlock = (GlowLichenBlock)Blocks.GLOW_LICHEN;
-            BlockState blockState2 = glowLichenBlock.method_33362(state, world, pos, direction);
+            BlockState blockState2 = glowLichenBlock.addDirection(state, world, pos, direction);
             if (blockState2 == null) {
                 return false;
             }
             world.setBlockState(pos, blockState2, 3);
             if (random.nextFloat() < config.spreadChance) {
-                glowLichenBlock.method_33364(blockState2, world, pos, direction, random);
+                glowLichenBlock.canSpreadRandomly(blockState2, world, pos, direction, random);
             }
             return true;
         }

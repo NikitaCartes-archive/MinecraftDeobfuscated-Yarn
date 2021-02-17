@@ -623,6 +623,10 @@ public class MathHelper {
         return mean + (float)random.nextGaussian() * deviation;
     }
 
+    public static double magnitude(int x, double y, int z) {
+        return MathHelper.sqrt((double)(x * x) + y * y + (double)(z * z));
+    }
+
     static {
         for (int i = 0; i < 257; ++i) {
             double d = (double)i / 256.0;

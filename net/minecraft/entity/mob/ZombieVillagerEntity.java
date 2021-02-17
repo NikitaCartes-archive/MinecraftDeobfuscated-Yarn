@@ -75,8 +75,8 @@ implements VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag2) {
-        super.writeCustomDataToTag(tag2);
+    public void writeCustomDataToNbt(CompoundTag tag2) {
+        super.writeCustomDataToNbt(tag2);
         VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("VillagerData", (Tag)tag));
         if (this.offerData != null) {
             tag2.put("Offers", this.offerData);
@@ -92,8 +92,8 @@ implements VillagerDataContainer {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("VillagerData", 10)) {
             DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData")));
             dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
@@ -194,7 +194,7 @@ implements VillagerDataContainer {
         }
         villagerEntity.setVillagerData(this.getVillagerData());
         if (this.gossipData != null) {
-            villagerEntity.setGossipDataFromTag(this.gossipData);
+            villagerEntity.setGossipDataFromNbt(this.gossipData);
         }
         if (this.offerData != null) {
             villagerEntity.setOffers(new TradeOfferList(this.offerData));

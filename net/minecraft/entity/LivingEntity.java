@@ -320,7 +320,7 @@ extends Entity {
             double d;
             if (this.isInsideWall()) {
                 this.damage(DamageSource.IN_WALL, 1.0f);
-            } else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox()) && (d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getBuffer()) < 0.0 && (e = this.world.getWorldBorder().getDamagePerBlock()) > 0.0) {
+            } else if (bl && !this.world.getWorldBorder().contains(this.getBoundingBox()) && (d = this.world.getWorldBorder().getDistanceInsideBorder(this) + this.world.getWorldBorder().getSafeZone()) < 0.0 && (e = this.world.getWorldBorder().getDamagePerBlock()) > 0.0) {
                 this.damage(DamageSource.IN_WALL, Math.max(1, MathHelper.floor(-d * e)));
             }
         }
@@ -590,17 +590,17 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag2) {
+    public void writeCustomDataToNbt(CompoundTag tag2) {
         tag2.putFloat("Health", this.getHealth());
         tag2.putShort("HurtTime", (short)this.hurtTime);
         tag2.putInt("HurtByTimestamp", this.lastAttackedTime);
         tag2.putShort("DeathTime", (short)this.deathTime);
         tag2.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
-        tag2.put("Attributes", this.getAttributes().toTag());
+        tag2.put("Attributes", this.getAttributes().toNbt());
         if (!this.activeStatusEffects.isEmpty()) {
             ListTag listTag = new ListTag();
             for (StatusEffectInstance statusEffectInstance : this.activeStatusEffects.values()) {
-                listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+                listTag.add(statusEffectInstance.writeNbt(new CompoundTag()));
             }
             tag2.put("ActiveEffects", listTag);
         }
@@ -615,16 +615,16 @@ extends Entity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         this.setAbsorptionAmount(tag.getFloat("AbsorptionAmount"));
         if (tag.contains("Attributes", 9) && this.world != null && !this.world.isClient) {
-            this.getAttributes().fromTag(tag.getList("Attributes", 10));
+            this.getAttributes().readNbt(tag.getList("Attributes", 10));
         }
         if (tag.contains("ActiveEffects", 9)) {
             ListTag listTag = tag.getList("ActiveEffects", 10);
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag = listTag.getCompound(i);
-                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(compoundTag);
+                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(compoundTag);
                 if (statusEffectInstance == null) continue;
                 this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
             }
@@ -1700,7 +1700,7 @@ extends Entity {
 
     private void onDismounted(Entity vehicle) {
         Vec3d vec3d = vehicle.isRemoved() || this.world.getBlockState(vehicle.getBlockPos()).isIn(BlockTags.PORTALS) ? new Vec3d(vehicle.getX(), vehicle.getY() + (double)vehicle.getHeight(), vehicle.getZ()) : vehicle.updatePassengerForDismount(this);
-        this.method_33567(vec3d.x, vec3d.y, vec3d.z);
+        this.requestTeleportAndDismount(vec3d.x, vec3d.y, vec3d.z);
     }
 
     @Override

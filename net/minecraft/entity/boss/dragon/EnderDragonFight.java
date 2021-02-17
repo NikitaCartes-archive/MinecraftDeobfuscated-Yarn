@@ -110,7 +110,7 @@ public class EnderDragonFight {
         this.endPortalPattern = BlockPatternBuilder.start().aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("       ", "       ", "       ", "   #   ", "       ", "       ", "       ").aisle("  ###  ", " #   # ", "#     #", "#  #  #", "#     #", " #   # ", "  ###  ").aisle("       ", "  ###  ", " ##### ", " ##### ", " ##### ", "  ###  ", "       ").where('#', CachedBlockPosition.matchesBlockState(BlockPredicate.make(Blocks.BEDROCK))).build();
     }
 
-    public CompoundTag toTag() {
+    public CompoundTag toNbt() {
         CompoundTag compoundTag = new CompoundTag();
         if (this.dragonUuid != null) {
             compoundTag.putUuid("Dragon", this.dragonUuid);

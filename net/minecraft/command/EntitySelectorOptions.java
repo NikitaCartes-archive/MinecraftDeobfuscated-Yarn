@@ -291,9 +291,9 @@ public class EntitySelectorOptions {
             CompoundTag compoundTag = new StringNbtReader(entitySelectorReader.getReader()).parseCompoundTag();
             entitySelectorReader.setPredicate(entity -> {
                 ItemStack itemStack;
-                CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
+                CompoundTag compoundTag2 = entity.writeNbt(new CompoundTag());
                 if (entity instanceof ServerPlayerEntity && !(itemStack = ((ServerPlayerEntity)entity).getInventory().getMainHandStack()).isEmpty()) {
-                    compoundTag2.put("SelectedItem", itemStack.toTag(new CompoundTag()));
+                    compoundTag2.put("SelectedItem", itemStack.writeNbt(new CompoundTag()));
                 }
                 return NbtHelper.matches(compoundTag, compoundTag2, true) != bl;
             });

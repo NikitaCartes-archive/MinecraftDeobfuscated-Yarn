@@ -24,12 +24,12 @@ import net.minecraft.world.border.WorldBorderStage;
 public class WorldBorder {
     private final List<WorldBorderListener> listeners = Lists.newArrayList();
     private double damagePerBlock = 0.2;
-    private double buffer = 5.0;
+    private double safeZone = 5.0;
     private int warningTime = 15;
     private int warningBlocks = 5;
     private double centerX;
     private double centerZ;
-    private int maxWorldBorderRadius = 29999984;
+    private int maxRadius = 29999984;
     private Area area = new StaticArea(6.0E7);
     public static final Properties DEFAULT_BORDER = new Properties(0.0, 0.0, 0.2, 5.0, 5, 15, 6.0E7, 0L, 0.0);
 
@@ -92,6 +92,10 @@ public class WorldBorder {
         return this.centerZ;
     }
 
+    /**
+     * Sets the {@code x} and {@code z} coordinates of the center of this border,
+     * and notifies its area and all listeners.
+     */
     public void setCenter(double x, double z) {
         this.centerX = x;
         this.centerZ = z;
@@ -105,14 +109,18 @@ public class WorldBorder {
         return this.area.getSize();
     }
 
-    public long getTargetRemainingTime() {
-        return this.area.getTargetRemainingTime();
+    public long getSizeLerpTime() {
+        return this.area.getSizeLerpTime();
     }
 
-    public double getTargetSize() {
-        return this.area.getTargetSize();
+    public double getSizeLerpTarget() {
+        return this.area.getSizeLerpTarget();
     }
 
+    /**
+     * Sets the area of this border to a static area with the given {@code size},
+     * and notifies all listeners.
+     */
     public void setSize(double size) {
         this.area = new StaticArea(size);
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
@@ -135,30 +143,58 @@ public class WorldBorder {
         this.listeners.add(listener);
     }
 
-    public void setMaxWorldBorderRadius(int radius) {
-        this.maxWorldBorderRadius = radius;
-        this.area.onMaxWorldBorderRadiusChanged();
+    /**
+     * Sets the maximum radius of this border and notifies its area.
+     */
+    public void setMaxRadius(int maxRadius) {
+        this.maxRadius = maxRadius;
+        this.area.onMaxRadiusChanged();
     }
 
-    public int getMaxWorldBorderRadius() {
-        return this.maxWorldBorderRadius;
+    /**
+     * Returns the maximum radius of this border, in blocks.
+     * 
+     * <p>The default value is 29999984.
+     */
+    public int getMaxRadius() {
+        return this.maxRadius;
     }
 
-    public double getBuffer() {
-        return this.buffer;
+    /**
+     * Returns the safe zone of this border.
+     * 
+     * <p>The default value is 5.0.
+     */
+    public double getSafeZone() {
+        return this.safeZone;
     }
 
-    public void setBuffer(double buffer) {
-        this.buffer = buffer;
+    /**
+     * Sets the safe zone of this border and notifies all listeners.
+     */
+    public void setSafeZone(double safeZone) {
+        this.safeZone = safeZone;
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
-            worldBorderListener.onSafeZoneChanged(this, buffer);
+            worldBorderListener.onSafeZoneChanged(this, safeZone);
         }
     }
 
+    /**
+     * Returns the damage increase per block beyond this border, in hearts.
+     * <p>Once an entity goes beyond the border and the safe zone, damage will be
+     * applied depending on the distance traveled multiplied by this damage increase.
+     * 
+     * <p>The default value is 0.2.
+     * 
+     * @see net.minecraft.entity.LivingEntity#baseTick()
+     */
     public double getDamagePerBlock() {
         return this.damagePerBlock;
     }
 
+    /**
+     * Sets the damage per block of this border and notifies all listeners.
+     */
     public void setDamagePerBlock(double damagePerBlock) {
         this.damagePerBlock = damagePerBlock;
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
@@ -171,10 +207,20 @@ public class WorldBorder {
         return this.area.getShrinkingSpeed();
     }
 
+    /**
+     * Returns the warning time of this border, in ticks.
+     * <p>Once a player goes beyond the border, this is the time before a message
+     * is displayed to them.
+     * 
+     * <p>The default value is 15.
+     */
     public int getWarningTime() {
         return this.warningTime;
     }
 
+    /**
+     * Sets the warning time of this border and notifies all listeners.
+     */
     public void setWarningTime(int warningTime) {
         this.warningTime = warningTime;
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
@@ -182,10 +228,20 @@ public class WorldBorder {
         }
     }
 
+    /**
+     * Returns the warning distance of this border, in blocks.
+     * <p>When an entity approaches the border, this is the distance from which
+     * a warning will be displayed.
+     * 
+     * <p>The default value is 5.
+     */
     public int getWarningBlocks() {
         return this.warningBlocks;
     }
 
+    /**
+     * Sets the warning blocks of this border and notifies all listeners.
+     */
     public void setWarningBlocks(int warningBlocks) {
         this.warningBlocks = warningBlocks;
         for (WorldBorderListener worldBorderListener : this.getListeners()) {
@@ -204,11 +260,11 @@ public class WorldBorder {
     public void load(Properties properties) {
         this.setCenter(properties.getCenterX(), properties.getCenterZ());
         this.setDamagePerBlock(properties.getDamagePerBlock());
-        this.setBuffer(properties.getBuffer());
+        this.setSafeZone(properties.getSafeZone());
         this.setWarningBlocks(properties.getWarningBlocks());
         this.setWarningTime(properties.getWarningTime());
-        if (properties.getTargetRemainingTime() > 0L) {
-            this.interpolateSize(properties.getSize(), properties.getTargetSize(), properties.getTargetRemainingTime());
+        if (properties.getSizeLerpTime() > 0L) {
+            this.interpolateSize(properties.getSize(), properties.getSizeLerpTarget(), properties.getSizeLerpTime());
         } else {
             this.setSize(properties.getSize());
         }
@@ -218,35 +274,35 @@ public class WorldBorder {
         private final double centerX;
         private final double centerZ;
         private final double damagePerBlock;
-        private final double buffer;
+        private final double safeZone;
         private final int warningBlocks;
         private final int warningTime;
         private final double size;
-        private final long targetRemainingTime;
-        private final double targetSize;
+        private final long sizeLerpTime;
+        private final double sizeLerpTarget;
 
-        private Properties(double centerX, double centerZ, double damagePerBlock, double buffer, int warningBlocks, int warningTime, double size, long targetRemainingTime, double targetSize) {
+        private Properties(double centerX, double centerZ, double damagePerBlock, double safeZone, int warningBlocks, int warningTime, double size, long sizeLerpTime, double sizeLerpTarget) {
             this.centerX = centerX;
             this.centerZ = centerZ;
             this.damagePerBlock = damagePerBlock;
-            this.buffer = buffer;
+            this.safeZone = safeZone;
             this.warningBlocks = warningBlocks;
             this.warningTime = warningTime;
             this.size = size;
-            this.targetRemainingTime = targetRemainingTime;
-            this.targetSize = targetSize;
+            this.sizeLerpTime = sizeLerpTime;
+            this.sizeLerpTarget = sizeLerpTarget;
         }
 
         private Properties(WorldBorder worldBorder) {
             this.centerX = worldBorder.getCenterX();
             this.centerZ = worldBorder.getCenterZ();
             this.damagePerBlock = worldBorder.getDamagePerBlock();
-            this.buffer = worldBorder.getBuffer();
+            this.safeZone = worldBorder.getSafeZone();
             this.warningBlocks = worldBorder.getWarningBlocks();
             this.warningTime = worldBorder.getWarningTime();
             this.size = worldBorder.getSize();
-            this.targetRemainingTime = worldBorder.getTargetRemainingTime();
-            this.targetSize = worldBorder.getTargetSize();
+            this.sizeLerpTime = worldBorder.getSizeLerpTime();
+            this.sizeLerpTarget = worldBorder.getSizeLerpTarget();
         }
 
         public double getCenterX() {
@@ -261,8 +317,8 @@ public class WorldBorder {
             return this.damagePerBlock;
         }
 
-        public double getBuffer() {
-            return this.buffer;
+        public double getSafeZone() {
+            return this.safeZone;
         }
 
         public int getWarningBlocks() {
@@ -277,35 +333,35 @@ public class WorldBorder {
             return this.size;
         }
 
-        public long getTargetRemainingTime() {
-            return this.targetRemainingTime;
+        public long getSizeLerpTime() {
+            return this.sizeLerpTime;
         }
 
-        public double getTargetSize() {
-            return this.targetSize;
+        public double getSizeLerpTarget() {
+            return this.sizeLerpTarget;
         }
 
         public static Properties fromDynamic(DynamicLike<?> dynamicLike, Properties properties) {
             double d = dynamicLike.get("BorderCenterX").asDouble(properties.centerX);
             double e = dynamicLike.get("BorderCenterZ").asDouble(properties.centerZ);
             double f = dynamicLike.get("BorderSize").asDouble(properties.size);
-            long l = dynamicLike.get("BorderSizeLerpTime").asLong(properties.targetRemainingTime);
-            double g = dynamicLike.get("BorderSizeLerpTarget").asDouble(properties.targetSize);
-            double h = dynamicLike.get("BorderSafeZone").asDouble(properties.buffer);
+            long l = dynamicLike.get("BorderSizeLerpTime").asLong(properties.sizeLerpTime);
+            double g = dynamicLike.get("BorderSizeLerpTarget").asDouble(properties.sizeLerpTarget);
+            double h = dynamicLike.get("BorderSafeZone").asDouble(properties.safeZone);
             double i = dynamicLike.get("BorderDamagePerBlock").asDouble(properties.damagePerBlock);
             int j = dynamicLike.get("BorderWarningBlocks").asInt(properties.warningBlocks);
             int k = dynamicLike.get("BorderWarningTime").asInt(properties.warningTime);
             return new Properties(d, e, i, h, j, k, f, l, g);
         }
 
-        public void toTag(CompoundTag tag) {
+        public void writeNbt(CompoundTag tag) {
             tag.putDouble("BorderCenterX", this.centerX);
             tag.putDouble("BorderCenterZ", this.centerZ);
             tag.putDouble("BorderSize", this.size);
-            tag.putLong("BorderSizeLerpTime", this.targetRemainingTime);
-            tag.putDouble("BorderSafeZone", this.buffer);
+            tag.putLong("BorderSizeLerpTime", this.sizeLerpTime);
+            tag.putDouble("BorderSafeZone", this.safeZone);
             tag.putDouble("BorderDamagePerBlock", this.damagePerBlock);
-            tag.putDouble("BorderSizeLerpTarget", this.targetSize);
+            tag.putDouble("BorderSizeLerpTarget", this.sizeLerpTarget);
             tag.putDouble("BorderWarningBlocks", this.warningBlocks);
             tag.putDouble("BorderWarningTime", this.warningTime);
         }
@@ -320,8 +376,8 @@ public class WorldBorder {
         private double boundSouth;
         private VoxelShape shape;
 
-        public StaticArea(double d) {
-            this.size = d;
+        public StaticArea(double size) {
+            this.size = size;
             this.recalculateBounds();
         }
 
@@ -363,25 +419,25 @@ public class WorldBorder {
         }
 
         @Override
-        public long getTargetRemainingTime() {
+        public long getSizeLerpTime() {
             return 0L;
         }
 
         @Override
-        public double getTargetSize() {
+        public double getSizeLerpTarget() {
             return this.size;
         }
 
         private void recalculateBounds() {
-            this.boundWest = Math.max(WorldBorder.this.getCenterX() - this.size / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
-            this.boundNorth = Math.max(WorldBorder.this.getCenterZ() - this.size / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
-            this.boundEast = Math.min(WorldBorder.this.getCenterX() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
-            this.boundSouth = Math.min(WorldBorder.this.getCenterZ() + this.size / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
+            this.boundWest = Math.max(WorldBorder.this.getCenterX() - this.size / 2.0, (double)(-WorldBorder.this.maxRadius));
+            this.boundNorth = Math.max(WorldBorder.this.getCenterZ() - this.size / 2.0, (double)(-WorldBorder.this.maxRadius));
+            this.boundEast = Math.min(WorldBorder.this.getCenterX() + this.size / 2.0, (double)WorldBorder.this.maxRadius);
+            this.boundSouth = Math.min(WorldBorder.this.getCenterZ() + this.size / 2.0, (double)WorldBorder.this.maxRadius);
             this.shape = VoxelShapes.combineAndSimplify(VoxelShapes.UNBOUNDED, VoxelShapes.cuboid(Math.floor(this.getBoundWest()), Double.NEGATIVE_INFINITY, Math.floor(this.getBoundNorth()), Math.ceil(this.getBoundEast()), Double.POSITIVE_INFINITY, Math.ceil(this.getBoundSouth())), BooleanBiFunction.ONLY_FIRST);
         }
 
         @Override
-        public void onMaxWorldBorderRadiusChanged() {
+        public void onMaxRadiusChanged() {
             this.recalculateBounds();
         }
 
@@ -419,22 +475,22 @@ public class WorldBorder {
 
         @Override
         public double getBoundWest() {
-            return Math.max(WorldBorder.this.getCenterX() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
+            return Math.max(WorldBorder.this.getCenterX() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius));
         }
 
         @Override
         public double getBoundNorth() {
-            return Math.max(WorldBorder.this.getCenterZ() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxWorldBorderRadius));
+            return Math.max(WorldBorder.this.getCenterZ() - this.getSize() / 2.0, (double)(-WorldBorder.this.maxRadius));
         }
 
         @Override
         public double getBoundEast() {
-            return Math.min(WorldBorder.this.getCenterX() + this.getSize() / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
+            return Math.min(WorldBorder.this.getCenterX() + this.getSize() / 2.0, (double)WorldBorder.this.maxRadius);
         }
 
         @Override
         public double getBoundSouth() {
-            return Math.min(WorldBorder.this.getCenterZ() + this.getSize() / 2.0, (double)WorldBorder.this.maxWorldBorderRadius);
+            return Math.min(WorldBorder.this.getCenterZ() + this.getSize() / 2.0, (double)WorldBorder.this.maxRadius);
         }
 
         @Override
@@ -450,12 +506,12 @@ public class WorldBorder {
         }
 
         @Override
-        public long getTargetRemainingTime() {
+        public long getSizeLerpTime() {
             return this.timeEnd - Util.getMeasuringTimeMs();
         }
 
         @Override
-        public double getTargetSize() {
+        public double getSizeLerpTarget() {
             return this.newSize;
         }
 
@@ -470,12 +526,12 @@ public class WorldBorder {
         }
 
         @Override
-        public void onMaxWorldBorderRadiusChanged() {
+        public void onMaxRadiusChanged() {
         }
 
         @Override
         public Area getAreaInstance() {
-            if (this.getTargetRemainingTime() <= 0L) {
+            if (this.getSizeLerpTime() <= 0L) {
                 return new StaticArea(this.newSize);
             }
             return this;
@@ -501,14 +557,14 @@ public class WorldBorder {
         @Environment(value=EnvType.CLIENT)
         public double getShrinkingSpeed();
 
-        public long getTargetRemainingTime();
+        public long getSizeLerpTime();
 
-        public double getTargetSize();
+        public double getSizeLerpTarget();
 
         @Environment(value=EnvType.CLIENT)
         public WorldBorderStage getStage();
 
-        public void onMaxWorldBorderRadiusChanged();
+        public void onMaxRadiusChanged();
 
         public void onCenterChanged();
 

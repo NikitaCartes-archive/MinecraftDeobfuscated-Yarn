@@ -88,12 +88,12 @@ extends ArrayList<TradeOffer> {
         return tradeOfferList;
     }
 
-    public CompoundTag toTag() {
+    public CompoundTag toNbt() {
         CompoundTag compoundTag = new CompoundTag();
         ListTag listTag = new ListTag();
         for (int i = 0; i < this.size(); ++i) {
             TradeOffer tradeOffer = (TradeOffer)this.get(i);
-            listTag.add(tradeOffer.toTag());
+            listTag.add(tradeOffer.toNbt());
         }
         compoundTag.put("Recipes", listTag);
         return compoundTag;

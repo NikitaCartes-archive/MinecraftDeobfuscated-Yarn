@@ -206,18 +206,18 @@ NamedScreenHandlerFactory {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
-        this.book = tag.contains("Book", 10) ? this.resolveBook(ItemStack.fromTag(tag.getCompound("Book")), null) : ItemStack.EMPTY;
+    public void readNbt(CompoundTag tag) {
+        super.readNbt(tag);
+        this.book = tag.contains("Book", 10) ? this.resolveBook(ItemStack.fromNbt(tag.getCompound("Book")), null) : ItemStack.EMPTY;
         this.pageCount = WrittenBookItem.getPageCount(this.book);
         this.currentPage = MathHelper.clamp(tag.getInt("Page"), 0, this.pageCount - 1);
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         if (!this.getBook().isEmpty()) {
-            tag.put("Book", this.getBook().toTag(new CompoundTag()));
+            tag.put("Book", this.getBook().writeNbt(new CompoundTag()));
             tag.putInt("Page", this.currentPage);
         }
         return tag;

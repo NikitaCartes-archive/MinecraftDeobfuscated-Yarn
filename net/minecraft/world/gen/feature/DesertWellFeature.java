@@ -31,7 +31,7 @@ extends Feature<DefaultFeatureConfig> {
         int j;
         int i2;
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         blockPos = blockPos.up();
         while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
             blockPos = blockPos.down();

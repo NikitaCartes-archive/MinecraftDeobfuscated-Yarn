@@ -87,8 +87,8 @@ extends PassiveEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("InLove", this.loveTicks);
         if (this.lovingPlayer != null) {
             tag.putUuid("LoveCause", this.lovingPlayer);
@@ -101,8 +101,8 @@ extends PassiveEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.loveTicks = tag.getInt("InLove");
         this.lovingPlayer = tag.containsUuid("LoveCause") ? tag.getUuid("LoveCause") : null;
     }

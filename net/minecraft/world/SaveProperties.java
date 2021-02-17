@@ -61,7 +61,7 @@ public interface SaveProperties {
     @Environment(value=EnvType.CLIENT)
     public LevelInfo getLevelInfo();
 
-    public CompoundTag cloneWorldTag(DynamicRegistryManager var1, @Nullable CompoundTag var2);
+    public CompoundTag cloneWorldNbt(DynamicRegistryManager var1, @Nullable CompoundTag var2);
 
     public boolean isHardcore();
 

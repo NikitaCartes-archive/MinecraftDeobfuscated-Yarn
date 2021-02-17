@@ -61,8 +61,8 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
+    public CompoundTag toInitialChunkDataNbt() {
+        return this.writeNbt(new CompoundTag());
     }
 
     public boolean isExtending() {
@@ -288,8 +288,8 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
+    public void readNbt(CompoundTag tag) {
+        super.readNbt(tag);
         this.pushedBlock = NbtHelper.toBlockState(tag.getCompound("blockState"));
         this.facing = Direction.byId(tag.getInt("facing"));
         this.lastProgress = this.progress = tag.getFloat("progress");
@@ -298,8 +298,8 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         tag.put("blockState", NbtHelper.fromBlockState(this.pushedBlock));
         tag.putInt("facing", this.facing.getId());
         tag.putFloat("progress", this.lastProgress);
@@ -324,12 +324,6 @@ extends BlockEntity {
 
     public long getSavedWorldTime() {
         return this.savedWorldTime;
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public double getSquaredRenderDistance() {
-        return 68.0;
     }
 }
 

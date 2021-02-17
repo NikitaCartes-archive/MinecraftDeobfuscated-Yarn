@@ -153,7 +153,7 @@ public class DataCommand {
         return i;
     }
 
-    private static Tag getTag(NbtPathArgumentType.NbtPath path, DataCommandObject object) throws CommandSyntaxException {
+    private static Tag getNbt(NbtPathArgumentType.NbtPath path, DataCommandObject object) throws CommandSyntaxException {
         List<Tag> collection = path.get(object.getTag());
         Iterator iterator = collection.iterator();
         Tag tag = (Tag)iterator.next();
@@ -165,7 +165,7 @@ public class DataCommand {
 
     private static int executeGet(ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path) throws CommandSyntaxException {
         int i;
-        Tag tag = DataCommand.getTag(path, object);
+        Tag tag = DataCommand.getNbt(path, object);
         if (tag instanceof AbstractNumberTag) {
             i = MathHelper.floor(((AbstractNumberTag)tag).getDouble());
         } else if (tag instanceof AbstractListTag) {
@@ -182,7 +182,7 @@ public class DataCommand {
     }
 
     private static int executeGet(ServerCommandSource source, DataCommandObject object, NbtPathArgumentType.NbtPath path, double scale) throws CommandSyntaxException {
-        Tag tag = DataCommand.getTag(path, object);
+        Tag tag = DataCommand.getNbt(path, object);
         if (!(tag instanceof AbstractNumberTag)) {
             throw GET_INVALID_EXCEPTION.create(path.toString());
         }

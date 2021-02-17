@@ -442,7 +442,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 this.world.getProfiler().visit("chunkLoad");
-                CompoundTag compoundTag = this.getUpdatedChunkTag(pos);
+                CompoundTag compoundTag = this.getUpdatedChunkNbt(pos);
                 if (compoundTag != null) {
                     boolean bl;
                     boolean bl2 = bl = compoundTag.contains("Level", 10) && compoundTag.getCompound("Level").contains("Status", 8);
@@ -487,6 +487,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 this.worldGenerationProgressListener.setChunkStatus(chunkPos, requiredStatus);
                 return completableFuture;
             } catch (Exception exception) {
+                exception.getStackTrace();
                 CrashReport crashReport = CrashReport.create(exception, "Exception generating new chunk");
                 CrashReportSection crashReportSection = crashReport.addElement("Chunk to be generated");
                 crashReportSection.add("Location", String.format("%d,%d", chunkPos.x, chunkPos.z));
@@ -606,7 +607,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
             return b == 1;
         }
         try {
-            compoundTag = this.getUpdatedChunkTag(chunkPos);
+            compoundTag = this.getUpdatedChunkNbt(chunkPos);
             if (compoundTag == null) {
                 this.method_27054(chunkPos);
                 return false;
@@ -694,12 +695,12 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     @Nullable
-    private CompoundTag getUpdatedChunkTag(ChunkPos pos) throws IOException {
+    private CompoundTag getUpdatedChunkNbt(ChunkPos pos) throws IOException {
         CompoundTag compoundTag = this.getNbt(pos);
         if (compoundTag == null) {
             return null;
         }
-        return this.updateChunkTag(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
+        return this.updateChunkNbt(this.world.getRegistryKey(), this.persistentStateManagerFactory, compoundTag);
     }
 
     boolean isTooFarFromPlayersToSpawnMobs(ChunkPos chunkPos) {

@@ -29,14 +29,14 @@ public interface Angerable {
 
     public void chooseRandomAngerTime();
 
-    default public void angerToTag(CompoundTag tag) {
+    default public void writeAngerToNbt(CompoundTag tag) {
         tag.putInt("AngerTime", this.getAngerTime());
         if (this.getAngryAt() != null) {
             tag.putUuid("AngryAt", this.getAngryAt());
         }
     }
 
-    default public void angerFromTag(World world, CompoundTag tag) {
+    default public void readAngerFromNbt(World world, CompoundTag tag) {
         this.setAngerTime(tag.getInt("AngerTime"));
         if (!(world instanceof ServerWorld)) {
             return;

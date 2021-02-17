@@ -130,7 +130,7 @@ implements Monster {
     }
 
     @Override
-    public void playFlySound() {
+    public void addFlapEffects() {
         if (this.world.isClient && !this.isSilent()) {
             this.world.playSound(this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_FLAP, this.getSoundCategory(), 5.0f, 0.8f + this.random.nextFloat() * 0.3f, false);
         }
@@ -168,7 +168,7 @@ implements Monster {
         double k;
         double j;
         double e;
-        this.method_33573();
+        this.addAirTravelEffects();
         if (this.world.isClient) {
             this.setHealth(this.getHealth());
             if (!this.isSilent() && !this.phaseManager.getCurrent().isSittingOrHovering() && --this.ticksUntilNextGrowl < 0) {
@@ -655,14 +655,14 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("DragonPhase")) {
             this.phaseManager.setPhase(PhaseType.getFromId(tag.getInt("DragonPhase")));
         }

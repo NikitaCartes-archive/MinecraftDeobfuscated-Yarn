@@ -64,11 +64,6 @@ implements FluidDrainable {
     }
 
     @Override
-    public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
-        BubbleColumnBlock.update(world, pos.up(), BubbleColumnBlock.calculateDrag(world, pos.down()));
-    }
-
-    @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BubbleColumnBlock.update(world, pos.up(), BubbleColumnBlock.calculateDrag(world, pos));
     }
@@ -79,8 +74,10 @@ implements FluidDrainable {
     }
 
     public static void update(WorldAccess world, BlockPos pos, boolean drag) {
-        if (BubbleColumnBlock.isStillWater(world, pos)) {
-            world.setBlockState(pos, (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, drag), 2);
+        BlockPos.Mutable mutable = pos.mutableCopy();
+        while (BubbleColumnBlock.isStillWater(world, mutable)) {
+            world.setBlockState(mutable, (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, drag), 2);
+            mutable.move(Direction.UP);
         }
     }
 

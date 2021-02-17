@@ -5,8 +5,8 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import net.minecraft.class_5534;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.passive.VillagerEntity;
@@ -48,7 +48,7 @@ extends WanderAroundGoal {
 
     @Nullable
     private Vec3d method_27925() {
-        return class_5534.method_31527(this.mob, 10, 7);
+        return FuzzyTargeting.find(this.mob, 10, 7);
     }
 
     @Nullable
@@ -60,7 +60,7 @@ extends WanderAroundGoal {
         }
         VillagerEntity villagerEntity = list.get(this.mob.world.random.nextInt(list.size()));
         Vec3d vec3d = villagerEntity.getPos();
-        return class_5534.method_31528(this.mob, 10, 7, vec3d);
+        return FuzzyTargeting.findTo(this.mob, 10, 7, vec3d);
     }
 
     @Nullable
@@ -73,7 +73,7 @@ extends WanderAroundGoal {
         if (blockPos == null) {
             return null;
         }
-        return class_5534.method_31528(this.mob, 10, 7, Vec3d.ofBottomCenter(blockPos));
+        return FuzzyTargeting.findTo(this.mob, 10, 7, Vec3d.ofBottomCenter(blockPos));
     }
 
     @Nullable

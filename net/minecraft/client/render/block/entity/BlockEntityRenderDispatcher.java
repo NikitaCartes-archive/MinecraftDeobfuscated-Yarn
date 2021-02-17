@@ -28,7 +28,6 @@ import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,14 +63,14 @@ implements SynchronousResourceReloadListener {
     }
 
     public <E extends BlockEntity> void render(E blockEntity, float tickDelta, MatrixStack matrix, VertexConsumerProvider vertexConsumerProvider) {
-        if (!Vec3d.ofCenter(blockEntity.getPos()).isInRange(this.camera.getPos(), blockEntity.getSquaredRenderDistance())) {
-            return;
-        }
         BlockEntityRenderer blockEntityRenderer = this.get(blockEntity);
         if (blockEntityRenderer == null) {
             return;
         }
         if (!blockEntity.hasWorld() || !blockEntity.getType().supports(blockEntity.getCachedState())) {
+            return;
+        }
+        if (!blockEntityRenderer.method_33892(blockEntity, this.camera.getPos())) {
             return;
         }
         BlockEntityRenderDispatcher.runReported(blockEntity, () -> BlockEntityRenderDispatcher.render(blockEntityRenderer, blockEntity, tickDelta, matrix, vertexConsumerProvider));

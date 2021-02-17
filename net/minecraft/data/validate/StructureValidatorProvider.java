@@ -43,8 +43,8 @@ implements SnbtProvider.Tweaker {
             LOGGER.warn("SNBT Too old, do not forget to update: {} < {}: {}", (Object)i, (Object)2678, (Object)name);
         }
         CompoundTag compoundTag = NbtHelper.update(Schemas.getFixer(), DataFixTypes.STRUCTURE, tag, i);
-        structure.fromTag(compoundTag);
-        return structure.toTag(new CompoundTag());
+        structure.readNbt(compoundTag);
+        return structure.writeNbt(new CompoundTag());
     }
 }
 

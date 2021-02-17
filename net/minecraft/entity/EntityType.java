@@ -354,7 +354,7 @@ implements TypeFilter<Entity, T> {
         if (name != null && entity instanceof LivingEntity) {
             ((Entity)entity).setCustomName(name);
         }
-        EntityType.loadFromEntityTag(world, player, entity, itemTag);
+        EntityType.loadFromEntityNbt(world, player, entity, itemTag);
         return entity;
     }
 
@@ -367,7 +367,7 @@ implements TypeFilter<Entity, T> {
         return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
     }
 
-    public static void loadFromEntityTag(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
+    public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
         if (itemTag == null || !itemTag.contains("EntityTag", 10)) {
             return;
         }
@@ -378,11 +378,11 @@ implements TypeFilter<Entity, T> {
         if (!(world.isClient || !entity.entityDataRequiresOperator() || player != null && minecraftServer.getPlayerManager().isOperator(player.getGameProfile()))) {
             return;
         }
-        CompoundTag compoundTag = entity.toTag(new CompoundTag());
+        CompoundTag compoundTag = entity.writeNbt(new CompoundTag());
         UUID uUID = entity.getUuid();
         compoundTag.copyFrom(itemTag.getCompound("EntityTag"));
         entity.setUuid(uUID);
-        entity.fromTag(compoundTag);
+        entity.readNbt(compoundTag);
     }
 
     public boolean isSaveable() {
@@ -450,8 +450,8 @@ implements TypeFilter<Entity, T> {
         return EntityType.newInstance(world, Registry.ENTITY_TYPE.get(type));
     }
 
-    public static Optional<Entity> getEntityFromTag(CompoundTag tag, World world) {
-        return Util.ifPresentOrElse(EntityType.fromTag(tag).map(entityType -> entityType.create(world)), entity -> entity.fromTag(tag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)tag.getString("id")));
+    public static Optional<Entity> getEntityFromNbt(CompoundTag tag, World world) {
+        return Util.ifPresentOrElse(EntityType.fromNbt(tag).map(entityType -> entityType.create(world)), entity -> entity.readNbt(tag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)tag.getString("id")));
     }
 
     @Nullable
@@ -487,13 +487,13 @@ implements TypeFilter<Entity, T> {
         return this.dimensions;
     }
 
-    public static Optional<EntityType<?>> fromTag(CompoundTag compoundTag) {
+    public static Optional<EntityType<?>> fromNbt(CompoundTag compoundTag) {
         return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(compoundTag.getString("id")));
     }
 
     @Nullable
     public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> entityProcessor) {
-        return EntityType.loadEntityFromTag(compoundTag, world).map(entityProcessor).map(entity -> {
+        return EntityType.loadEntityFromNbt(compoundTag, world).map(entityProcessor).map(entity -> {
             if (compoundTag.contains("Passengers", 9)) {
                 ListTag listTag = compoundTag.getList("Passengers", 10);
                 for (int i = 0; i < listTag.size(); ++i) {
@@ -535,9 +535,9 @@ implements TypeFilter<Entity, T> {
         }, false);
     }
 
-    private static Optional<Entity> loadEntityFromTag(CompoundTag compoundTag, World world) {
+    private static Optional<Entity> loadEntityFromNbt(CompoundTag compoundTag, World world) {
         try {
-            return EntityType.getEntityFromTag(compoundTag, world);
+            return EntityType.getEntityFromNbt(compoundTag, world);
         } catch (RuntimeException runtimeException) {
             LOGGER.warn("Exception loading entity: ", (Throwable)runtimeException);
             return Optional.empty();

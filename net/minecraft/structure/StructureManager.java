@@ -118,7 +118,7 @@ public class StructureManager {
             tag.putInt("DataVersion", 500);
         }
         Structure structure = new Structure();
-        structure.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
+        structure.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.STRUCTURE, tag, tag.getInt("DataVersion")));
         return structure;
     }
 
@@ -138,7 +138,7 @@ public class StructureManager {
             LOGGER.error("Failed to create parent directory: {}", (Object)path2);
             return false;
         }
-        CompoundTag compoundTag = structure.toTag(new CompoundTag());
+        CompoundTag compoundTag = structure.writeNbt(new CompoundTag());
         try (FileOutputStream outputStream = new FileOutputStream(path.toFile());){
             NbtIo.writeCompressed(compoundTag, outputStream);
         } catch (Throwable throwable) {

@@ -247,18 +247,12 @@ implements NamedScreenHandlerFactory {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 3, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 3, this.toInitialChunkDataNbt());
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
-    }
-
-    @Override
-    @Environment(value=EnvType.CLIENT)
-    public double getSquaredRenderDistance() {
-        return 256.0;
+    public CompoundTag toInitialChunkDataNbt() {
+        return this.writeNbt(new CompoundTag());
     }
 
     @Nullable
@@ -268,26 +262,26 @@ implements NamedScreenHandlerFactory {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
+    public void readNbt(CompoundTag tag) {
+        super.readNbt(tag);
         this.primary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Primary"));
         this.secondary = BeaconBlockEntity.getPotionEffectById(tag.getInt("Secondary"));
         if (tag.contains("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
-        this.lock = ContainerLock.fromTag(tag);
+        this.lock = ContainerLock.fromNbt(tag);
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         tag.putInt("Primary", StatusEffect.getRawId(this.primary));
         tag.putInt("Secondary", StatusEffect.getRawId(this.secondary));
         tag.putInt("Levels", this.level);
         if (this.customName != null) {
             tag.putString("CustomName", Text.Serializer.toJson(this.customName));
         }
-        this.lock.toTag(tag);
+        this.lock.writeNbt(tag);
         return tag;
     }
 

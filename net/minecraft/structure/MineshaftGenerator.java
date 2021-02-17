@@ -6,8 +6,10 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FallingBlock;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.RailBlock;
 import net.minecraft.block.WallTorchBlock;
@@ -165,8 +167,8 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putBoolean("tf", this.twoFloors);
             tag.putInt("D", this.direction.getHorizontal());
         }
@@ -278,10 +280,10 @@ public class MineshaftGenerator {
             this.generateCrossingPillar(world, boundingBox, this.boundingBox.minX + 1, this.boundingBox.minY, this.boundingBox.maxZ - 1, this.boundingBox.maxY);
             this.generateCrossingPillar(world, boundingBox, this.boundingBox.maxX - 1, this.boundingBox.minY, this.boundingBox.minZ + 1, this.boundingBox.maxY);
             this.generateCrossingPillar(world, boundingBox, this.boundingBox.maxX - 1, this.boundingBox.minY, this.boundingBox.maxZ - 1, this.boundingBox.maxY);
-            for (int i = this.boundingBox.minX; i <= this.boundingBox.maxX; ++i) {
-                for (int j = this.boundingBox.minZ; j <= this.boundingBox.maxZ; ++j) {
-                    if (!this.getBlockAt(world, i, this.boundingBox.minY - 1, j, boundingBox).isAir() || !this.isUnderSeaLevel(world, i, this.boundingBox.minY - 1, j, boundingBox)) continue;
-                    this.addBlock(world, blockState, i, this.boundingBox.minY - 1, j, boundingBox);
+            int i = this.boundingBox.minY - 1;
+            for (int j = this.boundingBox.minX; j <= this.boundingBox.maxX; ++j) {
+                for (int k = this.boundingBox.minZ; k <= this.boundingBox.maxZ; ++k) {
+                    this.method_33880(world, boundingBox, blockState, j, i, k);
                 }
             }
             return true;
@@ -310,8 +312,8 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putBoolean("hr", this.hasRails);
             tag.putBoolean("sc", this.hasCobwebs);
             tag.putBoolean("hps", this.hasSpawner);
@@ -461,7 +463,6 @@ public class MineshaftGenerator {
 
         @Override
         public boolean generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, Random random, BlockBox boundingBox, ChunkPos chunkPos, BlockPos pos) {
-            int r;
             int p;
             int o;
             int n;
@@ -500,7 +501,7 @@ public class MineshaftGenerator {
                 if (!this.hasCobwebs || this.hasSpawner) continue;
                 p = this.applyYTransform(0);
                 int q = o - 1 + random.nextInt(3);
-                r = this.applyXTransform(1, q);
+                int r = this.applyXTransform(1, q);
                 BlockPos blockPos = new BlockPos(r, p, s = this.applyZTransform(1, q));
                 if (!boundingBox.contains(blockPos) || !this.isUnderSeaLevel(world, 1, 0, q, boundingBox)) continue;
                 this.hasSpawner = true;
@@ -511,11 +512,7 @@ public class MineshaftGenerator {
             }
             for (n = 0; n <= 2; ++n) {
                 for (o = 0; o <= m; ++o) {
-                    p = -1;
-                    BlockState blockState2 = this.getBlockAt(world, n, -1, o, boundingBox);
-                    if (!blockState2.isAir() || !this.isUnderSeaLevel(world, n, -1, o, boundingBox)) continue;
-                    r = -1;
-                    this.addBlock(world, blockState, n, -1, o, boundingBox);
+                    this.method_33880(world, boundingBox, blockState, n, -1, o);
                 }
             }
             n = 2;
@@ -525,12 +522,12 @@ public class MineshaftGenerator {
                 this.fillSupportBeam(world, boundingBox, 0, -1, o);
             }
             if (this.hasRails) {
-                BlockState blockState3 = (BlockState)Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, RailShape.NORTH_SOUTH);
+                BlockState blockState2 = (BlockState)Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, RailShape.NORTH_SOUTH);
                 for (p = 0; p <= m; ++p) {
-                    BlockState blockState2 = this.getBlockAt(world, 1, -1, p, boundingBox);
-                    if (blockState2.isAir() || !blockState2.isOpaqueFullCube(world, new BlockPos(this.applyXTransform(1, p), this.applyYTransform(-1), this.applyZTransform(1, p)))) continue;
+                    BlockState blockState3 = this.getBlockAt(world, 1, -1, p, boundingBox);
+                    if (blockState3.isAir() || !blockState3.isOpaqueFullCube(world, new BlockPos(this.applyXTransform(1, p), this.applyYTransform(-1), this.applyZTransform(1, p)))) continue;
                     float f = this.isUnderSeaLevel(world, 1, 0, p, boundingBox) ? 0.7f : 0.9f;
-                    this.addBlockWithRandomThreshold(world, boundingBox, random, f, 1, 0, p, blockState3, false);
+                    this.addBlockWithRandomThreshold(world, boundingBox, random, f, 1, 0, p, blockState2, false);
                 }
             }
             return true;
@@ -540,10 +537,10 @@ public class MineshaftGenerator {
             BlockState blockState = this.mineshaftType.getWood();
             BlockState blockState2 = this.mineshaftType.getPlanks();
             if (this.getBlockAt(world, x, y, z, box).isOf(blockState2.getBlock())) {
-                this.fillDownwards(world, blockState, x, y - 1, z, box);
+                this.method_33879(world, blockState, x, y, z, box);
             }
             if (this.getBlockAt(world, x + 2, y, z, box).isOf(blockState2.getBlock())) {
-                this.fillDownwards(world, blockState, x + 2, y - 1, z, box);
+                this.method_33879(world, blockState, x + 2, y, z, box);
             }
         }
 
@@ -556,7 +553,7 @@ public class MineshaftGenerator {
             if (!box.contains(mutable)) {
                 return;
             }
-            while (this.isAirOrWater(world, mutable) && mutable.getY() > world.getBottomY() + 1) {
+            while (this.method_33881(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
                 mutable.move(Direction.DOWN);
             }
             if (!this.isNotRailOrLava(world.getBlockState(mutable))) {
@@ -568,13 +565,57 @@ public class MineshaftGenerator {
             }
         }
 
+        protected void method_33879(StructureWorldAccess structureWorldAccess, BlockState blockState, int i, int j, int k, BlockBox blockBox) {
+            int n;
+            int m;
+            int l = this.applyXTransform(i, k);
+            BlockPos.Mutable mutable = new BlockPos.Mutable(l, m = this.applyYTransform(j), n = this.applyZTransform(i, k));
+            if (!blockBox.contains(mutable)) {
+                return;
+            }
+            int o = 1;
+            boolean bl = true;
+            boolean bl2 = true;
+            while (bl || bl2) {
+                boolean bl3;
+                BlockState blockState2;
+                if (bl) {
+                    mutable.setY(m - o);
+                    blockState2 = structureWorldAccess.getBlockState(mutable);
+                    bl3 = this.method_33881(blockState2);
+                    if (!bl3 && this.isNotRailOrLava(blockState2)) {
+                        MineshaftCorridor.method_33878(structureWorldAccess, blockState, mutable, m - o + 1, m);
+                        return;
+                    }
+                    boolean bl4 = bl = o <= 10 && bl3 && mutable.getY() > structureWorldAccess.getBottomY() + 1;
+                }
+                if (bl2) {
+                    mutable.setY(m + o);
+                    blockState2 = structureWorldAccess.getBlockState(mutable);
+                    bl3 = this.method_33881(blockState2);
+                    if (!bl3 && this.method_33877(structureWorldAccess, mutable, blockState2)) {
+                        structureWorldAccess.setBlockState(mutable.setY(m + 1), this.mineshaftType.getFence(), 2);
+                        MineshaftCorridor.method_33878(structureWorldAccess, Blocks.CHAIN.getDefaultState(), mutable, m + 2, m + o);
+                        return;
+                    }
+                    bl2 = o <= 20 && bl3 && mutable.getY() < structureWorldAccess.getTopY() - 1;
+                }
+                ++o;
+            }
+        }
+
+        private static void method_33878(StructureWorldAccess structureWorldAccess, BlockState blockState, BlockPos.Mutable mutable, int i, int j) {
+            for (int k = i; k < j; ++k) {
+                structureWorldAccess.setBlockState(mutable.setY(k), blockState, 2);
+            }
+        }
+
         private boolean isNotRailOrLava(BlockState state) {
             return !state.isOf(Blocks.RAIL) && !state.isOf(Blocks.LAVA);
         }
 
-        private boolean isAirOrWater(WorldView world, BlockPos pos) {
-            BlockState blockState = world.getBlockState(pos);
-            return blockState.isAir() || blockState.isOf(Blocks.WATER);
+        private boolean method_33877(WorldView worldView, BlockPos blockPos, BlockState blockState) {
+            return Block.sideCoversSmallSquare(worldView, blockPos, Direction.DOWN) && !(blockState.getBlock() instanceof FallingBlock);
         }
 
         private void generateSupports(StructureWorldAccess world, BlockBox boundingBox, int minX, int minY, int z, int maxY, int maxX, Random random) {
@@ -679,8 +720,8 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             ListTag listTag = new ListTag();
             for (BlockBox blockBox : this.entrances) {
                 listTag.add(blockBox.toNbt());
@@ -706,11 +747,11 @@ public class MineshaftGenerator {
         @Override
         protected boolean canAddBlock(WorldView world, int x, int y, int z, BlockBox box) {
             BlockState blockState = this.getBlockAt(world, x, y, z, box);
-            return !blockState.isOf(this.mineshaftType.getPlanks().getBlock()) && !blockState.isOf(this.mineshaftType.getWood().getBlock()) && !blockState.isOf(this.mineshaftType.getFence().getBlock());
+            return !blockState.isOf(this.mineshaftType.getPlanks().getBlock()) && !blockState.isOf(this.mineshaftType.getWood().getBlock()) && !blockState.isOf(this.mineshaftType.getFence().getBlock()) && !blockState.isOf(Blocks.CHAIN);
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
+        protected void writeNbt(CompoundTag tag) {
             tag.putInt("MST", this.mineshaftType.ordinal());
         }
 
@@ -763,6 +804,17 @@ public class MineshaftGenerator {
                 }
             }
             return false;
+        }
+
+        protected void method_33880(StructureWorldAccess structureWorldAccess, BlockBox blockBox, BlockState blockState, int i, int j, int k) {
+            if (!this.isUnderSeaLevel(structureWorldAccess, i, j, k, blockBox)) {
+                return;
+            }
+            BlockPos blockPos = this.method_33781(i, j, k);
+            BlockState blockState2 = structureWorldAccess.getBlockState(blockPos);
+            if (blockState2.isAir() || blockState2.isOf(Blocks.CHAIN)) {
+                structureWorldAccess.setBlockState(blockPos, blockState, 2);
+            }
         }
 
         private boolean isAir(BlockView world, BlockPos.Mutable pos, int x, int y, int z) {

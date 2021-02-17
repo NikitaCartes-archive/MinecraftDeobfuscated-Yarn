@@ -362,21 +362,21 @@ Nameable {
             if (this.main.get(i).isEmpty()) continue;
             compoundTag = new CompoundTag();
             compoundTag.putByte("Slot", (byte)i);
-            this.main.get(i).toTag(compoundTag);
+            this.main.get(i).writeNbt(compoundTag);
             tag.add(compoundTag);
         }
         for (i = 0; i < this.armor.size(); ++i) {
             if (this.armor.get(i).isEmpty()) continue;
             compoundTag = new CompoundTag();
             compoundTag.putByte("Slot", (byte)(i + 100));
-            this.armor.get(i).toTag(compoundTag);
+            this.armor.get(i).writeNbt(compoundTag);
             tag.add(compoundTag);
         }
         for (i = 0; i < this.offHand.size(); ++i) {
             if (this.offHand.get(i).isEmpty()) continue;
             compoundTag = new CompoundTag();
             compoundTag.putByte("Slot", (byte)(i + 150));
-            this.offHand.get(i).toTag(compoundTag);
+            this.offHand.get(i).writeNbt(compoundTag);
             tag.add(compoundTag);
         }
         return tag;
@@ -389,7 +389,7 @@ Nameable {
         for (int i = 0; i < tag.size(); ++i) {
             CompoundTag compoundTag = tag.getCompound(i);
             int j = compoundTag.getByte("Slot") & 0xFF;
-            ItemStack itemStack = ItemStack.fromTag(compoundTag);
+            ItemStack itemStack = ItemStack.fromNbt(compoundTag);
             if (itemStack.isEmpty()) continue;
             if (j >= 0 && j < this.main.size()) {
                 this.main.set(j, itemStack);

@@ -4,7 +4,7 @@
 package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
-import net.minecraft.class_5532;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
@@ -28,7 +28,7 @@ extends Goal {
         if (this.mob.isInWalkTargetRange()) {
             return false;
         }
-        Vec3d vec3d = class_5532.method_31512(this.mob, 16, 7, Vec3d.ofBottomCenter(this.mob.getPositionTarget()), 1.5707963705062866);
+        Vec3d vec3d = NoPenaltyTargeting.find(this.mob, 16, 7, Vec3d.ofBottomCenter(this.mob.getPositionTarget()), 1.5707963705062866);
         if (vec3d == null) {
             return false;
         }

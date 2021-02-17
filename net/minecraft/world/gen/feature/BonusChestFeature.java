@@ -32,7 +32,7 @@ extends Feature<DefaultFeatureConfig> {
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        ChunkPos chunkPos = new ChunkPos(context.getPos());
+        ChunkPos chunkPos = new ChunkPos(context.getOrigin());
         List list = IntStream.rangeClosed(chunkPos.getStartX(), chunkPos.getEndX()).boxed().collect(Collectors.toList());
         Collections.shuffle(list, random);
         List list2 = IntStream.rangeClosed(chunkPos.getStartZ(), chunkPos.getEndZ()).boxed().collect(Collectors.toList());

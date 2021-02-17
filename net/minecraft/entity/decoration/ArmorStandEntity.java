@@ -162,13 +162,13 @@ extends LivingEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         ListTag listTag = new ListTag();
         for (ItemStack itemStack : this.armorItems) {
             CompoundTag compoundTag = new CompoundTag();
             if (!itemStack.isEmpty()) {
-                itemStack.toTag(compoundTag);
+                itemStack.writeNbt(compoundTag);
             }
             listTag.add(compoundTag);
         }
@@ -177,7 +177,7 @@ extends LivingEntity {
         for (ItemStack itemStack2 : this.heldItems) {
             CompoundTag compoundTag2 = new CompoundTag();
             if (!itemStack2.isEmpty()) {
-                itemStack2.toTag(compoundTag2);
+                itemStack2.writeNbt(compoundTag2);
             }
             listTag2.add(compoundTag2);
         }
@@ -194,20 +194,20 @@ extends LivingEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         int i;
         ListTag listTag;
-        super.readCustomDataFromTag(tag);
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("ArmorItems", 9)) {
             listTag = tag.getList("ArmorItems", 10);
             for (i = 0; i < this.armorItems.size(); ++i) {
-                this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+                this.armorItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
             }
         }
         if (tag.contains("HandItems", 9)) {
             listTag = tag.getList("HandItems", 10);
             for (i = 0; i < this.heldItems.size(); ++i) {
-                this.heldItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+                this.heldItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
             }
         }
         this.setInvisible(tag.getBoolean("Invisible"));

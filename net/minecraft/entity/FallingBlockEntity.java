@@ -87,8 +87,8 @@ extends Entity {
     }
 
     @Override
-    protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.NONE;
+    protected Entity.MoveEffect getMoveEffect() {
+        return Entity.MoveEffect.NONE;
     }
 
     @Override
@@ -152,13 +152,13 @@ extends Entity {
                                     ((LandingBlock)((Object)block)).onLanding(this.world, blockPos, this.block, blockState, this);
                                 }
                                 if (this.blockEntityData != null && this.block.hasBlockEntity() && (blockEntity = this.world.getBlockEntity(blockPos)) != null) {
-                                    CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+                                    CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
                                     for (String string : this.blockEntityData.getKeys()) {
                                         Tag tag = this.blockEntityData.get(string);
                                         if ("x".equals(string) || "y".equals(string) || "z".equals(string)) continue;
                                         compoundTag.put(string, tag.copy());
                                     }
-                                    blockEntity.fromTag(compoundTag);
+                                    blockEntity.readNbt(compoundTag);
                                     blockEntity.markDirty();
                                 }
                             } else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
@@ -223,7 +223,7 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag tag) {
+    protected void writeCustomDataToNbt(CompoundTag tag) {
         tag.put("BlockState", NbtHelper.fromBlockState(this.block));
         tag.putInt("Time", this.timeFalling);
         tag.putBoolean("DropItem", this.dropItem);
@@ -236,7 +236,7 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag tag) {
+    protected void readCustomDataFromNbt(CompoundTag tag) {
         this.block = NbtHelper.toBlockState(tag.getCompound("BlockState"));
         this.timeFalling = tag.getInt("Time");
         if (tag.contains("HurtEntities", 99)) {

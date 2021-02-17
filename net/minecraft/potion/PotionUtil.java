@@ -65,7 +65,7 @@ public class PotionUtil {
             ListTag listTag = tag.getList("CustomPotionEffects", 10);
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag = listTag.getCompound(i);
-                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(compoundTag);
+                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(compoundTag);
                 if (statusEffectInstance == null) continue;
                 list.add(statusEffectInstance);
             }
@@ -139,7 +139,7 @@ public class PotionUtil {
         CompoundTag compoundTag = stack.getOrCreateTag();
         ListTag listTag = compoundTag.getList("CustomPotionEffects", 9);
         for (StatusEffectInstance statusEffectInstance : effects) {
-            listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+            listTag.add(statusEffectInstance.writeNbt(new CompoundTag()));
         }
         compoundTag.put("CustomPotionEffects", listTag);
         return stack;

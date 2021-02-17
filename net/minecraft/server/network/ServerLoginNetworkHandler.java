@@ -48,9 +48,10 @@ implements ServerLoginPacketListener {
     public final ClientConnection connection;
     private State state = State.HELLO;
     private int loginTicks;
+    @Nullable
     private GameProfile profile;
     private final String serverId = "";
-    private SecretKey secretKey;
+    @Nullable
     private ServerPlayerEntity player;
 
     public ServerLoginNetworkHandler(MinecraftServer server, ClientConnection connection) {
@@ -65,7 +66,7 @@ implements ServerLoginPacketListener {
             this.acceptPlayer();
         } else if (this.state == State.DELAY_ACCEPT && (serverPlayerEntity = this.server.getPlayerManager().getPlayer(this.profile.getId())) == null) {
             this.state = State.READY_TO_ACCEPT;
-            this.server.getPlayerManager().onPlayerConnect(this.connection, this.player);
+            this.method_33800(this.player);
             this.player = null;
         }
         if (this.loginTicks++ == 600) {
@@ -106,9 +107,13 @@ implements ServerLoginPacketListener {
                 this.state = State.DELAY_ACCEPT;
                 this.player = this.server.getPlayerManager().createPlayer(this.profile);
             } else {
-                this.server.getPlayerManager().onPlayerConnect(this.connection, this.server.getPlayerManager().createPlayer(this.profile));
+                this.method_33800(this.server.getPlayerManager().createPlayer(this.profile));
             }
         }
+    }
+
+    private void method_33800(ServerPlayerEntity serverPlayerEntity) {
+        this.server.getPlayerManager().onPlayerConnect(this.connection, serverPlayerEntity);
     }
 
     @Override
@@ -144,10 +149,10 @@ implements ServerLoginPacketListener {
             if (!Arrays.equals(this.nonce, packet.decryptNonce(privateKey))) {
                 throw new IllegalStateException("Protocol error");
             }
-            this.secretKey = packet.decryptSecretKey(privateKey);
-            Cipher cipher = NetworkEncryptionUtils.cipherFromKey(2, this.secretKey);
-            Cipher cipher2 = NetworkEncryptionUtils.cipherFromKey(1, this.secretKey);
-            string = new BigInteger(NetworkEncryptionUtils.generateServerId("", this.server.getKeyPair().getPublic(), this.secretKey)).toString(16);
+            SecretKey secretKey = packet.decryptSecretKey(privateKey);
+            Cipher cipher = NetworkEncryptionUtils.cipherFromKey(2, secretKey);
+            Cipher cipher2 = NetworkEncryptionUtils.cipherFromKey(1, secretKey);
+            string = new BigInteger(NetworkEncryptionUtils.generateServerId("", this.server.getKeyPair().getPublic(), secretKey)).toString(16);
             this.state = State.AUTHENTICATING;
             this.connection.setupEncryption(cipher, cipher2);
         } catch (NetworkEncryptionException networkEncryptionException) {

@@ -165,7 +165,7 @@ Element {
             this.write("");
             return;
         }
-        int i = this.method_27537(characterOffset);
+        int i = this.getCursorPosWithOffset(characterOffset);
         int j = Math.min(i, this.selectionStart);
         if (j == (k = Math.max(i, this.selectionStart))) {
             return;
@@ -213,11 +213,11 @@ Element {
     }
 
     public void moveCursor(int offset) {
-        this.setCursor(this.method_27537(offset));
+        this.setCursor(this.getCursorPosWithOffset(offset));
     }
 
-    private int method_27537(int i) {
-        return Util.moveCursor(this.text, this.selectionStart, i);
+    private int getCursorPosWithOffset(int offset) {
+        return Util.moveCursor(this.text, this.selectionStart, offset);
     }
 
     public void setCursor(int cursor) {

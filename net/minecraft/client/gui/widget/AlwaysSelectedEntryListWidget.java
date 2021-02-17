@@ -19,14 +19,14 @@ extends EntryListWidget<E> {
 
     @Override
     public boolean changeFocus(boolean lookForwards) {
-        if (!this.inFocus && this.getItemCount() == 0) {
+        if (!this.inFocus && this.getEntryCount() == 0) {
             return false;
         }
         boolean bl = this.inFocus = !this.inFocus;
-        if (this.inFocus && this.getSelected() == null && this.getItemCount() > 0) {
+        if (this.inFocus && this.getSelected() == null && this.getEntryCount() > 0) {
             this.moveSelection(EntryListWidget.MoveDirection.DOWN);
         } else if (this.inFocus && this.getSelected() != null) {
-            this.method_30015();
+            this.ensureSelectedEntryVisible();
         }
         return this.inFocus;
     }

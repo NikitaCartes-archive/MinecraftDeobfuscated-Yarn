@@ -45,9 +45,9 @@ extends Screen {
     private SelectionManager selectionManager;
     private SignType signType;
     private SignBlockEntityRenderer.SignModel model;
-    private final String[] text = (String[])IntStream.range(0, 4).mapToObj(sign::getTextOnRow).map(Text::getString).toArray(String[]::new);
+    private final String[] text = (String[])IntStream.range(0, 4).mapToObj(i -> sign.getTextOnRow(i, bl)).map(Text::getString).toArray(String[]::new);
 
-    public SignEditScreen(SignBlockEntity sign) {
+    public SignEditScreen(SignBlockEntity sign, boolean bl) {
         super(new TranslatableText("sign.edit"));
         this.sign = sign;
     }

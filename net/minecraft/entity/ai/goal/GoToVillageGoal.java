@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.Random;
-import net.minecraft.class_5534;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.mob.PathAwareEntity;
@@ -45,7 +45,7 @@ extends Goal {
         if (!serverWorld.isNearOccupiedPointOfInterest(blockPos2, 6)) {
             return false;
         }
-        Vec3d vec3d = class_5534.method_31530(this.mob, 15, 7, blockPos -> -serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)));
+        Vec3d vec3d = FuzzyTargeting.find(this.mob, 15, 7, blockPos -> -serverWorld.getOccupiedPointOfInterestDistance(ChunkSectionPos.from(blockPos)));
         this.targetPosition = vec3d == null ? null : new BlockPos(vec3d);
         return this.targetPosition != null;
     }

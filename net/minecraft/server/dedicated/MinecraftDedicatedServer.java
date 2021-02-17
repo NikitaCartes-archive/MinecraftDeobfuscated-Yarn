@@ -86,7 +86,7 @@ implements DedicatedServer {
         super(thread, impl, session, saveProperties, resourcePackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
         this.propertiesLoader = serverPropertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
-        this.filterer = null;
+        this.filterer = TextFilterer.method_33805(serverPropertiesLoader.getPropertiesHandler().textFilteringConfig);
     }
 
     @Override
@@ -533,12 +533,11 @@ implements DedicatedServer {
     }
 
     @Override
-    @Nullable
     public TextStream createFilterer(ServerPlayerEntity player) {
         if (this.filterer != null) {
             return this.filterer.createFilterer(player.getGameProfile());
         }
-        return null;
+        return TextStream.field_28862;
     }
 
     @Override

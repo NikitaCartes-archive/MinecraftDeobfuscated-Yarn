@@ -139,5 +139,10 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
     public boolean rendersOutsideBoundingBox(StructureBlockBlockEntity structureBlockBlockEntity) {
         return true;
     }
+
+    @Override
+    public int method_33893() {
+        return 96;
+    }
 }
 

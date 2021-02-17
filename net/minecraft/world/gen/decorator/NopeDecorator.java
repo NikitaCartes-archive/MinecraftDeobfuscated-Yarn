@@ -7,17 +7,18 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.decorator.Decorator;
+import net.minecraft.world.gen.decorator.DecoratorContext;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
-import net.minecraft.world.gen.decorator.SimpleDecorator;
 
 public class NopeDecorator
-extends SimpleDecorator<NopeDecoratorConfig> {
+extends Decorator<NopeDecoratorConfig> {
     public NopeDecorator(Codec<NopeDecoratorConfig> codec) {
         super(codec);
     }
 
     @Override
-    public Stream<BlockPos> getPositions(Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
+    public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
         return Stream.of(blockPos);
     }
 }

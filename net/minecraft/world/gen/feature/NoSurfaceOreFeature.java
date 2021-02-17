@@ -24,7 +24,7 @@ extends Feature<OreFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
         OreFeatureConfig oreFeatureConfig = context.getConfig();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         int i = random.nextInt(oreFeatureConfig.size + 1);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int j = 0; j < i; ++j) {

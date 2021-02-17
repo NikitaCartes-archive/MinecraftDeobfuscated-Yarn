@@ -50,8 +50,8 @@ extends Entity {
     }
 
     @Override
-    protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.NONE;
+    protected Entity.MoveEffect getMoveEffect() {
+        return Entity.MoveEffect.NONE;
     }
 
     @Override
@@ -174,7 +174,7 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
+    public void writeCustomDataToNbt(CompoundTag tag) {
         tag.putShort("Health", (short)this.health);
         tag.putShort("Age", (short)this.orbAge);
         tag.putShort("Value", (short)this.amount);
@@ -182,7 +182,7 @@ extends Entity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         this.health = tag.getShort("Health");
         this.orbAge = tag.getShort("Age");
         this.amount = tag.getShort("Value");

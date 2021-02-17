@@ -70,7 +70,7 @@ public class EntityAttributeModifier {
         return "AttributeModifier{amount=" + this.value + ", operation=" + (Object)((Object)this.operation) + ", name='" + this.nameGetter.get() + '\'' + ", id=" + this.uuid + '}';
     }
 
-    public CompoundTag toTag() {
+    public CompoundTag toNbt() {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putString("Name", this.getName());
         compoundTag.putDouble("Amount", this.value);
@@ -80,7 +80,7 @@ public class EntityAttributeModifier {
     }
 
     @Nullable
-    public static EntityAttributeModifier fromTag(CompoundTag tag) {
+    public static EntityAttributeModifier fromNbt(CompoundTag tag) {
         try {
             UUID uUID = tag.getUuid("UUID");
             Operation operation = Operation.fromId(tag.getInt("Operation"));

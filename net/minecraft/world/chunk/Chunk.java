@@ -126,15 +126,15 @@ StructureHolder {
         Chunk.getList(this.getPostProcessingLists(), index).add(packedPos);
     }
 
-    default public void addPendingBlockEntityTag(CompoundTag tag) {
+    default public void addPendingBlockEntityNbt(CompoundTag tag) {
         LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
     }
 
     @Nullable
-    public CompoundTag getBlockEntityTag(BlockPos var1);
+    public CompoundTag getBlockEntityNbt(BlockPos var1);
 
     @Nullable
-    public CompoundTag getPackedBlockEntityTag(BlockPos var1);
+    public CompoundTag getPackedBlockEntityNbt(BlockPos var1);
 
     public Stream<BlockPos> getLightSourcesStream();
 

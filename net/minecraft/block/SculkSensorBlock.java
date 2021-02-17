@@ -191,9 +191,9 @@ implements Waterloggable {
 
     @Override
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world2, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world2, BlockState state2, BlockEntityType<T> type) {
         if (!world2.isClient) {
-            return SculkSensorBlock.checkType(type, BlockEntityType.SCULK_SENSOR, (world, blockPos, blockState, sculkSensorBlockEntity) -> sculkSensorBlockEntity.getEventListener().tick(world));
+            return SculkSensorBlock.checkType(type, BlockEntityType.SCULK_SENSOR, (world, pos, state, blockEntity) -> blockEntity.getEventListener().tick(world));
         }
         return null;
     }

@@ -21,9 +21,9 @@ public class TradeOffer {
     private int merchantExperience = 1;
 
     public TradeOffer(CompoundTag tag) {
-        this.firstBuyItem = ItemStack.fromTag(tag.getCompound("buy"));
-        this.secondBuyItem = ItemStack.fromTag(tag.getCompound("buyB"));
-        this.sellItem = ItemStack.fromTag(tag.getCompound("sell"));
+        this.firstBuyItem = ItemStack.fromNbt(tag.getCompound("buy"));
+        this.secondBuyItem = ItemStack.fromNbt(tag.getCompound("buyB"));
+        this.sellItem = ItemStack.fromNbt(tag.getCompound("sell"));
         this.uses = tag.getInt("uses");
         this.maxUses = tag.contains("maxUses", 99) ? tag.getInt("maxUses") : 4;
         if (tag.contains("rewardExp", 1)) {
@@ -150,11 +150,11 @@ public class TradeOffer {
         return this.rewardingPlayerExperience;
     }
 
-    public CompoundTag toTag() {
+    public CompoundTag toNbt() {
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put("buy", this.firstBuyItem.toTag(new CompoundTag()));
-        compoundTag.put("sell", this.sellItem.toTag(new CompoundTag()));
-        compoundTag.put("buyB", this.secondBuyItem.toTag(new CompoundTag()));
+        compoundTag.put("buy", this.firstBuyItem.writeNbt(new CompoundTag()));
+        compoundTag.put("sell", this.sellItem.writeNbt(new CompoundTag()));
+        compoundTag.put("buyB", this.secondBuyItem.writeNbt(new CompoundTag()));
         compoundTag.putInt("uses", this.uses);
         compoundTag.putInt("maxUses", this.maxUses);
         compoundTag.putBoolean("rewardExp", this.rewardingPlayerExperience);

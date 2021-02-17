@@ -7,8 +7,11 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -234,13 +237,27 @@ extends Screen {
         return null;
     }
 
-    public static List<String> readPages(CompoundTag tag) {
-        ListTag listTag = tag.getList("pages", 8).copy();
+    private static List<String> readPages(CompoundTag tag) {
         ImmutableList.Builder builder = ImmutableList.builder();
-        for (int i = 0; i < listTag.size(); ++i) {
-            builder.add(listTag.getString(i));
-        }
+        BookScreen.method_33888(tag, builder::add);
         return builder.build();
+    }
+
+    public static void method_33888(CompoundTag compoundTag, Consumer<String> consumer) {
+        IntFunction<String> intFunction;
+        ListTag listTag = compoundTag.getList("pages", 8).copy();
+        if (MinecraftClient.getInstance().method_33883() && compoundTag.contains("filtered_pages", 10)) {
+            CompoundTag compoundTag2 = compoundTag.getCompound("filtered_pages");
+            intFunction = i -> {
+                String string = String.valueOf(i);
+                return compoundTag2.contains(string) ? compoundTag2.getString(string) : listTag.getString(i);
+            };
+        } else {
+            intFunction = listTag::getString;
+        }
+        for (int i2 = 0; i2 < listTag.size(); ++i2) {
+            consumer.accept(intFunction.apply(i2));
+        }
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -169,16 +169,16 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
+    public void writeCustomDataToNbt(CompoundTag tag) {
         ItemStack itemStack = this.getTrackedItem();
         if (!itemStack.isEmpty()) {
-            tag.put("Item", itemStack.toTag(new CompoundTag()));
+            tag.put("Item", itemStack.writeNbt(new CompoundTag()));
         }
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        ItemStack itemStack = ItemStack.fromTag(tag.getCompound("Item"));
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("Item"));
         this.setItem(itemStack);
     }
 

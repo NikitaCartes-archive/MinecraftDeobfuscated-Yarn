@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.class_5532;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
@@ -52,7 +52,7 @@ extends Task<VillagerEntity> {
                 Vec3d vec3d = null;
                 int j = 1000;
                 for (i = 0; i < 1000 && (vec3d == null || this.exceedsMaxRange(villagerEntity, GlobalPos.create(serverWorld.getRegistryKey(), new BlockPos(vec3d)))); ++i) {
-                    vec3d = class_5532.method_31512(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), 1.5707963705062866);
+                    vec3d = NoPenaltyTargeting.find(villagerEntity, 15, 7, Vec3d.ofBottomCenter(globalPos.getPos()), 1.5707963705062866);
                 }
                 if (i == 1000) {
                     this.giveUp(villagerEntity, l);

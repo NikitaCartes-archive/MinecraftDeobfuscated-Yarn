@@ -15,7 +15,7 @@ public abstract class PersistentState {
     private static final Logger LOGGER = LogManager.getLogger();
     private boolean dirty;
 
-    public abstract CompoundTag toNbt(CompoundTag var1);
+    public abstract CompoundTag writeNbt(CompoundTag var1);
 
     public void markDirty() {
         this.setDirty(true);
@@ -34,7 +34,7 @@ public abstract class PersistentState {
             return;
         }
         CompoundTag compoundTag = new CompoundTag();
-        compoundTag.put("data", this.toNbt(new CompoundTag()));
+        compoundTag.put("data", this.writeNbt(new CompoundTag()));
         compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
         try {
             NbtIo.writeCompressed(compoundTag, file);

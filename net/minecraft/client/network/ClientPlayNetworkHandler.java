@@ -538,7 +538,7 @@ implements ClientPlayPacketListener {
         double d;
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         ClientPlayerEntity playerEntity = this.client.player;
-        if (packet.method_33718()) {
+        if (packet.shouldDismount()) {
             ((PlayerEntity)playerEntity).dismountVehicle();
         }
         Vec3d vec3d = playerEntity.getVelocity();
@@ -613,7 +613,7 @@ implements ClientPlayPacketListener {
                 BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
                 BlockEntity blockEntity = worldChunk.getBlockEntity(blockPos, WorldChunk.CreationType.IMMEDIATE);
                 if (blockEntity == null) continue;
-                blockEntity.fromTag(compoundTag);
+                blockEntity.readNbt(compoundTag);
             }
         }
     }
@@ -980,7 +980,7 @@ implements ClientPlayPacketListener {
         int i = packet.getBlockEntityType();
         boolean bl2 = bl = i == 2 && blockEntity instanceof CommandBlockBlockEntity;
         if (i == 1 && blockEntity instanceof MobSpawnerBlockEntity || bl || i == 3 && blockEntity instanceof BeaconBlockEntity || i == 4 && blockEntity instanceof SkullBlockEntity || i == 6 && blockEntity instanceof BannerBlockEntity || i == 7 && blockEntity instanceof StructureBlockBlockEntity || i == 8 && blockEntity instanceof EndGatewayBlockEntity || i == 9 && blockEntity instanceof SignBlockEntity || i == 11 && blockEntity instanceof BedBlockEntity || i == 5 && blockEntity instanceof ConduitBlockEntity || i == 12 && blockEntity instanceof JigsawBlockEntity || i == 13 && blockEntity instanceof CampfireBlockEntity || i == 14 && blockEntity instanceof BeehiveBlockEntity) {
-            blockEntity.fromTag(packet.getCompoundTag());
+            blockEntity.readNbt(packet.getCompoundTag());
         }
         if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
             ((CommandBlockScreen)this.client.currentScreen).updateCommandBlock();
@@ -1918,7 +1918,7 @@ implements ClientPlayPacketListener {
         ScreenHandler screenHandler = this.client.player.currentScreenHandler;
         if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler) {
             MerchantScreenHandler merchantScreenHandler = (MerchantScreenHandler)screenHandler;
-            merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toTag()));
+            merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toNbt()));
             merchantScreenHandler.setExperienceFromServer(packet.getExperience());
             merchantScreenHandler.setLevelProgress(packet.getLevelProgress());
             merchantScreenHandler.setCanLevel(packet.isLeveled());

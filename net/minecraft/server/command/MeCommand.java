@@ -14,7 +14,6 @@ import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.filter.TextStream;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
@@ -27,9 +26,14 @@ public class MeCommand {
             Entity entity = ((ServerCommandSource)commandContext.getSource()).getEntity();
             MinecraftServer minecraftServer = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer();
             if (entity != null) {
-                TextStream textStream;
-                if (entity instanceof ServerPlayerEntity && (textStream = ((ServerPlayerEntity)entity).getTextStream()) != null) {
-                    textStream.filterText(string).thenAcceptAsync(optional -> optional.ifPresent(string -> minecraftServer.getPlayerManager().broadcastChatMessage(MeCommand.method_31373(commandContext, string), MessageType.CHAT, entity.getUuid())), (Executor)minecraftServer);
+                if (entity instanceof ServerPlayerEntity) {
+                    ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+                    serverPlayerEntity.getTextStream().filterText(string).thenAcceptAsync(arg -> {
+                        String string = arg.method_33803();
+                        Text text = string.isEmpty() ? null : MeCommand.method_31373(commandContext, string);
+                        Text text2 = MeCommand.method_31373(commandContext, arg.method_33801());
+                        minecraftServer.getPlayerManager().method_33810(text2, serverPlayerEntity2 -> serverPlayerEntity.method_33795((ServerPlayerEntity)serverPlayerEntity2) ? text : text2, MessageType.CHAT, entity.getUuid());
+                    }, (Executor)minecraftServer);
                     return 1;
                 }
                 minecraftServer.getPlayerManager().broadcastChatMessage(MeCommand.method_31373(commandContext, string), MessageType.CHAT, entity.getUuid());

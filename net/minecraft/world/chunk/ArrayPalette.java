@@ -95,7 +95,7 @@ implements Palette<T> {
     }
 
     @Override
-    public void fromTag(ListTag tag) {
+    public void readNbt(ListTag tag) {
         for (int i = 0; i < tag.size(); ++i) {
             this.array[i] = this.valueDeserializer.apply(tag.getCompound(i));
         }

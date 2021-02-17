@@ -153,11 +153,11 @@ implements PaletteResizeListener<T> {
         if (i != this.paletteSize) {
             this.setPaletteSize(i);
         }
-        this.palette.fromTag(paletteTag);
+        this.palette.readNbt(paletteTag);
         int j = data.length * 64 / 4096;
         if (this.palette == this.fallbackPalette) {
             BiMapPalette<T> palette = new BiMapPalette<T>(this.idList, i, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer);
-            palette.fromTag(paletteTag);
+            palette.readNbt(paletteTag);
             PackedIntegerArray packedIntegerArray = new PackedIntegerArray(i, 4096, data);
             for (int k = 0; k < 4096; ++k) {
                 this.data.set(k, this.fallbackPalette.getIndex(palette.getByIndex(packedIntegerArray.get(k))));
@@ -188,7 +188,7 @@ implements PaletteResizeListener<T> {
             is[j] = i;
         }
         ListTag listTag = new ListTag();
-        biMapPalette.toTag(listTag);
+        biMapPalette.writeNbt(listTag);
         tag.put(paletteKey, listTag);
         int k = Math.max(4, MathHelper.log2DeBruijn(listTag.size()));
         PackedIntegerArray packedIntegerArray = new PackedIntegerArray(k, 4096);

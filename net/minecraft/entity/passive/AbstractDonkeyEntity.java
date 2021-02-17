@@ -79,8 +79,8 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putBoolean("ChestedHorse", this.hasChest());
         if (this.hasChest()) {
             ListTag listTag = new ListTag();
@@ -89,7 +89,7 @@ extends HorseBaseEntity {
                 if (itemStack.isEmpty()) continue;
                 CompoundTag compoundTag = new CompoundTag();
                 compoundTag.putByte("Slot", (byte)i);
-                itemStack.toTag(compoundTag);
+                itemStack.writeNbt(compoundTag);
                 listTag.add(compoundTag);
             }
             tag.put("Items", listTag);
@@ -97,8 +97,8 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.setHasChest(tag.getBoolean("ChestedHorse"));
         this.onChestedStatusChanged();
         if (this.hasChest()) {
@@ -107,7 +107,7 @@ extends HorseBaseEntity {
                 CompoundTag compoundTag = listTag.getCompound(i);
                 int j = compoundTag.getByte("Slot") & 0xFF;
                 if (j < 2 || j >= this.items.size()) continue;
-                this.items.setStack(j, ItemStack.fromTag(compoundTag));
+                this.items.setStack(j, ItemStack.fromNbt(compoundTag));
             }
         }
         this.updateSaddle();

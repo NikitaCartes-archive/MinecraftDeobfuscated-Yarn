@@ -51,7 +51,7 @@ extends Item {
         }
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null) {
-            EntityType.loadFromEntityTag(world, playerEntity, abstractDecorationEntity, compoundTag);
+            EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, compoundTag);
         }
         if (abstractDecorationEntity.canStayAttached()) {
             if (!world.isClient) {

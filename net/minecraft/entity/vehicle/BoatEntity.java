@@ -108,8 +108,8 @@ extends Entity {
     }
 
     @Override
-    protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.NONE;
+    protected Entity.MoveEffect getMoveEffect() {
+        return Entity.MoveEffect.NONE;
     }
 
     @Override
@@ -656,12 +656,12 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag tag) {
+    protected void writeCustomDataToNbt(CompoundTag tag) {
         tag.putString("Type", this.getBoatType().getName());
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag tag) {
+    protected void readCustomDataFromNbt(CompoundTag tag) {
         if (tag.contains("Type", 8)) {
             this.setBoatType(Type.getType(tag.getString("Type")));
         }

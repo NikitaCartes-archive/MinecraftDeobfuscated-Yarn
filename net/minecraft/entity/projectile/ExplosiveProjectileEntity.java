@@ -116,15 +116,15 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.put("power", this.toListTag(this.powerX, this.powerY, this.powerZ));
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         ListTag listTag;
-        super.readCustomDataFromTag(tag);
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("power", 9) && (listTag = tag.getList("power", 6)).size() == 3) {
             this.powerX = listTag.getDouble(0);
             this.powerY = listTag.getDouble(1);

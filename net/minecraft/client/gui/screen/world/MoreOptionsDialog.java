@@ -93,7 +93,7 @@ Drawable {
         this.textRenderer = textRenderer;
         this.parentWidth = parent.width;
         this.seedTextField = new TextFieldWidget(this.textRenderer, this.parentWidth / 2 - 100, 60, 200, 20, new TranslatableText("selectWorld.enterSeed"));
-        this.seedTextField.setText(MoreOptionsDialog.toSeedText(this.seed));
+        this.seedTextField.setText(MoreOptionsDialog.seedToString(this.seed));
         this.seedTextField.setChangedListener(string -> {
             this.seed = this.getSeed();
         });
@@ -138,7 +138,7 @@ Drawable {
                 return;
             }
             DynamicRegistryManager.Impl impl = DynamicRegistryManager.create();
-            ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(parent.method_29693().toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
+            ResourcePackManager resourcePackManager = new ResourcePackManager(ResourceType.SERVER_DATA, new VanillaDataPackProvider(), new FileResourcePackProvider(parent.getDataPackTempDir().toFile(), ResourcePackSource.PACK_SOURCE_WORLD));
             try {
                 MinecraftServer.loadDataPacks(resourcePackManager, createWorldScreen.dataPackSettings, false);
                 CompletableFuture<ServerResourceManager> completableFuture = ServerResourceManager.reload(resourcePackManager.createResourcePacks(), impl, CommandManager.RegistrationEnvironment.INTEGRATED, 2, Util.getMainWorkerExecutor(), client);
@@ -195,7 +195,7 @@ Drawable {
         this.generatorType = GeneratorType.fromGeneratorOptions(generatorOptions);
         this.method_32683(true);
         this.seed = OptionalLong.of(generatorOptions.getSeed());
-        this.seedTextField.setText(MoreOptionsDialog.toSeedText(this.seed));
+        this.seedTextField.setText(MoreOptionsDialog.seedToString(this.seed));
     }
 
     @Override
@@ -218,7 +218,7 @@ Drawable {
         this.generatorOptions = generatorOptions;
     }
 
-    private static String toSeedText(OptionalLong seed) {
+    private static String seedToString(OptionalLong seed) {
         if (seed.isPresent()) {
             return Long.toString(seed.getAsLong());
         }

@@ -29,7 +29,7 @@ extends Feature<OreFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<OreFeatureConfig> context) {
         Random random = context.getRandom();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         OreFeatureConfig oreFeatureConfig = context.getConfig();
         float f = random.nextFloat() * (float)Math.PI;
@@ -56,76 +56,76 @@ extends Feature<OreFeatureConfig> {
         return false;
     }
 
-    protected boolean generateVeinPart(WorldAccess world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int size, int i) {
+    protected boolean generateVeinPart(WorldAccess world, Random random, OreFeatureConfig config, double startX, double endX, double startZ, double endZ, double startY, double endY, int x, int y, int z, int horizontalSize, int verticalSize) {
         double h;
         double g;
         double e;
         double d;
-        int l;
-        int j = 0;
-        BitSet bitSet = new BitSet(size * i * size);
+        int k;
+        int i = 0;
+        BitSet bitSet = new BitSet(horizontalSize * verticalSize * horizontalSize);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        int k = config.size;
-        double[] ds = new double[k * 4];
-        for (l = 0; l < k; ++l) {
-            float f = (float)l / (float)k;
+        int j = config.size;
+        double[] ds = new double[j * 4];
+        for (k = 0; k < j; ++k) {
+            float f = (float)k / (float)j;
             d = MathHelper.lerp((double)f, startX, endX);
             e = MathHelper.lerp((double)f, startY, endY);
             g = MathHelper.lerp((double)f, startZ, endZ);
-            h = random.nextDouble() * (double)k / 16.0;
-            double m = ((double)(MathHelper.sin((float)Math.PI * f) + 1.0f) * h + 1.0) / 2.0;
-            ds[l * 4 + 0] = d;
-            ds[l * 4 + 1] = e;
-            ds[l * 4 + 2] = g;
-            ds[l * 4 + 3] = m;
+            h = random.nextDouble() * (double)j / 16.0;
+            double l = ((double)(MathHelper.sin((float)Math.PI * f) + 1.0f) * h + 1.0) / 2.0;
+            ds[k * 4 + 0] = d;
+            ds[k * 4 + 1] = e;
+            ds[k * 4 + 2] = g;
+            ds[k * 4 + 3] = l;
         }
-        for (l = 0; l < k - 1; ++l) {
-            if (ds[l * 4 + 3] <= 0.0) continue;
-            for (int n = l + 1; n < k; ++n) {
-                if (ds[n * 4 + 3] <= 0.0 || !((h = ds[l * 4 + 3] - ds[n * 4 + 3]) * h > (d = ds[l * 4 + 0] - ds[n * 4 + 0]) * d + (e = ds[l * 4 + 1] - ds[n * 4 + 1]) * e + (g = ds[l * 4 + 2] - ds[n * 4 + 2]) * g)) continue;
+        for (k = 0; k < j - 1; ++k) {
+            if (ds[k * 4 + 3] <= 0.0) continue;
+            for (int m = k + 1; m < j; ++m) {
+                if (ds[m * 4 + 3] <= 0.0 || !((h = ds[k * 4 + 3] - ds[m * 4 + 3]) * h > (d = ds[k * 4 + 0] - ds[m * 4 + 0]) * d + (e = ds[k * 4 + 1] - ds[m * 4 + 1]) * e + (g = ds[k * 4 + 2] - ds[m * 4 + 2]) * g)) continue;
                 if (h > 0.0) {
-                    ds[n * 4 + 3] = -1.0;
+                    ds[m * 4 + 3] = -1.0;
                     continue;
                 }
-                ds[l * 4 + 3] = -1.0;
+                ds[k * 4 + 3] = -1.0;
             }
         }
         HashSet<ChunkSection> set = Sets.newHashSet();
-        for (int n = 0; n < k; ++n) {
-            d = ds[n * 4 + 3];
+        for (int m = 0; m < j; ++m) {
+            d = ds[m * 4 + 3];
             if (d < 0.0) continue;
-            e = ds[n * 4 + 0];
-            g = ds[n * 4 + 1];
-            h = ds[n * 4 + 2];
-            int o = Math.max(MathHelper.floor(e - d), x);
-            int p = Math.max(MathHelper.floor(g - d), y);
-            int q = Math.max(MathHelper.floor(h - d), z);
-            int r = Math.max(MathHelper.floor(e + d), o);
-            int s = Math.max(MathHelper.floor(g + d), p);
-            int t = Math.max(MathHelper.floor(h + d), q);
-            for (int u = o; u <= r; ++u) {
-                double v = ((double)u + 0.5 - e) / d;
-                if (!(v * v < 1.0)) continue;
-                for (int w = p; w <= s; ++w) {
-                    double aa = ((double)w + 0.5 - g) / d;
-                    if (!(v * v + aa * aa < 1.0)) continue;
-                    for (int ab = q; ab <= t; ++ab) {
-                        int ag;
+            e = ds[m * 4 + 0];
+            g = ds[m * 4 + 1];
+            h = ds[m * 4 + 2];
+            int n = Math.max(MathHelper.floor(e - d), x);
+            int o = Math.max(MathHelper.floor(g - d), y);
+            int p = Math.max(MathHelper.floor(h - d), z);
+            int q = Math.max(MathHelper.floor(e + d), n);
+            int r = Math.max(MathHelper.floor(g + d), o);
+            int s = Math.max(MathHelper.floor(h + d), p);
+            for (int t = n; t <= q; ++t) {
+                double u = ((double)t + 0.5 - e) / d;
+                if (!(u * u < 1.0)) continue;
+                for (int v = o; v <= r; ++v) {
+                    double w = ((double)v + 0.5 - g) / d;
+                    if (!(u * u + w * w < 1.0)) continue;
+                    for (int aa = p; aa <= s; ++aa) {
                         int af;
                         int ae;
                         int ad;
-                        double ac = ((double)ab + 0.5 - h) / d;
-                        if (!(v * v + aa * aa + ac * ac < 1.0) || world.isOutOfHeightLimit(w) || bitSet.get(ad = u - x + (w - y) * size + (ab - z) * size * i)) continue;
-                        bitSet.set(ad);
-                        mutable.set(u, w, ab);
-                        Chunk chunk = world.getChunk(ChunkSectionPos.getSectionCoord(u), ChunkSectionPos.getSectionCoord(ab));
-                        ChunkSection chunkSection = chunk.getSection(chunk.getSectionIndex(w));
+                        int ac;
+                        double ab = ((double)aa + 0.5 - h) / d;
+                        if (!(u * u + w * w + ab * ab < 1.0) || world.isOutOfHeightLimit(v) || bitSet.get(ac = t - x + (v - y) * horizontalSize + (aa - z) * horizontalSize * verticalSize)) continue;
+                        bitSet.set(ac);
+                        mutable.set(t, v, aa);
+                        Chunk chunk = world.getChunk(ChunkSectionPos.getSectionCoord(t), ChunkSectionPos.getSectionCoord(aa));
+                        ChunkSection chunkSection = chunk.getSection(chunk.getSectionIndex(v));
                         if (set.add(chunkSection)) {
                             chunkSection.lock();
                         }
-                        if (!config.target.test(chunkSection.getBlockState(ae = ChunkSectionPos.getLocalCoord(u), af = ChunkSectionPos.getLocalCoord(w), ag = ChunkSectionPos.getLocalCoord(ab)), random)) continue;
-                        chunkSection.setBlockState(ae, af, ag, config.state, false);
-                        ++j;
+                        if (!config.target.test(chunkSection.getBlockState(ad = ChunkSectionPos.getLocalCoord(t), ae = ChunkSectionPos.getLocalCoord(v), af = ChunkSectionPos.getLocalCoord(aa)), random)) continue;
+                        chunkSection.setBlockState(ad, ae, af, config.state, false);
+                        ++i;
                     }
                 }
             }
@@ -133,7 +133,7 @@ extends Feature<OreFeatureConfig> {
         for (ChunkSection chunkSection2 : set) {
             chunkSection2.unlock();
         }
-        return j > 0;
+        return i > 0;
     }
 }
 

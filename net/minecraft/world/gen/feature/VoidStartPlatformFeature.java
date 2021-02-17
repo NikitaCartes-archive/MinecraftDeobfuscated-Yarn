@@ -28,11 +28,11 @@ extends Feature<DefaultFeatureConfig> {
     @Override
     public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        ChunkPos chunkPos = new ChunkPos(context.getPos());
+        ChunkPos chunkPos = new ChunkPos(context.getOrigin());
         if (VoidStartPlatformFeature.getDistance(chunkPos.x, chunkPos.z, VoidStartPlatformFeature.START_CHUNK.x, VoidStartPlatformFeature.START_CHUNK.z) > 1) {
             return true;
         }
-        BlockPos blockPos = context.getPos().add(START_BLOCK);
+        BlockPos blockPos = context.getOrigin().add(START_BLOCK);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = chunkPos.getStartZ(); i <= chunkPos.getEndZ(); ++i) {
             for (int j = chunkPos.getStartX(); j <= chunkPos.getEndX(); ++j) {

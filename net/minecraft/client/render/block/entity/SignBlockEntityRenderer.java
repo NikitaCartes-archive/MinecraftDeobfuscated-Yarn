@@ -14,6 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.SignBlock;
 import net.minecraft.block.WallSignBlock;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.ModelData;
@@ -84,12 +85,12 @@ implements BlockEntityRenderer<SignBlockEntity> {
         int o = (int)((double)NativeImage.getBlue(l) * 0.4);
         int p = NativeImage.getAbgrColor(0, o, n, m);
         int q = 20;
+        OrderedText[] orderedTexts = signBlockEntity.method_33829(MinecraftClient.getInstance().method_33883(), text -> {
+            List<OrderedText> list = this.textRenderer.wrapLines((StringVisitable)text, 90);
+            return list.isEmpty() ? OrderedText.EMPTY : list.get(0);
+        });
         for (int r = 0; r < 4; ++r) {
-            OrderedText orderedText = signBlockEntity.getTextBeingEditedOnRow(r, text -> {
-                List<OrderedText> list = this.textRenderer.wrapLines((StringVisitable)text, 90);
-                return list.isEmpty() ? OrderedText.EMPTY : list.get(0);
-            });
-            if (orderedText == null) continue;
+            OrderedText orderedText = orderedTexts[r];
             float s = -this.textRenderer.getWidth(orderedText) / 2;
             int t = blockState.get(AbstractSignBlock.LIT) != false ? 0xF000F0 : i;
             this.textRenderer.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, t);

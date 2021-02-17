@@ -514,7 +514,7 @@ public class GameOptions {
             for (PlayerModelPart playerModelPart : this.enabledPlayerModelParts) {
                 i |= playerModelPart.getBitFlag();
             }
-            this.client.player.networkHandler.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm));
+            this.client.player.networkHandler.sendPacket(new ClientSettingsC2SPacket(this.language, this.viewDistance, this.chatVisibility, this.chatColors, i, this.mainArm, this.client.method_33883()));
         }
     }
 

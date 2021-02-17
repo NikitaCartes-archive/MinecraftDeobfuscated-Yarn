@@ -536,7 +536,7 @@ CommandOutput {
     }
 
     public void move(MovementType movementType, Vec3d movement) {
-        class_5799 lv;
+        MoveEffect moveEffect;
         Vec3d vec3d;
         if (this.noClip) {
             this.setPosition(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
@@ -577,7 +577,7 @@ CommandOutput {
         if (this.onGround && !this.bypassesSteppingEffects()) {
             block.onSteppedOn(this.world, blockPos, this);
         }
-        if ((lv = this.method_33570()).method_33576() && !this.hasVehicle()) {
+        if ((moveEffect = this.getMoveEffect()).hasAny() && !this.hasVehicle()) {
             double d = vec3d.x;
             double e = vec3d.y;
             double f = vec3d.z;
@@ -590,7 +590,7 @@ CommandOutput {
             if (this.distanceTraveled > this.nextStepSoundDistance && !blockState2.isAir()) {
                 this.nextStepSoundDistance = this.calculateNextStepSoundDistance();
                 if (this.isTouchingWater()) {
-                    if (lv.method_33578()) {
+                    if (moveEffect.playsSounds()) {
                         Entity entity = this.hasPassengers() && this.getPrimaryPassenger() != null ? this.getPrimaryPassenger() : this;
                         float g = entity == this ? 0.35f : 0.4f;
                         Vec3d vec3d3 = entity.getVelocity();
@@ -600,19 +600,19 @@ CommandOutput {
                         }
                         this.playSwimSound(h);
                     }
-                    if (lv.method_33577()) {
+                    if (moveEffect.emitsGameEvents()) {
                         this.emitGameEvent(GameEvent.SWIM);
                     }
                 } else {
-                    if (lv.method_33578()) {
+                    if (moveEffect.playsSounds()) {
                         this.playStepSound(blockPos, blockState2);
                     }
-                    if (lv.method_33577() && !blockState2.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
+                    if (moveEffect.emitsGameEvents() && !blockState2.isIn(BlockTags.OCCLUDES_VIBRATION_SIGNALS)) {
                         this.emitGameEvent(GameEvent.STEP);
                     }
                 }
             } else if (blockState2.isAir()) {
-                this.method_33573();
+                this.addAirTravelEffects();
             }
         }
         try {
@@ -637,10 +637,17 @@ CommandOutput {
         this.world.getProfiler().pop();
     }
 
-    protected void method_33573() {
+    /**
+     * Adds the effects of this entity when it travels in air, usually to the
+     * world the entity is in.
+     * 
+     * <p>This is only called when the entity {@linkplain #getMoveEffect() has
+     * any move effect}, from {@link #move(MovementType, Vec3d)}
+     */
+    protected void addAirTravelEffects() {
         if (this.hasWings()) {
-            this.playFlySound();
-            if (this.method_33570().method_33577()) {
+            this.addFlapEffects();
+            if (this.getMoveEffect().emitsGameEvents()) {
                 this.emitGameEvent(GameEvent.FLAP);
             }
         }
@@ -888,7 +895,17 @@ CommandOutput {
         this.playSound(this.getSwimSound(), volume, 1.0f + (this.random.nextFloat() - this.random.nextFloat()) * 0.4f);
     }
 
-    protected void playFlySound() {
+    /**
+     * Adds the effects of this entity flapping, usually to the world the entity
+     * is in.
+     * 
+     * <p>The actual flapping logic should be done in {@link #tick()} instead.
+     * 
+     * <p>This is only called when the entity {@linkplain #hasWings() has wings}
+     * and the entity {@linkplain #getMoveEffect() has any move effect}, from
+     * {@link #addAirTravelEffects()}.
+     */
+    protected void addFlapEffects() {
     }
 
     protected boolean hasWings() {
@@ -917,8 +934,16 @@ CommandOutput {
         this.dataTracker.set(NO_GRAVITY, noGravity);
     }
 
-    protected class_5799 method_33570() {
-        return class_5799.ALL;
+    /**
+     * Returns the possible effect(s) of an entity moving.
+     * 
+     * @implNote If an entity does not emit game events or play move sounds, this
+     * method should be overridden as returning a value other than
+     * {@linkplain Entity.MoveEffect#ALL ALL} allows skipping some movement logic
+     * and boost ticking performance.
+     */
+    protected MoveEffect getMoveEffect() {
+        return MoveEffect.ALL;
     }
 
     public boolean occludeVibrationSignals() {
@@ -1367,7 +1392,7 @@ CommandOutput {
             return false;
         }
         tag.putString("id", string);
-        this.toTag(tag);
+        this.writeNbt(tag);
         return true;
     }
 
@@ -1378,7 +1403,7 @@ CommandOutput {
         return this.saveSelfToTag(tag);
     }
 
-    public CompoundTag toTag(CompoundTag tag) {
+    public CompoundTag writeNbt(CompoundTag tag) {
         try {
             ListTag listTag;
             int i;
@@ -1423,7 +1448,7 @@ CommandOutput {
                 }
                 tag.put("Tags", listTag);
             }
-            this.writeCustomDataToTag(tag);
+            this.writeCustomDataToNbt(tag);
             if (this.hasPassengers()) {
                 listTag = new ListTag();
                 for (Entity entity : this.getPassengerList()) {
@@ -1444,7 +1469,7 @@ CommandOutput {
         return tag;
     }
 
-    public void fromTag(CompoundTag tag) {
+    public void readNbt(CompoundTag tag) {
         try {
             ListTag listTag = tag.getList("Pos", 6);
             ListTag listTag2 = tag.getList("Motion", 6);
@@ -1500,7 +1525,7 @@ CommandOutput {
                     this.scoreboardTags.add(listTag4.getString(j));
                 }
             }
-            this.readCustomDataFromTag(tag);
+            this.readCustomDataFromNbt(tag);
             if (this.shouldSetPositionOnLoad()) {
                 this.refreshPosition();
             }
@@ -1523,9 +1548,9 @@ CommandOutput {
         return !entityType.isSaveable() || identifier == null ? null : identifier.toString();
     }
 
-    protected abstract void readCustomDataFromTag(CompoundTag var1);
+    protected abstract void readCustomDataFromNbt(CompoundTag var1);
 
-    protected abstract void writeCustomDataToTag(CompoundTag var1);
+    protected abstract void writeCustomDataToNbt(CompoundTag var1);
 
     protected ListTag toListTag(double ... values) {
         ListTag listTag = new ListTag();
@@ -2140,9 +2165,9 @@ CommandOutput {
     }
 
     public void copyFrom(Entity original) {
-        CompoundTag compoundTag = original.toTag(new CompoundTag());
+        CompoundTag compoundTag = original.writeNbt(new CompoundTag());
         compoundTag.remove("Dimension");
-        this.fromTag(compoundTag);
+        this.readNbt(compoundTag);
         this.netherPortalCooldown = original.netherPortalCooldown;
         this.lastNetherPortalPosition = original.lastNetherPortalPosition;
     }
@@ -2341,8 +2366,8 @@ CommandOutput {
         this.requestTeleport(destX, destY, destZ);
     }
 
-    public void method_33567(double d, double e, double f) {
-        this.requestTeleport(d, e, f);
+    public void requestTeleportAndDismount(double destX, double destY, double destZ) {
+        this.requestTeleport(destX, destY, destZ);
     }
 
     public void requestTeleport(double destX, double destY, double destZ) {
@@ -2565,18 +2590,6 @@ CommandOutput {
         return Stream.concat(Stream.of(this), this.streamIntoPassengers());
     }
 
-    /**
-     * Returns a stream consisting of this entity and its passengers recursively
-     * in which any entity appears only after all its passengers have appeared.
-     * 
-     * <p>This is useful for actions that must be applied on passengers before
-     * applying on an entity, such as writing each entity to NBT data.
-     * 
-     * @implNote The default implementation is very costly. I bet Mojangsta
-     * haven't used Java's FileTreeVisitor or any objectweb asm visitors!
-     * 
-     * @see net.minecraft.entity.Entity#streamSelfAndPassengers()
-     */
     public Stream<Entity> streamPassengersAndSelf() {
         return Stream.concat(this.passengerList.stream().flatMap(Entity::streamPassengersAndSelf), Stream.of(this));
     }
@@ -2975,7 +2988,7 @@ CommandOutput {
         }
     }
 
-    public static enum class_5799 {
+    public static enum MoveEffect {
         NONE(false, false),
         SOUNDS(true, false),
         EVENTS(false, true),
@@ -2984,20 +2997,20 @@ CommandOutput {
         final boolean sounds;
         final boolean events;
 
-        private class_5799(boolean sounds, boolean events) {
+        private MoveEffect(boolean sounds, boolean events) {
             this.sounds = sounds;
             this.events = events;
         }
 
-        public boolean method_33576() {
+        public boolean hasAny() {
             return this.events || this.sounds;
         }
 
-        public boolean method_33577() {
+        public boolean emitsGameEvents() {
             return this.events;
         }
 
-        public boolean method_33578() {
+        public boolean playsSounds() {
             return this.sounds;
         }
     }

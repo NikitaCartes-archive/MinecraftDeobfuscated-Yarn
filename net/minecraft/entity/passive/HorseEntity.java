@@ -61,11 +61,11 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("Variant", this.getVariant());
         if (!this.items.getStack(1).isEmpty()) {
-            tag.put("ArmorItem", this.items.getStack(1).toTag(new CompoundTag()));
+            tag.put("ArmorItem", this.items.getStack(1).writeNbt(new CompoundTag()));
         }
     }
 
@@ -79,11 +79,11 @@ extends HorseBaseEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         ItemStack itemStack;
-        super.readCustomDataFromTag(tag);
+        super.readCustomDataFromNbt(tag);
         this.setVariant(tag.getInt("Variant"));
-        if (tag.contains("ArmorItem", 10) && !(itemStack = ItemStack.fromTag(tag.getCompound("ArmorItem"))).isEmpty() && this.isHorseArmor(itemStack)) {
+        if (tag.contains("ArmorItem", 10) && !(itemStack = ItemStack.fromNbt(tag.getCompound("ArmorItem"))).isEmpty() && this.isHorseArmor(itemStack)) {
             this.items.setStack(1, itemStack);
         }
         this.updateSaddle();

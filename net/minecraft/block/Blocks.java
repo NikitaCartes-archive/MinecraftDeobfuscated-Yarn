@@ -1106,6 +1106,23 @@ public class Blocks {
     public static final Block SMALL_DRIPLEAF = Blocks.register("small_dripleaf", new SmallDripleafBlock(AbstractBlock.Settings.of(Material.PLANT, MapColor.GREEN).strength(0.1f).noCollision().breakInstantly().sounds(BlockSoundGroup.SMALL_DRIPLEAF)));
     public static final Block ROOTED_DIRT = Blocks.register("rooted_dirt", new Block(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).strength(0.1f).sounds(BlockSoundGroup.ROOTED_DIRT)));
     public static final Block HANGING_ROOTS = Blocks.register("hanging_roots", new HangingRootsBlock(AbstractBlock.Settings.of(Material.SOIL, MapColor.DIRT_BROWN).noCollision().breakInstantly().strength(0.1f).sounds(BlockSoundGroup.HANGING_ROOTS)));
+    public static final Block GRIMSTONE = Blocks.register("grimstone", new Block(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(3.0f, 6.0f)));
+    public static final Block GRIMSTONE_STAIRS = Blocks.register("grimstone_stairs", new StairsBlock(GRIMSTONE.getDefaultState(), AbstractBlock.Settings.copy(GRIMSTONE)));
+    public static final Block GRIMSTONE_SLAB = Blocks.register("grimstone_slab", new SlabBlock(AbstractBlock.Settings.of(Material.STONE, MapColor.STONE_GRAY).requiresTool().strength(3.5f, 6.0f)));
+    public static final Block GRIMSTONE_WALL = Blocks.register("grimstone_wall", new WallBlock(AbstractBlock.Settings.copy(GRIMSTONE)));
+    public static final Block POLISHED_GRIMSTONE = Blocks.register("polished_grimstone", new Block(AbstractBlock.Settings.copy(GRIMSTONE).strength(3.5f, 6.0f)));
+    public static final Block POLISHED_GRIMSTONE_STAIRS = Blocks.register("polished_grimstone_stairs", new StairsBlock(POLISHED_GRIMSTONE.getDefaultState(), AbstractBlock.Settings.copy(POLISHED_GRIMSTONE)));
+    public static final Block POLISHED_GRIMSTONE_SLAB = Blocks.register("polished_grimstone_slab", new SlabBlock(AbstractBlock.Settings.copy(POLISHED_GRIMSTONE)));
+    public static final Block POLISHED_GRIMSTONE_WALL = Blocks.register("polished_grimstone_wall", new WallBlock(AbstractBlock.Settings.copy(POLISHED_GRIMSTONE)));
+    public static final Block GRIMSTONE_TILES = Blocks.register("grimstone_tiles", new Block(AbstractBlock.Settings.copy(GRIMSTONE).strength(1.5f, 6.0f)));
+    public static final Block GRIMSTONE_TILE_STAIRS = Blocks.register("grimstone_tile_stairs", new StairsBlock(GRIMSTONE_TILES.getDefaultState(), AbstractBlock.Settings.copy(GRIMSTONE_TILES)));
+    public static final Block GRIMSTONE_TILE_SLAB = Blocks.register("grimstone_tile_slab", new SlabBlock(AbstractBlock.Settings.copy(GRIMSTONE_TILES)));
+    public static final Block GRIMSTONE_TILE_WALL = Blocks.register("grimstone_tile_wall", new WallBlock(AbstractBlock.Settings.copy(GRIMSTONE_TILES)));
+    public static final Block GRIMSTONE_BRICKS = Blocks.register("grimstone_bricks", new Block(AbstractBlock.Settings.copy(GRIMSTONE).strength(1.5f, 6.0f)));
+    public static final Block GRIMSTONE_BRICK_STAIRS = Blocks.register("grimstone_brick_stairs", new StairsBlock(GRIMSTONE_BRICKS.getDefaultState(), AbstractBlock.Settings.copy(GRIMSTONE_BRICKS)));
+    public static final Block GRIMSTONE_BRICK_SLAB = Blocks.register("grimstone_brick_slab", new SlabBlock(AbstractBlock.Settings.copy(GRIMSTONE_BRICKS)));
+    public static final Block GRIMSTONE_BRICK_WALL = Blocks.register("grimstone_brick_wall", new WallBlock(AbstractBlock.Settings.copy(GRIMSTONE_BRICKS)));
+    public static final Block CHISELED_GRIMSTONE = Blocks.register("chiseled_grimstone", new Block(AbstractBlock.Settings.copy(GRIMSTONE).strength(1.5f, 6.0f)));
 
     private static ToIntFunction<BlockState> createLightLevelFromLitBlockState(int litLevel) {
         return state -> state.get(Properties.LIT) != false ? litLevel : 0;

@@ -20,7 +20,7 @@ extends TameableEntity {
     public boolean mountOnto(ServerPlayerEntity player) {
         CompoundTag compoundTag = new CompoundTag();
         compoundTag.putString("id", this.getSavedEntityId());
-        this.toTag(compoundTag);
+        this.writeNbt(compoundTag);
         if (player.addShoulderEntity(compoundTag)) {
             this.discard();
             return true;

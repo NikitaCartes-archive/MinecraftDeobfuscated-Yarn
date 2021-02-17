@@ -53,7 +53,7 @@ extends StructurePiece {
     }
 
     @Override
-    protected void toNbt(CompoundTag tag) {
+    protected void writeNbt(CompoundTag tag) {
         tag.putInt("TPX", this.pos.getX());
         tag.putInt("TPY", this.pos.getY());
         tag.putInt("TPZ", this.pos.getZ());

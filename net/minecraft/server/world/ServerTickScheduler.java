@@ -144,7 +144,7 @@ implements TickScheduler<T> {
         }
     }
 
-    public ListTag toTag(ChunkPos chunkPos) {
+    public ListTag toNbt(ChunkPos chunkPos) {
         List<ScheduledTick<T>> list = this.getScheduledTicksInChunk(chunkPos, false, true);
         return ServerTickScheduler.serializeScheduledTicks(this.idToName, list, this.world.getTime());
     }

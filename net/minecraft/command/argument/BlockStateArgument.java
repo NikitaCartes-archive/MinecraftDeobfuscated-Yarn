@@ -45,7 +45,7 @@ implements Predicate<CachedBlockPosition> {
         }
         if (this.data != null) {
             BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-            return blockEntity != null && NbtHelper.matches(this.data, blockEntity.toTag(new CompoundTag()), true);
+            return blockEntity != null && NbtHelper.matches(this.data, blockEntity.writeNbt(new CompoundTag()), true);
         }
         return true;
     }
@@ -64,7 +64,7 @@ implements Predicate<CachedBlockPosition> {
             compoundTag.putInt("x", blockPos.getX());
             compoundTag.putInt("y", blockPos.getY());
             compoundTag.putInt("z", blockPos.getZ());
-            blockEntity.fromTag(compoundTag);
+            blockEntity.readNbt(compoundTag);
         }
         return true;
     }

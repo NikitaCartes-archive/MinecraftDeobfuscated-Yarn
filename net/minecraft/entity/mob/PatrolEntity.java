@@ -46,8 +46,8 @@ extends HostileEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         if (this.patrolTarget != null) {
             tag.put("PatrolTarget", NbtHelper.fromBlockPos(this.patrolTarget));
         }
@@ -56,8 +56,8 @@ extends HostileEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("PatrolTarget")) {
             this.patrolTarget = NbtHelper.toBlockPos(tag.getCompound("PatrolTarget"));
         }

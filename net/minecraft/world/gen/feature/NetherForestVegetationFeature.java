@@ -21,7 +21,7 @@ extends Feature<BlockPileFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<BlockPileFeatureConfig> context) {
-        return NetherForestVegetationFeature.generate(context.getWorld(), context.getRandom(), context.getPos(), context.getConfig(), 8, 4);
+        return NetherForestVegetationFeature.generate(context.getWorld(), context.getRandom(), context.getOrigin(), context.getConfig(), 8, 4);
     }
 
     public static boolean generate(WorldAccess world, Random random, BlockPos pos, BlockPileFeatureConfig config, int i, int j) {

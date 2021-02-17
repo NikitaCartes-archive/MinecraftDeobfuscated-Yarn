@@ -52,10 +52,7 @@ implements Packet<ClientPlayPacketListener> {
         return this.message;
     }
 
-    public boolean isNonChat() {
-        return this.location == MessageType.SYSTEM || this.location == MessageType.GAME_INFO;
-    }
-
+    @Environment(value=EnvType.CLIENT)
     public MessageType getLocation() {
         return this.location;
     }

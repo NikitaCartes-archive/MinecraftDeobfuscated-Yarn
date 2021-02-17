@@ -21,7 +21,7 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class ChatScreen
 extends Screen {
-    private String field_2389 = "";
+    private String chatLastMessage = "";
     private int messageHistorySize = -1;
     protected TextFieldWidget chatField;
     private String originalChatText = "";
@@ -173,11 +173,11 @@ extends Screen {
         }
         if (j == k) {
             this.messageHistorySize = k;
-            this.chatField.setText(this.field_2389);
+            this.chatField.setText(this.chatLastMessage);
             return;
         }
         if (this.messageHistorySize == k) {
-            this.field_2389 = this.chatField.getText();
+            this.chatLastMessage = this.chatField.getText();
         }
         this.chatField.setText(this.client.inGameHud.getChatHud().getMessageHistory().get(j));
         this.commandSuggestor.setWindowActive(false);

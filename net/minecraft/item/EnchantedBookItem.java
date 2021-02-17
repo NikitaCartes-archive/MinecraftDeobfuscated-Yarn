@@ -38,7 +38,7 @@ extends Item {
         return false;
     }
 
-    public static ListTag getEnchantmentTag(ItemStack stack) {
+    public static ListTag getEnchantmentNbt(ItemStack stack) {
         CompoundTag compoundTag = stack.getTag();
         if (compoundTag != null) {
             return compoundTag.getList("StoredEnchantments", 10);
@@ -50,11 +50,11 @@ extends Item {
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         super.appendTooltip(stack, world, tooltip, context);
-        ItemStack.appendEnchantments(tooltip, EnchantedBookItem.getEnchantmentTag(stack));
+        ItemStack.appendEnchantments(tooltip, EnchantedBookItem.getEnchantmentNbt(stack));
     }
 
     public static void addEnchantment(ItemStack stack, EnchantmentLevelEntry entry) {
-        ListTag listTag = EnchantedBookItem.getEnchantmentTag(stack);
+        ListTag listTag = EnchantedBookItem.getEnchantmentNbt(stack);
         boolean bl = true;
         Identifier identifier = Registry.ENCHANTMENT.getId(entry.enchantment);
         for (int i = 0; i < listTag.size(); ++i) {

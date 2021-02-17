@@ -31,7 +31,7 @@ extends Feature<UnderwaterMagmaFeatureConfig> {
     public boolean generate(FeatureContext<UnderwaterMagmaFeatureConfig> context) {
         Vec3i vec3i;
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         UnderwaterMagmaFeatureConfig underwaterMagmaFeatureConfig = context.getConfig();
         Random random = context.getRandom();
         OptionalInt optionalInt = UnderwaterMagmaFeature.getFloorHeight(structureWorldAccess, blockPos, underwaterMagmaFeatureConfig);

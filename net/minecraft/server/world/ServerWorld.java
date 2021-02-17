@@ -39,6 +39,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5838;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -168,7 +169,7 @@ implements StructureWorldAccess {
     private final EntityList entityList = new EntityList();
     private final ServerEntityManager<Entity> entityManager;
     public boolean savingDisabled;
-    private float playersSleepingPercentage;
+    private final class_5838 field_28859;
     private int idleTimeout;
     private final PortalForcer portalForcer;
     private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<Block>(this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, this::tickBlock);
@@ -198,13 +199,14 @@ implements StructureWorldAccess {
         this.portalForcer = new PortalForcer(this);
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
-        this.getWorldBorder().setMaxWorldBorderRadius(server.getMaxWorldBorderRadius());
-        this.raidManager = this.getPersistentStateManager().getOrCreate(compoundTag -> RaidManager.fromTag(this, compoundTag), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
+        this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
+        this.raidManager = this.getPersistentStateManager().getOrCreate(compoundTag -> RaidManager.fromNbt(this, compoundTag), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
         if (!server.isSinglePlayer()) {
             properties.setGameMode(server.getDefaultGameMode());
         }
         this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions());
         this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, server.getSaveProperties().getGeneratorOptions().getSeed(), server.getSaveProperties().getDragonFight()) : null;
+        this.field_28859 = new class_5838();
     }
 
     public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
@@ -290,8 +292,7 @@ implements StructureWorldAccess {
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient));
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient));
         }
-        i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
-        if (this.playersSleepingPercentage > 0.0f && this.playersSleepingPercentage >= (float)i && this.getPlayersSleepingPercentage(true) >= (float)i) {
+        if (this.field_28859.method_33812(i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE)) && this.field_28859.method_33813(i, this.players)) {
             if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
                 long l = this.properties.getTimeOfDay() + 24000L;
                 this.setTimeOfDay(l - l % 24000L);
@@ -388,7 +389,7 @@ implements StructureWorldAccess {
     }
 
     private void wakeSleepingPlayers() {
-        this.playersSleepingPercentage = 0.0f;
+        this.field_28859.method_33811();
         this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList()).forEach(player -> player.wakeUp(false, false));
     }
 
@@ -501,53 +502,23 @@ implements StructureWorldAccess {
     }
 
     private void handleSleeping() {
-        TranslatableText text;
         if (!this.isSleepingEnabled()) {
             return;
         }
-        int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
-        if (this.playersSleepingPercentage >= (float)i) {
-            text = new TranslatableText("sleep.skipping_night");
-        } else {
-            int j = 0;
-            int k = 0;
-            for (ServerPlayerEntity serverPlayerEntity : this.players) {
-                if (serverPlayerEntity.isSpectator()) continue;
-                ++k;
-                if (!serverPlayerEntity.isSleeping()) continue;
-                ++j;
-            }
-            k = Math.max(k * i / 100, 1);
-            text = new TranslatableText("sleep.players_sleeping", j, k);
+        if (this.getServer().isSinglePlayer() && !this.getServer().isRemote()) {
+            return;
         }
-        for (ServerPlayerEntity serverPlayerEntity2 : this.players) {
-            serverPlayerEntity2.sendMessage(text, true);
+        int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
+        TranslatableText text = this.field_28859.method_33812(i) ? new TranslatableText("sleep.skipping_night") : new TranslatableText("sleep.players_sleeping", this.field_28859.method_33815(), this.field_28859.method_33816(i));
+        for (ServerPlayerEntity serverPlayerEntity : this.players) {
+            serverPlayerEntity.sendMessage(text, true);
         }
     }
 
     public void updateSleepingPlayers() {
-        if (!this.players.isEmpty()) {
-            float f = this.playersSleepingPercentage;
-            this.playersSleepingPercentage = this.getPlayersSleepingPercentage(false);
-            if (f != this.playersSleepingPercentage) {
-                this.handleSleeping();
-            }
+        if (!this.players.isEmpty() && this.field_28859.method_33814(this.players)) {
+            this.handleSleeping();
         }
-    }
-
-    private float getPlayersSleepingPercentage(boolean longEnough) {
-        int i = 0;
-        int j = 0;
-        for (ServerPlayerEntity serverPlayerEntity : this.players) {
-            if (serverPlayerEntity.isSpectator()) continue;
-            ++i;
-            if (!(longEnough ? serverPlayerEntity.isSleepingLongEnough() : serverPlayerEntity.isSleeping())) continue;
-            ++j;
-        }
-        if (i == 0) {
-            return 0.0f;
-        }
-        return 100.0f * (float)j / (float)i;
     }
 
     @Override
@@ -640,7 +611,7 @@ implements StructureWorldAccess {
 
     private void saveLevel() {
         if (this.enderDragonFight != null) {
-            this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toTag());
+            this.server.getSaveProperties().setDragonFight(this.enderDragonFight.toNbt());
         }
         this.getChunkManager().getPersistentStateManager().save();
     }

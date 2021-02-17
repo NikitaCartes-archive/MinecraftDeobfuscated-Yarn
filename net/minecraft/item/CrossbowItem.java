@@ -156,7 +156,7 @@ implements Vanishable {
         CompoundTag compoundTag = crossbow.getOrCreateTag();
         ListTag listTag = compoundTag.contains("ChargedProjectiles", 9) ? compoundTag.getList("ChargedProjectiles", 10) : new ListTag();
         CompoundTag compoundTag2 = new CompoundTag();
-        projectile.toTag(compoundTag2);
+        projectile.writeNbt(compoundTag2);
         listTag.add(compoundTag2);
         compoundTag.put("ChargedProjectiles", listTag);
     }
@@ -168,7 +168,7 @@ implements Vanishable {
         if (compoundTag != null && compoundTag.contains("ChargedProjectiles", 9) && (listTag = compoundTag.getList("ChargedProjectiles", 10)) != null) {
             for (int i = 0; i < listTag.size(); ++i) {
                 CompoundTag compoundTag2 = listTag.getCompound(i);
-                list.add(ItemStack.fromTag(compoundTag2));
+                list.add(ItemStack.fromNbt(compoundTag2));
             }
         }
         return list;

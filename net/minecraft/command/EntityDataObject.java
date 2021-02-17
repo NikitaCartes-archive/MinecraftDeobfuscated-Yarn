@@ -56,13 +56,13 @@ implements DataCommandObject {
             throw INVALID_ENTITY_EXCEPTION.create();
         }
         UUID uUID = this.entity.getUuid();
-        this.entity.fromTag(tag);
+        this.entity.readNbt(tag);
         this.entity.setUuid(uUID);
     }
 
     @Override
     public CompoundTag getTag() {
-        return NbtPredicate.entityToTag(this.entity);
+        return NbtPredicate.entityToNbt(this.entity);
     }
 
     @Override

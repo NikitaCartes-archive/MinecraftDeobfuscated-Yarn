@@ -25,7 +25,7 @@ extends Feature<RandomFeatureConfig> {
         Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         ChunkGenerator chunkGenerator = context.getGenerator();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         for (RandomFeatureEntry randomFeatureEntry : randomFeatureConfig.features) {
             if (!(random.nextFloat() < randomFeatureEntry.chance)) continue;
             return randomFeatureEntry.generate(structureWorldAccess, chunkGenerator, random, blockPos);

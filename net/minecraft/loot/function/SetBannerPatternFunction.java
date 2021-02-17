@@ -40,7 +40,7 @@ extends ConditionalLootFunction {
         CompoundTag compoundTag = stack.getOrCreateSubTag("BlockEntityTag");
         BannerPattern.Patterns patterns = new BannerPattern.Patterns();
         this.patterns.forEach(patterns::add);
-        ListTag listTag = patterns.toTag();
+        ListTag listTag = patterns.toNbt();
         if (this.append) {
             listTag2 = compoundTag.getList("Patterns", 10).copy();
             listTag2.addAll(listTag);

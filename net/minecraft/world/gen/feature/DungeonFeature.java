@@ -40,7 +40,7 @@ extends Feature<DefaultFeatureConfig> {
         int u;
         int t;
         int s;
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         int i = 3;

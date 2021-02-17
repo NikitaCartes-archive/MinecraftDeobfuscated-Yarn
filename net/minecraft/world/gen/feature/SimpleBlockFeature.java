@@ -21,7 +21,7 @@ extends Feature<SimpleBlockFeatureConfig> {
         BlockPos blockPos;
         SimpleBlockFeatureConfig simpleBlockFeatureConfig = context.getConfig();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState((blockPos = context.getPos()).down())) && simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {
+        if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState((blockPos = context.getOrigin()).down())) && simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {
             structureWorldAccess.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);
             return true;
         }

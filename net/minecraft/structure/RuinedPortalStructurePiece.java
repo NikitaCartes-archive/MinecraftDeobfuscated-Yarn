@@ -86,8 +86,8 @@ extends SimpleStructurePiece {
     }
 
     @Override
-    protected void toNbt(CompoundTag tag2) {
-        super.toNbt(tag2);
+    protected void writeNbt(CompoundTag tag2) {
+        super.writeNbt(tag2);
         tag2.putString("Template", this.template.toString());
         tag2.putString("Rotation", this.rotation.name());
         tag2.putString("Mirror", this.mirror.name());

@@ -91,14 +91,14 @@ public class ItemPredicate {
             return false;
         }
         if (this.enchantments.length > 0) {
-            map = EnchantmentHelper.fromTag(stack.getEnchantments());
+            map = EnchantmentHelper.fromNbt(stack.getEnchantments());
             for (EnchantmentPredicate enchantmentPredicate : this.enchantments) {
                 if (enchantmentPredicate.test(map)) continue;
                 return false;
             }
         }
         if (this.storedEnchantments.length > 0) {
-            map = EnchantmentHelper.fromTag(EnchantedBookItem.getEnchantmentTag(stack));
+            map = EnchantmentHelper.fromNbt(EnchantedBookItem.getEnchantmentNbt(stack));
             for (EnchantmentPredicate enchantmentPredicate : this.storedEnchantments) {
                 if (enchantmentPredicate.test(map)) continue;
                 return false;

@@ -108,14 +108,14 @@ RangedAttackMob {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("Invul", this.getInvulnerableTimer());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.setInvulTimer(tag.getInt("Invul"));
         if (this.hasCustomName()) {
             this.bossBar.setName(this.getDisplayName());

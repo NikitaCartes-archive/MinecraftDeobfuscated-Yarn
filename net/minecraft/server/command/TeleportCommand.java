@@ -112,7 +112,7 @@ public class TeleportCommand {
                 ((ServerPlayerEntity)target).wakeUp(true, true);
             }
             if (world == target.world) {
-                ((ServerPlayerEntity)target).networkHandler.teleportRequest(x, y, z, f, g, movementFlags);
+                ((ServerPlayerEntity)target).networkHandler.requestTeleport(x, y, z, f, g, movementFlags);
             } else {
                 ((ServerPlayerEntity)target).teleport(world, x, y, z, f, g);
             }

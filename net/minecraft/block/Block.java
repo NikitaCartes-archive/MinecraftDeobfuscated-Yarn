@@ -398,12 +398,12 @@ implements ItemConvertible {
         return this.jumpVelocityMultiplier;
     }
 
-    protected void method_33614(World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState) {
-        world.syncWorldEvent(playerEntity, 2001, blockPos, Block.getRawIdFromState(blockState));
+    protected void spawnBreakParticles(World world, PlayerEntity player, BlockPos pos, BlockState state) {
+        world.syncWorldEvent(player, 2001, pos, Block.getRawIdFromState(state));
     }
 
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
-        this.method_33614(world, player, pos, state);
+        this.spawnBreakParticles(world, player, pos, state);
         if (state.isIn(BlockTags.GUARDED_BY_PIGLINS)) {
             PiglinBrain.onGuardedBlockInteracted(player, false);
         }

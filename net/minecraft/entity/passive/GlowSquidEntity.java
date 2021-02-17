@@ -56,13 +56,13 @@ extends SquidEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("DarkTicksRemaining", this.getDarkTicksRemaining());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         this.setDarkTicksRemaining(tag.getInt("DarkTicksRemaining"));
     }
 

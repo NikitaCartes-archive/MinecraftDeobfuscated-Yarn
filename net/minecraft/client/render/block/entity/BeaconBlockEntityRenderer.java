@@ -18,6 +18,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
@@ -114,6 +115,16 @@ implements BlockEntityRenderer<BeaconBlockEntity> {
     @Override
     public boolean rendersOutsideBoundingBox(BeaconBlockEntity beaconBlockEntity) {
         return true;
+    }
+
+    @Override
+    public int method_33893() {
+        return 256;
+    }
+
+    @Override
+    public boolean method_33892(BeaconBlockEntity beaconBlockEntity, Vec3d vec3d) {
+        return Vec3d.ofCenter(beaconBlockEntity.getPos()).multiply(1.0, 0.0, 1.0).isInRange(vec3d.multiply(1.0, 0.0, 1.0), this.method_33893());
     }
 }
 

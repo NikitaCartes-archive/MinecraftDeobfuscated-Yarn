@@ -368,7 +368,7 @@ AutoCloseable {
         }
         this.getPlayerManager().setMainWorld(serverWorld);
         if (this.saveProperties.getCustomBossEvents() != null) {
-            this.getBossBarManager().fromTag(this.saveProperties.getCustomBossEvents());
+            this.getBossBarManager().readNbt(this.saveProperties.getCustomBossEvents());
         }
         for (Map.Entry<RegistryKey<DimensionOptions>, DimensionOptions> entry : simpleRegistry.getEntries()) {
             RegistryKey<DimensionOptions> registryKey = entry.getKey();
@@ -525,7 +525,7 @@ AutoCloseable {
         ServerWorld serverWorld2 = this.getOverworld();
         ServerWorldProperties serverWorldProperties = this.saveProperties.getMainWorldProperties();
         serverWorldProperties.setWorldBorder(serverWorld2.getWorldBorder().write());
-        this.saveProperties.setCustomBossEvents(this.getBossBarManager().toTag());
+        this.saveProperties.setCustomBossEvents(this.getBossBarManager().toNbt());
         this.session.backupLevelDataFile(this.registryManager, this.saveProperties, this.getPlayerManager().getUserData());
         return bl;
     }
@@ -1526,9 +1526,8 @@ AutoCloseable {
         return this.registryManager;
     }
 
-    @Nullable
     public TextStream createFilterer(ServerPlayerEntity player) {
-        return null;
+        return TextStream.field_28862;
     }
 
     public boolean requireResourcePack() {

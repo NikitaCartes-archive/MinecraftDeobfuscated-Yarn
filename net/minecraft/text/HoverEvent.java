@@ -238,7 +238,7 @@ public class HoverEvent {
         private static ItemStackContent parse(Text text) {
             try {
                 CompoundTag compoundTag = StringNbtReader.parse(text.getString());
-                return new ItemStackContent(ItemStack.fromTag(compoundTag));
+                return new ItemStackContent(ItemStack.fromNbt(compoundTag));
             } catch (CommandSyntaxException commandSyntaxException) {
                 LOGGER.warn("Failed to parse item tag: {}", (Object)text, (Object)commandSyntaxException);
                 return null;

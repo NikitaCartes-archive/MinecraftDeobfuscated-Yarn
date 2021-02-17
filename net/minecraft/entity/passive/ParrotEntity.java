@@ -353,7 +353,7 @@ implements Flutterer {
     }
 
     @Override
-    protected void playFlySound() {
+    protected void addFlapEffects() {
         this.playSound(SoundEvents.ENTITY_PARROT_FLY, 0.15f, 1.0f);
         this.field_28640 = this.field_28627 + this.maxWingDeviation / 2.0f;
     }
@@ -409,14 +409,14 @@ implements Flutterer {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("Variant", this.getVariant());
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.setVariant(tag.getInt("Variant"));
     }
 

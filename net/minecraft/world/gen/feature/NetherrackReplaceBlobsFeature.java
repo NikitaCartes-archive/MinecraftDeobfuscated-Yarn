@@ -28,7 +28,7 @@ extends Feature<NetherrackReplaceBlobsFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
         Block block = netherrackReplaceBlobsFeatureConfig.target.getBlock();
-        BlockPos blockPos = NetherrackReplaceBlobsFeature.method_27107(structureWorldAccess, context.getPos().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopY() - 1), block);
+        BlockPos blockPos = NetherrackReplaceBlobsFeature.method_27107(structureWorldAccess, context.getOrigin().mutableCopy().clamp(Direction.Axis.Y, structureWorldAccess.getBottomY() + 1, structureWorldAccess.getTopY() - 1), block);
         if (blockPos == null) {
             return false;
         }

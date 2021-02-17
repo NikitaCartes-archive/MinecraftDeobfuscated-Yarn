@@ -45,8 +45,8 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         if (this.owner != null) {
             CompoundTag compoundTag = new CompoundTag();
             NbtHelper.fromGameProfile(compoundTag, this.owner);
@@ -56,9 +56,9 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
+    public void readNbt(CompoundTag tag) {
         String string;
-        super.fromTag(tag);
+        super.readNbt(tag);
         if (tag.contains("SkullOwner", 10)) {
             this.setOwner(NbtHelper.toGameProfile(tag.getCompound("SkullOwner")));
         } else if (tag.contains("ExtraType", 8) && !ChatUtil.isEmpty(string = tag.getString("ExtraType"))) {
@@ -92,12 +92,12 @@ extends BlockEntity {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 4, this.toInitialChunkDataNbt());
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
+    public CompoundTag toInitialChunkDataNbt() {
+        return this.writeNbt(new CompoundTag());
     }
 
     public void setOwner(@Nullable GameProfile owner) {

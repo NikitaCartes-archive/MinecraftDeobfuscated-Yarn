@@ -64,8 +64,8 @@ extends Screen {
     private int currentPage;
     private final List<String> pages = Lists.newArrayList();
     private String title = "";
-    private final SelectionManager field_24269 = new SelectionManager(this::getCurrentPageContent, this::setPageContent, this::getClipboard, this::setClipboard, string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight((String)string, 114) <= 128);
-    private final SelectionManager field_24270 = new SelectionManager(() -> this.title, string -> {
+    private final SelectionManager currentPageSelectionManager = new SelectionManager(this::getCurrentPageContent, this::setPageContent, this::getClipboard, this::setClipboard, string -> string.length() < 1024 && this.textRenderer.getWrappedLinesHeight((String)string, 114) <= 128);
+    private final SelectionManager bookTitleSelectionManager = new SelectionManager(() -> this.title, string -> {
         this.title = string;
     }, this::getClipboard, this::setClipboard, string -> string.length() < 16);
     private long lastClickTime;
@@ -79,8 +79,8 @@ extends Screen {
     private final Hand hand;
     @Nullable
     private PageContent pageContent = PageContent.method_27599();
-    private Text field_25891 = LiteralText.EMPTY;
-    private final Text field_25892;
+    private Text pageIndicatorText = LiteralText.EMPTY;
+    private final Text signedByText;
 
     public BookEditScreen(PlayerEntity player, ItemStack itemStack, Hand hand) {
         super(NarratorManager.EMPTY);
@@ -89,15 +89,12 @@ extends Screen {
         this.hand = hand;
         CompoundTag compoundTag = itemStack.getTag();
         if (compoundTag != null) {
-            ListTag listTag = compoundTag.getList("pages", 8).copy();
-            for (int i = 0; i < listTag.size(); ++i) {
-                this.pages.add(listTag.getString(i));
-            }
+            BookScreen.method_33888(compoundTag, this.pages::add);
         }
         if (this.pages.isEmpty()) {
             this.pages.add("");
         }
-        this.field_25892 = new TranslatableText("book.byAuthor", player.getName()).formatted(Formatting.DARK_GRAY);
+        this.signedByText = new TranslatableText("book.byAuthor", player.getName()).formatted(Formatting.DARK_GRAY);
     }
 
     private void setClipboard(String clipboard) {
@@ -242,7 +239,7 @@ extends Screen {
             return true;
         }
         if (this.signing) {
-            boolean bl = this.field_24270.insert(chr);
+            boolean bl = this.bookTitleSelectionManager.insert(chr);
             if (bl) {
                 this.updateButtons();
                 this.dirty = true;
@@ -251,7 +248,7 @@ extends Screen {
             return false;
         }
         if (SharedConstants.isValidChar(chr)) {
-            this.field_24269.insert(Character.toString(chr));
+            this.currentPageSelectionManager.insert(Character.toString(chr));
             this.invalidatePageContent();
             return true;
         }
@@ -260,41 +257,41 @@ extends Screen {
 
     private boolean method_27592(int i, int j, int k) {
         if (Screen.isSelectAll(i)) {
-            this.field_24269.selectAll();
+            this.currentPageSelectionManager.selectAll();
             return true;
         }
         if (Screen.isCopy(i)) {
-            this.field_24269.copy();
+            this.currentPageSelectionManager.copy();
             return true;
         }
         if (Screen.isPaste(i)) {
-            this.field_24269.paste();
+            this.currentPageSelectionManager.paste();
             return true;
         }
         if (Screen.isCut(i)) {
-            this.field_24269.cut();
+            this.currentPageSelectionManager.cut();
             return true;
         }
         switch (i) {
             case 259: {
-                this.field_24269.delete(-1);
+                this.currentPageSelectionManager.delete(-1);
                 return true;
             }
             case 261: {
-                this.field_24269.delete(1);
+                this.currentPageSelectionManager.delete(1);
                 return true;
             }
             case 257: 
             case 335: {
-                this.field_24269.insert("\n");
+                this.currentPageSelectionManager.insert("\n");
                 return true;
             }
             case 263: {
-                this.field_24269.moveCursor(-1, Screen.hasShiftDown());
+                this.currentPageSelectionManager.moveCursor(-1, Screen.hasShiftDown());
                 return true;
             }
             case 262: {
-                this.field_24269.moveCursor(1, Screen.hasShiftDown());
+                this.currentPageSelectionManager.moveCursor(1, Screen.hasShiftDown());
                 return true;
             }
             case 265: {
@@ -334,28 +331,28 @@ extends Screen {
     }
 
     private void method_27580(int i) {
-        int j = this.field_24269.getSelectionStart();
+        int j = this.currentPageSelectionManager.getSelectionStart();
         int k = this.getPageContent().method_27601(j, i);
-        this.field_24269.method_27560(k, Screen.hasShiftDown());
+        this.currentPageSelectionManager.method_27560(k, Screen.hasShiftDown());
     }
 
     private void moveCursorToTop() {
-        int i = this.field_24269.getSelectionStart();
+        int i = this.currentPageSelectionManager.getSelectionStart();
         int j = this.getPageContent().method_27600(i);
-        this.field_24269.method_27560(j, Screen.hasShiftDown());
+        this.currentPageSelectionManager.method_27560(j, Screen.hasShiftDown());
     }
 
     private void moveCursorToBottom() {
         PageContent pageContent = this.getPageContent();
-        int i = this.field_24269.getSelectionStart();
+        int i = this.currentPageSelectionManager.getSelectionStart();
         int j = pageContent.method_27604(i);
-        this.field_24269.method_27560(j, Screen.hasShiftDown());
+        this.currentPageSelectionManager.method_27560(j, Screen.hasShiftDown());
     }
 
     private boolean keyPressedSignMode(int keyCode, int scanCode, int modifiers) {
         switch (keyCode) {
             case 259: {
-                this.field_24270.delete(-1);
+                this.bookTitleSelectionManager.delete(-1);
                 this.updateButtons();
                 this.dirty = true;
                 return true;
@@ -403,12 +400,12 @@ extends Screen {
             this.textRenderer.draw(matrices, EDIT_TITLE_TEXT, (float)(i + 36 + (114 - k) / 2), 34.0f, 0);
             int l = this.textRenderer.getWidth(orderedText);
             this.textRenderer.draw(matrices, orderedText, (float)(i + 36 + (114 - l) / 2), 50.0f, 0);
-            int m = this.textRenderer.getWidth(this.field_25892);
-            this.textRenderer.draw(matrices, this.field_25892, (float)(i + 36 + (114 - m) / 2), 60.0f, 0);
+            int m = this.textRenderer.getWidth(this.signedByText);
+            this.textRenderer.draw(matrices, this.signedByText, (float)(i + 36 + (114 - m) / 2), 60.0f, 0);
             this.textRenderer.drawTrimmed(FINALIZE_WARNING_TEXT, i + 36, 82, 114, 0);
         } else {
-            int n = this.textRenderer.getWidth(this.field_25891);
-            this.textRenderer.draw(matrices, this.field_25891, (float)(i - n + 192 - 44), 18.0f, 0);
+            int n = this.textRenderer.getWidth(this.pageIndicatorText);
+            this.textRenderer.draw(matrices, this.pageIndicatorText, (float)(i - n + 192 - 44), 18.0f, 0);
             PageContent pageContent = this.getPageContent();
             for (Line line : pageContent.lines) {
                 this.textRenderer.draw(matrices, line.text, (float)line.x, (float)line.y, -16777216);
@@ -419,13 +416,13 @@ extends Screen {
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private void method_27581(MatrixStack matrixStack, Position position, boolean bl) {
+    private void method_27581(MatrixStack matrices, Position position, boolean bl) {
         if (this.tickCounter / 6 % 2 == 0) {
             position = this.method_27590(position);
             if (!bl) {
-                DrawableHelper.fill(matrixStack, position.x, position.y - 1, position.x + 1, position.y + this.textRenderer.fontHeight, -16777216);
+                DrawableHelper.fill(matrices, position.x, position.y - 1, position.x + 1, position.y + this.textRenderer.fontHeight, -16777216);
             } else {
-                this.textRenderer.draw(matrixStack, "_", (float)position.x, (float)position.y, 0);
+                this.textRenderer.draw(matrices, "_", (float)position.x, (float)position.y, 0);
             }
         }
     }
@@ -472,13 +469,13 @@ extends Screen {
             int i = pageContent.method_27602(this.textRenderer, this.method_27582(new Position((int)mouseX, (int)mouseY)));
             if (i >= 0) {
                 if (i == this.lastClickIndex && l - this.lastClickTime < 250L) {
-                    if (!this.field_24269.method_27568()) {
+                    if (!this.currentPageSelectionManager.method_27568()) {
                         this.method_27589(i);
                     } else {
-                        this.field_24269.selectAll();
+                        this.currentPageSelectionManager.selectAll();
                     }
                 } else {
-                    this.field_24269.method_27560(i, Screen.hasShiftDown());
+                    this.currentPageSelectionManager.method_27560(i, Screen.hasShiftDown());
                 }
                 this.invalidatePageContent();
             }
@@ -490,7 +487,7 @@ extends Screen {
 
     private void method_27589(int i) {
         String string = this.getCurrentPageContent();
-        this.field_24269.method_27548(TextHandler.moveCursorByWords(string, -1, i, false), TextHandler.moveCursorByWords(string, 1, i, false));
+        this.currentPageSelectionManager.method_27548(TextHandler.moveCursorByWords(string, -1, i, false), TextHandler.moveCursorByWords(string, 1, i, false));
     }
 
     @Override
@@ -501,7 +498,7 @@ extends Screen {
         if (button == 0) {
             PageContent pageContent = this.getPageContent();
             int i = pageContent.method_27602(this.textRenderer, this.method_27582(new Position((int)mouseX, (int)mouseY)));
-            this.field_24269.method_27560(i, true);
+            this.currentPageSelectionManager.method_27560(i, true);
             this.invalidatePageContent();
         }
         return true;
@@ -510,7 +507,7 @@ extends Screen {
     private PageContent getPageContent() {
         if (this.pageContent == null) {
             this.pageContent = this.createPageContent();
-            this.field_25891 = new TranslatableText("book.pageIndicator", this.currentPage + 1, this.countPages());
+            this.pageIndicatorText = new TranslatableText("book.pageIndicator", this.currentPage + 1, this.countPages());
         }
         return this.pageContent;
     }
@@ -520,7 +517,7 @@ extends Screen {
     }
 
     private void method_27872() {
-        this.field_24269.moveCaretToEnd();
+        this.currentPageSelectionManager.moveCaretToEnd();
         this.invalidatePageContent();
     }
 
@@ -532,8 +529,8 @@ extends Screen {
         if (string.isEmpty()) {
             return PageContent.EMPTY;
         }
-        int i2 = this.field_24269.getSelectionStart();
-        int j2 = this.field_24269.getSelectionEnd();
+        int i2 = this.currentPageSelectionManager.getSelectionStart();
+        int j2 = this.currentPageSelectionManager.getSelectionEnd();
         IntArrayList intList = new IntArrayList();
         ArrayList list = Lists.newArrayList();
         MutableInt mutableInt = new MutableInt();

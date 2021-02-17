@@ -116,7 +116,7 @@ implements ArgumentType<BlockPredicate> {
             }
             if (this.nbt != null) {
                 BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
+                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new CompoundTag()), true);
             }
             return true;
         }
@@ -152,7 +152,7 @@ implements ArgumentType<BlockPredicate> {
             }
             if (this.nbt != null) {
                 BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.toTag(new CompoundTag()), true);
+                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new CompoundTag()), true);
             }
             return true;
         }

@@ -178,19 +178,19 @@ extends ProtoChunk {
     }
 
     @Override
-    public void addPendingBlockEntityTag(CompoundTag tag) {
+    public void addPendingBlockEntityNbt(CompoundTag tag) {
     }
 
     @Override
     @Nullable
-    public CompoundTag getBlockEntityTag(BlockPos pos) {
-        return this.wrapped.getBlockEntityTag(pos);
+    public CompoundTag getBlockEntityNbt(BlockPos pos) {
+        return this.wrapped.getBlockEntityNbt(pos);
     }
 
     @Override
     @Nullable
-    public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
-        return this.wrapped.getPackedBlockEntityTag(pos);
+    public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
+        return this.wrapped.getPackedBlockEntityNbt(pos);
     }
 
     @Override

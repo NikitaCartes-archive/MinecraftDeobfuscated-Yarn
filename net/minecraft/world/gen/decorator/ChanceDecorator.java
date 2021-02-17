@@ -5,23 +5,22 @@ package net.minecraft.world.gen.decorator;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.gen.decorator.AbstractCountDecorator;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
-import net.minecraft.world.gen.decorator.SimpleDecorator;
 
 public class ChanceDecorator
-extends SimpleDecorator<ChanceDecoratorConfig> {
+extends AbstractCountDecorator<ChanceDecoratorConfig> {
     public ChanceDecorator(Codec<ChanceDecoratorConfig> codec) {
         super(codec);
     }
 
     @Override
-    public Stream<BlockPos> getPositions(Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
+    protected int getCount(Random random, ChanceDecoratorConfig chanceDecoratorConfig, BlockPos blockPos) {
         if (random.nextFloat() < 1.0f / (float)chanceDecoratorConfig.chance) {
-            return Stream.of(blockPos);
+            return 1;
         }
-        return Stream.empty();
+        return 0;
     }
 }
 

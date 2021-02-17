@@ -130,15 +130,15 @@ implements Hopper {
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    protected void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("TransferCooldown", this.transferCooldown);
         tag.putBoolean("Enabled", this.enabled);
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    protected void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.transferCooldown = tag.getInt("TransferCooldown");
         this.enabled = tag.contains("Enabled") ? tag.getBoolean("Enabled") : true;
     }

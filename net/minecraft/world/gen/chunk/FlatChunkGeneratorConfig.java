@@ -22,8 +22,8 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.Util;
+import net.minecraft.util.dynamic.RegistryLookupCodec;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.util.registry.RegistryLookupCodec;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.Biome;
@@ -77,8 +77,8 @@ implements HeightLimitView {
 
     private static DataResult<FlatChunkGeneratorConfig> method_33067(FlatChunkGeneratorConfig flatChunkGeneratorConfig) {
         int i = flatChunkGeneratorConfig.layers.stream().mapToInt(FlatChunkGeneratorLayer::getThickness).sum();
-        if (i > DimensionType.field_28134) {
-            return DataResult.error("Sum of layer heights is > " + DimensionType.field_28134, flatChunkGeneratorConfig);
+        if (i > DimensionType.MAX_HEIGHT) {
+            return DataResult.error("Sum of layer heights is > " + DimensionType.MAX_HEIGHT, flatChunkGeneratorConfig);
         }
         return DataResult.success(flatChunkGeneratorConfig);
     }

@@ -38,7 +38,7 @@ public class NbtPredicate {
         if (this == ANY) {
             return true;
         }
-        return this.test(NbtPredicate.entityToTag(entity));
+        return this.test(NbtPredicate.entityToNbt(entity));
     }
 
     public boolean test(@Nullable Tag tag) {
@@ -68,11 +68,11 @@ public class NbtPredicate {
         return new NbtPredicate(compoundTag);
     }
 
-    public static CompoundTag entityToTag(Entity entity) {
+    public static CompoundTag entityToNbt(Entity entity) {
         ItemStack itemStack;
-        CompoundTag compoundTag = entity.toTag(new CompoundTag());
+        CompoundTag compoundTag = entity.writeNbt(new CompoundTag());
         if (entity instanceof PlayerEntity && !(itemStack = ((PlayerEntity)entity).getInventory().getMainHandStack()).isEmpty()) {
-            compoundTag.put("SelectedItem", itemStack.toTag(new CompoundTag()));
+            compoundTag.put("SelectedItem", itemStack.writeNbt(new CompoundTag()));
         }
         return compoundTag;
     }

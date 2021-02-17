@@ -22,7 +22,7 @@ extends Feature<SpringFeatureConfig> {
         BlockPos blockPos;
         SpringFeatureConfig springFeatureConfig = context.getConfig();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState((blockPos = context.getPos()).up()).getBlock())) {
+        if (!springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState((blockPos = context.getOrigin()).up()).getBlock())) {
             return false;
         }
         if (springFeatureConfig.requiresBlockBelow && !springFeatureConfig.validBlocks.contains(structureWorldAccess.getBlockState(blockPos.down()).getBlock())) {

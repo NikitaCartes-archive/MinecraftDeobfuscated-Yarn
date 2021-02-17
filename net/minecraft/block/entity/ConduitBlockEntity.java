@@ -53,14 +53,14 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
+    public void readNbt(CompoundTag tag) {
+        super.readNbt(tag);
         this.targetUuid = tag.containsUuid("Target") ? tag.getUuid("Target") : null;
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         if (this.targetEntity != null) {
             tag.putUuid("Target", this.targetEntity.getUuid());
         }
@@ -70,12 +70,12 @@ extends BlockEntity {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 5, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 5, this.toInitialChunkDataNbt());
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
+    public CompoundTag toInitialChunkDataNbt() {
+        return this.writeNbt(new CompoundTag());
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, ConduitBlockEntity blockEntity) {

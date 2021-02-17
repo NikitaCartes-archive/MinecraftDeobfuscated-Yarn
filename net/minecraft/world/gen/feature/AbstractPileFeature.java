@@ -23,7 +23,7 @@ extends Feature<BlockPileFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<BlockPileFeatureConfig> context) {
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
         BlockPileFeatureConfig blockPileFeatureConfig = context.getConfig();

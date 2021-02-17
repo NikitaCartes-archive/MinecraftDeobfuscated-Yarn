@@ -88,8 +88,8 @@ implements Monster {
     }
 
     @Override
-    protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.NONE;
+    protected Entity.MoveEffect getMoveEffect() {
+        return Entity.MoveEffect.NONE;
     }
 
     @Override
@@ -140,8 +140,8 @@ implements Monster {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.dataTracker.set(ATTACHED_FACE, Direction.byId(tag.getByte("AttachFace")));
         this.dataTracker.set(PEEK_AMOUNT, tag.getByte("Peek"));
         if (tag.contains("Color", 99)) {
@@ -150,8 +150,8 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putByte("AttachFace", (byte)this.dataTracker.get(ATTACHED_FACE).getId());
         tag.putByte("Peek", this.dataTracker.get(PEEK_AMOUNT));
         tag.putByte("Color", this.dataTracker.get(COLOR));

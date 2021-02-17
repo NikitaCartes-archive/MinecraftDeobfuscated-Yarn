@@ -1,7 +1,7 @@
 /*
  * Decompiled with CFR 0.2.0 (FabricMC d28b102d).
  */
-package net.minecraft.util.registry;
+package net.minecraft.util.dynamic;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;

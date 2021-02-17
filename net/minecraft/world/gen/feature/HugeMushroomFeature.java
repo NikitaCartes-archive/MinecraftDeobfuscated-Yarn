@@ -63,7 +63,7 @@ extends Feature<HugeMushroomFeatureConfig> {
     public boolean generate(FeatureContext<HugeMushroomFeatureConfig> context) {
         BlockPos.Mutable mutable;
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         Random random = context.getRandom();
         HugeMushroomFeatureConfig hugeMushroomFeatureConfig = context.getConfig();
         int i = this.getHeight(random);

@@ -47,7 +47,7 @@ extends ConditionalLootFunction {
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         this.entries.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(defaultedList::add), context)));
         CompoundTag compoundTag = new CompoundTag();
-        Inventories.toTag(compoundTag, defaultedList);
+        Inventories.writeNbt(compoundTag, defaultedList);
         CompoundTag compoundTag2 = stack.getOrCreateTag();
         compoundTag2.put("BlockEntityTag", compoundTag.copyFrom(compoundTag2.getCompound("BlockEntityTag")));
         return stack;

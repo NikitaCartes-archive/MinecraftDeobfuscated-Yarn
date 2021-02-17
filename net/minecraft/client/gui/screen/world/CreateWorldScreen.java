@@ -85,7 +85,7 @@ extends Screen {
     public boolean hardcore;
     protected DataPackSettings dataPackSettings;
     @Nullable
-    private Path field_25477;
+    private Path dataPackTempDir;
     @Nullable
     private ResourcePackManager packManager;
     private boolean moreOptionsOpen;
@@ -102,7 +102,7 @@ extends Screen {
     private GameRules gameRules = new GameRules();
     public final MoreOptionsDialog moreOptionsDialog;
 
-    public CreateWorldScreen(@Nullable Screen parent, LevelInfo levelInfo, GeneratorOptions generatorOptions, @Nullable Path path, DataPackSettings dataPackSettings, DynamicRegistryManager.Impl registryManager) {
+    public CreateWorldScreen(@Nullable Screen parent, LevelInfo levelInfo, GeneratorOptions generatorOptions, @Nullable Path dataPackTempDir, DataPackSettings dataPackSettings, DynamicRegistryManager.Impl registryManager) {
         this(parent, dataPackSettings, new MoreOptionsDialog(registryManager, generatorOptions, GeneratorType.fromGeneratorOptions(generatorOptions), OptionalLong.of(generatorOptions.getSeed())));
         this.levelName = levelInfo.getLevelName();
         this.cheatsEnabled = levelInfo.areCommandsAllowed();
@@ -116,7 +116,7 @@ extends Screen {
         } else if (levelInfo.getGameMode().isCreative()) {
             this.currentMode = Mode.CREATIVE;
         }
-        this.field_25477 = path;
+        this.dataPackTempDir = dataPackTempDir;
     }
 
     public static CreateWorldScreen create(@Nullable Screen parent) {
@@ -176,7 +176,7 @@ extends Screen {
         this.moreOptionsButton = this.addButton(new ButtonWidget(j, 185, 150, 20, new TranslatableText("selectWorld.moreWorldOptions"), buttonWidget -> this.toggleMoreOptions()));
         this.createLevelButton = this.addButton(new ButtonWidget(i, this.height - 28, 150, 20, new TranslatableText("selectWorld.create"), buttonWidget -> this.createLevel()));
         this.createLevelButton.active = !this.levelName.isEmpty();
-        this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.method_30297()));
+        this.addButton(new ButtonWidget(j, this.height - 28, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onCloseScreen()));
         this.setMoreOptionsOpen();
         this.setInitialFocus(this.levelNameField);
         this.tweakDefaultsTo(this.currentMode);
@@ -217,10 +217,10 @@ extends Screen {
     private void createLevel() {
         LevelInfo levelInfo;
         this.client.method_29970(new SaveLevelScreen(new TranslatableText("createWorld.preparing")));
-        if (!this.method_29696()) {
+        if (!this.copyTempDirDataPacks()) {
             return;
         }
-        this.method_30298();
+        this.clearTempResources();
         GeneratorOptions generatorOptions = this.moreOptionsDialog.getGeneratorOptions(this.hardcore);
         if (generatorOptions.isDebugWorld()) {
             GameRules gameRules = new GameRules();
@@ -311,20 +311,20 @@ extends Screen {
         if (this.moreOptionsOpen) {
             this.setMoreOptionsOpen(false);
         } else {
-            this.method_30297();
+            this.onCloseScreen();
         }
     }
 
-    public void method_30297() {
+    public void onCloseScreen() {
         this.client.openScreen(this.parent);
-        this.method_30298();
+        this.clearTempResources();
     }
 
-    private void method_30298() {
+    private void clearTempResources() {
         if (this.packManager != null) {
             this.packManager.close();
         }
-        this.method_29695();
+        this.clearDataPackTempDir();
     }
 
     @Override
@@ -359,17 +359,17 @@ extends Screen {
     }
 
     @Nullable
-    protected Path method_29693() {
-        if (this.field_25477 == null) {
+    protected Path getDataPackTempDir() {
+        if (this.dataPackTempDir == null) {
             try {
-                this.field_25477 = Files.createTempDirectory("mcworld-", new FileAttribute[0]);
+                this.dataPackTempDir = Files.createTempDirectory("mcworld-", new FileAttribute[0]);
             } catch (IOException iOException) {
                 LOGGER.warn("Failed to create temporary dir", (Throwable)iOException);
                 SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
-                this.method_30297();
+                this.onCloseScreen();
             }
         }
-        return this.field_25477;
+        return this.dataPackTempDir;
     }
 
     private void method_29694() {
@@ -411,9 +411,9 @@ extends Screen {
         });
     }
 
-    private void method_29695() {
-        if (this.field_25477 != null) {
-            try (Stream<Path> stream = Files.walk(this.field_25477, new FileVisitOption[0]);){
+    private void clearDataPackTempDir() {
+        if (this.dataPackTempDir != null) {
+            try (Stream<Path> stream = Files.walk(this.dataPackTempDir, new FileVisitOption[0]);){
                 stream.sorted(Comparator.reverseOrder()).forEach(path -> {
                     try {
                         Files.delete(path);
@@ -422,32 +422,32 @@ extends Screen {
                     }
                 });
             } catch (IOException iOException) {
-                LOGGER.warn("Failed to list temporary dir {}", (Object)this.field_25477);
+                LOGGER.warn("Failed to list temporary dir {}", (Object)this.dataPackTempDir);
             }
-            this.field_25477 = null;
+            this.dataPackTempDir = null;
         }
     }
 
-    private static void method_29687(Path path, Path path2, Path path3) {
+    private static void copyDataPack(Path srcFolder, Path destFolder, Path dataPackFile) {
         try {
-            Util.relativeCopy(path, path2, path3);
+            Util.relativeCopy(srcFolder, destFolder, dataPackFile);
         } catch (IOException iOException) {
-            LOGGER.warn("Failed to copy datapack file from {} to {}", (Object)path3, (Object)path2);
+            LOGGER.warn("Failed to copy datapack file from {} to {}", (Object)dataPackFile, (Object)destFolder);
             throw new WorldCreationException(iOException);
         }
     }
 
-    private boolean method_29696() {
-        if (this.field_25477 != null) {
+    private boolean copyTempDirDataPacks() {
+        if (this.dataPackTempDir != null) {
             try (LevelStorage.Session session = this.client.getLevelStorage().createSession(this.saveDirectoryName);
-                 Stream<Path> stream = Files.walk(this.field_25477, new FileVisitOption[0]);){
+                 Stream<Path> stream = Files.walk(this.dataPackTempDir, new FileVisitOption[0]);){
                 Path path3 = session.getDirectory(WorldSavePath.DATAPACKS);
                 Files.createDirectories(path3, new FileAttribute[0]);
-                stream.filter(path -> !path.equals(this.field_25477)).forEach(path2 -> CreateWorldScreen.method_29687(this.field_25477, path3, path2));
+                stream.filter(path -> !path.equals(this.dataPackTempDir)).forEach(path2 -> CreateWorldScreen.copyDataPack(this.dataPackTempDir, path3, path2));
             } catch (IOException | WorldCreationException exception) {
                 LOGGER.warn("Failed to copy datapacks to world {}", (Object)this.saveDirectoryName, (Object)exception);
                 SystemToast.addPackCopyFailure(this.client, this.saveDirectoryName);
-                this.method_30297();
+                this.onCloseScreen();
                 return false;
             }
         }
@@ -469,7 +469,7 @@ extends Screen {
                     }
                     mutableObject.setValue(path3);
                 }
-                CreateWorldScreen.method_29687(path, path3, path2);
+                CreateWorldScreen.copyDataPack(path, path3, path2);
             });
         } catch (IOException | WorldCreationException exception) {
             LOGGER.warn("Failed to copy datapacks from world {}", (Object)path, (Object)exception);
@@ -481,7 +481,7 @@ extends Screen {
 
     @Nullable
     private Pair<File, ResourcePackManager> method_30296() {
-        Path path = this.method_29693();
+        Path path = this.getDataPackTempDir();
         if (path != null) {
             File file = path.toFile();
             if (this.packManager == null) {

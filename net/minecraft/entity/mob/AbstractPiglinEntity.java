@@ -5,9 +5,9 @@ package net.minecraft.entity.mob;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5493;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.PathNodeType;
@@ -41,7 +41,7 @@ extends HostileEntity {
     }
 
     private void setCanPathThroughDoors() {
-        if (class_5493.method_30955(this)) {
+        if (NavigationConditions.hasMobNavigation(this)) {
             ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(true);
         }
     }
@@ -63,8 +63,8 @@ extends HostileEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         if (this.isImmuneToZombification()) {
             tag.putBoolean("IsImmuneToZombification", true);
         }
@@ -77,8 +77,8 @@ extends HostileEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
         this.timeInOverworld = tag.getInt("TimeInOverworld");
     }

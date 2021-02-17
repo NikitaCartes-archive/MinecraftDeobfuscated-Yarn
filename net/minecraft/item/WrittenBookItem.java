@@ -65,9 +65,9 @@ extends Item {
 
     @Override
     public Text getName(ItemStack stack) {
-        CompoundTag compoundTag;
         String string;
-        if (stack.hasTag() && !ChatUtil.isEmpty(string = (compoundTag = stack.getTag()).getString("title"))) {
+        CompoundTag compoundTag = stack.getTag();
+        if (compoundTag != null && !ChatUtil.isEmpty(string = compoundTag.getString("title"))) {
             return new LiteralText(string);
         }
         return super.getName(stack);
@@ -116,18 +116,26 @@ extends Item {
         }
         ListTag listTag = compoundTag.getList("pages", 8);
         for (int i = 0; i < listTag.size(); ++i) {
-            MutableText text;
-            String string = listTag.getString(i);
-            try {
-                text = Text.Serializer.fromLenientJson(string);
-                text = Texts.parse(commandSource, text, player, 0);
-            } catch (Exception exception) {
-                text = new LiteralText(string);
-            }
-            listTag.set(i, StringTag.of(Text.Serializer.toJson(text)));
+            listTag.set(i, StringTag.of(WrittenBookItem.method_33826(commandSource, player, listTag.getString(i))));
         }
-        compoundTag.put("pages", listTag);
+        if (compoundTag.contains("filtered_pages", 10)) {
+            CompoundTag compoundTag2 = compoundTag.getCompound("filtered_pages");
+            for (String string : compoundTag2.getKeys()) {
+                compoundTag2.putString(string, WrittenBookItem.method_33826(commandSource, player, compoundTag2.getString(string)));
+            }
+        }
         return true;
+    }
+
+    private static String method_33826(@Nullable ServerCommandSource serverCommandSource, @Nullable PlayerEntity playerEntity, String string) {
+        MutableText text;
+        try {
+            text = Text.Serializer.fromLenientJson(string);
+            text = Texts.parse(serverCommandSource, text, playerEntity, 0);
+        } catch (Exception exception) {
+            text = new LiteralText(string);
+        }
+        return Text.Serializer.toJson(text);
     }
 
     @Override

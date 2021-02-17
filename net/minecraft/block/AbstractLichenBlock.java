@@ -48,7 +48,7 @@ extends Block {
     private static final VoxelShape SOUTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 0.0, 16.0, 16.0, 1.0);
     private static final VoxelShape NORTH_SHAPE = Block.createCuboidShape(0.0, 0.0, 15.0, 16.0, 16.0, 16.0);
     private static final Map<Direction, BooleanProperty> FACING_PROPERTIES = ConnectingBlock.FACING_PROPERTIES;
-    private static final Map<Direction, VoxelShape> field_28420 = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
+    private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
         enumMap.put(Direction.NORTH, SOUTH_SHAPE);
         enumMap.put(Direction.EAST, WEST_SHAPE);
         enumMap.put(Direction.SOUTH, NORTH_SHAPE);
@@ -57,52 +57,52 @@ extends Block {
         enumMap.put(Direction.DOWN, DOWN_SHAPE);
     });
     private static final Direction[] DIRECTIONS = Direction.values();
-    private final ImmutableMap<BlockState, VoxelShape> field_28422;
-    private final boolean field_28423;
-    private final boolean field_28424;
-    private final boolean field_28425;
+    private final ImmutableMap<BlockState, VoxelShape> SHAPES;
+    private final boolean hasAllHorizontalDirections;
+    private final boolean canMirrorX;
+    private final boolean canMirrorZ;
 
     public AbstractLichenBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState(AbstractLichenBlock.method_33368(this.stateManager));
-        this.field_28422 = this.getShapesForStates(AbstractLichenBlock::method_33380);
-        this.field_28423 = Direction.Type.HORIZONTAL.stream().allMatch(this::method_33369);
-        this.field_28424 = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.X).filter(this::method_33369).count() % 2L == 0L;
-        this.field_28425 = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::method_33369).count() % 2L == 0L;
+        this.setDefaultState(AbstractLichenBlock.withNoDirections(this.stateManager));
+        this.SHAPES = this.getShapesForStates(AbstractLichenBlock::getShapeForState);
+        this.hasAllHorizontalDirections = Direction.Type.HORIZONTAL.stream().allMatch(this::canHaveDirection);
+        this.canMirrorX = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.X).filter(this::canHaveDirection).count() % 2L == 0L;
+        this.canMirrorZ = Direction.Type.HORIZONTAL.stream().filter(Direction.Axis.Z).filter(this::canHaveDirection).count() % 2L == 0L;
     }
 
-    protected boolean method_33369(Direction direction) {
+    protected boolean canHaveDirection(Direction direction) {
         return true;
     }
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         for (Direction direction : DIRECTIONS) {
-            if (!this.method_33369(direction)) continue;
-            builder.add(AbstractLichenBlock.method_33374(direction));
+            if (!this.canHaveDirection(direction)) continue;
+            builder.add(AbstractLichenBlock.getProperty(direction));
         }
     }
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (!AbstractLichenBlock.method_33366(state, direction) || AbstractLichenBlock.method_33358(world, direction, neighborPos, neighborState)) {
+        if (!AbstractLichenBlock.hasDirection(state, direction) || AbstractLichenBlock.canGrowOn(world, direction, neighborPos, neighborState)) {
             return state;
         }
-        return AbstractLichenBlock.method_33365(state, AbstractLichenBlock.method_33374(direction));
+        return AbstractLichenBlock.disableDirection(state, AbstractLichenBlock.getProperty(direction));
     }
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return this.field_28422.get(state);
+        return this.SHAPES.get(state);
     }
 
     @Override
     public boolean canPlaceAt(BlockState state, WorldView world, BlockPos pos) {
         boolean bl = false;
         for (Direction direction : DIRECTIONS) {
-            if (!AbstractLichenBlock.method_33366(state, direction)) continue;
+            if (!AbstractLichenBlock.hasDirection(state, direction)) continue;
             BlockPos blockPos = pos.offset(direction);
-            if (!AbstractLichenBlock.method_33358(world, direction, blockPos, world.getBlockState(blockPos))) {
+            if (!AbstractLichenBlock.canGrowOn(world, direction, blockPos, world.getBlockState(blockPos))) {
                 return false;
             }
             bl = true;
@@ -112,7 +112,7 @@ extends Block {
 
     @Override
     public boolean canReplace(BlockState state, ItemPlacementContext context) {
-        return AbstractLichenBlock.method_33382(state);
+        return AbstractLichenBlock.isNotFullBlock(state);
     }
 
     @Override
@@ -121,125 +121,125 @@ extends Block {
         World world = ctx.getWorld();
         BlockPos blockPos = ctx.getBlockPos();
         BlockState blockState = world.getBlockState(blockPos);
-        return Arrays.stream(ctx.getPlacementDirections()).map(direction -> this.method_33362(blockState, world, blockPos, (Direction)direction)).filter(Objects::nonNull).findFirst().orElse(null);
+        return Arrays.stream(ctx.getPlacementDirections()).map(direction -> this.addDirection(blockState, world, blockPos, (Direction)direction)).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
     @Nullable
-    public BlockState method_33362(BlockState blockState, WorldAccess worldAccess, BlockPos blockPos, Direction direction) {
-        BlockState blockState2;
-        if (!this.method_33369(direction)) {
+    public BlockState addDirection(BlockState state, WorldAccess world, BlockPos pos, Direction direction) {
+        BlockState blockState;
+        if (!this.canHaveDirection(direction)) {
             return null;
         }
-        if (blockState.isOf(this)) {
-            if (AbstractLichenBlock.method_33366(blockState, direction)) {
+        if (state.isOf(this)) {
+            if (AbstractLichenBlock.hasDirection(state, direction)) {
                 return null;
             }
-            blockState2 = blockState;
+            blockState = state;
         } else {
-            blockState2 = this.method_33378() && blockState.getFluidState().isEqualAndStill(Fluids.WATER) ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState();
+            blockState = this.isWaterlogged() && state.getFluidState().isEqualAndStill(Fluids.WATER) ? (BlockState)this.getDefaultState().with(Properties.WATERLOGGED, true) : this.getDefaultState();
         }
-        BlockPos blockPos2 = blockPos.offset(direction);
-        if (AbstractLichenBlock.method_33358(worldAccess, direction, blockPos2, worldAccess.getBlockState(blockPos2))) {
-            return (BlockState)blockState2.with(AbstractLichenBlock.method_33374(direction), true);
+        BlockPos blockPos = pos.offset(direction);
+        if (AbstractLichenBlock.canGrowOn(world, direction, blockPos, world.getBlockState(blockPos))) {
+            return (BlockState)blockState.with(AbstractLichenBlock.getProperty(direction), true);
         }
         return null;
     }
 
     @Override
     public BlockState rotate(BlockState state, BlockRotation rotation) {
-        if (!this.field_28423) {
+        if (!this.hasAllHorizontalDirections) {
             return state;
         }
-        return this.method_33367(state, rotation::rotate);
+        return this.mirror(state, rotation::rotate);
     }
 
     @Override
     public BlockState mirror(BlockState state, BlockMirror mirror) {
-        if (mirror == BlockMirror.FRONT_BACK && !this.field_28424) {
+        if (mirror == BlockMirror.FRONT_BACK && !this.canMirrorX) {
             return state;
         }
-        if (mirror == BlockMirror.LEFT_RIGHT && !this.field_28425) {
+        if (mirror == BlockMirror.LEFT_RIGHT && !this.canMirrorZ) {
             return state;
         }
-        return this.method_33367(state, mirror::apply);
+        return this.mirror(state, mirror::apply);
     }
 
-    private BlockState method_33367(BlockState blockState, Function<Direction, Direction> function) {
-        BlockState blockState2 = blockState;
+    private BlockState mirror(BlockState state, Function<Direction, Direction> mirror) {
+        BlockState blockState = state;
         for (Direction direction : DIRECTIONS) {
-            if (!this.method_33369(direction)) continue;
-            blockState2 = (BlockState)blockState2.with(AbstractLichenBlock.method_33374(function.apply(direction)), blockState.get(AbstractLichenBlock.method_33374(direction)));
+            if (!this.canHaveDirection(direction)) continue;
+            blockState = (BlockState)blockState.with(AbstractLichenBlock.getProperty(mirror.apply(direction)), state.get(AbstractLichenBlock.getProperty(direction)));
         }
-        return blockState2;
+        return blockState;
     }
 
-    public boolean method_33375(BlockState blockState, ServerWorld serverWorld, BlockPos blockPos, Random random) {
+    public boolean canSpreadRandomly(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         ArrayList<Direction> list = Lists.newArrayList(DIRECTIONS);
         Collections.shuffle(list);
-        return list.stream().filter(direction -> AbstractLichenBlock.method_33366(blockState, direction)).anyMatch(direction -> this.method_33364(blockState, serverWorld, blockPos, (Direction)direction, random));
+        return list.stream().filter(from -> AbstractLichenBlock.hasDirection(state, from)).anyMatch(to -> this.canSpreadRandomly(state, world, pos, (Direction)to, random));
     }
 
-    public boolean method_33364(BlockState blockState, WorldAccess worldAccess, BlockPos blockPos, Direction direction, Random random) {
+    public boolean canSpreadRandomly(BlockState state, WorldAccess world, BlockPos pos, Direction from, Random random) {
         List<Direction> list = Arrays.asList(DIRECTIONS);
         Collections.shuffle(list, random);
-        return list.stream().anyMatch(direction2 -> this.method_33363(blockState, worldAccess, blockPos, direction, (Direction)direction2));
+        return list.stream().anyMatch(to -> this.canSpreadTo(state, world, pos, from, (Direction)to));
     }
 
-    public boolean method_33363(BlockState blockState, WorldAccess worldAccess, BlockPos blockPos, Direction direction, Direction direction2) {
-        if (direction2.getAxis() == direction.getAxis() || !AbstractLichenBlock.method_33366(blockState, direction) || AbstractLichenBlock.method_33366(blockState, direction2)) {
+    public boolean canSpreadTo(BlockState state, WorldAccess world, BlockPos pos, Direction from, Direction to) {
+        if (to.getAxis() == from.getAxis() || !AbstractLichenBlock.hasDirection(state, from) || AbstractLichenBlock.hasDirection(state, to)) {
             return false;
         }
-        if (this.method_33359(worldAccess, blockPos, direction2)) {
+        if (this.addDirection(world, pos, to)) {
             return true;
         }
-        if (this.method_33359(worldAccess, blockPos.offset(direction2), direction)) {
+        if (this.addDirection(world, pos.offset(to), from)) {
             return true;
         }
-        return this.method_33359(worldAccess, blockPos.offset(direction2).offset(direction), direction2.getOpposite());
+        return this.addDirection(world, pos.offset(to).offset(from), to.getOpposite());
     }
 
-    private boolean method_33359(WorldAccess worldAccess, BlockPos blockPos, Direction direction) {
-        BlockState blockState = worldAccess.getBlockState(blockPos);
-        if (!this.method_33379(blockState)) {
+    private boolean addDirection(WorldAccess world, BlockPos pos, Direction direction) {
+        BlockState blockState = world.getBlockState(pos);
+        if (!this.canGrowIn(blockState)) {
             return false;
         }
-        BlockState blockState2 = this.method_33362(blockState, worldAccess, blockPos, direction);
+        BlockState blockState2 = this.addDirection(blockState, world, pos, direction);
         if (blockState2 != null) {
-            return worldAccess.setBlockState(blockPos, blockState2, 2);
+            return world.setBlockState(pos, blockState2, 2);
         }
         return false;
     }
 
-    private boolean method_33379(BlockState blockState) {
-        return blockState.isAir() || blockState.isOf(this) || blockState.isOf(Blocks.WATER) && blockState.getFluidState().isStill();
+    private boolean canGrowIn(BlockState state) {
+        return state.isAir() || state.isOf(this) || state.isOf(Blocks.WATER) && state.getFluidState().isStill();
     }
 
-    private static boolean method_33366(BlockState blockState, Direction direction) {
-        BooleanProperty booleanProperty = AbstractLichenBlock.method_33374(direction);
-        return blockState.contains(booleanProperty) && blockState.get(booleanProperty) != false;
+    private static boolean hasDirection(BlockState state, Direction direction) {
+        BooleanProperty booleanProperty = AbstractLichenBlock.getProperty(direction);
+        return state.contains(booleanProperty) && state.get(booleanProperty) != false;
     }
 
-    private static boolean method_33358(BlockView blockView, Direction direction, BlockPos blockPos, BlockState blockState) {
-        return Block.isFaceFullSquare(blockState.getCollisionShape(blockView, blockPos), direction.getOpposite());
+    private static boolean canGrowOn(BlockView world, Direction direction, BlockPos pos, BlockState state) {
+        return Block.isFaceFullSquare(state.getCollisionShape(world, pos), direction.getOpposite());
     }
 
-    private boolean method_33378() {
+    private boolean isWaterlogged() {
         return this.stateManager.getProperties().contains(Properties.WATERLOGGED);
     }
 
-    private static BlockState method_33365(BlockState blockState, BooleanProperty booleanProperty) {
-        BlockState blockState2 = (BlockState)blockState.with(booleanProperty, false);
-        if (AbstractLichenBlock.method_33381(blockState2)) {
-            return blockState2;
+    private static BlockState disableDirection(BlockState state, BooleanProperty direction) {
+        BlockState blockState = (BlockState)state.with(direction, false);
+        if (AbstractLichenBlock.hasAnyDirection(blockState)) {
+            return blockState;
         }
-        return blockState.contains(Properties.WATERLOGGED) && blockState.get(Properties.WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+        return state.contains(Properties.WATERLOGGED) && state.get(Properties.WATERLOGGED) != false ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
     }
 
-    public static BooleanProperty method_33374(Direction direction) {
+    public static BooleanProperty getProperty(Direction direction) {
         return FACING_PROPERTIES.get(direction);
     }
 
-    private static BlockState method_33368(StateManager<Block, BlockState> stateManager) {
+    private static BlockState withNoDirections(StateManager<Block, BlockState> stateManager) {
         BlockState blockState = stateManager.getDefaultState();
         for (BooleanProperty booleanProperty : FACING_PROPERTIES.values()) {
             if (!blockState.contains(booleanProperty)) continue;
@@ -248,21 +248,21 @@ extends Block {
         return blockState;
     }
 
-    private static VoxelShape method_33380(BlockState blockState) {
+    private static VoxelShape getShapeForState(BlockState state) {
         VoxelShape voxelShape = VoxelShapes.empty();
         for (Direction direction : DIRECTIONS) {
-            if (!AbstractLichenBlock.method_33366(blockState, direction)) continue;
-            voxelShape = VoxelShapes.union(voxelShape, field_28420.get(direction));
+            if (!AbstractLichenBlock.hasDirection(state, direction)) continue;
+            voxelShape = VoxelShapes.union(voxelShape, SHAPES_FOR_DIRECTIONS.get(direction));
         }
         return voxelShape;
     }
 
-    private static boolean method_33381(BlockState blockState) {
-        return Arrays.stream(DIRECTIONS).anyMatch(direction -> AbstractLichenBlock.method_33366(blockState, direction));
+    private static boolean hasAnyDirection(BlockState state) {
+        return Arrays.stream(DIRECTIONS).anyMatch(direction -> AbstractLichenBlock.hasDirection(state, direction));
     }
 
-    private static boolean method_33382(BlockState blockState) {
-        return Arrays.stream(DIRECTIONS).anyMatch(direction -> !AbstractLichenBlock.method_33366(blockState, direction));
+    private static boolean isNotFullBlock(BlockState state) {
+        return Arrays.stream(DIRECTIONS).anyMatch(direction -> !AbstractLichenBlock.hasDirection(state, direction));
     }
 }
 

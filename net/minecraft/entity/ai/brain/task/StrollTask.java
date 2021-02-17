@@ -5,7 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
-import net.minecraft.class_5534;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.brain.MemoryModuleState;
 import net.minecraft.entity.ai.brain.MemoryModuleType;
 import net.minecraft.entity.ai.brain.WalkTarget;
@@ -40,7 +40,7 @@ extends Task<PathAwareEntity> {
 
     @Nullable
     protected Vec3d method_33201(PathAwareEntity pathAwareEntity) {
-        return class_5534.method_31527(pathAwareEntity, this.horizontalRadius, this.verticalRadius);
+        return FuzzyTargeting.find(pathAwareEntity, this.horizontalRadius, this.verticalRadius);
     }
 }
 

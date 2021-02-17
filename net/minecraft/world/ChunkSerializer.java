@@ -164,7 +164,7 @@ public class ChunkSerializer {
         ListTag listTag4 = compoundTag.getList("TileEntities", 10);
         for (int o = 0; o < listTag4.size(); ++o) {
             CompoundTag compoundTag5 = listTag4.getCompound(o);
-            chunk.addPendingBlockEntityTag(compoundTag5);
+            chunk.addPendingBlockEntityNbt(compoundTag5);
         }
         ListTag listTag5 = compoundTag.getList("Lights", 9);
         for (int p = 0; p < listTag5.size(); ++p) {
@@ -197,7 +197,7 @@ public class ChunkSerializer {
         compoundTag2.putString("Status", chunk.getStatus().getId());
         UpgradeData upgradeData = chunk.getUpgradeData();
         if (!upgradeData.isDone()) {
-            compoundTag2.put("UpgradeData", upgradeData.toTag());
+            compoundTag2.put("UpgradeData", upgradeData.toNbt());
         }
         ChunkSection[] chunkSections = chunk.getSectionArray();
         ListTag listTag = new ListTag();
@@ -231,7 +231,7 @@ public class ChunkSerializer {
         }
         ListTag listTag2 = new ListTag();
         for (BlockPos blockPos : chunk.getBlockEntityPositions()) {
-            compoundTag4 = chunk.getPackedBlockEntityTag(blockPos);
+            compoundTag4 = chunk.getPackedBlockEntityNbt(blockPos);
             if (compoundTag4 == null) continue;
             listTag2.add(compoundTag4);
         }
@@ -255,7 +255,7 @@ public class ChunkSerializer {
         } else if (tickScheduler instanceof SimpleTickScheduler) {
             compoundTag2.put("TileTicks", ((SimpleTickScheduler)tickScheduler).toNbt());
         } else {
-            compoundTag2.put("TileTicks", ((ServerTickScheduler)world.getBlockTickScheduler()).toTag(chunkPos));
+            compoundTag2.put("TileTicks", ((ServerTickScheduler)world.getBlockTickScheduler()).toNbt(chunkPos));
         }
         TickScheduler<Fluid> tickScheduler2 = chunk.getFluidTickScheduler();
         if (tickScheduler2 instanceof ChunkTickScheduler) {
@@ -263,7 +263,7 @@ public class ChunkSerializer {
         } else if (tickScheduler2 instanceof SimpleTickScheduler) {
             compoundTag2.put("LiquidTicks", ((SimpleTickScheduler)tickScheduler2).toNbt());
         } else {
-            compoundTag2.put("LiquidTicks", ((ServerTickScheduler)world.getFluidTickScheduler()).toTag(chunkPos));
+            compoundTag2.put("LiquidTicks", ((ServerTickScheduler)world.getFluidTickScheduler()).toNbt(chunkPos));
         }
         compoundTag2.put("PostProcessing", ChunkSerializer.toNbt(chunk.getPostProcessingLists()));
         compoundTag4 = new CompoundTag();
@@ -294,11 +294,11 @@ public class ChunkSerializer {
             CompoundTag compoundTag = listTag.getCompound(i);
             boolean bl = compoundTag.getBoolean("keepPacked");
             if (bl) {
-                chunk.addPendingBlockEntityTag(compoundTag);
+                chunk.addPendingBlockEntityNbt(compoundTag);
                 continue;
             }
             BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
-            BlockEntity blockEntity = BlockEntity.createFromTag(blockPos, chunk.getBlockState(blockPos), compoundTag);
+            BlockEntity blockEntity = BlockEntity.createFromNbt(blockPos, chunk.getBlockState(blockPos), compoundTag);
             if (blockEntity == null) continue;
             chunk.setBlockEntity(blockEntity);
         }
@@ -308,7 +308,7 @@ public class ChunkSerializer {
         CompoundTag compoundTag = new CompoundTag();
         CompoundTag compoundTag2 = new CompoundTag();
         for (Map.Entry<StructureFeature<?>, StructureStart<?>> entry : structureStarts.entrySet()) {
-            compoundTag2.put(entry.getKey().getName(), entry.getValue().toTag(pos.x, pos.z));
+            compoundTag2.put(entry.getKey().getName(), entry.getValue().toNbt(pos.x, pos.z));
         }
         compoundTag.put("Starts", compoundTag2);
         CompoundTag compoundTag3 = new CompoundTag();

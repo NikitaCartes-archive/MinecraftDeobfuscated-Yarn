@@ -53,7 +53,7 @@ extends Feature<EndSpikeFeatureConfig> {
         EndSpikeFeatureConfig endSpikeFeatureConfig = context.getConfig();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         List<Spike> list = endSpikeFeatureConfig.getSpikes();
         if (list.isEmpty()) {
             list = EndSpikeFeature.getSpikes(structureWorldAccess);
@@ -147,7 +147,7 @@ extends Feature<EndSpikeFeatureConfig> {
             this.radius = radius;
             this.height = height;
             this.guarded = guarded;
-            this.boundingBox = new Box(centerX - radius, DimensionType.field_28136, centerZ - radius, centerX + radius, DimensionType.field_28135, centerZ + radius);
+            this.boundingBox = new Box(centerX - radius, DimensionType.MIN_HEIGHT, centerZ - radius, centerX + radius, DimensionType.MAX_COLUMN_HEIGHT, centerZ + radius);
         }
 
         public boolean isInChunk(BlockPos pos) {

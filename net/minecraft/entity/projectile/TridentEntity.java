@@ -171,19 +171,19 @@ extends PersistentProjectileEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("Trident", 10)) {
-            this.tridentStack = ItemStack.fromTag(tag.getCompound("Trident"));
+            this.tridentStack = ItemStack.fromNbt(tag.getCompound("Trident"));
         }
         this.dealtDamage = tag.getBoolean("DealtDamage");
         this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(this.tridentStack));
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
-        tag.put("Trident", this.tridentStack.toTag(new CompoundTag()));
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
+        tag.put("Trident", this.tridentStack.writeNbt(new CompoundTag()));
         tag.putBoolean("DealtDamage", this.dealtDamage);
     }
 

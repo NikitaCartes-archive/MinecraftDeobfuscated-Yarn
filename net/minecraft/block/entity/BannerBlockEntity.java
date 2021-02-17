@@ -87,8 +87,8 @@ implements Nameable {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         if (this.patternListTag != null) {
             tag.put("Patterns", this.patternListTag);
         }
@@ -99,8 +99,8 @@ implements Nameable {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
+    public void readNbt(CompoundTag tag) {
+        super.readNbt(tag);
         if (tag.contains("CustomName", 8)) {
             this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
@@ -112,12 +112,12 @@ implements Nameable {
     @Override
     @Nullable
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 6, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 6, this.toInitialChunkDataNbt());
     }
 
     @Override
-    public CompoundTag toInitialChunkDataTag() {
-        return this.toTag(new CompoundTag());
+    public CompoundTag toInitialChunkDataNbt() {
+        return this.writeNbt(new CompoundTag());
     }
 
     public static int getPatternCount(ItemStack stack) {
@@ -131,13 +131,13 @@ implements Nameable {
     @Environment(value=EnvType.CLIENT)
     public List<Pair<BannerPattern, DyeColor>> getPatterns() {
         if (this.patterns == null && this.patternListTagRead) {
-            this.patterns = BannerBlockEntity.getPatternsFromTag(this.baseColor, this.patternListTag);
+            this.patterns = BannerBlockEntity.getPatternsFromNbt(this.baseColor, this.patternListTag);
         }
         return this.patterns;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static List<Pair<BannerPattern, DyeColor>> getPatternsFromTag(DyeColor baseColor, @Nullable ListTag patternListTag) {
+    public static List<Pair<BannerPattern, DyeColor>> getPatternsFromNbt(DyeColor baseColor, @Nullable ListTag patternListTag) {
         ArrayList<Pair<BannerPattern, DyeColor>> list = Lists.newArrayList();
         list.add(Pair.of(BannerPattern.BASE, baseColor));
         if (patternListTag != null) {

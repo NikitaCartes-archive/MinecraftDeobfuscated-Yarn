@@ -140,8 +140,8 @@ extends Entity {
     }
 
     @Override
-    protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.EVENTS;
+    protected Entity.MoveEffect getMoveEffect() {
+        return Entity.MoveEffect.EVENTS;
     }
 
     @Override
@@ -650,7 +650,7 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromTag(CompoundTag tag) {
+    protected void readCustomDataFromNbt(CompoundTag tag) {
         if (tag.getBoolean("CustomDisplayTile")) {
             this.setCustomBlock(NbtHelper.toBlockState(tag.getCompound("DisplayState")));
             this.setCustomBlockOffset(tag.getInt("DisplayOffset"));
@@ -658,7 +658,7 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToTag(CompoundTag tag) {
+    protected void writeCustomDataToNbt(CompoundTag tag) {
         if (this.hasCustomBlock()) {
             tag.putBoolean("CustomDisplayTile", true);
             tag.put("DisplayState", NbtHelper.fromBlockState(this.getContainedBlock()));

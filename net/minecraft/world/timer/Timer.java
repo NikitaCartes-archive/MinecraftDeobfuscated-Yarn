@@ -100,7 +100,7 @@ public class Timer<T> {
         return compoundTag;
     }
 
-    public ListTag toTag() {
+    public ListTag toNbt() {
         ListTag listTag = new ListTag();
         this.events.stream().sorted(Timer.createEventComparator()).map(this::serialize).forEach(listTag::add);
         return listTag;

@@ -6,26 +6,26 @@ package net.minecraft.world.storage;
 import java.util.BitSet;
 
 public class SectorMap {
-    private final BitSet field_20433 = new BitSet();
+    private final BitSet bitSet = new BitSet();
 
-    public void allocate(int i, int j) {
-        this.field_20433.set(i, i + j);
+    public void allocate(int start, int size) {
+        this.bitSet.set(start, start + size);
     }
 
-    public void free(int i, int j) {
-        this.field_20433.clear(i, i + j);
+    public void free(int start, int size) {
+        this.bitSet.clear(start, start + size);
     }
 
-    public int allocate(int i) {
-        int j = 0;
+    public int allocate(int size) {
+        int i = 0;
         while (true) {
+            int j;
             int k;
-            int l;
-            if ((l = this.field_20433.nextSetBit(k = this.field_20433.nextClearBit(j))) == -1 || l - k >= i) {
-                this.allocate(k, i);
-                return k;
+            if ((k = this.bitSet.nextSetBit(j = this.bitSet.nextClearBit(i))) == -1 || k - j >= size) {
+                this.allocate(j, size);
+                return j;
             }
-            j = l;
+            i = k;
         }
     }
 }

@@ -821,10 +821,9 @@ WindowEventHandler {
     }
 
     private void openChatScreen(String text) {
-        if (!this.isInSingleplayer() && !this.isOnlineChatEnabled()) {
-            if (this.player != null) {
-                this.player.sendSystemMessage(new TranslatableText("chat.cannotSend").formatted(Formatting.RED), Util.NIL_UUID);
-            }
+        ChatRestriction chatRestriction = this.getChatRestriction();
+        if (!chatRestriction.allowsChat(this.isInSingleplayer())) {
+            this.inGameHud.setOverlayMessage(chatRestriction.getDescription(), false);
         } else {
             this.openScreen(new ChatScreen(text));
         }
@@ -1448,7 +1447,6 @@ WindowEventHandler {
     }
 
     private void handleInputEvents() {
-        boolean bl3;
         while (this.options.keyTogglePerspective.wasPressed()) {
             Perspective perspective = this.options.getPerspective();
             this.options.setPerspective(this.options.getPerspective().next());
@@ -1505,14 +1503,11 @@ WindowEventHandler {
             if (this.player.isSpectator() || !this.player.dropSelectedItem(Screen.hasControlDown())) continue;
             this.player.swingHand(Hand.MAIN_HAND);
         }
-        boolean bl = bl3 = this.options.chatVisibility != ChatVisibility.HIDDEN;
-        if (bl3) {
-            while (this.options.keyChat.wasPressed()) {
-                this.openChatScreen("");
-            }
-            if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
-                this.openChatScreen("/");
-            }
+        while (this.options.keyChat.wasPressed()) {
+            this.openChatScreen("");
+        }
+        if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
+            this.openChatScreen("/");
         }
         if (this.player.isUsingItem()) {
             if (!this.options.keyUse.isPressed()) {
@@ -1800,14 +1795,23 @@ WindowEventHandler {
      * them.
      */
     public boolean shouldBlockMessages(UUID sender) {
-        if (!this.isOnlineChatEnabled()) {
+        if (!this.getChatRestriction().allowsChat(false)) {
             return (this.player == null || !sender.equals(this.player.getUuid())) && !sender.equals(Util.NIL_UUID);
         }
         return this.socialInteractionsManager.isPlayerMuted(sender);
     }
 
-    public boolean isOnlineChatEnabled() {
-        return this.onlineChatEnabled && this.socialInteractionsService.chatAllowed();
+    public ChatRestriction getChatRestriction() {
+        if (this.options.chatVisibility == ChatVisibility.HIDDEN) {
+            return ChatRestriction.DISABLED_BY_OPTIONS;
+        }
+        if (!this.onlineChatEnabled) {
+            return ChatRestriction.DISABLED_BY_LAUNCHER;
+        }
+        if (!this.socialInteractionsService.chatAllowed()) {
+            return ChatRestriction.DISABLED_BY_PROFILE;
+        }
+        return ChatRestriction.ENABLED;
     }
 
     public final boolean isDemo() {
@@ -1894,7 +1898,7 @@ WindowEventHandler {
     }
 
     private ItemStack addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-        CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+        CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
         if (stack.getItem() instanceof SkullItem && compoundTag.contains("SkullOwner")) {
             CompoundTag compoundTag2 = compoundTag.getCompound("SkullOwner");
             stack.getOrCreateTag().put("SkullOwner", compoundTag2);
@@ -2312,6 +2316,10 @@ WindowEventHandler {
         return this.entityModelLoader;
     }
 
+    public boolean method_33883() {
+        return true;
+    }
+
     static {
         LOGGER = LogManager.getLogger();
         IS_SYSTEM_MAC = Util.getOperatingSystem() == Util.OperatingSystem.OSX;
@@ -2321,6 +2329,53 @@ WindowEventHandler {
         COMPLETED_UNIT_FUTURE = CompletableFuture.completedFuture(Unit.INSTANCE);
         SOCIAL_INTERACTIONS_NOT_AVAILABLE = new TranslatableText("multiplayer.socialInteractions.not_available");
         memoryReservedForCrash = new byte[0xA00000];
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static enum ChatRestriction {
+        ENABLED(LiteralText.EMPTY){
+
+            @Override
+            public boolean allowsChat(boolean singlePlayer) {
+                return true;
+            }
+        }
+        ,
+        DISABLED_BY_OPTIONS(new TranslatableText("chat.disabled.options").formatted(Formatting.RED)){
+
+            @Override
+            public boolean allowsChat(boolean singlePlayer) {
+                return false;
+            }
+        }
+        ,
+        DISABLED_BY_LAUNCHER(new TranslatableText("chat.disabled.launcher").formatted(Formatting.RED)){
+
+            @Override
+            public boolean allowsChat(boolean singlePlayer) {
+                return singlePlayer;
+            }
+        }
+        ,
+        DISABLED_BY_PROFILE(new TranslatableText("chat.disabled.profile").formatted(Formatting.RED)){
+
+            @Override
+            public boolean allowsChat(boolean singlePlayer) {
+                return singlePlayer;
+            }
+        };
+
+        private final Text description;
+
+        private ChatRestriction(Text description) {
+            this.description = description;
+        }
+
+        public Text getDescription() {
+            return this.description;
+        }
+
+        public abstract boolean allowsChat(boolean var1);
     }
 
     @Environment(value=EnvType.CLIENT)

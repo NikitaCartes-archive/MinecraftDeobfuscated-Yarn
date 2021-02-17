@@ -38,7 +38,7 @@ extends SimpleInventory {
             CompoundTag compoundTag = tags.getCompound(i);
             int j = compoundTag.getByte("Slot") & 0xFF;
             if (j < 0 || j >= this.size()) continue;
-            this.setStack(j, ItemStack.fromTag(compoundTag));
+            this.setStack(j, ItemStack.fromNbt(compoundTag));
         }
     }
 
@@ -50,7 +50,7 @@ extends SimpleInventory {
             if (itemStack.isEmpty()) continue;
             CompoundTag compoundTag = new CompoundTag();
             compoundTag.putByte("Slot", (byte)i);
-            itemStack.toTag(compoundTag);
+            itemStack.writeNbt(compoundTag);
             listTag.add(compoundTag);
         }
         return listTag;

@@ -315,7 +315,7 @@ public class Scoreboard {
         this.clearPlayerTeam(string);
     }
 
-    protected ListTag toTag() {
+    protected ListTag toNbt() {
         ListTag listTag = new ListTag();
         this.playerObjectives.values().stream().map(Map::values).forEach(collection -> collection.stream().filter(score -> score.getObjective() != null).forEach(score -> {
             CompoundTag compoundTag = new CompoundTag();
@@ -328,7 +328,7 @@ public class Scoreboard {
         return listTag;
     }
 
-    protected void fromTag(ListTag listTag) {
+    protected void readNbt(ListTag listTag) {
         for (int i = 0; i < listTag.size(); ++i) {
             CompoundTag compoundTag = listTag.getCompound(i);
             ScoreboardObjective scoreboardObjective = this.getObjective(compoundTag.getString("Objective"));

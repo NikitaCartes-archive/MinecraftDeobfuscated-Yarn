@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5493;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
@@ -20,6 +19,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
+import net.minecraft.entity.ai.NavigationConditions;
 import net.minecraft.entity.ai.goal.FollowTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
@@ -67,7 +67,7 @@ extends IllagerEntity {
         super.initGoals();
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new BreakDoorGoal(this));
-        this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this));
+        this.goalSelector.add(2, new IllagerEntity.LongDoorInteractGoal(this, this));
         this.goalSelector.add(3, new RaiderEntity.PatrolApproachGoal(this, this, 10.0f));
         this.goalSelector.add(4, new AttackGoal(this));
         this.targetSelector.add(1, new RevengeGoal(this, RaiderEntity.class).setGroupRevenge(new Class[0]));
@@ -82,7 +82,7 @@ extends IllagerEntity {
 
     @Override
     protected void mobTick() {
-        if (!this.isAiDisabled() && class_5493.method_30955(this)) {
+        if (!this.isAiDisabled() && NavigationConditions.hasMobNavigation(this)) {
             boolean bl = ((ServerWorld)this.world).hasRaidAt(this.getBlockPos());
             ((MobNavigation)this.getNavigation()).setCanPathThroughDoors(bl);
         }
@@ -94,8 +94,8 @@ extends IllagerEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         if (this.johnny) {
             tag.putBoolean("Johnny", true);
         }
@@ -114,8 +114,8 @@ extends IllagerEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("Johnny", 99)) {
             this.johnny = tag.getBoolean("Johnny");
         }

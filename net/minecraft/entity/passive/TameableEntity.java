@@ -47,8 +47,8 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         if (this.getOwnerUuid() != null) {
             tag.putUuid("Owner", this.getOwnerUuid());
         }
@@ -56,9 +56,9 @@ extends AnimalEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         UUID uUID;
-        super.readCustomDataFromTag(tag);
+        super.readCustomDataFromNbt(tag);
         if (tag.containsUuid("Owner")) {
             uUID = tag.getUuid("Owner");
         } else {

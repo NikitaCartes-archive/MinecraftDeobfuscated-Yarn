@@ -185,7 +185,7 @@ public final class Biome {
         return this.generationSettings;
     }
 
-    public void generateFeatureStep(StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos pos) {
+    public void generateFeatureStep(StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, ChunkRegion region, long populationSeed, ChunkRandom random, BlockPos origin) {
         List<List<Supplier<ConfiguredFeature<?, ?>>>> list = this.generationSettings.getFeatures();
         int i = GenerationStep.Feature.values().length;
         for (int j = 0; j < i; ++j) {
@@ -194,13 +194,13 @@ public final class Biome {
                 List list2 = this.structures.getOrDefault(j, Collections.emptyList());
                 for (StructureFeature structureFeature : list2) {
                     random.setDecoratorSeed(populationSeed, k, j);
-                    int l = ChunkSectionPos.getSectionCoord(pos.getX());
-                    int m = ChunkSectionPos.getSectionCoord(pos.getZ());
+                    int l = ChunkSectionPos.getSectionCoord(origin.getX());
+                    int m = ChunkSectionPos.getSectionCoord(origin.getZ());
                     int n = ChunkSectionPos.getBlockCoord(l);
                     int o = ChunkSectionPos.getBlockCoord(m);
                     try {
                         int p = region.getBottomY() + 1;
-                        structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(pos), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopY() - 1, o + 15), new ChunkPos(l, m)));
+                        structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopY() - 1, o + 15), new ChunkPos(l, m)));
                     } catch (Exception exception) {
                         CrashReport crashReport = CrashReport.create(exception, "Feature placement");
                         crashReport.addElement("Feature").add("Id", Registry.STRUCTURE_FEATURE.getId(structureFeature)).add("Description", () -> structureFeature.toString());
@@ -214,7 +214,7 @@ public final class Biome {
                 ConfiguredFeature<?, ?> configuredFeature = supplier.get();
                 random.setDecoratorSeed(populationSeed, k, j);
                 try {
-                    configuredFeature.generate(region, chunkGenerator, random, pos);
+                    configuredFeature.generate(region, chunkGenerator, random, origin);
                 } catch (Exception exception2) {
                     CrashReport crashReport2 = CrashReport.create(exception2, "Feature placement");
                     crashReport2.addElement("Feature").add("Id", Registry.FEATURE.getId((Feature<?>)configuredFeature.feature)).add("Config", configuredFeature.config).add("Description", () -> configuredFeature.feature.toString());

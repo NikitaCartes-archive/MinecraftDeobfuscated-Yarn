@@ -197,7 +197,7 @@ implements ParsableText {
             BlockPos blockPos;
             ServerWorld serverWorld;
             if (this.pos != null && (serverWorld = source.getWorld()).canSetBlock(blockPos = this.pos.toAbsoluteBlockPos(source)) && (blockEntity = serverWorld.getBlockEntity(blockPos)) != null) {
-                return Stream.of(blockEntity.toTag(new CompoundTag()));
+                return Stream.of(blockEntity.writeNbt(new CompoundTag()));
             }
             return Stream.empty();
         }
@@ -271,7 +271,7 @@ implements ParsableText {
         protected Stream<CompoundTag> toNbt(ServerCommandSource source) throws CommandSyntaxException {
             if (this.selector != null) {
                 List<? extends Entity> list = this.selector.getEntities(source);
-                return list.stream().map(NbtPredicate::entityToTag);
+                return list.stream().map(NbtPredicate::entityToNbt);
             }
             return Stream.empty();
         }

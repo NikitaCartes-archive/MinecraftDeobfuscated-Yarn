@@ -60,8 +60,8 @@ public class NetherFossilGenerator {
         }
 
         @Override
-        protected void toNbt(CompoundTag tag) {
-            super.toNbt(tag);
+        protected void writeNbt(CompoundTag tag) {
+            super.writeNbt(tag);
             tag.putString("Template", this.template.toString());
             tag.putString("Rot", this.structureRotation.name());
         }

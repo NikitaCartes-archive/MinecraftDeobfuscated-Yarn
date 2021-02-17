@@ -221,8 +221,8 @@ extends BlockEntity {
     }
 
     @Override
-    public void fromTag(CompoundTag tag) {
-        super.fromTag(tag);
+    public void readNbt(CompoundTag tag) {
+        super.readNbt(tag);
         this.bees.clear();
         ListTag listTag = tag.getList("Bees", 10);
         for (int i = 0; i < listTag.size(); ++i) {
@@ -237,8 +237,8 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toTag(CompoundTag tag) {
-        super.toTag(tag);
+    public CompoundTag writeNbt(CompoundTag tag) {
+        super.writeNbt(tag);
         tag.put("Bees", this.getBees());
         if (this.hasFlowerPos()) {
             tag.put("FlowerPos", NbtHelper.fromBlockPos(this.flowerPos));

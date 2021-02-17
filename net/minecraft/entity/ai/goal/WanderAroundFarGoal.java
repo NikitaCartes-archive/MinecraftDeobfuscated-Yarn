@@ -3,7 +3,7 @@
  */
 package net.minecraft.entity.ai.goal;
 
-import net.minecraft.class_5534;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.util.math.Vec3d;
@@ -26,11 +26,11 @@ extends WanderAroundGoal {
     @Nullable
     protected Vec3d getWanderTarget() {
         if (this.mob.isInsideWaterOrBubbleColumn()) {
-            Vec3d vec3d = class_5534.method_31527(this.mob, 15, 7);
+            Vec3d vec3d = FuzzyTargeting.find(this.mob, 15, 7);
             return vec3d == null ? super.getWanderTarget() : vec3d;
         }
         if (this.mob.getRandom().nextFloat() >= this.probability) {
-            return class_5534.method_31527(this.mob, 10, 7);
+            return FuzzyTargeting.find(this.mob, 10, 7);
         }
         return super.getWanderTarget();
     }

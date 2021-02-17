@@ -54,7 +54,7 @@ implements Packet<ClientPlayPacketListener> {
         this.blockEntities = Lists.newArrayList();
         for (Map.Entry<Object, Object> entry : chunk.getBlockEntities().entrySet()) {
             BlockEntity blockEntity = (BlockEntity)entry.getValue();
-            CompoundTag compoundTag = blockEntity.toInitialChunkDataTag();
+            CompoundTag compoundTag = blockEntity.toInitialChunkDataNbt();
             this.blockEntities.add(compoundTag);
         }
     }

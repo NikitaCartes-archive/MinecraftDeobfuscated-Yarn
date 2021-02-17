@@ -21,7 +21,7 @@ extends Feature<EndGatewayFeatureConfig> {
 
     @Override
     public boolean generate(FeatureContext<EndGatewayFeatureConfig> context) {
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         EndGatewayFeatureConfig endGatewayFeatureConfig = context.getConfig();
         for (BlockPos blockPos22 : BlockPos.iterate(blockPos.add(-1, -2, -1), blockPos.add(1, 2, 1))) {

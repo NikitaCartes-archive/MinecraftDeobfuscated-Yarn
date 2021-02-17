@@ -28,10 +28,10 @@ extends AbstractHeightmapDecorator<DC> {
         int i = pos.getX();
         int j = pos.getZ();
         int k = context.getTopY(this.getHeightmapType(config), i, j);
-        if (k == context.getBottomY()) {
+        if (k == context.method_33868()) {
             return Stream.of(new BlockPos[0]);
         }
-        return Stream.of(new BlockPos(i, context.getBottomY() + random.nextInt((k - context.getBottomY()) * 2), j));
+        return Stream.of(new BlockPos(i, context.method_33868() + random.nextInt((k - context.method_33868()) * 2), j));
     }
 }
 

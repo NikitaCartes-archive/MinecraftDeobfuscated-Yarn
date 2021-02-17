@@ -195,7 +195,7 @@ public class Keyboard {
                         break;
                     }
                     BlockEntity blockEntity = this.client.player.world.getBlockEntity(blockPos);
-                    CompoundTag compoundTag2 = blockEntity != null ? blockEntity.toTag(new CompoundTag()) : null;
+                    CompoundTag compoundTag2 = blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : null;
                     this.copyBlock(blockState, blockPos, compoundTag2);
                     this.debugWarn("debug.inspect.client.block", new Object[0]);
                     break;
@@ -215,7 +215,7 @@ public class Keyboard {
                         });
                         break;
                     }
-                    CompoundTag compoundTag2 = entity.toTag(new CompoundTag());
+                    CompoundTag compoundTag2 = entity.writeNbt(new CompoundTag());
                     this.copyEntity(identifier, entity.getPos(), compoundTag2);
                     this.debugWarn("debug.inspect.client.entity", new Object[0]);
                     break;

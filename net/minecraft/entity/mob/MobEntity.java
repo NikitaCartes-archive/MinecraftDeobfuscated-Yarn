@@ -326,15 +326,15 @@ extends LivingEntity {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putBoolean("CanPickUpLoot", this.canPickUpLoot());
         tag.putBoolean("PersistenceRequired", this.persistent);
         ListTag listTag = new ListTag();
         for (ItemStack itemStack : this.armorItems) {
             CompoundTag compoundTag = new CompoundTag();
             if (!itemStack.isEmpty()) {
-                itemStack.toTag(compoundTag);
+                itemStack.writeNbt(compoundTag);
             }
             listTag.add(compoundTag);
         }
@@ -343,7 +343,7 @@ extends LivingEntity {
         for (ItemStack itemStack : this.handItems) {
             CompoundTag compoundTag2 = new CompoundTag();
             if (!itemStack.isEmpty()) {
-                itemStack.toTag(compoundTag2);
+                itemStack.writeNbt(compoundTag2);
             }
             listTag2.add(compoundTag2);
         }
@@ -386,10 +386,10 @@ extends LivingEntity {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         int i;
         ListTag listTag;
-        super.readCustomDataFromTag(tag);
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("CanPickUpLoot", 1)) {
             this.setCanPickUpLoot(tag.getBoolean("CanPickUpLoot"));
         }
@@ -397,13 +397,13 @@ extends LivingEntity {
         if (tag.contains("ArmorItems", 9)) {
             listTag = tag.getList("ArmorItems", 10);
             for (i = 0; i < this.armorItems.size(); ++i) {
-                this.armorItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+                this.armorItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
             }
         }
         if (tag.contains("HandItems", 9)) {
             listTag = tag.getList("HandItems", 10);
             for (i = 0; i < this.handItems.size(); ++i) {
-                this.handItems.set(i, ItemStack.fromTag(listTag.getCompound(i)));
+                this.handItems.set(i, ItemStack.fromNbt(listTag.getCompound(i)));
             }
         }
         if (tag.contains("ArmorDropChances", 9)) {

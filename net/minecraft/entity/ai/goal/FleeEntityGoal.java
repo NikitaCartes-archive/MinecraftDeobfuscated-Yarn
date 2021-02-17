@@ -5,9 +5,9 @@ package net.minecraft.entity.ai.goal;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;
-import net.minecraft.class_5532;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
@@ -57,7 +57,7 @@ extends Goal {
         if (this.targetEntity == null) {
             return false;
         }
-        Vec3d vec3d = class_5532.method_31511(this.mob, 16, 7, ((Entity)this.targetEntity).getPos());
+        Vec3d vec3d = NoPenaltyTargeting.find(this.mob, 16, 7, ((Entity)this.targetEntity).getPos());
         if (vec3d == null) {
             return false;
         }

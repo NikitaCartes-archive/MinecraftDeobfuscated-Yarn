@@ -31,7 +31,7 @@ extends Feature<SingleStateFeatureConfig> {
         int q;
         int p;
         int l;
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         blockPos = new BlockPos(blockPos.getX(), context.getGenerator().getSeaLevel(), blockPos.getZ());
         Random random = context.getRandom();

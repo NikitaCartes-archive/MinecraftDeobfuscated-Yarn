@@ -16,18 +16,18 @@ import net.minecraft.text.TranslatableText;
 public class DatapackFailureScreen
 extends Screen {
     private MultilineText wrappedText = MultilineText.EMPTY;
-    private final Runnable field_25452;
+    private final Runnable runServerInSafeMode;
 
     public DatapackFailureScreen(Runnable runnable) {
         super(new TranslatableText("datapackFailure.title"));
-        this.field_25452 = runnable;
+        this.runServerInSafeMode = runnable;
     }
 
     @Override
     protected void init() {
         super.init();
         this.wrappedText = MultilineText.create(this.textRenderer, (StringVisitable)this.getTitle(), this.width - 50);
-        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, new TranslatableText("datapackFailure.safeMode"), buttonWidget -> this.field_25452.run()));
+        this.addButton(new ButtonWidget(this.width / 2 - 155, this.height / 6 + 96, 150, 20, new TranslatableText("datapackFailure.safeMode"), buttonWidget -> this.runServerInSafeMode.run()));
         this.addButton(new ButtonWidget(this.width / 2 - 155 + 160, this.height / 6 + 96, 150, 20, new TranslatableText("gui.toTitle"), buttonWidget -> this.client.openScreen(null)));
     }
 

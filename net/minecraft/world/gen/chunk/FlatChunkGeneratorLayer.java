@@ -14,7 +14,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.world.dimension.DimensionType;
 
 public class FlatChunkGeneratorLayer {
-    public static final Codec<FlatChunkGeneratorLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, DimensionType.field_28134).fieldOf("height")).forGetter(FlatChunkGeneratorLayer::getThickness), ((MapCodec)Registry.BLOCK.fieldOf("block")).orElse(Blocks.AIR).forGetter(flatChunkGeneratorLayer -> flatChunkGeneratorLayer.getBlockState().getBlock())).apply((Applicative<FlatChunkGeneratorLayer, ?>)instance, FlatChunkGeneratorLayer::new));
+    public static final Codec<FlatChunkGeneratorLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(FlatChunkGeneratorLayer::getThickness), ((MapCodec)Registry.BLOCK.fieldOf("block")).orElse(Blocks.AIR).forGetter(flatChunkGeneratorLayer -> flatChunkGeneratorLayer.getBlockState().getBlock())).apply((Applicative<FlatChunkGeneratorLayer, ?>)instance, FlatChunkGeneratorLayer::new));
     private final BlockState blockState;
     private final int thickness;
     private int startY;

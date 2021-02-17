@@ -91,14 +91,14 @@ implements Palette<T> {
     }
 
     @Override
-    public void fromTag(ListTag tag) {
+    public void readNbt(ListTag tag) {
         this.map.clear();
         for (int i = 0; i < tag.size(); ++i) {
             this.map.add(this.elementDeserializer.apply(tag.getCompound(i)));
         }
     }
 
-    public void toTag(ListTag tag) {
+    public void writeNbt(ListTag tag) {
         for (int i = 0; i < this.getIndexBits(); ++i) {
             tag.add(this.elementSerializer.apply(this.map.get(i)));
         }

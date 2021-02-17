@@ -7,17 +7,26 @@ import com.mojang.datafixers.kinds.Applicative;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
 
 public class DepthAverageDecoratorConfig
 implements DecoratorConfig {
-    public static final Codec<DepthAverageDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.INT.fieldOf("baseline")).forGetter(depthAverageDecoratorConfig -> depthAverageDecoratorConfig.baseline), ((MapCodec)Codec.INT.fieldOf("spread")).forGetter(depthAverageDecoratorConfig -> depthAverageDecoratorConfig.spread)).apply((Applicative<DepthAverageDecoratorConfig, ?>)instance, DepthAverageDecoratorConfig::new));
-    public final int baseline;
-    public final int spread;
+    public static final Codec<DepthAverageDecoratorConfig> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)YOffset.OFFSET_CODEC.fieldOf("baseline")).forGetter(DepthAverageDecoratorConfig::getBaseline), ((MapCodec)Codec.INT.fieldOf("spread")).forGetter(DepthAverageDecoratorConfig::getSpread)).apply((Applicative<DepthAverageDecoratorConfig, ?>)instance, DepthAverageDecoratorConfig::new));
+    private final YOffset baseline;
+    private final int spread;
 
-    public DepthAverageDecoratorConfig(int baseline, int spread) {
+    public DepthAverageDecoratorConfig(YOffset baseline, int spread) {
         this.baseline = baseline;
         this.spread = spread;
+    }
+
+    public YOffset getBaseline() {
+        return this.baseline;
+    }
+
+    public int getSpread() {
+        return this.spread;
     }
 }
 

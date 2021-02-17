@@ -381,8 +381,8 @@ VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag2) {
-        super.writeCustomDataToTag(tag2);
+    public void writeCustomDataToNbt(CompoundTag tag2) {
+        super.writeCustomDataToNbt(tag2);
         VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("VillagerData", (Tag)tag));
         tag2.putByte("FoodLevel", this.foodLevel);
         tag2.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
@@ -396,8 +396,8 @@ VillagerDataContainer {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("VillagerData", 10)) {
             DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData")));
             dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
@@ -839,7 +839,7 @@ VillagerDataContainer {
         return this.gossip;
     }
 
-    public void setGossipDataFromTag(Tag tag) {
+    public void setGossipDataFromNbt(Tag tag) {
         this.gossip.deserialize(new Dynamic<Tag>(NbtOps.INSTANCE, tag));
     }
 

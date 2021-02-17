@@ -30,7 +30,7 @@ extends Feature<SingleStateFeatureConfig> {
     public boolean generate(FeatureContext<SingleStateFeatureConfig> context) {
         int t;
         int j;
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
         SingleStateFeatureConfig singleStateFeatureConfig = context.getConfig();

@@ -25,7 +25,7 @@ extends PersistentState {
     }
 
     @Override
-    public CompoundTag toNbt(CompoundTag tag) {
+    public CompoundTag writeNbt(CompoundTag tag) {
         tag.putLongArray("Forced", this.chunks.toLongArray());
         return tag;
     }

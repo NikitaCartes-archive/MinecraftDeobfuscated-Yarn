@@ -25,7 +25,7 @@ extends DiskFeature {
         ChunkGenerator chunkGenerator = context.getGenerator();
         Random random = context.getRandom();
         DiskFeatureConfig diskFeatureConfig = context.getConfig();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         while (structureWorldAccess.isAir(blockPos) && blockPos.getY() > structureWorldAccess.getBottomY() + 2) {
             blockPos = blockPos.down();
         }

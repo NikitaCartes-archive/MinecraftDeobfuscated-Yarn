@@ -5,10 +5,10 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.List;
+import net.minecraft.structure.MarginedStructureStart;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
-import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -38,7 +38,7 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     public static class Start
-    extends StructureStart<DefaultFeatureConfig> {
+    extends MarginedStructureStart<DefaultFeatureConfig> {
         private final long seed;
 
         public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {

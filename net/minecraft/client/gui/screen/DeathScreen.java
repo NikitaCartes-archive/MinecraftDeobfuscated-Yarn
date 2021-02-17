@@ -27,7 +27,7 @@ extends Screen {
     private int ticksSinceDeath;
     private final Text message;
     private final boolean isHardcore;
-    private Text score;
+    private Text scoreText;
 
     public DeathScreen(@Nullable Text message, boolean isHardcore) {
         super(new TranslatableText(isHardcore ? "deathScreen.title.hardcore" : "deathScreen.title"));
@@ -57,7 +57,7 @@ extends Screen {
         for (AbstractButtonWidget abstractButtonWidget : this.buttons) {
             abstractButtonWidget.active = false;
         }
-        this.score = new TranslatableText("deathScreen.score").append(": ").append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
+        this.scoreText = new TranslatableText("deathScreen.score").append(": ").append(new LiteralText(Integer.toString(this.client.player.getScore())).formatted(Formatting.YELLOW));
     }
 
     @Override
@@ -92,7 +92,7 @@ extends Screen {
         if (this.message != null) {
             DeathScreen.drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
         }
-        DeathScreen.drawCenteredText(matrices, this.textRenderer, this.score, this.width / 2, 100, 0xFFFFFF);
+        DeathScreen.drawCenteredText(matrices, this.textRenderer, this.scoreText, this.width / 2, 100, 0xFFFFFF);
         if (this.message != null && mouseY > 85 && mouseY < 85 + this.textRenderer.fontHeight) {
             Style style = this.getTextComponentUnderMouse(mouseX);
             this.renderTextHoverEffect(matrices, style, mouseX, mouseY);

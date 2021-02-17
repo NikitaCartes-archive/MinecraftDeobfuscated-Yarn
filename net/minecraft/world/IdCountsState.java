@@ -26,7 +26,7 @@ extends PersistentState {
     }
 
     @Override
-    public CompoundTag toNbt(CompoundTag tag) {
+    public CompoundTag writeNbt(CompoundTag tag) {
         for (Object2IntMap.Entry entry : this.idCounts.object2IntEntrySet()) {
             tag.putInt((String)entry.getKey(), entry.getIntValue());
         }

@@ -29,7 +29,7 @@ extends BlockEntity {
 
     @Override
     public BlockEntityUpdateS2CPacket toUpdatePacket() {
-        return new BlockEntityUpdateS2CPacket(this.pos, 11, this.toInitialChunkDataTag());
+        return new BlockEntityUpdateS2CPacket(this.pos, 11, this.toInitialChunkDataNbt());
     }
 
     @Environment(value=EnvType.CLIENT)

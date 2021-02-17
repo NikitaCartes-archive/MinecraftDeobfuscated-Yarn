@@ -162,7 +162,7 @@ implements ScreenHandlerListener {
     private boolean syncedSaturationIsZero = true;
     private int syncedExperience = -99999999;
     private int joinInvulnerabilityTicks = 60;
-    private ChatVisibility clientChatVisibility;
+    private ChatVisibility clientChatVisibility = ChatVisibility.FULL;
     private boolean clientChatColorsEnabled = true;
     private long lastActionTime = Util.getMeasuringTimeMs();
     private Entity cameraEntity;
@@ -180,8 +180,8 @@ implements ScreenHandlerListener {
     private BlockPos spawnPointPosition;
     private boolean spawnPointSet;
     private float spawnAngle;
-    @Nullable
     private final TextStream textStream;
+    private boolean field_28860 = true;
     private int screenHandlerSyncId;
     public boolean skipPacketSlotUpdates;
     public int pingMilliseconds;
@@ -189,13 +189,13 @@ implements ScreenHandlerListener {
 
     public ServerPlayerEntity(MinecraftServer server, ServerWorld world, GameProfile profile) {
         super(world, world.getSpawnPos(), world.getSpawnAngle(), profile);
+        this.textStream = server.createFilterer(this);
         this.interactionManager = server.getPlayerInteractionManager(this);
         this.server = server;
         this.statHandler = server.getPlayerManager().createStatHandler(this);
         this.advancementTracker = server.getPlayerManager().getAdvancementTracker(this);
         this.stepHeight = 1.0f;
         this.moveToSpawn(world);
-        this.textStream = server.createFilterer(this);
     }
 
     private void moveToSpawn(ServerWorld world) {
@@ -239,15 +239,15 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         if (tag.contains("enteredNetherPosition", 10)) {
             CompoundTag compoundTag = tag.getCompound("enteredNetherPosition");
             this.enteredNetherPos = new Vec3d(compoundTag.getDouble("x"), compoundTag.getDouble("y"), compoundTag.getDouble("z"));
         }
         this.seenCredits = tag.getBoolean("seenCredits");
         if (tag.contains("recipeBook", 10)) {
-            this.recipeBook.fromTag(tag.getCompound("recipeBook"), this.server.getRecipeManager());
+            this.recipeBook.readNbt(tag.getCompound("recipeBook"), this.server.getRecipeManager());
         }
         if (this.isSleeping()) {
             this.wakeUp();
@@ -263,9 +263,9 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag2) {
-        super.writeCustomDataToTag(tag2);
-        this.gameModeToTag(tag2);
+    public void writeCustomDataToNbt(CompoundTag tag2) {
+        super.writeCustomDataToNbt(tag2);
+        this.writeGameModeToNbt(tag2);
         tag2.putBoolean("seenCredits", this.seenCredits);
         if (this.enteredNetherPos != null) {
             CompoundTag compoundTag = new CompoundTag();
@@ -284,7 +284,7 @@ implements ScreenHandlerListener {
             compoundTag2.put("Entity", compoundTag3);
             tag2.put("RootVehicle", compoundTag2);
         }
-        tag2.put("recipeBook", this.recipeBook.toTag());
+        tag2.put("recipeBook", this.recipeBook.toNbt());
         tag2.putString("Dimension", this.world.getRegistryKey().getValue().toString());
         if (this.spawnPointPosition != null) {
             tag2.putInt("SpawnX", this.spawnPointPosition.getX());
@@ -774,15 +774,15 @@ implements ScreenHandlerListener {
         super.stopRiding();
         Entity entity2 = this.getVehicle();
         if (entity2 != entity && this.networkHandler != null) {
-            this.networkHandler.method_33562(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
+            this.networkHandler.requestTeleportAndDismount(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch);
         }
     }
 
     @Override
-    public void method_33567(double d, double e, double f) {
+    public void requestTeleportAndDismount(double destX, double destY, double destZ) {
         this.dismountVehicle();
         if (this.networkHandler != null) {
-            this.networkHandler.method_33562(d, e, f, this.yaw, this.pitch);
+            this.networkHandler.requestTeleportAndDismount(destX, destY, destZ, this.yaw, this.pitch);
         }
     }
 
@@ -996,7 +996,7 @@ implements ScreenHandlerListener {
 
     @Override
     public void sendMessage(Text message, boolean actionBar) {
-        this.networkHandler.sendPacket(new GameMessageS2CPacket(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT, Util.NIL_UUID));
+        this.sendMessage(message, actionBar ? MessageType.GAME_INFO : MessageType.CHAT, Util.NIL_UUID);
     }
 
     @Override
@@ -1020,6 +1020,7 @@ implements ScreenHandlerListener {
     }
 
     public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive) {
+        this.field_28860 = oldPlayer.field_28860;
         this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
         if (alive) {
             this.getInventory().clone(oldPlayer.getInventory());
@@ -1145,8 +1146,11 @@ implements ScreenHandlerListener {
     }
 
     public void sendMessage(Text message, MessageType type, UUID senderUuid) {
+        if (!this.method_33794(type)) {
+            return;
+        }
         this.networkHandler.sendPacket(new GameMessageS2CPacket(message, type, senderUuid), future -> {
-            if (!(future.isSuccess() || type != MessageType.GAME_INFO && type != MessageType.SYSTEM)) {
+            if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.method_33794(MessageType.SYSTEM)) {
                 int i = 256;
                 String string = message.asTruncatedString(256);
                 MutableText text2 = new LiteralText(string).formatted(Formatting.YELLOW);
@@ -1165,12 +1169,25 @@ implements ScreenHandlerListener {
     public void setClientSettings(ClientSettingsC2SPacket packet) {
         this.clientChatVisibility = packet.getChatVisibility();
         this.clientChatColorsEnabled = packet.hasChatColors();
+        this.field_28860 = packet.method_33894();
         this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.getPlayerModelBitMask());
         this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() != Arm.LEFT ? 1 : 0));
     }
 
     public ChatVisibility getClientChatVisibility() {
         return this.clientChatVisibility;
+    }
+
+    private boolean method_33794(MessageType messageType) {
+        switch (this.clientChatVisibility) {
+            case HIDDEN: {
+                return messageType == MessageType.GAME_INFO;
+            }
+            case SYSTEM: {
+                return messageType == MessageType.SYSTEM || messageType == MessageType.GAME_INFO;
+            }
+        }
+        return true;
     }
 
     public void sendResourcePackUrl(String url, String hash, boolean required) {
@@ -1377,7 +1394,6 @@ implements ScreenHandlerListener {
         return itemEntity;
     }
 
-    @Nullable
     public TextStream getTextStream() {
         return this.textStream;
     }
@@ -1388,7 +1404,7 @@ implements ScreenHandlerListener {
     }
 
     @Nullable
-    private static GameMode gameModeFromTag(@Nullable CompoundTag tag, String key) {
+    private static GameMode gameModeFromNbt(@Nullable CompoundTag tag, String key) {
         return tag != null && tag.contains(key, 99) ? GameMode.byId(tag.getInt(key)) : null;
     }
 
@@ -1409,15 +1425,26 @@ implements ScreenHandlerListener {
     }
 
     public void setGameMode(@Nullable CompoundTag tag) {
-        this.interactionManager.setGameMode(this.getServerGameMode(ServerPlayerEntity.gameModeFromTag(tag, "playerGameType")), ServerPlayerEntity.gameModeFromTag(tag, "previousPlayerGameType"));
+        this.interactionManager.setGameMode(this.getServerGameMode(ServerPlayerEntity.gameModeFromNbt(tag, "playerGameType")), ServerPlayerEntity.gameModeFromNbt(tag, "previousPlayerGameType"));
     }
 
-    private void gameModeToTag(CompoundTag tag) {
+    private void writeGameModeToNbt(CompoundTag tag) {
         tag.putInt("playerGameType", this.interactionManager.getGameMode().getId());
         GameMode gameMode = this.interactionManager.getPreviousGameMode();
         if (gameMode != null) {
             tag.putInt("previousPlayerGameType", gameMode.getId());
         }
+    }
+
+    public boolean method_33793() {
+        return this.field_28860;
+    }
+
+    public boolean method_33795(ServerPlayerEntity serverPlayerEntity) {
+        if (serverPlayerEntity == this) {
+            return false;
+        }
+        return this.field_28860 || serverPlayerEntity.field_28860;
     }
 }
 

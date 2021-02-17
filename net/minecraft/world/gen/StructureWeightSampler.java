@@ -17,6 +17,7 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.StructureWeightType;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 /**
@@ -90,6 +91,12 @@ public class StructureWeightSampler {
             i = Math.max(0, Math.max(blockBox.minX - x, x - blockBox.maxX));
             j = y - (blockBox.minY + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
             int k = Math.max(0, Math.max(blockBox.minZ - z, z - blockBox.maxZ));
+            StructureWeightType structureWeightType = structurePiece.method_33882();
+            if (structureWeightType == StructureWeightType.BURY) {
+                d += StructureWeightSampler.getMagnitudeWeight(i, j, k);
+                continue;
+            }
+            if (structureWeightType != StructureWeightType.BEARD) continue;
             d += StructureWeightSampler.getStructureWeight(i, j, k) * 0.8;
         }
         this.pieceIterator.back(this.pieces.size());
@@ -102,6 +109,11 @@ public class StructureWeightSampler {
         }
         this.junctionIterator.back(this.junctions.size());
         return d;
+    }
+
+    private static double getMagnitudeWeight(int x, int y, int z) {
+        double d = MathHelper.magnitude(x, (double)y / 2.0, z);
+        return MathHelper.clampedLerpFromProgress(d, 0.0, 6.0, 1.0, 0.0);
     }
 
     /**

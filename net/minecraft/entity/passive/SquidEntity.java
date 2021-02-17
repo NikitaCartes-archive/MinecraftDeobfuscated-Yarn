@@ -108,8 +108,8 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    protected Entity.class_5799 method_33570() {
-        return Entity.class_5799.EVENTS;
+    protected Entity.MoveEffect getMoveEffect() {
+        return Entity.MoveEffect.EVENTS;
     }
 
     @Override

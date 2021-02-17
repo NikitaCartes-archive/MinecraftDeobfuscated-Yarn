@@ -77,8 +77,8 @@ implements CrossbowUser {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         if (this.isBaby()) {
             tag.putBoolean("IsBaby", true);
         }
@@ -89,8 +89,8 @@ implements CrossbowUser {
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
-        super.readCustomDataFromTag(tag);
+    public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.setBaby(tag.getBoolean("IsBaby"));
         this.setCannotHunt(tag.getBoolean("CannotHunt"));
         this.inventory.readTags(tag.getList("Inventory", 10));

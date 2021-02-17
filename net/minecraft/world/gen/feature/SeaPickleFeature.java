@@ -26,7 +26,7 @@ extends Feature<CountConfig> {
         int i = 0;
         Random random = context.getRandom();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        BlockPos blockPos = context.getPos();
+        BlockPos blockPos = context.getOrigin();
         int j = context.getConfig().getCount().getValue(random);
         for (int k = 0; k < j; ++k) {
             int l = random.nextInt(8) - random.nextInt(8);

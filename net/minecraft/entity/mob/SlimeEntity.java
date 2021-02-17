@@ -97,20 +97,20 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToTag(CompoundTag tag) {
-        super.writeCustomDataToTag(tag);
+    public void writeCustomDataToNbt(CompoundTag tag) {
+        super.writeCustomDataToNbt(tag);
         tag.putInt("Size", this.getSize() - 1);
         tag.putBoolean("wasOnGround", this.onGroundLastTick);
     }
 
     @Override
-    public void readCustomDataFromTag(CompoundTag tag) {
+    public void readCustomDataFromNbt(CompoundTag tag) {
         int i = tag.getInt("Size");
         if (i < 0) {
             i = 0;
         }
         this.setSize(i + 1, false);
-        super.readCustomDataFromTag(tag);
+        super.readCustomDataFromNbt(tag);
         this.onGroundLastTick = tag.getBoolean("wasOnGround");
     }
 

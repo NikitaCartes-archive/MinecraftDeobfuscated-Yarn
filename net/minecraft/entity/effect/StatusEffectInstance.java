@@ -202,13 +202,13 @@ implements Comparable<StatusEffectInstance> {
         return i;
     }
 
-    public CompoundTag toTag(CompoundTag tag) {
+    public CompoundTag writeNbt(CompoundTag tag) {
         tag.putByte("Id", (byte)StatusEffect.getRawId(this.getEffectType()));
-        this.typelessToTag(tag);
+        this.writeTypelessToNbt(tag);
         return tag;
     }
 
-    private void typelessToTag(CompoundTag tag) {
+    private void writeTypelessToNbt(CompoundTag tag) {
         tag.putByte("Amplifier", (byte)this.getAmplifier());
         tag.putInt("Duration", this.getDuration());
         tag.putBoolean("Ambient", this.isAmbient());
@@ -216,22 +216,22 @@ implements Comparable<StatusEffectInstance> {
         tag.putBoolean("ShowIcon", this.shouldShowIcon());
         if (this.hiddenEffect != null) {
             CompoundTag compoundTag = new CompoundTag();
-            this.hiddenEffect.toTag(compoundTag);
+            this.hiddenEffect.writeNbt(compoundTag);
             tag.put("HiddenEffect", compoundTag);
         }
     }
 
     @Nullable
-    public static StatusEffectInstance fromTag(CompoundTag tag) {
+    public static StatusEffectInstance fromNbt(CompoundTag tag) {
         byte i = tag.getByte("Id");
         StatusEffect statusEffect = StatusEffect.byRawId(i);
         if (statusEffect == null) {
             return null;
         }
-        return StatusEffectInstance.fromTag(statusEffect, tag);
+        return StatusEffectInstance.fromNbt(statusEffect, tag);
     }
 
-    private static StatusEffectInstance fromTag(StatusEffect type, CompoundTag tag) {
+    private static StatusEffectInstance fromNbt(StatusEffect type, CompoundTag tag) {
         byte i = tag.getByte("Amplifier");
         int j = tag.getInt("Duration");
         boolean bl = tag.getBoolean("Ambient");
@@ -245,7 +245,7 @@ implements Comparable<StatusEffectInstance> {
         }
         StatusEffectInstance statusEffectInstance = null;
         if (tag.contains("HiddenEffect", 10)) {
-            statusEffectInstance = StatusEffectInstance.fromTag(type, tag.getCompound("HiddenEffect"));
+            statusEffectInstance = StatusEffectInstance.fromNbt(type, tag.getCompound("HiddenEffect"));
         }
         return new StatusEffectInstance(type, j, i < 0 ? (byte)0 : i, bl, bl2, bl3, statusEffectInstance);
     }

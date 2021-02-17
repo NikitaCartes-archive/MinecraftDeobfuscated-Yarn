@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -42,7 +43,6 @@ import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.network.packet.s2c.play.ExperienceBarUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameJoinS2CPacket;
-import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameStateChangeS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerAbilitiesS2CPacket;
@@ -276,7 +276,7 @@ public abstract class PlayerManager {
         CompoundTag compoundTag = this.server.getSaveProperties().getPlayerData();
         if (player.getName().getString().equals(this.server.getUserName()) && compoundTag != null) {
             compoundTag2 = compoundTag;
-            player.fromTag(compoundTag2);
+            player.readNbt(compoundTag2);
             LOGGER.debug("loading single player");
         } else {
             compoundTag2 = this.saveHandler.loadPlayerData(player);
@@ -437,14 +437,13 @@ public abstract class PlayerManager {
     }
 
     public void sendToAll(Packet<?> packet) {
-        for (int i = 0; i < this.players.size(); ++i) {
-            this.players.get((int)i).networkHandler.sendPacket(packet);
+        for (ServerPlayerEntity serverPlayerEntity : this.players) {
+            serverPlayerEntity.networkHandler.sendPacket(packet);
         }
     }
 
     public void sendToDimension(Packet<?> packet, RegistryKey<World> dimension) {
-        for (int i = 0; i < this.players.size(); ++i) {
-            ServerPlayerEntity serverPlayerEntity = this.players.get(i);
+        for (ServerPlayerEntity serverPlayerEntity : this.players) {
             if (serverPlayerEntity.world.getRegistryKey() != dimension) continue;
             serverPlayerEntity.networkHandler.sendPacket(packet);
         }
@@ -642,7 +641,18 @@ public abstract class PlayerManager {
 
     public void broadcastChatMessage(Text message, MessageType type, UUID senderUuid) {
         this.server.sendSystemMessage(message, senderUuid);
-        this.sendToAll(new GameMessageS2CPacket(message, type, senderUuid));
+        for (ServerPlayerEntity serverPlayerEntity : this.players) {
+            serverPlayerEntity.sendMessage(message, type, senderUuid);
+        }
+    }
+
+    public void method_33810(Text text, Function<ServerPlayerEntity, Text> function, MessageType messageType, UUID uUID) {
+        this.server.sendSystemMessage(text, uUID);
+        for (ServerPlayerEntity serverPlayerEntity : this.players) {
+            Text text2 = function.apply(serverPlayerEntity);
+            if (text2 == null) continue;
+            serverPlayerEntity.sendMessage(text2, messageType, uUID);
+        }
     }
 
     public ServerStatHandler createStatHandler(PlayerEntity player) {

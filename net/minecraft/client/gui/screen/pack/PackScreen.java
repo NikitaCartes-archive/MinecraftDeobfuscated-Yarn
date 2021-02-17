@@ -61,12 +61,12 @@ extends Screen {
     private PackListWidget selectedPackList;
     private final File file;
     private ButtonWidget doneButton;
-    private final Map<String, Identifier> field_25789 = Maps.newHashMap();
+    private final Map<String, Identifier> iconTextures = Maps.newHashMap();
 
     public PackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> consumer, File file, Text title) {
         super(title);
         this.parent = parent;
-        this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::method_30287, packManager, consumer);
+        this.organizer = new ResourcePackOrganizer(this::updatePackLists, this::getPackIconTexture, packManager, consumer);
         this.file = file;
         this.directoryWatcher = DirectoryWatcher.create(file);
     }
@@ -134,7 +134,7 @@ extends Screen {
         this.organizer.refresh();
         this.updatePackLists();
         this.field_25788 = 0L;
-        this.field_25789.clear();
+        this.iconTextures.clear();
     }
 
     @Override
@@ -184,7 +184,7 @@ extends Screen {
     /*
      * Exception decompiling
      */
-    private Identifier method_30289(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {
+    private Identifier loadPackIcon(TextureManager textureManager, ResourcePackProfile resourcePackProfile) {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
          * 
@@ -234,8 +234,8 @@ extends Screen {
         throw new IllegalStateException("Decompilation failed");
     }
 
-    private Identifier method_30287(ResourcePackProfile resourcePackProfile) {
-        return this.field_25789.computeIfAbsent(resourcePackProfile.getName(), string -> this.method_30289(this.client.getTextureManager(), resourcePackProfile));
+    private Identifier getPackIconTexture(ResourcePackProfile resourcePackProfile) {
+        return this.iconTextures.computeIfAbsent(resourcePackProfile.getName(), string -> this.loadPackIcon(this.client.getTextureManager(), resourcePackProfile));
     }
 
     @Environment(value=EnvType.CLIENT)
