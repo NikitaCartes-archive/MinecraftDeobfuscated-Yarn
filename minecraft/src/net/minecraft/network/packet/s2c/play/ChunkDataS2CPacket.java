@@ -55,7 +55,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 
 		for(Entry<BlockPos, BlockEntity> entry : chunk.getBlockEntities().entrySet()) {
 			BlockEntity blockEntity = (BlockEntity)entry.getValue();
-			CompoundTag compoundTag = blockEntity.toInitialChunkDataTag();
+			CompoundTag compoundTag = blockEntity.toInitialChunkDataNbt();
 			this.blockEntities.add(compoundTag);
 		}
 	}

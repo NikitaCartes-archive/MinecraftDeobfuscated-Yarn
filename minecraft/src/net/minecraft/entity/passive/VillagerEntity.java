@@ -457,8 +457,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tagx -> tag.put("VillagerData", tagx));
 		tag.putByte("FoodLevel", this.foodLevel);
 		tag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
@@ -472,8 +472,8 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("VillagerData", 10)) {
 			DataResult<VillagerData> dataResult = VillagerData.CODEC.parse(new Dynamic<>(NbtOps.INSTANCE, tag.get("VillagerData")));
 			dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
@@ -943,7 +943,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		return this.gossip;
 	}
 
-	public void setGossipDataFromTag(Tag tag) {
+	public void setGossipDataFromNbt(Tag tag) {
 		this.gossip.deserialize(new Dynamic<>(NbtOps.INSTANCE, tag));
 	}
 

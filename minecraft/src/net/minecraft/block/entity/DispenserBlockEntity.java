@@ -61,19 +61,19 @@ public class DispenserBlockEntity extends LootableContainerBlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(tag)) {
-			Inventories.fromTag(tag, this.inventory);
+			Inventories.readNbt(tag, this.inventory);
 		}
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		if (!this.serializeLootTable(tag)) {
-			Inventories.toTag(tag, this.inventory);
+			Inventories.writeNbt(tag, this.inventory);
 		}
 
 		return tag;

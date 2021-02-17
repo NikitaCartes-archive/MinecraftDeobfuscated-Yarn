@@ -194,7 +194,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		if (blockEntity != null) {
 			return blockEntity;
 		} else {
-			CompoundTag compoundTag = chunk.getBlockEntityTag(pos);
+			CompoundTag compoundTag = chunk.getBlockEntityNbt(pos);
 			BlockState blockState = chunk.getBlockState(pos);
 			if (compoundTag != null) {
 				if ("DUMMY".equals(compoundTag.getString("id"))) {
@@ -204,7 +204,7 @@ public class ChunkRegion implements StructureWorldAccess {
 
 					blockEntity = ((BlockEntityProvider)blockState.getBlock()).createBlockEntity(pos, blockState);
 				} else {
-					blockEntity = BlockEntity.createFromTag(pos, blockState, compoundTag);
+					blockEntity = BlockEntity.createFromNbt(pos, blockState, compoundTag);
 				}
 
 				if (blockEntity != null) {
@@ -243,7 +243,7 @@ public class ChunkRegion implements StructureWorldAccess {
 				compoundTag.putInt("y", pos.getY());
 				compoundTag.putInt("z", pos.getZ());
 				compoundTag.putString("id", "DUMMY");
-				chunk.addPendingBlockEntityTag(compoundTag);
+				chunk.addPendingBlockEntityNbt(compoundTag);
 			}
 		} else if (blockState != null && blockState.hasBlockEntity()) {
 			chunk.removeBlockEntity(pos);

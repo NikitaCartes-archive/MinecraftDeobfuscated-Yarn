@@ -92,16 +92,16 @@ public class RavagerEntity extends RaiderEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("AttackTick", this.attackTick);
 		tag.putInt("StunTick", this.stunTick);
 		tag.putInt("RoarTick", this.roarTick);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.attackTick = tag.getInt("AttackTick");
 		this.stunTick = tag.getInt("StunTick");
 		this.roarTick = tag.getInt("RoarTick");

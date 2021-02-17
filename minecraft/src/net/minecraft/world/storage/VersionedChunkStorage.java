@@ -21,19 +21,19 @@ public class VersionedChunkStorage implements AutoCloseable {
 	@Nullable
 	private FeatureUpdater featureUpdater;
 
-	public VersionedChunkStorage(File file, DataFixer dataFixer, boolean bl) {
+	public VersionedChunkStorage(File directory, DataFixer dataFixer, boolean dsync) {
 		this.dataFixer = dataFixer;
-		this.worker = new StorageIoWorker(file, bl, "chunk");
+		this.worker = new StorageIoWorker(directory, dsync, "chunk");
 	}
 
-	public CompoundTag updateChunkTag(RegistryKey<World> registryKey, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
+	public CompoundTag updateChunkNbt(RegistryKey<World> worldKey, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
 		int i = getDataVersion(tag);
 		int j = 1493;
 		if (i < 1493) {
 			tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, i, 1493);
 			if (tag.getCompound("Level").getBoolean("hasLegacyStructureData")) {
 				if (this.featureUpdater == null) {
-					this.featureUpdater = FeatureUpdater.create(registryKey, (PersistentStateManager)persistentStateManagerFactory.get());
+					this.featureUpdater = FeatureUpdater.create(worldKey, (PersistentStateManager)persistentStateManagerFactory.get());
 				}
 
 				tag = this.featureUpdater.getUpdatedReferences(tag);

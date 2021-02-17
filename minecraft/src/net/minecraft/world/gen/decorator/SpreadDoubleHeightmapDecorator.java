@@ -21,6 +21,6 @@ public class SpreadDoubleHeightmapDecorator<DC extends DecoratorConfig> extends 
 		int i = pos.getX();
 		int j = pos.getZ();
 		int k = context.getTopY(this.getHeightmapType(config), i, j);
-		return k == context.getBottomY() ? Stream.of() : Stream.of(new BlockPos(i, context.getBottomY() + random.nextInt((k - context.getBottomY()) * 2), j));
+		return k == context.method_33868() ? Stream.of() : Stream.of(new BlockPos(i, context.method_33868() + random.nextInt((k - context.method_33868()) * 2), j));
 	}
 }

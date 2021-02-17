@@ -2,16 +2,13 @@ package net.minecraft.world.gen.decorator;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
-import java.util.stream.Stream;
-import net.minecraft.util.math.BlockPos;
 
-public class Spread32AboveDecorator extends Decorator<NopeDecoratorConfig> {
+public class Spread32AboveDecorator extends AbstractRangeDecorator<NopeDecoratorConfig> {
 	public Spread32AboveDecorator(Codec<NopeDecoratorConfig> codec) {
 		super(codec);
 	}
 
-	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, BlockPos blockPos) {
-		int i = random.nextInt(Math.max(blockPos.getY(), 0) + 32);
-		return Stream.of(new BlockPos(blockPos.getX(), i, blockPos.getZ()));
+	protected int getY(DecoratorContext decoratorContext, Random random, NopeDecoratorConfig nopeDecoratorConfig, int i) {
+		return random.nextInt(Math.max(i, 0) + 32);
 	}
 }

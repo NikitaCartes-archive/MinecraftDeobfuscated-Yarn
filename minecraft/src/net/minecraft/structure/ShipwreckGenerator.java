@@ -88,8 +88,8 @@ public class ShipwreckGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
-			super.toNbt(tag);
+		protected void writeNbt(CompoundTag tag) {
+			super.writeNbt(tag);
 			tag.putString("Template", this.template.toString());
 			tag.putBoolean("isBeached", this.grounded);
 			tag.putString("Rot", this.rotation.name());

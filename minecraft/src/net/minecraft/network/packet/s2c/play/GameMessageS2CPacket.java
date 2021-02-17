@@ -47,10 +47,7 @@ public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 		return this.message;
 	}
 
-	public boolean isNonChat() {
-		return this.location == MessageType.SYSTEM || this.location == MessageType.GAME_INFO;
-	}
-
+	@Environment(EnvType.CLIENT)
 	public MessageType getLocation() {
 		return this.location;
 	}

@@ -233,7 +233,7 @@ public class ServerScoreboard extends Scoreboard {
 	}
 
 	public ScoreboardState stateFromNbt(CompoundTag nbt) {
-		return this.createState().fromTag(nbt);
+		return this.createState().readNbt(nbt);
 	}
 
 	public static enum UpdateMode {

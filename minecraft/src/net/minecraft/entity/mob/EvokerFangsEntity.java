@@ -58,7 +58,7 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
+	protected void readCustomDataFromNbt(CompoundTag tag) {
 		this.warmup = tag.getInt("Warmup");
 		if (tag.containsUuid("Owner")) {
 			this.ownerUuid = tag.getUuid("Owner");
@@ -66,7 +66,7 @@ public class EvokerFangsEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToNbt(CompoundTag tag) {
 		tag.putInt("Warmup", this.warmup);
 		if (this.ownerUuid != null) {
 			tag.putUuid("Owner", this.ownerUuid);

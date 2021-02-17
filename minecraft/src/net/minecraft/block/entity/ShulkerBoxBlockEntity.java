@@ -209,27 +209,27 @@ public class ShulkerBoxBlockEntity extends LootableContainerBlockEntity implemen
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.deserializeInventory(tag);
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		return this.serializeInventory(tag);
 	}
 
 	public void deserializeInventory(CompoundTag tag) {
 		this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
 		if (!this.deserializeLootTable(tag) && tag.contains("Items", 9)) {
-			Inventories.fromTag(tag, this.inventory);
+			Inventories.readNbt(tag, this.inventory);
 		}
 	}
 
 	public CompoundTag serializeInventory(CompoundTag tag) {
 		if (!this.serializeLootTable(tag)) {
-			Inventories.toTag(tag, this.inventory, false);
+			Inventories.writeNbt(tag, this.inventory, false);
 		}
 
 		return tag;

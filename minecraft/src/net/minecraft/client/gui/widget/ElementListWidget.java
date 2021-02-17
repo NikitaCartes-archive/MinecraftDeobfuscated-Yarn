@@ -24,7 +24,7 @@ public abstract class ElementListWidget<E extends ElementListWidget.Entry<E>> ex
 	}
 
 	@Override
-	protected boolean isSelectedItem(int index) {
+	protected boolean isSelectedEntry(int index) {
 		return false;
 	}
 

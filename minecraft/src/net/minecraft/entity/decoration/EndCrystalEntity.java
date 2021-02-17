@@ -43,8 +43,8 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected Entity.class_5799 method_33570() {
-		return Entity.class_5799.NONE;
+	protected Entity.MoveEffect getMoveEffect() {
+		return Entity.MoveEffect.NONE;
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToNbt(CompoundTag tag) {
 		if (this.getBeamTarget() != null) {
 			tag.put("BeamTarget", NbtHelper.fromBlockPos(this.getBeamTarget()));
 		}
@@ -74,7 +74,7 @@ public class EndCrystalEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
+	protected void readCustomDataFromNbt(CompoundTag tag) {
 		if (tag.contains("BeamTarget", 10)) {
 			this.setBeamTarget(NbtHelper.toBlockPos(tag.getCompound("BeamTarget")));
 		}

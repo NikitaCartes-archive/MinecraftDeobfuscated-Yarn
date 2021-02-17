@@ -42,8 +42,8 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		if (this.getOwnerUuid() != null) {
 			tag.putUuid("Owner", this.getOwnerUuid());
 		}
@@ -52,8 +52,8 @@ public abstract class TameableEntity extends AnimalEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		UUID uUID;
 		if (tag.containsUuid("Owner")) {
 			uUID = tag.getUuid("Owner");

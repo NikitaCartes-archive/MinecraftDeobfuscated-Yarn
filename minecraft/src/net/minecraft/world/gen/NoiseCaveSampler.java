@@ -46,7 +46,7 @@ public class NoiseCaveSampler {
 		double e = this.getTunnelNoise(x, y, z);
 		if (bl) {
 			double f = noise / 128.0;
-			double g = MathHelper.clamp(f + 0.2, -1.0, 1.0);
+			double g = MathHelper.clamp(f + 0.35, -1.0, 1.0);
 			double h = this.getVerticalNoise(x, y, z);
 			double i = this.getCaveNoise(x, y, z);
 			double j = g + h;
@@ -80,10 +80,10 @@ public class NoiseCaveSampler {
 
 	private double getTunnelNoise(int x, int y, int z) {
 		double d = this.tunnelScaleNoise.sample((double)(x * 2), (double)y, (double)(z * 2));
-		double e = this.scale(d);
+		double e = NoiseCaveSampler.CaveScaler.scaleTunnels(d);
 		double f = 0.065;
-		double g = 0.09;
-		double h = NoiseHelper.lerpFromProgress(this.tunnelFalloffNoise, (double)x, (double)y, (double)z, 0.065, 0.09);
+		double g = 0.085;
+		double h = NoiseHelper.lerpFromProgress(this.tunnelFalloffNoise, (double)x, (double)y, (double)z, 0.065, 0.085);
 		double i = sample(this.tunnelNoise1, (double)x, (double)y, (double)z, e);
 		double j = Math.abs(e * i) - h;
 		double k = sample(this.tunnelNoise2, (double)x, (double)y, (double)z, e);
@@ -93,7 +93,7 @@ public class NoiseCaveSampler {
 
 	private double getCaveNoise(int x, int y, int z) {
 		double d = this.caveScaleNoise.sample((double)(x * 2), (double)y, (double)(z * 2));
-		double e = this.scale(d);
+		double e = NoiseCaveSampler.CaveScaler.scaleCaves(d);
 		double f = 0.6;
 		double g = 1.3;
 		double h = NoiseHelper.lerpFromProgress(this.caveExtentNoise, (double)(x * 2), (double)y, (double)(z * 2), 0.6, 1.3);
@@ -113,23 +113,35 @@ public class NoiseCaveSampler {
 		return (0.4 - Math.abs(this.offsetNoise.sample((double)x, (double)y, (double)z))) * d;
 	}
 
-	private double scale(double value) {
-		if (value < -0.75) {
-			return 0.5;
-		} else if (value < -0.5) {
-			return 0.75;
-		} else if (value < 0.5) {
-			return 1.0;
-		} else {
-			return value < 0.75 ? 2.0 : 3.0;
-		}
-	}
-
 	private static double clamp(double value) {
 		return MathHelper.clamp(value, -1.0, 1.0);
 	}
 
 	private static double sample(DoublePerlinNoiseSampler sampler, double x, double y, double z, double scale) {
 		return sampler.sample(x / scale, y / scale, z / scale);
+	}
+
+	static final class CaveScaler {
+		private static double scaleCaves(double value) {
+			if (value < -0.75) {
+				return 0.5;
+			} else if (value < -0.5) {
+				return 0.75;
+			} else if (value < 0.5) {
+				return 1.0;
+			} else {
+				return value < 0.75 ? 2.0 : 3.0;
+			}
+		}
+
+		private static double scaleTunnels(double value) {
+			if (value < -0.5) {
+				return 0.75;
+			} else if (value < 0.0) {
+				return 1.0;
+			} else {
+				return value < 0.5 ? 2.0 : 3.0;
+			}
+		}
 	}
 }

@@ -30,8 +30,8 @@ public class DesertTempleGenerator extends StructurePieceWithDimensions {
 	}
 
 	@Override
-	protected void toNbt(CompoundTag tag) {
-		super.toNbt(tag);
+	protected void writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putBoolean("hasPlacedChest0", this.hasPlacedChest[0]);
 		tag.putBoolean("hasPlacedChest1", this.hasPlacedChest[1]);
 		tag.putBoolean("hasPlacedChest2", this.hasPlacedChest[2]);

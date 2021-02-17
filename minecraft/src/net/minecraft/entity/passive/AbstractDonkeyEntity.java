@@ -72,8 +72,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putBoolean("ChestedHorse", this.hasChest());
 		if (this.hasChest()) {
 			ListTag listTag = new ListTag();
@@ -83,7 +83,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				if (!itemStack.isEmpty()) {
 					CompoundTag compoundTag = new CompoundTag();
 					compoundTag.putByte("Slot", (byte)i);
-					itemStack.toTag(compoundTag);
+					itemStack.writeNbt(compoundTag);
 					listTag.add(compoundTag);
 				}
 			}
@@ -93,8 +93,8 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setHasChest(tag.getBoolean("ChestedHorse"));
 		this.onChestedStatusChanged();
 		if (this.hasChest()) {
@@ -104,7 +104,7 @@ public abstract class AbstractDonkeyEntity extends HorseBaseEntity {
 				CompoundTag compoundTag = listTag.getCompound(i);
 				int j = compoundTag.getByte("Slot") & 255;
 				if (j >= 2 && j < this.items.size()) {
-					this.items.setStack(j, ItemStack.fromTag(compoundTag));
+					this.items.setStack(j, ItemStack.fromNbt(compoundTag));
 				}
 			}
 		}

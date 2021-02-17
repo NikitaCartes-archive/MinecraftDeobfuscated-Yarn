@@ -16,7 +16,7 @@ public abstract class FlowerFeature<U extends FeatureConfig> extends Feature<U> 
 	@Override
 	public boolean generate(FeatureContext<U> context) {
 		Random random = context.getRandom();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		U featureConfig = context.getConfig();
 		BlockState blockState = this.getFlowerState(random, blockPos, featureConfig);

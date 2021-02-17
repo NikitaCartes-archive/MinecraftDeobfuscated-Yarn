@@ -414,7 +414,7 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public void addPendingBlockEntityTag(CompoundTag tag) {
+	public void addPendingBlockEntityNbt(CompoundTag tag) {
 		this.blockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
 	}
 
@@ -423,15 +423,15 @@ public class ProtoChunk implements Chunk {
 	}
 
 	@Override
-	public CompoundTag getBlockEntityTag(BlockPos pos) {
+	public CompoundTag getBlockEntityNbt(BlockPos pos) {
 		return (CompoundTag)this.blockEntityTags.get(pos);
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
+	public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
 		BlockEntity blockEntity = this.getBlockEntity(pos);
-		return blockEntity != null ? blockEntity.toTag(new CompoundTag()) : (CompoundTag)this.blockEntityTags.get(pos);
+		return blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : (CompoundTag)this.blockEntityTags.get(pos);
 	}
 
 	@Override

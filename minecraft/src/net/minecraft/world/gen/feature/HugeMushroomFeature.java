@@ -63,7 +63,7 @@ public abstract class HugeMushroomFeature extends Feature<HugeMushroomFeatureCon
 	@Override
 	public boolean generate(FeatureContext<HugeMushroomFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		Random random = context.getRandom();
 		HugeMushroomFeatureConfig hugeMushroomFeatureConfig = context.getConfig();
 		int i = this.getHeight(random);

@@ -166,19 +166,19 @@ public class ReadOnlyChunk extends ProtoChunk {
 	}
 
 	@Override
-	public void addPendingBlockEntityTag(CompoundTag tag) {
+	public void addPendingBlockEntityNbt(CompoundTag tag) {
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag getBlockEntityTag(BlockPos pos) {
-		return this.wrapped.getBlockEntityTag(pos);
+	public CompoundTag getBlockEntityNbt(BlockPos pos) {
+		return this.wrapped.getBlockEntityNbt(pos);
 	}
 
 	@Nullable
 	@Override
-	public CompoundTag getPackedBlockEntityTag(BlockPos pos) {
-		return this.wrapped.getPackedBlockEntityTag(pos);
+	public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
+		return this.wrapped.getPackedBlockEntityNbt(pos);
 	}
 
 	@Override

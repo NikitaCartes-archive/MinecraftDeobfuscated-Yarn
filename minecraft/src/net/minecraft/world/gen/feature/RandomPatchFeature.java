@@ -18,7 +18,7 @@ public class RandomPatchFeature extends Feature<RandomPatchFeatureConfig> {
 	public boolean generate(FeatureContext<RandomPatchFeatureConfig> context) {
 		RandomPatchFeatureConfig randomPatchFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		BlockState blockState = randomPatchFeatureConfig.stateProvider.getBlockState(random, blockPos);
 		BlockPos blockPos2;

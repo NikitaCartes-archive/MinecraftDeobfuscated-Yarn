@@ -5,6 +5,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Vec3d;
 
 @Environment(EnvType.CLIENT)
 public interface BlockEntityRenderer<T extends BlockEntity> {
@@ -12,5 +13,13 @@ public interface BlockEntityRenderer<T extends BlockEntity> {
 
 	default boolean rendersOutsideBoundingBox(T blockEntity) {
 		return false;
+	}
+
+	default int method_33893() {
+		return 64;
+	}
+
+	default boolean method_33892(T blockEntity, Vec3d vec3d) {
+		return Vec3d.ofCenter(blockEntity.getPos()).isInRange(vec3d, (double)this.method_33893());
 	}
 }

@@ -71,4 +71,9 @@ public class PistonBlockEntityRenderer implements BlockEntityRenderer<PistonBloc
 			.getModelRenderer()
 			.render(world, this.manager.getModel(state), state, pos, matrices, vertexConsumer, cull, new Random(), state.getRenderingSeed(pos), overlay);
 	}
+
+	@Override
+	public int method_33893() {
+		return 68;
+	}
 }

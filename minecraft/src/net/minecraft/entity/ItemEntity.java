@@ -71,8 +71,8 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	protected Entity.class_5799 method_33570() {
-		return Entity.class_5799.NONE;
+	protected Entity.MoveEffect getMoveEffect() {
+		return Entity.MoveEffect.NONE;
 	}
 
 	@Override
@@ -262,7 +262,7 @@ public class ItemEntity extends Entity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
+	public void writeCustomDataToNbt(CompoundTag tag) {
 		tag.putShort("Health", (short)this.health);
 		tag.putShort("Age", (short)this.age);
 		tag.putShort("PickupDelay", (short)this.pickupDelay);
@@ -275,12 +275,12 @@ public class ItemEntity extends Entity {
 		}
 
 		if (!this.getStack().isEmpty()) {
-			tag.put("Item", this.getStack().toTag(new CompoundTag()));
+			tag.put("Item", this.getStack().writeNbt(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
+	public void readCustomDataFromNbt(CompoundTag tag) {
 		this.health = tag.getShort("Health");
 		this.age = tag.getShort("Age");
 		if (tag.contains("PickupDelay")) {
@@ -296,7 +296,7 @@ public class ItemEntity extends Entity {
 		}
 
 		CompoundTag compoundTag = tag.getCompound("Item");
-		this.setStack(ItemStack.fromTag(compoundTag));
+		this.setStack(ItemStack.fromNbt(compoundTag));
 		if (this.getStack().isEmpty()) {
 			this.discard();
 		}

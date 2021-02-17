@@ -111,15 +111,15 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("Variant", this.getVariant().getId());
 		tag.putBoolean("FromBucket", this.isFromBucket());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setVariant(AxolotlEntity.Variant.VARIANTS[tag.getInt("Variant")]);
 		this.setFromBucket(tag.getBoolean("FromBucket"));
 	}

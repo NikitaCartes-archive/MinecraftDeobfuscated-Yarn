@@ -894,10 +894,11 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private void openChatScreen(String text) {
-		if (this.isInSingleplayer() || this.isOnlineChatEnabled()) {
+		MinecraftClient.ChatRestriction chatRestriction = this.getChatRestriction();
+		if (!chatRestriction.allowsChat(this.isInSingleplayer())) {
+			this.inGameHud.setOverlayMessage(chatRestriction.getDescription(), false);
+		} else {
 			this.openScreen(new ChatScreen(text));
-		} else if (this.player != null) {
-			this.player.sendSystemMessage(new TranslatableText("chat.cannotSend").formatted(Formatting.RED), Util.NIL_UUID);
 		}
 	}
 
@@ -1659,15 +1660,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			}
 		}
 
-		boolean bl3 = this.options.chatVisibility != ChatVisibility.HIDDEN;
-		if (bl3) {
-			while(this.options.keyChat.wasPressed()) {
-				this.openChatScreen("");
-			}
+		while(this.options.keyChat.wasPressed()) {
+			this.openChatScreen("");
+		}
 
-			if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
-				this.openChatScreen("/");
-			}
+		if (this.currentScreen == null && this.overlay == null && this.options.keyCommand.wasPressed()) {
+			this.openChatScreen("/");
 		}
 
 		if (this.player.isUsingItem()) {
@@ -2058,15 +2056,21 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	 * them.
 	 */
 	public boolean shouldBlockMessages(UUID sender) {
-		if (this.isOnlineChatEnabled()) {
+		if (this.getChatRestriction().allowsChat(false)) {
 			return this.socialInteractionsManager.isPlayerMuted(sender);
 		} else {
 			return (this.player == null || !sender.equals(this.player.getUuid())) && !sender.equals(Util.NIL_UUID);
 		}
 	}
 
-	public boolean isOnlineChatEnabled() {
-		return this.onlineChatEnabled && this.socialInteractionsService.chatAllowed();
+	public MinecraftClient.ChatRestriction getChatRestriction() {
+		if (this.options.chatVisibility == ChatVisibility.HIDDEN) {
+			return MinecraftClient.ChatRestriction.DISABLED_BY_OPTIONS;
+		} else if (!this.onlineChatEnabled) {
+			return MinecraftClient.ChatRestriction.DISABLED_BY_LAUNCHER;
+		} else {
+			return !this.socialInteractionsService.chatAllowed() ? MinecraftClient.ChatRestriction.DISABLED_BY_PROFILE : MinecraftClient.ChatRestriction.ENABLED;
+		}
 	}
 
 	public final boolean isDemo() {
@@ -2159,7 +2163,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 	}
 
 	private ItemStack addBlockEntityNbt(ItemStack stack, BlockEntity blockEntity) {
-		CompoundTag compoundTag = blockEntity.toTag(new CompoundTag());
+		CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
 		if (stack.getItem() instanceof SkullItem && compoundTag.contains("SkullOwner")) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("SkullOwner");
 			stack.getOrCreateTag().put("SkullOwner", compoundTag2);
@@ -2597,6 +2601,55 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	public EntityModelLoader getEntityModelLoader() {
 		return this.entityModelLoader;
+	}
+
+	public boolean method_33883() {
+		return true;
+	}
+
+	/**
+	 * Represents the restrictions on chat on a Minecraft client.
+	 * 
+	 * @see MinecraftClient#getChatRestriction()
+	 */
+	@Environment(EnvType.CLIENT)
+	public static enum ChatRestriction {
+		ENABLED(LiteralText.EMPTY) {
+			@Override
+			public boolean allowsChat(boolean singlePlayer) {
+				return true;
+			}
+		},
+		DISABLED_BY_OPTIONS(new TranslatableText("chat.disabled.options").formatted(Formatting.RED)) {
+			@Override
+			public boolean allowsChat(boolean singlePlayer) {
+				return false;
+			}
+		},
+		DISABLED_BY_LAUNCHER(new TranslatableText("chat.disabled.launcher").formatted(Formatting.RED)) {
+			@Override
+			public boolean allowsChat(boolean singlePlayer) {
+				return singlePlayer;
+			}
+		},
+		DISABLED_BY_PROFILE(new TranslatableText("chat.disabled.profile").formatted(Formatting.RED)) {
+			@Override
+			public boolean allowsChat(boolean singlePlayer) {
+				return singlePlayer;
+			}
+		};
+
+		private final Text description;
+
+		private ChatRestriction(Text description) {
+			this.description = description;
+		}
+
+		public Text getDescription() {
+			return this.description;
+		}
+
+		public abstract boolean allowsChat(boolean singlePlayer);
 	}
 
 	@Environment(EnvType.CLIENT)

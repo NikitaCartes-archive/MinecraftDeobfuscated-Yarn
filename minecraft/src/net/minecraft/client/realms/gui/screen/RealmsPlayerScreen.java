@@ -326,7 +326,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 				int j = RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width;
 				int k = (int)Math.floor(mouseY - (double)this.top) - this.headerHeight + (int)this.getScrollAmount() - 4;
 				int l = k / this.itemHeight;
-				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getItemCount()) {
+				if (mouseX >= (double)i && mouseX <= (double)j && l >= 0 && k >= 0 && l < this.getEntryCount()) {
 					this.setSelected(l);
 					this.itemClicked(k, l, mouseX, mouseY, this.width);
 				}
@@ -387,7 +387,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 		@Override
 		public int getMaxPosition() {
-			return this.getItemCount() * 13;
+			return this.getEntryCount() * 13;
 		}
 	}
 

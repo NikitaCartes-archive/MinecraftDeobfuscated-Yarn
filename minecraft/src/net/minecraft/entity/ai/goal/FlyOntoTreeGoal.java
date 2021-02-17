@@ -1,9 +1,9 @@
 package net.minecraft.entity.ai.goal;
 
 import javax.annotation.Nullable;
-import net.minecraft.class_5534;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
+import net.minecraft.entity.ai.FuzzyTargeting;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
@@ -21,7 +21,7 @@ public class FlyOntoTreeGoal extends WanderAroundFarGoal {
 	protected Vec3d getWanderTarget() {
 		Vec3d vec3d = null;
 		if (this.mob.isTouchingWater()) {
-			vec3d = class_5534.method_31527(this.mob, 15, 15);
+			vec3d = FuzzyTargeting.find(this.mob, 15, 15);
 		}
 
 		if (this.mob.getRandom().nextFloat() >= this.probability) {

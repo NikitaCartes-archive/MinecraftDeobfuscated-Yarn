@@ -126,4 +126,9 @@ public class StructureBlockBlockEntityRenderer implements BlockEntityRenderer<St
 	public boolean rendersOutsideBoundingBox(StructureBlockBlockEntity structureBlockBlockEntity) {
 		return true;
 	}
+
+	@Override
+	public int method_33893() {
+		return 96;
+	}
 }

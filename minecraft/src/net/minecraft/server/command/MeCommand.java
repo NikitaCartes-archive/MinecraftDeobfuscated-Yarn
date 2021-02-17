@@ -3,7 +3,6 @@ package net.minecraft.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import java.util.Optional;
 import net.minecraft.entity.Entity;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.MinecraftServer;
@@ -26,17 +25,22 @@ public class MeCommand {
 								MinecraftServer minecraftServer = commandContext.getSource().getMinecraftServer();
 								if (entity != null) {
 									if (entity instanceof ServerPlayerEntity) {
-										TextStream textStream = ((ServerPlayerEntity)entity).getTextStream();
-										if (textStream != null) {
-											textStream.filterText(string)
-												.thenAcceptAsync(
-													optional -> optional.ifPresent(
-															stringx -> minecraftServer.getPlayerManager().broadcastChatMessage(method_31373(commandContext, stringx), MessageType.CHAT, entity.getUuid())
-														),
-													minecraftServer
-												);
-											return 1;
-										}
+										ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
+										serverPlayerEntity.getTextStream()
+											.filterText(string)
+											.thenAcceptAsync(
+												arg -> {
+													String stringxx = arg.method_33803();
+													Text text = stringxx.isEmpty() ? null : method_31373(commandContext, stringxx);
+													Text text2 = method_31373(commandContext, arg.method_33801());
+													minecraftServer.getPlayerManager()
+														.method_33810(
+															text2, serverPlayerEntity2 -> serverPlayerEntity.method_33795(serverPlayerEntity2) ? text : text2, MessageType.CHAT, entity.getUuid()
+														);
+												},
+												minecraftServer
+											);
+										return 1;
 									}
 					
 									minecraftServer.getPlayerManager().broadcastChatMessage(method_31373(commandContext, string), MessageType.CHAT, entity.getUuid());

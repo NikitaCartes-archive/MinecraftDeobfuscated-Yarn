@@ -22,7 +22,7 @@ public class WeepingVinesFeature extends Feature<DefaultFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		Random random = context.getRandom();
 		if (!structureWorldAccess.isAir(blockPos)) {
 			return false;

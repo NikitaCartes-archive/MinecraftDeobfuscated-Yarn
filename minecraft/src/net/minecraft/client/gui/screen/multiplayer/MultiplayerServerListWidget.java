@@ -302,7 +302,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256, 256);
 			String string = this.server.getIcon();
 			if (!Objects.equals(string, this.iconUri)) {
-				if (this.method_29979(string)) {
+				if (this.isNewIconValid(string)) {
 					this.iconUri = string;
 				} else {
 					this.server.setIcon(null);
@@ -360,10 +360,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			this.screen.getServerList().saveFile();
 		}
 
-		protected void draw(MatrixStack matrices, int i, int j, Identifier identifier) {
-			this.client.getTextureManager().bindTexture(identifier);
+		protected void draw(MatrixStack matrices, int x, int y, Identifier textureId) {
+			this.client.getTextureManager().bindTexture(textureId);
 			RenderSystem.enableBlend();
-			DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 32, 32, 32, 32);
+			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();
 		}
 
@@ -371,8 +371,8 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			return true;
 		}
 
-		private boolean method_29979(@Nullable String string) {
-			if (string == null) {
+		private boolean isNewIconValid(@Nullable String newIconUri) {
+			if (newIconUri == null) {
 				this.client.getTextureManager().destroyTexture(this.iconTextureId);
 				if (this.icon != null && this.icon.getImage() != null) {
 					this.icon.getImage().close();
@@ -381,7 +381,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				this.icon = null;
 			} else {
 				try {
-					NativeImage nativeImage = NativeImage.read(string);
+					NativeImage nativeImage = NativeImage.read(newIconUri);
 					Validate.validState(nativeImage.getWidth() == 64, "Must be 64 pixels wide");
 					Validate.validState(nativeImage.getHeight() == 64, "Must be 64 pixels high");
 					if (this.icon == null) {

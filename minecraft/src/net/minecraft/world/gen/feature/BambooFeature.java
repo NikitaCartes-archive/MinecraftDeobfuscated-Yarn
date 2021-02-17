@@ -30,7 +30,7 @@ public class BambooFeature extends Feature<ProbabilityConfig> {
 	@Override
 	public boolean generate(FeatureContext<ProbabilityConfig> context) {
 		int i = 0;
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		Random random = context.getRandom();
 		ProbabilityConfig probabilityConfig = context.getConfig();

@@ -1,8 +1,6 @@
 package net.minecraft.block.entity;
 
 import javax.annotation.Nullable;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -43,10 +41,10 @@ public abstract class BlockEntity {
 		return this.world != null;
 	}
 
-	public void fromTag(CompoundTag tag) {
+	public void readNbt(CompoundTag tag) {
 	}
 
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag writeNbt(CompoundTag tag) {
 		return this.writeIdentifyingData(tag);
 	}
 
@@ -64,7 +62,7 @@ public abstract class BlockEntity {
 	}
 
 	@Nullable
-	public static BlockEntity createFromTag(BlockPos pos, BlockState state, CompoundTag tag) {
+	public static BlockEntity createFromNbt(BlockPos pos, BlockState state, CompoundTag tag) {
 		String string = tag.getString("id");
 		return (BlockEntity)Registry.BLOCK_ENTITY_TYPE.getOrEmpty(new Identifier(string)).map(blockEntityType -> {
 			try {
@@ -75,7 +73,7 @@ public abstract class BlockEntity {
 			}
 		}).map(blockEntity -> {
 			try {
-				blockEntity.fromTag(tag);
+				blockEntity.readNbt(tag);
 				return blockEntity;
 			} catch (Throwable var4) {
 				LOGGER.error("Failed to load data for block entity {}", string, var4);
@@ -100,11 +98,6 @@ public abstract class BlockEntity {
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
-	public double getSquaredRenderDistance() {
-		return 64.0;
-	}
-
 	public BlockPos getPos() {
 		return this.pos;
 	}
@@ -118,7 +111,7 @@ public abstract class BlockEntity {
 		return null;
 	}
 
-	public CompoundTag toInitialChunkDataTag() {
+	public CompoundTag toInitialChunkDataNbt() {
 		return this.writeIdentifyingData(new CompoundTag());
 	}
 

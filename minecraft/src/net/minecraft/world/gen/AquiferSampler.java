@@ -30,27 +30,27 @@ public class AquiferSampler {
 		DoublePerlinNoiseSampler waterLevelNoise,
 		ChunkGeneratorSettings settings,
 		NoiseColumnSampler columnSampler,
-		int i
+		int height
 	) {
 		this.field_28813 = doublePerlinNoiseSampler;
 		this.waterLevelNoise = waterLevelNoise;
 		this.settings = settings;
 		this.columnSampler = columnSampler;
 		ChunkPos chunkPos = new ChunkPos(x, z);
-		this.startX = this.method_33734(chunkPos.getStartX()) - 1;
-		int j = this.method_33734(chunkPos.getEndX()) + 1;
-		this.sizeX = j - this.startX + 1;
-		int k = settings.getGenerationShapeConfig().getMinimumY();
-		this.startY = this.method_33740(k) - 1;
-		int l = this.method_33740(k + i) + 1;
-		int m = l - this.startY + 1;
-		this.startZ = this.method_33743(chunkPos.getStartZ()) - 1;
-		int n = this.method_33743(chunkPos.getEndZ()) + 1;
-		this.sizeZ = n - this.startZ + 1;
-		int o = this.sizeX * m * this.sizeZ;
-		this.waterLevels = new int[o];
+		this.startX = this.getLocalX(chunkPos.getStartX()) - 1;
+		int i = this.getLocalX(chunkPos.getEndX()) + 1;
+		this.sizeX = i - this.startX + 1;
+		int j = settings.getGenerationShapeConfig().getMinimumY();
+		this.startY = this.getLocalY(j) - 1;
+		int k = this.getLocalY(j + height) + 1;
+		int l = k - this.startY + 1;
+		this.startZ = this.getLocalZ(chunkPos.getStartZ()) - 1;
+		int m = this.getLocalZ(chunkPos.getEndZ()) + 1;
+		this.sizeZ = m - this.startZ + 1;
+		int n = this.sizeX * l * this.sizeZ;
+		this.waterLevels = new int[n];
 		Arrays.fill(this.waterLevels, Integer.MAX_VALUE);
-		this.blockPositions = new long[o];
+		this.blockPositions = new long[n];
 		Arrays.fill(this.blockPositions, Long.MAX_VALUE);
 	}
 
@@ -145,25 +145,25 @@ public class AquiferSampler {
 		return 0.5 * (double)Math.abs(j - k) * d - Math.abs(0.5 * (double)(j + k) - (double)i - 0.5);
 	}
 
-	private int method_33734(int i) {
-		return Math.floorDiv(i, 16);
+	private int getLocalX(int x) {
+		return Math.floorDiv(x, 16);
 	}
 
-	private int method_33740(int i) {
-		return Math.floorDiv(i, 12);
+	private int getLocalY(int y) {
+		return Math.floorDiv(y, 12);
 	}
 
-	private int method_33743(int i) {
-		return Math.floorDiv(i, 16);
+	private int getLocalZ(int z) {
+		return Math.floorDiv(z, 16);
 	}
 
 	private int getWaterLevel(long pos) {
 		int i = BlockPos.unpackLongX(pos);
 		int j = BlockPos.unpackLongY(pos);
 		int k = BlockPos.unpackLongZ(pos);
-		int l = this.method_33734(i);
-		int m = this.method_33740(j);
-		int n = this.method_33743(k);
+		int l = this.getLocalX(i);
+		int m = this.getLocalY(j);
+		int n = this.getLocalZ(k);
 		int o = this.index(l, m, n);
 		int p = this.waterLevels[o];
 		if (p != Integer.MAX_VALUE) {
@@ -181,9 +181,9 @@ public class AquiferSampler {
 			return i;
 		} else {
 			int j = 64;
-			int k = -8;
+			int k = -12;
 			int l = 40;
-			double d = this.waterLevelNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40) / 1.4, (double)Math.floorDiv(z, 64)) * 30.0 + -8.0;
+			double d = this.waterLevelNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40) / 1.4, (double)Math.floorDiv(z, 64)) * 30.0 + -12.0;
 			if (Math.abs(d) > 8.0) {
 				d *= 4.0;
 			}

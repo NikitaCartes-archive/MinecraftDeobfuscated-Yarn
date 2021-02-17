@@ -33,7 +33,7 @@ public class SetBannerPatternFunction extends ConditionalLootFunction {
 		CompoundTag compoundTag = stack.getOrCreateSubTag("BlockEntityTag");
 		BannerPattern.Patterns patterns = new BannerPattern.Patterns();
 		this.patterns.forEach(patterns::add);
-		ListTag listTag = patterns.toTag();
+		ListTag listTag = patterns.toNbt();
 		ListTag listTag2;
 		if (this.append) {
 			listTag2 = compoundTag.getList("Patterns", 10).copy();

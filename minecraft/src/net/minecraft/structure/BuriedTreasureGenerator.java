@@ -26,7 +26,7 @@ public class BuriedTreasureGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
+		protected void writeNbt(CompoundTag tag) {
 		}
 
 		@Override

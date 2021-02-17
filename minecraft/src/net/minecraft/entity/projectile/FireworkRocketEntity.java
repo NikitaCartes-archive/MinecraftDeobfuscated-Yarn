@@ -275,24 +275,24 @@ public class FireworkRocketEntity extends ProjectileEntity implements FlyingItem
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("Life", this.life);
 		tag.putInt("LifeTime", this.lifeTime);
 		ItemStack itemStack = this.dataTracker.get(ITEM);
 		if (!itemStack.isEmpty()) {
-			tag.put("FireworksItem", itemStack.toTag(new CompoundTag()));
+			tag.put("FireworksItem", itemStack.writeNbt(new CompoundTag()));
 		}
 
 		tag.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.life = tag.getInt("Life");
 		this.lifeTime = tag.getInt("LifeTime");
-		ItemStack itemStack = ItemStack.fromTag(tag.getCompound("FireworksItem"));
+		ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("FireworksItem"));
 		if (!itemStack.isEmpty()) {
 			this.dataTracker.set(ITEM, itemStack);
 		}

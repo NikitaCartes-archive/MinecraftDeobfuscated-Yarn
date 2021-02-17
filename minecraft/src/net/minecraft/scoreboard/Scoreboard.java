@@ -331,7 +331,7 @@ public class Scoreboard {
 		}
 	}
 
-	protected ListTag toTag() {
+	protected ListTag toNbt() {
 		ListTag listTag = new ListTag();
 		this.playerObjectives
 			.values()
@@ -348,7 +348,7 @@ public class Scoreboard {
 		return listTag;
 	}
 
-	protected void fromTag(ListTag listTag) {
+	protected void readNbt(ListTag listTag) {
 		for(int i = 0; i < listTag.size(); ++i) {
 			CompoundTag compoundTag = listTag.getCompound(i);
 			ScoreboardObjective scoreboardObjective = this.getObjective(compoundTag.getString("Objective"));

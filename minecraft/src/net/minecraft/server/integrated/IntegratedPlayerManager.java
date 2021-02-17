@@ -24,7 +24,7 @@ public class IntegratedPlayerManager extends PlayerManager {
 	@Override
 	protected void savePlayerData(ServerPlayerEntity player) {
 		if (player.getName().getString().equals(this.getServer().getUserName())) {
-			this.userData = player.toTag(new CompoundTag());
+			this.userData = player.writeNbt(new CompoundTag());
 		}
 
 		super.savePlayerData(player);

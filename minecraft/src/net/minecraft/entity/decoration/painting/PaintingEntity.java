@@ -71,17 +71,17 @@ public class PaintingEntity extends AbstractDecorationEntity {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
+	public void writeCustomDataToNbt(CompoundTag tag) {
 		tag.putString("Motive", Registry.PAINTING_MOTIVE.getId(this.motive).toString());
 		tag.putByte("Facing", (byte)this.facing.getHorizontal());
-		super.writeCustomDataToTag(tag);
+		super.writeCustomDataToNbt(tag);
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
+	public void readCustomDataFromNbt(CompoundTag tag) {
 		this.motive = Registry.PAINTING_MOTIVE.get(Identifier.tryParse(tag.getString("Motive")));
 		this.facing = Direction.fromHorizontal(tag.getByte("Facing"));
-		super.readCustomDataFromTag(tag);
+		super.readCustomDataFromNbt(tag);
 		this.setFacing(this.facing);
 	}
 

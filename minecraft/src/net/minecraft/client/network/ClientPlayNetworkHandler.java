@@ -529,7 +529,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlayerPositionLook(PlayerPositionLookS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		PlayerEntity playerEntity = this.client.player;
-		if (packet.method_33718()) {
+		if (packet.shouldDismount()) {
 			playerEntity.dismountVehicle();
 		}
 
@@ -626,7 +626,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
 				BlockEntity blockEntity = worldChunk.getBlockEntity(blockPos, WorldChunk.CreationType.IMMEDIATE);
 				if (blockEntity != null) {
-					blockEntity.fromTag(compoundTag);
+					blockEntity.readNbt(compoundTag);
 				}
 			}
 		}
@@ -1061,7 +1061,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			|| i == 12 && blockEntity instanceof JigsawBlockEntity
 			|| i == 13 && blockEntity instanceof CampfireBlockEntity
 			|| i == 14 && blockEntity instanceof BeehiveBlockEntity) {
-			blockEntity.fromTag(packet.getCompoundTag());
+			blockEntity.readNbt(packet.getCompoundTag());
 		}
 
 		if (bl && this.client.currentScreen instanceof CommandBlockScreen) {
@@ -2111,7 +2111,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
 		if (packet.getSyncId() == screenHandler.syncId && screenHandler instanceof MerchantScreenHandler) {
 			MerchantScreenHandler merchantScreenHandler = (MerchantScreenHandler)screenHandler;
-			merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toTag()));
+			merchantScreenHandler.setOffers(new TradeOfferList(packet.getOffers().toNbt()));
 			merchantScreenHandler.setExperienceFromServer(packet.getExperience());
 			merchantScreenHandler.setLevelProgress(packet.getLevelProgress());
 			merchantScreenHandler.setCanLevel(packet.isLeveled());

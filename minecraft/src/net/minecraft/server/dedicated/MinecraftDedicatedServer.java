@@ -100,7 +100,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		);
 		this.propertiesLoader = serverPropertiesLoader;
 		this.rconCommandOutput = new RconCommandOutput(this);
-		this.filterer = null;
+		this.filterer = TextFilterer.method_33805(serverPropertiesLoader.getPropertiesHandler().textFilteringConfig);
 	}
 
 	@Override
@@ -574,10 +574,9 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		return this.propertiesLoader.getPropertiesHandler().syncChunkWrites;
 	}
 
-	@Nullable
 	@Override
 	public TextStream createFilterer(ServerPlayerEntity player) {
-		return this.filterer != null ? this.filterer.createFilterer(player.getGameProfile()) : null;
+		return this.filterer != null ? this.filterer.createFilterer(player.getGameProfile()) : TextStream.field_28862;
 	}
 
 	@Override

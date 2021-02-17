@@ -335,7 +335,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
+	protected void readCustomDataFromNbt(CompoundTag tag) {
 		this.age = tag.getInt("Age");
 		this.duration = tag.getInt("Duration");
 		this.waitTime = tag.getInt("WaitTime");
@@ -369,7 +369,7 @@ public class AreaEffectCloudEntity extends Entity {
 			this.effects.clear();
 
 			for(int i = 0; i < listTag.size(); ++i) {
-				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromTag(listTag.getCompound(i));
+				StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(listTag.getCompound(i));
 				if (statusEffectInstance != null) {
 					this.addEffect(statusEffectInstance);
 				}
@@ -378,7 +378,7 @@ public class AreaEffectCloudEntity extends Entity {
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
+	protected void writeCustomDataToNbt(CompoundTag tag) {
 		tag.putInt("Age", this.age);
 		tag.putInt("Duration", this.duration);
 		tag.putInt("WaitTime", this.waitTime);
@@ -404,7 +404,7 @@ public class AreaEffectCloudEntity extends Entity {
 			ListTag listTag = new ListTag();
 
 			for(StatusEffectInstance statusEffectInstance : this.effects) {
-				listTag.add(statusEffectInstance.toTag(new CompoundTag()));
+				listTag.add(statusEffectInstance.writeNbt(new CompoundTag()));
 			}
 
 			tag.put("Effects", listTag);

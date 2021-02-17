@@ -23,14 +23,14 @@ public class SculkSensorBlockEntity extends BlockEntity implements SculkSensorLi
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.lastVibrationFrequency = tag.getInt("last_vibration_frequency");
 	}
 
 	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putInt("last_vibration_frequency", this.lastVibrationFrequency);
 		return tag;
 	}

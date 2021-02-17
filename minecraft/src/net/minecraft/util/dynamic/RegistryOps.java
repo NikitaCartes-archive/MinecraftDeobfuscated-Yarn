@@ -169,7 +169,7 @@ public class RegistryOps<T> extends ForwardingDynamicOps<T> {
 		return (RegistryOps.ValueHolder<E>)this.valueHolders.computeIfAbsent(registryRef, registryKey -> new RegistryOps.ValueHolder());
 	}
 
-	public <E> DataResult<Registry<E>> method_31152(RegistryKey<? extends Registry<E>> registryKey) {
+	protected <E> DataResult<Registry<E>> method_31152(RegistryKey<? extends Registry<E>> registryKey) {
 		return (DataResult<Registry<E>>)this.registryManager
 			.getOptionalMutable(registryKey)
 			.map(mutableRegistry -> DataResult.success(mutableRegistry, mutableRegistry.getLifecycle()))

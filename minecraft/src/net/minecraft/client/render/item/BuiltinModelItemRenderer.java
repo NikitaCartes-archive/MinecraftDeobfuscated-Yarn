@@ -151,7 +151,7 @@ public class BuiltinModelItemRenderer implements SynchronousResourceReloadListen
 					);
 				this.modelShield.getHandle().render(matrices, vertexConsumer, light, overlay, 1.0F, 1.0F, 1.0F, 1.0F);
 				if (bl) {
-					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.getPatternsFromTag(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListTag(stack));
+					List<Pair<BannerPattern, DyeColor>> list = BannerBlockEntity.getPatternsFromNbt(ShieldItem.getColor(stack), BannerBlockEntity.getPatternListTag(stack));
 					BannerBlockEntityRenderer.renderCanvas(
 						matrices, vertexConsumers, light, overlay, this.modelShield.getPlate(), spriteIdentifier, false, list, stack.hasGlint()
 					);

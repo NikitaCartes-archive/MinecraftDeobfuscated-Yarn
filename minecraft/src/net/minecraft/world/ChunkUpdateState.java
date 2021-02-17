@@ -22,7 +22,7 @@ public class ChunkUpdateState extends PersistentState {
 	}
 
 	@Override
-	public CompoundTag toNbt(CompoundTag tag) {
+	public CompoundTag writeNbt(CompoundTag tag) {
 		tag.putLongArray("All", this.all.toLongArray());
 		tag.putLongArray("Remaining", this.remaining.toLongArray());
 		return tag;

@@ -47,15 +47,15 @@ public class SpawnerMinecartEntity extends AbstractMinecartEntity {
 	}
 
 	@Override
-	protected void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
-		this.logic.fromTag(this.world, this.getBlockPos(), tag);
+	protected void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
+		this.logic.readNbt(this.world, this.getBlockPos(), tag);
 	}
 
 	@Override
-	protected void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
-		this.logic.toTag(this.world, this.getBlockPos(), tag);
+	protected void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
+		this.logic.writeNbt(this.world, this.getBlockPos(), tag);
 	}
 
 	@Environment(EnvType.CLIENT)

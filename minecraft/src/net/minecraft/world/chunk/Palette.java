@@ -22,5 +22,5 @@ public interface Palette<T> {
 
 	int getPacketSize();
 
-	void fromTag(ListTag tag);
+	void readNbt(ListTag tag);
 }

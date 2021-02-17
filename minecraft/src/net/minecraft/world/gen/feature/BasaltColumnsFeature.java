@@ -34,7 +34,7 @@ public class BasaltColumnsFeature extends Feature<BasaltColumnsFeatureConfig> {
 	@Override
 	public boolean generate(FeatureContext<BasaltColumnsFeatureConfig> context) {
 		int i = context.getGenerator().getSeaLevel();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		Random random = context.getRandom();
 		BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = context.getConfig();

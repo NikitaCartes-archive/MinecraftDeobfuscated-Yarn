@@ -1479,7 +1479,7 @@ public class OceanMonumentGenerator {
 		}
 
 		@Override
-		protected void toNbt(CompoundTag tag) {
+		protected void writeNbt(CompoundTag tag) {
 		}
 
 		protected void setAirAndWater(StructureWorldAccess world, BlockBox box, int x, int y, int z, int width, int height, int depth) {

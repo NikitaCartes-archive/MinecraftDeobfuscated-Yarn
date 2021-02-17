@@ -14,7 +14,7 @@ public class SimpleBlockFeature extends Feature<SimpleBlockFeatureConfig> {
 	public boolean generate(FeatureContext<SimpleBlockFeatureConfig> context) {
 		SimpleBlockFeatureConfig simpleBlockFeatureConfig = context.getConfig();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState(blockPos.down()))
 			&& simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos))
 			&& simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {

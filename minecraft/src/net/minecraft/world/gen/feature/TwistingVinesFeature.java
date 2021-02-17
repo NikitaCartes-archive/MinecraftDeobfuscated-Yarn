@@ -18,7 +18,7 @@ public class TwistingVinesFeature extends Feature<DefaultFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<DefaultFeatureConfig> context) {
-		return tryGenerateVines(context.getWorld(), context.getRandom(), context.getPos(), 8, 4, 8);
+		return tryGenerateVines(context.getWorld(), context.getRandom(), context.getOrigin(), 8, 4, 8);
 	}
 
 	public static boolean tryGenerateVines(WorldAccess world, Random random, BlockPos pos, int horizontalSpread, int verticalSpread, int length) {

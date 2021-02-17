@@ -83,16 +83,20 @@ public class StructureWeightSampler {
 	 * Gets the weight of the structures near the given position.
 	 */
 	public double getWeight(int x, int y, int z) {
-		double d;
-		int i;
-		int j;
-		int k;
-		for(d = 0.0; this.pieceIterator.hasNext(); d += getStructureWeight(i, j, k) * 0.8) {
+		double d = 0.0;
+
+		while(this.pieceIterator.hasNext()) {
 			StructurePiece structurePiece = (StructurePiece)this.pieceIterator.next();
 			BlockBox blockBox = structurePiece.getBoundingBox();
-			i = Math.max(0, Math.max(blockBox.minX - x, x - blockBox.maxX));
-			j = y - (blockBox.minY + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
-			k = Math.max(0, Math.max(blockBox.minZ - z, z - blockBox.maxZ));
+			int i = Math.max(0, Math.max(blockBox.minX - x, x - blockBox.maxX));
+			int j = y - (blockBox.minY + (structurePiece instanceof PoolStructurePiece ? ((PoolStructurePiece)structurePiece).getGroundLevelDelta() : 0));
+			int k = Math.max(0, Math.max(blockBox.minZ - z, z - blockBox.maxZ));
+			StructureWeightType structureWeightType = structurePiece.method_33882();
+			if (structureWeightType == StructureWeightType.BURY) {
+				d += getMagnitudeWeight(i, j, k);
+			} else if (structureWeightType == StructureWeightType.BEARD) {
+				d += getStructureWeight(i, j, k) * 0.8;
+			}
 		}
 
 		this.pieceIterator.back(this.pieces.size());
@@ -100,13 +104,18 @@ public class StructureWeightSampler {
 		while(this.junctionIterator.hasNext()) {
 			JigsawJunction jigsawJunction = (JigsawJunction)this.junctionIterator.next();
 			int l = x - jigsawJunction.getSourceX();
-			i = y - jigsawJunction.getSourceGroundY();
-			j = z - jigsawJunction.getSourceZ();
+			int i = y - jigsawJunction.getSourceGroundY();
+			int j = z - jigsawJunction.getSourceZ();
 			d += getStructureWeight(l, i, j) * 0.4;
 		}
 
 		this.junctionIterator.back(this.junctions.size());
 		return d;
+	}
+
+	private static double getMagnitudeWeight(int x, int y, int z) {
+		double d = MathHelper.magnitude(x, (double)y / 2.0, z);
+		return MathHelper.clampedLerpFromProgress(d, 0.0, 6.0, 1.0, 0.0);
 	}
 
 	/**

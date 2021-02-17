@@ -275,8 +275,8 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		if (this.isImmuneToZombification()) {
 			tag.putBoolean("IsImmuneToZombification", true);
 		}
@@ -288,8 +288,8 @@ public class HoglinEntity extends AnimalEntity implements Monster, Hoglin {
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
 		this.timeInOverworld = tag.getInt("TimeInOverworld");
 		this.setCannotBeHunted(tag.getBoolean("CannotBeHunted"));

@@ -26,7 +26,7 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 	@Override
 	public boolean generate(FeatureContext<DripstoneClusterFeatureConfig> context) {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		DripstoneClusterFeatureConfig dripstoneClusterFeatureConfig = context.getConfig();
 		Random random = context.getRandom();
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {

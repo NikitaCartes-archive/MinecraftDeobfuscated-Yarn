@@ -27,7 +27,7 @@ public class WorldSaveHandler {
 
 	public void savePlayerData(PlayerEntity player) {
 		try {
-			CompoundTag compoundTag = player.toTag(new CompoundTag());
+			CompoundTag compoundTag = player.writeNbt(new CompoundTag());
 			File file = File.createTempFile(player.getUuidAsString() + "-", ".dat", this.playerDataDir);
 			NbtIo.writeCompressed(compoundTag, file);
 			File file2 = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
@@ -53,7 +53,7 @@ public class WorldSaveHandler {
 
 		if (compoundTag != null) {
 			int i = compoundTag.contains("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-			player.fromTag(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
+			player.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
 		}
 
 		return compoundTag;

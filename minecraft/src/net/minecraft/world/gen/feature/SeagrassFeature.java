@@ -22,7 +22,7 @@ public class SeagrassFeature extends Feature<ProbabilityConfig> {
 		boolean bl = false;
 		Random random = context.getRandom();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		ProbabilityConfig probabilityConfig = context.getConfig();
 		int i = random.nextInt(8) - random.nextInt(8);
 		int j = random.nextInt(8) - random.nextInt(8);

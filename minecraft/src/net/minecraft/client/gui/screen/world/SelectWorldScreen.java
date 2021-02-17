@@ -55,7 +55,7 @@ public class SelectWorldScreen extends Screen {
 				150,
 				20,
 				new TranslatableText("selectWorld.select"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::play)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::play)
 			)
 		);
 		this.addButton(
@@ -75,7 +75,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				new TranslatableText("selectWorld.edit"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::edit)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::edit)
 			)
 		);
 		this.deleteButton = this.addButton(
@@ -85,7 +85,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				new TranslatableText("selectWorld.delete"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::delete)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::delete)
 			)
 		);
 		this.recreateButton = this.addButton(
@@ -95,7 +95,7 @@ public class SelectWorldScreen extends Screen {
 				72,
 				20,
 				new TranslatableText("selectWorld.recreate"),
-				buttonWidget -> this.levelList.method_20159().ifPresent(WorldListWidget.Entry::recreate)
+				buttonWidget -> this.levelList.getSelectedAsOptional().ifPresent(WorldListWidget.Entry::recreate)
 			)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 82, this.height - 28, 72, 20, ScreenTexts.CANCEL, buttonWidget -> this.client.openScreen(this.parent)));

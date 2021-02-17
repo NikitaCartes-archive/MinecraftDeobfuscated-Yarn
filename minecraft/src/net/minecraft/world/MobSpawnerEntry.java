@@ -35,7 +35,7 @@ public class MobSpawnerEntry extends WeightedPicker.Entry {
 		return compoundTag;
 	}
 
-	public CompoundTag getEntityTag() {
+	public CompoundTag getEntityNbt() {
 		return this.entityTag;
 	}
 }

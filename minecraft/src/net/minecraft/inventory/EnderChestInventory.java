@@ -33,7 +33,7 @@ public class EnderChestInventory extends SimpleInventory {
 			CompoundTag compoundTag = tags.getCompound(i);
 			int j = compoundTag.getByte("Slot") & 255;
 			if (j >= 0 && j < this.size()) {
-				this.setStack(j, ItemStack.fromTag(compoundTag));
+				this.setStack(j, ItemStack.fromNbt(compoundTag));
 			}
 		}
 	}
@@ -47,7 +47,7 @@ public class EnderChestInventory extends SimpleInventory {
 			if (!itemStack.isEmpty()) {
 				CompoundTag compoundTag = new CompoundTag();
 				compoundTag.putByte("Slot", (byte)i);
-				itemStack.toTag(compoundTag);
+				itemStack.writeNbt(compoundTag);
 				listTag.add(compoundTag);
 			}
 		}

@@ -10,14 +10,14 @@ public class FeatureContext<FC extends FeatureConfig> {
 	private final StructureWorldAccess world;
 	private final ChunkGenerator generator;
 	private final Random random;
-	private final BlockPos pos;
+	private final BlockPos origin;
 	private final FC config;
 
-	public FeatureContext(StructureWorldAccess world, ChunkGenerator generator, Random random, BlockPos pos, FC config) {
+	public FeatureContext(StructureWorldAccess world, ChunkGenerator generator, Random random, BlockPos origin, FC config) {
 		this.world = world;
 		this.generator = generator;
 		this.random = random;
-		this.pos = pos;
+		this.origin = origin;
 		this.config = config;
 	}
 
@@ -33,8 +33,8 @@ public class FeatureContext<FC extends FeatureConfig> {
 		return this.random;
 	}
 
-	public BlockPos getPos() {
-		return this.pos;
+	public BlockPos getOrigin() {
+		return this.origin;
 	}
 
 	public FC getConfig() {

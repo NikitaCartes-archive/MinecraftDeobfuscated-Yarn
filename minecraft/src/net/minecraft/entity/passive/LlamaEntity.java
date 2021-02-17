@@ -86,22 +86,22 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		tag.putInt("Variant", this.getVariant());
 		tag.putInt("Strength", this.getStrength());
 		if (!this.items.getStack(1).isEmpty()) {
-			tag.put("DecorItem", this.items.getStack(1).toTag(new CompoundTag()));
+			tag.put("DecorItem", this.items.getStack(1).writeNbt(new CompoundTag()));
 		}
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
+	public void readCustomDataFromNbt(CompoundTag tag) {
 		this.setStrength(tag.getInt("Strength"));
-		super.readCustomDataFromTag(tag);
+		super.readCustomDataFromNbt(tag);
 		this.setVariant(tag.getInt("Variant"));
 		if (tag.contains("DecorItem", 10)) {
-			this.items.setStack(1, ItemStack.fromTag(tag.getCompound("DecorItem")));
+			this.items.setStack(1, ItemStack.fromNbt(tag.getCompound("DecorItem")));
 		}
 
 		this.updateSaddle();

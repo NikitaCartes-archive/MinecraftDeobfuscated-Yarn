@@ -44,7 +44,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 				return true;
 			} else {
 				BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-				return blockEntity != null && NbtHelper.matches(this.data, blockEntity.toTag(new CompoundTag()), true);
+				return blockEntity != null && NbtHelper.matches(this.data, blockEntity.writeNbt(new CompoundTag()), true);
 			}
 		}
 	}
@@ -65,7 +65,7 @@ public class BlockStateArgument implements Predicate<CachedBlockPosition> {
 					compoundTag.putInt("x", blockPos.getX());
 					compoundTag.putInt("y", blockPos.getY());
 					compoundTag.putInt("z", blockPos.getZ());
-					blockEntity.fromTag(compoundTag);
+					blockEntity.readNbt(compoundTag);
 				}
 			}
 

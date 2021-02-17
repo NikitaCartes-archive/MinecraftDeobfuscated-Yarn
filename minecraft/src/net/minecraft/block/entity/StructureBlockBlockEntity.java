@@ -53,15 +53,9 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.mode = state.get(StructureBlock.MODE);
 	}
 
-	@Environment(EnvType.CLIENT)
 	@Override
-	public double getSquaredRenderDistance() {
-		return 96.0;
-	}
-
-	@Override
-	public CompoundTag toTag(CompoundTag tag) {
-		super.toTag(tag);
+	public CompoundTag writeNbt(CompoundTag tag) {
+		super.writeNbt(tag);
 		tag.putString("name", this.getStructureName());
 		tag.putString("author", this.author);
 		tag.putString("metadata", this.metadata);
@@ -84,8 +78,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public void fromTag(CompoundTag tag) {
-		super.fromTag(tag);
+	public void readNbt(CompoundTag tag) {
+		super.readNbt(tag);
 		this.setStructureName(tag.getString("name"));
 		this.author = tag.getString("author");
 		this.metadata = tag.getString("metadata");
@@ -143,12 +137,12 @@ public class StructureBlockBlockEntity extends BlockEntity {
 	@Nullable
 	@Override
 	public BlockEntityUpdateS2CPacket toUpdatePacket() {
-		return new BlockEntityUpdateS2CPacket(this.pos, 7, this.toInitialChunkDataTag());
+		return new BlockEntityUpdateS2CPacket(this.pos, 7, this.toInitialChunkDataNbt());
 	}
 
 	@Override
-	public CompoundTag toInitialChunkDataTag() {
-		return this.toTag(new CompoundTag());
+	public CompoundTag toInitialChunkDataNbt() {
+		return this.writeNbt(new CompoundTag());
 	}
 
 	public boolean openScreen(PlayerEntity player) {

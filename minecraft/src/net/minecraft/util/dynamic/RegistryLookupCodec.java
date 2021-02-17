@@ -1,4 +1,4 @@
-package net.minecraft.util.registry;
+package net.minecraft.util.dynamic;
 
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.DynamicOps;
@@ -6,7 +6,8 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.MapLike;
 import com.mojang.serialization.RecordBuilder;
 import java.util.stream.Stream;
-import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.registry.Registry;
+import net.minecraft.util.registry.RegistryKey;
 
 public final class RegistryLookupCodec<E> extends MapCodec<Registry<E>> {
 	private final RegistryKey<? extends Registry<E>> registryKey;

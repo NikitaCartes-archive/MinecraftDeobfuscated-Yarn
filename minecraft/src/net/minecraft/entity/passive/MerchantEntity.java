@@ -160,19 +160,19 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 	}
 
 	@Override
-	public void writeCustomDataToTag(CompoundTag tag) {
-		super.writeCustomDataToTag(tag);
+	public void writeCustomDataToNbt(CompoundTag tag) {
+		super.writeCustomDataToNbt(tag);
 		TradeOfferList tradeOfferList = this.getOffers();
 		if (!tradeOfferList.isEmpty()) {
-			tag.put("Offers", tradeOfferList.toTag());
+			tag.put("Offers", tradeOfferList.toNbt());
 		}
 
 		tag.put("Inventory", this.inventory.getTags());
 	}
 
 	@Override
-	public void readCustomDataFromTag(CompoundTag tag) {
-		super.readCustomDataFromTag(tag);
+	public void readCustomDataFromNbt(CompoundTag tag) {
+		super.readCustomDataFromNbt(tag);
 		if (tag.contains("Offers", 10)) {
 			this.offers = new TradeOfferList(tag.getCompound("Offers"));
 		}

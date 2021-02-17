@@ -567,7 +567,7 @@ public class Raid {
 			.add(BannerPattern.HALF_HORIZONTAL, DyeColor.LIGHT_GRAY)
 			.add(BannerPattern.CIRCLE_MIDDLE, DyeColor.LIGHT_GRAY)
 			.add(BannerPattern.BORDER, DyeColor.BLACK)
-			.toTag();
+			.toNbt();
 		compoundTag.put("Patterns", listTag);
 		itemStack.addHideFlag(ItemStack.TooltipSection.ADDITIONAL);
 		itemStack.setCustomName(new TranslatableText("block.minecraft.ominous_banner").formatted(Formatting.GOLD));
@@ -700,7 +700,7 @@ public class Raid {
 		return this.active;
 	}
 
-	public CompoundTag toTag(CompoundTag tag) {
+	public CompoundTag writeNbt(CompoundTag tag) {
 		tag.putInt("Id", this.id);
 		tag.putBoolean("Started", this.started);
 		tag.putBoolean("Active", this.active);

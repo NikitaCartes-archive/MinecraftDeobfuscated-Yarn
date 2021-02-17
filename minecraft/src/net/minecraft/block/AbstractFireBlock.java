@@ -154,7 +154,7 @@ public abstract class AbstractFireBlock extends Block {
 	}
 
 	@Override
-	protected void method_33614(World world, PlayerEntity playerEntity, BlockPos blockPos, BlockState blockState) {
+	protected void spawnBreakParticles(World world, PlayerEntity player, BlockPos pos, BlockState state) {
 	}
 
 	@Override

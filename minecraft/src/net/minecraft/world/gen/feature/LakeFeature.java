@@ -21,7 +21,7 @@ public class LakeFeature extends Feature<SingleStateFeatureConfig> {
 
 	@Override
 	public boolean generate(FeatureContext<SingleStateFeatureConfig> context) {
-		BlockPos blockPos = context.getPos();
+		BlockPos blockPos = context.getOrigin();
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		Random random = context.getRandom();
 		SingleStateFeatureConfig singleStateFeatureConfig = context.getConfig();
