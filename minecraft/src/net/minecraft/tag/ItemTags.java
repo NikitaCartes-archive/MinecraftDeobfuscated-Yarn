@@ -49,6 +49,10 @@ public final class ItemTags {
 	public static final Tag.Identified<Item> PIGLIN_FOOD = register("piglin_food");
 	public static final Tag.Identified<Item> FOX_FOOD = register("fox_food");
 	public static final Tag.Identified<Item> GOLD_ORES = register("gold_ores");
+	public static final Tag.Identified<Item> IRON_ORES = register("iron_ores");
+	public static final Tag.Identified<Item> DIAMOND_ORES = register("diamond_ores");
+	public static final Tag.Identified<Item> REDSTONE_ORES = register("redstone_ores");
+	public static final Tag.Identified<Item> LAPIS_ORES = register("lapis_ores");
 	public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
 	public static final Tag.Identified<Item> SOUL_FIRE_BASE_BLOCKS = register("soul_fire_base_blocks");
 	public static final Tag.Identified<Item> CANDLES = register("candles");

@@ -28,28 +28,26 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 	}
 
 	public static class Start extends MarginedStructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkPos, blockBox, i, l);
 		}
 
 		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			int i,
-			int j,
+			ChunkPos chunkPos,
 			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
-			ChunkPos chunkPos = new ChunkPos(i, j);
-			int k = chunkPos.getStartX() + this.random.nextInt(16);
-			int l = chunkPos.getStartZ() + this.random.nextInt(16);
-			int m = chunkGenerator.getSeaLevel();
-			int n = m + this.random.nextInt(chunkGenerator.getWorldHeight() - 2 - m);
-			VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(k, l, heightLimitView);
+			int i = chunkPos.getStartX() + this.random.nextInt(16);
+			int j = chunkPos.getStartZ() + this.random.nextInt(16);
+			int k = chunkGenerator.getSeaLevel();
+			int l = k + this.random.nextInt(chunkGenerator.getWorldHeight() - 2 - k);
+			VerticalBlockSample verticalBlockSample = chunkGenerator.getColumnSample(i, j, heightLimitView);
 
-			for (BlockPos.Mutable mutable = new BlockPos.Mutable(k, n, l); n > m; n--) {
+			for (BlockPos.Mutable mutable = new BlockPos.Mutable(i, l, j); l > k; l--) {
 				BlockState blockState = verticalBlockSample.getState(mutable);
 				mutable.move(Direction.DOWN);
 				BlockState blockState2 = verticalBlockSample.getState(mutable);
@@ -58,8 +56,8 @@ public class NetherFossilFeature extends StructureFeature<DefaultFeatureConfig> 
 				}
 			}
 
-			if (n > m) {
-				NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(k, n, l));
+			if (l > k) {
+				NetherFossilGenerator.addPieces(structureManager, this.children, this.random, new BlockPos(i, l, j));
 				this.setBoundingBoxFromChildren();
 			}
 		}

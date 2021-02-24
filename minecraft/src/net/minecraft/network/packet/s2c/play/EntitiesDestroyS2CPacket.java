@@ -1,6 +1,7 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,31 +9,23 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntitiesDestroyS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int[] entityIds;
+	private final IntList entityIds;
 
-	public EntitiesDestroyS2CPacket() {
+	public EntitiesDestroyS2CPacket(IntList intList) {
+		this.entityIds = new IntArrayList(intList);
 	}
 
 	public EntitiesDestroyS2CPacket(int... entityIds) {
-		this.entityIds = entityIds;
+		this.entityIds = new IntArrayList(entityIds);
+	}
+
+	public EntitiesDestroyS2CPacket(PacketByteBuf packetByteBuf) {
+		this.entityIds = packetByteBuf.method_34059();
 	}
 
 	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.entityIds = new int[buf.readVarInt()];
-
-		for (int i = 0; i < this.entityIds.length; i++) {
-			this.entityIds[i] = buf.readVarInt();
-		}
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) throws IOException {
-		buf.writeVarInt(this.entityIds.length);
-
-		for (int i : this.entityIds) {
-			buf.writeVarInt(i);
-		}
+	public void write(PacketByteBuf buf) {
+		buf.method_34060(this.entityIds);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -40,7 +33,7 @@ public class EntitiesDestroyS2CPacket implements Packet<ClientPlayPacketListener
 	}
 
 	@Environment(EnvType.CLIENT)
-	public int[] getEntityIds() {
+	public IntList getEntityIds() {
 		return this.entityIds;
 	}
 }

@@ -131,7 +131,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			noiseCaveSampler
 		);
 		this.hasAquifers = chunkGeneratorSettings.hasAquifers();
-		this.blockInterpolator = new GrimstoneInterpolator(seed, this.defaultBlock, Blocks.GRIMSTONE.getDefaultState());
+		this.blockInterpolator = new GrimstoneInterpolator(seed, this.defaultBlock, Blocks.DEEPSLATE.getDefaultState());
 	}
 
 	@Override

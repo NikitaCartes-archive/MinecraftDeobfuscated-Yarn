@@ -81,7 +81,7 @@ public class ClientChunkManager extends ChunkManager {
 	}
 
 	@Nullable
-	public WorldChunk loadChunkFromPacket(int x, int z, @Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, BitSet bitSet) {
+	public WorldChunk loadChunkFromPacket(int x, int z, BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, BitSet bitSet) {
 		if (!this.chunks.isInRadius(x, z)) {
 			LOGGER.warn("Ignoring chunk since it's not in the view range: {}, {}", x, z);
 			return null;
@@ -90,11 +90,6 @@ public class ClientChunkManager extends ChunkManager {
 			WorldChunk worldChunk = (WorldChunk)this.chunks.chunks.get(i);
 			ChunkPos chunkPos = new ChunkPos(x, z);
 			if (!positionEquals(worldChunk, x, z)) {
-				if (biomes == null) {
-					LOGGER.warn("Ignoring chunk since we don't have complete data: {}, {}", x, z);
-					return null;
-				}
-
 				worldChunk = new WorldChunk(this.world, chunkPos, biomes);
 				worldChunk.loadFromPacket(biomes, buf, tag, bitSet);
 				this.chunks.set(i, worldChunk);

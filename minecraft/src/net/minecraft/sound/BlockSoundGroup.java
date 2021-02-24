@@ -487,7 +487,7 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_COPPER_HIT,
 		SoundEvents.BLOCK_COPPER_FALL
 	);
-	public static final BlockSoundGroup field_28692 = new BlockSoundGroup(
+	public static final BlockSoundGroup CAVE_VINES = new BlockSoundGroup(
 		1.0F,
 		1.0F,
 		SoundEvents.BLOCK_CAVE_VINES_BREAK,
@@ -597,6 +597,42 @@ public class BlockSoundGroup {
 		SoundEvents.BLOCK_GRASS_PLACE,
 		SoundEvents.BLOCK_GRASS_HIT,
 		SoundEvents.BLOCK_GRASS_FALL
+	);
+	public static final BlockSoundGroup DEEPSLATE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_DEEPSLATE_BREAK,
+		SoundEvents.BLOCK_DEEPSLATE_STEP,
+		SoundEvents.BLOCK_DEEPSLATE_PLACE,
+		SoundEvents.BLOCK_DEEPSLATE_HIT,
+		SoundEvents.BLOCK_DEEPSLATE_FALL
+	);
+	public static final BlockSoundGroup DEEPSLATE_BRICKS = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_DEEPSLATE_BRICKS_BREAK,
+		SoundEvents.BLOCK_DEEPSLATE_BRICKS_STEP,
+		SoundEvents.BLOCK_DEEPSLATE_BRICKS_PLACE,
+		SoundEvents.BLOCK_DEEPSLATE_BRICKS_HIT,
+		SoundEvents.BLOCK_DEEPSLATE_BRICKS_FALL
+	);
+	public static final BlockSoundGroup DEEPSLATE_TILES = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_DEEPSLATE_TILES_BREAK,
+		SoundEvents.BLOCK_DEEPSLATE_TILES_STEP,
+		SoundEvents.BLOCK_DEEPSLATE_TILES_PLACE,
+		SoundEvents.BLOCK_DEEPSLATE_TILES_HIT,
+		SoundEvents.BLOCK_DEEPSLATE_TILES_FALL
+	);
+	public static final BlockSoundGroup POLISHED_DEEPSLATE = new BlockSoundGroup(
+		1.0F,
+		1.0F,
+		SoundEvents.BLOCK_POLISHED_DEEPSLATE_BREAK,
+		SoundEvents.BLOCK_POLISHED_DEEPSLATE_STEP,
+		SoundEvents.BLOCK_POLISHED_DEEPSLATE_PLACE,
+		SoundEvents.BLOCK_POLISHED_DEEPSLATE_HIT,
+		SoundEvents.BLOCK_POLISHED_DEEPSLATE_FALL
 	);
 	public final float volume;
 	public final float pitch;

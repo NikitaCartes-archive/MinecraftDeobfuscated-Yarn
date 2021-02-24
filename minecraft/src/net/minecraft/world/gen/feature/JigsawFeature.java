@@ -8,7 +8,7 @@ import net.minecraft.structure.pool.StructurePoolBasedGenerator;
 import net.minecraft.structure.pool.StructurePools;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
@@ -28,14 +28,14 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 
 	@Override
 	public StructureFeature.StructureStartFactory<StructurePoolFeatureConfig> getStructureStartFactory() {
-		return (feature, chunkX, chunkZ, boundingBox, references, seed) -> new JigsawFeature.Start(this, chunkX, chunkZ, boundingBox, references, seed);
+		return (feature, chunkPos, blockBox, i, l) -> new JigsawFeature.Start(this, chunkPos, blockBox, i, l);
 	}
 
 	public static class Start extends MarginedStructureStart<StructurePoolFeatureConfig> {
 		private final JigsawFeature jigsawFeature;
 
-		public Start(JigsawFeature feature, int chunkX, int chunkZ, BlockBox boundingBox, int references, long seed) {
-			super(feature, chunkX, chunkZ, boundingBox, references, seed);
+		public Start(JigsawFeature feature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
+			super(feature, chunkPos, blockBox, i, l);
 			this.jigsawFeature = feature;
 		}
 
@@ -43,13 +43,12 @@ public class JigsawFeature extends StructureFeature<StructurePoolFeatureConfig> 
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			int i,
-			int j,
+			ChunkPos chunkPos,
 			Biome biome,
 			StructurePoolFeatureConfig structurePoolFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
-			BlockPos blockPos = new BlockPos(ChunkSectionPos.getBlockCoord(i), this.jigsawFeature.structureStartY, ChunkSectionPos.getBlockCoord(j));
+			BlockPos blockPos = new BlockPos(chunkPos.getStartX(), this.jigsawFeature.structureStartY, chunkPos.getStartZ());
 			StructurePools.initDefaultPools();
 			StructurePoolBasedGenerator.method_30419(
 				dynamicRegistryManager,

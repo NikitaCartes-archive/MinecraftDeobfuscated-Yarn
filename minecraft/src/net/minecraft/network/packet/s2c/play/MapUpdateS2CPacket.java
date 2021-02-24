@@ -1,7 +1,8 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
+import com.google.common.collect.Lists;
 import java.util.Collection;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -12,70 +13,74 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int id;
-	private byte scale;
-	private boolean locked;
+	private final int id;
+	private final byte scale;
+	private final boolean locked;
 	@Nullable
-	private MapIcon[] icons;
+	private final List<MapIcon> icons;
 	@Nullable
-	private MapState.UpdateData updateData;
-
-	public MapUpdateS2CPacket() {
-	}
+	private final MapState.UpdateData updateData;
 
 	public MapUpdateS2CPacket(int id, byte scale, boolean showIcons, @Nullable Collection<MapIcon> icons, @Nullable MapState.UpdateData updateData) {
 		this.id = id;
 		this.scale = scale;
 		this.locked = showIcons;
-		this.icons = icons != null ? (MapIcon[])icons.toArray(new MapIcon[0]) : null;
+		this.icons = icons != null ? Lists.<MapIcon>newArrayList(icons) : null;
 		this.updateData = updateData;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.id = buf.readVarInt();
-		this.scale = buf.readByte();
-		this.locked = buf.readBoolean();
-		if (buf.readBoolean()) {
-			this.icons = new MapIcon[buf.readVarInt()];
-
-			for (int i = 0; i < this.icons.length; i++) {
-				MapIcon.Type type = buf.readEnumConstant(MapIcon.Type.class);
-				this.icons[i] = new MapIcon(type, buf.readByte(), buf.readByte(), (byte)(buf.readByte() & 15), buf.readBoolean() ? buf.readText() : null);
-			}
+	public MapUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+		this.id = packetByteBuf.readVarInt();
+		this.scale = packetByteBuf.readByte();
+		this.locked = packetByteBuf.readBoolean();
+		if (packetByteBuf.readBoolean()) {
+			this.icons = packetByteBuf.method_34066(
+				packetByteBufx -> {
+					MapIcon.Type type = packetByteBufx.readEnumConstant(MapIcon.Type.class);
+					return new MapIcon(
+						type,
+						packetByteBufx.readByte(),
+						packetByteBufx.readByte(),
+						(byte)(packetByteBufx.readByte() & 15),
+						packetByteBufx.readBoolean() ? packetByteBufx.readText() : null
+					);
+				}
+			);
+		} else {
+			this.icons = null;
 		}
 
-		int i = buf.readUnsignedByte();
+		int i = packetByteBuf.readUnsignedByte();
 		if (i > 0) {
-			int j = buf.readUnsignedByte();
-			int k = buf.readUnsignedByte();
-			int l = buf.readUnsignedByte();
-			byte[] bs = buf.readByteArray();
+			int j = packetByteBuf.readUnsignedByte();
+			int k = packetByteBuf.readUnsignedByte();
+			int l = packetByteBuf.readUnsignedByte();
+			byte[] bs = packetByteBuf.readByteArray();
 			this.updateData = new MapState.UpdateData(k, l, i, j, bs);
+		} else {
+			this.updateData = null;
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeByte(this.scale);
 		buf.writeBoolean(this.locked);
 		if (this.icons != null) {
 			buf.writeBoolean(true);
-			buf.writeVarInt(this.icons.length);
-
-			for (MapIcon mapIcon : this.icons) {
-				buf.writeEnumConstant(mapIcon.getType());
-				buf.writeByte(mapIcon.getX());
-				buf.writeByte(mapIcon.getZ());
-				buf.writeByte(mapIcon.getRotation() & 15);
+			buf.method_34062(this.icons, (packetByteBuf, mapIcon) -> {
+				packetByteBuf.writeEnumConstant(mapIcon.getType());
+				packetByteBuf.writeByte(mapIcon.getX());
+				packetByteBuf.writeByte(mapIcon.getZ());
+				packetByteBuf.writeByte(mapIcon.getRotation() & 15);
 				if (mapIcon.getText() != null) {
-					buf.writeBoolean(true);
-					buf.writeText(mapIcon.getText());
+					packetByteBuf.writeBoolean(true);
+					packetByteBuf.writeText(mapIcon.getText());
 				} else {
-					buf.writeBoolean(false);
+					packetByteBuf.writeBoolean(false);
 				}
-			}
+			});
 		} else {
 			buf.writeBoolean(false);
 		}

@@ -12,6 +12,9 @@ import java.util.OptionalInt;
 import java.util.Random;
 import java.util.UUID;
 import javax.annotation.Nullable;
+import net.minecraft.class_5890;
+import net.minecraft.class_5891;
+import net.minecraft.class_5892;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
@@ -49,7 +52,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
-import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
@@ -329,13 +331,13 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 	@Override
 	public void enterCombat() {
 		super.enterCombat();
-		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTER_COMBAT));
+		this.networkHandler.sendPacket(new class_5891());
 	}
 
 	@Override
 	public void endCombat() {
 		super.endCombat();
-		this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.END_COMBAT));
+		this.networkHandler.sendPacket(new class_5890(this.getDamageTracker()));
 	}
 
 	@Override
@@ -363,7 +365,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 		}
 
 		if (!this.removedEntities.isEmpty()) {
-			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(this.removedEntities.toIntArray()));
+			this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(this.removedEntities));
 			this.removedEntities.clear();
 		}
 
@@ -470,7 +472,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 			Text text = this.getDamageTracker().getDeathMessage();
 			this.networkHandler
 				.sendPacket(
-					new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text),
+					new class_5892(this.getDamageTracker(), text),
 					future -> {
 						if (!future.isSuccess()) {
 							int i = 256;
@@ -478,7 +480,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 							Text text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
 							Text text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName())
 								.styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
-							this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text3));
+							this.networkHandler.sendPacket(new class_5892(this.getDamageTracker(), text3));
 						}
 					}
 				);
@@ -491,7 +493,7 @@ public class ServerPlayerEntity extends PlayerEntity implements ScreenHandlerLis
 				this.server.getPlayerManager().sendToOtherTeams(this, text);
 			}
 		} else {
-			this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED));
+			this.networkHandler.sendPacket(new class_5892(this.getDamageTracker(), LiteralText.EMPTY));
 		}
 
 		this.dropShoulderEntities();

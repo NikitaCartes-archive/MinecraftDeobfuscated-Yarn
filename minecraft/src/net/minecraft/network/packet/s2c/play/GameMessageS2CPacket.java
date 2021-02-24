@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,12 +10,9 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 
 public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Text message;
-	private MessageType location;
-	private UUID senderUuid;
-
-	public GameMessageS2CPacket() {
-	}
+	private final Text message;
+	private final MessageType location;
+	private final UUID senderUuid;
 
 	public GameMessageS2CPacket(Text message, MessageType location, UUID senderUuid) {
 		this.message = message;
@@ -24,15 +20,14 @@ public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.senderUuid = senderUuid;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.message = buf.readText();
-		this.location = MessageType.byId(buf.readByte());
-		this.senderUuid = buf.readUuid();
+	public GameMessageS2CPacket(PacketByteBuf packetByteBuf) {
+		this.message = packetByteBuf.readText();
+		this.location = MessageType.byId(packetByteBuf.readByte());
+		this.senderUuid = packetByteBuf.readUuid();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeText(this.message);
 		buf.writeByte(this.location.getId());
 		buf.writeUuid(this.senderUuid);

@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
@@ -9,25 +8,21 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class CooldownUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Item item;
-	private int cooldown;
-
-	public CooldownUpdateS2CPacket() {
-	}
+	private final Item item;
+	private final int cooldown;
 
 	public CooldownUpdateS2CPacket(Item item, int cooldown) {
 		this.item = item;
 		this.cooldown = cooldown;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.item = Item.byRawId(buf.readVarInt());
-		this.cooldown = buf.readVarInt();
+	public CooldownUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+		this.item = Item.byRawId(packetByteBuf.readVarInt());
+		this.cooldown = packetByteBuf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(Item.getRawId(this.item));
 		buf.writeVarInt(this.cooldown);
 	}

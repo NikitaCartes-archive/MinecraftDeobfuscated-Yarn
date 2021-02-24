@@ -65,7 +65,7 @@ public class ServerPlayerInteractionManager {
 		this.gameMode = gameMode;
 		gameMode.setAbilities(this.player.getAbilities());
 		this.player.sendAbilitiesUpdate();
-		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_GAME_MODE, this.player));
+		this.player.server.getPlayerManager().sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.class_5893.field_29137, this.player));
 		this.world.updateSleepingPlayers();
 	}
 

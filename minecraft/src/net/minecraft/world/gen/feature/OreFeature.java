@@ -1,17 +1,17 @@
 package net.minecraft.world.gen.feature;
 
-import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
-import java.util.Set;
+import java.util.function.Function;
+import net.minecraft.class_5867;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -108,46 +108,46 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		Set<ChunkSection> set = Sets.<ChunkSection>newHashSet();
+		try (class_5867 lv = new class_5867(world)) {
+			for (int n = 0; n < j; n++) {
+				double o = ds[n * 4 + 3];
+				if (!(o < 0.0)) {
+					double p = ds[n * 4 + 0];
+					double q = ds[n * 4 + 1];
+					double r = ds[n * 4 + 2];
+					int s = Math.max(MathHelper.floor(p - o), x);
+					int t = Math.max(MathHelper.floor(q - o), y);
+					int u = Math.max(MathHelper.floor(r - o), z);
+					int v = Math.max(MathHelper.floor(p + o), s);
+					int w = Math.max(MathHelper.floor(q + o), t);
+					int aa = Math.max(MathHelper.floor(r + o), u);
 
-		for (int mx = 0; mx < j; mx++) {
-			double d = ds[mx * 4 + 3];
-			if (!(d < 0.0)) {
-				double e = ds[mx * 4 + 0];
-				double g = ds[mx * 4 + 1];
-				double h = ds[mx * 4 + 2];
-				int n = Math.max(MathHelper.floor(e - d), x);
-				int o = Math.max(MathHelper.floor(g - d), y);
-				int p = Math.max(MathHelper.floor(h - d), z);
-				int q = Math.max(MathHelper.floor(e + d), n);
-				int r = Math.max(MathHelper.floor(g + d), o);
-				int s = Math.max(MathHelper.floor(h + d), p);
+					for (int ab = s; ab <= v; ab++) {
+						double ac = ((double)ab + 0.5 - p) / o;
+						if (ac * ac < 1.0) {
+							for (int ad = t; ad <= w; ad++) {
+								double ae = ((double)ad + 0.5 - q) / o;
+								if (ac * ac + ae * ae < 1.0) {
+									for (int af = u; af <= aa; af++) {
+										double ag = ((double)af + 0.5 - r) / o;
+										if (ac * ac + ae * ae + ag * ag < 1.0 && !world.isOutOfHeightLimit(ad)) {
+											int ah = ab - x + (ad - y) * horizontalSize + (af - z) * horizontalSize * verticalSize;
+											if (!bitSet.get(ah)) {
+												bitSet.set(ah);
+												mutable.set(ab, ad, af);
+												ChunkSection chunkSection = lv.method_33944(mutable);
+												int ai = ChunkSectionPos.getLocalCoord(ab);
+												int aj = ChunkSectionPos.getLocalCoord(ad);
+												int ak = ChunkSectionPos.getLocalCoord(af);
+												BlockState blockState = chunkSection.getBlockState(ai, aj, ak);
 
-				for (int t = n; t <= q; t++) {
-					double u = ((double)t + 0.5 - e) / d;
-					if (u * u < 1.0) {
-						for (int v = o; v <= r; v++) {
-							double w = ((double)v + 0.5 - g) / d;
-							if (u * u + w * w < 1.0) {
-								for (int aa = p; aa <= s; aa++) {
-									double ab = ((double)aa + 0.5 - h) / d;
-									if (u * u + w * w + ab * ab < 1.0 && !world.isOutOfHeightLimit(v)) {
-										int ac = t - x + (v - y) * horizontalSize + (aa - z) * horizontalSize * verticalSize;
-										if (!bitSet.get(ac)) {
-											bitSet.set(ac);
-											mutable.set(t, v, aa);
-											Chunk chunk = world.getChunk(ChunkSectionPos.getSectionCoord(t), ChunkSectionPos.getSectionCoord(aa));
-											ChunkSection chunkSection = chunk.getSection(chunk.getSectionIndex(v));
-											if (set.add(chunkSection)) {
-												chunkSection.lock();
-											}
-
-											int ad = ChunkSectionPos.getLocalCoord(t);
-											int ae = ChunkSectionPos.getLocalCoord(v);
-											int af = ChunkSectionPos.getLocalCoord(aa);
-											if (config.target.test(chunkSection.getBlockState(ad, ae, af), random)) {
-												chunkSection.setBlockState(ad, ae, af, config.state, false);
-												i++;
+												for (OreFeatureConfig.class_5876 lv2 : config.field_29063) {
+													if (method_33983(blockState, lv::method_33946, random, config, lv2, mutable)) {
+														chunkSection.setBlockState(ai, aj, ak, lv2.field_29069, false);
+														i++;
+														break;
+													}
+												}
 											}
 										}
 									}
@@ -159,10 +159,29 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		for (ChunkSection chunkSection2 : set) {
-			chunkSection2.unlock();
-		}
-
 		return i > 0;
+	}
+
+	public static boolean method_33983(
+		BlockState blockState,
+		Function<BlockPos, BlockState> function,
+		Random random,
+		OreFeatureConfig oreFeatureConfig,
+		OreFeatureConfig.class_5876 arg,
+		BlockPos.Mutable mutable
+	) {
+		if (!arg.field_29068.test(blockState, random)) {
+			return false;
+		} else {
+			return method_33984(random, oreFeatureConfig.field_29064) ? true : !method_33981(function, mutable);
+		}
+	}
+
+	protected static boolean method_33984(Random random, float f) {
+		if (f <= 0.0F) {
+			return true;
+		} else {
+			return f >= 1.0F ? false : random.nextFloat() >= f;
+		}
 	}
 }

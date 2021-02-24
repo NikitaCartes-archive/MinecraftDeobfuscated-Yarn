@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,11 +17,8 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 	/**
 	 * The {@link net.minecraft.screen.ScreenHandler#syncId} of a screen handler.
 	 */
-	private int syncId;
-	private List<ItemStack> contents;
-
-	public InventoryS2CPacket() {
-	}
+	private final int syncId;
+	private final List<ItemStack> contents;
 
 	public InventoryS2CPacket(int syncId, DefaultedList<ItemStack> contents) {
 		this.syncId = syncId;
@@ -33,19 +29,18 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.syncId = buf.readUnsignedByte();
-		int i = buf.readShort();
+	public InventoryS2CPacket(PacketByteBuf packetByteBuf) {
+		this.syncId = packetByteBuf.readUnsignedByte();
+		int i = packetByteBuf.readShort();
 		this.contents = DefaultedList.<ItemStack>ofSize(i, ItemStack.EMPTY);
 
 		for (int j = 0; j < i; j++) {
-			this.contents.set(j, buf.readItemStack());
+			this.contents.set(j, packetByteBuf.readItemStack());
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeShort(this.contents.size());
 

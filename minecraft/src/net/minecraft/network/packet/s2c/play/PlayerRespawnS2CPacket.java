@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,18 +13,15 @@ import net.minecraft.world.World;
 import net.minecraft.world.dimension.DimensionType;
 
 public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> {
-	private DimensionType field_25322;
-	private RegistryKey<World> dimension;
-	private long sha256Seed;
-	private GameMode gameMode;
+	private final DimensionType field_25322;
+	private final RegistryKey<World> dimension;
+	private final long sha256Seed;
+	private final GameMode gameMode;
 	@Nullable
-	private GameMode previousGameMode;
-	private boolean debugWorld;
-	private boolean flatWorld;
-	private boolean keepPlayerAttributes;
-
-	public PlayerRespawnS2CPacket() {
-	}
+	private final GameMode previousGameMode;
+	private final boolean debugWorld;
+	private final boolean flatWorld;
+	private final boolean keepPlayerAttributes;
 
 	public PlayerRespawnS2CPacket(
 		DimensionType dimensionType,
@@ -47,24 +43,19 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.keepPlayerAttributes = bl3;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onPlayerRespawn(this);
+	public PlayerRespawnS2CPacket(PacketByteBuf packetByteBuf) {
+		this.field_25322 = (DimensionType)packetByteBuf.decode(DimensionType.REGISTRY_CODEC).get();
+		this.dimension = RegistryKey.of(Registry.DIMENSION, packetByteBuf.readIdentifier());
+		this.sha256Seed = packetByteBuf.readLong();
+		this.gameMode = GameMode.byId(packetByteBuf.readUnsignedByte());
+		this.previousGameMode = GameMode.getOrNull(packetByteBuf.readByte());
+		this.debugWorld = packetByteBuf.readBoolean();
+		this.flatWorld = packetByteBuf.readBoolean();
+		this.keepPlayerAttributes = packetByteBuf.readBoolean();
 	}
 
 	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.field_25322 = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
-		this.dimension = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
-		this.sha256Seed = buf.readLong();
-		this.gameMode = GameMode.byId(buf.readUnsignedByte());
-		this.previousGameMode = GameMode.getOrNull(buf.readByte());
-		this.debugWorld = buf.readBoolean();
-		this.flatWorld = buf.readBoolean();
-		this.keepPlayerAttributes = buf.readBoolean();
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.encode(DimensionType.REGISTRY_CODEC, () -> this.field_25322);
 		buf.writeIdentifier(this.dimension.getValue());
 		buf.writeLong(this.sha256Seed);
@@ -73,6 +64,10 @@ public class PlayerRespawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		buf.writeBoolean(this.debugWorld);
 		buf.writeBoolean(this.flatWorld);
 		buf.writeBoolean(this.keepPlayerAttributes);
+	}
+
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+		clientPlayPacketListener.onPlayerRespawn(this);
 	}
 
 	@Environment(EnvType.CLIENT)

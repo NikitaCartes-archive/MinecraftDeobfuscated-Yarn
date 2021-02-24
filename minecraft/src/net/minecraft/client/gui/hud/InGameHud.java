@@ -1146,33 +1146,37 @@ public class InGameHud extends DrawableHelper {
 		this.overlayTinted = tinted;
 	}
 
-	public void setTitles(@Nullable Text title, @Nullable Text subtitle, int titleFadeInTicks, int titleRemainTicks, int titleFadeOutTicks) {
-		if (title == null && subtitle == null && titleFadeInTicks < 0 && titleRemainTicks < 0 && titleFadeOutTicks < 0) {
-			this.title = null;
-			this.subtitle = null;
-			this.titleTotalTicks = 0;
-		} else if (title != null) {
-			this.title = title;
-			this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
-		} else if (subtitle != null) {
-			this.subtitle = subtitle;
-		} else {
-			if (titleFadeInTicks >= 0) {
-				this.titleFadeInTicks = titleFadeInTicks;
-			}
-
-			if (titleRemainTicks >= 0) {
-				this.titleRemainTicks = titleRemainTicks;
-			}
-
-			if (titleFadeOutTicks >= 0) {
-				this.titleFadeOutTicks = titleFadeOutTicks;
-			}
-
-			if (this.titleTotalTicks > 0) {
-				this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
-			}
+	public void method_34001(int i, int j, int k) {
+		if (i >= 0) {
+			this.titleFadeInTicks = i;
 		}
+
+		if (j >= 0) {
+			this.titleRemainTicks = j;
+		}
+
+		if (k >= 0) {
+			this.titleFadeOutTicks = k;
+		}
+
+		if (this.titleTotalTicks > 0) {
+			this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
+		}
+	}
+
+	public void method_34002(Text text) {
+		this.subtitle = text;
+	}
+
+	public void method_34004(Text text) {
+		this.title = text;
+		this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
+	}
+
+	public void method_34003() {
+		this.title = null;
+		this.subtitle = null;
+		this.titleTotalTicks = 0;
 	}
 
 	public UUID extractSender(Text message) {

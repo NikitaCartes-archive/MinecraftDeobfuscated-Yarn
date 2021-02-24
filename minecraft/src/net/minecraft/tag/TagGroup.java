@@ -121,32 +121,11 @@ public interface TagGroup<T> {
 		}
 
 		public void method_33159(PacketByteBuf packetByteBuf) {
-			packetByteBuf.writeVarInt(this.field_28304.size());
-
-			for (Entry<Identifier, IntList> entry : this.field_28304.entrySet()) {
-				packetByteBuf.writeIdentifier((Identifier)entry.getKey());
-				packetByteBuf.writeVarInt(((IntList)entry.getValue()).size());
-				((IntList)entry.getValue()).forEach(packetByteBuf::writeVarInt);
-			}
+			packetByteBuf.method_34063(this.field_28304, PacketByteBuf::writeIdentifier, PacketByteBuf::method_34060);
 		}
 
 		public static TagGroup.class_5748 method_33160(PacketByteBuf packetByteBuf) {
-			Map<Identifier, IntList> map = Maps.<Identifier, IntList>newHashMap();
-			int i = packetByteBuf.readVarInt();
-
-			for (int j = 0; j < i; j++) {
-				Identifier identifier = packetByteBuf.readIdentifier();
-				int k = packetByteBuf.readVarInt();
-				IntList intList = new IntArrayList(k);
-
-				for (int l = 0; l < k; l++) {
-					intList.add(packetByteBuf.readVarInt());
-				}
-
-				map.put(identifier, intList);
-			}
-
-			return new TagGroup.class_5748(map);
+			return new TagGroup.class_5748(packetByteBuf.method_34067(PacketByteBuf::readIdentifier, PacketByteBuf::method_34059));
 		}
 	}
 }

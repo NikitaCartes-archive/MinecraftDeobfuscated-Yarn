@@ -2,7 +2,6 @@ package net.minecraft.network.packet.s2c.query;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -23,22 +22,18 @@ public class QueryResponseS2CPacket implements Packet<ClientQueryPacketListener>
 		.registerTypeHierarchyAdapter(Style.class, new Style.Serializer())
 		.registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory())
 		.create();
-	private ServerMetadata metadata;
-
-	public QueryResponseS2CPacket() {
-	}
+	private final ServerMetadata metadata;
 
 	public QueryResponseS2CPacket(ServerMetadata metadata) {
 		this.metadata = metadata;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.metadata = JsonHelper.deserialize(GSON, buf.readString(32767), ServerMetadata.class);
+	public QueryResponseS2CPacket(PacketByteBuf packetByteBuf) {
+		this.metadata = JsonHelper.deserialize(GSON, packetByteBuf.readString(32767), ServerMetadata.class);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeString(GSON.toJson(this.metadata));
 	}
 

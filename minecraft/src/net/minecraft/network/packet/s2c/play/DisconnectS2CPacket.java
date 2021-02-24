@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -9,22 +8,18 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 
 public class DisconnectS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Text reason;
-
-	public DisconnectS2CPacket() {
-	}
+	private final Text reason;
 
 	public DisconnectS2CPacket(Text reason) {
 		this.reason = reason;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.reason = buf.readText();
+	public DisconnectS2CPacket(PacketByteBuf packetByteBuf) {
+		this.reason = packetByteBuf.readText();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeText(this.reason);
 	}
 

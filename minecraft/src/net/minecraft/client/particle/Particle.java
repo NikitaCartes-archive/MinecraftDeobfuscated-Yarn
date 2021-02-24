@@ -1,9 +1,11 @@
 package net.minecraft.client.particle;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5878;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
@@ -229,5 +231,9 @@ public abstract class Particle {
 
 	public void setBoundingBox(Box boundingBox) {
 		this.boundingBox = boundingBox;
+	}
+
+	public Optional<class_5878> method_34019() {
+		return Optional.empty();
 	}
 }

@@ -15,6 +15,7 @@ public class Models {
 	public static final Model CUBE_MIRRORED_ALL = block("cube_mirrored_all", "_mirrored", TextureKey.ALL);
 	public static final Model CUBE_COLUMN = block("cube_column", TextureKey.END, TextureKey.SIDE);
 	public static final Model CUBE_COLUMN_HORIZONTAL = block("cube_column_horizontal", "_horizontal", TextureKey.END, TextureKey.SIDE);
+	public static final Model CUBE_COLUMN_MIRRORED = block("cube_column_mirrored", "_mirrored", TextureKey.END, TextureKey.SIDE);
 	public static final Model CUBE_TOP = block("cube_top", TextureKey.TOP, TextureKey.SIDE);
 	public static final Model CUBE_BOTTOM_TOP = block("cube_bottom_top", TextureKey.TOP, TextureKey.BOTTOM, TextureKey.SIDE);
 	public static final Model ORIENTABLE = block("orientable", TextureKey.TOP, TextureKey.FRONT, TextureKey.SIDE);

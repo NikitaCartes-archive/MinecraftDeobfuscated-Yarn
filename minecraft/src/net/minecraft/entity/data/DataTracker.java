@@ -1,11 +1,13 @@
 package net.minecraft.entity.data;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -23,9 +25,9 @@ import org.apache.logging.log4j.Logger;
 
 public class DataTracker {
 	private static final Logger LOGGER = LogManager.getLogger();
-	private static final Map<Class<? extends Entity>, Integer> TRACKED_ENTITIES = Maps.<Class<? extends Entity>, Integer>newHashMap();
+	private static final Object2IntMap<Class<? extends Entity>> TRACKED_ENTITIES = new Object2IntOpenHashMap<>();
 	private final Entity trackedEntity;
-	private final Map<Integer, DataTracker.Entry<?>> entries = Maps.<Integer, DataTracker.Entry<?>>newHashMap();
+	private final Int2ObjectMap<DataTracker.Entry<?>> entries = new Int2ObjectOpenHashMap<>();
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 	private boolean empty = true;
 	private boolean dirty;
@@ -47,7 +49,7 @@ public class DataTracker {
 
 		int i;
 		if (TRACKED_ENTITIES.containsKey(entityClass)) {
-			i = (Integer)TRACKED_ENTITIES.get(entityClass) + 1;
+			i = TRACKED_ENTITIES.getInt(entityClass) + 1;
 		} else {
 			int j = 0;
 			Class<?> class2 = entityClass;
@@ -55,7 +57,7 @@ public class DataTracker {
 			while (class2 != Entity.class) {
 				class2 = class2.getSuperclass();
 				if (TRACKED_ENTITIES.containsKey(class2)) {
-					j = (Integer)TRACKED_ENTITIES.get(class2) + 1;
+					j = TRACKED_ENTITIES.getInt(class2) + 1;
 					break;
 				}
 			}
@@ -128,12 +130,10 @@ public class DataTracker {
 		return this.dirty;
 	}
 
-	public static void entriesToPacket(List<DataTracker.Entry<?>> list, PacketByteBuf packetByteBuf) {
+	public static void entriesToPacket(@Nullable List<DataTracker.Entry<?>> list, PacketByteBuf packetByteBuf) {
 		if (list != null) {
-			int i = 0;
-
-			for (int j = list.size(); i < j; i++) {
-				writeEntryToPacket(packetByteBuf, (DataTracker.Entry)list.get(i));
+			for (DataTracker.Entry<?> entry : list) {
+				writeEntryToPacket(packetByteBuf, entry);
 			}
 		}
 
@@ -224,7 +224,7 @@ public class DataTracker {
 		this.lock.writeLock().lock();
 
 		for (DataTracker.Entry<?> entry : list) {
-			DataTracker.Entry<?> entry2 = (DataTracker.Entry<?>)this.entries.get(entry.getData().getId());
+			DataTracker.Entry<?> entry2 = this.entries.get(entry.getData().getId());
 			if (entry2 != null) {
 				this.copyToFrom(entry2, entry);
 				this.trackedEntity.onTrackedDataSet(entry.getData());

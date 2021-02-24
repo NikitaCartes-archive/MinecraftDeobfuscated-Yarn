@@ -105,7 +105,7 @@ public class ShapelessRecipe implements CraftingRecipe {
 		}
 
 		public ShapelessRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-			String string = packetByteBuf.readString(32767);
+			String string = packetByteBuf.readString();
 			int i = packetByteBuf.readVarInt();
 			DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i, Ingredient.EMPTY);
 

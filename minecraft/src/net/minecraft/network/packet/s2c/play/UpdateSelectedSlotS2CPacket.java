@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,22 +7,18 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class UpdateSelectedSlotS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int selectedSlot;
-
-	public UpdateSelectedSlotS2CPacket() {
-	}
+	private final int selectedSlot;
 
 	public UpdateSelectedSlotS2CPacket(int slot) {
 		this.selectedSlot = slot;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.selectedSlot = buf.readByte();
+	public UpdateSelectedSlotS2CPacket(PacketByteBuf packetByteBuf) {
+		this.selectedSlot = packetByteBuf.readByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.selectedSlot);
 	}
 

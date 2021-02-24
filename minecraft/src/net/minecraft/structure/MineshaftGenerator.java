@@ -264,7 +264,7 @@ public class MineshaftGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			if (this.containsLiquid(world, boundingBox)) {
+			if (this.method_33999(world, boundingBox)) {
 				return false;
 			} else {
 				int i = 0;
@@ -576,7 +576,7 @@ public class MineshaftGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			if (this.containsLiquid(world, boundingBox)) {
+			if (this.method_33999(world, boundingBox)) {
 				return false;
 			} else {
 				BlockState blockState = this.mineshaftType.getPlanks();
@@ -735,57 +735,52 @@ public class MineshaftGenerator {
 			return true;
 		}
 
-		protected boolean containsLiquid(BlockView world, BlockBox box) {
-			int i = Math.max(this.boundingBox.minX - 1, box.minX);
-			int j = Math.max(this.boundingBox.minY - 1, box.minY);
-			int k = Math.max(this.boundingBox.minZ - 1, box.minZ);
-			int l = Math.min(this.boundingBox.maxX + 1, box.maxX);
-			int m = Math.min(this.boundingBox.maxY + 1, box.maxY);
-			int n = Math.min(this.boundingBox.maxZ + 1, box.maxZ);
+		protected boolean method_33999(BlockView blockView, BlockBox blockBox) {
+			int i = Math.max(this.boundingBox.minX - 1, blockBox.minX);
+			int j = Math.max(this.boundingBox.minY - 1, blockBox.minY);
+			int k = Math.max(this.boundingBox.minZ - 1, blockBox.minZ);
+			int l = Math.min(this.boundingBox.maxX + 1, blockBox.maxX);
+			int m = Math.min(this.boundingBox.maxY + 1, blockBox.maxY);
+			int n = Math.min(this.boundingBox.maxZ + 1, blockBox.maxZ);
 			BlockPos.Mutable mutable = new BlockPos.Mutable();
-			if (this.isAir(world, mutable, i, j, k) && this.isAir(world, mutable, i, j, n) && this.isAir(world, mutable, l, j, k) && this.isAir(world, mutable, l, j, n)
-				)
-			 {
-				return true;
-			} else {
-				for (int o = i; o <= l; o++) {
-					for (int p = k; p <= n; p++) {
-						if (world.getBlockState(mutable.set(o, j, p)).getMaterial().isLiquid()) {
-							return true;
-						}
 
-						if (world.getBlockState(mutable.set(o, m, p)).getMaterial().isLiquid()) {
-							return true;
-						}
+			for (int o = i; o <= l; o++) {
+				for (int p = k; p <= n; p++) {
+					if (blockView.getBlockState(mutable.set(o, j, p)).getMaterial().isLiquid()) {
+						return true;
+					}
+
+					if (blockView.getBlockState(mutable.set(o, m, p)).getMaterial().isLiquid()) {
+						return true;
 					}
 				}
-
-				for (int o = i; o <= l; o++) {
-					for (int p = j; p <= m; p++) {
-						if (world.getBlockState(mutable.set(o, p, k)).getMaterial().isLiquid()) {
-							return true;
-						}
-
-						if (world.getBlockState(mutable.set(o, p, n)).getMaterial().isLiquid()) {
-							return true;
-						}
-					}
-				}
-
-				for (int o = k; o <= n; o++) {
-					for (int p = j; p <= m; p++) {
-						if (world.getBlockState(mutable.set(i, p, o)).getMaterial().isLiquid()) {
-							return true;
-						}
-
-						if (world.getBlockState(mutable.set(l, p, o)).getMaterial().isLiquid()) {
-							return true;
-						}
-					}
-				}
-
-				return false;
 			}
+
+			for (int o = i; o <= l; o++) {
+				for (int p = j; p <= m; p++) {
+					if (blockView.getBlockState(mutable.set(o, p, k)).getMaterial().isLiquid()) {
+						return true;
+					}
+
+					if (blockView.getBlockState(mutable.set(o, p, n)).getMaterial().isLiquid()) {
+						return true;
+					}
+				}
+			}
+
+			for (int o = k; o <= n; o++) {
+				for (int p = j; p <= m; p++) {
+					if (blockView.getBlockState(mutable.set(i, p, o)).getMaterial().isLiquid()) {
+						return true;
+					}
+
+					if (blockView.getBlockState(mutable.set(l, p, o)).getMaterial().isLiquid()) {
+						return true;
+					}
+				}
+			}
+
+			return false;
 		}
 
 		protected void method_33880(StructureWorldAccess structureWorldAccess, BlockBox blockBox, BlockState blockState, int i, int j, int k) {
@@ -796,16 +791,6 @@ public class MineshaftGenerator {
 					structureWorldAccess.setBlockState(blockPos, blockState, 2);
 				}
 			}
-		}
-
-		/**
-		 * Determines whether the block at the given coordinates is air.
-		 * 
-		 * <p>This method mutates the passed position by {@linkplain net.minecraft.util.math.BlockPos.Mutable#set(int, int, int) setting it} based on the integer coordinates.
-		 */
-		private boolean isAir(BlockView world, BlockPos.Mutable pos, int x, int y, int z) {
-			pos.set(x, y, z);
-			return world.getBlockState(pos).isAir();
 		}
 	}
 
@@ -922,7 +907,7 @@ public class MineshaftGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			if (this.containsLiquid(world, boundingBox)) {
+			if (this.method_33999(world, boundingBox)) {
 				return false;
 			} else {
 				this.fillWithOutline(
@@ -1061,7 +1046,7 @@ public class MineshaftGenerator {
 			ChunkPos chunkPos,
 			BlockPos pos
 		) {
-			if (this.containsLiquid(world, boundingBox)) {
+			if (this.method_33999(world, boundingBox)) {
 				return false;
 			} else {
 				this.fillWithOutline(world, boundingBox, 0, 5, 0, 2, 7, 1, AIR, AIR, false);

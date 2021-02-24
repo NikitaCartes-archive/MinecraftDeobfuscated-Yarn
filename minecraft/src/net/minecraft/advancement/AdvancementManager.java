@@ -1,6 +1,5 @@
 package net.minecraft.advancement;
 
-import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Collection;
@@ -8,7 +7,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
-import java.util.function.Function;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -57,17 +55,17 @@ public class AdvancementManager {
 	}
 
 	public void load(Map<Identifier, Advancement.Task> map) {
-		Function<Identifier, Advancement> function = Functions.forMap(this.advancements, null);
+		Map<Identifier, Advancement.Task> map2 = Maps.<Identifier, Advancement.Task>newHashMap(map);
 
-		while (!map.isEmpty()) {
+		while (!map2.isEmpty()) {
 			boolean bl = false;
-			Iterator<Entry<Identifier, Advancement.Task>> iterator = map.entrySet().iterator();
+			Iterator<Entry<Identifier, Advancement.Task>> iterator = map2.entrySet().iterator();
 
 			while (iterator.hasNext()) {
 				Entry<Identifier, Advancement.Task> entry = (Entry<Identifier, Advancement.Task>)iterator.next();
 				Identifier identifier = (Identifier)entry.getKey();
 				Advancement.Task task = (Advancement.Task)entry.getValue();
-				if (task.findParent(function)) {
+				if (task.findParent(this.advancements::get)) {
 					Advancement advancement = task.build(identifier);
 					this.advancements.put(identifier, advancement);
 					bl = true;
@@ -87,7 +85,7 @@ public class AdvancementManager {
 			}
 
 			if (!bl) {
-				for (Entry<Identifier, Advancement.Task> entry : map.entrySet()) {
+				for (Entry<Identifier, Advancement.Task> entry : map2.entrySet()) {
 					LOGGER.error("Couldn't load advancement {}: {}", entry.getKey(), entry.getValue());
 				}
 				break;

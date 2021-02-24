@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
@@ -10,15 +9,12 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.screen.slot.SlotActionType;
 
 public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
-	private int syncId;
-	private int slot;
-	private int clickData;
-	private short actionId;
-	private ItemStack stack = ItemStack.EMPTY;
-	private SlotActionType actionType;
-
-	public ClickSlotC2SPacket() {
-	}
+	private final int syncId;
+	private final int slot;
+	private final int clickData;
+	private final short actionId;
+	private final ItemStack stack;
+	private final SlotActionType actionType;
 
 	@Environment(EnvType.CLIENT)
 	public ClickSlotC2SPacket(int syncId, int slot, int clickData, SlotActionType actionType, ItemStack stack, short actionId) {
@@ -34,18 +30,17 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 		serverPlayPacketListener.onClickSlot(this);
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.syncId = buf.readByte();
-		this.slot = buf.readShort();
-		this.clickData = buf.readByte();
-		this.actionId = buf.readShort();
-		this.actionType = buf.readEnumConstant(SlotActionType.class);
-		this.stack = buf.readItemStack();
+	public ClickSlotC2SPacket(PacketByteBuf packetByteBuf) {
+		this.syncId = packetByteBuf.readByte();
+		this.slot = packetByteBuf.readShort();
+		this.clickData = packetByteBuf.readByte();
+		this.actionId = packetByteBuf.readShort();
+		this.actionType = packetByteBuf.readEnumConstant(SlotActionType.class);
+		this.stack = packetByteBuf.readItemStack();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeShort(this.slot);
 		buf.writeByte(this.clickData);

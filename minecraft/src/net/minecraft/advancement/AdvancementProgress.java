@@ -24,8 +24,16 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.JsonHelper;
 
 public class AdvancementProgress implements Comparable<AdvancementProgress> {
-	private final Map<String, CriterionProgress> criteriaProgresses = Maps.<String, CriterionProgress>newHashMap();
+	private final Map<String, CriterionProgress> criteriaProgresses;
 	private String[][] requirements = new String[0][];
+
+	private AdvancementProgress(Map<String, CriterionProgress> map) {
+		this.criteriaProgresses = map;
+	}
+
+	public AdvancementProgress() {
+		this.criteriaProgresses = Maps.<String, CriterionProgress>newHashMap();
+	}
 
 	public void init(Map<String, AdvancementCriterion> criteria, String[][] requirements) {
 		Set<String> set = criteria.keySet();
@@ -99,23 +107,12 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
 	}
 
 	public void toPacket(PacketByteBuf buf) {
-		buf.writeVarInt(this.criteriaProgresses.size());
-
-		for (Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
-			buf.writeString((String)entry.getKey());
-			((CriterionProgress)entry.getValue()).toPacket(buf);
-		}
+		buf.method_34063(this.criteriaProgresses, PacketByteBuf::writeString, (packetByteBuf, criterionProgress) -> criterionProgress.toPacket(packetByteBuf));
 	}
 
 	public static AdvancementProgress fromPacket(PacketByteBuf buf) {
-		AdvancementProgress advancementProgress = new AdvancementProgress();
-		int i = buf.readVarInt();
-
-		for (int j = 0; j < i; j++) {
-			advancementProgress.criteriaProgresses.put(buf.readString(32767), CriterionProgress.fromPacket(buf));
-		}
-
-		return advancementProgress;
+		Map<String, CriterionProgress> map = buf.method_34067(PacketByteBuf::readString, CriterionProgress::fromPacket);
+		return new AdvancementProgress(map);
 	}
 
 	@Nullable

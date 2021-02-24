@@ -1,8 +1,8 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
 import java.util.List;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -13,19 +13,16 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
 public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
-	private double x;
-	private double y;
-	private double z;
-	private float radius;
-	private List<BlockPos> affectedBlocks;
-	private float playerVelocityX;
-	private float playerVelocityY;
-	private float playerVelocityZ;
+	private final double x;
+	private final double y;
+	private final double z;
+	private final float radius;
+	private final List<BlockPos> affectedBlocks;
+	private final float playerVelocityX;
+	private final float playerVelocityY;
+	private final float playerVelocityZ;
 
-	public ExplosionS2CPacket() {
-	}
-
-	public ExplosionS2CPacket(double x, double y, double z, float radius, List<BlockPos> affectedBlocks, Vec3d playerVelocity) {
+	public ExplosionS2CPacket(double x, double y, double z, float radius, List<BlockPos> affectedBlocks, @Nullable Vec3d playerVelocity) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -35,53 +32,49 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.playerVelocityX = (float)playerVelocity.x;
 			this.playerVelocityY = (float)playerVelocity.y;
 			this.playerVelocityZ = (float)playerVelocity.z;
+		} else {
+			this.playerVelocityX = 0.0F;
+			this.playerVelocityY = 0.0F;
+			this.playerVelocityZ = 0.0F;
 		}
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.x = (double)buf.readFloat();
-		this.y = (double)buf.readFloat();
-		this.z = (double)buf.readFloat();
-		this.radius = buf.readFloat();
-		int i = buf.readInt();
-		this.affectedBlocks = Lists.<BlockPos>newArrayListWithCapacity(i);
-		int j = MathHelper.floor(this.x);
-		int k = MathHelper.floor(this.y);
-		int l = MathHelper.floor(this.z);
-
-		for (int m = 0; m < i; m++) {
-			int n = buf.readByte() + j;
-			int o = buf.readByte() + k;
-			int p = buf.readByte() + l;
-			this.affectedBlocks.add(new BlockPos(n, o, p));
-		}
-
-		this.playerVelocityX = buf.readFloat();
-		this.playerVelocityY = buf.readFloat();
-		this.playerVelocityZ = buf.readFloat();
+	public ExplosionS2CPacket(PacketByteBuf packetByteBuf) {
+		this.x = (double)packetByteBuf.readFloat();
+		this.y = (double)packetByteBuf.readFloat();
+		this.z = (double)packetByteBuf.readFloat();
+		this.radius = packetByteBuf.readFloat();
+		int i = MathHelper.floor(this.x);
+		int j = MathHelper.floor(this.y);
+		int k = MathHelper.floor(this.z);
+		this.affectedBlocks = packetByteBuf.method_34066(packetByteBufx -> {
+			int l = packetByteBufx.readByte() + i;
+			int m = packetByteBufx.readByte() + j;
+			int n = packetByteBufx.readByte() + k;
+			return new BlockPos(l, m, n);
+		});
+		this.playerVelocityX = packetByteBuf.readFloat();
+		this.playerVelocityY = packetByteBuf.readFloat();
+		this.playerVelocityZ = packetByteBuf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeFloat((float)this.x);
 		buf.writeFloat((float)this.y);
 		buf.writeFloat((float)this.z);
 		buf.writeFloat(this.radius);
-		buf.writeInt(this.affectedBlocks.size());
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.y);
 		int k = MathHelper.floor(this.z);
-
-		for (BlockPos blockPos : this.affectedBlocks) {
+		buf.method_34062(this.affectedBlocks, (packetByteBuf, blockPos) -> {
 			int l = blockPos.getX() - i;
 			int m = blockPos.getY() - j;
 			int n = blockPos.getZ() - k;
-			buf.writeByte(l);
-			buf.writeByte(m);
-			buf.writeByte(n);
-		}
-
+			packetByteBuf.writeByte(l);
+			packetByteBuf.writeByte(m);
+			packetByteBuf.writeByte(n);
+		});
 		buf.writeFloat(this.playerVelocityX);
 		buf.writeFloat(this.playerVelocityY);
 		buf.writeFloat(this.playerVelocityZ);

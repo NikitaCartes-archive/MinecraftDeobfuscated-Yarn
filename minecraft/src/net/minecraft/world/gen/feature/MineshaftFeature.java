@@ -14,7 +14,6 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
@@ -32,14 +31,13 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 		BiomeSource biomeSource,
 		long l,
 		ChunkRandom chunkRandom,
-		int i,
-		int j,
-		Biome biome,
 		ChunkPos chunkPos,
+		Biome biome,
+		ChunkPos chunkPos2,
 		MineshaftFeatureConfig mineshaftFeatureConfig,
 		HeightLimitView heightLimitView
 	) {
-		chunkRandom.setCarverSeed(l, i, j);
+		chunkRandom.setCarverSeed(l, chunkPos.x, chunkPos.z);
 		double d = (double)mineshaftFeatureConfig.probability;
 		return chunkRandom.nextDouble() < d;
 	}
@@ -50,33 +48,32 @@ public class MineshaftFeature extends StructureFeature<MineshaftFeatureConfig> {
 	}
 
 	public static class Start extends StructureStart<MineshaftFeatureConfig> {
-		public Start(StructureFeature<MineshaftFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<MineshaftFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkPos, blockBox, i, l);
 		}
 
 		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			int i,
-			int j,
+			ChunkPos chunkPos,
 			Biome biome,
 			MineshaftFeatureConfig mineshaftFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
 			MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(
-				0, this.random, ChunkSectionPos.getOffsetPos(i, 2), ChunkSectionPos.getOffsetPos(j, 2), mineshaftFeatureConfig.type
+				0, this.random, chunkPos.method_33939(2), chunkPos.method_33941(2), mineshaftFeatureConfig.type
 			);
 			this.children.add(mineshaftRoom);
 			mineshaftRoom.fillOpenings(mineshaftRoom, this.children, this.random);
 			this.setBoundingBoxFromChildren();
 			if (mineshaftFeatureConfig.type == MineshaftFeature.Type.MESA) {
-				int k = -5;
-				int l = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
-				this.boundingBox.move(0, l, 0);
+				int i = -5;
+				int j = chunkGenerator.getSeaLevel() - this.boundingBox.maxY + this.boundingBox.getBlockCountY() / 2 - -5;
+				this.boundingBox.move(0, j, 0);
 
 				for (StructurePiece structurePiece : this.children) {
-					structurePiece.translate(0, l, 0);
+					structurePiece.translate(0, j, 0);
 				}
 			} else {
 				this.randomUpwardTranslation(chunkGenerator.getSeaLevel(), chunkGenerator.getMinimumY(), this.random, 10);

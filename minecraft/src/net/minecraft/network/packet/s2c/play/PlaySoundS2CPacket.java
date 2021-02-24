@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -12,16 +11,13 @@ import net.minecraft.util.registry.Registry;
 import org.apache.commons.lang3.Validate;
 
 public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
-	private SoundEvent sound;
-	private SoundCategory category;
-	private int fixedX;
-	private int fixedY;
-	private int fixedZ;
-	private float volume;
-	private float pitch;
-
-	public PlaySoundS2CPacket() {
-	}
+	private final SoundEvent sound;
+	private final SoundCategory category;
+	private final int fixedX;
+	private final int fixedY;
+	private final int fixedZ;
+	private final float volume;
+	private final float pitch;
 
 	public PlaySoundS2CPacket(SoundEvent sound, SoundCategory category, double x, double y, double z, float volume, float pitch) {
 		Validate.notNull(sound, "sound");
@@ -34,19 +30,18 @@ public class PlaySoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pitch = pitch;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.sound = Registry.SOUND_EVENT.get(buf.readVarInt());
-		this.category = buf.readEnumConstant(SoundCategory.class);
-		this.fixedX = buf.readInt();
-		this.fixedY = buf.readInt();
-		this.fixedZ = buf.readInt();
-		this.volume = buf.readFloat();
-		this.pitch = buf.readFloat();
+	public PlaySoundS2CPacket(PacketByteBuf packetByteBuf) {
+		this.sound = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
+		this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
+		this.fixedX = packetByteBuf.readInt();
+		this.fixedY = packetByteBuf.readInt();
+		this.fixedZ = packetByteBuf.readInt();
+		this.volume = packetByteBuf.readFloat();
+		this.pitch = packetByteBuf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(Registry.SOUND_EVENT.getRawId(this.sound));
 		buf.writeEnumConstant(this.category);
 		buf.writeInt(this.fixedX);

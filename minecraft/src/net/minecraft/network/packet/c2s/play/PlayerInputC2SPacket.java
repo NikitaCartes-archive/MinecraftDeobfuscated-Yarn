@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,13 +7,10 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
-	private float sideways;
-	private float forward;
-	private boolean jumping;
-	private boolean sneaking;
-
-	public PlayerInputC2SPacket() {
-	}
+	private final float sideways;
+	private final float forward;
+	private final boolean jumping;
+	private final boolean sneaking;
 
 	@Environment(EnvType.CLIENT)
 	public PlayerInputC2SPacket(float sideways, float forward, boolean jumping, boolean sneaking) {
@@ -24,17 +20,16 @@ public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.sneaking = sneaking;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.sideways = buf.readFloat();
-		this.forward = buf.readFloat();
-		byte b = buf.readByte();
+	public PlayerInputC2SPacket(PacketByteBuf packetByteBuf) {
+		this.sideways = packetByteBuf.readFloat();
+		this.forward = packetByteBuf.readFloat();
+		byte b = packetByteBuf.readByte();
 		this.jumping = (b & 1) > 0;
 		this.sneaking = (b & 2) > 0;
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeFloat(this.sideways);
 		buf.writeFloat(this.forward);
 		byte b = 0;

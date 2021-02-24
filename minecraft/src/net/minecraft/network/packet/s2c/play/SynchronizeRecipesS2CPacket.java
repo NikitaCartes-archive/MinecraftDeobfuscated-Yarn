@@ -1,7 +1,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -15,36 +14,23 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListener> {
-	private List<Recipe<?>> recipes;
-
-	public SynchronizeRecipesS2CPacket() {
-	}
+	private final List<Recipe<?>> recipes;
 
 	public SynchronizeRecipesS2CPacket(Collection<Recipe<?>> recipes) {
 		this.recipes = Lists.<Recipe<?>>newArrayList(recipes);
 	}
 
+	public SynchronizeRecipesS2CPacket(PacketByteBuf packetByteBuf) {
+		this.recipes = packetByteBuf.method_34066(SynchronizeRecipesS2CPacket::readRecipe);
+	}
+
+	@Override
+	public void write(PacketByteBuf buf) {
+		buf.method_34062(this.recipes, SynchronizeRecipesS2CPacket::writeRecipe);
+	}
+
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onSynchronizeRecipes(this);
-	}
-
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.recipes = Lists.<Recipe<?>>newArrayList();
-		int i = buf.readVarInt();
-
-		for (int j = 0; j < i; j++) {
-			this.recipes.add(readRecipe(buf));
-		}
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) throws IOException {
-		buf.writeVarInt(this.recipes.size());
-
-		for (Recipe<?> recipe : this.recipes) {
-			writeRecipe(recipe, buf);
-		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -61,9 +47,9 @@ public class SynchronizeRecipesS2CPacket implements Packet<ClientPlayPacketListe
 			.read(identifier2, buf);
 	}
 
-	public static <T extends Recipe<?>> void writeRecipe(T recipe, PacketByteBuf buf) {
-		buf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
-		buf.writeIdentifier(recipe.getId());
-		((RecipeSerializer<T>)recipe.getSerializer()).write(buf, recipe);
+	public static <T extends Recipe<?>> void writeRecipe(PacketByteBuf packetByteBuf, T recipe) {
+		packetByteBuf.writeIdentifier(Registry.RECIPE_SERIALIZER.getId(recipe.getSerializer()));
+		packetByteBuf.writeIdentifier(recipe.getId());
+		((RecipeSerializer<T>)recipe.getSerializer()).write(packetByteBuf, recipe);
 	}
 }

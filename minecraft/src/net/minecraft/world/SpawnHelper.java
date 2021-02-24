@@ -88,13 +88,13 @@ public final class SpawnHelper {
 		return DirectBiomeAccessType.INSTANCE.getBiome(0L, pos.getX(), pos.getY(), pos.getZ(), chunk.getBiomeArray());
 	}
 
-	public static void spawn(ServerWorld world, WorldChunk chunk, SpawnHelper.Info info, boolean spawnAnimals, boolean spawnMonsters, boolean shouldSpawnAnimals) {
+	public static void spawn(ServerWorld world, WorldChunk chunk, SpawnHelper.Info info, boolean spawnAnimals, boolean spawnMonsters, boolean rareSpawn) {
 		world.getProfiler().push("spawner");
 
 		for (SpawnGroup spawnGroup : SPAWNABLE_GROUPS) {
 			if ((spawnAnimals || !spawnGroup.isPeaceful())
 				&& (spawnMonsters || spawnGroup.isPeaceful())
-				&& (shouldSpawnAnimals || !spawnGroup.isAnimal())
+				&& (rareSpawn || !spawnGroup.isRare())
 				&& info.isBelowCap(spawnGroup)) {
 				spawnEntitiesInChunk(
 					spawnGroup, world, chunk, (entityType, blockPos, chunkx) -> info.test(entityType, blockPos, chunkx), (mobEntity, chunkx) -> info.run(mobEntity, chunkx)

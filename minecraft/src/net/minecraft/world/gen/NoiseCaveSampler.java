@@ -46,7 +46,7 @@ public class NoiseCaveSampler {
 		double e = this.getTunnelNoise(x, y, z);
 		if (bl) {
 			double f = noise / 128.0;
-			double g = MathHelper.clamp(f + 0.35, -1.0, 1.0);
+			double g = MathHelper.clamp(f + 0.25, -1.0, 1.0);
 			double h = this.getVerticalNoise(x, y, z);
 			double i = this.getCaveNoise(x, y, z);
 			double j = g + h;
@@ -82,8 +82,8 @@ public class NoiseCaveSampler {
 		double d = this.tunnelScaleNoise.sample((double)(x * 2), (double)y, (double)(z * 2));
 		double e = NoiseCaveSampler.CaveScaler.scaleTunnels(d);
 		double f = 0.065;
-		double g = 0.085;
-		double h = NoiseHelper.lerpFromProgress(this.tunnelFalloffNoise, (double)x, (double)y, (double)z, 0.065, 0.085);
+		double g = 0.088;
+		double h = NoiseHelper.lerpFromProgress(this.tunnelFalloffNoise, (double)x, (double)y, (double)z, 0.065, 0.088);
 		double i = sample(this.tunnelNoise1, (double)x, (double)y, (double)z, e);
 		double j = Math.abs(e * i) - h;
 		double k = sample(this.tunnelNoise2, (double)x, (double)y, (double)z, e);
@@ -140,7 +140,7 @@ public class NoiseCaveSampler {
 			} else if (value < 0.0) {
 				return 1.0;
 			} else {
-				return value < 0.5 ? 2.0 : 3.0;
+				return value < 0.5 ? 1.5 : 2.0;
 			}
 		}
 	}

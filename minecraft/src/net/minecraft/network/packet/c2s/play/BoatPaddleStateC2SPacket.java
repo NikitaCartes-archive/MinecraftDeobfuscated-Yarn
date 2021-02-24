@@ -1,30 +1,25 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class BoatPaddleStateC2SPacket implements Packet<ServerPlayPacketListener> {
-	private boolean leftPaddling;
-	private boolean rightPaddling;
-
-	public BoatPaddleStateC2SPacket() {
-	}
+	private final boolean leftPaddling;
+	private final boolean rightPaddling;
 
 	public BoatPaddleStateC2SPacket(boolean leftPaddling, boolean rightPaddling) {
 		this.leftPaddling = leftPaddling;
 		this.rightPaddling = rightPaddling;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.leftPaddling = buf.readBoolean();
-		this.rightPaddling = buf.readBoolean();
+	public BoatPaddleStateC2SPacket(PacketByteBuf packetByteBuf) {
+		this.leftPaddling = packetByteBuf.readBoolean();
+		this.rightPaddling = packetByteBuf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeBoolean(this.leftPaddling);
 		buf.writeBoolean(this.rightPaddling);
 	}

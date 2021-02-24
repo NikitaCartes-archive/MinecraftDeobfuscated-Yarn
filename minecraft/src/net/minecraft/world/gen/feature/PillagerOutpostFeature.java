@@ -5,7 +5,6 @@ import com.mojang.serialization.Codec;
 import java.util.List;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.SpawnSettings;
@@ -31,29 +30,31 @@ public class PillagerOutpostFeature extends JigsawFeature {
 		BiomeSource biomeSource,
 		long l,
 		ChunkRandom chunkRandom,
-		int i,
-		int j,
-		Biome biome,
 		ChunkPos chunkPos,
+		Biome biome,
+		ChunkPos chunkPos2,
 		StructurePoolFeatureConfig structurePoolFeatureConfig,
 		HeightLimitView heightLimitView
 	) {
-		int k = ChunkSectionPos.getSectionCoord(i);
-		int m = ChunkSectionPos.getSectionCoord(j);
-		chunkRandom.setSeed((long)(k ^ m << 4) ^ l);
+		int i = chunkPos.x >> 4;
+		int j = chunkPos.z >> 4;
+		chunkRandom.setSeed((long)(i ^ j << 4) ^ l);
 		chunkRandom.nextInt();
-		return chunkRandom.nextInt(5) != 0 ? false : !this.method_30845(chunkGenerator, l, chunkRandom, i, j);
+		return chunkRandom.nextInt(5) != 0 ? false : !this.method_30845(chunkGenerator, l, chunkRandom, chunkPos);
 	}
 
-	private boolean method_30845(ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, int i, int j) {
+	private boolean method_30845(ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, ChunkPos chunkPos) {
 		StructureConfig structureConfig = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
 		if (structureConfig == null) {
 			return false;
 		} else {
+			int i = chunkPos.x;
+			int j = chunkPos.z;
+
 			for (int k = i - 10; k <= i + 10; k++) {
 				for (int m = j - 10; m <= j + 10; m++) {
-					ChunkPos chunkPos = StructureFeature.VILLAGE.getStartChunk(structureConfig, l, chunkRandom, k, m);
-					if (k == chunkPos.x && m == chunkPos.z) {
+					ChunkPos chunkPos2 = StructureFeature.VILLAGE.getStartChunk(structureConfig, l, chunkRandom, k, m);
+					if (k == chunkPos2.x && m == chunkPos2.z) {
 						return true;
 					}
 				}

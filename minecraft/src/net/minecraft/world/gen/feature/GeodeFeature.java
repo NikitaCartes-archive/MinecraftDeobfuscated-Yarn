@@ -32,122 +32,125 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 		StructureWorldAccess structureWorldAccess = context.getWorld();
 		int i = geodeFeatureConfig.minGenOffset;
 		int j = geodeFeatureConfig.maxGenOffset;
-		if (structureWorldAccess.getFluidState(blockPos.add(0, j / 3, 0)).isStill()) {
-			return false;
-		} else {
-			List<Pair<BlockPos, Integer>> list = Lists.<Pair<BlockPos, Integer>>newLinkedList();
-			int k = geodeFeatureConfig.minDistributionPoints + random.nextInt(geodeFeatureConfig.maxDistributionPoints - geodeFeatureConfig.minDistributionPoints);
-			ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
-			DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0);
-			List<BlockPos> list2 = Lists.<BlockPos>newLinkedList();
-			double d = (double)k / (double)geodeFeatureConfig.maxOuterWallDistance;
-			GeodeLayerThicknessConfig geodeLayerThicknessConfig = geodeFeatureConfig.layerThicknessConfig;
-			GeodeLayerConfig geodeLayerConfig = geodeFeatureConfig.layerConfig;
-			GeodeCrackConfig geodeCrackConfig = geodeFeatureConfig.crackConfig;
-			double e = 1.0 / Math.sqrt(geodeLayerThicknessConfig.filling);
-			double f = 1.0 / Math.sqrt(geodeLayerThicknessConfig.innerLayer + d);
-			double g = 1.0 / Math.sqrt(geodeLayerThicknessConfig.middleLayer + d);
-			double h = 1.0 / Math.sqrt(geodeLayerThicknessConfig.outerLayer + d);
-			double l = 1.0 / Math.sqrt(geodeCrackConfig.baseCrackSize + random.nextDouble() / 2.0 + (k > 3 ? d : 0.0));
-			boolean bl = (double)random.nextFloat() < geodeCrackConfig.generateCrackChance;
+		List<Pair<BlockPos, Integer>> list = Lists.<Pair<BlockPos, Integer>>newLinkedList();
+		int k = geodeFeatureConfig.minDistributionPoints + random.nextInt(geodeFeatureConfig.maxDistributionPoints - geodeFeatureConfig.minDistributionPoints);
+		ChunkRandom chunkRandom = new ChunkRandom(structureWorldAccess.getSeed());
+		DoublePerlinNoiseSampler doublePerlinNoiseSampler = DoublePerlinNoiseSampler.create(chunkRandom, -4, 1.0);
+		List<BlockPos> list2 = Lists.<BlockPos>newLinkedList();
+		double d = (double)k / (double)geodeFeatureConfig.maxOuterWallDistance;
+		GeodeLayerThicknessConfig geodeLayerThicknessConfig = geodeFeatureConfig.layerThicknessConfig;
+		GeodeLayerConfig geodeLayerConfig = geodeFeatureConfig.layerConfig;
+		GeodeCrackConfig geodeCrackConfig = geodeFeatureConfig.crackConfig;
+		double e = 1.0 / Math.sqrt(geodeLayerThicknessConfig.filling);
+		double f = 1.0 / Math.sqrt(geodeLayerThicknessConfig.innerLayer + d);
+		double g = 1.0 / Math.sqrt(geodeLayerThicknessConfig.middleLayer + d);
+		double h = 1.0 / Math.sqrt(geodeLayerThicknessConfig.outerLayer + d);
+		double l = 1.0 / Math.sqrt(geodeCrackConfig.baseCrackSize + random.nextDouble() / 2.0 + (k > 3 ? d : 0.0));
+		boolean bl = (double)random.nextFloat() < geodeCrackConfig.generateCrackChance;
+		int m = 0;
 
-			for (int m = 0; m < k; m++) {
-				int n = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
-				int o = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
-				int p = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
-				list.add(
-					Pair.of(blockPos.add(n, o, p), geodeFeatureConfig.minPointOffset + random.nextInt(geodeFeatureConfig.maxPointOffset - geodeFeatureConfig.minPointOffset))
-				);
-			}
-
-			if (bl) {
-				int m = random.nextInt(4);
-				int n = k * 2 + 1;
-				if (m == 0) {
-					list2.add(blockPos.add(n, 7, 0));
-					list2.add(blockPos.add(n, 5, 0));
-					list2.add(blockPos.add(n, 1, 0));
-				} else if (m == 1) {
-					list2.add(blockPos.add(0, 7, n));
-					list2.add(blockPos.add(0, 5, n));
-					list2.add(blockPos.add(0, 1, n));
-				} else if (m == 2) {
-					list2.add(blockPos.add(n, 7, n));
-					list2.add(blockPos.add(n, 5, n));
-					list2.add(blockPos.add(n, 1, n));
-				} else {
-					list2.add(blockPos.add(0, 7, 0));
-					list2.add(blockPos.add(0, 5, 0));
-					list2.add(blockPos.add(0, 1, 0));
+		for (int n = 0; n < k; n++) {
+			int o = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
+			int p = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
+			int q = geodeFeatureConfig.minOuterWallDistance + random.nextInt(geodeFeatureConfig.maxOuterWallDistance - geodeFeatureConfig.minOuterWallDistance);
+			BlockPos blockPos2 = blockPos.add(o, p, q);
+			BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
+			if (blockState.isAir() || blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA)) {
+				if (++m > geodeFeatureConfig.field_29062) {
+					return false;
 				}
 			}
 
-			List<BlockPos> list3 = Lists.<BlockPos>newArrayList();
-
-			for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(i, i, i), blockPos.add(j, j, j))) {
-				double q = doublePerlinNoiseSampler.sample((double)blockPos2.getX(), (double)blockPos2.getY(), (double)blockPos2.getZ())
-					* geodeFeatureConfig.noiseMultiplier;
-				double r = 0.0;
-				double s = 0.0;
-
-				for (Pair<BlockPos, Integer> pair : list) {
-					r += MathHelper.fastInverseSqrt(blockPos2.getSquaredDistance(pair.getFirst()) + (double)pair.getSecond().intValue()) + q;
-				}
-
-				for (BlockPos blockPos3 : list2) {
-					s += MathHelper.fastInverseSqrt(blockPos2.getSquaredDistance(blockPos3) + (double)geodeCrackConfig.crackPointOffset) + q;
-				}
-
-				if (!(r < h)) {
-					if (bl && s >= l && r < e) {
-						if (structureWorldAccess.getFluidState(blockPos2).isEmpty()) {
-							structureWorldAccess.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 2);
-						}
-					} else if (r >= e) {
-						structureWorldAccess.setBlockState(blockPos2, geodeLayerConfig.fillingProvider.getBlockState(random, blockPos2), 2);
-					} else if (r >= f) {
-						boolean bl2 = (double)random.nextFloat() < geodeFeatureConfig.useAlternateLayer0Chance;
-						if (bl2) {
-							structureWorldAccess.setBlockState(blockPos2, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(random, blockPos2), 2);
-						} else {
-							structureWorldAccess.setBlockState(blockPos2, geodeLayerConfig.innerLayerProvider.getBlockState(random, blockPos2), 2);
-						}
-
-						if ((!geodeFeatureConfig.placementsRequireLayer0Alternate || bl2) && (double)random.nextFloat() < geodeFeatureConfig.usePotentialPlacementsChance) {
-							list3.add(blockPos2.toImmutable());
-						}
-					} else if (r >= g) {
-						structureWorldAccess.setBlockState(blockPos2, geodeLayerConfig.middleLayerProvider.getBlockState(random, blockPos2), 2);
-					} else if (r >= h) {
-						structureWorldAccess.setBlockState(blockPos2, geodeLayerConfig.outerLayerProvider.getBlockState(random, blockPos2), 2);
-					}
-				}
-			}
-
-			List<BlockState> list4 = geodeLayerConfig.innerBlocks;
-
-			for (BlockPos blockPos4 : list3) {
-				BlockState blockState = (BlockState)list4.get(random.nextInt(list4.size()));
-
-				for (Direction direction : DIRECTIONS) {
-					if (blockState.contains(Properties.FACING)) {
-						blockState = blockState.with(Properties.FACING, direction);
-					}
-
-					BlockPos blockPos5 = blockPos4.offset(direction);
-					BlockState blockState2 = structureWorldAccess.getBlockState(blockPos5);
-					if (blockState.contains(Properties.WATERLOGGED)) {
-						blockState = blockState.with(Properties.WATERLOGGED, Boolean.valueOf(blockState2.getFluidState().isStill()));
-					}
-
-					if (BuddingAmethystBlock.canGrowIn(blockState2)) {
-						structureWorldAccess.setBlockState(blockPos5, blockState, 2);
-						break;
-					}
-				}
-			}
-
-			return true;
+			list.add(Pair.of(blockPos2, geodeFeatureConfig.minPointOffset + random.nextInt(geodeFeatureConfig.maxPointOffset - geodeFeatureConfig.minPointOffset)));
 		}
+
+		if (bl) {
+			int n = random.nextInt(4);
+			int o = k * 2 + 1;
+			if (n == 0) {
+				list2.add(blockPos.add(o, 7, 0));
+				list2.add(blockPos.add(o, 5, 0));
+				list2.add(blockPos.add(o, 1, 0));
+			} else if (n == 1) {
+				list2.add(blockPos.add(0, 7, o));
+				list2.add(blockPos.add(0, 5, o));
+				list2.add(blockPos.add(0, 1, o));
+			} else if (n == 2) {
+				list2.add(blockPos.add(o, 7, o));
+				list2.add(blockPos.add(o, 5, o));
+				list2.add(blockPos.add(o, 1, o));
+			} else {
+				list2.add(blockPos.add(0, 7, 0));
+				list2.add(blockPos.add(0, 5, 0));
+				list2.add(blockPos.add(0, 1, 0));
+			}
+		}
+
+		List<BlockPos> list3 = Lists.<BlockPos>newArrayList();
+
+		for (BlockPos blockPos3 : BlockPos.iterate(blockPos.add(i, i, i), blockPos.add(j, j, j))) {
+			double r = doublePerlinNoiseSampler.sample((double)blockPos3.getX(), (double)blockPos3.getY(), (double)blockPos3.getZ())
+				* geodeFeatureConfig.noiseMultiplier;
+			double s = 0.0;
+			double t = 0.0;
+
+			for (Pair<BlockPos, Integer> pair : list) {
+				s += MathHelper.fastInverseSqrt(blockPos3.getSquaredDistance(pair.getFirst()) + (double)pair.getSecond().intValue()) + r;
+			}
+
+			for (BlockPos blockPos4 : list2) {
+				t += MathHelper.fastInverseSqrt(blockPos3.getSquaredDistance(blockPos4) + (double)geodeCrackConfig.crackPointOffset) + r;
+			}
+
+			if (!(s < h)) {
+				if (bl && t >= l && s < e) {
+					if (structureWorldAccess.getFluidState(blockPos3).isEmpty()) {
+						structureWorldAccess.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), 2);
+					}
+				} else if (s >= e) {
+					structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.fillingProvider.getBlockState(random, blockPos3), 2);
+				} else if (s >= f) {
+					boolean bl2 = (double)random.nextFloat() < geodeFeatureConfig.useAlternateLayer0Chance;
+					if (bl2) {
+						structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.alternateInnerLayerProvider.getBlockState(random, blockPos3), 2);
+					} else {
+						structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.innerLayerProvider.getBlockState(random, blockPos3), 2);
+					}
+
+					if ((!geodeFeatureConfig.placementsRequireLayer0Alternate || bl2) && (double)random.nextFloat() < geodeFeatureConfig.usePotentialPlacementsChance) {
+						list3.add(blockPos3.toImmutable());
+					}
+				} else if (s >= g) {
+					structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.middleLayerProvider.getBlockState(random, blockPos3), 2);
+				} else if (s >= h) {
+					structureWorldAccess.setBlockState(blockPos3, geodeLayerConfig.outerLayerProvider.getBlockState(random, blockPos3), 2);
+				}
+			}
+		}
+
+		List<BlockState> list4 = geodeLayerConfig.innerBlocks;
+
+		for (BlockPos blockPos5 : list3) {
+			BlockState blockState2 = (BlockState)list4.get(random.nextInt(list4.size()));
+
+			for (Direction direction : DIRECTIONS) {
+				if (blockState2.contains(Properties.FACING)) {
+					blockState2 = blockState2.with(Properties.FACING, direction);
+				}
+
+				BlockPos blockPos6 = blockPos5.offset(direction);
+				BlockState blockState3 = structureWorldAccess.getBlockState(blockPos6);
+				if (blockState2.contains(Properties.WATERLOGGED)) {
+					blockState2 = blockState2.with(Properties.WATERLOGGED, Boolean.valueOf(blockState3.getFluidState().isStill()));
+				}
+
+				if (BuddingAmethystBlock.canGrowIn(blockState3)) {
+					structureWorldAccess.setBlockState(blockPos6, blockState2, 2);
+					break;
+				}
+			}
+		}
+
+		return true;
 	}
 }

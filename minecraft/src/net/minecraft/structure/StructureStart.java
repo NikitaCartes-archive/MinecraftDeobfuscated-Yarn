@@ -9,7 +9,6 @@ import net.minecraft.nbt.ListTag;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.util.registry.Registry;
@@ -29,13 +28,14 @@ import net.minecraft.world.gen.feature.StructureFeature;
  * with the chunk that the structure originates from.
  */
 public abstract class StructureStart<C extends FeatureConfig> {
-	public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(StructureFeature.MINESHAFT, 0, 0, BlockBox.empty(), 0, 0L) {
+	public static final StructureStart<?> DEFAULT = new StructureStart<MineshaftFeatureConfig>(
+		StructureFeature.MINESHAFT, new ChunkPos(0, 0), BlockBox.empty(), 0, 0L
+	) {
 		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			int i,
-			int j,
+			ChunkPos chunkPos,
 			Biome biome,
 			MineshaftFeatureConfig mineshaftFeatureConfig,
 			HeightLimitView heightLimitView
@@ -45,8 +45,7 @@ public abstract class StructureStart<C extends FeatureConfig> {
 	private final StructureFeature<C> feature;
 	protected final List<StructurePiece> children = Lists.<StructurePiece>newArrayList();
 	protected BlockBox boundingBox;
-	private final int chunkX;
-	private final int chunkZ;
+	private final ChunkPos field_29070;
 	/**
 	 * The number of chunks that intersect the structures bounding box,
 	 * and have stored references to its starting chunk.
@@ -59,24 +58,22 @@ public abstract class StructureStart<C extends FeatureConfig> {
 	private int references;
 	protected final ChunkRandom random;
 
-	public StructureStart(StructureFeature<C> feature, int chunkX, int chunkZ, BlockBox box, int references, long seed) {
+	public StructureStart(StructureFeature<C> feature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
 		this.feature = feature;
-		this.chunkX = chunkX;
-		this.chunkZ = chunkZ;
-		this.references = references;
+		this.field_29070 = chunkPos;
+		this.references = i;
 		this.random = new ChunkRandom();
-		this.random.setCarverSeed(seed, chunkX, chunkZ);
-		this.boundingBox = box;
+		this.random.setCarverSeed(l, chunkPos.x, chunkPos.z);
+		this.boundingBox = blockBox;
 	}
 
 	public abstract void init(
 		DynamicRegistryManager registryManager,
 		ChunkGenerator chunkGenerator,
 		StructureManager manager,
-		int chunkX,
-		int chunkZ,
+		ChunkPos chunkPos,
 		Biome biome,
-		C config,
+		C featureConfig,
 		HeightLimitView heightLimitView
 	);
 
@@ -120,12 +117,12 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		}
 	}
 
-	public CompoundTag toNbt(int chunkX, int chunkZ) {
+	public CompoundTag toNbt(ChunkPos chunkPos) {
 		CompoundTag compoundTag = new CompoundTag();
 		if (this.hasChildren()) {
 			compoundTag.putString("id", Registry.STRUCTURE_FEATURE.getId(this.getFeature()).toString());
-			compoundTag.putInt("ChunkX", chunkX);
-			compoundTag.putInt("ChunkZ", chunkZ);
+			compoundTag.putInt("ChunkX", chunkPos.x);
+			compoundTag.putInt("ChunkZ", chunkPos.z);
 			compoundTag.putInt("references", this.references);
 			compoundTag.put("BB", this.boundingBox.toNbt());
 			ListTag listTag = new ListTag();
@@ -179,16 +176,12 @@ public abstract class StructureStart<C extends FeatureConfig> {
 		return !this.children.isEmpty();
 	}
 
-	public int getChunkX() {
-		return this.chunkX;
-	}
-
-	public int getChunkZ() {
-		return this.chunkZ;
+	public ChunkPos method_34000() {
+		return this.field_29070;
 	}
 
 	public BlockPos getPos() {
-		return new BlockPos(ChunkSectionPos.getBlockCoord(this.chunkX), 0, ChunkSectionPos.getBlockCoord(this.chunkZ));
+		return new BlockPos(this.field_29070.getStartX(), 0, this.field_29070.getStartZ());
 	}
 
 	public boolean isInExistingChunk() {

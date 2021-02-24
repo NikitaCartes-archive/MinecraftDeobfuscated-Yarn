@@ -13,6 +13,7 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5873;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -141,24 +142,24 @@ public abstract class ChunkGenerator {
 		ChunkRandom chunkRandom = new ChunkRandom();
 		int i = 8;
 		ChunkPos chunkPos = chunk.getPos();
-		int j = chunkPos.x;
-		int k = chunkPos.z;
 		GenerationSettings generationSettings = this.populationSource
 			.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getStartX()), 0, BiomeCoords.fromBlock(chunkPos.getStartZ()))
 			.getGenerationSettings();
+		class_5873 lv = new class_5873(this);
 		BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
 
-		for (int l = j - 8; l <= j + 8; l++) {
-			for (int m = k - 8; m <= k + 8; m++) {
+		for (int j = -8; j <= 8; j++) {
+			for (int k = -8; k <= 8; k++) {
+				ChunkPos chunkPos2 = new ChunkPos(chunkPos.x + j, chunkPos.z + k);
 				List<Supplier<ConfiguredCarver<?>>> list = generationSettings.getCarversForStep(carver);
 				ListIterator<Supplier<ConfiguredCarver<?>>> listIterator = list.listIterator();
 
 				while (listIterator.hasNext()) {
-					int n = listIterator.nextIndex();
+					int l = listIterator.nextIndex();
 					ConfiguredCarver<?> configuredCarver = (ConfiguredCarver<?>)((Supplier)listIterator.next()).get();
-					chunkRandom.setCarverSeed(seed + (long)n, l, m);
-					if (configuredCarver.shouldCarve(chunkRandom, l, m)) {
-						configuredCarver.carve(chunk, biomeAccess::getBiome, chunkRandom, this.getSeaLevel(), l, m, j, k, bitSet);
+					chunkRandom.setCarverSeed(seed + (long)l, chunkPos2.x, chunkPos2.z);
+					if (configuredCarver.shouldCarve(chunkRandom)) {
+						configuredCarver.carve(lv, chunk, biomeAccess::getBiome, chunkRandom, this.getSeaLevel(), chunkPos2, bitSet);
 					}
 				}
 			}

@@ -18,10 +18,9 @@ public class BastionRemnantFeature extends JigsawFeature {
 		BiomeSource biomeSource,
 		long l,
 		ChunkRandom chunkRandom,
-		int i,
-		int j,
-		Biome biome,
 		ChunkPos chunkPos,
+		Biome biome,
+		ChunkPos chunkPos2,
 		StructurePoolFeatureConfig structurePoolFeatureConfig,
 		HeightLimitView heightLimitView
 	) {

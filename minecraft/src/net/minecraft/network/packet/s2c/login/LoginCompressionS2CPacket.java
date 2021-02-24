@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.login;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,22 +7,18 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientLoginPacketListener;
 
 public class LoginCompressionS2CPacket implements Packet<ClientLoginPacketListener> {
-	private int compressionThreshold;
-
-	public LoginCompressionS2CPacket() {
-	}
+	private final int compressionThreshold;
 
 	public LoginCompressionS2CPacket(int compressionThreshold) {
 		this.compressionThreshold = compressionThreshold;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.compressionThreshold = buf.readVarInt();
+	public LoginCompressionS2CPacket(PacketByteBuf packetByteBuf) {
+		this.compressionThreshold = packetByteBuf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.compressionThreshold);
 	}
 

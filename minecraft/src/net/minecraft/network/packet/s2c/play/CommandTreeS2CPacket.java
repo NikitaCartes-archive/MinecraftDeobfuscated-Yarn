@@ -13,8 +13,8 @@ import com.mojang.brigadier.tree.RootCommandNode;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMaps;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap.Entry;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -29,45 +29,32 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
-	private RootCommandNode<CommandSource> commandTree;
-
-	public CommandTreeS2CPacket() {
-	}
+	private final RootCommandNode<CommandSource> commandTree;
 
 	public CommandTreeS2CPacket(RootCommandNode<CommandSource> commandTree) {
 		this.commandTree = commandTree;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		CommandTreeS2CPacket.CommandNodeData[] commandNodeDatas = new CommandTreeS2CPacket.CommandNodeData[buf.readVarInt()];
-
-		for (int i = 0; i < commandNodeDatas.length; i++) {
-			commandNodeDatas[i] = readCommandNode(buf);
-		}
-
-		method_30946(commandNodeDatas);
-		this.commandTree = (RootCommandNode<CommandSource>)commandNodeDatas[buf.readVarInt()].node;
+	public CommandTreeS2CPacket(PacketByteBuf packetByteBuf) {
+		List<CommandTreeS2CPacket.CommandNodeData> list = packetByteBuf.method_34066(CommandTreeS2CPacket::readCommandNode);
+		method_30946(list);
+		int i = packetByteBuf.readVarInt();
+		this.commandTree = (RootCommandNode<CommandSource>)((CommandTreeS2CPacket.CommandNodeData)list.get(i)).node;
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		Object2IntMap<CommandNode<CommandSource>> object2IntMap = method_30944(this.commandTree);
-		CommandNode<CommandSource>[] commandNodes = method_30945(object2IntMap);
-		buf.writeVarInt(commandNodes.length);
-
-		for (CommandNode<CommandSource> commandNode : commandNodes) {
-			writeNode(buf, commandNode, object2IntMap);
-		}
-
+		List<CommandNode<CommandSource>> list = method_30945(object2IntMap);
+		buf.method_34062(list, (packetByteBuf, commandNode) -> writeNode(packetByteBuf, commandNode, object2IntMap));
 		buf.writeVarInt(object2IntMap.get(this.commandTree));
 	}
 
-	private static void method_30946(CommandTreeS2CPacket.CommandNodeData[] commandNodeDatas) {
-		List<CommandTreeS2CPacket.CommandNodeData> list = Lists.<CommandTreeS2CPacket.CommandNodeData>newArrayList(commandNodeDatas);
+	private static void method_30946(List<CommandTreeS2CPacket.CommandNodeData> list) {
+		List<CommandTreeS2CPacket.CommandNodeData> list2 = Lists.<CommandTreeS2CPacket.CommandNodeData>newArrayList(list);
 
-		while (!list.isEmpty()) {
-			boolean bl = list.removeIf(commandNodeData -> commandNodeData.build(commandNodeDatas));
+		while (!list2.isEmpty()) {
+			boolean bl = list2.removeIf(commandNodeData -> commandNodeData.build(list));
 			if (!bl) {
 				throw new IllegalStateException("Server sent an impossible command tree");
 			}
@@ -94,14 +81,15 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		return object2IntMap;
 	}
 
-	private static CommandNode<CommandSource>[] method_30945(Object2IntMap<CommandNode<CommandSource>> object2IntMap) {
-		CommandNode<CommandSource>[] commandNodes = new CommandNode[object2IntMap.size()];
+	private static List<CommandNode<CommandSource>> method_30945(Object2IntMap<CommandNode<CommandSource>> object2IntMap) {
+		ObjectArrayList<CommandNode<CommandSource>> objectArrayList = new ObjectArrayList<>(object2IntMap.size());
+		objectArrayList.size(object2IntMap.size());
 
 		for (Entry<CommandNode<CommandSource>> entry : Object2IntMaps.fastIterable(object2IntMap)) {
-			commandNodes[entry.getIntValue()] = (CommandNode<CommandSource>)entry.getKey();
+			objectArrayList.set(entry.getIntValue(), (CommandNode<CommandSource>)entry.getKey());
 		}
 
-		return commandNodes;
+		return objectArrayList;
 	}
 
 	private static CommandTreeS2CPacket.CommandNodeData readCommandNode(PacketByteBuf packetByteBuf) {
@@ -116,7 +104,7 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 	private static ArgumentBuilder<CommandSource, ?> readArgumentBuilder(PacketByteBuf packetByteBuf, byte b) {
 		int i = b & 3;
 		if (i == 2) {
-			String string = packetByteBuf.readString(32767);
+			String string = packetByteBuf.readString();
 			ArgumentType<?> argumentType = ArgumentTypes.fromPacket(packetByteBuf);
 			if (argumentType == null) {
 				return null;
@@ -129,7 +117,7 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 				return requiredArgumentBuilder;
 			}
 		} else {
-			return i == 1 ? LiteralArgumentBuilder.literal(packetByteBuf.readString(32767)) : null;
+			return i == 1 ? LiteralArgumentBuilder.literal(packetByteBuf.readString()) : null;
 		}
 	}
 
@@ -206,17 +194,17 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.childNodeIndices = childNodeIndices;
 		}
 
-		public boolean build(CommandTreeS2CPacket.CommandNodeData[] previousNodes) {
+		public boolean build(List<CommandTreeS2CPacket.CommandNodeData> list) {
 			if (this.node == null) {
 				if (this.argumentBuilder == null) {
 					this.node = new RootCommandNode<>();
 				} else {
 					if ((this.flags & 8) != 0) {
-						if (previousNodes[this.redirectNodeIndex].node == null) {
+						if (((CommandTreeS2CPacket.CommandNodeData)list.get(this.redirectNodeIndex)).node == null) {
 							return false;
 						}
 
-						this.argumentBuilder.redirect(previousNodes[this.redirectNodeIndex].node);
+						this.argumentBuilder.redirect(((CommandTreeS2CPacket.CommandNodeData)list.get(this.redirectNodeIndex)).node);
 					}
 
 					if ((this.flags & 4) != 0) {
@@ -228,13 +216,13 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 			}
 
 			for (int i : this.childNodeIndices) {
-				if (previousNodes[i].node == null) {
+				if (((CommandTreeS2CPacket.CommandNodeData)list.get(i)).node == null) {
 					return false;
 				}
 			}
 
 			for (int ix : this.childNodeIndices) {
-				CommandNode<CommandSource> commandNode = previousNodes[ix].node;
+				CommandNode<CommandSource> commandNode = ((CommandTreeS2CPacket.CommandNodeData)list.get(ix)).node;
 				if (!(commandNode instanceof RootCommandNode)) {
 					this.node.addChild(commandNode);
 				}

@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -9,25 +8,21 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntityAnimationS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int id;
-	private int animationId;
-
-	public EntityAnimationS2CPacket() {
-	}
+	private final int id;
+	private final int animationId;
 
 	public EntityAnimationS2CPacket(Entity entity, int animationId) {
 		this.id = entity.getId();
 		this.animationId = animationId;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.id = buf.readVarInt();
-		this.animationId = buf.readUnsignedByte();
+	public EntityAnimationS2CPacket(PacketByteBuf packetByteBuf) {
+		this.id = packetByteBuf.readVarInt();
+		this.animationId = packetByteBuf.readUnsignedByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeByte(this.animationId);
 	}

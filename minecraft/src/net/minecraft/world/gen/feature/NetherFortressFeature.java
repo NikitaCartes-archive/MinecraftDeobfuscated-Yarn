@@ -10,7 +10,6 @@ import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
@@ -37,10 +36,9 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 		BiomeSource biomeSource,
 		long l,
 		ChunkRandom chunkRandom,
-		int i,
-		int j,
-		Biome biome,
 		ChunkPos chunkPos,
+		Biome biome,
+		ChunkPos chunkPos2,
 		DefaultFeatureConfig defaultFeatureConfig,
 		HeightLimitView heightLimitView
 	) {
@@ -58,28 +56,27 @@ public class NetherFortressFeature extends StructureFeature<DefaultFeatureConfig
 	}
 
 	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkPos, blockBox, i, l);
 		}
 
 		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			int i,
-			int j,
+			ChunkPos chunkPos,
 			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
-			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, ChunkSectionPos.getOffsetPos(i, 2), ChunkSectionPos.getOffsetPos(j, 2));
+			NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, chunkPos.method_33939(2), chunkPos.method_33941(2));
 			this.children.add(start);
 			start.fillOpenings(start, this.children, this.random);
 			List<StructurePiece> list = start.pieces;
 
 			while (!list.isEmpty()) {
-				int k = this.random.nextInt(list.size());
-				StructurePiece structurePiece = (StructurePiece)list.remove(k);
+				int i = this.random.nextInt(list.size());
+				StructurePiece structurePiece = (StructurePiece)list.remove(i);
 				structurePiece.fillOpenings(start, this.children, this.random);
 			}
 

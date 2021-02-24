@@ -29,7 +29,7 @@ public final class ChunkGeneratorSettings {
 					Codec.BOOL.fieldOf("disable_mob_generation").forGetter(ChunkGeneratorSettings::isMobGenerationDisabled),
 					Codec.BOOL.fieldOf("aquifers_enabled").forGetter(ChunkGeneratorSettings::hasAquifers),
 					Codec.BOOL.fieldOf("noise_caves_enabled").forGetter(ChunkGeneratorSettings::hasNoiseCaves),
-					Codec.BOOL.fieldOf("grimstone_enabled").forGetter(ChunkGeneratorSettings::hasGrimstone)
+					Codec.BOOL.fieldOf("deepslate_enabled").forGetter(ChunkGeneratorSettings::hasGrimstone)
 				)
 				.apply(instance, ChunkGeneratorSettings::new)
 	);

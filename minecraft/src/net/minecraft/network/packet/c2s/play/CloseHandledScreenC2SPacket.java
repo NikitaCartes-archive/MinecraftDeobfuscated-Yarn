@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,10 +7,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class CloseHandledScreenC2SPacket implements Packet<ServerPlayPacketListener> {
-	private int syncId;
-
-	public CloseHandledScreenC2SPacket() {
-	}
+	private final int syncId;
 
 	@Environment(EnvType.CLIENT)
 	public CloseHandledScreenC2SPacket(int syncId) {
@@ -22,13 +18,12 @@ public class CloseHandledScreenC2SPacket implements Packet<ServerPlayPacketListe
 		serverPlayPacketListener.onCloseHandledScreen(this);
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.syncId = buf.readByte();
+	public CloseHandledScreenC2SPacket(PacketByteBuf packetByteBuf) {
+		this.syncId = packetByteBuf.readByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 	}
 }

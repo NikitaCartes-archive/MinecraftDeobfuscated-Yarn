@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
@@ -33,6 +34,23 @@ public class SporeBlossomBlock extends Block {
 		double e = (double)j + 0.7;
 		double f = (double)k + random.nextDouble();
 		world.addParticle(ParticleTypes.FALLING_SPORE_BLOSSOM, d, e, f, 0.0, 0.0, 0.0);
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (int l = 0; l < 14; l++) {
+			mutable.set(i + MathHelper.nextInt(random, -10, 10), j - random.nextInt(10), k + MathHelper.nextInt(random, -10, 10));
+			BlockState blockState = world.getBlockState(mutable);
+			if (!blockState.isFullCube(world, mutable)) {
+				world.addParticle(
+					ParticleTypes.SPORE_BLOSSOM_AIR,
+					(double)mutable.getX() + random.nextDouble(),
+					(double)mutable.getY() + random.nextDouble(),
+					(double)mutable.getZ() + random.nextDouble(),
+					0.0,
+					0.0,
+					0.0
+				);
+			}
+		}
 	}
 
 	@Override

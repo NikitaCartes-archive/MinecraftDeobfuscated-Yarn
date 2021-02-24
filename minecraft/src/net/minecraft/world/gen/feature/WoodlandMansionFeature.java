@@ -13,7 +13,6 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -39,14 +38,13 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		BiomeSource biomeSource,
 		long l,
 		ChunkRandom chunkRandom,
-		int i,
-		int j,
-		Biome biome,
 		ChunkPos chunkPos,
+		Biome biome,
+		ChunkPos chunkPos2,
 		DefaultFeatureConfig defaultFeatureConfig,
 		HeightLimitView heightLimitView
 	) {
-		for (Biome biome2 : biomeSource.getBiomesInArea(ChunkSectionPos.getOffsetPos(i, 9), chunkGenerator.getSeaLevel(), ChunkSectionPos.getOffsetPos(j, 9), 32)) {
+		for (Biome biome2 : biomeSource.getBiomesInArea(chunkPos.method_33939(9), chunkGenerator.getSeaLevel(), chunkPos.method_33941(9), 32)) {
 			if (!biome2.getGenerationSettings().hasStructureFeature(this)) {
 				return false;
 			}
@@ -61,41 +59,40 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 	}
 
 	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkPos, blockBox, i, l);
 		}
 
 		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			int i,
-			int j,
+			ChunkPos chunkPos,
 			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
 			BlockRotation blockRotation = BlockRotation.random(this.random);
-			int k = 5;
-			int l = 5;
+			int i = 5;
+			int j = 5;
 			if (blockRotation == BlockRotation.CLOCKWISE_90) {
-				k = -5;
+				i = -5;
 			} else if (blockRotation == BlockRotation.CLOCKWISE_180) {
-				k = -5;
-				l = -5;
+				i = -5;
+				j = -5;
 			} else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
-				l = -5;
+				j = -5;
 			}
 
-			int m = ChunkSectionPos.getOffsetPos(i, 7);
-			int n = ChunkSectionPos.getOffsetPos(j, 7);
-			int o = chunkGenerator.getHeightInGround(m, n, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
-			int p = chunkGenerator.getHeightInGround(m, n + l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
-			int q = chunkGenerator.getHeightInGround(m + k, n, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
-			int r = chunkGenerator.getHeightInGround(m + k, n + l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
-			int s = Math.min(Math.min(o, p), Math.min(q, r));
-			if (s >= 60) {
-				BlockPos blockPos = new BlockPos(ChunkSectionPos.getOffsetPos(i, 8), s + 1, ChunkSectionPos.getOffsetPos(j, 8));
+			int k = chunkPos.method_33939(7);
+			int l = chunkPos.method_33941(7);
+			int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+			int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+			int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+			int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
+			int q = Math.min(Math.min(m, n), Math.min(o, p));
+			if (q >= 60) {
+				BlockPos blockPos = new BlockPos(chunkPos.method_33939(8), q + 1, chunkPos.method_33941(8));
 				List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
 				WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
 				this.children.addAll(list);

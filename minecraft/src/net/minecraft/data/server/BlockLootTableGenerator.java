@@ -257,6 +257,30 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 			);
 	}
 
+	private static LootTable.Builder method_34057(Block block) {
+		return dropsWithSilkTouch(
+			block,
+			(LootPoolEntry.Builder<?>)applyExplosionDecay(
+				block,
+				ItemEntry.builder(Items.LAPIS_LAZULI)
+					.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 9.0F)))
+					.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
+			)
+		);
+	}
+
+	private static LootTable.Builder method_34058(Block block) {
+		return dropsWithSilkTouch(
+			block,
+			(LootPoolEntry.Builder<?>)applyExplosionDecay(
+				block,
+				ItemEntry.builder(Items.REDSTONE)
+					.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 5.0F)))
+					.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
+			)
+		);
+	}
+
 	private static LootTable.Builder bannerDrops(Block drop) {
 		return LootTable.builder()
 			.pool(
@@ -566,7 +590,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.SAND);
 		this.addDrop(Blocks.RED_SAND);
 		this.addDrop(Blocks.GOLD_ORE);
+		this.addDrop(Blocks.DEEPSLATE_GOLD_ORE);
 		this.addDrop(Blocks.IRON_ORE);
+		this.addDrop(Blocks.DEEPSLATE_IRON_ORE);
 		this.addDrop(Blocks.OAK_LOG);
 		this.addDrop(Blocks.SPRUCE_LOG);
 		this.addDrop(Blocks.BIRCH_LOG);
@@ -677,6 +703,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.SOUL_SOIL);
 		this.addDrop(Blocks.BASALT);
 		this.addDrop(Blocks.POLISHED_BASALT);
+		this.addDrop(Blocks.SMOOTH_BASALT);
 		this.addDrop(Blocks.SOUL_TORCH);
 		this.addDrop(Blocks.CARVED_PUMPKIN);
 		this.addDrop(Blocks.JACK_O_LANTERN);
@@ -981,19 +1008,19 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.BIG_DRIPLEAF);
 		this.addDrop(Blocks.MOSS_BLOCK);
 		this.addDrop(Blocks.ROOTED_DIRT);
-		this.addDrop(Blocks.GRIMSTONE);
-		this.addDrop(Blocks.GRIMSTONE_STAIRS);
-		this.addDrop(Blocks.GRIMSTONE_WALL);
-		this.addDrop(Blocks.POLISHED_GRIMSTONE);
-		this.addDrop(Blocks.POLISHED_GRIMSTONE_STAIRS);
-		this.addDrop(Blocks.POLISHED_GRIMSTONE_WALL);
-		this.addDrop(Blocks.GRIMSTONE_TILES);
-		this.addDrop(Blocks.GRIMSTONE_TILE_STAIRS);
-		this.addDrop(Blocks.GRIMSTONE_TILE_WALL);
-		this.addDrop(Blocks.GRIMSTONE_BRICKS);
-		this.addDrop(Blocks.GRIMSTONE_BRICK_STAIRS);
-		this.addDrop(Blocks.GRIMSTONE_BRICK_WALL);
-		this.addDrop(Blocks.CHISELED_GRIMSTONE);
+		this.addDrop(Blocks.COBBLED_DEEPSLATE);
+		this.addDrop(Blocks.COBBLED_DEEPSLATE_STAIRS);
+		this.addDrop(Blocks.COBBLED_DEEPSLATE_WALL);
+		this.addDrop(Blocks.POLISHED_DEEPSLATE);
+		this.addDrop(Blocks.POLISHED_DEEPSLATE_STAIRS);
+		this.addDrop(Blocks.POLISHED_DEEPSLATE_WALL);
+		this.addDrop(Blocks.DEEPSLATE_TILES);
+		this.addDrop(Blocks.DEEPSLATE_TILE_STAIRS);
+		this.addDrop(Blocks.DEEPSLATE_TILE_WALL);
+		this.addDrop(Blocks.DEEPSLATE_BRICKS);
+		this.addDrop(Blocks.DEEPSLATE_BRICK_STAIRS);
+		this.addDrop(Blocks.DEEPSLATE_BRICK_WALL);
+		this.addDrop(Blocks.CHISELED_DEEPSLATE);
 		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
 		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
 		this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);
@@ -1003,6 +1030,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.LAVA_CAULDRON, Blocks.CAULDRON);
 		this.addDrop(Blocks.POWDER_SNOW_CAULDRON, Blocks.CAULDRON);
 		this.addDrop(Blocks.STONE, blockx -> drops(blockx, Blocks.COBBLESTONE));
+		this.addDrop(Blocks.DEEPSLATE, blockx -> drops(blockx, Blocks.COBBLED_DEEPSLATE));
 		this.addDrop(Blocks.GRASS_BLOCK, blockx -> drops(blockx, Blocks.DIRT));
 		this.addDrop(Blocks.PODZOL, blockx -> drops(blockx, Blocks.DIRT));
 		this.addDrop(Blocks.MYCELIUM, blockx -> drops(blockx, Blocks.DIRT));
@@ -1094,10 +1122,10 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.WAXED_WEATHERED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
 		this.addDrop(Blocks.WAXED_EXPOSED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
 		this.addDrop(Blocks.WAXED_CUT_COPPER_SLAB, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.GRIMSTONE_SLAB, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.POLISHED_GRIMSTONE_SLAB, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.GRIMSTONE_TILE_SLAB, BlockLootTableGenerator::slabDrops);
-		this.addDrop(Blocks.GRIMSTONE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.COBBLED_DEEPSLATE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.POLISHED_DEEPSLATE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.DEEPSLATE_TILE_SLAB, BlockLootTableGenerator::slabDrops);
+		this.addDrop(Blocks.DEEPSLATE_BRICK_SLAB, BlockLootTableGenerator::slabDrops);
 		this.addDrop(Blocks.ACACIA_DOOR, BlockLootTableGenerator::addDoorDrop);
 		this.addDrop(Blocks.BIRCH_DOOR, BlockLootTableGenerator::addDoorDrop);
 		this.addDrop(Blocks.DARK_OAK_DOOR, BlockLootTableGenerator::addDoorDrop);
@@ -1359,6 +1387,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.EMERALD_ORE, blockx -> oreDrops(blockx, Items.EMERALD));
 		this.addDrop(Blocks.NETHER_QUARTZ_ORE, blockx -> oreDrops(blockx, Items.QUARTZ));
 		this.addDrop(Blocks.DIAMOND_ORE, blockx -> oreDrops(blockx, Items.DIAMOND));
+		this.addDrop(Blocks.DEEPSLATE_DIAMOND_ORE, blockx -> oreDrops(blockx, Items.DIAMOND));
 		this.addDrop(
 			Blocks.NETHER_GOLD_ORE,
 			blockx -> dropsWithSilkTouch(
@@ -1371,18 +1400,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					)
 				)
 		);
-		this.addDrop(
-			Blocks.LAPIS_ORE,
-			blockx -> dropsWithSilkTouch(
-					blockx,
-					(LootPoolEntry.Builder<?>)applyExplosionDecay(
-						blockx,
-						ItemEntry.builder(Items.LAPIS_LAZULI)
-							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 9.0F)))
-							.apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))
-					)
-				)
-		);
+		this.addDrop(Blocks.LAPIS_ORE, BlockLootTableGenerator::method_34057);
+		this.addDrop(Blocks.DEEPSLATE_LAPIS_ORE, BlockLootTableGenerator::method_34057);
 		this.addDrop(
 			Blocks.COBWEB,
 			blockx -> dropsWithSilkTouchOrShears(blockx, (LootPoolEntry.Builder<?>)addSurvivesExplosionCondition(blockx, ItemEntry.builder(Items.STRING)))
@@ -1449,18 +1468,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 					)
 				)
 		);
-		this.addDrop(
-			Blocks.REDSTONE_ORE,
-			blockx -> dropsWithSilkTouch(
-					blockx,
-					(LootPoolEntry.Builder<?>)applyExplosionDecay(
-						blockx,
-						ItemEntry.builder(Items.REDSTONE)
-							.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(4.0F, 5.0F)))
-							.apply(ApplyBonusLootFunction.uniformBonusCount(Enchantments.FORTUNE))
-					)
-				)
-		);
+		this.addDrop(Blocks.REDSTONE_ORE, BlockLootTableGenerator::method_34058);
+		this.addDrop(Blocks.DEEPSLATE_REDSTONE_ORE, BlockLootTableGenerator::method_34058);
 		this.addDrop(
 			Blocks.SEA_LANTERN,
 			blockx -> dropsWithSilkTouch(

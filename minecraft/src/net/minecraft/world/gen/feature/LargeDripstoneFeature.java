@@ -4,6 +4,7 @@ import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.Random;
 import javax.annotation.Nullable;
+import net.minecraft.class_5863;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
@@ -12,7 +13,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.UniformFloatDistribution;
 import net.minecraft.world.gen.feature.util.DripstoneColumn;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
 import net.minecraft.world.gen.feature.util.FeatureContext;
@@ -74,9 +74,11 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 	}
 
 	private static LargeDripstoneFeature.DripstoneGenerator createGenerator(
-		BlockPos pos, boolean isStalagmite, Random random, int scale, UniformFloatDistribution bluntness, UniformFloatDistribution heightScale
+		BlockPos pos, boolean isStalagmite, Random random, int scale, class_5863 bluntness, class_5863 heightScale
 	) {
-		return new LargeDripstoneFeature.DripstoneGenerator(pos, isStalagmite, scale, (double)bluntness.getValue(random), (double)heightScale.getValue(random));
+		return new LargeDripstoneFeature.DripstoneGenerator(
+			pos, isStalagmite, scale, (double)bluntness.method_33920(random), (double)heightScale.method_33920(random)
+		);
 	}
 
 	static final class DripstoneGenerator {
@@ -168,9 +170,9 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 		@Nullable
 		private final Vec3d wind;
 
-		private WindModifier(int y, Random random, UniformFloatDistribution wind) {
+		private WindModifier(int y, Random random, class_5863 wind) {
 			this.y = y;
-			float f = wind.getValue(random);
+			float f = wind.method_33920(random);
 			float g = MathHelper.nextBetween(random, 0.0F, (float) Math.PI);
 			this.wind = new Vec3d((double)(MathHelper.cos(g) * f), 0.0, (double)(MathHelper.sin(g) * f));
 		}

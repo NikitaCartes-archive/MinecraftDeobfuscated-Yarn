@@ -33,7 +33,6 @@ public class DebugRenderer {
 	public final DebugRenderer.Renderer heightmapDebugRenderer;
 	public final DebugRenderer.Renderer collisionDebugRenderer;
 	public final DebugRenderer.Renderer neighborUpdateDebugRenderer;
-	public final CaveDebugRenderer caveDebugRenderer;
 	public final StructureDebugRenderer structureDebugRenderer;
 	public final DebugRenderer.Renderer skyLightDebugRenderer;
 	public final DebugRenderer.Renderer worldGenAttemptDebugRenderer;
@@ -54,7 +53,6 @@ public class DebugRenderer {
 		this.heightmapDebugRenderer = new HeightmapDebugRenderer(client);
 		this.collisionDebugRenderer = new CollisionDebugRenderer(client);
 		this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(client);
-		this.caveDebugRenderer = new CaveDebugRenderer();
 		this.structureDebugRenderer = new StructureDebugRenderer(client);
 		this.skyLightDebugRenderer = new SkyLightDebugRenderer(client);
 		this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer();
@@ -76,7 +74,6 @@ public class DebugRenderer {
 		this.heightmapDebugRenderer.clear();
 		this.collisionDebugRenderer.clear();
 		this.neighborUpdateDebugRenderer.clear();
-		this.caveDebugRenderer.clear();
 		this.structureDebugRenderer.clear();
 		this.skyLightDebugRenderer.clear();
 		this.worldGenAttemptDebugRenderer.clear();

@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -9,17 +8,16 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.text.Text;
 
 public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Text header;
-	private Text footer;
+	private final Text header;
+	private final Text footer;
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.header = buf.readText();
-		this.footer = buf.readText();
+	public PlayerListHeaderS2CPacket(PacketByteBuf packetByteBuf) {
+		this.header = packetByteBuf.readText();
+		this.footer = packetByteBuf.readText();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeText(this.header);
 		buf.writeText(this.footer);
 	}

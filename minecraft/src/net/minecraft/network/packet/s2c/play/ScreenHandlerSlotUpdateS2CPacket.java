@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.ItemStack;
@@ -9,12 +8,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int syncId;
-	private int slot;
-	private ItemStack stack = ItemStack.EMPTY;
-
-	public ScreenHandlerSlotUpdateS2CPacket() {
-	}
+	private final int syncId;
+	private final int slot;
+	private final ItemStack stack;
 
 	public ScreenHandlerSlotUpdateS2CPacket(int syncId, int slot, ItemStack stack) {
 		this.syncId = syncId;
@@ -22,22 +18,21 @@ public class ScreenHandlerSlotUpdateS2CPacket implements Packet<ClientPlayPacket
 		this.stack = stack.copy();
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onScreenHandlerSlotUpdate(this);
+	public ScreenHandlerSlotUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+		this.syncId = packetByteBuf.readByte();
+		this.slot = packetByteBuf.readShort();
+		this.stack = packetByteBuf.readItemStack();
 	}
 
 	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.syncId = buf.readByte();
-		this.slot = buf.readShort();
-		this.stack = buf.readItemStack();
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeShort(this.slot);
 		buf.writeItemStack(this.stack);
+	}
+
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+		clientPlayPacketListener.onScreenHandlerSlotUpdate(this);
 	}
 
 	@Environment(EnvType.CLIENT)

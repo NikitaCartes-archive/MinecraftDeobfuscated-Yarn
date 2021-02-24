@@ -1,11 +1,15 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import net.minecraft.class_5875;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.TestableWorld;
@@ -77,7 +81,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> BASALT_PILLAR = register("basalt_pillar", new BasaltPillarFeature(DefaultFeatureConfig.CODEC));
-	public static final Feature<OreFeatureConfig> NO_SURFACE_ORE = register("no_surface_ore", new NoSurfaceOreFeature(OreFeatureConfig.CODEC));
+	public static final Feature<OreFeatureConfig> SCATTERED_ORE = register("scattered_ore", new class_5875(OreFeatureConfig.CODEC));
 	public static final Feature<RandomFeatureConfig> RANDOM_SELECTOR = register("random_selector", new RandomFeature(RandomFeatureConfig.CODEC));
 	public static final Feature<SimpleRandomFeatureConfig> SIMPLE_RANDOM_SELECTOR = register(
 		"simple_random_selector", new SimpleRandomFeature(SimpleRandomFeatureConfig.CODEC)
@@ -140,5 +144,22 @@ public abstract class Feature<FC extends FeatureConfig> {
 
 	public static boolean isAir(TestableWorld world, BlockPos pos) {
 		return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
+	}
+
+	public static boolean method_33982(Function<BlockPos, BlockState> function, BlockPos blockPos, Predicate<BlockState> predicate) {
+		BlockPos.Mutable mutable = new BlockPos.Mutable();
+
+		for (Direction direction : Direction.values()) {
+			mutable.set(blockPos, direction);
+			if (predicate.test(function.apply(mutable))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean method_33981(Function<BlockPos, BlockState> function, BlockPos blockPos) {
+		return method_33982(function, blockPos, AbstractBlock.AbstractBlockState::isAir);
 	}
 }

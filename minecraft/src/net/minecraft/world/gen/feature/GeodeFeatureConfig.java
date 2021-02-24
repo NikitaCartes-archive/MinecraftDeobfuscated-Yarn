@@ -24,7 +24,8 @@ public class GeodeFeatureConfig implements FeatureConfig {
 					Codec.intRange(0, 10).fieldOf("max_point_offset").orElse(3).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxPointOffset),
 					Codec.INT.fieldOf("min_gen_offset").orElse(-16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.minGenOffset),
 					Codec.INT.fieldOf("max_gen_offset").orElse(16).forGetter(geodeFeatureConfig -> geodeFeatureConfig.maxGenOffset),
-					RANGE.fieldOf("noise_multiplier").orElse(0.05).forGetter(geodeFeatureConfig -> geodeFeatureConfig.noiseMultiplier)
+					RANGE.fieldOf("noise_multiplier").orElse(0.05).forGetter(geodeFeatureConfig -> geodeFeatureConfig.noiseMultiplier),
+					Codec.INT.fieldOf("invalid_blocks_threshold").forGetter(geodeFeatureConfig -> geodeFeatureConfig.field_29062)
 				)
 				.apply(instance, GeodeFeatureConfig::new)
 	);
@@ -43,6 +44,7 @@ public class GeodeFeatureConfig implements FeatureConfig {
 	public final int minGenOffset;
 	public final int maxGenOffset;
 	public final double noiseMultiplier;
+	public final int field_29062;
 
 	public GeodeFeatureConfig(
 		GeodeLayerConfig layerConfig,
@@ -59,7 +61,8 @@ public class GeodeFeatureConfig implements FeatureConfig {
 		int maxPointOffset,
 		int minGenOffset,
 		int maxGenOffset,
-		double noiseMultiplier
+		double noiseMultiplier,
+		int i
 	) {
 		this.layerConfig = layerConfig;
 		this.layerThicknessConfig = layerThicknessConfig;
@@ -76,5 +79,6 @@ public class GeodeFeatureConfig implements FeatureConfig {
 		this.minGenOffset = minGenOffset;
 		this.maxGenOffset = maxGenOffset;
 		this.noiseMultiplier = noiseMultiplier;
+		this.field_29062 = i;
 	}
 }

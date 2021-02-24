@@ -463,11 +463,11 @@ public class MapState extends PersistentState {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public void replaceIcons(MapIcon[] icons) {
+	public void replaceIcons(List<MapIcon> list) {
 		this.icons.clear();
 
-		for (int i = 0; i < icons.length; i++) {
-			MapIcon mapIcon = icons[i];
+		for (int i = 0; i < list.size(); i++) {
+			MapIcon mapIcon = (MapIcon)list.get(i);
 			this.icons.put("icon-" + i, mapIcon);
 		}
 	}

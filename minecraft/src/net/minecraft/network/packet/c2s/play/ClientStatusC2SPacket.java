@@ -1,27 +1,22 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class ClientStatusC2SPacket implements Packet<ServerPlayPacketListener> {
-	private ClientStatusC2SPacket.Mode mode;
-
-	public ClientStatusC2SPacket() {
-	}
+	private final ClientStatusC2SPacket.Mode mode;
 
 	public ClientStatusC2SPacket(ClientStatusC2SPacket.Mode mode) {
 		this.mode = mode;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.mode = buf.readEnumConstant(ClientStatusC2SPacket.Mode.class);
+	public ClientStatusC2SPacket(PacketByteBuf packetByteBuf) {
+		this.mode = packetByteBuf.readEnumConstant(ClientStatusC2SPacket.Mode.class);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.mode);
 	}
 

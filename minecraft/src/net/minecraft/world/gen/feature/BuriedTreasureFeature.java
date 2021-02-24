@@ -7,7 +7,6 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
@@ -26,14 +25,13 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 		BiomeSource biomeSource,
 		long l,
 		ChunkRandom chunkRandom,
-		int i,
-		int j,
-		Biome biome,
 		ChunkPos chunkPos,
+		Biome biome,
+		ChunkPos chunkPos2,
 		ProbabilityConfig probabilityConfig,
 		HeightLimitView heightLimitView
 	) {
-		chunkRandom.setRegionSeed(l, i, j, 10387320);
+		chunkRandom.setRegionSeed(l, chunkPos.x, chunkPos.z, 10387320);
 		return chunkRandom.nextFloat() < probabilityConfig.probability;
 	}
 
@@ -43,28 +41,28 @@ public class BuriedTreasureFeature extends StructureFeature<ProbabilityConfig> {
 	}
 
 	public static class Start extends StructureStart<ProbabilityConfig> {
-		public Start(StructureFeature<ProbabilityConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<ProbabilityConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkPos, blockBox, i, l);
 		}
 
 		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			int i,
-			int j,
+			ChunkPos chunkPos,
 			Biome biome,
 			ProbabilityConfig probabilityConfig,
 			HeightLimitView heightLimitView
 		) {
-			BlockPos blockPos = new BlockPos(ChunkSectionPos.getOffsetPos(i, 9), 90, ChunkSectionPos.getOffsetPos(j, 9));
+			BlockPos blockPos = new BlockPos(chunkPos.method_33939(9), 90, chunkPos.method_33941(9));
 			this.children.add(new BuriedTreasureGenerator.Piece(blockPos));
 			this.setBoundingBoxFromChildren();
 		}
 
 		@Override
 		public BlockPos getPos() {
-			return new BlockPos(ChunkSectionPos.getOffsetPos(this.getChunkX(), 9), 0, ChunkSectionPos.getOffsetPos(this.getChunkZ(), 9));
+			ChunkPos chunkPos = this.method_34000();
+			return new BlockPos(chunkPos.method_33939(9), 0, chunkPos.method_33941(9));
 		}
 	}
 }

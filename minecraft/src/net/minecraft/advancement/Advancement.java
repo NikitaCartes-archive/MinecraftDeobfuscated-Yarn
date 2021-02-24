@@ -428,7 +428,7 @@ public class Advancement {
 				strings[i] = new String[buf.readVarInt()];
 
 				for (int j = 0; j < strings[i].length; j++) {
-					strings[i][j] = buf.readString(32767);
+					strings[i][j] = buf.readString();
 				}
 			}
 

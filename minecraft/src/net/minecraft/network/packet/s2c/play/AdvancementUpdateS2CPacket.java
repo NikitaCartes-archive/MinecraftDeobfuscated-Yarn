@@ -1,12 +1,12 @@
 package net.minecraft.network.packet.s2c.play;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import java.io.IOException;
+import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.Map.Entry;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
@@ -17,85 +17,43 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.Identifier;
 
 public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
-	private boolean clearCurrent;
-	private Map<Identifier, Advancement.Task> toEarn;
-	private Set<Identifier> toRemove;
-	private Map<Identifier, AdvancementProgress> toSetProgress;
-
-	public AdvancementUpdateS2CPacket() {
-	}
+	private final boolean clearCurrent;
+	private final Map<Identifier, Advancement.Task> toEarn;
+	private final Set<Identifier> toRemove;
+	private final Map<Identifier, AdvancementProgress> toSetProgress;
 
 	public AdvancementUpdateS2CPacket(
 		boolean clearCurrent, Collection<Advancement> toEarn, Set<Identifier> toRemove, Map<Identifier, AdvancementProgress> toSetProgress
 	) {
 		this.clearCurrent = clearCurrent;
-		this.toEarn = Maps.<Identifier, Advancement.Task>newHashMap();
+		Builder<Identifier, Advancement.Task> builder = ImmutableMap.builder();
 
 		for (Advancement advancement : toEarn) {
-			this.toEarn.put(advancement.getId(), advancement.createTask());
+			builder.put(advancement.getId(), advancement.createTask());
 		}
 
-		this.toRemove = toRemove;
-		this.toSetProgress = Maps.<Identifier, AdvancementProgress>newHashMap(toSetProgress);
+		this.toEarn = builder.build();
+		this.toRemove = ImmutableSet.copyOf(toRemove);
+		this.toSetProgress = ImmutableMap.copyOf(toSetProgress);
+	}
+
+	public AdvancementUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+		this.clearCurrent = packetByteBuf.readBoolean();
+		this.toEarn = packetByteBuf.method_34067(PacketByteBuf::readIdentifier, Advancement.Task::fromPacket);
+		this.toRemove = packetByteBuf.method_34068(Sets::newLinkedHashSetWithExpectedSize, PacketByteBuf::readIdentifier);
+		this.toSetProgress = packetByteBuf.method_34067(PacketByteBuf::readIdentifier, AdvancementProgress::fromPacket);
+	}
+
+	@Override
+	public void write(PacketByteBuf buf) {
+		buf.writeBoolean(this.clearCurrent);
+		buf.method_34063(this.toEarn, PacketByteBuf::writeIdentifier, (packetByteBuf, task) -> task.toPacket(packetByteBuf));
+		buf.method_34062(this.toRemove, PacketByteBuf::writeIdentifier);
+		buf.method_34063(this.toSetProgress, PacketByteBuf::writeIdentifier, (packetByteBuf, advancementProgress) -> advancementProgress.toPacket(packetByteBuf));
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
 		clientPlayPacketListener.onAdvancements(this);
-	}
-
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.clearCurrent = buf.readBoolean();
-		this.toEarn = Maps.<Identifier, Advancement.Task>newHashMap();
-		this.toRemove = Sets.<Identifier>newLinkedHashSet();
-		this.toSetProgress = Maps.<Identifier, AdvancementProgress>newHashMap();
-		int i = buf.readVarInt();
-
-		for (int j = 0; j < i; j++) {
-			Identifier identifier = buf.readIdentifier();
-			Advancement.Task task = Advancement.Task.fromPacket(buf);
-			this.toEarn.put(identifier, task);
-		}
-
-		i = buf.readVarInt();
-
-		for (int j = 0; j < i; j++) {
-			Identifier identifier = buf.readIdentifier();
-			this.toRemove.add(identifier);
-		}
-
-		i = buf.readVarInt();
-
-		for (int j = 0; j < i; j++) {
-			Identifier identifier = buf.readIdentifier();
-			this.toSetProgress.put(identifier, AdvancementProgress.fromPacket(buf));
-		}
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) throws IOException {
-		buf.writeBoolean(this.clearCurrent);
-		buf.writeVarInt(this.toEarn.size());
-
-		for (Entry<Identifier, Advancement.Task> entry : this.toEarn.entrySet()) {
-			Identifier identifier = (Identifier)entry.getKey();
-			Advancement.Task task = (Advancement.Task)entry.getValue();
-			buf.writeIdentifier(identifier);
-			task.toPacket(buf);
-		}
-
-		buf.writeVarInt(this.toRemove.size());
-
-		for (Identifier identifier2 : this.toRemove) {
-			buf.writeIdentifier(identifier2);
-		}
-
-		buf.writeVarInt(this.toSetProgress.size());
-
-		for (Entry<Identifier, AdvancementProgress> entry : this.toSetProgress.entrySet()) {
-			buf.writeIdentifier((Identifier)entry.getKey());
-			((AdvancementProgress)entry.getValue()).toPacket(buf);
-		}
 	}
 
 	@Environment(EnvType.CLIENT)

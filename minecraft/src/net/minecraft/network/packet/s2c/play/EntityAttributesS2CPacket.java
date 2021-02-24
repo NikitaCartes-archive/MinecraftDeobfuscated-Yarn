@@ -1,10 +1,8 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -17,14 +15,12 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 
 public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int entityId;
-	private final List<EntityAttributesS2CPacket.Entry> entries = Lists.<EntityAttributesS2CPacket.Entry>newArrayList();
-
-	public EntityAttributesS2CPacket() {
-	}
+	private final int entityId;
+	private final List<EntityAttributesS2CPacket.Entry> entries;
 
 	public EntityAttributesS2CPacket(int entityId, Collection<EntityAttributeInstance> attributes) {
 		this.entityId = entityId;
+		this.entries = Lists.<EntityAttributesS2CPacket.Entry>newArrayList();
 
 		for (EntityAttributeInstance entityAttributeInstance : attributes) {
 			this.entries
@@ -34,43 +30,38 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.entityId = buf.readVarInt();
-		int i = buf.readInt();
-
-		for (int j = 0; j < i; j++) {
-			Identifier identifier = buf.readIdentifier();
-			EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
-			double d = buf.readDouble();
-			List<EntityAttributeModifier> list = Lists.<EntityAttributeModifier>newArrayList();
-			int k = buf.readVarInt();
-
-			for (int l = 0; l < k; l++) {
-				UUID uUID = buf.readUuid();
-				list.add(new EntityAttributeModifier(uUID, "Unknown synced attribute modifier", buf.readDouble(), EntityAttributeModifier.Operation.fromId(buf.readByte())));
+	public EntityAttributesS2CPacket(PacketByteBuf packetByteBuf) {
+		this.entityId = packetByteBuf.readVarInt();
+		this.entries = packetByteBuf.method_34066(
+			packetByteBufx -> {
+				Identifier identifier = packetByteBufx.readIdentifier();
+				EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
+				double d = packetByteBufx.readDouble();
+				List<EntityAttributeModifier> list = packetByteBufx.method_34066(
+					packetByteBufxx -> new EntityAttributeModifier(
+							packetByteBufxx.readUuid(),
+							"Unknown synced attribute modifier",
+							packetByteBufxx.readDouble(),
+							EntityAttributeModifier.Operation.fromId(packetByteBufxx.readByte())
+						)
+				);
+				return new EntityAttributesS2CPacket.Entry(entityAttribute, d, list);
 			}
-
-			this.entries.add(new EntityAttributesS2CPacket.Entry(entityAttribute, d, list));
-		}
+		);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.writeInt(this.entries.size());
-
-		for (EntityAttributesS2CPacket.Entry entry : this.entries) {
-			buf.writeIdentifier(Registry.ATTRIBUTE.getId(entry.getId()));
-			buf.writeDouble(entry.getBaseValue());
-			buf.writeVarInt(entry.getModifiers().size());
-
-			for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {
-				buf.writeUuid(entityAttributeModifier.getId());
-				buf.writeDouble(entityAttributeModifier.getValue());
-				buf.writeByte(entityAttributeModifier.getOperation().getId());
-			}
-		}
+		buf.method_34062(this.entries, (packetByteBuf, entry) -> {
+			packetByteBuf.writeIdentifier(Registry.ATTRIBUTE.getId(entry.getId()));
+			packetByteBuf.writeDouble(entry.getBaseValue());
+			packetByteBuf.method_34062(entry.getModifiers(), (packetByteBufx, entityAttributeModifier) -> {
+				packetByteBufx.writeUuid(entityAttributeModifier.getId());
+				packetByteBufx.writeDouble(entityAttributeModifier.getValue());
+				packetByteBufx.writeByte(entityAttributeModifier.getOperation().getId());
+			});
+		});
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -87,7 +78,7 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		return this.entries;
 	}
 
-	public class Entry {
+	public static class Entry {
 		private final EntityAttribute id;
 		private final double baseValue;
 		private final Collection<EntityAttributeModifier> modifiers;
