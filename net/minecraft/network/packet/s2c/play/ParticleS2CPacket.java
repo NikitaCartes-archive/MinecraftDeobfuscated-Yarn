@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -16,19 +15,16 @@ import net.minecraft.util.registry.Registry;
 
 public class ParticleS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private double x;
-    private double y;
-    private double z;
-    private float offsetX;
-    private float offsetY;
-    private float offsetZ;
-    private float speed;
-    private int count;
-    private boolean longDistance;
-    private ParticleEffect parameters;
-
-    public ParticleS2CPacket() {
-    }
+    private final double x;
+    private final double y;
+    private final double z;
+    private final float offsetX;
+    private final float offsetY;
+    private final float offsetZ;
+    private final float speed;
+    private final int count;
+    private final boolean longDistance;
+    private final ParticleEffect parameters;
 
     public <T extends ParticleEffect> ParticleS2CPacket(T parameters, boolean longDistance, double x, double y, double z, float offsetX, float offsetY, float offsetZ, float speed, int count) {
         this.parameters = parameters;
@@ -43,22 +39,21 @@ implements Packet<ClientPlayPacketListener> {
         this.count = count;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        ParticleType particleType = (ParticleType)Registry.PARTICLE_TYPE.get(buf.readInt());
+    public ParticleS2CPacket(PacketByteBuf packetByteBuf) {
+        ParticleType particleType = (ParticleType)Registry.PARTICLE_TYPE.get(packetByteBuf.readInt());
         if (particleType == null) {
             particleType = ParticleTypes.BARRIER;
         }
-        this.longDistance = buf.readBoolean();
-        this.x = buf.readDouble();
-        this.y = buf.readDouble();
-        this.z = buf.readDouble();
-        this.offsetX = buf.readFloat();
-        this.offsetY = buf.readFloat();
-        this.offsetZ = buf.readFloat();
-        this.speed = buf.readFloat();
-        this.count = buf.readInt();
-        this.parameters = this.readParticleParameters(buf, particleType);
+        this.longDistance = packetByteBuf.readBoolean();
+        this.x = packetByteBuf.readDouble();
+        this.y = packetByteBuf.readDouble();
+        this.z = packetByteBuf.readDouble();
+        this.offsetX = packetByteBuf.readFloat();
+        this.offsetY = packetByteBuf.readFloat();
+        this.offsetZ = packetByteBuf.readFloat();
+        this.speed = packetByteBuf.readFloat();
+        this.count = packetByteBuf.readInt();
+        this.parameters = this.readParticleParameters(packetByteBuf, particleType);
     }
 
     private <T extends ParticleEffect> T readParticleParameters(PacketByteBuf buf, ParticleType<T> type) {
@@ -66,7 +61,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeInt(Registry.PARTICLE_TYPE.getRawId(this.parameters.getType()));
         buf.writeBoolean(this.longDistance);
         buf.writeDouble(this.x);

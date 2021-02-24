@@ -5,7 +5,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
-import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -17,33 +16,29 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntityEquipmentUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int id;
+    private final int id;
     private final List<Pair<EquipmentSlot, ItemStack>> equipmentList;
-
-    public EntityEquipmentUpdateS2CPacket() {
-        this.equipmentList = Lists.newArrayList();
-    }
 
     public EntityEquipmentUpdateS2CPacket(int id, List<Pair<EquipmentSlot, ItemStack>> equipmentList) {
         this.id = id;
         this.equipmentList = equipmentList;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
+    public EntityEquipmentUpdateS2CPacket(PacketByteBuf packetByteBuf) {
         byte i;
-        this.id = buf.readVarInt();
+        this.id = packetByteBuf.readVarInt();
         EquipmentSlot[] equipmentSlots = EquipmentSlot.values();
+        this.equipmentList = Lists.newArrayList();
         do {
-            i = buf.readByte();
+            i = packetByteBuf.readByte();
             EquipmentSlot equipmentSlot = equipmentSlots[i & 0x7F];
-            ItemStack itemStack = buf.readItemStack();
+            ItemStack itemStack = packetByteBuf.readItemStack();
             this.equipmentList.add(Pair.of(equipmentSlot, itemStack));
         } while ((i & 0xFFFFFF80) != 0);
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.id);
         int i = this.equipmentList.size();
         for (int j = 0; j < i; ++j) {

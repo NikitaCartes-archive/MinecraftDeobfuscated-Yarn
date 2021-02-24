@@ -3,10 +3,11 @@
  */
 package net.minecraft.client.gui.hud;
 
+import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.network.packet.s2c.play.BossBarS2CPacket;
+import net.minecraft.text.Text;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 
@@ -16,14 +17,14 @@ extends BossBar {
     protected float healthLatest;
     protected long timeHealthSet;
 
-    public ClientBossBar(BossBarS2CPacket packet) {
-        super(packet.getUuid(), packet.getName(), packet.getColor(), packet.getOverlay());
-        this.healthLatest = packet.getPercent();
-        this.percent = packet.getPercent();
+    public ClientBossBar(UUID uUID, Text text, float f, BossBar.Color color, BossBar.Style style, boolean bl, boolean bl2, boolean bl3) {
+        super(uUID, text, color, style);
+        this.healthLatest = f;
+        this.percent = f;
         this.timeHealthSet = Util.getMeasuringTimeMs();
-        this.setDarkenSky(packet.shouldDarkenSky());
-        this.setDragonMusic(packet.hasDragonMusic());
-        this.setThickenFog(packet.shouldThickenFog());
+        this.setDarkenSky(bl);
+        this.setDragonMusic(bl2);
+        this.setThickenFog(bl3);
     }
 
     @Override
@@ -38,28 +39,6 @@ extends BossBar {
         long l = Util.getMeasuringTimeMs() - this.timeHealthSet;
         float f = MathHelper.clamp((float)l / 100.0f, 0.0f, 1.0f);
         return MathHelper.lerp(f, this.percent, this.healthLatest);
-    }
-
-    public void handlePacket(BossBarS2CPacket packet) {
-        switch (packet.getType()) {
-            case UPDATE_NAME: {
-                this.setName(packet.getName());
-                break;
-            }
-            case UPDATE_PROGRESS: {
-                this.setPercent(packet.getPercent());
-                break;
-            }
-            case UPDATE_STYLE: {
-                this.setColor(packet.getColor());
-                this.setOverlay(packet.getOverlay());
-                break;
-            }
-            case UPDATE_PROPERTIES: {
-                this.setDarkenSky(packet.shouldDarkenSky());
-                this.setDragonMusic(packet.hasDragonMusic());
-            }
-        }
     }
 }
 

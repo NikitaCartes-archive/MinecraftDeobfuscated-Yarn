@@ -12,7 +12,6 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -35,8 +34,8 @@ extends StructureFeature<DefaultFeatureConfig> {
     }
 
     @Override
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
-        return EndCityFeature.getGenerationHeight(i, j, chunkGenerator, heightLimitView) >= 60;
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, Biome biome, ChunkPos chunkPos2, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
+        return EndCityFeature.getGenerationHeight(chunkPos, chunkGenerator, heightLimitView) >= 60;
     }
 
     @Override
@@ -44,8 +43,8 @@ extends StructureFeature<DefaultFeatureConfig> {
         return Start::new;
     }
 
-    private static int getGenerationHeight(int chunkX, int chunkZ, ChunkGenerator chunkGenerator, HeightLimitView heightLimitView) {
-        Random random = new Random(chunkX + chunkZ * 10387313);
+    private static int getGenerationHeight(ChunkPos chunkPos, ChunkGenerator chunkGenerator, HeightLimitView heightLimitView) {
+        Random random = new Random(chunkPos.x + chunkPos.z * 10387313);
         BlockRotation blockRotation = BlockRotation.random(random);
         int i = 5;
         int j = 5;
@@ -57,8 +56,8 @@ extends StructureFeature<DefaultFeatureConfig> {
         } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
             j = -5;
         }
-        int k = ChunkSectionPos.getOffsetPos(chunkX, 7);
-        int l = ChunkSectionPos.getOffsetPos(chunkZ, 7);
+        int k = chunkPos.method_33939(7);
+        int l = chunkPos.method_33941(7);
         int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
         int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
         int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
@@ -68,18 +67,18 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     public static class Start
     extends StructureStart<DefaultFeatureConfig> {
-        public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-            super(structureFeature, i, j, blockBox, k, l);
+        public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
+            super(structureFeature, chunkPos, blockBox, i, l);
         }
 
         @Override
-        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, int i, int j, Biome biome, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
+        public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
             BlockRotation blockRotation = BlockRotation.random(this.random);
-            int k = EndCityFeature.getGenerationHeight(i, j, chunkGenerator, heightLimitView);
-            if (k < 60) {
+            int i = EndCityFeature.getGenerationHeight(chunkPos, chunkGenerator, heightLimitView);
+            if (i < 60) {
                 return;
             }
-            BlockPos blockPos = new BlockPos(ChunkSectionPos.getOffsetPos(i, 8), k, ChunkSectionPos.getOffsetPos(j, 8));
+            BlockPos blockPos = chunkPos.method_33943(i);
             EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
             this.setBoundingBoxFromChildren();
         }

@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -16,25 +15,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class RemoveEntityStatusEffectS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int entityId;
-    private StatusEffect effectType;
-
-    public RemoveEntityStatusEffectS2CPacket() {
-    }
+    private final int entityId;
+    private final StatusEffect effectType;
 
     public RemoveEntityStatusEffectS2CPacket(int entityId, StatusEffect effectType) {
         this.entityId = entityId;
         this.effectType = effectType;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.entityId = buf.readVarInt();
-        this.effectType = StatusEffect.byRawId(buf.readUnsignedByte());
+    public RemoveEntityStatusEffectS2CPacket(PacketByteBuf packetByteBuf) {
+        this.entityId = packetByteBuf.readVarInt();
+        this.effectType = StatusEffect.byRawId(packetByteBuf.readUnsignedByte());
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.entityId);
         buf.writeByte(StatusEffect.getRawId(this.effectType));
     }

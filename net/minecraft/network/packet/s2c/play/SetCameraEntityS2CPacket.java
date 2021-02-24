@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -15,22 +14,18 @@ import org.jetbrains.annotations.Nullable;
 
 public class SetCameraEntityS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    public int entityId;
-
-    public SetCameraEntityS2CPacket() {
-    }
+    private final int entityId;
 
     public SetCameraEntityS2CPacket(Entity entity) {
         this.entityId = entity.getId();
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.entityId = buf.readVarInt();
+    public SetCameraEntityS2CPacket(PacketByteBuf packetByteBuf) {
+        this.entityId = packetByteBuf.readVarInt();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.entityId);
     }
 

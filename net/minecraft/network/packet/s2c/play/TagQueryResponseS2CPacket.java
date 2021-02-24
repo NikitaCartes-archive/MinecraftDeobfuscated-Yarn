@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -14,26 +13,22 @@ import org.jetbrains.annotations.Nullable;
 
 public class TagQueryResponseS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int transactionId;
+    private final int transactionId;
     @Nullable
-    private CompoundTag tag;
-
-    public TagQueryResponseS2CPacket() {
-    }
+    private final CompoundTag tag;
 
     public TagQueryResponseS2CPacket(int transactionId, @Nullable CompoundTag tag) {
         this.transactionId = transactionId;
         this.tag = tag;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.transactionId = buf.readVarInt();
-        this.tag = buf.readCompoundTag();
+    public TagQueryResponseS2CPacket(PacketByteBuf packetByteBuf) {
+        this.transactionId = packetByteBuf.readVarInt();
+        this.tag = packetByteBuf.readCompoundTag();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.transactionId);
         buf.writeCompoundTag(this.tag);
     }

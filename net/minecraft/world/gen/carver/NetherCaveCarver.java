@@ -11,18 +11,19 @@ import java.util.function.Function;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5871;
+import net.minecraft.class_5873;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
-import net.minecraft.world.gen.ProbabilityConfig;
 import net.minecraft.world.gen.carver.CaveCarver;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NetherCaveCarver
 extends CaveCarver {
-    public NetherCaveCarver(Codec<ProbabilityConfig> configCodec) {
-        super(configCodec, 128);
+    public NetherCaveCarver(Codec<class_5871> codec) {
+        super(codec);
         this.alwaysCarvableBlocks = ImmutableSet.of(Blocks.STONE, Blocks.GRANITE, Blocks.DIORITE, Blocks.ANDESITE, Blocks.DIRT, Blocks.COARSE_DIRT, new Block[]{Blocks.PODZOL, Blocks.GRASS_BLOCK, Blocks.NETHERRACK, Blocks.SOUL_SAND, Blocks.SOUL_SOIL, Blocks.CRIMSON_NYLIUM, Blocks.WARPED_NYLIUM, Blocks.NETHER_WART_BLOCK, Blocks.WARPED_WART_BLOCK, Blocks.BASALT, Blocks.BLACKSTONE});
         this.carvableFluids = ImmutableSet.of(Fluids.LAVA, Fluids.WATER);
     }
@@ -43,21 +44,15 @@ extends CaveCarver {
     }
 
     @Override
-    protected int getCaveY(Random random) {
-        return random.nextInt(this.heightLimit);
+    protected int getCaveY(class_5873 arg, Random random) {
+        return random.nextInt(arg.getMaxY());
     }
 
     @Override
-    protected boolean carveAtPoint(Chunk chunk, Function<BlockPos, Biome> posToBiome, BitSet carvingMask, Random random, BlockPos.Mutable currentPos, BlockPos.Mutable upperPos, BlockPos.Mutable lowerPos, int seaLevel, int mainChunkX, int mainChunkZ, int x, int z, int relativeX, int y, int relativeZ, MutableBoolean visitedSurface) {
-        int i = relativeX | relativeZ << 4 | y << 8;
-        if (carvingMask.get(i)) {
-            return false;
-        }
-        carvingMask.set(i);
-        currentPos.set(x, y, z);
-        if (this.canAlwaysCarveBlock(chunk.getBlockState(currentPos))) {
-            BlockState blockState = y <= 31 ? LAVA.getBlockState() : CAVE_AIR;
-            chunk.setBlockState(currentPos, blockState, false);
+    protected boolean carveAtPoint(class_5873 arg, class_5871 arg2, Chunk chunk, Function<BlockPos, Biome> function, BitSet bitSet, Random random, BlockPos.Mutable mutable, BlockPos.Mutable mutable2, int mainChunkX, MutableBoolean mutableBoolean) {
+        if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
+            BlockState blockState = mutable.getY() <= arg.getMinY() + 31 ? LAVA.getBlockState() : CAVE_AIR;
+            chunk.setBlockState(mutable, blockState, false);
             return true;
         }
         return false;

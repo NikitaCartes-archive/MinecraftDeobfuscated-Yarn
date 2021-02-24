@@ -3,9 +3,11 @@
  */
 package net.minecraft.client.particle;
 
+import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5878;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
 import net.minecraft.client.particle.ParticleTextureSheet;
@@ -18,40 +20,31 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class WaterSuspendParticle
 extends SpriteBillboardParticle {
-    private WaterSuspendParticle(ClientWorld world, double x, double y, double z) {
-        super(world, x, y - 0.125, z);
-        this.colorRed = 0.4f;
-        this.colorGreen = 0.4f;
-        this.colorBlue = 0.7f;
+    private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double d, double e, double f) {
+        super(world, d, e - 0.125, f);
         this.setBoundingBoxSpacing(0.01f, 0.01f);
+        this.setSprite(spriteProvider);
         this.scale *= this.random.nextFloat() * 0.6f + 0.2f;
         this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
         this.collidesWithWorld = false;
+        this.field_28786 = 1.0f;
+        this.gravityStrength = 0.0f;
     }
 
-    private WaterSuspendParticle(ClientWorld world, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
-        super(world, x, y - 0.125, z, velocityX, velocityY, velocityZ);
+    private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double d, double e, double f, double g, double h, double i) {
+        super(world, d, e - 0.125, f, g, h, i);
         this.setBoundingBoxSpacing(0.01f, 0.01f);
+        this.setSprite(spriteProvider);
         this.scale *= this.random.nextFloat() * 0.6f + 0.6f;
         this.maxAge = (int)(16.0 / (Math.random() * 0.8 + 0.2));
         this.collidesWithWorld = false;
+        this.field_28786 = 1.0f;
+        this.gravityStrength = 0.0f;
     }
 
     @Override
     public ParticleTextureSheet getType() {
         return ParticleTextureSheet.PARTICLE_SHEET_OPAQUE;
-    }
-
-    @Override
-    public void tick() {
-        this.prevPosX = this.x;
-        this.prevPosY = this.y;
-        this.prevPosZ = this.z;
-        if (this.maxAge-- <= 0) {
-            this.markDead();
-            return;
-        }
-        this.move(this.velocityX, this.velocityY, this.velocityZ);
     }
 
     @Environment(value=EnvType.CLIENT)
@@ -66,8 +59,7 @@ extends SpriteBillboardParticle {
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
             double j = (double)clientWorld.random.nextFloat() * -1.9 * (double)clientWorld.random.nextFloat() * 0.1;
-            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f, 0.0, j, 0.0);
-            waterSuspendParticle.setSprite(this.spriteProvider);
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, j, 0.0);
             waterSuspendParticle.setColor(0.1f, 0.1f, 0.3f);
             waterSuspendParticle.setBoundingBoxSpacing(0.001f, 0.001f);
             return waterSuspendParticle;
@@ -89,30 +81,32 @@ extends SpriteBillboardParticle {
             double j = random.nextGaussian() * (double)1.0E-6f;
             double k = random.nextGaussian() * (double)1.0E-4f;
             double l = random.nextGaussian() * (double)1.0E-6f;
-            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f, j, k, l);
-            waterSuspendParticle.setSprite(this.spriteProvider);
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, j, k, l);
             waterSuspendParticle.setColor(0.9f, 0.4f, 0.5f);
             return waterSuspendParticle;
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class SporeBlossomAirFactory
+    public static class class_5877
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider spriteProvider;
-        private final Random random;
+        private final SpriteProvider field_29073;
 
-        public SporeBlossomAirFactory(SpriteProvider spriteProvider) {
-            this.spriteProvider = spriteProvider;
-            this.random = new Random();
+        public class_5877(SpriteProvider spriteProvider) {
+            this.field_29073 = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f);
-            waterSuspendParticle.maxAge = MathHelper.nextBetween(this.random, 1000, 2000);
-            waterSuspendParticle.setSprite(this.spriteProvider);
-            waterSuspendParticle.gravityStrength = 0.001f;
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.field_29073, d, e, f, 0.0, (double)-0.8f, 0.0){
+
+                @Override
+                public Optional<class_5878> method_34019() {
+                    return Optional.of(class_5878.field_29077);
+                }
+            };
+            waterSuspendParticle.maxAge = MathHelper.nextBetween(clientWorld.random, 500, 1000);
+            waterSuspendParticle.gravityStrength = 0.01f;
             waterSuspendParticle.setColor(0.32f, 0.5f, 0.22f);
             return waterSuspendParticle;
         }
@@ -129,8 +123,8 @@ extends SpriteBillboardParticle {
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, d, e, f);
-            waterSuspendParticle.setSprite(this.spriteProvider);
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f);
+            waterSuspendParticle.setColor(0.4f, 0.4f, 0.7f);
             return waterSuspendParticle;
         }
     }

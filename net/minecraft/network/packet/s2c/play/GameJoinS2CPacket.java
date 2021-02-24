@@ -4,7 +4,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Sets;
-import java.io.IOException;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -21,25 +20,22 @@ import org.jetbrains.annotations.Nullable;
 
 public class GameJoinS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int playerEntityId;
-    private long sha256Seed;
-    private boolean hardcore;
-    private GameMode gameMode;
+    private final int playerEntityId;
+    private final long sha256Seed;
+    private final boolean hardcore;
+    private final GameMode gameMode;
     @Nullable
-    private GameMode previousGameMode;
-    private Set<RegistryKey<World>> dimensionIds;
-    private DynamicRegistryManager.Impl registryManager;
-    private DimensionType dimensionType;
-    private RegistryKey<World> dimensionId;
-    private int maxPlayers;
-    private int viewDistance;
-    private boolean reducedDebugInfo;
-    private boolean showDeathScreen;
-    private boolean debugWorld;
-    private boolean flatWorld;
-
-    public GameJoinS2CPacket() {
-    }
+    private final GameMode previousGameMode;
+    private final Set<RegistryKey<World>> dimensionIds;
+    private final DynamicRegistryManager.Impl registryManager;
+    private final DimensionType dimensionType;
+    private final RegistryKey<World> dimensionId;
+    private final int maxPlayers;
+    private final int viewDistance;
+    private final boolean reducedDebugInfo;
+    private final boolean showDeathScreen;
+    private final boolean debugWorld;
+    private final boolean flatWorld;
 
     public GameJoinS2CPacket(int playerEntityId, GameMode gameMode, @Nullable GameMode previousGameMode, long sha256Seed, boolean hardcore, Set<RegistryKey<World>> dimensionIds, DynamicRegistryManager.Impl registryManager, DimensionType dimensionType, RegistryKey<World> dimensionId, int maxPlayers, int chunkLoadDistance, boolean reducedDebugInfo, boolean showDeathScreen, boolean debugWorld, boolean flatWorld) {
         this.playerEntityId = playerEntityId;
@@ -59,39 +55,31 @@ implements Packet<ClientPlayPacketListener> {
         this.flatWorld = flatWorld;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.playerEntityId = buf.readInt();
-        this.hardcore = buf.readBoolean();
-        this.gameMode = GameMode.byId(buf.readByte());
-        this.previousGameMode = GameMode.getOrNull(buf.readByte());
-        int i = buf.readVarInt();
-        this.dimensionIds = Sets.newHashSet();
-        for (int j = 0; j < i; ++j) {
-            this.dimensionIds.add(RegistryKey.of(Registry.DIMENSION, buf.readIdentifier()));
-        }
-        this.registryManager = buf.decode(DynamicRegistryManager.Impl.CODEC);
-        this.dimensionType = buf.decode(DimensionType.REGISTRY_CODEC).get();
-        this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
-        this.sha256Seed = buf.readLong();
-        this.maxPlayers = buf.readVarInt();
-        this.viewDistance = buf.readVarInt();
-        this.reducedDebugInfo = buf.readBoolean();
-        this.showDeathScreen = buf.readBoolean();
-        this.debugWorld = buf.readBoolean();
-        this.flatWorld = buf.readBoolean();
+    public GameJoinS2CPacket(PacketByteBuf packetByteBuf2) {
+        this.playerEntityId = packetByteBuf2.readInt();
+        this.hardcore = packetByteBuf2.readBoolean();
+        this.gameMode = GameMode.byId(packetByteBuf2.readByte());
+        this.previousGameMode = GameMode.getOrNull(packetByteBuf2.readByte());
+        this.dimensionIds = packetByteBuf2.method_34068(Sets::newHashSetWithExpectedSize, packetByteBuf -> RegistryKey.of(Registry.DIMENSION, packetByteBuf.readIdentifier()));
+        this.registryManager = packetByteBuf2.decode(DynamicRegistryManager.Impl.CODEC);
+        this.dimensionType = packetByteBuf2.decode(DimensionType.REGISTRY_CODEC).get();
+        this.dimensionId = RegistryKey.of(Registry.DIMENSION, packetByteBuf2.readIdentifier());
+        this.sha256Seed = packetByteBuf2.readLong();
+        this.maxPlayers = packetByteBuf2.readVarInt();
+        this.viewDistance = packetByteBuf2.readVarInt();
+        this.reducedDebugInfo = packetByteBuf2.readBoolean();
+        this.showDeathScreen = packetByteBuf2.readBoolean();
+        this.debugWorld = packetByteBuf2.readBoolean();
+        this.flatWorld = packetByteBuf2.readBoolean();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeInt(this.playerEntityId);
         buf.writeBoolean(this.hardcore);
         buf.writeByte(this.gameMode.getId());
         buf.writeByte(GameMode.getId(this.previousGameMode));
-        buf.writeVarInt(this.dimensionIds.size());
-        for (RegistryKey<World> registryKey : this.dimensionIds) {
-            buf.writeIdentifier(registryKey.getValue());
-        }
+        buf.method_34062(this.dimensionIds, (packetByteBuf, registryKey) -> packetByteBuf.writeIdentifier(registryKey.getValue()));
         buf.encode(DynamicRegistryManager.Impl.CODEC, this.registryManager);
         buf.encode(DimensionType.REGISTRY_CODEC, () -> this.dimensionType);
         buf.writeIdentifier(this.dimensionId.getValue());
@@ -129,6 +117,7 @@ implements Packet<ClientPlayPacketListener> {
         return this.gameMode;
     }
 
+    @Nullable
     @Environment(value=EnvType.CLIENT)
     public GameMode getPreviousGameMode() {
         return this.previousGameMode;

@@ -4,7 +4,6 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -21,23 +20,26 @@ import org.jetbrains.annotations.Nullable;
 
 public class LightUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int chunkX;
-    private int chunkZ;
-    private BitSet skyLightMask = new BitSet();
-    private BitSet blockLightMask = new BitSet();
-    private BitSet filledSkyLightMask = new BitSet();
-    private BitSet filledBlockLightMask = new BitSet();
-    private final List<byte[]> skyLightUpdates = Lists.newArrayList();
-    private final List<byte[]> blockLightUpdates = Lists.newArrayList();
-    private boolean field_25659;
-
-    public LightUpdateS2CPacket() {
-    }
+    private final int chunkX;
+    private final int chunkZ;
+    private final BitSet skyLightMask;
+    private final BitSet blockLightMask;
+    private final BitSet filledSkyLightMask;
+    private final BitSet filledBlockLightMask;
+    private final List<byte[]> skyLightUpdates;
+    private final List<byte[]> blockLightUpdates;
+    private final boolean field_25659;
 
     public LightUpdateS2CPacket(ChunkPos chunkPos, LightingProvider lightingProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean bl) {
         this.chunkX = chunkPos.x;
         this.chunkZ = chunkPos.z;
         this.field_25659 = bl;
+        this.skyLightMask = new BitSet();
+        this.blockLightMask = new BitSet();
+        this.filledSkyLightMask = new BitSet();
+        this.filledBlockLightMask = new BitSet();
+        this.skyLightUpdates = Lists.newArrayList();
+        this.blockLightUpdates = Lists.newArrayList();
         for (int i = 0; i < lightingProvider.method_31928(); ++i) {
             if (bitSet == null || bitSet.get(i)) {
                 LightUpdateS2CPacket.method_33138(chunkPos, lightingProvider, LightType.SKY, i, this.skyLightMask, this.filledSkyLightMask, this.skyLightUpdates);
@@ -59,28 +61,20 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        int j;
-        this.chunkX = buf.readVarInt();
-        this.chunkZ = buf.readVarInt();
-        this.field_25659 = buf.readBoolean();
-        this.skyLightMask = buf.method_33558();
-        this.blockLightMask = buf.method_33558();
-        this.filledSkyLightMask = buf.method_33558();
-        this.filledBlockLightMask = buf.method_33558();
-        int i = buf.readVarInt();
-        for (j = 0; j < i; ++j) {
-            this.skyLightUpdates.add(buf.readByteArray(2048));
-        }
-        j = buf.readVarInt();
-        for (int k = 0; k < j; ++k) {
-            this.blockLightUpdates.add(buf.readByteArray(2048));
-        }
+    public LightUpdateS2CPacket(PacketByteBuf packetByteBuf2) {
+        this.chunkX = packetByteBuf2.readVarInt();
+        this.chunkZ = packetByteBuf2.readVarInt();
+        this.field_25659 = packetByteBuf2.readBoolean();
+        this.skyLightMask = packetByteBuf2.method_33558();
+        this.blockLightMask = packetByteBuf2.method_33558();
+        this.filledSkyLightMask = packetByteBuf2.method_33558();
+        this.filledBlockLightMask = packetByteBuf2.method_33558();
+        this.skyLightUpdates = packetByteBuf2.method_34066(packetByteBuf -> packetByteBuf.readByteArray(2048));
+        this.blockLightUpdates = packetByteBuf2.method_34066(packetByteBuf -> packetByteBuf.readByteArray(2048));
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.chunkX);
         buf.writeVarInt(this.chunkZ);
         buf.writeBoolean(this.field_25659);
@@ -88,14 +82,8 @@ implements Packet<ClientPlayPacketListener> {
         buf.method_33557(this.blockLightMask);
         buf.method_33557(this.filledSkyLightMask);
         buf.method_33557(this.filledBlockLightMask);
-        buf.writeVarInt(this.skyLightUpdates.size());
-        for (byte[] bs : this.skyLightUpdates) {
-            buf.writeByteArray(bs);
-        }
-        buf.writeVarInt(this.blockLightUpdates.size());
-        for (byte[] bs : this.blockLightUpdates) {
-            buf.writeByteArray(bs);
-        }
+        buf.method_34062(this.skyLightUpdates, PacketByteBuf::writeByteArray);
+        buf.method_34062(this.blockLightUpdates, PacketByteBuf::writeByteArray);
     }
 
     @Override

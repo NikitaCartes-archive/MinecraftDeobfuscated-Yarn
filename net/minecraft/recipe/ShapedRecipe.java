@@ -259,7 +259,7 @@ implements CraftingRecipe {
         public ShapedRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
             int i = packetByteBuf.readVarInt();
             int j = packetByteBuf.readVarInt();
-            String string = packetByteBuf.readString(Short.MAX_VALUE);
+            String string = packetByteBuf.readString();
             DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i * j, Ingredient.EMPTY);
             for (int k = 0; k < defaultedList.size(); ++k) {
                 defaultedList.set(k, Ingredient.fromPacket(packetByteBuf));

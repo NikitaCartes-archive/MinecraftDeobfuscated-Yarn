@@ -3,12 +3,10 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import com.google.common.collect.Lists;
 import com.mojang.brigadier.context.StringRange;
 import com.mojang.brigadier.suggestion.Suggestion;
 import com.mojang.brigadier.suggestion.Suggestions;
-import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -19,45 +17,39 @@ import net.minecraft.text.Texts;
 
 public class CommandSuggestionsS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int completionId;
-    private Suggestions suggestions;
-
-    public CommandSuggestionsS2CPacket() {
-    }
+    private final int completionId;
+    private final Suggestions suggestions;
 
     public CommandSuggestionsS2CPacket(int completionId, Suggestions suggestions) {
         this.completionId = completionId;
         this.suggestions = suggestions;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.completionId = buf.readVarInt();
-        int i = buf.readVarInt();
-        int j = buf.readVarInt();
+    public CommandSuggestionsS2CPacket(PacketByteBuf packetByteBuf2) {
+        this.completionId = packetByteBuf2.readVarInt();
+        int i = packetByteBuf2.readVarInt();
+        int j = packetByteBuf2.readVarInt();
         StringRange stringRange = StringRange.between(i, i + j);
-        int k = buf.readVarInt();
-        ArrayList<Suggestion> list = Lists.newArrayListWithCapacity(k);
-        for (int l = 0; l < k; ++l) {
-            String string = buf.readString(Short.MAX_VALUE);
-            Text text = buf.readBoolean() ? buf.readText() : null;
-            list.add(new Suggestion(stringRange, string, text));
-        }
+        List<Suggestion> list = packetByteBuf2.method_34066(packetByteBuf -> {
+            String string = packetByteBuf.readString();
+            Text text = packetByteBuf.readBoolean() ? packetByteBuf.readText() : null;
+            return new Suggestion(stringRange, string, text);
+        });
         this.suggestions = new Suggestions(stringRange, list);
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.completionId);
         buf.writeVarInt(this.suggestions.getRange().getStart());
         buf.writeVarInt(this.suggestions.getRange().getLength());
-        buf.writeVarInt(this.suggestions.getList().size());
-        for (Suggestion suggestion : this.suggestions.getList()) {
-            buf.writeString(suggestion.getText());
-            buf.writeBoolean(suggestion.getTooltip() != null);
-            if (suggestion.getTooltip() == null) continue;
-            buf.writeText(Texts.toText(suggestion.getTooltip()));
-        }
+        buf.method_34062(this.suggestions.getList(), (packetByteBuf, suggestion) -> {
+            packetByteBuf.writeString(suggestion.getText());
+            packetByteBuf.writeBoolean(suggestion.getTooltip() != null);
+            if (suggestion.getTooltip() != null) {
+                packetByteBuf.writeText(Texts.toText(suggestion.getTooltip()));
+            }
+        });
     }
 
     @Override

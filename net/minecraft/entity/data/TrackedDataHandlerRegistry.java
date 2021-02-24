@@ -101,7 +101,7 @@ public class TrackedDataHandlerRegistry {
 
         @Override
         public String read(PacketByteBuf packetByteBuf) {
-            return packetByteBuf.readString(Short.MAX_VALUE);
+            return packetByteBuf.readString();
         }
 
         @Override

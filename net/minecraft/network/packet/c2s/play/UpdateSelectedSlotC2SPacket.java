@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -12,23 +11,19 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class UpdateSelectedSlotC2SPacket
 implements Packet<ServerPlayPacketListener> {
-    private int selectedSlot;
-
-    public UpdateSelectedSlotC2SPacket() {
-    }
+    private final int selectedSlot;
 
     @Environment(value=EnvType.CLIENT)
     public UpdateSelectedSlotC2SPacket(int selectedSlot) {
         this.selectedSlot = selectedSlot;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.selectedSlot = buf.readShort();
+    public UpdateSelectedSlotC2SPacket(PacketByteBuf packetByteBuf) {
+        this.selectedSlot = packetByteBuf.readShort();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeShort(this.selectedSlot);
     }
 

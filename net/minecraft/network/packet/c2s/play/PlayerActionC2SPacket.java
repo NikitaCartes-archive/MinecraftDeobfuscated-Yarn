@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -14,12 +13,9 @@ import net.minecraft.util.math.Direction;
 
 public class PlayerActionC2SPacket
 implements Packet<ServerPlayPacketListener> {
-    private BlockPos pos;
-    private Direction direction;
-    private Action action;
-
-    public PlayerActionC2SPacket() {
-    }
+    private final BlockPos pos;
+    private final Direction direction;
+    private final Action action;
 
     @Environment(value=EnvType.CLIENT)
     public PlayerActionC2SPacket(Action action, BlockPos pos, Direction direction) {
@@ -28,15 +24,14 @@ implements Packet<ServerPlayPacketListener> {
         this.direction = direction;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.action = buf.readEnumConstant(Action.class);
-        this.pos = buf.readBlockPos();
-        this.direction = Direction.byId(buf.readUnsignedByte());
+    public PlayerActionC2SPacket(PacketByteBuf packetByteBuf) {
+        this.action = packetByteBuf.readEnumConstant(Action.class);
+        this.pos = packetByteBuf.readBlockPos();
+        this.direction = Direction.byId(packetByteBuf.readUnsignedByte());
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeEnumConstant(this.action);
         buf.writeBlockPos(this.pos);
         buf.writeByte(this.direction.getId());

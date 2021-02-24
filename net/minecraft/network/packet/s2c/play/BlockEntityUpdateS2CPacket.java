@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
@@ -14,12 +13,9 @@ import net.minecraft.util.math.BlockPos;
 
 public class BlockEntityUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private BlockPos pos;
-    private int blockEntityType;
-    private CompoundTag tag;
-
-    public BlockEntityUpdateS2CPacket() {
-    }
+    private final BlockPos pos;
+    private final int blockEntityType;
+    private final CompoundTag tag;
 
     public BlockEntityUpdateS2CPacket(BlockPos pos, int blockEntityType, CompoundTag tag) {
         this.pos = pos;
@@ -27,15 +23,14 @@ implements Packet<ClientPlayPacketListener> {
         this.tag = tag;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.pos = buf.readBlockPos();
-        this.blockEntityType = buf.readUnsignedByte();
-        this.tag = buf.readCompoundTag();
+    public BlockEntityUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+        this.pos = packetByteBuf.readBlockPos();
+        this.blockEntityType = packetByteBuf.readUnsignedByte();
+        this.tag = packetByteBuf.readCompoundTag();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeBlockPos(this.pos);
         buf.writeByte((byte)this.blockEntityType);
         buf.writeCompoundTag(this.tag);

@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -18,14 +17,11 @@ import net.minecraft.util.registry.Registry;
 
 public class PaintingSpawnS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int id;
-    private UUID uuid;
-    private BlockPos pos;
-    private Direction facing;
-    private int motiveId;
-
-    public PaintingSpawnS2CPacket() {
-    }
+    private final int id;
+    private final UUID uuid;
+    private final BlockPos pos;
+    private final Direction facing;
+    private final int motiveId;
 
     public PaintingSpawnS2CPacket(PaintingEntity entity) {
         this.id = entity.getId();
@@ -35,17 +31,16 @@ implements Packet<ClientPlayPacketListener> {
         this.motiveId = Registry.PAINTING_MOTIVE.getRawId(entity.motive);
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.id = buf.readVarInt();
-        this.uuid = buf.readUuid();
-        this.motiveId = buf.readVarInt();
-        this.pos = buf.readBlockPos();
-        this.facing = Direction.fromHorizontal(buf.readUnsignedByte());
+    public PaintingSpawnS2CPacket(PacketByteBuf packetByteBuf) {
+        this.id = packetByteBuf.readVarInt();
+        this.uuid = packetByteBuf.readUuid();
+        this.motiveId = packetByteBuf.readVarInt();
+        this.pos = packetByteBuf.readBlockPos();
+        this.facing = Direction.fromHorizontal(packetByteBuf.readUnsignedByte());
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.id);
         buf.writeUuid(this.uuid);
         buf.writeVarInt(this.motiveId);

@@ -56,6 +56,10 @@ public final class ItemTags {
     public static final Tag.Identified<Item> PIGLIN_FOOD = ItemTags.register("piglin_food");
     public static final Tag.Identified<Item> FOX_FOOD = ItemTags.register("fox_food");
     public static final Tag.Identified<Item> GOLD_ORES = ItemTags.register("gold_ores");
+    public static final Tag.Identified<Item> IRON_ORES = ItemTags.register("iron_ores");
+    public static final Tag.Identified<Item> DIAMOND_ORES = ItemTags.register("diamond_ores");
+    public static final Tag.Identified<Item> REDSTONE_ORES = ItemTags.register("redstone_ores");
+    public static final Tag.Identified<Item> LAPIS_ORES = ItemTags.register("lapis_ores");
     public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = ItemTags.register("non_flammable_wood");
     public static final Tag.Identified<Item> SOUL_FIRE_BASE_BLOCKS = ItemTags.register("soul_fire_base_blocks");
     public static final Tag.Identified<Item> CANDLES = ItemTags.register("candles");

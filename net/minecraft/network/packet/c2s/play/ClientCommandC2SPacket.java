@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -13,12 +12,9 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class ClientCommandC2SPacket
 implements Packet<ServerPlayPacketListener> {
-    private int entityId;
-    private Mode mode;
-    private int mountJumpHeight;
-
-    public ClientCommandC2SPacket() {
-    }
+    private final int entityId;
+    private final Mode mode;
+    private final int mountJumpHeight;
 
     @Environment(value=EnvType.CLIENT)
     public ClientCommandC2SPacket(Entity entity, Mode mode) {
@@ -32,15 +28,14 @@ implements Packet<ServerPlayPacketListener> {
         this.mountJumpHeight = mountJumpHeight;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.entityId = buf.readVarInt();
-        this.mode = buf.readEnumConstant(Mode.class);
-        this.mountJumpHeight = buf.readVarInt();
+    public ClientCommandC2SPacket(PacketByteBuf packetByteBuf) {
+        this.entityId = packetByteBuf.readVarInt();
+        this.mode = packetByteBuf.readEnumConstant(Mode.class);
+        this.mountJumpHeight = packetByteBuf.readVarInt();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.entityId);
         buf.writeEnumConstant(this.mode);
         buf.writeVarInt(this.mountJumpHeight);

@@ -5,7 +5,6 @@ package net.minecraft.network.packet.s2c.query;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -21,22 +20,18 @@ import net.minecraft.util.LowercaseEnumTypeAdapterFactory;
 public class QueryResponseS2CPacket
 implements Packet<ClientQueryPacketListener> {
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter((Type)((Object)ServerMetadata.Version.class), new ServerMetadata.Version.Serializer()).registerTypeAdapter((Type)((Object)ServerMetadata.Players.class), new ServerMetadata.Players.Deserializer()).registerTypeAdapter((Type)((Object)ServerMetadata.class), new ServerMetadata.Deserializer()).registerTypeHierarchyAdapter(Text.class, new Text.Serializer()).registerTypeHierarchyAdapter(Style.class, new Style.Serializer()).registerTypeAdapterFactory(new LowercaseEnumTypeAdapterFactory()).create();
-    private ServerMetadata metadata;
-
-    public QueryResponseS2CPacket() {
-    }
+    private final ServerMetadata metadata;
 
     public QueryResponseS2CPacket(ServerMetadata metadata) {
         this.metadata = metadata;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.metadata = JsonHelper.deserialize(GSON, buf.readString(Short.MAX_VALUE), ServerMetadata.class);
+    public QueryResponseS2CPacket(PacketByteBuf packetByteBuf) {
+        this.metadata = JsonHelper.deserialize(GSON, packetByteBuf.readString(Short.MAX_VALUE), ServerMetadata.class);
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeString(GSON.toJson(this.metadata));
     }
 

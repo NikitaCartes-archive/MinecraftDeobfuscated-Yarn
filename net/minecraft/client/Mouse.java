@@ -152,19 +152,19 @@ public class Mouse {
         }
     }
 
-    private void method_29616(long l, List<Path> list) {
+    private void onFilesDropped(long window, List<Path> paths) {
         if (this.client.currentScreen != null) {
-            this.client.currentScreen.filesDragged(list);
+            this.client.currentScreen.filesDragged(paths);
         }
     }
 
-    public void setup(long l2) {
-        InputUtil.setMouseCallbacks(l2, (l, d, e) -> this.client.execute(() -> this.onCursorPos(l, d, e)), (l, i, j, k) -> this.client.execute(() -> this.onMouseButton(l, i, j, k)), (l, d, e) -> this.client.execute(() -> this.onMouseScroll(l, d, e)), (l, i, m) -> {
-            Path[] paths = new Path[i];
-            for (int j = 0; j < i; ++j) {
-                paths[j] = Paths.get(GLFWDropCallback.getName(m, j), new String[0]);
+    public void setup(long window2) {
+        InputUtil.setMouseCallbacks(window2, (window, x, y) -> this.client.execute(() -> this.onCursorPos(window, x, y)), (window, button, action, modifiers) -> this.client.execute(() -> this.onMouseButton(window, button, action, modifiers)), (window, xOffset, yOffset) -> this.client.execute(() -> this.onMouseScroll(window, xOffset, yOffset)), (window, count, names) -> {
+            Path[] paths = new Path[count];
+            for (int i = 0; i < count; ++i) {
+                paths[i] = Paths.get(GLFWDropCallback.getName(names, i), new String[0]);
             }
-            this.client.execute(() -> this.method_29616(l, Arrays.asList(paths)));
+            this.client.execute(() -> this.onFilesDropped(window, Arrays.asList(paths)));
         });
     }
 

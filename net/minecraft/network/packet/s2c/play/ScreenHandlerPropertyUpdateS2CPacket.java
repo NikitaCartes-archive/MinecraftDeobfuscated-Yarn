@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -12,12 +11,9 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class ScreenHandlerPropertyUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int syncId;
-    private int propertyId;
-    private int value;
-
-    public ScreenHandlerPropertyUpdateS2CPacket() {
-    }
+    private final int syncId;
+    private final int propertyId;
+    private final int value;
 
     public ScreenHandlerPropertyUpdateS2CPacket(int syncId, int propertyId, int value) {
         this.syncId = syncId;
@@ -25,23 +21,22 @@ implements Packet<ClientPlayPacketListener> {
         this.value = value;
     }
 
-    @Override
-    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-        clientPlayPacketListener.onScreenHandlerPropertyUpdate(this);
+    public ScreenHandlerPropertyUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+        this.syncId = packetByteBuf.readUnsignedByte();
+        this.propertyId = packetByteBuf.readShort();
+        this.value = packetByteBuf.readShort();
     }
 
     @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.syncId = buf.readUnsignedByte();
-        this.propertyId = buf.readShort();
-        this.value = buf.readShort();
-    }
-
-    @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeByte(this.syncId);
         buf.writeShort(this.propertyId);
         buf.writeShort(this.value);
+    }
+
+    @Override
+    public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+        clientPlayPacketListener.onScreenHandlerPropertyUpdate(this);
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -100,7 +100,7 @@ implements Recipe<Inventory> {
 
         @Override
         public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
-            String string = packetByteBuf.readString(Short.MAX_VALUE);
+            String string = packetByteBuf.readString();
             Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
             ItemStack itemStack = packetByteBuf.readItemStack();
             return this.recipeFactory.create(identifier, string, ingredient, itemStack);

@@ -120,7 +120,7 @@ extends ChunkGenerator {
         NoiseCaveSampler noiseCaveSampler = chunkGeneratorSettings.hasNoiseCaves() ? new NoiseCaveSampler(chunkRandom, generationShapeConfig.getMinimumY() / this.verticalNoiseResolution) : null;
         this.noiseColumnSampler = new NoiseColumnSampler(populationSource, this.horizontalNoiseResolution, this.verticalNoiseResolution, this.noiseSizeY, generationShapeConfig, interpolatedNoise, simplexNoiseSampler, octavePerlinNoiseSampler, noiseCaveSampler);
         this.hasAquifers = chunkGeneratorSettings.hasAquifers();
-        this.blockInterpolator = new GrimstoneInterpolator(seed, this.defaultBlock, Blocks.GRIMSTONE.getDefaultState());
+        this.blockInterpolator = new GrimstoneInterpolator(seed, this.defaultBlock, Blocks.DEEPSLATE.getDefaultState());
     }
 
     @Override

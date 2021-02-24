@@ -25,6 +25,13 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.class_5889;
+import net.minecraft.class_5895;
+import net.minecraft.class_5896;
+import net.minecraft.class_5897;
+import net.minecraft.class_5898;
+import net.minecraft.class_5899;
+import net.minecraft.class_5900;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -51,9 +58,7 @@ import net.minecraft.network.packet.s2c.play.PlayerRespawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlayerSpawnPositionS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
-import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
-import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -176,9 +181,9 @@ public abstract class PlayerManager {
         serverPlayNetworkHandler.requestTeleport(player.getX(), player.getY(), player.getZ(), player.yaw, player.pitch);
         this.players.add(player);
         this.playerMap.put(player.getUuid(), player);
-        this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, player));
+        this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.class_5893.field_29136, player));
         for (int i = 0; i < this.players.size(); ++i) {
-            player.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.Action.ADD_PLAYER, this.players.get(i)));
+            player.networkHandler.sendPacket(new PlayerListS2CPacket(PlayerListS2CPacket.class_5893.field_29136, this.players.get(i)));
         }
         serverWorld2.onPlayerConnected(player);
         this.server.getBossBarManager().onPlayerConnect(player);
@@ -219,7 +224,7 @@ public abstract class PlayerManager {
     protected void sendScoreboard(ServerScoreboard scoreboard, ServerPlayerEntity player) {
         HashSet<ScoreboardObjective> set = Sets.newHashSet();
         for (Team team : scoreboard.getTeams()) {
-            player.networkHandler.sendPacket(new TeamS2CPacket(team, 0));
+            player.networkHandler.sendPacket(class_5900.method_34172(team, true));
         }
         for (int i = 0; i < 19; ++i) {
             ScoreboardObjective scoreboardObjective = scoreboard.getObjectiveForSlot(i);
@@ -237,27 +242,27 @@ public abstract class PlayerManager {
 
             @Override
             public void onSizeChange(WorldBorder border, double size) {
-                PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.SET_SIZE));
+                PlayerManager.this.sendToAll(new class_5897(border));
             }
 
             @Override
             public void onInterpolateSize(WorldBorder border, double fromSize, double toSize, long time) {
-                PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.LERP_SIZE));
+                PlayerManager.this.sendToAll(new class_5896(border));
             }
 
             @Override
             public void onCenterChanged(WorldBorder border, double centerX, double centerZ) {
-                PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.SET_CENTER));
+                PlayerManager.this.sendToAll(new class_5895(border));
             }
 
             @Override
             public void onWarningTimeChanged(WorldBorder border, int warningTime) {
-                PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.SET_WARNING_TIME));
+                PlayerManager.this.sendToAll(new class_5898(border));
             }
 
             @Override
             public void onWarningBlocksChanged(WorldBorder border, int warningBlockDistance) {
-                PlayerManager.this.sendToAll(new WorldBorderS2CPacket(border, WorldBorderS2CPacket.Type.SET_WARNING_BLOCKS));
+                PlayerManager.this.sendToAll(new class_5899(border));
             }
 
             @Override
@@ -318,7 +323,7 @@ public abstract class PlayerManager {
             this.statisticsMap.remove(uUID);
             this.advancementTrackers.remove(uUID);
         }
-        this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.REMOVE_PLAYER, player));
+        this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.class_5893.field_29140, player));
     }
 
     @Nullable
@@ -431,7 +436,7 @@ public abstract class PlayerManager {
 
     public void updatePlayerLatency() {
         if (++this.latencyUpdateTimer > 600) {
-            this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.Action.UPDATE_LATENCY, this.players));
+            this.sendToAll(new PlayerListS2CPacket(PlayerListS2CPacket.class_5893.field_29138, this.players));
             this.latencyUpdateTimer = 0;
         }
     }
@@ -570,7 +575,7 @@ public abstract class PlayerManager {
 
     public void sendWorldInfo(ServerPlayerEntity player, ServerWorld world) {
         WorldBorder worldBorder = this.server.getOverworld().getWorldBorder();
-        player.networkHandler.sendPacket(new WorldBorderS2CPacket(worldBorder, WorldBorderS2CPacket.Type.INITIALIZE));
+        player.networkHandler.sendPacket(new class_5889(worldBorder));
         player.networkHandler.sendPacket(new WorldTimeUpdateS2CPacket(world.getTime(), world.getTimeOfDay(), world.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)));
         player.networkHandler.sendPacket(new PlayerSpawnPositionS2CPacket(world.getSpawnPos(), world.getSpawnAngle()));
         if (world.isRaining()) {

@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -13,32 +12,28 @@ import net.minecraft.world.Difficulty;
 
 public class DifficultyS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private Difficulty difficulty;
-    private boolean difficultyLocked;
-
-    public DifficultyS2CPacket() {
-    }
+    private final Difficulty difficulty;
+    private final boolean difficultyLocked;
 
     public DifficultyS2CPacket(Difficulty difficulty, boolean difficultyLocked) {
         this.difficulty = difficulty;
         this.difficultyLocked = difficultyLocked;
     }
 
+    public DifficultyS2CPacket(PacketByteBuf packetByteBuf) {
+        this.difficulty = Difficulty.byOrdinal(packetByteBuf.readUnsignedByte());
+        this.difficultyLocked = packetByteBuf.readBoolean();
+    }
+
+    @Override
+    public void write(PacketByteBuf buf) {
+        buf.writeByte(this.difficulty.getId());
+        buf.writeBoolean(this.difficultyLocked);
+    }
+
     @Override
     public void apply(ClientPlayPacketListener clientPlayPacketListener) {
         clientPlayPacketListener.onDifficulty(this);
-    }
-
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.difficulty = Difficulty.byOrdinal(buf.readUnsignedByte());
-        this.difficultyLocked = buf.readBoolean();
-    }
-
-    @Override
-    public void write(PacketByteBuf buf) throws IOException {
-        buf.writeByte(this.difficulty.getId());
-        buf.writeBoolean(this.difficultyLocked);
     }
 
     @Environment(value=EnvType.CLIENT)

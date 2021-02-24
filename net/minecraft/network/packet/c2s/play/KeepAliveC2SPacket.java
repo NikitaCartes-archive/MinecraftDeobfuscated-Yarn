@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -12,10 +11,7 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class KeepAliveC2SPacket
 implements Packet<ServerPlayPacketListener> {
-    private long id;
-
-    public KeepAliveC2SPacket() {
-    }
+    private final long id;
 
     @Environment(value=EnvType.CLIENT)
     public KeepAliveC2SPacket(long id) {
@@ -27,13 +23,12 @@ implements Packet<ServerPlayPacketListener> {
         serverPlayPacketListener.onKeepAlive(this);
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.id = buf.readLong();
+    public KeepAliveC2SPacket(PacketByteBuf packetByteBuf) {
+        this.id = packetByteBuf.readLong();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeLong(this.id);
     }
 

@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,14 +14,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class ScoreboardPlayerUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private String playerName = "";
+    private final String playerName;
     @Nullable
-    private String objectiveName;
-    private int score;
-    private ServerScoreboard.UpdateMode mode;
-
-    public ScoreboardPlayerUpdateS2CPacket() {
-    }
+    private final String objectiveName;
+    private final int score;
+    private final ServerScoreboard.UpdateMode mode;
 
     public ScoreboardPlayerUpdateS2CPacket(ServerScoreboard.UpdateMode mode, @Nullable String objectiveName, String playerName, int score) {
         if (mode != ServerScoreboard.UpdateMode.REMOVE && objectiveName == null) {
@@ -34,19 +30,16 @@ implements Packet<ClientPlayPacketListener> {
         this.mode = mode;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.playerName = buf.readString(40);
-        this.mode = buf.readEnumConstant(ServerScoreboard.UpdateMode.class);
-        String string = buf.readString(16);
-        String string2 = this.objectiveName = Objects.equals(string, "") ? null : string;
-        if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
-            this.score = buf.readVarInt();
-        }
+    public ScoreboardPlayerUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+        this.playerName = packetByteBuf.readString(40);
+        this.mode = packetByteBuf.readEnumConstant(ServerScoreboard.UpdateMode.class);
+        String string = packetByteBuf.readString(16);
+        this.objectiveName = Objects.equals(string, "") ? null : string;
+        this.score = this.mode != ServerScoreboard.UpdateMode.REMOVE ? packetByteBuf.readVarInt() : 0;
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeString(this.playerName);
         buf.writeEnumConstant(this.mode);
         buf.writeString(this.objectiveName == null ? "" : this.objectiveName);

@@ -54,6 +54,10 @@ public final class BlockTags {
     public static final Tag.Identified<Block> FLOWERS = BlockTags.register("flowers");
     public static final Tag.Identified<Block> PIGLIN_REPELLENTS = BlockTags.register("piglin_repellents");
     public static final Tag.Identified<Block> GOLD_ORES = BlockTags.register("gold_ores");
+    public static final Tag.Identified<Block> IRON_ORES = BlockTags.register("iron_ores");
+    public static final Tag.Identified<Block> DIAMOND_ORES = BlockTags.register("diamond_ores");
+    public static final Tag.Identified<Block> REDSTONE_ORES = BlockTags.register("redstone_ores");
+    public static final Tag.Identified<Block> LAPIS_ORES = BlockTags.register("lapis_ores");
     public static final Tag.Identified<Block> NON_FLAMMABLE_WOOD = BlockTags.register("non_flammable_wood");
     public static final Tag.Identified<Block> CANDLES = BlockTags.register("candles");
     public static final Tag.Identified<Block> FLOWER_POTS = BlockTags.register("flower_pots");
@@ -98,6 +102,8 @@ public final class BlockTags {
     public static final Tag.Identified<Block> INFINIBURN_NETHER = BlockTags.register("infiniburn_nether");
     public static final Tag.Identified<Block> INFINIBURN_END = BlockTags.register("infiniburn_end");
     public static final Tag.Identified<Block> BASE_STONE_OVERWORLD = BlockTags.register("base_stone_overworld");
+    public static final Tag.Identified<Block> STONE_ORE_REPLACEABLES = BlockTags.register("stone_ore_replaceables");
+    public static final Tag.Identified<Block> DEEPSLATE_ORE_REPLACEABLES = BlockTags.register("deepslate_ore_replaceables");
     public static final Tag.Identified<Block> BASE_STONE_NETHER = BlockTags.register("base_stone_nether");
     public static final Tag.Identified<Block> CANDLE_CAKES = BlockTags.register("candle_cakes");
     public static final Tag.Identified<Block> CAULDRONS = BlockTags.register("cauldrons");

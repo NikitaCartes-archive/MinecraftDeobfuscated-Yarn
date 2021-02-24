@@ -20,7 +20,7 @@ extends JigsawFeature {
     }
 
     @Override
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, int i, int j, Biome biome, ChunkPos chunkPos, StructurePoolFeatureConfig structurePoolFeatureConfig, HeightLimitView heightLimitView) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, Biome biome, ChunkPos chunkPos2, StructurePoolFeatureConfig structurePoolFeatureConfig, HeightLimitView heightLimitView) {
         return chunkRandom.nextInt(5) >= 2;
     }
 }

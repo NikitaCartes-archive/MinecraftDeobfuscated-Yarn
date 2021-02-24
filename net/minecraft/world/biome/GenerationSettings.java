@@ -18,10 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import net.minecraft.class_5871;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.world.gen.GenerationStep;
-import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
@@ -112,7 +112,7 @@ public class GenerationSettings {
             return this;
         }
 
-        public <C extends CarverConfig> Builder carver(GenerationStep.Carver carverStep, ConfiguredCarver<C> carver2) {
+        public <C extends class_5871> Builder carver(GenerationStep.Carver carverStep, ConfiguredCarver<C> carver2) {
             this.carvers.computeIfAbsent(carverStep, carver -> Lists.newArrayList()).add(() -> carver2);
             return this;
         }

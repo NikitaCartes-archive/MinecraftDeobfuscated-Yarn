@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -17,12 +16,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class UpdateCommandBlockMinecartC2SPacket
 implements Packet<ServerPlayPacketListener> {
-    private int entityId;
-    private String command;
-    private boolean trackOutput;
-
-    public UpdateCommandBlockMinecartC2SPacket() {
-    }
+    private final int entityId;
+    private final String command;
+    private final boolean trackOutput;
 
     @Environment(value=EnvType.CLIENT)
     public UpdateCommandBlockMinecartC2SPacket(int entityId, String command, boolean trackOutput) {
@@ -31,15 +27,14 @@ implements Packet<ServerPlayPacketListener> {
         this.trackOutput = trackOutput;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.entityId = buf.readVarInt();
-        this.command = buf.readString(Short.MAX_VALUE);
-        this.trackOutput = buf.readBoolean();
+    public UpdateCommandBlockMinecartC2SPacket(PacketByteBuf packetByteBuf) {
+        this.entityId = packetByteBuf.readVarInt();
+        this.command = packetByteBuf.readString();
+        this.trackOutput = packetByteBuf.readBoolean();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.entityId);
         buf.writeString(this.command);
         buf.writeBoolean(this.trackOutput);

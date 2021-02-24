@@ -19,7 +19,6 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.render.debug.BeeDebugRenderer;
 import net.minecraft.client.render.debug.BlockOutlineDebugRenderer;
-import net.minecraft.client.render.debug.CaveDebugRenderer;
 import net.minecraft.client.render.debug.ChunkBorderDebugRenderer;
 import net.minecraft.client.render.debug.ChunkLoadingDebugRenderer;
 import net.minecraft.client.render.debug.CollisionDebugRenderer;
@@ -55,7 +54,6 @@ public class DebugRenderer {
     public final Renderer heightmapDebugRenderer;
     public final Renderer collisionDebugRenderer;
     public final Renderer neighborUpdateDebugRenderer;
-    public final CaveDebugRenderer caveDebugRenderer;
     public final StructureDebugRenderer structureDebugRenderer;
     public final Renderer skyLightDebugRenderer;
     public final Renderer worldGenAttemptDebugRenderer;
@@ -76,7 +74,6 @@ public class DebugRenderer {
         this.heightmapDebugRenderer = new HeightmapDebugRenderer(client);
         this.collisionDebugRenderer = new CollisionDebugRenderer(client);
         this.neighborUpdateDebugRenderer = new NeighborUpdateDebugRenderer(client);
-        this.caveDebugRenderer = new CaveDebugRenderer();
         this.structureDebugRenderer = new StructureDebugRenderer(client);
         this.skyLightDebugRenderer = new SkyLightDebugRenderer(client);
         this.worldGenAttemptDebugRenderer = new WorldGenAttemptDebugRenderer();
@@ -98,7 +95,6 @@ public class DebugRenderer {
         this.heightmapDebugRenderer.clear();
         this.collisionDebugRenderer.clear();
         this.neighborUpdateDebugRenderer.clear();
-        this.caveDebugRenderer.clear();
         this.structureDebugRenderer.clear();
         this.skyLightDebugRenderer.clear();
         this.worldGenAttemptDebugRenderer.clear();

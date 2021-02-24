@@ -7,9 +7,9 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
+import net.minecraft.class_5868;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.dimension.DimensionType;
-import net.minecraft.world.gen.decorator.DecoratorContext;
 
 public abstract class YOffset {
     public static final Codec<YOffset> OFFSET_CODEC = Codecs.xor(Fixed.CODEC, Codecs.xor(AboveBottom.CODEC, BelowTop.CODEC)).xmap(YOffset::fromEither, YOffset::map);
@@ -56,7 +56,7 @@ public abstract class YOffset {
         return this.offset;
     }
 
-    public abstract int getY(DecoratorContext var1);
+    public abstract int getY(class_5868 var1);
 
     static final class BelowTop
     extends YOffset {
@@ -67,8 +67,8 @@ public abstract class YOffset {
         }
 
         @Override
-        public int getY(DecoratorContext context) {
-            return context.getMaxY() - 1 + context.getMinY() - this.getOffset();
+        public int getY(class_5868 arg) {
+            return arg.getMaxY() - 1 + arg.getMinY() - this.getOffset();
         }
     }
 
@@ -81,8 +81,8 @@ public abstract class YOffset {
         }
 
         @Override
-        public int getY(DecoratorContext context) {
-            return context.getMinY() + this.getOffset();
+        public int getY(class_5868 arg) {
+            return arg.getMinY() + this.getOffset();
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class YOffset {
         }
 
         @Override
-        public int getY(DecoratorContext context) {
+        public int getY(class_5868 arg) {
             return this.getOffset();
         }
     }

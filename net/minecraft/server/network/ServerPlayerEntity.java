@@ -24,6 +24,9 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.class_5890;
+import net.minecraft.class_5891;
+import net.minecraft.class_5892;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -53,7 +56,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
-import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
@@ -327,13 +329,13 @@ implements ScreenHandlerListener {
     @Override
     public void enterCombat() {
         super.enterCombat();
-        this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTER_COMBAT));
+        this.networkHandler.sendPacket(new class_5891());
     }
 
     @Override
     public void endCombat() {
         super.endCombat();
-        this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.END_COMBAT));
+        this.networkHandler.sendPacket(new class_5890(this.getDamageTracker()));
     }
 
     @Override
@@ -360,7 +362,7 @@ implements ScreenHandlerListener {
             this.currentScreenHandler = this.playerScreenHandler;
         }
         if (!this.removedEntities.isEmpty()) {
-            this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(this.removedEntities.toIntArray()));
+            this.networkHandler.sendPacket(new EntitiesDestroyS2CPacket(this.removedEntities));
             this.removedEntities.clear();
         }
         if ((entity = this.getCameraEntity()) != this) {
@@ -446,13 +448,13 @@ implements ScreenHandlerListener {
         boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
         if (bl) {
             Text text = this.getDamageTracker().getDeathMessage();
-            this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text), future -> {
+            this.networkHandler.sendPacket(new class_5892(this.getDamageTracker(), text), future -> {
                 if (!future.isSuccess()) {
                     int i = 256;
                     String string = text.asTruncatedString(256);
                     TranslatableText text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
                     MutableText text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
-                    this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED, text3));
+                    this.networkHandler.sendPacket(new class_5892(this.getDamageTracker(), text3));
                 }
             });
             AbstractTeam abstractTeam = this.getScoreboardTeam();
@@ -464,7 +466,7 @@ implements ScreenHandlerListener {
                 this.server.getPlayerManager().sendToOtherTeams(this, text);
             }
         } else {
-            this.networkHandler.sendPacket(new CombatEventS2CPacket(this.getDamageTracker(), CombatEventS2CPacket.Type.ENTITY_DIED));
+            this.networkHandler.sendPacket(new class_5892(this.getDamageTracker(), LiteralText.EMPTY));
         }
         this.dropShoulderEntities();
         if (this.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {

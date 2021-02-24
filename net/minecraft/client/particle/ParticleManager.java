@@ -12,6 +12,7 @@ import com.google.common.collect.Queues;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -19,6 +20,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
 import java.util.Random;
 import java.util.concurrent.CompletableFuture;
@@ -29,6 +31,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
+import net.minecraft.class_5878;
 import net.minecraft.client.particle.AshParticle;
 import net.minecraft.client.particle.BarrierParticle;
 import net.minecraft.client.particle.BlockDustParticle;
@@ -125,9 +128,11 @@ implements ResourceReloadListener {
     private final Int2ObjectMap<ParticleFactory<?>> factories = new Int2ObjectOpenHashMap();
     private final Queue<Particle> newParticles = Queues.newArrayDeque();
     private final Map<Identifier, SimpleSpriteProvider> spriteAwareFactories = Maps.newHashMap();
-    private final SpriteAtlasTexture particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
+    private final SpriteAtlasTexture particleAtlasTexture;
+    private final Object2IntOpenHashMap<class_5878> field_29072 = new Object2IntOpenHashMap();
 
     public ParticleManager(ClientWorld world, TextureManager textureManager) {
+        this.particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
         textureManager.registerTexture(this.particleAtlasTexture.getId(), this.particleAtlasTexture);
         this.world = world;
         this.textureManager = textureManager;
@@ -202,7 +207,7 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.LANDING_HONEY, BlockLeakParticle.LandingHoneyFactory::new);
         this.registerFactory(ParticleTypes.FALLING_NECTAR, BlockLeakParticle.FallingNectarFactory::new);
         this.registerFactory(ParticleTypes.FALLING_SPORE_BLOSSOM, BlockLeakParticle.FallingSporeBlossomFactory::new);
-        this.registerFactory(ParticleTypes.SPORE_BLOSSOM_AIR, WaterSuspendParticle.SporeBlossomAirFactory::new);
+        this.registerFactory(ParticleTypes.SPORE_BLOSSOM_AIR, WaterSuspendParticle.class_5877::new);
         this.registerFactory(ParticleTypes.ASH, AshParticle.Factory::new);
         this.registerFactory(ParticleTypes.CRIMSON_SPORE, WaterSuspendParticle.CrimsonSporeFactory::new);
         this.registerFactory(ParticleTypes.WARPED_SPORE, WaterSuspendParticle.WarpedSporeFactory::new);
@@ -312,7 +317,15 @@ implements ResourceReloadListener {
     }
 
     public void addParticle(Particle particle) {
-        this.newParticles.add(particle);
+        Optional<class_5878> optional = particle.method_34019();
+        if (optional.isPresent()) {
+            if (this.method_34021(optional.get())) {
+                this.newParticles.add(particle);
+                this.method_34022(optional.get(), 1);
+            }
+        } else {
+            this.newParticles.add(particle);
+        }
     }
 
     public void tick() {
@@ -345,9 +358,14 @@ implements ResourceReloadListener {
                 Particle particle = iterator.next();
                 this.tickParticle(particle);
                 if (particle.isAlive()) continue;
+                particle.method_34019().ifPresent(arg -> this.method_34022((class_5878)arg, -1));
                 iterator.remove();
             }
         }
+    }
+
+    private void method_34022(class_5878 arg, int i) {
+        this.field_29072.addTo(arg, i);
     }
 
     private void tickParticle(Particle particle) {
@@ -403,6 +421,7 @@ implements ResourceReloadListener {
         this.world = world;
         this.particles.clear();
         this.newEmitterParticles.clear();
+        this.field_29072.clear();
     }
 
     public void addBlockBreakParticles(BlockPos pos, BlockState state) {
@@ -470,6 +489,10 @@ implements ResourceReloadListener {
 
     public String getDebugString() {
         return String.valueOf(this.particles.values().stream().mapToInt(Collection::size).sum());
+    }
+
+    private boolean method_34021(class_5878 arg) {
+        return this.field_29072.getInt(arg) < arg.method_34045();
     }
 
     @Environment(value=EnvType.CLIENT)

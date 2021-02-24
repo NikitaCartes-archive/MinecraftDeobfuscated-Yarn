@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import java.util.Objects;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,25 +14,21 @@ import org.jetbrains.annotations.Nullable;
 
 public class ScoreboardDisplayS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int slot;
-    private String name;
-
-    public ScoreboardDisplayS2CPacket() {
-    }
+    private final int slot;
+    private final String name;
 
     public ScoreboardDisplayS2CPacket(int slot, @Nullable ScoreboardObjective objective) {
         this.slot = slot;
         this.name = objective == null ? "" : objective.getName();
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.slot = buf.readByte();
-        this.name = buf.readString(16);
+    public ScoreboardDisplayS2CPacket(PacketByteBuf packetByteBuf) {
+        this.slot = packetByteBuf.readByte();
+        this.name = packetByteBuf.readString(16);
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeByte(this.slot);
         buf.writeString(this.name);
     }

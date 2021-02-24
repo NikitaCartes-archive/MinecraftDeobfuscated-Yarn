@@ -4,12 +4,14 @@
 package net.minecraft.entity.data;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -30,9 +32,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class DataTracker {
     private static final Logger LOGGER = LogManager.getLogger();
-    private static final Map<Class<? extends Entity>, Integer> TRACKED_ENTITIES = Maps.newHashMap();
+    private static final Object2IntMap<Class<? extends Entity>> TRACKED_ENTITIES = new Object2IntOpenHashMap<Class<? extends Entity>>();
     private final Entity trackedEntity;
-    private final Map<Integer, Entry<?>> entries = Maps.newHashMap();
+    private final Int2ObjectMap<Entry<?>> entries = new Int2ObjectOpenHashMap();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     private boolean empty = true;
     private boolean dirty;
@@ -54,13 +56,13 @@ public class DataTracker {
             }
         }
         if (TRACKED_ENTITIES.containsKey(entityClass)) {
-            i = TRACKED_ENTITIES.get(entityClass) + 1;
+            i = TRACKED_ENTITIES.getInt(entityClass) + 1;
         } else {
             int j = 0;
             Class<? extends Entity> class2 = entityClass;
             while (class2 != Entity.class) {
                 if (!TRACKED_ENTITIES.containsKey(class2 = class2.getSuperclass())) continue;
-                j = TRACKED_ENTITIES.get(class2) + 1;
+                j = TRACKED_ENTITIES.getInt(class2) + 1;
                 break;
             }
             i = j;
@@ -89,16 +91,16 @@ public class DataTracker {
     private <T> void addTrackedData(TrackedData<T> trackedData, T object) {
         Entry<T> entry = new Entry<T>(trackedData, object);
         this.lock.writeLock().lock();
-        this.entries.put(trackedData.getId(), entry);
+        this.entries.put(trackedData.getId(), (Entry<?>)entry);
         this.empty = false;
         this.lock.writeLock().unlock();
     }
 
     private <T> Entry<T> getEntry(TrackedData<T> trackedData) {
-        Entry<?> entry;
+        Entry entry;
         this.lock.readLock().lock();
         try {
-            entry = this.entries.get(trackedData.getId());
+            entry = (Entry)this.entries.get(trackedData.getId());
         } catch (Throwable throwable) {
             CrashReport crashReport = CrashReport.create(throwable, "Getting synched entity data");
             CrashReportSection crashReportSection = crashReport.addElement("Synched entity data");
@@ -128,11 +130,10 @@ public class DataTracker {
         return this.dirty;
     }
 
-    public static void entriesToPacket(List<Entry<?>> list, PacketByteBuf packetByteBuf) {
+    public static void entriesToPacket(@Nullable List<Entry<?>> list, PacketByteBuf packetByteBuf) {
         if (list != null) {
-            int j = list.size();
-            for (int i = 0; i < j; ++i) {
-                DataTracker.writeEntryToPacket(packetByteBuf, list.get(i));
+            for (Entry<?> entry : list) {
+                DataTracker.writeEntryToPacket(packetByteBuf, entry);
             }
         }
         packetByteBuf.writeByte(255);
@@ -140,10 +141,10 @@ public class DataTracker {
 
     @Nullable
     public List<Entry<?>> getDirtyEntries() {
-        ArrayList<Entry<?>> list = null;
+        ArrayList list = null;
         if (this.dirty) {
             this.lock.readLock().lock();
-            for (Entry<?> entry : this.entries.values()) {
+            for (Entry entry : this.entries.values()) {
                 if (!entry.isDirty()) continue;
                 entry.setDirty(false);
                 if (list == null) {
@@ -159,9 +160,9 @@ public class DataTracker {
 
     @Nullable
     public List<Entry<?>> getAllEntries() {
-        ArrayList<Entry<?>> list = null;
+        ArrayList list = null;
         this.lock.readLock().lock();
-        for (Entry<?> entry : this.entries.values()) {
+        for (Entry entry : this.entries.values()) {
             if (list == null) {
                 list = Lists.newArrayList();
             }
@@ -208,7 +209,7 @@ public class DataTracker {
     public void writeUpdatedEntries(List<Entry<?>> list) {
         this.lock.writeLock().lock();
         for (Entry<?> entry : list) {
-            Entry<?> entry2 = this.entries.get(entry.getData().getId());
+            Entry entry2 = (Entry)this.entries.get(entry.getData().getId());
             if (entry2 == null) continue;
             this.copyToFrom(entry2, entry);
             this.trackedEntity.onTrackedDataSet(entry.getData());
@@ -232,7 +233,7 @@ public class DataTracker {
     public void clearDirty() {
         this.dirty = false;
         this.lock.readLock().lock();
-        for (Entry<?> entry : this.entries.values()) {
+        for (Entry entry : this.entries.values()) {
             entry.setDirty(false);
         }
         this.lock.readLock().unlock();

@@ -21,6 +21,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.class_5864;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityType;
@@ -200,6 +201,8 @@ IndexedIterable<T> {
     public static final RegistryKey<Registry<Biome>> BIOME_KEY = Registry.createRegistryKey("worldgen/biome");
     public static final RegistryKey<Registry<SurfaceBuilder<?>>> SURFACE_BUILD_KEY = Registry.createRegistryKey("worldgen/surface_builder");
     public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = Registry.create(SURFACE_BUILD_KEY, () -> SurfaceBuilder.DEFAULT);
+    public static final RegistryKey<Registry<class_5864<?>>> FLOAT_PROVIDER_TYPE_WORLDGEN = Registry.createRegistryKey("worldgen/float_provider_type");
+    public static final Registry<class_5864<?>> field_29076 = Registry.create(FLOAT_PROVIDER_TYPE_WORLDGEN, () -> class_5864.field_29008);
     public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = Registry.createRegistryKey("worldgen/carver");
     public static final Registry<Carver<?>> CARVER = Registry.create(CARVER_KEY, () -> Carver.CAVE);
     public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = Registry.createRegistryKey("worldgen/feature");
@@ -391,9 +394,9 @@ IndexedIterable<T> {
 
     static {
         BuiltinRegistries.init();
-        DEFAULT_ENTRIES.forEach((? super K id, ? super V supplier) -> {
+        DEFAULT_ENTRIES.forEach((? super K identifier, ? super V supplier) -> {
             if (supplier.get() == null) {
-                LOGGER.error("Unable to bootstrap registry '{}'", id);
+                LOGGER.error("Unable to bootstrap registry '{}'", identifier);
             }
         });
         Registry.validate(ROOT);

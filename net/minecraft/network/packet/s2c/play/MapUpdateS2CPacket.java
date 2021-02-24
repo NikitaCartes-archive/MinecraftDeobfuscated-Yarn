@@ -3,8 +3,9 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
+import com.google.common.collect.Lists;
 import java.util.Collection;
+import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.map.MapIcon;
@@ -16,67 +17,61 @@ import org.jetbrains.annotations.Nullable;
 
 public class MapUpdateS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int id;
-    private byte scale;
-    private boolean locked;
+    private final int id;
+    private final byte scale;
+    private final boolean locked;
     @Nullable
-    private MapIcon[] icons;
+    private final List<MapIcon> icons;
     @Nullable
-    private MapState.UpdateData updateData;
-
-    public MapUpdateS2CPacket() {
-    }
+    private final MapState.UpdateData updateData;
 
     public MapUpdateS2CPacket(int id, byte scale, boolean showIcons, @Nullable Collection<MapIcon> icons, @Nullable MapState.UpdateData updateData) {
         this.id = id;
         this.scale = scale;
         this.locked = showIcons;
-        this.icons = icons != null ? icons.toArray(new MapIcon[0]) : null;
+        this.icons = icons != null ? Lists.newArrayList(icons) : null;
         this.updateData = updateData;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        int i;
-        this.id = buf.readVarInt();
-        this.scale = buf.readByte();
-        this.locked = buf.readBoolean();
-        if (buf.readBoolean()) {
-            this.icons = new MapIcon[buf.readVarInt()];
-            for (i = 0; i < this.icons.length; ++i) {
-                MapIcon.Type type = buf.readEnumConstant(MapIcon.Type.class);
-                this.icons[i] = new MapIcon(type, buf.readByte(), buf.readByte(), (byte)(buf.readByte() & 0xF), buf.readBoolean() ? buf.readText() : null);
-            }
-        }
-        if ((i = buf.readUnsignedByte()) > 0) {
-            short j = buf.readUnsignedByte();
-            short k = buf.readUnsignedByte();
-            short l = buf.readUnsignedByte();
-            byte[] bs = buf.readByteArray();
+    public MapUpdateS2CPacket(PacketByteBuf packetByteBuf2) {
+        this.id = packetByteBuf2.readVarInt();
+        this.scale = packetByteBuf2.readByte();
+        this.locked = packetByteBuf2.readBoolean();
+        this.icons = packetByteBuf2.readBoolean() ? packetByteBuf2.method_34066(packetByteBuf -> {
+            MapIcon.Type type = packetByteBuf.readEnumConstant(MapIcon.Type.class);
+            return new MapIcon(type, packetByteBuf.readByte(), packetByteBuf.readByte(), (byte)(packetByteBuf.readByte() & 0xF), packetByteBuf.readBoolean() ? packetByteBuf.readText() : null);
+        }) : null;
+        short i = packetByteBuf2.readUnsignedByte();
+        if (i > 0) {
+            short j = packetByteBuf2.readUnsignedByte();
+            short k = packetByteBuf2.readUnsignedByte();
+            short l = packetByteBuf2.readUnsignedByte();
+            byte[] bs = packetByteBuf2.readByteArray();
             this.updateData = new MapState.UpdateData(k, l, i, j, bs);
+        } else {
+            this.updateData = null;
         }
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.id);
         buf.writeByte(this.scale);
         buf.writeBoolean(this.locked);
         if (this.icons != null) {
             buf.writeBoolean(true);
-            buf.writeVarInt(this.icons.length);
-            for (MapIcon mapIcon : this.icons) {
-                buf.writeEnumConstant(mapIcon.getType());
-                buf.writeByte(mapIcon.getX());
-                buf.writeByte(mapIcon.getZ());
-                buf.writeByte(mapIcon.getRotation() & 0xF);
+            buf.method_34062(this.icons, (packetByteBuf, mapIcon) -> {
+                packetByteBuf.writeEnumConstant(mapIcon.getType());
+                packetByteBuf.writeByte(mapIcon.getX());
+                packetByteBuf.writeByte(mapIcon.getZ());
+                packetByteBuf.writeByte(mapIcon.getRotation() & 0xF);
                 if (mapIcon.getText() != null) {
-                    buf.writeBoolean(true);
-                    buf.writeText(mapIcon.getText());
-                    continue;
+                    packetByteBuf.writeBoolean(true);
+                    packetByteBuf.writeText(mapIcon.getText());
+                } else {
+                    packetByteBuf.writeBoolean(false);
                 }
-                buf.writeBoolean(false);
-            }
+            });
         } else {
             buf.writeBoolean(false);
         }

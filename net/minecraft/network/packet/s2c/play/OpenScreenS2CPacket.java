@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -16,12 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class OpenScreenS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int syncId;
-    private int screenHandlerId;
-    private Text name;
-
-    public OpenScreenS2CPacket() {
-    }
+    private final int syncId;
+    private final int screenHandlerId;
+    private final Text name;
 
     public OpenScreenS2CPacket(int syncId, ScreenHandlerType<?> type, Text name) {
         this.syncId = syncId;
@@ -29,15 +25,14 @@ implements Packet<ClientPlayPacketListener> {
         this.name = name;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.syncId = buf.readVarInt();
-        this.screenHandlerId = buf.readVarInt();
-        this.name = buf.readText();
+    public OpenScreenS2CPacket(PacketByteBuf packetByteBuf) {
+        this.syncId = packetByteBuf.readVarInt();
+        this.screenHandlerId = packetByteBuf.readVarInt();
+        this.name = packetByteBuf.readText();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.syncId);
         buf.writeVarInt(this.screenHandlerId);
         buf.writeText(this.name);

@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -14,12 +13,9 @@ import net.minecraft.util.Identifier;
 
 public class CraftRequestC2SPacket
 implements Packet<ServerPlayPacketListener> {
-    private int syncId;
-    private Identifier recipe;
-    private boolean craftAll;
-
-    public CraftRequestC2SPacket() {
-    }
+    private final int syncId;
+    private final Identifier recipe;
+    private final boolean craftAll;
 
     @Environment(value=EnvType.CLIENT)
     public CraftRequestC2SPacket(int syncId, Recipe<?> recipe, boolean craftAll) {
@@ -28,15 +24,14 @@ implements Packet<ServerPlayPacketListener> {
         this.craftAll = craftAll;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.syncId = buf.readByte();
-        this.recipe = buf.readIdentifier();
-        this.craftAll = buf.readBoolean();
+    public CraftRequestC2SPacket(PacketByteBuf packetByteBuf) {
+        this.syncId = packetByteBuf.readByte();
+        this.recipe = packetByteBuf.readIdentifier();
+        this.craftAll = packetByteBuf.readBoolean();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeByte(this.syncId);
         buf.writeIdentifier(this.recipe);
         buf.writeBoolean(this.craftAll);

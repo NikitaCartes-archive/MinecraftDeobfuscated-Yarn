@@ -3,11 +3,10 @@
  */
 package net.minecraft.advancement;
 
-import com.google.common.base.Function;
-import com.google.common.base.Functions;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -59,15 +58,15 @@ public class AdvancementManager {
     }
 
     public void load(Map<Identifier, Advancement.Task> map) {
-        Function<Identifier, Object> function = Functions.forMap(this.advancements, null);
-        while (!map.isEmpty()) {
+        HashMap<Identifier, Advancement.Task> map2 = Maps.newHashMap(map);
+        while (!map2.isEmpty()) {
             boolean bl = false;
-            Iterator<Map.Entry<Identifier, Advancement.Task>> iterator = map.entrySet().iterator();
+            Iterator iterator = map2.entrySet().iterator();
             while (iterator.hasNext()) {
-                Map.Entry<Identifier, Advancement.Task> entry = iterator.next();
-                Identifier identifier = entry.getKey();
-                Advancement.Task task = entry.getValue();
-                if (!task.findParent(function)) continue;
+                Map.Entry entry = iterator.next();
+                Identifier identifier = (Identifier)entry.getKey();
+                Advancement.Task task = (Advancement.Task)entry.getValue();
+                if (!task.findParent(this.advancements::get)) continue;
                 Advancement advancement = task.build(identifier);
                 this.advancements.put(identifier, advancement);
                 bl = true;
@@ -83,8 +82,8 @@ public class AdvancementManager {
                 this.listener.onDependentAdded(advancement);
             }
             if (bl) continue;
-            for (Map.Entry<Identifier, Advancement.Task> entry : map.entrySet()) {
-                LOGGER.error("Couldn't load advancement {}: {}", (Object)entry.getKey(), (Object)entry.getValue());
+            for (Map.Entry entry : map2.entrySet()) {
+                LOGGER.error("Couldn't load advancement {}: {}", entry.getKey(), entry.getValue());
             }
         }
         LOGGER.info("Loaded {} advancements", (Object)this.advancements.size());

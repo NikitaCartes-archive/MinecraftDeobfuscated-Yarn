@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.option.ChatVisibility;
@@ -14,16 +13,13 @@ import net.minecraft.util.Arm;
 
 public class ClientSettingsC2SPacket
 implements Packet<ServerPlayPacketListener> {
-    private String language;
-    private int viewDistance;
-    private ChatVisibility chatVisibility;
-    private boolean chatColors;
-    private int playerModelBitMask;
-    private Arm mainArm;
-    private boolean field_28961;
-
-    public ClientSettingsC2SPacket() {
-    }
+    private final String language;
+    private final int viewDistance;
+    private final ChatVisibility chatVisibility;
+    private final boolean chatColors;
+    private final int playerModelBitMask;
+    private final Arm mainArm;
+    private final boolean field_28961;
 
     @Environment(value=EnvType.CLIENT)
     public ClientSettingsC2SPacket(String language, int viewDistance, ChatVisibility chatVisibility, boolean chatColors, int modelBitMask, Arm mainArm, boolean bl) {
@@ -36,19 +32,18 @@ implements Packet<ServerPlayPacketListener> {
         this.field_28961 = bl;
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.language = buf.readString(16);
-        this.viewDistance = buf.readByte();
-        this.chatVisibility = buf.readEnumConstant(ChatVisibility.class);
-        this.chatColors = buf.readBoolean();
-        this.playerModelBitMask = buf.readUnsignedByte();
-        this.mainArm = buf.readEnumConstant(Arm.class);
-        this.field_28961 = buf.readBoolean();
+    public ClientSettingsC2SPacket(PacketByteBuf packetByteBuf) {
+        this.language = packetByteBuf.readString(16);
+        this.viewDistance = packetByteBuf.readByte();
+        this.chatVisibility = packetByteBuf.readEnumConstant(ChatVisibility.class);
+        this.chatColors = packetByteBuf.readBoolean();
+        this.playerModelBitMask = packetByteBuf.readUnsignedByte();
+        this.mainArm = packetByteBuf.readEnumConstant(Arm.class);
+        this.field_28961 = packetByteBuf.readBoolean();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeString(this.language);
         buf.writeByte(this.viewDistance);
         buf.writeEnumConstant(this.chatVisibility);

@@ -3,7 +3,6 @@
  */
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -14,11 +13,8 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntityPassengersSetS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int id;
-    private int[] passengerIds;
-
-    public EntityPassengersSetS2CPacket() {
-    }
+    private final int id;
+    private final int[] passengerIds;
 
     public EntityPassengersSetS2CPacket(Entity entity) {
         this.id = entity.getId();
@@ -29,14 +25,13 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.id = buf.readVarInt();
-        this.passengerIds = buf.readIntArray();
+    public EntityPassengersSetS2CPacket(PacketByteBuf packetByteBuf) {
+        this.id = packetByteBuf.readVarInt();
+        this.passengerIds = packetByteBuf.readIntArray();
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.id);
         buf.writeIntArray(this.passengerIds);
     }

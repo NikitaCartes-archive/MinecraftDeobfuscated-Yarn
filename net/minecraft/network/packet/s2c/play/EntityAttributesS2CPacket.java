@@ -4,11 +4,8 @@
 package net.minecraft.network.packet.s2c.play;
 
 import com.google.common.collect.Lists;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -22,51 +19,40 @@ import net.minecraft.util.registry.Registry;
 
 public class EntityAttributesS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int entityId;
-    private final List<Entry> entries = Lists.newArrayList();
-
-    public EntityAttributesS2CPacket() {
-    }
+    private final int entityId;
+    private final List<Entry> entries;
 
     public EntityAttributesS2CPacket(int entityId, Collection<EntityAttributeInstance> attributes) {
         this.entityId = entityId;
+        this.entries = Lists.newArrayList();
         for (EntityAttributeInstance entityAttributeInstance : attributes) {
             this.entries.add(new Entry(entityAttributeInstance.getAttribute(), entityAttributeInstance.getBaseValue(), entityAttributeInstance.getModifiers()));
         }
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.entityId = buf.readVarInt();
-        int i = buf.readInt();
-        for (int j = 0; j < i; ++j) {
-            Identifier identifier = buf.readIdentifier();
+    public EntityAttributesS2CPacket(PacketByteBuf packetByteBuf) {
+        this.entityId = packetByteBuf.readVarInt();
+        this.entries = packetByteBuf.method_34066(packetByteBuf2 -> {
+            Identifier identifier = packetByteBuf2.readIdentifier();
             EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
-            double d = buf.readDouble();
-            ArrayList<EntityAttributeModifier> list = Lists.newArrayList();
-            int k = buf.readVarInt();
-            for (int l = 0; l < k; ++l) {
-                UUID uUID = buf.readUuid();
-                list.add(new EntityAttributeModifier(uUID, "Unknown synced attribute modifier", buf.readDouble(), EntityAttributeModifier.Operation.fromId(buf.readByte())));
-            }
-            this.entries.add(new Entry(entityAttribute, d, list));
-        }
+            double d = packetByteBuf2.readDouble();
+            List<EntityAttributeModifier> list = packetByteBuf2.method_34066(packetByteBuf -> new EntityAttributeModifier(packetByteBuf.readUuid(), "Unknown synced attribute modifier", packetByteBuf.readDouble(), EntityAttributeModifier.Operation.fromId(packetByteBuf.readByte())));
+            return new Entry(entityAttribute, d, list);
+        });
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.entityId);
-        buf.writeInt(this.entries.size());
-        for (Entry entry : this.entries) {
-            buf.writeIdentifier(Registry.ATTRIBUTE.getId(entry.getId()));
-            buf.writeDouble(entry.getBaseValue());
-            buf.writeVarInt(entry.getModifiers().size());
-            for (EntityAttributeModifier entityAttributeModifier : entry.getModifiers()) {
-                buf.writeUuid(entityAttributeModifier.getId());
-                buf.writeDouble(entityAttributeModifier.getValue());
-                buf.writeByte(entityAttributeModifier.getOperation().getId());
-            }
-        }
+        buf.method_34062(this.entries, (packetByteBuf2, entry) -> {
+            packetByteBuf2.writeIdentifier(Registry.ATTRIBUTE.getId(entry.getId()));
+            packetByteBuf2.writeDouble(entry.getBaseValue());
+            packetByteBuf2.method_34062(entry.getModifiers(), (packetByteBuf, entityAttributeModifier) -> {
+                packetByteBuf.writeUuid(entityAttributeModifier.getId());
+                packetByteBuf.writeDouble(entityAttributeModifier.getValue());
+                packetByteBuf.writeByte(entityAttributeModifier.getOperation().getId());
+            });
+        });
     }
 
     @Override
@@ -84,7 +70,7 @@ implements Packet<ClientPlayPacketListener> {
         return this.entries;
     }
 
-    public class Entry {
+    public static class Entry {
         private final EntityAttribute id;
         private final double baseValue;
         private final Collection<EntityAttributeModifier> modifiers;

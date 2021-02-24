@@ -28,8 +28,16 @@ import org.jetbrains.annotations.Nullable;
 
 public class AdvancementProgress
 implements Comparable<AdvancementProgress> {
-    private final Map<String, CriterionProgress> criteriaProgresses = Maps.newHashMap();
+    private final Map<String, CriterionProgress> criteriaProgresses;
     private String[][] requirements = new String[0][];
+
+    private AdvancementProgress(Map<String, CriterionProgress> map) {
+        this.criteriaProgresses = map;
+    }
+
+    public AdvancementProgress() {
+        this.criteriaProgresses = Maps.newHashMap();
+    }
 
     public void init(Map<String, AdvancementCriterion> criteria, String[][] requirements) {
         Set<String> set = criteria.keySet();
@@ -90,20 +98,12 @@ implements Comparable<AdvancementProgress> {
     }
 
     public void toPacket(PacketByteBuf buf) {
-        buf.writeVarInt(this.criteriaProgresses.size());
-        for (Map.Entry<String, CriterionProgress> entry : this.criteriaProgresses.entrySet()) {
-            buf.writeString(entry.getKey());
-            entry.getValue().toPacket(buf);
-        }
+        buf.method_34063(this.criteriaProgresses, PacketByteBuf::writeString, (packetByteBuf, criterionProgress) -> criterionProgress.toPacket((PacketByteBuf)packetByteBuf));
     }
 
     public static AdvancementProgress fromPacket(PacketByteBuf buf) {
-        AdvancementProgress advancementProgress = new AdvancementProgress();
-        int i = buf.readVarInt();
-        for (int j = 0; j < i; ++j) {
-            advancementProgress.criteriaProgresses.put(buf.readString(Short.MAX_VALUE), CriterionProgress.fromPacket(buf));
-        }
-        return advancementProgress;
+        Map<String, CriterionProgress> map = buf.method_34067(PacketByteBuf::readString, CriterionProgress::fromPacket);
+        return new AdvancementProgress(map);
     }
 
     @Nullable

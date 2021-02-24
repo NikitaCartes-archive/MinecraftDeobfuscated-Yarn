@@ -114,7 +114,7 @@ implements CraftingRecipe {
 
         @Override
         public ShapelessRecipe read(Identifier identifier, PacketByteBuf packetByteBuf) {
-            String string = packetByteBuf.readString(Short.MAX_VALUE);
+            String string = packetByteBuf.readString();
             int i = packetByteBuf.readVarInt();
             DefaultedList<Ingredient> defaultedList = DefaultedList.ofSize(i, Ingredient.EMPTY);
             for (int j = 0; j < defaultedList.size(); ++j) {

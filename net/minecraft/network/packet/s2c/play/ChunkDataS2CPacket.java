@@ -6,7 +6,6 @@ package net.minecraft.network.packet.s2c.play;
 import com.google.common.collect.Lists;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import java.io.IOException;
 import java.util.BitSet;
 import java.util.List;
 import java.util.Map;
@@ -23,21 +22,16 @@ import net.minecraft.world.Heightmap;
 import net.minecraft.world.biome.source.BiomeArray;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
-import org.jetbrains.annotations.Nullable;
 
 public class ChunkDataS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private int chunkX;
-    private int chunkZ;
-    private BitSet verticalStripBitmask;
-    private CompoundTag heightmaps;
-    @Nullable
-    private int[] biomeArray;
-    private byte[] data;
-    private List<CompoundTag> blockEntities;
-
-    public ChunkDataS2CPacket() {
-    }
+    private final int chunkX;
+    private final int chunkZ;
+    private final BitSet verticalStripBitmask;
+    private final CompoundTag heightmaps;
+    private final int[] biomeArray;
+    private final byte[] data;
+    private final List<CompoundTag> blockEntities;
 
     public ChunkDataS2CPacket(WorldChunk chunk) {
         ChunkPos chunkPos = chunk.getPos();
@@ -59,41 +53,31 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    @Override
-    public void read(PacketByteBuf buf) throws IOException {
-        this.chunkX = buf.readInt();
-        this.chunkZ = buf.readInt();
-        this.verticalStripBitmask = buf.method_33558();
-        this.heightmaps = buf.readCompoundTag();
-        this.biomeArray = buf.readIntArray(BiomeArray.DEFAULT_LENGTH);
-        int i = buf.readVarInt();
+    public ChunkDataS2CPacket(PacketByteBuf packetByteBuf) {
+        this.chunkX = packetByteBuf.readInt();
+        this.chunkZ = packetByteBuf.readInt();
+        this.verticalStripBitmask = packetByteBuf.method_33558();
+        this.heightmaps = packetByteBuf.readCompoundTag();
+        this.biomeArray = packetByteBuf.readIntArray(BiomeArray.DEFAULT_LENGTH);
+        int i = packetByteBuf.readVarInt();
         if (i > 0x200000) {
             throw new RuntimeException("Chunk Packet trying to allocate too much memory on read.");
         }
         this.data = new byte[i];
-        buf.readBytes(this.data);
-        int j = buf.readVarInt();
-        this.blockEntities = Lists.newArrayList();
-        for (int k = 0; k < j; ++k) {
-            this.blockEntities.add(buf.readCompoundTag());
-        }
+        packetByteBuf.readBytes(this.data);
+        this.blockEntities = packetByteBuf.method_34066(PacketByteBuf::readCompoundTag);
     }
 
     @Override
-    public void write(PacketByteBuf buf) throws IOException {
+    public void write(PacketByteBuf buf) {
         buf.writeInt(this.chunkX);
         buf.writeInt(this.chunkZ);
         buf.method_33557(this.verticalStripBitmask);
         buf.writeCompoundTag(this.heightmaps);
-        if (this.biomeArray != null) {
-            buf.writeIntArray(this.biomeArray);
-        }
+        buf.writeIntArray(this.biomeArray);
         buf.writeVarInt(this.data.length);
         buf.writeBytes(this.data);
-        buf.writeVarInt(this.blockEntities.size());
-        for (CompoundTag compoundTag : this.blockEntities) {
-            buf.writeCompoundTag(compoundTag);
-        }
+        buf.method_34062(this.blockEntities, PacketByteBuf::writeCompoundTag);
     }
 
     @Override
@@ -159,7 +143,6 @@ implements Packet<ClientPlayPacketListener> {
         return this.blockEntities;
     }
 
-    @Nullable
     @Environment(value=EnvType.CLIENT)
     public int[] getBiomeArray() {
         return this.biomeArray;

@@ -3,6 +3,8 @@
  */
 package net.minecraft.network;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
@@ -12,6 +14,8 @@ import io.netty.buffer.ByteBufOutputStream;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import io.netty.util.ByteProcessor;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import java.io.DataOutput;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,8 +28,15 @@ import java.nio.channels.ScatteringByteChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.item.Item;
@@ -60,31 +71,95 @@ extends ByteBuf {
         return 5;
     }
 
-    public <T> T decode(Codec<T> codec) throws IOException {
+    public <T> T decode(Codec<T> codec) {
         CompoundTag compoundTag = this.method_30617();
         DataResult dataResult = codec.parse(NbtOps.INSTANCE, compoundTag);
-        if (dataResult.error().isPresent()) {
-            throw new IOException("Failed to decode: " + dataResult.error().get().message() + " " + compoundTag);
-        }
+        dataResult.error().ifPresent(partialResult -> {
+            throw new EncoderException("Failed to decode: " + partialResult.message() + " " + compoundTag);
+        });
         return (T)dataResult.result().get();
     }
 
-    public <T> void encode(Codec<T> codec, T object) throws IOException {
+    public <T> void encode(Codec<T> codec, T object) {
         DataResult<Tag> dataResult = codec.encodeStart(NbtOps.INSTANCE, (Tag)object);
-        if (dataResult.error().isPresent()) {
-            throw new IOException("Failed to encode: " + dataResult.error().get().message() + " " + object);
-        }
+        dataResult.error().ifPresent(partialResult -> {
+            throw new EncoderException("Failed to encode: " + partialResult.message() + " " + object);
+        });
         this.writeCompoundTag((CompoundTag)dataResult.result().get());
+    }
+
+    public <T, C extends Collection<T>> C method_34068(IntFunction<C> intFunction, Function<PacketByteBuf, T> function) {
+        int i = this.readVarInt();
+        Collection collection = (Collection)intFunction.apply(i);
+        for (int j = 0; j < i; ++j) {
+            collection.add(function.apply(this));
+        }
+        return (C)collection;
+    }
+
+    public <T> void method_34062(Collection<T> collection, BiConsumer<PacketByteBuf, T> biConsumer) {
+        this.writeVarInt(collection.size());
+        for (T object : collection) {
+            biConsumer.accept(this, (PacketByteBuf)object);
+        }
+    }
+
+    public <T> List<T> method_34066(Function<PacketByteBuf, T> function) {
+        return this.method_34068(Lists::newArrayListWithCapacity, function);
+    }
+
+    public IntList method_34059() {
+        int i = this.readVarInt();
+        IntArrayList intList = new IntArrayList();
+        for (int j = 0; j < i; ++j) {
+            intList.add(this.readVarInt());
+        }
+        return intList;
+    }
+
+    public void method_34060(IntList intList) {
+        this.writeVarInt(intList.size());
+        intList.forEach(this::writeVarInt);
+    }
+
+    public <K, V, M extends Map<K, V>> M method_34069(IntFunction<M> intFunction, Function<PacketByteBuf, K> function, Function<PacketByteBuf, V> function2) {
+        int i = this.readVarInt();
+        Map map = (Map)intFunction.apply(i);
+        for (int j = 0; j < i; ++j) {
+            K object = function.apply(this);
+            V object2 = function2.apply(this);
+            map.put(object, object2);
+        }
+        return (M)map;
+    }
+
+    public <K, V> Map<K, V> method_34067(Function<PacketByteBuf, K> function, Function<PacketByteBuf, V> function2) {
+        return this.method_34069(Maps::newHashMapWithExpectedSize, function, function2);
+    }
+
+    public <K, V> void method_34063(Map<K, V> map, BiConsumer<PacketByteBuf, K> biConsumer, BiConsumer<PacketByteBuf, V> biConsumer2) {
+        this.writeVarInt(map.size());
+        map.forEach((object, object2) -> {
+            biConsumer.accept(this, object);
+            biConsumer2.accept(this, object2);
+        });
+    }
+
+    public void method_34065(Consumer<PacketByteBuf> consumer) {
+        int i = this.readVarInt();
+        for (int j = 0; j < i; ++j) {
+            consumer.accept(this);
+        }
+    }
+
+    public byte[] readByteArray() {
+        return this.readByteArray(this.readableBytes());
     }
 
     public PacketByteBuf writeByteArray(byte[] bs) {
         this.writeVarInt(bs.length);
         this.writeBytes(bs);
         return this;
-    }
-
-    public byte[] readByteArray() {
-        return this.readByteArray(this.readableBytes());
     }
 
     public byte[] readByteArray(int i) {
@@ -305,7 +380,6 @@ extends ByteBuf {
         return itemStack;
     }
 
-    @Environment(value=EnvType.CLIENT)
     public String readString() {
         return this.readString(Short.MAX_VALUE);
     }

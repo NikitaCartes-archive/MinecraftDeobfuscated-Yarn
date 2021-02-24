@@ -56,20 +56,11 @@ public class AdvancementCriterion {
     }
 
     public static Map<String, AdvancementCriterion> criteriaFromPacket(PacketByteBuf buf) {
-        HashMap<String, AdvancementCriterion> map = Maps.newHashMap();
-        int i = buf.readVarInt();
-        for (int j = 0; j < i; ++j) {
-            map.put(buf.readString(Short.MAX_VALUE), AdvancementCriterion.fromPacket(buf));
-        }
-        return map;
+        return buf.method_34067(PacketByteBuf::readString, AdvancementCriterion::fromPacket);
     }
 
     public static void criteriaToPacket(Map<String, AdvancementCriterion> criteria, PacketByteBuf buf) {
-        buf.writeVarInt(criteria.size());
-        for (Map.Entry<String, AdvancementCriterion> entry : criteria.entrySet()) {
-            buf.writeString(entry.getKey());
-            entry.getValue().toPacket(buf);
-        }
+        buf.method_34063(criteria, PacketByteBuf::writeString, (packetByteBuf, advancementCriterion) -> advancementCriterion.toPacket((PacketByteBuf)packetByteBuf));
     }
 
     @Nullable

@@ -16,7 +16,6 @@ import it.unimi.dsi.fastutil.ints.Int2ShortOpenHashMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -45,6 +44,7 @@ import net.minecraft.entity.JumpingMount;
 import net.minecraft.entity.MovementType;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.passive.HorseBaseEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.vehicle.BoatEntity;
@@ -1188,33 +1188,45 @@ ServerPlayPacketListener {
     public void onPlayerInteractEntity(PlayerInteractEntityC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         ServerWorld serverWorld = this.player.getServerWorld();
-        Entity entity = packet.getEntity(serverWorld);
+        final Entity entity = packet.getEntity(serverWorld);
         this.player.updateLastActionTime();
         this.player.setSneaking(packet.isPlayerSneaking());
         if (entity != null) {
             double d = 36.0;
             if (this.player.squaredDistanceTo(entity) < 36.0) {
-                Hand hand = packet.getHand();
-                ItemStack itemStack = hand != null ? this.player.getStackInHand(hand).copy() : ItemStack.EMPTY;
-                Optional<Object> optional = Optional.empty();
-                if (packet.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT) {
-                    optional = Optional.of(this.player.interact(entity, hand));
-                } else if (packet.getType() == PlayerInteractEntityC2SPacket.InteractionType.INTERACT_AT) {
-                    optional = Optional.of(entity.interactAt(this.player, packet.getHitPosition(), hand));
-                } else if (packet.getType() == PlayerInteractEntityC2SPacket.InteractionType.ATTACK) {
-                    if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof PersistentProjectileEntity || entity == this.player) {
-                        this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
-                        LOGGER.warn("Player {} tried to attack an invalid entity", (Object)this.player.getName().getString());
-                        return;
+                packet.method_34209(new PlayerInteractEntityC2SPacket.class_5908(){
+
+                    private void method_33897(Hand hand, class_5860 arg) {
+                        ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand).copy();
+                        ActionResult actionResult = arg.run(ServerPlayNetworkHandler.this.player, entity, hand);
+                        if (actionResult.isAccepted()) {
+                            Criteria.PLAYER_INTERACTED_WITH_ENTITY.test(ServerPlayNetworkHandler.this.player, itemStack, entity);
+                            if (actionResult.shouldSwingHand()) {
+                                ServerPlayNetworkHandler.this.player.swingHand(hand, true);
+                            }
+                        }
                     }
-                    this.player.attack(entity);
-                }
-                if (optional.isPresent() && ((ActionResult)((Object)optional.get())).isAccepted()) {
-                    Criteria.PLAYER_INTERACTED_WITH_ENTITY.test(this.player, itemStack, entity);
-                    if (((ActionResult)((Object)optional.get())).shouldSwingHand()) {
-                        this.player.swingHand(hand, true);
+
+                    @Override
+                    public void method_34219(Hand hand) {
+                        this.method_33897(hand, PlayerEntity::interact);
                     }
-                }
+
+                    @Override
+                    public void method_34220(Hand hand2, Vec3d vec3d) {
+                        this.method_33897(hand2, (serverPlayerEntity, entity, hand) -> entity.interactAt(serverPlayerEntity, vec3d, hand));
+                    }
+
+                    @Override
+                    public void method_34218() {
+                        if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof PersistentProjectileEntity || entity == ServerPlayNetworkHandler.this.player) {
+                            ServerPlayNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
+                            LOGGER.warn("Player {} tried to attack an invalid entity", (Object)ServerPlayNetworkHandler.this.player.getName().getString());
+                            return;
+                        }
+                        ServerPlayNetworkHandler.this.player.attack(entity);
+                    }
+                });
             }
         }
     }
@@ -1432,6 +1444,11 @@ ServerPlayPacketListener {
     @Override
     public ServerPlayerEntity getPlayer() {
         return this.player;
+    }
+
+    @FunctionalInterface
+    static interface class_5860 {
+        public ActionResult run(ServerPlayerEntity var1, Entity var2, Hand var3);
     }
 }
 
