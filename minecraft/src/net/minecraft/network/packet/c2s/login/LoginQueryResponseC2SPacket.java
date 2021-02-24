@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.login;
 
-import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -9,11 +8,8 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerLoginPacketListener;
 
 public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketListener> {
-	private int queryId;
-	private PacketByteBuf response;
-
-	public LoginQueryResponseC2SPacket() {
-	}
+	private final int queryId;
+	private final PacketByteBuf response;
 
 	@Environment(EnvType.CLIENT)
 	public LoginQueryResponseC2SPacket(int queryId, @Nullable PacketByteBuf response) {
@@ -21,23 +17,22 @@ public class LoginQueryResponseC2SPacket implements Packet<ServerLoginPacketList
 		this.response = response;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.queryId = buf.readVarInt();
-		if (buf.readBoolean()) {
-			int i = buf.readableBytes();
+	public LoginQueryResponseC2SPacket(PacketByteBuf packetByteBuf) {
+		this.queryId = packetByteBuf.readVarInt();
+		if (packetByteBuf.readBoolean()) {
+			int i = packetByteBuf.readableBytes();
 			if (i < 0 || i > 1048576) {
-				throw new IOException("Payload may not be larger than 1048576 bytes");
+				throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
 			}
 
-			this.response = new PacketByteBuf(buf.readBytes(i));
+			this.response = new PacketByteBuf(packetByteBuf.readBytes(i));
 		} else {
 			this.response = null;
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.queryId);
 		if (this.response != null) {
 			buf.writeBoolean(true);

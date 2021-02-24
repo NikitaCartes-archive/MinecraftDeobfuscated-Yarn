@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,12 +7,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class ConfirmScreenActionS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int syncId;
-	private short actionId;
-	private boolean accepted;
-
-	public ConfirmScreenActionS2CPacket() {
-	}
+	private final int syncId;
+	private final short actionId;
+	private final boolean accepted;
 
 	public ConfirmScreenActionS2CPacket(int syncId, short actionId, boolean accepted) {
 		this.syncId = syncId;
@@ -21,22 +17,21 @@ public class ConfirmScreenActionS2CPacket implements Packet<ClientPlayPacketList
 		this.accepted = accepted;
 	}
 
-	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
-		clientPlayPacketListener.onConfirmScreenAction(this);
+	public ConfirmScreenActionS2CPacket(PacketByteBuf packetByteBuf) {
+		this.syncId = packetByteBuf.readUnsignedByte();
+		this.actionId = packetByteBuf.readShort();
+		this.accepted = packetByteBuf.readBoolean();
 	}
 
 	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.syncId = buf.readUnsignedByte();
-		this.actionId = buf.readShort();
-		this.accepted = buf.readBoolean();
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.syncId);
 		buf.writeShort(this.actionId);
 		buf.writeBoolean(this.accepted);
+	}
+
+	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
+		clientPlayPacketListener.onConfirmScreenAction(this);
 	}
 
 	@Environment(EnvType.CLIENT)

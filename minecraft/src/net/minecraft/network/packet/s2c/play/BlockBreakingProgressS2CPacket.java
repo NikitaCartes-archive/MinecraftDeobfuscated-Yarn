@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -9,12 +8,9 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
 
 public class BlockBreakingProgressS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int entityId;
-	private BlockPos pos;
-	private int progress;
-
-	public BlockBreakingProgressS2CPacket() {
-	}
+	private final int entityId;
+	private final BlockPos pos;
+	private final int progress;
 
 	public BlockBreakingProgressS2CPacket(int entityId, BlockPos pos, int progress) {
 		this.entityId = entityId;
@@ -22,15 +18,14 @@ public class BlockBreakingProgressS2CPacket implements Packet<ClientPlayPacketLi
 		this.progress = progress;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.entityId = buf.readVarInt();
-		this.pos = buf.readBlockPos();
-		this.progress = buf.readUnsignedByte();
+	public BlockBreakingProgressS2CPacket(PacketByteBuf packetByteBuf) {
+		this.entityId = packetByteBuf.readVarInt();
+		this.pos = packetByteBuf.readBlockPos();
+		this.progress = packetByteBuf.readUnsignedByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeBlockPos(this.pos);
 		buf.writeByte(this.progress);

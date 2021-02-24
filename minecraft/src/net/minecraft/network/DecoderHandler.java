@@ -24,29 +24,27 @@ public class DecoderHandler extends ByteToMessageDecoder {
 		if (byteBuf.readableBytes() != 0) {
 			PacketByteBuf packetByteBuf = new PacketByteBuf(byteBuf);
 			int i = packetByteBuf.readVarInt();
-			Packet<?> packet = ((NetworkState)channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get()).getPacketHandler(this.side, i);
+			Packet<?> packet = ((NetworkState)channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get())
+				.getPacketHandler(this.side, i, packetByteBuf);
 			if (packet == null) {
 				throw new IOException("Bad packet id " + i);
+			} else if (packetByteBuf.readableBytes() > 0) {
+				throw new IOException(
+					"Packet "
+						+ ((NetworkState)channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get()).getId()
+						+ "/"
+						+ i
+						+ " ("
+						+ packet.getClass().getSimpleName()
+						+ ") was larger than I expected, found "
+						+ packetByteBuf.readableBytes()
+						+ " bytes extra whilst reading packet "
+						+ i
+				);
 			} else {
-				packet.read(packetByteBuf);
-				if (packetByteBuf.readableBytes() > 0) {
-					throw new IOException(
-						"Packet "
-							+ ((NetworkState)channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get()).getId()
-							+ "/"
-							+ i
-							+ " ("
-							+ packet.getClass().getSimpleName()
-							+ ") was larger than I expected, found "
-							+ packetByteBuf.readableBytes()
-							+ " bytes extra whilst reading packet "
-							+ i
-					);
-				} else {
-					list.add(packet);
-					if (LOGGER.isDebugEnabled()) {
-						LOGGER.debug(MARKER, " IN: [{}:{}] {}", channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get(), i, packet.getClass().getName());
-					}
+				list.add(packet);
+				if (LOGGER.isDebugEnabled()) {
+					LOGGER.debug(MARKER, " IN: [{}:{}] {}", channelHandlerContext.channel().attr(ClientConnection.ATTR_KEY_PROTOCOL).get(), i, packet.getClass().getName());
 				}
 			}
 		}

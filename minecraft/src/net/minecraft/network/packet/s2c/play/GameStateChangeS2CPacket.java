@@ -2,7 +2,6 @@ package net.minecraft.network.packet.s2c.play;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -22,25 +21,21 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 	public static final GameStateChangeS2CPacket.Reason PUFFERFISH_STING = new GameStateChangeS2CPacket.Reason(9);
 	public static final GameStateChangeS2CPacket.Reason ELDER_GUARDIAN_EFFECT = new GameStateChangeS2CPacket.Reason(10);
 	public static final GameStateChangeS2CPacket.Reason IMMEDIATE_RESPAWN = new GameStateChangeS2CPacket.Reason(11);
-	private GameStateChangeS2CPacket.Reason reason;
-	private float value;
-
-	public GameStateChangeS2CPacket() {
-	}
+	private final GameStateChangeS2CPacket.Reason reason;
+	private final float value;
 
 	public GameStateChangeS2CPacket(GameStateChangeS2CPacket.Reason reason, float value) {
 		this.reason = reason;
 		this.value = value;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.reason = GameStateChangeS2CPacket.Reason.REASONS.get(buf.readUnsignedByte());
-		this.value = buf.readFloat();
+	public GameStateChangeS2CPacket(PacketByteBuf packetByteBuf) {
+		this.reason = GameStateChangeS2CPacket.Reason.REASONS.get(packetByteBuf.readUnsignedByte());
+		this.value = packetByteBuf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeByte(this.reason.id);
 		buf.writeFloat(this.value);
 	}

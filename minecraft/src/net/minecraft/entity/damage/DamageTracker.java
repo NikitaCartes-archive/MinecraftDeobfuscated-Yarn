@@ -193,4 +193,9 @@ public class DamageTracker {
 	public LivingEntity getEntity() {
 		return this.entity;
 	}
+
+	public int method_33937() {
+		LivingEntity livingEntity = this.getBiggestAttacker();
+		return livingEntity == null ? -1 : livingEntity.getId();
+	}
 }

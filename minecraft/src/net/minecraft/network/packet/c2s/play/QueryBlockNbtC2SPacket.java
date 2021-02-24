@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -9,11 +8,8 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
 
 public class QueryBlockNbtC2SPacket implements Packet<ServerPlayPacketListener> {
-	private int transactionId;
-	private BlockPos pos;
-
-	public QueryBlockNbtC2SPacket() {
-	}
+	private final int transactionId;
+	private final BlockPos pos;
 
 	@Environment(EnvType.CLIENT)
 	public QueryBlockNbtC2SPacket(int transactionId, BlockPos pos) {
@@ -21,14 +17,13 @@ public class QueryBlockNbtC2SPacket implements Packet<ServerPlayPacketListener> 
 		this.pos = pos;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.transactionId = buf.readVarInt();
-		this.pos = buf.readBlockPos();
+	public QueryBlockNbtC2SPacket(PacketByteBuf packetByteBuf) {
+		this.transactionId = packetByteBuf.readVarInt();
+		this.pos = packetByteBuf.readBlockPos();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.transactionId);
 		buf.writeBlockPos(this.pos);
 	}

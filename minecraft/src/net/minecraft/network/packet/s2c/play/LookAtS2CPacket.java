@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,22 +12,22 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
-	private double targetX;
-	private double targetY;
-	private double targetZ;
-	private int entityId;
-	private EntityAnchorArgumentType.EntityAnchor selfAnchor;
-	private EntityAnchorArgumentType.EntityAnchor targetAnchor;
-	private boolean lookAtEntity;
-
-	public LookAtS2CPacket() {
-	}
+	private final double targetX;
+	private final double targetY;
+	private final double targetZ;
+	private final int entityId;
+	private final EntityAnchorArgumentType.EntityAnchor selfAnchor;
+	private final EntityAnchorArgumentType.EntityAnchor targetAnchor;
+	private final boolean lookAtEntity;
 
 	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor entityAnchor, double targetX, double targetY, double targetZ) {
 		this.selfAnchor = entityAnchor;
 		this.targetX = targetX;
 		this.targetY = targetY;
 		this.targetZ = targetZ;
+		this.entityId = 0;
+		this.lookAtEntity = false;
+		this.targetAnchor = null;
 	}
 
 	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor selfAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor targetAnchor) {
@@ -42,21 +41,23 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.lookAtEntity = true;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.selfAnchor = buf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
-		this.targetX = buf.readDouble();
-		this.targetY = buf.readDouble();
-		this.targetZ = buf.readDouble();
-		if (buf.readBoolean()) {
-			this.lookAtEntity = true;
-			this.entityId = buf.readVarInt();
-			this.targetAnchor = buf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
+	public LookAtS2CPacket(PacketByteBuf packetByteBuf) {
+		this.selfAnchor = packetByteBuf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
+		this.targetX = packetByteBuf.readDouble();
+		this.targetY = packetByteBuf.readDouble();
+		this.targetZ = packetByteBuf.readDouble();
+		this.lookAtEntity = packetByteBuf.readBoolean();
+		if (this.lookAtEntity) {
+			this.entityId = packetByteBuf.readVarInt();
+			this.targetAnchor = packetByteBuf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
+		} else {
+			this.entityId = 0;
+			this.targetAnchor = null;
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.selfAnchor);
 		buf.writeDouble(this.targetX);
 		buf.writeDouble(this.targetY);

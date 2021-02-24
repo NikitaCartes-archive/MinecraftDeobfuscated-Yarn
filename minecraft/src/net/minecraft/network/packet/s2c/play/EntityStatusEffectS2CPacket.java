@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.effect.StatusEffect;
@@ -10,14 +9,11 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int entityId;
-	private byte effectId;
-	private byte amplifier;
-	private int duration;
-	private byte flags;
-
-	public EntityStatusEffectS2CPacket() {
-	}
+	private final int entityId;
+	private final byte effectId;
+	private final byte amplifier;
+	private final int duration;
+	private final byte flags;
 
 	public EntityStatusEffectS2CPacket(int entityId, StatusEffectInstance effect) {
 		this.entityId = entityId;
@@ -29,31 +25,32 @@ public class EntityStatusEffectS2CPacket implements Packet<ClientPlayPacketListe
 			this.duration = effect.getDuration();
 		}
 
-		this.flags = 0;
+		byte b = 0;
 		if (effect.isAmbient()) {
-			this.flags = (byte)(this.flags | 1);
+			b = (byte)(b | 1);
 		}
 
 		if (effect.shouldShowParticles()) {
-			this.flags = (byte)(this.flags | 2);
+			b = (byte)(b | 2);
 		}
 
 		if (effect.shouldShowIcon()) {
-			this.flags = (byte)(this.flags | 4);
+			b = (byte)(b | 4);
 		}
+
+		this.flags = b;
+	}
+
+	public EntityStatusEffectS2CPacket(PacketByteBuf packetByteBuf) {
+		this.entityId = packetByteBuf.readVarInt();
+		this.effectId = packetByteBuf.readByte();
+		this.amplifier = packetByteBuf.readByte();
+		this.duration = packetByteBuf.readVarInt();
+		this.flags = packetByteBuf.readByte();
 	}
 
 	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.entityId = buf.readVarInt();
-		this.effectId = buf.readByte();
-		this.amplifier = buf.readByte();
-		this.duration = buf.readVarInt();
-		this.flags = buf.readByte();
-	}
-
-	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeByte(this.effectId);
 		buf.writeByte(this.amplifier);

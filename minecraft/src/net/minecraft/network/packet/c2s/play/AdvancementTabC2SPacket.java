@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,11 +10,9 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.Identifier;
 
 public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener> {
-	private AdvancementTabC2SPacket.Action action;
-	private Identifier tabToOpen;
-
-	public AdvancementTabC2SPacket() {
-	}
+	private final AdvancementTabC2SPacket.Action action;
+	@Nullable
+	private final Identifier tabToOpen;
 
 	@Environment(EnvType.CLIENT)
 	public AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action action, @Nullable Identifier tab) {
@@ -33,16 +30,17 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.CLOSED_SCREEN, null);
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.action = buf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
+	public AdvancementTabC2SPacket(PacketByteBuf packetByteBuf) {
+		this.action = packetByteBuf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
 		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
-			this.tabToOpen = buf.readIdentifier();
+			this.tabToOpen = packetByteBuf.readIdentifier();
+		} else {
+			this.tabToOpen = null;
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.action);
 		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
 			buf.writeIdentifier(this.tabToOpen);
@@ -57,6 +55,7 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 		return this.action;
 	}
 
+	@Nullable
 	public Identifier getTabToOpen() {
 		return this.tabToOpen;
 	}

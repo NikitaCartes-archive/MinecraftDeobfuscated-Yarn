@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
@@ -12,11 +11,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.BlockView;
 
 public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
-	private BlockPos pos;
-	private BlockState state;
-
-	public BlockUpdateS2CPacket() {
-	}
+	private final BlockPos pos;
+	private final BlockState state;
 
 	public BlockUpdateS2CPacket(BlockPos blockPos, BlockState blockState) {
 		this.pos = blockPos;
@@ -27,14 +23,13 @@ public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this(pos, world.getBlockState(pos));
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.pos = buf.readBlockPos();
-		this.state = Block.STATE_IDS.get(buf.readVarInt());
+	public BlockUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+		this.pos = packetByteBuf.readBlockPos();
+		this.state = Block.STATE_IDS.get(packetByteBuf.readVarInt());
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
 		buf.writeVarInt(Block.getRawIdFromState(this.state));
 	}

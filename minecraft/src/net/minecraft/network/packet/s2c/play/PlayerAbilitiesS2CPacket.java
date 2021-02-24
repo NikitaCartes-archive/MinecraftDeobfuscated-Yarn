@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerAbilities;
@@ -9,15 +8,12 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener> {
-	private boolean invulnerable;
-	private boolean flying;
-	private boolean allowFlying;
-	private boolean creativeMode;
-	private float flySpeed;
-	private float walkSpeed;
-
-	public PlayerAbilitiesS2CPacket() {
-	}
+	private final boolean invulnerable;
+	private final boolean flying;
+	private final boolean allowFlying;
+	private final boolean creativeMode;
+	private final float flySpeed;
+	private final float walkSpeed;
 
 	public PlayerAbilitiesS2CPacket(PlayerAbilities playerAbilities) {
 		this.invulnerable = playerAbilities.invulnerable;
@@ -28,19 +24,18 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 		this.walkSpeed = playerAbilities.getWalkSpeed();
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		byte b = buf.readByte();
+	public PlayerAbilitiesS2CPacket(PacketByteBuf packetByteBuf) {
+		byte b = packetByteBuf.readByte();
 		this.invulnerable = (b & 1) != 0;
 		this.flying = (b & 2) != 0;
 		this.allowFlying = (b & 4) != 0;
 		this.creativeMode = (b & 8) != 0;
-		this.flySpeed = buf.readFloat();
-		this.walkSpeed = buf.readFloat();
+		this.flySpeed = packetByteBuf.readFloat();
+		this.walkSpeed = packetByteBuf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		byte b = 0;
 		if (this.invulnerable) {
 			b = (byte)(b | 1);

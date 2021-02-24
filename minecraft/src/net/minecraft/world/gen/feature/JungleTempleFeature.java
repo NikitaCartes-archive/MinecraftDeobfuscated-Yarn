@@ -5,7 +5,7 @@ import net.minecraft.structure.JungleTempleGenerator;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockBox;
-import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.biome.Biome;
@@ -22,21 +22,20 @@ public class JungleTempleFeature extends StructureFeature<DefaultFeatureConfig> 
 	}
 
 	public static class Start extends StructureStart<DefaultFeatureConfig> {
-		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, int i, int j, BlockBox blockBox, int k, long l) {
-			super(structureFeature, i, j, blockBox, k, l);
+		public Start(StructureFeature<DefaultFeatureConfig> structureFeature, ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
+			super(structureFeature, chunkPos, blockBox, i, l);
 		}
 
 		public void init(
 			DynamicRegistryManager dynamicRegistryManager,
 			ChunkGenerator chunkGenerator,
 			StructureManager structureManager,
-			int i,
-			int j,
+			ChunkPos chunkPos,
 			Biome biome,
 			DefaultFeatureConfig defaultFeatureConfig,
 			HeightLimitView heightLimitView
 		) {
-			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, ChunkSectionPos.getBlockCoord(i), ChunkSectionPos.getBlockCoord(j));
+			JungleTempleGenerator jungleTempleGenerator = new JungleTempleGenerator(this.random, chunkPos.getStartX(), chunkPos.getStartZ());
 			this.children.add(jungleTempleGenerator);
 			this.setBoundingBoxFromChildren();
 		}

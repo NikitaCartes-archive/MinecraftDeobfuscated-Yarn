@@ -63,13 +63,42 @@ public class BossBarHud extends DrawableHelper {
 	}
 
 	public void handlePacket(BossBarS2CPacket packet) {
-		if (packet.getType() == BossBarS2CPacket.Type.ADD) {
-			this.bossBars.put(packet.getUuid(), new ClientBossBar(packet));
-		} else if (packet.getType() == BossBarS2CPacket.Type.REMOVE) {
-			this.bossBars.remove(packet.getUuid());
-		} else {
-			((ClientBossBar)this.bossBars.get(packet.getUuid())).handlePacket(packet);
-		}
+		packet.method_34091(new BossBarS2CPacket.class_5881() {
+			@Override
+			public void method_34103(UUID uUID, Text text, float f, BossBar.Color color, BossBar.Style style, boolean bl, boolean bl2, boolean bl3) {
+				BossBarHud.this.bossBars.put(uUID, new ClientBossBar(uUID, text, f, color, style, bl, bl2, bl3));
+			}
+
+			@Override
+			public void method_34099(UUID uUID) {
+				BossBarHud.this.bossBars.remove(uUID);
+			}
+
+			@Override
+			public void method_34100(UUID uUID, float f) {
+				((ClientBossBar)BossBarHud.this.bossBars.get(uUID)).setPercent(f);
+			}
+
+			@Override
+			public void method_34102(UUID uUID, Text text) {
+				((ClientBossBar)BossBarHud.this.bossBars.get(uUID)).setName(text);
+			}
+
+			@Override
+			public void method_34101(UUID uUID, BossBar.Color color, BossBar.Style style) {
+				ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uUID);
+				clientBossBar.setColor(color);
+				clientBossBar.setOverlay(style);
+			}
+
+			@Override
+			public void method_34104(UUID uUID, boolean bl, boolean bl2, boolean bl3) {
+				ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uUID);
+				clientBossBar.setDarkenSky(bl);
+				clientBossBar.setDragonMusic(bl2);
+				clientBossBar.setThickenFog(bl3);
+			}
+		});
 	}
 
 	public void clear() {

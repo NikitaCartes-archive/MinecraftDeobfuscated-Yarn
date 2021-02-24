@@ -1,5 +1,20 @@
 package net.minecraft.network.listener;
 
+import net.minecraft.class_5888;
+import net.minecraft.class_5889;
+import net.minecraft.class_5890;
+import net.minecraft.class_5891;
+import net.minecraft.class_5892;
+import net.minecraft.class_5894;
+import net.minecraft.class_5895;
+import net.minecraft.class_5896;
+import net.minecraft.class_5897;
+import net.minecraft.class_5898;
+import net.minecraft.class_5899;
+import net.minecraft.class_5900;
+import net.minecraft.class_5903;
+import net.minecraft.class_5904;
+import net.minecraft.class_5905;
 import net.minecraft.network.packet.s2c.play.AdvancementUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockBreakingProgressS2CPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
@@ -11,7 +26,6 @@ import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
-import net.minecraft.network.packet.s2c.play.CombatEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
 import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
@@ -80,14 +94,11 @@ import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
-import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
-import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
-import net.minecraft.network.packet.s2c.play.WorldBorderS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 
@@ -202,7 +213,7 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onHealthUpdate(HealthUpdateS2CPacket packet);
 
-	void onTeam(TeamS2CPacket packet);
+	void onTeam(class_5900 packet);
 
 	void onScoreboardPlayerUpdate(ScoreboardPlayerUpdateS2CPacket packet);
 
@@ -226,15 +237,27 @@ public interface ClientPlayPacketListener extends PacketListener {
 
 	void onSynchronizeTags(SynchronizeTagsS2CPacket packet);
 
-	void onCombatEvent(CombatEventS2CPacket packet);
+	void method_34073(class_5890 arg);
+
+	void method_34074(class_5891 arg);
+
+	void method_34075(class_5892 arg);
 
 	void onDifficulty(DifficultyS2CPacket packet);
 
 	void onSetCameraEntity(SetCameraEntityS2CPacket packet);
 
-	void onWorldBorder(WorldBorderS2CPacket packet);
+	void method_34072(class_5889 arg);
 
-	void onTitle(TitleS2CPacket packet);
+	void method_34078(class_5896 arg);
+
+	void method_34079(class_5897 arg);
+
+	void method_34080(class_5898 arg);
+
+	void method_34081(class_5899 arg);
+
+	void method_34077(class_5895 arg);
 
 	void onPlayerListHeader(PlayerListHeaderS2CPacket packet);
 
@@ -277,4 +300,14 @@ public interface ClientPlayPacketListener extends PacketListener {
 	void onChunkRenderDistanceCenter(ChunkRenderDistanceCenterS2CPacket packet);
 
 	void onPlayerActionResponse(PlayerActionResponseS2CPacket packet);
+
+	void method_34076(class_5894 arg);
+
+	void method_34082(class_5903 arg);
+
+	void method_34083(class_5904 arg);
+
+	void method_34084(class_5905 arg);
+
+	void method_34071(class_5888 arg);
 }

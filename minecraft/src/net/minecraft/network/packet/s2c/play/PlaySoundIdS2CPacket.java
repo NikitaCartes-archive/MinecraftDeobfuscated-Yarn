@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -11,16 +10,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class PlaySoundIdS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Identifier id;
-	private SoundCategory category;
-	private int fixedX;
-	private int fixedY = Integer.MAX_VALUE;
-	private int fixedZ;
-	private float volume;
-	private float pitch;
-
-	public PlaySoundIdS2CPacket() {
-	}
+	private final Identifier id;
+	private final SoundCategory category;
+	private final int fixedX;
+	private final int fixedY;
+	private final int fixedZ;
+	private final float volume;
+	private final float pitch;
 
 	public PlaySoundIdS2CPacket(Identifier sound, SoundCategory category, Vec3d pos, float volume, float pitch) {
 		this.id = sound;
@@ -32,19 +28,18 @@ public class PlaySoundIdS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pitch = pitch;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.id = buf.readIdentifier();
-		this.category = buf.readEnumConstant(SoundCategory.class);
-		this.fixedX = buf.readInt();
-		this.fixedY = buf.readInt();
-		this.fixedZ = buf.readInt();
-		this.volume = buf.readFloat();
-		this.pitch = buf.readFloat();
+	public PlaySoundIdS2CPacket(PacketByteBuf packetByteBuf) {
+		this.id = packetByteBuf.readIdentifier();
+		this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
+		this.fixedX = packetByteBuf.readInt();
+		this.fixedY = packetByteBuf.readInt();
+		this.fixedZ = packetByteBuf.readInt();
+		this.volume = packetByteBuf.readFloat();
+		this.pitch = packetByteBuf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeIdentifier(this.id);
 		buf.writeEnumConstant(this.category);
 		buf.writeInt(this.fixedX);

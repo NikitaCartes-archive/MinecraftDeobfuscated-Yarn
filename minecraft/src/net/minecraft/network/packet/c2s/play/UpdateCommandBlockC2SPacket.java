@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
@@ -10,15 +9,12 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
 
 public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListener> {
-	private BlockPos pos;
-	private String command;
-	private boolean trackOutput;
-	private boolean conditional;
-	private boolean alwaysActive;
-	private CommandBlockBlockEntity.Type type;
-
-	public UpdateCommandBlockC2SPacket() {
-	}
+	private final BlockPos pos;
+	private final String command;
+	private final boolean trackOutput;
+	private final boolean conditional;
+	private final boolean alwaysActive;
+	private final CommandBlockBlockEntity.Type type;
 
 	@Environment(EnvType.CLIENT)
 	public UpdateCommandBlockC2SPacket(
@@ -32,19 +28,18 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 		this.type = type;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.pos = buf.readBlockPos();
-		this.command = buf.readString(32767);
-		this.type = buf.readEnumConstant(CommandBlockBlockEntity.Type.class);
-		int i = buf.readByte();
+	public UpdateCommandBlockC2SPacket(PacketByteBuf packetByteBuf) {
+		this.pos = packetByteBuf.readBlockPos();
+		this.command = packetByteBuf.readString();
+		this.type = packetByteBuf.readEnumConstant(CommandBlockBlockEntity.Type.class);
+		int i = packetByteBuf.readByte();
 		this.trackOutput = (i & 1) != 0;
 		this.conditional = (i & 2) != 0;
 		this.alwaysActive = (i & 4) != 0;
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
 		buf.writeString(this.command);
 		buf.writeEnumConstant(this.type);

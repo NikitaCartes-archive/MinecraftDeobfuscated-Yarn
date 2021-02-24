@@ -47,6 +47,10 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> FLOWERS = register("flowers");
 	public static final Tag.Identified<Block> PIGLIN_REPELLENTS = register("piglin_repellents");
 	public static final Tag.Identified<Block> GOLD_ORES = register("gold_ores");
+	public static final Tag.Identified<Block> IRON_ORES = register("iron_ores");
+	public static final Tag.Identified<Block> DIAMOND_ORES = register("diamond_ores");
+	public static final Tag.Identified<Block> REDSTONE_ORES = register("redstone_ores");
+	public static final Tag.Identified<Block> LAPIS_ORES = register("lapis_ores");
 	public static final Tag.Identified<Block> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
 	public static final Tag.Identified<Block> CANDLES = register("candles");
 	public static final Tag.Identified<Block> FLOWER_POTS = register("flower_pots");
@@ -91,6 +95,8 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> INFINIBURN_NETHER = register("infiniburn_nether");
 	public static final Tag.Identified<Block> INFINIBURN_END = register("infiniburn_end");
 	public static final Tag.Identified<Block> BASE_STONE_OVERWORLD = register("base_stone_overworld");
+	public static final Tag.Identified<Block> STONE_ORE_REPLACEABLES = register("stone_ore_replaceables");
+	public static final Tag.Identified<Block> DEEPSLATE_ORE_REPLACEABLES = register("deepslate_ore_replaceables");
 	public static final Tag.Identified<Block> BASE_STONE_NETHER = register("base_stone_nether");
 	public static final Tag.Identified<Block> CANDLE_CAKES = register("candle_cakes");
 	public static final Tag.Identified<Block> CAULDRONS = register("cauldrons");

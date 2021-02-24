@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,12 +7,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int entityId;
-	private int collectorEntityId;
-	private int stackAmount;
-
-	public ItemPickupAnimationS2CPacket() {
-	}
+	private final int entityId;
+	private final int collectorEntityId;
+	private final int stackAmount;
 
 	public ItemPickupAnimationS2CPacket(int entityId, int collectorId, int stackAmount) {
 		this.entityId = entityId;
@@ -21,15 +17,14 @@ public class ItemPickupAnimationS2CPacket implements Packet<ClientPlayPacketList
 		this.stackAmount = stackAmount;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.entityId = buf.readVarInt();
-		this.collectorEntityId = buf.readVarInt();
-		this.stackAmount = buf.readVarInt();
+	public ItemPickupAnimationS2CPacket(PacketByteBuf packetByteBuf) {
+		this.entityId = packetByteBuf.readVarInt();
+		this.collectorEntityId = packetByteBuf.readVarInt();
+		this.stackAmount = packetByteBuf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
 		buf.writeVarInt(this.collectorEntityId);
 		buf.writeVarInt(this.stackAmount);

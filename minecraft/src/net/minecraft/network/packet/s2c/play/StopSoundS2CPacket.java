@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,31 +10,33 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 
 public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
-	private Identifier soundId;
-	private SoundCategory category;
-
-	public StopSoundS2CPacket() {
-	}
+	@Nullable
+	private final Identifier soundId;
+	@Nullable
+	private final SoundCategory category;
 
 	public StopSoundS2CPacket(@Nullable Identifier soundId, @Nullable SoundCategory category) {
 		this.soundId = soundId;
 		this.category = category;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		int i = buf.readByte();
+	public StopSoundS2CPacket(PacketByteBuf packetByteBuf) {
+		int i = packetByteBuf.readByte();
 		if ((i & 1) > 0) {
-			this.category = buf.readEnumConstant(SoundCategory.class);
+			this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
+		} else {
+			this.category = null;
 		}
 
 		if ((i & 2) > 0) {
-			this.soundId = buf.readIdentifier();
+			this.soundId = packetByteBuf.readIdentifier();
+		} else {
+			this.soundId = null;
 		}
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		if (this.category != null) {
 			if (this.soundId != null) {
 				buf.writeByte(3);

@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -11,25 +10,21 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.world.World;
 
 public class EntityStatusS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int id;
-	private byte status;
-
-	public EntityStatusS2CPacket() {
-	}
+	private final int id;
+	private final byte status;
 
 	public EntityStatusS2CPacket(Entity entity, byte status) {
 		this.id = entity.getId();
 		this.status = status;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.id = buf.readInt();
-		this.status = buf.readByte();
+	public EntityStatusS2CPacket(PacketByteBuf packetByteBuf) {
+		this.id = packetByteBuf.readInt();
+		this.status = packetByteBuf.readByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeInt(this.id);
 		buf.writeByte(this.status);
 	}

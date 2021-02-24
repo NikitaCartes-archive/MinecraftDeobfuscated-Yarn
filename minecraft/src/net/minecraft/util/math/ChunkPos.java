@@ -59,6 +59,14 @@ public class ChunkPos {
 		}
 	}
 
+	public int method_33940() {
+		return this.method_33939(8);
+	}
+
+	public int method_33942() {
+		return this.method_33941(8);
+	}
+
 	public int getStartX() {
 		return ChunkSectionPos.getBlockCoord(this.x);
 	}
@@ -68,11 +76,11 @@ public class ChunkPos {
 	}
 
 	public int getEndX() {
-		return ChunkSectionPos.getOffsetPos(this.x, 15);
+		return this.method_33939(15);
 	}
 
 	public int getEndZ() {
-		return ChunkSectionPos.getOffsetPos(this.z, 15);
+		return this.method_33941(15);
 	}
 
 	public int getRegionX() {
@@ -89,6 +97,18 @@ public class ChunkPos {
 
 	public int getRegionRelativeZ() {
 		return this.z & 31;
+	}
+
+	public int method_33939(int i) {
+		return ChunkSectionPos.getOffsetPos(this.x, i);
+	}
+
+	public int method_33941(int i) {
+		return ChunkSectionPos.getOffsetPos(this.z, i);
+	}
+
+	public BlockPos method_33943(int i) {
+		return new BlockPos(this.method_33940(), i, this.method_33942());
 	}
 
 	public String toString() {

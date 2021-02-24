@@ -35,7 +35,7 @@ public class CookingRecipeSerializer<T extends AbstractCookingRecipe> implements
 	}
 
 	public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
-		String string = packetByteBuf.readString(32767);
+		String string = packetByteBuf.readString();
 		Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 		ItemStack itemStack = packetByteBuf.readItemStack();
 		float f = packetByteBuf.readFloat();

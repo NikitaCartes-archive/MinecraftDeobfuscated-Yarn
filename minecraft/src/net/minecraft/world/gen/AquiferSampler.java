@@ -181,9 +181,9 @@ public class AquiferSampler {
 			return i;
 		} else {
 			int j = 64;
-			int k = -12;
+			int k = -10;
 			int l = 40;
-			double d = this.waterLevelNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40) / 1.4, (double)Math.floorDiv(z, 64)) * 30.0 + -12.0;
+			double d = this.waterLevelNoise.sample((double)Math.floorDiv(x, 64), (double)Math.floorDiv(y, 40) / 1.4, (double)Math.floorDiv(z, 64)) * 30.0 + -10.0;
 			if (Math.abs(d) > 8.0) {
 				d *= 4.0;
 			}

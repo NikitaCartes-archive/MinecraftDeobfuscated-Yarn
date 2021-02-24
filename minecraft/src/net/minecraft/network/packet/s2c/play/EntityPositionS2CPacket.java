@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
@@ -9,16 +8,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int id;
-	private double x;
-	private double y;
-	private double z;
-	private byte yaw;
-	private byte pitch;
-	private boolean onGround;
-
-	public EntityPositionS2CPacket() {
-	}
+	private final int id;
+	private final double x;
+	private final double y;
+	private final double z;
+	private final byte yaw;
+	private final byte pitch;
+	private final boolean onGround;
 
 	public EntityPositionS2CPacket(Entity entity) {
 		this.id = entity.getId();
@@ -30,19 +26,18 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		this.onGround = entity.isOnGround();
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.id = buf.readVarInt();
-		this.x = buf.readDouble();
-		this.y = buf.readDouble();
-		this.z = buf.readDouble();
-		this.yaw = buf.readByte();
-		this.pitch = buf.readByte();
-		this.onGround = buf.readBoolean();
+	public EntityPositionS2CPacket(PacketByteBuf packetByteBuf) {
+		this.id = packetByteBuf.readVarInt();
+		this.x = packetByteBuf.readDouble();
+		this.y = packetByteBuf.readDouble();
+		this.z = packetByteBuf.readDouble();
+		this.yaw = packetByteBuf.readByte();
+		this.pitch = packetByteBuf.readByte();
+		this.onGround = packetByteBuf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeDouble(this.x);
 		buf.writeDouble(this.y);

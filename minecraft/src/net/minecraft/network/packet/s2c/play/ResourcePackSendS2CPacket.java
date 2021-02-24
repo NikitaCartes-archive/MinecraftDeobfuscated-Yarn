@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,12 +7,9 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListener> {
-	private String url;
-	private String hash;
-	private boolean required;
-
-	public ResourcePackSendS2CPacket() {
-	}
+	private final String url;
+	private final String hash;
+	private final boolean required;
 
 	public ResourcePackSendS2CPacket(String url, String hash, boolean required) {
 		if (hash.length() > 40) {
@@ -25,15 +21,14 @@ public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.url = buf.readString(32767);
-		this.hash = buf.readString(40);
-		this.required = buf.readBoolean();
+	public ResourcePackSendS2CPacket(PacketByteBuf packetByteBuf) {
+		this.url = packetByteBuf.readString();
+		this.hash = packetByteBuf.readString(40);
+		this.required = packetByteBuf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeString(this.url);
 		buf.writeString(this.hash);
 		buf.writeBoolean(this.required);

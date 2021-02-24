@@ -67,7 +67,7 @@ public class TrackedDataHandlerRegistry {
 		}
 
 		public String read(PacketByteBuf packetByteBuf) {
-			return packetByteBuf.readString(32767);
+			return packetByteBuf.readString();
 		}
 
 		public String copy(String string) {

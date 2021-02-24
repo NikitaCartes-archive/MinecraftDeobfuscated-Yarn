@@ -95,7 +95,7 @@ public abstract class CuttingRecipe implements Recipe<Inventory> {
 		}
 
 		public T read(Identifier identifier, PacketByteBuf packetByteBuf) {
-			String string = packetByteBuf.readString(32767);
+			String string = packetByteBuf.readString();
 			Ingredient ingredient = Ingredient.fromPacket(packetByteBuf);
 			ItemStack itemStack = packetByteBuf.readItemStack();
 			return this.recipeFactory.create(identifier, string, ingredient, itemStack);

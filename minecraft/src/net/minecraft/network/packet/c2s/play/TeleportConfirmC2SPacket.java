@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -8,23 +7,19 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ServerPlayPacketListener;
 
 public class TeleportConfirmC2SPacket implements Packet<ServerPlayPacketListener> {
-	private int teleportId;
-
-	public TeleportConfirmC2SPacket() {
-	}
+	private final int teleportId;
 
 	@Environment(EnvType.CLIENT)
 	public TeleportConfirmC2SPacket(int teleportId) {
 		this.teleportId = teleportId;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.teleportId = buf.readVarInt();
+	public TeleportConfirmC2SPacket(PacketByteBuf packetByteBuf) {
+		this.teleportId = packetByteBuf.readVarInt();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.teleportId);
 	}
 

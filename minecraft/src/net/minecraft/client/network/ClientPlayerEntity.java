@@ -257,7 +257,7 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 			} else if (bl4) {
 				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
 			} else if (this.lastOnGround != this.onGround) {
-				this.networkHandler.sendPacket(new PlayerMoveC2SPacket(this.onGround));
+				this.networkHandler.sendPacket(new PlayerMoveC2SPacket.class_5911(this.onGround));
 			}
 
 			if (bl3) {

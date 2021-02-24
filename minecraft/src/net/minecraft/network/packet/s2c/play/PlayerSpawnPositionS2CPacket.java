@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -9,25 +8,23 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
 
 public class PlayerSpawnPositionS2CPacket implements Packet<ClientPlayPacketListener> {
-	private BlockPos pos;
-	private float angle;
-
-	public PlayerSpawnPositionS2CPacket() {
-	}
+	private final BlockPos pos;
+	private final float angle;
 
 	public PlayerSpawnPositionS2CPacket(BlockPos pos, float angle) {
 		this.pos = pos;
 		this.angle = angle;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.pos = buf.readBlockPos();
+	public PlayerSpawnPositionS2CPacket(PacketByteBuf packetByteBuf) {
+		this.pos = packetByteBuf.readBlockPos();
+		this.angle = packetByteBuf.readFloat();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
+		buf.writeFloat(this.angle);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

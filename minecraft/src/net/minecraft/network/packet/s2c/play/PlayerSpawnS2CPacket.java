@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.s2c.play;
 
-import java.io.IOException;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -10,16 +9,13 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 
 public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
-	private int id;
-	private UUID uuid;
-	private double x;
-	private double y;
-	private double z;
-	private byte yaw;
-	private byte pitch;
-
-	public PlayerSpawnS2CPacket() {
-	}
+	private final int id;
+	private final UUID uuid;
+	private final double x;
+	private final double y;
+	private final double z;
+	private final byte yaw;
+	private final byte pitch;
 
 	public PlayerSpawnS2CPacket(PlayerEntity player) {
 		this.id = player.getId();
@@ -31,19 +27,18 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pitch = (byte)((int)(player.pitch * 256.0F / 360.0F));
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.id = buf.readVarInt();
-		this.uuid = buf.readUuid();
-		this.x = buf.readDouble();
-		this.y = buf.readDouble();
-		this.z = buf.readDouble();
-		this.yaw = buf.readByte();
-		this.pitch = buf.readByte();
+	public PlayerSpawnS2CPacket(PacketByteBuf packetByteBuf) {
+		this.id = packetByteBuf.readVarInt();
+		this.uuid = packetByteBuf.readUuid();
+		this.x = packetByteBuf.readDouble();
+		this.y = packetByteBuf.readDouble();
+		this.z = packetByteBuf.readDouble();
+		this.yaw = packetByteBuf.readByte();
+		this.pitch = packetByteBuf.readByte();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.id);
 		buf.writeUuid(this.uuid);
 		buf.writeDouble(this.x);

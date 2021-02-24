@@ -17,6 +17,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5864;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -196,6 +197,8 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<Biome>> BIOME_KEY = createRegistryKey("worldgen/biome");
 	public static final RegistryKey<Registry<SurfaceBuilder<?>>> SURFACE_BUILD_KEY = createRegistryKey("worldgen/surface_builder");
 	public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = create(SURFACE_BUILD_KEY, () -> SurfaceBuilder.DEFAULT);
+	public static final RegistryKey<Registry<class_5864<?>>> FLOAT_PROVIDER_TYPE_WORLDGEN = createRegistryKey("worldgen/float_provider_type");
+	public static final Registry<class_5864<?>> field_29076 = create(FLOAT_PROVIDER_TYPE_WORLDGEN, () -> class_5864.field_29008);
 	public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = createRegistryKey("worldgen/carver");
 	public static final Registry<Carver<?>> CARVER = create(CARVER_KEY, () -> Carver.CAVE);
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = createRegistryKey("worldgen/feature");
@@ -393,9 +396,9 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 
 	static {
 		BuiltinRegistries.init();
-		DEFAULT_ENTRIES.forEach((id, supplier) -> {
+		DEFAULT_ENTRIES.forEach((identifier, supplier) -> {
 			if (supplier.get() == null) {
-				LOGGER.error("Unable to bootstrap registry '{}'", id);
+				LOGGER.error("Unable to bootstrap registry '{}'", identifier);
 			}
 		});
 		validate(ROOT);

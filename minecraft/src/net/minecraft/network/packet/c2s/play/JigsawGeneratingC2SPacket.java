@@ -1,6 +1,5 @@
 package net.minecraft.network.packet.c2s.play;
 
-import java.io.IOException;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.network.Packet;
@@ -9,12 +8,9 @@ import net.minecraft.network.listener.ServerPlayPacketListener;
 import net.minecraft.util.math.BlockPos;
 
 public class JigsawGeneratingC2SPacket implements Packet<ServerPlayPacketListener> {
-	private BlockPos pos;
-	private int maxDepth;
-	private boolean keepJigsaws;
-
-	public JigsawGeneratingC2SPacket() {
-	}
+	private final BlockPos pos;
+	private final int maxDepth;
+	private final boolean keepJigsaws;
 
 	@Environment(EnvType.CLIENT)
 	public JigsawGeneratingC2SPacket(BlockPos pos, int maxDepth, boolean keepJigsaws) {
@@ -23,15 +19,14 @@ public class JigsawGeneratingC2SPacket implements Packet<ServerPlayPacketListene
 		this.keepJigsaws = keepJigsaws;
 	}
 
-	@Override
-	public void read(PacketByteBuf buf) throws IOException {
-		this.pos = buf.readBlockPos();
-		this.maxDepth = buf.readVarInt();
-		this.keepJigsaws = buf.readBoolean();
+	public JigsawGeneratingC2SPacket(PacketByteBuf packetByteBuf) {
+		this.pos = packetByteBuf.readBlockPos();
+		this.maxDepth = packetByteBuf.readVarInt();
+		this.keepJigsaws = packetByteBuf.readBoolean();
 	}
 
 	@Override
-	public void write(PacketByteBuf buf) throws IOException {
+	public void write(PacketByteBuf buf) {
 		buf.writeBlockPos(this.pos);
 		buf.writeVarInt(this.maxDepth);
 		buf.writeBoolean(this.keepJigsaws);
