@@ -5,8 +5,6 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_5871;
-import net.minecraft.class_5873;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.fluid.Fluids;
@@ -16,7 +14,7 @@ import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
 public class NetherCaveCarver extends CaveCarver {
-	public NetherCaveCarver(Codec<class_5871> codec) {
+	public NetherCaveCarver(Codec<CarverConfig> codec) {
 		super(codec);
 		this.alwaysCarvableBlocks = ImmutableSet.of(
 			Blocks.STONE,
@@ -56,32 +54,32 @@ public class NetherCaveCarver extends CaveCarver {
 	}
 
 	@Override
-	protected int getCaveY(class_5873 arg, Random random) {
-		return random.nextInt(arg.getMaxY());
+	protected int getCaveY(CarverContext context, Random random) {
+		return random.nextInt(context.getMaxY());
 	}
 
 	@Override
 	protected boolean carveAtPoint(
-		class_5873 arg,
-		class_5871 arg2,
+		CarverContext context,
+		CarverConfig config,
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
-		BitSet bitSet,
+		Function<BlockPos, Biome> posToBiome,
+		BitSet carvingMask,
 		Random random,
-		BlockPos.Mutable mutable,
-		BlockPos.Mutable mutable2,
+		BlockPos.Mutable pos,
+		BlockPos.Mutable downPos,
 		int mainChunkX,
-		MutableBoolean mutableBoolean
+		MutableBoolean foundSurface
 	) {
-		if (this.canAlwaysCarveBlock(chunk.getBlockState(mutable))) {
+		if (this.canAlwaysCarveBlock(chunk.getBlockState(pos))) {
 			BlockState blockState;
-			if (mutable.getY() <= arg.getMinY() + 31) {
+			if (pos.getY() <= context.getMinY() + 31) {
 				blockState = LAVA.getBlockState();
 			} else {
 				blockState = CAVE_AIR;
 			}
 
-			chunk.setBlockState(mutable, blockState, false);
+			chunk.setBlockState(pos, blockState, false);
 			return true;
 		} else {
 			return false;

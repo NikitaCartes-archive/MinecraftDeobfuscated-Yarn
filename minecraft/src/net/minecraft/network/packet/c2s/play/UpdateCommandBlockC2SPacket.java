@@ -28,11 +28,11 @@ public class UpdateCommandBlockC2SPacket implements Packet<ServerPlayPacketListe
 		this.type = type;
 	}
 
-	public UpdateCommandBlockC2SPacket(PacketByteBuf packetByteBuf) {
-		this.pos = packetByteBuf.readBlockPos();
-		this.command = packetByteBuf.readString();
-		this.type = packetByteBuf.readEnumConstant(CommandBlockBlockEntity.Type.class);
-		int i = packetByteBuf.readByte();
+	public UpdateCommandBlockC2SPacket(PacketByteBuf buf) {
+		this.pos = buf.readBlockPos();
+		this.command = buf.readString();
+		this.type = buf.readEnumConstant(CommandBlockBlockEntity.Type.class);
+		int i = buf.readByte();
 		this.trackOutput = (i & 1) != 0;
 		this.conditional = (i & 2) != 0;
 		this.alwaysActive = (i & 4) != 0;

@@ -71,9 +71,9 @@ public class AddServerScreen extends Screen {
 		this.addressField.setChangedListener(this::onClose);
 		this.children.add(this.addressField);
 		this.addButton(
-			CyclingButtonWidget.method_32606(ServerInfo.ResourcePackState::getName)
-				.method_32624(ServerInfo.ResourcePackState.values())
-				.value(this.server.getResourcePack())
+			CyclingButtonWidget.builder(ServerInfo.ResourcePackState::getName)
+				.values(ServerInfo.ResourcePackState.values())
+				.initially(this.server.getResourcePack())
 				.build(
 					this.width / 2 - 100,
 					this.height / 4 + 72,

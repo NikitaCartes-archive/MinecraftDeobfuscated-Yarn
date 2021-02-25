@@ -8,7 +8,7 @@ import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.world.gen.chunk.ChunkGeneratorSettings;
 
 public class AquiferSampler {
-	private final DoublePerlinNoiseSampler field_28813;
+	private final DoublePerlinNoiseSampler edgeDensityNoise;
 	private final DoublePerlinNoiseSampler waterLevelNoise;
 	private final ChunkGeneratorSettings settings;
 	private final int[] waterLevels;
@@ -26,13 +26,13 @@ public class AquiferSampler {
 	public AquiferSampler(
 		int x,
 		int z,
-		DoublePerlinNoiseSampler doublePerlinNoiseSampler,
+		DoublePerlinNoiseSampler edgeDensityNoise,
 		DoublePerlinNoiseSampler waterLevelNoise,
 		ChunkGeneratorSettings settings,
 		NoiseColumnSampler columnSampler,
 		int height
 	) {
-		this.field_28813 = doublePerlinNoiseSampler;
+		this.edgeDensityNoise = edgeDensityNoise;
 		this.waterLevelNoise = waterLevelNoise;
 		this.settings = settings;
 		this.columnSampler = columnSampler;
@@ -116,16 +116,16 @@ public class AquiferSampler {
 		int r = this.getWaterLevel(o);
 		int s = this.getWaterLevel(p);
 		int t = this.getWaterLevel(q);
-		double d = this.method_33736(l, m);
-		double e = this.method_33736(l, n);
-		double f = this.method_33736(m, n);
+		double d = this.maxDistance(l, m);
+		double e = this.maxDistance(l, n);
+		double f = this.maxDistance(m, n);
 		this.waterLevel = r;
 		this.needsFluidTick = d > 0.0;
 		if (d > -1.0) {
-			double g = 1.0 + (this.field_28813.sample((double)x, (double)y, (double)z) + 0.1) / 4.0;
-			double h = this.method_33735(y, g, r, s);
-			double ah = this.method_33735(y, g, r, t);
-			double ai = this.method_33735(y, g, s, t);
+			double g = 1.0 + (this.edgeDensityNoise.sample((double)x, (double)y, (double)z) + 0.1) / 4.0;
+			double h = this.calculateDensity(y, g, r, s);
+			double ah = this.calculateDensity(y, g, r, t);
+			double ai = this.calculateDensity(y, g, s, t);
 			double aj = Math.max(0.0, d);
 			double ak = Math.max(0.0, e);
 			double al = Math.max(0.0, f);
@@ -136,13 +136,13 @@ public class AquiferSampler {
 		}
 	}
 
-	private double method_33736(int i, int j) {
+	private double maxDistance(int a, int b) {
 		double d = 25.0;
-		return 1.0 - (double)Math.abs(j - i) / 25.0;
+		return 1.0 - (double)Math.abs(b - a) / 25.0;
 	}
 
-	private double method_33735(int i, double d, int j, int k) {
-		return 0.5 * (double)Math.abs(j - k) * d - Math.abs(0.5 * (double)(j + k) - (double)i - 0.5);
+	private double calculateDensity(int y, double noise, int a, int b) {
+		return 0.5 * (double)Math.abs(a - b) * noise - Math.abs(0.5 * (double)(a + b) - (double)y - 0.5);
 	}
 
 	private int getLocalX(int x) {

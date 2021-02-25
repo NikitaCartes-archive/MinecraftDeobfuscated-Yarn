@@ -20,8 +20,8 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final EntityAnchorArgumentType.EntityAnchor targetAnchor;
 	private final boolean lookAtEntity;
 
-	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor entityAnchor, double targetX, double targetY, double targetZ) {
-		this.selfAnchor = entityAnchor;
+	public LookAtS2CPacket(EntityAnchorArgumentType.EntityAnchor selfAnchor, double targetX, double targetY, double targetZ) {
+		this.selfAnchor = selfAnchor;
 		this.targetX = targetX;
 		this.targetY = targetY;
 		this.targetZ = targetZ;
@@ -41,15 +41,15 @@ public class LookAtS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.lookAtEntity = true;
 	}
 
-	public LookAtS2CPacket(PacketByteBuf packetByteBuf) {
-		this.selfAnchor = packetByteBuf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
-		this.targetX = packetByteBuf.readDouble();
-		this.targetY = packetByteBuf.readDouble();
-		this.targetZ = packetByteBuf.readDouble();
-		this.lookAtEntity = packetByteBuf.readBoolean();
+	public LookAtS2CPacket(PacketByteBuf buf) {
+		this.selfAnchor = buf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
+		this.targetX = buf.readDouble();
+		this.targetY = buf.readDouble();
+		this.targetZ = buf.readDouble();
+		this.lookAtEntity = buf.readBoolean();
 		if (this.lookAtEntity) {
-			this.entityId = packetByteBuf.readVarInt();
-			this.targetAnchor = packetByteBuf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
+			this.entityId = buf.readVarInt();
+			this.targetAnchor = buf.readEnumConstant(EntityAnchorArgumentType.EntityAnchor.class);
 		} else {
 			this.entityId = 0;
 			this.targetAnchor = null;

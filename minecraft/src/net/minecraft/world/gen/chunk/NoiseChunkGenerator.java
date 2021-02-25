@@ -25,7 +25,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
-import net.minecraft.util.math.noise.InterpolatedNoise;
+import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.NoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.OctaveSimplexNoiseSampler;
@@ -45,7 +45,7 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.AquiferSampler;
 import net.minecraft.world.gen.BlockInterpolator;
 import net.minecraft.world.gen.ChunkRandom;
-import net.minecraft.world.gen.GrimstoneInterpolator;
+import net.minecraft.world.gen.DeepslateInterpolator;
 import net.minecraft.world.gen.NoiseCaveSampler;
 import net.minecraft.world.gen.NoiseColumnSampler;
 import net.minecraft.world.gen.SimpleRandom;
@@ -70,7 +70,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 	private final int noiseSizeY;
 	private final int noiseSizeZ;
 	private final NoiseSampler surfaceDepthNoise;
-	private final DoublePerlinNoiseSampler field_28843;
+	private final DoublePerlinNoiseSampler edgeDensityNoise;
 	private final DoublePerlinNoiseSampler waterLevelNoise;
 	protected final BlockState defaultBlock;
 	protected final BlockState defaultFluid;
@@ -100,7 +100,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		this.noiseSizeY = generationShapeConfig.getHeight() / this.verticalNoiseResolution;
 		this.noiseSizeZ = 16 / this.horizontalNoiseResolution;
 		ChunkRandom chunkRandom = new ChunkRandom(seed);
-		InterpolatedNoise interpolatedNoise = new InterpolatedNoise(chunkRandom);
+		InterpolatedNoiseSampler interpolatedNoiseSampler = new InterpolatedNoiseSampler(chunkRandom);
 		this.surfaceDepthNoise = (NoiseSampler)(generationShapeConfig.hasSimplexSurfaceNoise()
 			? new OctaveSimplexNoiseSampler(chunkRandom, IntStream.rangeClosed(-3, 0))
 			: new OctavePerlinNoiseSampler(chunkRandom, IntStream.rangeClosed(-3, 0)));
@@ -115,7 +115,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			simplexNoiseSampler = null;
 		}
 
-		this.field_28843 = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -3, 1.0);
+		this.edgeDensityNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -3, 1.0);
 		this.waterLevelNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(chunkRandom.nextLong()), -3, 1.0, 0.0, 2.0);
 		NoiseCaveSampler noiseCaveSampler = chunkGeneratorSettings.hasNoiseCaves()
 			? new NoiseCaveSampler(chunkRandom, generationShapeConfig.getMinimumY() / this.verticalNoiseResolution)
@@ -126,13 +126,13 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			this.verticalNoiseResolution,
 			this.noiseSizeY,
 			generationShapeConfig,
-			interpolatedNoise,
+			interpolatedNoiseSampler,
 			simplexNoiseSampler,
 			octavePerlinNoiseSampler,
 			noiseCaveSampler
 		);
 		this.hasAquifers = chunkGeneratorSettings.hasAquifers();
-		this.blockInterpolator = new GrimstoneInterpolator(seed, this.defaultBlock, Blocks.DEEPSLATE.getDefaultState());
+		this.blockInterpolator = new DeepslateInterpolator(seed, this.defaultBlock, Blocks.DEEPSLATE.getDefaultState());
 	}
 
 	@Override
@@ -208,7 +208,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			? new AquiferSampler(
 				i,
 				j,
-				this.field_28843,
+				this.edgeDensityNoise,
 				this.waterLevelNoise,
 				(ChunkGeneratorSettings)this.settings.get(),
 				this.noiseColumnSampler,
@@ -377,7 +377,7 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 			? new AquiferSampler(
 				j,
 				k,
-				this.field_28843,
+				this.edgeDensityNoise,
 				this.waterLevelNoise,
 				(ChunkGeneratorSettings)this.settings.get(),
 				this.noiseColumnSampler,

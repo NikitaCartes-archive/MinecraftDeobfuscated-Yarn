@@ -26,14 +26,14 @@ public class EntityPositionS2CPacket implements Packet<ClientPlayPacketListener>
 		this.onGround = entity.isOnGround();
 	}
 
-	public EntityPositionS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readByte();
-		this.pitch = packetByteBuf.readByte();
-		this.onGround = packetByteBuf.readBoolean();
+	public EntityPositionS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readByte();
+		this.pitch = buf.readByte();
+		this.onGround = buf.readBoolean();
 	}
 
 	@Override

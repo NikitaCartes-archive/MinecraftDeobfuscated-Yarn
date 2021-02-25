@@ -7,8 +7,8 @@ import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class EndTag implements Tag {
 	public static final TagReader<EndTag> READER = new TagReader<EndTag>() {
-		public EndTag read(DataInput dataInput, int i, PositionTracker positionTracker) {
-			positionTracker.add(64L);
+		public EndTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
+			nbtTagSizeTracker.add(64L);
 			return EndTag.INSTANCE;
 		}
 

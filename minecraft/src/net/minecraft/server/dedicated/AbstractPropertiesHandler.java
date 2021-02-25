@@ -204,7 +204,7 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 	 * Creates another property handler with the same type as this one from the
 	 * passed new map of properties.
 	 */
-	protected abstract T create(DynamicRegistryManager dynamicRegistryManager, Properties properties);
+	protected abstract T create(DynamicRegistryManager registryManager, Properties properties);
 
 	public class PropertyAccessor<V> implements Supplier<V> {
 		private final String key;
@@ -228,10 +228,10 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
 		 * <p>This method does not mutate the original property where this accessor
 		 * is from.
 		 */
-		public T set(DynamicRegistryManager dynamicRegistryManager, V object) {
+		public T set(DynamicRegistryManager registryManager, V object) {
 			Properties properties = AbstractPropertiesHandler.this.copyProperties();
 			properties.put(this.key, this.stringifier.apply(object));
-			return AbstractPropertiesHandler.this.create(dynamicRegistryManager, properties);
+			return AbstractPropertiesHandler.this.create(registryManager, properties);
 		}
 	}
 }

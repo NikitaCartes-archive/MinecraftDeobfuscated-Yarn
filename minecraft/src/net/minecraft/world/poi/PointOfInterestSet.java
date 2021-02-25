@@ -81,7 +81,7 @@ public class PointOfInterestSet {
 				return false;
 			}
 
-			Util.method_33559("POI data mismatch: already registered at " + blockPos);
+			Util.error("POI data mismatch: already registered at " + blockPos);
 		}
 
 		this.pointsOfInterestByPos.put(s, poi);

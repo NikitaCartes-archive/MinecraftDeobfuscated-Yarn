@@ -39,23 +39,23 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public ExplosionS2CPacket(PacketByteBuf packetByteBuf) {
-		this.x = (double)packetByteBuf.readFloat();
-		this.y = (double)packetByteBuf.readFloat();
-		this.z = (double)packetByteBuf.readFloat();
-		this.radius = packetByteBuf.readFloat();
+	public ExplosionS2CPacket(PacketByteBuf buf) {
+		this.x = (double)buf.readFloat();
+		this.y = (double)buf.readFloat();
+		this.z = (double)buf.readFloat();
+		this.radius = buf.readFloat();
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.y);
 		int k = MathHelper.floor(this.z);
-		this.affectedBlocks = packetByteBuf.method_34066(packetByteBufx -> {
-			int l = packetByteBufx.readByte() + i;
-			int m = packetByteBufx.readByte() + j;
-			int n = packetByteBufx.readByte() + k;
+		this.affectedBlocks = buf.readList(packetByteBuf -> {
+			int l = packetByteBuf.readByte() + i;
+			int m = packetByteBuf.readByte() + j;
+			int n = packetByteBuf.readByte() + k;
 			return new BlockPos(l, m, n);
 		});
-		this.playerVelocityX = packetByteBuf.readFloat();
-		this.playerVelocityY = packetByteBuf.readFloat();
-		this.playerVelocityZ = packetByteBuf.readFloat();
+		this.playerVelocityX = buf.readFloat();
+		this.playerVelocityY = buf.readFloat();
+		this.playerVelocityZ = buf.readFloat();
 	}
 
 	@Override
@@ -67,13 +67,13 @@ public class ExplosionS2CPacket implements Packet<ClientPlayPacketListener> {
 		int i = MathHelper.floor(this.x);
 		int j = MathHelper.floor(this.y);
 		int k = MathHelper.floor(this.z);
-		buf.method_34062(this.affectedBlocks, (packetByteBuf, blockPos) -> {
-			int l = blockPos.getX() - i;
-			int m = blockPos.getY() - j;
-			int n = blockPos.getZ() - k;
-			packetByteBuf.writeByte(l);
-			packetByteBuf.writeByte(m);
-			packetByteBuf.writeByte(n);
+		buf.writeCollection(this.affectedBlocks, (bufx, pos) -> {
+			int l = pos.getX() - i;
+			int m = pos.getY() - j;
+			int n = pos.getZ() - k;
+			bufx.writeByte(l);
+			bufx.writeByte(m);
+			bufx.writeByte(n);
 		});
 		buf.writeFloat(this.playerVelocityX);
 		buf.writeFloat(this.playerVelocityY);

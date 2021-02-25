@@ -30,13 +30,13 @@ public class ClickSlotC2SPacket implements Packet<ServerPlayPacketListener> {
 		serverPlayPacketListener.onClickSlot(this);
 	}
 
-	public ClickSlotC2SPacket(PacketByteBuf packetByteBuf) {
-		this.syncId = packetByteBuf.readByte();
-		this.slot = packetByteBuf.readShort();
-		this.clickData = packetByteBuf.readByte();
-		this.actionId = packetByteBuf.readShort();
-		this.actionType = packetByteBuf.readEnumConstant(SlotActionType.class);
-		this.stack = packetByteBuf.readItemStack();
+	public ClickSlotC2SPacket(PacketByteBuf buf) {
+		this.syncId = buf.readByte();
+		this.slot = buf.readShort();
+		this.clickData = buf.readByte();
+		this.actionId = buf.readShort();
+		this.actionType = buf.readEnumConstant(SlotActionType.class);
+		this.stack = buf.readItemStack();
 	}
 
 	@Override

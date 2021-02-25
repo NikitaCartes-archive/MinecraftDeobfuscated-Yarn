@@ -14,8 +14,8 @@ public class LoginDisconnectS2CPacket implements Packet<ClientLoginPacketListene
 		this.reason = reason;
 	}
 
-	public LoginDisconnectS2CPacket(PacketByteBuf packetByteBuf) {
-		this.reason = Text.Serializer.fromLenientJson(packetByteBuf.readString(262144));
+	public LoginDisconnectS2CPacket(PacketByteBuf buf) {
+		this.reason = Text.Serializer.fromLenientJson(buf.readString(262144));
 	}
 
 	@Override

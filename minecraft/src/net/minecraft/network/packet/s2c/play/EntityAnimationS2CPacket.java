@@ -16,9 +16,9 @@ public class EntityAnimationS2CPacket implements Packet<ClientPlayPacketListener
 		this.animationId = animationId;
 	}
 
-	public EntityAnimationS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.animationId = packetByteBuf.readUnsignedByte();
+	public EntityAnimationS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.animationId = buf.readUnsignedByte();
 	}
 
 	@Override

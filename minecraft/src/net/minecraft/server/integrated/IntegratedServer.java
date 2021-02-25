@@ -41,7 +41,7 @@ public class IntegratedServer extends MinecraftServer {
 	private boolean paused;
 	private int lanPort = -1;
 	@Nullable
-	private GameMode field_28075;
+	private GameMode forcedGameMode;
 	private LanServerPinger lanPinger;
 	private UUID localPlayerUuid;
 
@@ -50,11 +50,11 @@ public class IntegratedServer extends MinecraftServer {
 		MinecraftClient client,
 		DynamicRegistryManager.Impl registryManager,
 		LevelStorage.Session session,
-		ResourcePackManager resourcePackManager,
+		ResourcePackManager dataPackManager,
 		ServerResourceManager serverResourceManager,
 		SaveProperties saveProperties,
-		MinecraftSessionService minecraftSessionService,
-		GameProfileRepository gameProfileRepository,
+		MinecraftSessionService sessionService,
+		GameProfileRepository gameProfileRepo,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
@@ -63,12 +63,12 @@ public class IntegratedServer extends MinecraftServer {
 			registryManager,
 			session,
 			saveProperties,
-			resourcePackManager,
+			dataPackManager,
 			client.getNetworkProxy(),
 			client.getDataFixer(),
 			serverResourceManager,
-			minecraftSessionService,
-			gameProfileRepository,
+			sessionService,
+			gameProfileRepo,
 			userCache,
 			worldGenerationProgressListenerFactory
 		);
@@ -190,7 +190,7 @@ public class IntegratedServer extends MinecraftServer {
 			this.lanPort = port;
 			this.lanPinger = new LanServerPinger(this.getServerMotd(), port + "");
 			this.lanPinger.start();
-			this.field_28075 = gameMode;
+			this.forcedGameMode = gameMode;
 			this.getPlayerManager().setCheatsAllowed(cheatsAllowed);
 			int i = this.getPermissionLevel(this.client.player.getGameProfile());
 			this.client.player.setClientPermissionLevel(i);
@@ -243,7 +243,7 @@ public class IntegratedServer extends MinecraftServer {
 	@Override
 	public void setDefaultGameMode(GameMode gameMode) {
 		super.setDefaultGameMode(gameMode);
-		this.field_28075 = null;
+		this.forcedGameMode = null;
 	}
 
 	@Override
@@ -283,6 +283,6 @@ public class IntegratedServer extends MinecraftServer {
 	@Nullable
 	@Override
 	public GameMode getForcedGameMode() {
-		return this.isRemote() ? MoreObjects.firstNonNull(this.field_28075, this.saveProperties.getGameMode()) : null;
+		return this.isRemote() ? MoreObjects.firstNonNull(this.forcedGameMode, this.saveProperties.getGameMode()) : null;
 	}
 }

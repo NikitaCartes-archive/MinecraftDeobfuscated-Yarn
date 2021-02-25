@@ -30,10 +30,10 @@ public class AdvancementTabC2SPacket implements Packet<ServerPlayPacketListener>
 		return new AdvancementTabC2SPacket(AdvancementTabC2SPacket.Action.CLOSED_SCREEN, null);
 	}
 
-	public AdvancementTabC2SPacket(PacketByteBuf packetByteBuf) {
-		this.action = packetByteBuf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
+	public AdvancementTabC2SPacket(PacketByteBuf buf) {
+		this.action = buf.readEnumConstant(AdvancementTabC2SPacket.Action.class);
 		if (this.action == AdvancementTabC2SPacket.Action.OPENED_TAB) {
-			this.tabToOpen = packetByteBuf.readIdentifier();
+			this.tabToOpen = buf.readIdentifier();
 		} else {
 			this.tabToOpen = null;
 		}

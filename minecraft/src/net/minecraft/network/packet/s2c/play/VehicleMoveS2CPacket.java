@@ -22,12 +22,12 @@ public class VehicleMoveS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pitch = entity.pitch;
 	}
 
-	public VehicleMoveS2CPacket(PacketByteBuf packetByteBuf) {
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readFloat();
-		this.pitch = packetByteBuf.readFloat();
+	public VehicleMoveS2CPacket(PacketByteBuf buf) {
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readFloat();
+		this.pitch = buf.readFloat();
 	}
 
 	@Override

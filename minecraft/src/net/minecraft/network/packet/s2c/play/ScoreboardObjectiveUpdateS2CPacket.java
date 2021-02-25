@@ -23,15 +23,15 @@ public class ScoreboardObjectiveUpdateS2CPacket implements Packet<ClientPlayPack
 		this.mode = mode;
 	}
 
-	public ScoreboardObjectiveUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.name = packetByteBuf.readString(16);
-		this.mode = packetByteBuf.readByte();
+	public ScoreboardObjectiveUpdateS2CPacket(PacketByteBuf buf) {
+		this.name = buf.readString(16);
+		this.mode = buf.readByte();
 		if (this.mode != 0 && this.mode != 2) {
 			this.displayName = LiteralText.EMPTY;
 			this.type = ScoreboardCriterion.RenderType.INTEGER;
 		} else {
-			this.displayName = packetByteBuf.readText();
-			this.type = packetByteBuf.readEnumConstant(ScoreboardCriterion.RenderType.class);
+			this.displayName = buf.readText();
+			this.type = buf.readEnumConstant(ScoreboardCriterion.RenderType.class);
 		}
 	}
 

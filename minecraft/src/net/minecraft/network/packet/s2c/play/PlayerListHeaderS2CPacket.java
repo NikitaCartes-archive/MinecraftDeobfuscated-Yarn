@@ -11,9 +11,9 @@ public class PlayerListHeaderS2CPacket implements Packet<ClientPlayPacketListene
 	private final Text header;
 	private final Text footer;
 
-	public PlayerListHeaderS2CPacket(PacketByteBuf packetByteBuf) {
-		this.header = packetByteBuf.readText();
-		this.footer = packetByteBuf.readText();
+	public PlayerListHeaderS2CPacket(PacketByteBuf buf) {
+		this.header = buf.readText();
+		this.footer = buf.readText();
 	}
 
 	@Override

@@ -43,16 +43,18 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 		return new Vec3d((double)x, (double)y, (double)z).multiply(2.4414062E-4F);
 	}
 
-	protected EntityS2CPacket(int entityId, short s, short t, short u, byte b, byte c, boolean bl, boolean bl2, boolean bl3) {
+	protected EntityS2CPacket(
+		int entityId, short deltaX, short deltaY, short deltaZ, byte yaw, byte pitch, boolean onGround, boolean rotate, boolean positionChanged
+	) {
 		this.id = entityId;
-		this.deltaX = s;
-		this.deltaY = t;
-		this.deltaZ = u;
-		this.yaw = b;
-		this.pitch = c;
-		this.onGround = bl;
-		this.rotate = bl2;
-		this.positionChanged = bl3;
+		this.deltaX = deltaX;
+		this.deltaY = deltaY;
+		this.deltaZ = deltaZ;
+		this.yaw = yaw;
+		this.pitch = pitch;
+		this.onGround = onGround;
+		this.rotate = rotate;
+		this.positionChanged = positionChanged;
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -99,12 +101,12 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 			super(entityId, deltaX, deltaY, deltaZ, (byte)0, (byte)0, onGround, false, true);
 		}
 
-		public static EntityS2CPacket.MoveRelative method_34138(PacketByteBuf packetByteBuf) {
-			int i = packetByteBuf.readVarInt();
-			short s = packetByteBuf.readShort();
-			short t = packetByteBuf.readShort();
-			short u = packetByteBuf.readShort();
-			boolean bl = packetByteBuf.readBoolean();
+		public static EntityS2CPacket.MoveRelative read(PacketByteBuf buf) {
+			int i = buf.readVarInt();
+			short s = buf.readShort();
+			short t = buf.readShort();
+			short u = buf.readShort();
+			boolean bl = buf.readBoolean();
 			return new EntityS2CPacket.MoveRelative(i, s, t, u, bl);
 		}
 
@@ -123,11 +125,11 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 			super(entityId, (short)0, (short)0, (short)0, yaw, pitch, onGround, true, false);
 		}
 
-		public static EntityS2CPacket.Rotate method_34140(PacketByteBuf packetByteBuf) {
-			int i = packetByteBuf.readVarInt();
-			byte b = packetByteBuf.readByte();
-			byte c = packetByteBuf.readByte();
-			boolean bl = packetByteBuf.readBoolean();
+		public static EntityS2CPacket.Rotate read(PacketByteBuf buf) {
+			int i = buf.readVarInt();
+			byte b = buf.readByte();
+			byte c = buf.readByte();
+			boolean bl = buf.readBoolean();
 			return new EntityS2CPacket.Rotate(i, b, c, bl);
 		}
 
@@ -145,14 +147,14 @@ public abstract class EntityS2CPacket implements Packet<ClientPlayPacketListener
 			super(entityId, deltaX, deltaY, deltaZ, yaw, pitch, onGround, true, true);
 		}
 
-		public static EntityS2CPacket.RotateAndMoveRelative method_34139(PacketByteBuf packetByteBuf) {
-			int i = packetByteBuf.readVarInt();
-			short s = packetByteBuf.readShort();
-			short t = packetByteBuf.readShort();
-			short u = packetByteBuf.readShort();
-			byte b = packetByteBuf.readByte();
-			byte c = packetByteBuf.readByte();
-			boolean bl = packetByteBuf.readBoolean();
+		public static EntityS2CPacket.RotateAndMoveRelative read(PacketByteBuf buf) {
+			int i = buf.readVarInt();
+			short s = buf.readShort();
+			short t = buf.readShort();
+			short u = buf.readShort();
+			byte b = buf.readByte();
+			byte c = buf.readByte();
+			boolean bl = buf.readBoolean();
 			return new EntityS2CPacket.RotateAndMoveRelative(i, s, t, u, b, c, bl);
 		}
 

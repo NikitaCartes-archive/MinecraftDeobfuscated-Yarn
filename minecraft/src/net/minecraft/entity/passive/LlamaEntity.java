@@ -217,7 +217,7 @@ public class LlamaEntity extends AbstractDonkeyEntity implements RangedAttackMob
 		}
 
 		if (bl) {
-			this.emitGameEvent(GameEvent.MOB_INTERACT, this.method_33575());
+			this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 			if (!this.isSilent()) {
 				SoundEvent soundEvent = this.getEatSound();
 				if (soundEvent != null) {

@@ -11,8 +11,8 @@ public class RenameItemC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.name = name;
 	}
 
-	public RenameItemC2SPacket(PacketByteBuf packetByteBuf) {
-		this.name = packetByteBuf.readString();
+	public RenameItemC2SPacket(PacketByteBuf buf) {
+		this.name = buf.readString();
 	}
 
 	@Override

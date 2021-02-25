@@ -22,9 +22,9 @@ public class ScoreboardDisplayS2CPacket implements Packet<ClientPlayPacketListen
 		}
 	}
 
-	public ScoreboardDisplayS2CPacket(PacketByteBuf packetByteBuf) {
-		this.slot = packetByteBuf.readByte();
-		this.name = packetByteBuf.readString(16);
+	public ScoreboardDisplayS2CPacket(PacketByteBuf buf) {
+		this.slot = buf.readByte();
+		this.name = buf.readString(16);
 	}
 
 	@Override

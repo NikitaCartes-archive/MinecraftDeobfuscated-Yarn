@@ -56,11 +56,11 @@ public class AdvancementCriterion {
 	}
 
 	public static Map<String, AdvancementCriterion> criteriaFromPacket(PacketByteBuf buf) {
-		return buf.method_34067(PacketByteBuf::readString, AdvancementCriterion::fromPacket);
+		return buf.readMap(PacketByteBuf::readString, AdvancementCriterion::fromPacket);
 	}
 
 	public static void criteriaToPacket(Map<String, AdvancementCriterion> criteria, PacketByteBuf buf) {
-		buf.method_34063(criteria, PacketByteBuf::writeString, (packetByteBuf, advancementCriterion) -> advancementCriterion.toPacket(packetByteBuf));
+		buf.writeMap(criteria, PacketByteBuf::writeString, (packetByteBuf, advancementCriterion) -> advancementCriterion.toPacket(packetByteBuf));
 	}
 
 	@Nullable

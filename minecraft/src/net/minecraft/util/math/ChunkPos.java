@@ -59,12 +59,12 @@ public class ChunkPos {
 		}
 	}
 
-	public int method_33940() {
-		return this.method_33939(8);
+	public int getCenterX() {
+		return this.getOffsetX(8);
 	}
 
-	public int method_33942() {
-		return this.method_33941(8);
+	public int getCenterZ() {
+		return this.getOffsetZ(8);
 	}
 
 	public int getStartX() {
@@ -76,11 +76,11 @@ public class ChunkPos {
 	}
 
 	public int getEndX() {
-		return this.method_33939(15);
+		return this.getOffsetX(15);
 	}
 
 	public int getEndZ() {
-		return this.method_33941(15);
+		return this.getOffsetZ(15);
 	}
 
 	public int getRegionX() {
@@ -99,16 +99,16 @@ public class ChunkPos {
 		return this.z & 31;
 	}
 
-	public int method_33939(int i) {
-		return ChunkSectionPos.getOffsetPos(this.x, i);
+	public int getOffsetX(int offset) {
+		return ChunkSectionPos.getOffsetPos(this.x, offset);
 	}
 
-	public int method_33941(int i) {
-		return ChunkSectionPos.getOffsetPos(this.z, i);
+	public int getOffsetZ(int offset) {
+		return ChunkSectionPos.getOffsetPos(this.z, offset);
 	}
 
-	public BlockPos method_33943(int i) {
-		return new BlockPos(this.method_33940(), i, this.method_33942());
+	public BlockPos getCenterAtY(int y) {
+		return new BlockPos(this.getCenterX(), y, this.getCenterZ());
 	}
 
 	public String toString() {

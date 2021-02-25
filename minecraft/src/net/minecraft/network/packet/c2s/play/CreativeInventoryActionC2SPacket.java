@@ -21,9 +21,9 @@ public class CreativeInventoryActionC2SPacket implements Packet<ServerPlayPacket
 		serverPlayPacketListener.onCreativeInventoryAction(this);
 	}
 
-	public CreativeInventoryActionC2SPacket(PacketByteBuf packetByteBuf) {
-		this.slot = packetByteBuf.readShort();
-		this.stack = packetByteBuf.readItemStack();
+	public CreativeInventoryActionC2SPacket(PacketByteBuf buf) {
+		this.slot = buf.readShort();
+		this.stack = buf.readItemStack();
 	}
 
 	@Override

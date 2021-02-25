@@ -45,19 +45,19 @@ public class MobSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.velocityZ = (int)(g * 8000.0);
 	}
 
-	public MobSpawnS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.uuid = packetByteBuf.readUuid();
-		this.entityTypeId = packetByteBuf.readVarInt();
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readByte();
-		this.pitch = packetByteBuf.readByte();
-		this.headYaw = packetByteBuf.readByte();
-		this.velocityX = packetByteBuf.readShort();
-		this.velocityY = packetByteBuf.readShort();
-		this.velocityZ = packetByteBuf.readShort();
+	public MobSpawnS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.uuid = buf.readUuid();
+		this.entityTypeId = buf.readVarInt();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readByte();
+		this.pitch = buf.readByte();
+		this.headYaw = buf.readByte();
+		this.velocityX = buf.readShort();
+		this.velocityY = buf.readShort();
+		this.velocityZ = buf.readShort();
 	}
 
 	@Override

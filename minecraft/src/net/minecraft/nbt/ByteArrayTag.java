@@ -10,10 +10,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class ByteArrayTag extends AbstractListTag<ByteTag> {
 	public static final TagReader<ByteArrayTag> READER = new TagReader<ByteArrayTag>() {
-		public ByteArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-			positionTracker.add(192L);
+		public ByteArrayTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.add(192L);
 			int j = dataInput.readInt();
-			positionTracker.add(8L * (long)j);
+			nbtTagSizeTracker.add(8L * (long)j);
 			byte[] bs = new byte[j];
 			dataInput.readFully(bs);
 			return new ByteArrayTag(bs);

@@ -12,8 +12,8 @@ public class PlayerInteractItemC2SPacket implements Packet<ServerPlayPacketListe
 		this.hand = hand;
 	}
 
-	public PlayerInteractItemC2SPacket(PacketByteBuf packetByteBuf) {
-		this.hand = packetByteBuf.readEnumConstant(Hand.class);
+	public PlayerInteractItemC2SPacket(PacketByteBuf buf) {
+		this.hand = buf.readEnumConstant(Hand.class);
 	}
 
 	@Override

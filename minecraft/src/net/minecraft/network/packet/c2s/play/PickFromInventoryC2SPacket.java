@@ -14,8 +14,8 @@ public class PickFromInventoryC2SPacket implements Packet<ServerPlayPacketListen
 		this.slot = slot;
 	}
 
-	public PickFromInventoryC2SPacket(PacketByteBuf packetByteBuf) {
-		this.slot = packetByteBuf.readVarInt();
+	public PickFromInventoryC2SPacket(PacketByteBuf buf) {
+		this.slot = buf.readVarInt();
 	}
 
 	@Override

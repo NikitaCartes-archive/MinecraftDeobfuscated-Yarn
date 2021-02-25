@@ -56,7 +56,7 @@ public class GeodeFeature extends Feature<GeodeFeatureConfig> {
 			BlockPos blockPos2 = blockPos.add(o, p, q);
 			BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
 			if (blockState.isAir() || blockState.isOf(Blocks.WATER) || blockState.isOf(Blocks.LAVA)) {
-				if (++m > geodeFeatureConfig.field_29062) {
+				if (++m > geodeFeatureConfig.invalidBlocksThreshold) {
 					return false;
 				}
 			}

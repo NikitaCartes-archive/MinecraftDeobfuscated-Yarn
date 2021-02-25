@@ -50,7 +50,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 	private volatile boolean extracting;
 	private Long previousWrittenBytes;
 	private Long previousTimeSnapshot;
-	private long bytesPersSecond;
+	private long bytesPerSecond;
 	private int animTick;
 	private static final String[] DOTS = new String[]{"", ".", ". .", ". . ."};
 	private int dotIndex;
@@ -108,7 +108,7 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 			list.add(this.status);
 			if (this.progress != null) {
 				list.add(new LiteralText(this.progress + "%"));
-				list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPersSecond) + "/s"));
+				list.add(new LiteralText(SizeUnit.getUserFriendlyString(this.bytesPerSecond) + "/s"));
 			}
 
 			if (this.field_20494 != null) {
@@ -200,14 +200,14 @@ public class RealmsDownloadLatestWorldScreen extends RealmsScreen {
 					l = 1L;
 				}
 
-				this.bytesPersSecond = 1000L * (this.downloadStatus.bytesWritten - this.previousWrittenBytes) / l;
-				this.drawDownloadSpeed0(matrices, this.bytesPersSecond);
+				this.bytesPerSecond = 1000L * (this.downloadStatus.bytesWritten - this.previousWrittenBytes) / l;
+				this.drawDownloadSpeed0(matrices, this.bytesPerSecond);
 			}
 
 			this.previousWrittenBytes = this.downloadStatus.bytesWritten;
 			this.previousTimeSnapshot = Util.getMeasuringTimeMs();
 		} else {
-			this.drawDownloadSpeed0(matrices, this.bytesPersSecond);
+			this.drawDownloadSpeed0(matrices, this.bytesPerSecond);
 		}
 	}
 

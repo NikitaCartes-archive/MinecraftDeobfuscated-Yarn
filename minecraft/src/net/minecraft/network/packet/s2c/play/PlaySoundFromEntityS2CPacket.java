@@ -27,12 +27,12 @@ public class PlaySoundFromEntityS2CPacket implements Packet<ClientPlayPacketList
 		this.pitch = pitch;
 	}
 
-	public PlaySoundFromEntityS2CPacket(PacketByteBuf packetByteBuf) {
-		this.sound = Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
-		this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
-		this.entityId = packetByteBuf.readVarInt();
-		this.volume = packetByteBuf.readFloat();
-		this.pitch = packetByteBuf.readFloat();
+	public PlaySoundFromEntityS2CPacket(PacketByteBuf buf) {
+		this.sound = Registry.SOUND_EVENT.get(buf.readVarInt());
+		this.category = buf.readEnumConstant(SoundCategory.class);
+		this.entityId = buf.readVarInt();
+		this.volume = buf.readFloat();
+		this.pitch = buf.readFloat();
 	}
 
 	@Override

@@ -22,11 +22,11 @@ public class BlockEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.data = data;
 	}
 
-	public BlockEventS2CPacket(PacketByteBuf packetByteBuf) {
-		this.pos = packetByteBuf.readBlockPos();
-		this.type = packetByteBuf.readUnsignedByte();
-		this.data = packetByteBuf.readUnsignedByte();
-		this.block = Registry.BLOCK.get(packetByteBuf.readVarInt());
+	public BlockEventS2CPacket(PacketByteBuf buf) {
+		this.pos = buf.readBlockPos();
+		this.type = buf.readUnsignedByte();
+		this.data = buf.readUnsignedByte();
+		this.block = Registry.BLOCK.get(buf.readVarInt());
 	}
 
 	@Override

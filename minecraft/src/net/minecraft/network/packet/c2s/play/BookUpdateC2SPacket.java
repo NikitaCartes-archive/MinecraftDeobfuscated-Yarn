@@ -19,10 +19,10 @@ public class BookUpdateC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.slot = slot;
 	}
 
-	public BookUpdateC2SPacket(PacketByteBuf packetByteBuf) {
-		this.book = packetByteBuf.readItemStack();
-		this.signed = packetByteBuf.readBoolean();
-		this.slot = packetByteBuf.readVarInt();
+	public BookUpdateC2SPacket(PacketByteBuf buf) {
+		this.book = buf.readItemStack();
+		this.signed = buf.readBoolean();
+		this.slot = buf.readVarInt();
 	}
 
 	@Override

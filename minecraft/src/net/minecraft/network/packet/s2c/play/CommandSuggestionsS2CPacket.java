@@ -21,14 +21,14 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 		this.suggestions = suggestions;
 	}
 
-	public CommandSuggestionsS2CPacket(PacketByteBuf packetByteBuf) {
-		this.completionId = packetByteBuf.readVarInt();
-		int i = packetByteBuf.readVarInt();
-		int j = packetByteBuf.readVarInt();
+	public CommandSuggestionsS2CPacket(PacketByteBuf buf) {
+		this.completionId = buf.readVarInt();
+		int i = buf.readVarInt();
+		int j = buf.readVarInt();
 		StringRange stringRange = StringRange.between(i, i + j);
-		List<Suggestion> list = packetByteBuf.method_34066(packetByteBufx -> {
-			String string = packetByteBufx.readString();
-			Text text = packetByteBufx.readBoolean() ? packetByteBufx.readText() : null;
+		List<Suggestion> list = buf.readList(bufx -> {
+			String string = bufx.readString();
+			Text text = bufx.readBoolean() ? bufx.readText() : null;
 			return new Suggestion(stringRange, string, text);
 		});
 		this.suggestions = new Suggestions(stringRange, list);
@@ -39,11 +39,11 @@ public class CommandSuggestionsS2CPacket implements Packet<ClientPlayPacketListe
 		buf.writeVarInt(this.completionId);
 		buf.writeVarInt(this.suggestions.getRange().getStart());
 		buf.writeVarInt(this.suggestions.getRange().getLength());
-		buf.method_34062(this.suggestions.getList(), (packetByteBuf, suggestion) -> {
-			packetByteBuf.writeString(suggestion.getText());
-			packetByteBuf.writeBoolean(suggestion.getTooltip() != null);
+		buf.writeCollection(this.suggestions.getList(), (bufx, suggestion) -> {
+			bufx.writeString(suggestion.getText());
+			bufx.writeBoolean(suggestion.getTooltip() != null);
 			if (suggestion.getTooltip() != null) {
-				packetByteBuf.writeText(Texts.toText(suggestion.getTooltip()));
+				bufx.writeText(Texts.toText(suggestion.getTooltip()));
 			}
 		});
 	}

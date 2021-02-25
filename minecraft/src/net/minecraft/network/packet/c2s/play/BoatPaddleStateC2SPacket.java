@@ -13,9 +13,9 @@ public class BoatPaddleStateC2SPacket implements Packet<ServerPlayPacketListener
 		this.rightPaddling = rightPaddling;
 	}
 
-	public BoatPaddleStateC2SPacket(PacketByteBuf packetByteBuf) {
-		this.leftPaddling = packetByteBuf.readBoolean();
-		this.rightPaddling = packetByteBuf.readBoolean();
+	public BoatPaddleStateC2SPacket(PacketByteBuf buf) {
+		this.leftPaddling = buf.readBoolean();
+		this.rightPaddling = buf.readBoolean();
 	}
 
 	@Override

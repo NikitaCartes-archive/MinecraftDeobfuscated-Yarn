@@ -20,9 +20,9 @@ public class ButtonClickC2SPacket implements Packet<ServerPlayPacketListener> {
 		serverPlayPacketListener.onButtonClick(this);
 	}
 
-	public ButtonClickC2SPacket(PacketByteBuf packetByteBuf) {
-		this.syncId = packetByteBuf.readByte();
-		this.buttonId = packetByteBuf.readByte();
+	public ButtonClickC2SPacket(PacketByteBuf buf) {
+		this.syncId = buf.readByte();
+		this.buttonId = buf.readByte();
 	}
 
 	@Override

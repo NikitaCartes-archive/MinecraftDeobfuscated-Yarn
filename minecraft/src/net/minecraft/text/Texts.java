@@ -36,16 +36,16 @@ public class Texts {
 				mutableText.append(parse(source, text2, sender, depth + 1));
 			}
 
-			return mutableText.fillStyle(method_27663(source, text.getStyle(), sender, depth));
+			return mutableText.fillStyle(parseStyle(source, text.getStyle(), sender, depth));
 		}
 	}
 
-	private static Style method_27663(@Nullable ServerCommandSource serverCommandSource, Style style, @Nullable Entity entity, int i) throws CommandSyntaxException {
+	private static Style parseStyle(@Nullable ServerCommandSource source, Style style, @Nullable Entity sender, int depth) throws CommandSyntaxException {
 		HoverEvent hoverEvent = style.getHoverEvent();
 		if (hoverEvent != null) {
 			Text text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT);
 			if (text != null) {
-				HoverEvent hoverEvent2 = new HoverEvent(HoverEvent.Action.SHOW_TEXT, parse(serverCommandSource, text, entity, i + 1));
+				HoverEvent hoverEvent2 = new HoverEvent(HoverEvent.Action.SHOW_TEXT, parse(source, text, sender, depth + 1));
 				return style.withHoverEvent(hoverEvent2);
 			}
 		}

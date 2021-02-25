@@ -27,7 +27,7 @@ import net.minecraft.world.TestableWorld;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
-import net.minecraft.world.gen.tree.TreeDecorator;
+import net.minecraft.world.gen.treedecorator.TreeDecorator;
 
 public class TreeFeature extends Feature<TreeFeatureConfig> {
 	public TreeFeature(Codec<TreeFeatureConfig> codec) {

@@ -6,14 +6,14 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.util.Collection;
 import java.util.function.Function;
-import net.minecraft.class_5888;
-import net.minecraft.class_5894;
-import net.minecraft.class_5903;
-import net.minecraft.class_5904;
-import net.minecraft.class_5905;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.TextArgumentType;
 import net.minecraft.network.Packet;
+import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.text.Texts;
@@ -44,7 +44,7 @@ public class TitleCommand {
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													TextArgumentType.getTextArgument(commandContext, "title"),
 													"title",
-													class_5904::new
+													TitleS2CPacket::new
 												)
 										)
 								)
@@ -59,7 +59,7 @@ public class TitleCommand {
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													TextArgumentType.getTextArgument(commandContext, "title"),
 													"subtitle",
-													class_5903::new
+													SubtitleS2CPacket::new
 												)
 										)
 								)
@@ -74,7 +74,7 @@ public class TitleCommand {
 													EntityArgumentType.getPlayers(commandContext, "targets"),
 													TextArgumentType.getTextArgument(commandContext, "title"),
 													"actionbar",
-													class_5894::new
+													OverlayMessageS2CPacket::new
 												)
 										)
 								)
@@ -105,10 +105,10 @@ public class TitleCommand {
 	}
 
 	private static int executeClear(ServerCommandSource source, Collection<ServerPlayerEntity> targets) {
-		class_5888 lv = new class_5888(false);
+		ClearTitleS2CPacket clearTitleS2CPacket = new ClearTitleS2CPacket(false);
 
 		for(ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.networkHandler.sendPacket(lv);
+			serverPlayerEntity.networkHandler.sendPacket(clearTitleS2CPacket);
 		}
 
 		if (targets.size() == 1) {
@@ -121,10 +121,10 @@ public class TitleCommand {
 	}
 
 	private static int executeReset(ServerCommandSource source, Collection<ServerPlayerEntity> targets) {
-		class_5888 lv = new class_5888(true);
+		ClearTitleS2CPacket clearTitleS2CPacket = new ClearTitleS2CPacket(true);
 
 		for(ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.networkHandler.sendPacket(lv);
+			serverPlayerEntity.networkHandler.sendPacket(clearTitleS2CPacket);
 		}
 
 		if (targets.size() == 1) {
@@ -155,10 +155,10 @@ public class TitleCommand {
 	}
 
 	private static int executeTimes(ServerCommandSource source, Collection<ServerPlayerEntity> targets, int fadeIn, int stay, int fadeOut) {
-		class_5905 lv = new class_5905(fadeIn, stay, fadeOut);
+		TitleFadeS2CPacket titleFadeS2CPacket = new TitleFadeS2CPacket(fadeIn, stay, fadeOut);
 
 		for(ServerPlayerEntity serverPlayerEntity : targets) {
-			serverPlayerEntity.networkHandler.sendPacket(lv);
+			serverPlayerEntity.networkHandler.sendPacket(titleFadeS2CPacket);
 		}
 
 		if (targets.size() == 1) {

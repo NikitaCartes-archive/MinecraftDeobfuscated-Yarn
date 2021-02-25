@@ -67,7 +67,7 @@ public class PotionItem extends Item {
 			}
 		}
 
-		world.emitGameEvent(user, GameEvent.DRINKING_FINISH, user.method_33575());
+		world.emitGameEvent(user, GameEvent.DRINKING_FINISH, user.getCameraBlockPos());
 		return stack;
 	}
 

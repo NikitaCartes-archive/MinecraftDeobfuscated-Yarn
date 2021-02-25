@@ -8,7 +8,7 @@ public class QueryRequestC2SPacket implements Packet<ServerQueryPacketListener> 
 	public QueryRequestC2SPacket() {
 	}
 
-	public QueryRequestC2SPacket(PacketByteBuf packetByteBuf) {
+	public QueryRequestC2SPacket(PacketByteBuf buf) {
 	}
 
 	@Override

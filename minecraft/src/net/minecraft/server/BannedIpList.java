@@ -23,13 +23,13 @@ public class BannedIpList extends ServerConfigList<String, BannedIpEntry> {
 		return this.contains(ip);
 	}
 
-	public BannedIpEntry get(SocketAddress socketAddress) {
-		String string = this.stringifyAddress(socketAddress);
+	public BannedIpEntry get(SocketAddress address) {
+		String string = this.stringifyAddress(address);
 		return this.get(string);
 	}
 
-	private String stringifyAddress(SocketAddress socketAddress) {
-		String string = socketAddress.toString();
+	private String stringifyAddress(SocketAddress address) {
+		String string = address.toString();
 		if (string.contains("/")) {
 			string = string.substring(string.indexOf(47) + 1);
 		}

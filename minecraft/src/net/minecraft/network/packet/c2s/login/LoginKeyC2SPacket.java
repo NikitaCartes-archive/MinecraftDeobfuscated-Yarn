@@ -21,9 +21,9 @@ public class LoginKeyC2SPacket implements Packet<ServerLoginPacketListener> {
 		this.encryptedNonce = NetworkEncryptionUtils.encrypt(publicKey, nonce);
 	}
 
-	public LoginKeyC2SPacket(PacketByteBuf packetByteBuf) {
-		this.encryptedSecretKey = packetByteBuf.readByteArray();
-		this.encryptedNonce = packetByteBuf.readByteArray();
+	public LoginKeyC2SPacket(PacketByteBuf buf) {
+		this.encryptedSecretKey = buf.readByteArray();
+		this.encryptedNonce = buf.readByteArray();
 	}
 
 	@Override

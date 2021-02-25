@@ -3,7 +3,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.mojang.serialization.codecs.RecordCodecBuilder.Instance;
-import net.minecraft.class_5863;
+import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.world.gen.UniformIntDistribution;
 
 public class DripstoneClusterFeatureConfig implements FeatureConfig {
@@ -21,8 +21,8 @@ public class DripstoneClusterFeatureConfig implements FeatureConfig {
 					UniformIntDistribution.createValidatedCodec(0, 64, 64)
 						.fieldOf("dripstone_block_layer_thickness")
 						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.dripstoneBlockLayerThickness),
-					class_5863.method_33916(0.0F, 2.0F).fieldOf("density").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.density),
-					class_5863.method_33916(0.0F, 2.0F).fieldOf("wetness").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.wetness),
+					FloatProvider.createValidatedCodec(0.0F, 2.0F).fieldOf("density").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.density),
+					FloatProvider.createValidatedCodec(0.0F, 2.0F).fieldOf("wetness").forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.wetness),
 					Codec.floatRange(0.0F, 1.0F)
 						.fieldOf("chance_of_dripstone_column_at_max_distance_from_center")
 						.forGetter(dripstoneClusterFeatureConfig -> dripstoneClusterFeatureConfig.chanceOfDripstoneColumnAtMaxDistanceFromCenter),
@@ -41,8 +41,8 @@ public class DripstoneClusterFeatureConfig implements FeatureConfig {
 	public final int maxStalagmiteStalactiteHeightDiff;
 	public final int heightDeviation;
 	public final UniformIntDistribution dripstoneBlockLayerThickness;
-	public final class_5863 density;
-	public final class_5863 wetness;
+	public final FloatProvider density;
+	public final FloatProvider wetness;
 	public final float chanceOfDripstoneColumnAtMaxDistanceFromCenter;
 	public final int maxDistanceFromCenterAffectingChanceOfDripstoneColumn;
 	public final int maxDistanceFromCenterAffectingHeightBias;
@@ -54,8 +54,8 @@ public class DripstoneClusterFeatureConfig implements FeatureConfig {
 		int maxStalagmiteStalactiteHeightDiff,
 		int heightDeviation,
 		UniformIntDistribution dripstoneBlockLayerThickness,
-		class_5863 density,
-		class_5863 wetness,
+		FloatProvider density,
+		FloatProvider wetness,
 		float wetnessMean,
 		int i,
 		int j

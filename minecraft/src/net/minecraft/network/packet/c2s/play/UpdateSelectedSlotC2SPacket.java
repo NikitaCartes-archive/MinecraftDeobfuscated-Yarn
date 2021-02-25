@@ -14,8 +14,8 @@ public class UpdateSelectedSlotC2SPacket implements Packet<ServerPlayPacketListe
 		this.selectedSlot = selectedSlot;
 	}
 
-	public UpdateSelectedSlotC2SPacket(PacketByteBuf packetByteBuf) {
-		this.selectedSlot = packetByteBuf.readShort();
+	public UpdateSelectedSlotC2SPacket(PacketByteBuf buf) {
+		this.selectedSlot = buf.readShort();
 	}
 
 	@Override

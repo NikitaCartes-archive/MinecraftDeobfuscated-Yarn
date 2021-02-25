@@ -24,10 +24,10 @@ public class ClientCommandC2SPacket implements Packet<ServerPlayPacketListener> 
 		this.mountJumpHeight = mountJumpHeight;
 	}
 
-	public ClientCommandC2SPacket(PacketByteBuf packetByteBuf) {
-		this.entityId = packetByteBuf.readVarInt();
-		this.mode = packetByteBuf.readEnumConstant(ClientCommandC2SPacket.Mode.class);
-		this.mountJumpHeight = packetByteBuf.readVarInt();
+	public ClientCommandC2SPacket(PacketByteBuf buf) {
+		this.entityId = buf.readVarInt();
+		this.mode = buf.readEnumConstant(ClientCommandC2SPacket.Mode.class);
+		this.mountJumpHeight = buf.readVarInt();
 	}
 
 	@Override

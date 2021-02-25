@@ -22,9 +22,9 @@ public class EntityPassengersSetS2CPacket implements Packet<ClientPlayPacketList
 		}
 	}
 
-	public EntityPassengersSetS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.passengerIds = packetByteBuf.readIntArray();
+	public EntityPassengersSetS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.passengerIds = buf.readIntArray();
 	}
 
 	@Override

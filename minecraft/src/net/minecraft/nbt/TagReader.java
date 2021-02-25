@@ -4,7 +4,7 @@ import java.io.DataInput;
 import java.io.IOException;
 
 public interface TagReader<T extends Tag> {
-	T read(DataInput input, int depth, PositionTracker tracker) throws IOException;
+	T read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException;
 
 	default boolean isImmutable() {
 		return false;
@@ -16,7 +16,7 @@ public interface TagReader<T extends Tag> {
 
 	static TagReader<EndTag> createInvalid(int type) {
 		return new TagReader<EndTag>() {
-			public EndTag read(DataInput dataInput, int i, PositionTracker positionTracker) {
+			public EndTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
 				throw new IllegalArgumentException("Invalid tag id: " + type);
 			}
 

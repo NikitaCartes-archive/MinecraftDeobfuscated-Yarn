@@ -19,11 +19,11 @@ public class RequiredTagListRegistry {
 	private static final Set<RegistryKey<?>> REGISTRY_KEYS = Sets.<RegistryKey<?>>newHashSet();
 	private static final List<RequiredTagList<?>> REQUIRED_TAG_LISTS = Lists.<RequiredTagList<?>>newArrayList();
 
-	public static <T> RequiredTagList<T> register(RegistryKey<? extends Registry<T>> registryKey, String string) {
+	public static <T> RequiredTagList<T> register(RegistryKey<? extends Registry<T>> registryKey, String dataType) {
 		if (!REGISTRY_KEYS.add(registryKey)) {
 			throw new IllegalStateException("Duplicate entry for static tag collection: " + registryKey);
 		} else {
-			RequiredTagList<T> requiredTagList = new RequiredTagList<>(registryKey, string);
+			RequiredTagList<T> requiredTagList = new RequiredTagList<>(registryKey, dataType);
 			REQUIRED_TAG_LISTS.add(requiredTagList);
 			return requiredTagList;
 		}
@@ -64,9 +64,9 @@ public class RequiredTagListRegistry {
 	}
 
 	public static TagManager method_33152() {
-		TagManager.class_5749 lv = new TagManager.class_5749();
+		TagManager.Builder builder = new TagManager.Builder();
 		method_33154();
-		REQUIRED_TAG_LISTS.forEach(requiredTagList -> requiredTagList.method_33147(lv));
-		return lv.method_33171();
+		REQUIRED_TAG_LISTS.forEach(requiredTagList -> requiredTagList.method_33147(builder));
+		return builder.build();
 	}
 }

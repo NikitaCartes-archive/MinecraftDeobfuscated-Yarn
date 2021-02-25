@@ -19,9 +19,9 @@ public class RemoveEntityStatusEffectS2CPacket implements Packet<ClientPlayPacke
 		this.effectType = effectType;
 	}
 
-	public RemoveEntityStatusEffectS2CPacket(PacketByteBuf packetByteBuf) {
-		this.entityId = packetByteBuf.readVarInt();
-		this.effectType = StatusEffect.byRawId(packetByteBuf.readUnsignedByte());
+	public RemoveEntityStatusEffectS2CPacket(PacketByteBuf buf) {
+		this.entityId = buf.readVarInt();
+		this.effectType = StatusEffect.byRawId(buf.readUnsignedByte());
 	}
 
 	@Override

@@ -14,16 +14,16 @@ public class LoginHelloS2CPacket implements Packet<ClientLoginPacketListener> {
 	private final byte[] publicKey;
 	private final byte[] nonce;
 
-	public LoginHelloS2CPacket(String serverId, byte[] bs, byte[] nonce) {
+	public LoginHelloS2CPacket(String serverId, byte[] publicKey, byte[] nonce) {
 		this.serverId = serverId;
-		this.publicKey = bs;
+		this.publicKey = publicKey;
 		this.nonce = nonce;
 	}
 
-	public LoginHelloS2CPacket(PacketByteBuf packetByteBuf) {
-		this.serverId = packetByteBuf.readString(20);
-		this.publicKey = packetByteBuf.readByteArray();
-		this.nonce = packetByteBuf.readByteArray();
+	public LoginHelloS2CPacket(PacketByteBuf buf) {
+		this.serverId = buf.readString(20);
+		this.publicKey = buf.readByteArray();
+		this.nonce = buf.readByteArray();
 	}
 
 	@Override

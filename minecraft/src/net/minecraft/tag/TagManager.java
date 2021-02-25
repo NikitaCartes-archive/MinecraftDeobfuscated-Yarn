@@ -2,7 +2,6 @@ package net.minecraft.tag;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.ImmutableMap.Builder;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -36,40 +35,40 @@ public class TagManager {
 		return (TagGroup<T>)this.tagGroups.getOrDefault(registryKey, TagGroup.createEmpty());
 	}
 
-	public <T, E extends Exception> Tag<T> getTag(RegistryKey<? extends Registry<T>> registryKey, Identifier id, Function<Identifier, E> function) throws E {
+	public <T, E extends Exception> Tag<T> getTag(RegistryKey<? extends Registry<T>> registryKey, Identifier id, Function<Identifier, E> exceptionFactory) throws E {
 		TagGroup<T> tagGroup = this.getTagGroup(registryKey);
 		if (tagGroup == null) {
-			throw (Exception)function.apply(id);
+			throw (Exception)exceptionFactory.apply(id);
 		} else {
 			Tag<T> tag = tagGroup.getTag(id);
 			if (tag == null) {
-				throw (Exception)function.apply(id);
+				throw (Exception)exceptionFactory.apply(id);
 			} else {
 				return tag;
 			}
 		}
 	}
 
-	public <T, E extends Exception> Identifier getTagId(RegistryKey<? extends Registry<T>> registryKey, Tag<T> tag, Supplier<E> supplier) throws E {
+	public <T, E extends Exception> Identifier getTagId(RegistryKey<? extends Registry<T>> registryKey, Tag<T> tag, Supplier<E> exceptionSupplier) throws E {
 		TagGroup<T> tagGroup = this.getTagGroup(registryKey);
 		if (tagGroup == null) {
-			throw (Exception)supplier.get();
+			throw (Exception)exceptionSupplier.get();
 		} else {
 			Identifier identifier = tagGroup.getUncheckedTagId(tag);
 			if (identifier == null) {
-				throw (Exception)supplier.get();
+				throw (Exception)exceptionSupplier.get();
 			} else {
 				return identifier;
 			}
 		}
 	}
 
-	public void method_33161(TagManager.class_5750 arg) {
-		this.tagGroups.forEach((registryKey, tagGroup) -> method_33162(arg, registryKey, tagGroup));
+	public void accept(TagManager.Visitor visitor) {
+		this.tagGroups.forEach((type, group) -> offerTo(visitor, type, group));
 	}
 
-	private static <T> void method_33162(TagManager.class_5750 arg, RegistryKey<? extends Registry<?>> registryKey, TagGroup<?> tagGroup) {
-		arg.method_33173(registryKey, tagGroup);
+	private static <T> void offerTo(TagManager.Visitor visitor, RegistryKey<? extends Registry<?>> type, TagGroup<?> group) {
+		visitor.visit(type, group);
 	}
 
 	public void apply() {
@@ -77,16 +76,16 @@ public class TagManager {
 		Blocks.refreshShapeCache();
 	}
 
-	public Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> toPacket(DynamicRegistryManager dynamicRegistryManager) {
-		final Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> map = Maps.<RegistryKey<? extends Registry<?>>, TagGroup.class_5748>newHashMap();
-		this.method_33161(new TagManager.class_5750() {
+	public Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> toPacket(DynamicRegistryManager registryManager) {
+		final Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> map = Maps.<RegistryKey<? extends Registry<?>>, TagGroup.Serialized>newHashMap();
+		this.accept(new TagManager.Visitor() {
 			@Override
-			public <T> void method_33173(RegistryKey<? extends Registry<T>> registryKey, TagGroup<T> tagGroup) {
-				Optional<? extends Registry<T>> optional = dynamicRegistryManager.getOptional(registryKey);
+			public <T> void visit(RegistryKey<? extends Registry<T>> type, TagGroup<T> group) {
+				Optional<? extends Registry<T>> optional = registryManager.getOptional(type);
 				if (optional.isPresent()) {
-					map.put(registryKey, tagGroup.toPacket((Registry<T>)optional.get()));
+					map.put(type, group.serialize((Registry<T>)optional.get()));
 				} else {
-					TagManager.LOGGER.error("Unknown registry {}", registryKey);
+					TagManager.LOGGER.error("Unknown registry {}", type);
 				}
 			}
 		});
@@ -94,39 +93,39 @@ public class TagManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static TagManager fromPacket(DynamicRegistryManager dynamicRegistryManager, Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> map) {
-		TagManager.class_5749 lv = new TagManager.class_5749();
-		map.forEach((registryKey, arg2) -> method_33163(dynamicRegistryManager, lv, registryKey, arg2));
-		return lv.method_33171();
+	public static TagManager fromPacket(DynamicRegistryManager registryManager, Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> groups) {
+		TagManager.Builder builder = new TagManager.Builder();
+		groups.forEach((type, group) -> tryAdd(registryManager, builder, type, group));
+		return builder.build();
 	}
 
 	@Environment(EnvType.CLIENT)
-	private static <T> void method_33163(
-		DynamicRegistryManager dynamicRegistryManager, TagManager.class_5749 arg, RegistryKey<? extends Registry<? extends T>> registryKey, TagGroup.class_5748 arg2
+	private static <T> void tryAdd(
+		DynamicRegistryManager registryManager, TagManager.Builder builder, RegistryKey<? extends Registry<? extends T>> type, TagGroup.Serialized group
 	) {
-		Optional<? extends Registry<? extends T>> optional = dynamicRegistryManager.getOptional(registryKey);
+		Optional<? extends Registry<? extends T>> optional = registryManager.getOptional(type);
 		if (optional.isPresent()) {
-			arg.method_33172(registryKey, TagGroup.method_33155(arg2, (Registry<? extends T>)optional.get()));
+			builder.add(type, TagGroup.deserialize(group, (Registry<? extends T>)optional.get()));
 		} else {
-			LOGGER.error("Unknown registry {}", registryKey);
+			LOGGER.error("Unknown registry {}", type);
 		}
 	}
 
-	public static class class_5749 {
-		private final Builder<RegistryKey<? extends Registry<?>>, TagGroup<?>> field_28310 = ImmutableMap.builder();
+	public static class Builder {
+		private final ImmutableMap.Builder<RegistryKey<? extends Registry<?>>, TagGroup<?>> groups = ImmutableMap.builder();
 
-		public <T> TagManager.class_5749 method_33172(RegistryKey<? extends Registry<? extends T>> registryKey, TagGroup<T> tagGroup) {
-			this.field_28310.put(registryKey, tagGroup);
+		public <T> TagManager.Builder add(RegistryKey<? extends Registry<? extends T>> type, TagGroup<T> tagGroup) {
+			this.groups.put(type, tagGroup);
 			return this;
 		}
 
-		public TagManager method_33171() {
-			return new TagManager(this.field_28310.build());
+		public TagManager build() {
+			return new TagManager(this.groups.build());
 		}
 	}
 
 	@FunctionalInterface
-	interface class_5750 {
-		<T> void method_33173(RegistryKey<? extends Registry<T>> registryKey, TagGroup<T> tagGroup);
+	interface Visitor {
+		<T> void visit(RegistryKey<? extends Registry<T>> type, TagGroup<T> group);
 	}
 }
