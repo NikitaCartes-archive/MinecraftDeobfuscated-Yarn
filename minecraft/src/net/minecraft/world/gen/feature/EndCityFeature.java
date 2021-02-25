@@ -60,8 +60,8 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			j = -5;
 		}
 
-		int k = chunkPos.method_33939(7);
-		int l = chunkPos.method_33941(7);
+		int k = chunkPos.getOffsetX(7);
+		int l = chunkPos.getOffsetZ(7);
 		int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 		int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 		int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
@@ -86,7 +86,7 @@ public class EndCityFeature extends StructureFeature<DefaultFeatureConfig> {
 			BlockRotation blockRotation = BlockRotation.random(this.random);
 			int i = EndCityFeature.getGenerationHeight(chunkPos, chunkGenerator, heightLimitView);
 			if (i >= 60) {
-				BlockPos blockPos = chunkPos.method_33943(i);
+				BlockPos blockPos = chunkPos.getCenterAtY(i);
 				EndCityGenerator.addPieces(structureManager, blockPos, blockRotation, this.children, this.random);
 				this.setBoundingBoxFromChildren();
 			}

@@ -27,13 +27,13 @@ public class ScoreboardPlayerUpdateS2CPacket implements Packet<ClientPlayPacketL
 		}
 	}
 
-	public ScoreboardPlayerUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.playerName = packetByteBuf.readString(40);
-		this.mode = packetByteBuf.readEnumConstant(ServerScoreboard.UpdateMode.class);
-		String string = packetByteBuf.readString(16);
+	public ScoreboardPlayerUpdateS2CPacket(PacketByteBuf buf) {
+		this.playerName = buf.readString(40);
+		this.mode = buf.readEnumConstant(ServerScoreboard.UpdateMode.class);
+		String string = buf.readString(16);
 		this.objectiveName = Objects.equals(string, "") ? null : string;
 		if (this.mode != ServerScoreboard.UpdateMode.REMOVE) {
-			this.score = packetByteBuf.readVarInt();
+			this.score = buf.readVarInt();
 		} else {
 			this.score = 0;
 		}

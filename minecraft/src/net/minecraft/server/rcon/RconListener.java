@@ -20,11 +20,11 @@ public class RconListener extends RconBase {
 	private final List<RconClient> clients = Lists.<RconClient>newArrayList();
 	private final DedicatedServer server;
 
-	private RconListener(DedicatedServer dedicatedServer, ServerSocket serverSocket, String string) {
+	private RconListener(DedicatedServer server, ServerSocket listener, String password) {
 		super("RCON Listener");
-		this.server = dedicatedServer;
-		this.listener = serverSocket;
-		this.password = string;
+		this.server = server;
+		this.listener = listener;
+		this.password = password;
 	}
 
 	private void removeStoppedClients() {

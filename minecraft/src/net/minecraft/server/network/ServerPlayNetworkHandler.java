@@ -310,18 +310,18 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		((CompletableFuture)backingFilterer.apply(this.player.getTextStream(), text)).thenAcceptAsync(consumer2, threadExecutor);
 	}
 
-	private void filterText(String text, Consumer<TextStream.class_5837> consumer) {
+	private void filterText(String text, Consumer<TextStream.Message> consumer) {
 		this.filterText(text, consumer, TextStream::filterText);
 	}
 
-	private void filterTexts(List<String> texts, Consumer<List<TextStream.class_5837>> consumer) {
+	private void filterTexts(List<String> texts, Consumer<List<TextStream.Message>> consumer) {
 		this.filterText(texts, consumer, TextStream::filterTexts);
 	}
 
 	@Override
 	public void onPlayerInput(PlayerInputC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		this.player.method_14218(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
+		this.player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
 	}
 
 	private static boolean validatePlayerMove(PlayerMoveC2SPacket packet) {
@@ -399,7 +399,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 				this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 				this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-				this.ridingEntity = m >= -0.03125 && !this.server.isFlightEnabled() && this.method_29780(entity);
+				this.ridingEntity = m >= -0.03125 && !this.server.isFlightEnabled() && this.isEntityOnAir(entity);
 				this.updatedRiddenX = entity.getX();
 				this.updatedRiddenY = entity.getY();
 				this.updatedRiddenZ = entity.getZ();
@@ -407,7 +407,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		}
 	}
 
-	private boolean method_29780(Entity entity) {
+	private boolean isEntityOnAir(Entity entity) {
 		return entity.world.getStatesInBox(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0)).allMatch(AbstractBlock.AbstractBlockState::isAir);
 	}
 
@@ -707,22 +707,22 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					}
 
 					this.filterTexts(
-						list, bl ? listx -> this.method_31276((TextStream.class_5837)listx.get(0), listx.subList(1, listx.size()), i) : listx -> this.method_31278(listx, i)
+						list, bl ? listx -> this.addBook((TextStream.Message)listx.get(0), listx.subList(1, listx.size()), i) : listx -> this.updateBookContent(listx, i)
 					);
 				}
 			}
 		}
 	}
 
-	private void method_31278(List<TextStream.class_5837> list, int i) {
-		ItemStack itemStack = this.player.getInventory().getStack(i);
+	private void updateBookContent(List<TextStream.Message> pages, int slotId) {
+		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
-			this.method_33796(list, UnaryOperator.identity(), itemStack);
+			this.setTextToBook(pages, UnaryOperator.identity(), itemStack);
 		}
 	}
 
-	private void method_31276(TextStream.class_5837 arg, List<TextStream.class_5837> list, int i) {
-		ItemStack itemStack = this.player.getInventory().getStack(i);
+	private void addBook(TextStream.Message title, List<TextStream.Message> pages, int slotId) {
+		ItemStack itemStack = this.player.getInventory().getStack(slotId);
 		if (itemStack.isOf(Items.WRITABLE_BOOK)) {
 			ItemStack itemStack2 = new ItemStack(Items.WRITTEN_BOOK);
 			CompoundTag compoundTag = itemStack.getTag();
@@ -731,42 +731,42 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			}
 
 			itemStack2.putSubTag("author", StringTag.of(this.player.getName().getString()));
-			if (this.player.method_33793()) {
-				itemStack2.putSubTag("title", StringTag.of(arg.method_33803()));
+			if (this.player.shouldFilterText()) {
+				itemStack2.putSubTag("title", StringTag.of(title.getFiltered()));
 			} else {
-				itemStack2.putSubTag("filtered_title", StringTag.of(arg.method_33803()));
-				itemStack2.putSubTag("title", StringTag.of(arg.method_33801()));
+				itemStack2.putSubTag("filtered_title", StringTag.of(title.getFiltered()));
+				itemStack2.putSubTag("title", StringTag.of(title.getRaw()));
 			}
 
-			this.method_33796(list, string -> Text.Serializer.toJson(new LiteralText(string)), itemStack2);
-			this.player.getInventory().setStack(i, itemStack2);
+			this.setTextToBook(pages, string -> Text.Serializer.toJson(new LiteralText(string)), itemStack2);
+			this.player.getInventory().setStack(slotId, itemStack2);
 		}
 	}
 
-	private void method_33796(List<TextStream.class_5837> list, UnaryOperator<String> unaryOperator, ItemStack itemStack) {
+	private void setTextToBook(List<TextStream.Message> messages, UnaryOperator<String> postProcessor, ItemStack book) {
 		ListTag listTag = new ListTag();
-		if (this.player.method_33793()) {
-			list.stream().map(arg -> StringTag.of((String)unaryOperator.apply(arg.method_33803()))).forEach(listTag::add);
+		if (this.player.shouldFilterText()) {
+			messages.stream().map(messagex -> StringTag.of((String)postProcessor.apply(messagex.getFiltered()))).forEach(listTag::add);
 		} else {
 			CompoundTag compoundTag = new CompoundTag();
 			int i = 0;
 
-			for (int j = list.size(); i < j; i++) {
-				TextStream.class_5837 lv = (TextStream.class_5837)list.get(i);
-				String string = lv.method_33801();
-				listTag.add(StringTag.of((String)unaryOperator.apply(string)));
-				String string2 = lv.method_33803();
+			for (int j = messages.size(); i < j; i++) {
+				TextStream.Message message = (TextStream.Message)messages.get(i);
+				String string = message.getRaw();
+				listTag.add(StringTag.of((String)postProcessor.apply(string)));
+				String string2 = message.getFiltered();
 				if (!string.equals(string2)) {
-					compoundTag.putString(String.valueOf(i), (String)unaryOperator.apply(string2));
+					compoundTag.putString(String.valueOf(i), (String)postProcessor.apply(string2));
 				}
 			}
 
 			if (!compoundTag.isEmpty()) {
-				itemStack.putSubTag("filtered_pages", compoundTag);
+				book.putSubTag("filtered_pages", compoundTag);
 			}
 		}
 
-		itemStack.putSubTag("pages", listTag);
+		book.putSubTag("pages", listTag);
 	}
 
 	@Override
@@ -889,7 +889,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 									&& !this.player.getAbilities().allowFlying
 									&& !this.player.hasStatusEffect(StatusEffects.LEVITATION)
 									&& !this.player.isFallFlying()
-									&& this.method_29780(this.player);
+									&& this.isEntityOnAir(this.player);
 								this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
 								this.player.handleFall(this.player.getY() - g, packet.isOnGround());
 								this.player.setOnGround(packet.isOnGround());
@@ -911,8 +911,8 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		}
 	}
 
-	private boolean isPlayerNotCollidingWithBlocks(WorldView worldView, Box box) {
-		Stream<VoxelShape> stream = worldView.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5F), entity -> true);
+	private boolean isPlayerNotCollidingWithBlocks(WorldView world, Box box) {
+		Stream<VoxelShape> stream = world.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5F), entity -> true);
 		VoxelShape voxelShape = VoxelShapes.cuboid(box.contract(1.0E-5F));
 		return stream.anyMatch(voxelShape2 -> !VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND));
 	}
@@ -1143,27 +1143,27 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 		if (string.startsWith("/")) {
 			NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-			this.method_31286(TextStream.class_5837.method_33802(string));
+			this.method_31286(TextStream.Message.permitted(string));
 		} else {
 			this.filterText(string, this::method_31286);
 		}
 	}
 
-	private void method_31286(TextStream.class_5837 arg) {
+	private void method_31286(TextStream.Message message) {
 		if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
 			this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
 		} else {
 			this.player.updateLastActionTime();
-			String string = arg.method_33801();
+			String string = message.getRaw();
 			if (string.startsWith("/")) {
 				this.executeCommand(string);
 			} else {
-				String string2 = arg.method_33803();
+				String string2 = message.getFiltered();
 				Text text = string2.isEmpty() ? null : new TranslatableText("chat.type.text", this.player.getDisplayName(), string2);
 				Text text2 = new TranslatableText("chat.type.text", this.player.getDisplayName(), string);
 				this.server
 					.getPlayerManager()
-					.method_33810(text2, serverPlayerEntity -> this.player.method_33795(serverPlayerEntity) ? text : text2, MessageType.CHAT, this.player.getUuid());
+					.broadcast(text2, player -> this.player.shouldFilterMessagesSentTo(player) ? text : text2, MessageType.CHAT, this.player.getUuid());
 			}
 
 			this.messageCooldown += 20;
@@ -1247,9 +1247,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		if (entity != null) {
 			double d = 36.0;
 			if (this.player.squaredDistanceTo(entity) < 36.0) {
-				packet.method_34209(
-					new PlayerInteractEntityC2SPacket.class_5908() {
-						private void method_33897(Hand hand, ServerPlayNetworkHandler.class_5860 arg) {
+				packet.handle(
+					new PlayerInteractEntityC2SPacket.Handler() {
+						private void processInteract(Hand hand, ServerPlayNetworkHandler.class_5860 arg) {
 							ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand).copy();
 							ActionResult actionResult = arg.run(ServerPlayNetworkHandler.this.player, entity, hand);
 							if (actionResult.isAccepted()) {
@@ -1261,17 +1261,17 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 						}
 
 						@Override
-						public void method_34219(Hand hand) {
-							this.method_33897(hand, PlayerEntity::interact);
+						public void interact(Hand hand) {
+							this.processInteract(hand, PlayerEntity::interact);
 						}
 
 						@Override
-						public void method_34220(Hand hand, Vec3d vec3d) {
-							this.method_33897(hand, (serverPlayerEntity, entityxx, handx) -> entityxx.interactAt(serverPlayerEntity, vec3d, handx));
+						public void interactAt(Hand hand, Vec3d pos) {
+							this.processInteract(hand, (player, entityxx, handx) -> entityxx.interactAt(player, pos, handx));
 						}
 
 						@Override
-						public void method_34218() {
+						public void attack() {
 							if (!(entity instanceof ItemEntity)
 								&& !(entity instanceof ExperienceOrbEntity)
 								&& !(entity instanceof PersistentProjectileEntity)
@@ -1439,13 +1439,13 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	@Override
 	public void onSignUpdate(UpdateSignC2SPacket packet) {
 		List<String> list = (List<String>)Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
-		this.filterTexts(list, listx -> this.method_31282(packet, listx));
+		this.filterTexts(list, listx -> this.onSignUpdate(packet, listx));
 	}
 
-	private void method_31282(UpdateSignC2SPacket updateSignC2SPacket, List<TextStream.class_5837> list) {
+	private void onSignUpdate(UpdateSignC2SPacket packet, List<TextStream.Message> signText) {
 		this.player.updateLastActionTime();
 		ServerWorld serverWorld = this.player.getServerWorld();
-		BlockPos blockPos = updateSignC2SPacket.getPos();
+		BlockPos blockPos = packet.getPos();
 		if (serverWorld.isChunkLoaded(blockPos)) {
 			BlockState blockState = serverWorld.getBlockState(blockPos);
 			BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
@@ -1459,12 +1459,12 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 				return;
 			}
 
-			for (int i = 0; i < list.size(); i++) {
-				TextStream.class_5837 lv = (TextStream.class_5837)list.get(i);
-				if (this.player.method_33793()) {
-					signBlockEntity.setTextOnRow(i, new LiteralText(lv.method_33803()));
+			for (int i = 0; i < signText.size(); i++) {
+				TextStream.Message message = (TextStream.Message)signText.get(i);
+				if (this.player.shouldFilterText()) {
+					signBlockEntity.setTextOnRow(i, new LiteralText(message.getFiltered()));
 				} else {
-					signBlockEntity.method_33827(i, new LiteralText(lv.method_33801()), new LiteralText(lv.method_33803()));
+					signBlockEntity.setTextOnRow(i, new LiteralText(message.getRaw()), new LiteralText(message.getFiltered()));
 				}
 			}
 
@@ -1523,6 +1523,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 
 	@FunctionalInterface
 	interface class_5860 {
-		ActionResult run(ServerPlayerEntity serverPlayerEntity, Entity entity, Hand hand);
+		ActionResult run(ServerPlayerEntity player, Entity entity, Hand hand);
 	}
 }

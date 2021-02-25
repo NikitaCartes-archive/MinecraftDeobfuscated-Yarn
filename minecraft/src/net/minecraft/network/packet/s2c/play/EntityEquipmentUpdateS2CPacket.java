@@ -20,16 +20,16 @@ public class EntityEquipmentUpdateS2CPacket implements Packet<ClientPlayPacketLi
 		this.equipmentList = equipmentList;
 	}
 
-	public EntityEquipmentUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
+	public EntityEquipmentUpdateS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
 		EquipmentSlot[] equipmentSlots = EquipmentSlot.values();
 		this.equipmentList = Lists.<Pair<EquipmentSlot, ItemStack>>newArrayList();
 
 		int i;
 		do {
-			i = packetByteBuf.readByte();
+			i = buf.readByte();
 			EquipmentSlot equipmentSlot = equipmentSlots[i & 127];
-			ItemStack itemStack = packetByteBuf.readItemStack();
+			ItemStack itemStack = buf.readItemStack();
 			this.equipmentList.add(Pair.of(equipmentSlot, itemStack));
 		} while ((i & -128) != 0);
 	}

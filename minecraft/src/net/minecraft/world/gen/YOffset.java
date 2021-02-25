@@ -3,7 +3,6 @@ package net.minecraft.world.gen;
 import com.mojang.datafixers.util.Either;
 import com.mojang.serialization.Codec;
 import java.util.function.Function;
-import net.minecraft.class_5868;
 import net.minecraft.util.dynamic.Codecs;
 import net.minecraft.world.dimension.DimensionType;
 
@@ -52,7 +51,7 @@ public abstract class YOffset {
 		return this.offset;
 	}
 
-	public abstract int getY(class_5868 arg);
+	public abstract int getY(HeightContext heightContext);
 
 	static final class AboveBottom extends YOffset {
 		public static final Codec<YOffset.AboveBottom> CODEC = Codec.intRange(DimensionType.MIN_HEIGHT, DimensionType.MAX_COLUMN_HEIGHT)
@@ -65,8 +64,8 @@ public abstract class YOffset {
 		}
 
 		@Override
-		public int getY(class_5868 arg) {
-			return arg.getMinY() + this.getOffset();
+		public int getY(HeightContext heightContext) {
+			return heightContext.getMinY() + this.getOffset();
 		}
 	}
 
@@ -81,8 +80,8 @@ public abstract class YOffset {
 		}
 
 		@Override
-		public int getY(class_5868 arg) {
-			return arg.getMaxY() - 1 + arg.getMinY() - this.getOffset();
+		public int getY(HeightContext heightContext) {
+			return heightContext.getMaxY() - 1 + heightContext.getMinY() - this.getOffset();
 		}
 	}
 
@@ -97,7 +96,7 @@ public abstract class YOffset {
 		}
 
 		@Override
-		public int getY(class_5868 arg) {
+		public int getY(HeightContext heightContext) {
 			return this.getOffset();
 		}
 	}

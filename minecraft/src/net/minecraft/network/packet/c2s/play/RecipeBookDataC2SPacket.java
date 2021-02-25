@@ -13,8 +13,8 @@ public class RecipeBookDataC2SPacket implements Packet<ServerPlayPacketListener>
 		this.recipeId = recipe.getId();
 	}
 
-	public RecipeBookDataC2SPacket(PacketByteBuf packetByteBuf) {
-		this.recipeId = packetByteBuf.readIdentifier();
+	public RecipeBookDataC2SPacket(PacketByteBuf buf) {
+		this.recipeId = buf.readIdentifier();
 	}
 
 	@Override

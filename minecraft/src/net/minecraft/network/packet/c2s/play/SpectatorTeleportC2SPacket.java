@@ -15,8 +15,8 @@ public class SpectatorTeleportC2SPacket implements Packet<ServerPlayPacketListen
 		this.targetUuid = targetUuid;
 	}
 
-	public SpectatorTeleportC2SPacket(PacketByteBuf packetByteBuf) {
-		this.targetUuid = packetByteBuf.readUuid();
+	public SpectatorTeleportC2SPacket(PacketByteBuf buf) {
+		this.targetUuid = buf.readUuid();
 	}
 
 	@Override

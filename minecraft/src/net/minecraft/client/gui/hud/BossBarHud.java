@@ -63,42 +63,44 @@ public class BossBarHud extends DrawableHelper {
 	}
 
 	public void handlePacket(BossBarS2CPacket packet) {
-		packet.method_34091(new BossBarS2CPacket.class_5881() {
-			@Override
-			public void method_34103(UUID uUID, Text text, float f, BossBar.Color color, BossBar.Style style, boolean bl, boolean bl2, boolean bl3) {
-				BossBarHud.this.bossBars.put(uUID, new ClientBossBar(uUID, text, f, color, style, bl, bl2, bl3));
-			}
+		packet.accept(
+			new BossBarS2CPacket.Consumer() {
+				@Override
+				public void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style overlay, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+					BossBarHud.this.bossBars.put(uuid, new ClientBossBar(uuid, name, percent, color, overlay, darkenSky, dragonMusic, thickenFog));
+				}
 
-			@Override
-			public void method_34099(UUID uUID) {
-				BossBarHud.this.bossBars.remove(uUID);
-			}
+				@Override
+				public void remove(UUID uuid) {
+					BossBarHud.this.bossBars.remove(uuid);
+				}
 
-			@Override
-			public void method_34100(UUID uUID, float f) {
-				((ClientBossBar)BossBarHud.this.bossBars.get(uUID)).setPercent(f);
-			}
+				@Override
+				public void updateProgress(UUID uuid, float percent) {
+					((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setPercent(percent);
+				}
 
-			@Override
-			public void method_34102(UUID uUID, Text text) {
-				((ClientBossBar)BossBarHud.this.bossBars.get(uUID)).setName(text);
-			}
+				@Override
+				public void updateName(UUID uuid, Text name) {
+					((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setName(name);
+				}
 
-			@Override
-			public void method_34101(UUID uUID, BossBar.Color color, BossBar.Style style) {
-				ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uUID);
-				clientBossBar.setColor(color);
-				clientBossBar.setOverlay(style);
-			}
+				@Override
+				public void updateStyle(UUID id, BossBar.Color color, BossBar.Style overlay) {
+					ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(id);
+					clientBossBar.setColor(color);
+					clientBossBar.setOverlay(overlay);
+				}
 
-			@Override
-			public void method_34104(UUID uUID, boolean bl, boolean bl2, boolean bl3) {
-				ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uUID);
-				clientBossBar.setDarkenSky(bl);
-				clientBossBar.setDragonMusic(bl2);
-				clientBossBar.setThickenFog(bl3);
+				@Override
+				public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+					ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uuid);
+					clientBossBar.setDarkenSky(darkenSky);
+					clientBossBar.setDragonMusic(dragonMusic);
+					clientBossBar.setThickenFog(thickenFog);
+				}
 			}
-		});
+		);
 	}
 
 	public void clear() {

@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntSupplier;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockPos;
@@ -65,12 +66,12 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			ChunkSectionPos.getSectionCoord(pos.getX()),
 			ChunkSectionPos.getSectionCoord(pos.getZ()),
 			ServerLightingProvider.Stage.POST_UPDATE,
-			Util.debugRunnable(() -> super.checkBlock(blockPos), () -> "checkBlock " + blockPos)
+			Util.debugRunnable((Runnable)(() -> super.checkBlock(blockPos)), (Supplier<String>)(() -> "checkBlock " + blockPos))
 		);
 	}
 
 	protected void updateChunkStatus(ChunkPos pos) {
-		this.enqueue(pos.x, pos.z, () -> 0, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable(() -> {
+		this.enqueue(pos.x, pos.z, () -> 0, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable((Runnable)(() -> {
 			super.setRetainData(pos, false);
 			super.setColumnEnabled(pos, false);
 
@@ -82,7 +83,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			for (int i = this.world.getBottomSectionCoord(); i < this.world.getTopSectionCoord(); i++) {
 				super.setSectionStatus(ChunkSectionPos.from(pos, i), true);
 			}
-		}, () -> "updateChunkStatus " + pos + " " + true));
+		}), (Supplier<String>)(() -> "updateChunkStatus " + pos + " " + true)));
 	}
 
 	@Override
@@ -92,7 +93,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			pos.getSectionZ(),
 			() -> 0,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable(() -> super.setSectionStatus(pos, notReady), () -> "updateSectionStatus " + pos + " " + notReady)
+			Util.debugRunnable((Runnable)(() -> super.setSectionStatus(pos, notReady)), (Supplier<String>)(() -> "updateSectionStatus " + pos + " " + notReady))
 		);
 	}
 
@@ -102,7 +103,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			pos.x,
 			pos.z,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable(() -> super.setColumnEnabled(pos, lightEnabled), () -> "enableLight " + pos + " " + lightEnabled)
+			Util.debugRunnable((Runnable)(() -> super.setColumnEnabled(pos, lightEnabled)), (Supplier<String>)(() -> "enableLight " + pos + " " + lightEnabled))
 		);
 	}
 
@@ -113,7 +114,7 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 			pos.getSectionZ(),
 			() -> 0,
 			ServerLightingProvider.Stage.PRE_UPDATE,
-			Util.debugRunnable(() -> super.enqueueSectionData(lightType, pos, nibbles, bl), () -> "queueData " + pos)
+			Util.debugRunnable((Runnable)(() -> super.enqueueSectionData(lightType, pos, nibbles, bl)), (Supplier<String>)(() -> "queueData " + pos))
 		);
 	}
 
@@ -133,14 +134,18 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 	@Override
 	public void setRetainData(ChunkPos pos, boolean retainData) {
 		this.enqueue(
-			pos.x, pos.z, () -> 0, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable(() -> super.setRetainData(pos, retainData), () -> "retainData " + pos)
+			pos.x,
+			pos.z,
+			() -> 0,
+			ServerLightingProvider.Stage.PRE_UPDATE,
+			Util.debugRunnable((Runnable)(() -> super.setRetainData(pos, retainData)), (Supplier<String>)(() -> "retainData " + pos))
 		);
 	}
 
 	public CompletableFuture<Chunk> light(Chunk chunk, boolean excludeBlocks) {
 		ChunkPos chunkPos = chunk.getPos();
 		chunk.setLightOn(false);
-		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable(() -> {
+		this.enqueue(chunkPos.x, chunkPos.z, ServerLightingProvider.Stage.PRE_UPDATE, Util.debugRunnable((Runnable)(() -> {
 			ChunkSection[] chunkSections = chunk.getSectionArray();
 
 			for (int i = 0; i < chunk.countVerticalSections(); i++) {
@@ -153,11 +158,11 @@ public class ServerLightingProvider extends LightingProvider implements AutoClos
 
 			super.setColumnEnabled(chunkPos, true);
 			if (!excludeBlocks) {
-				chunk.getLightSourcesStream().forEach(blockPos -> super.addLightSource(blockPos, chunk.getLuminance(blockPos)));
+				chunk.getLightSourcesStream().forEach(pos -> super.addLightSource(pos, chunk.getLuminance(pos)));
 			}
 
 			this.chunkStorage.releaseLightTicket(chunkPos);
-		}, () -> "lightChunk " + chunkPos + " " + excludeBlocks));
+		}), (Supplier<String>)(() -> "lightChunk " + chunkPos + " " + excludeBlocks)));
 		return CompletableFuture.supplyAsync(() -> {
 			chunk.setLightOn(true);
 			super.setRetainData(chunkPos, false);

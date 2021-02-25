@@ -3,7 +3,7 @@ package net.minecraft.world.gen;
 import javax.annotation.Nullable;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.noise.InterpolatedNoise;
+import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.OctavePerlinNoiseSampler;
 import net.minecraft.util.math.noise.SimplexNoiseSampler;
 import net.minecraft.world.biome.Biome;
@@ -31,7 +31,7 @@ public class NoiseColumnSampler {
 	private final int verticalNoiseResolution;
 	private final int noiseSizeY;
 	private final GenerationShapeConfig config;
-	private final InterpolatedNoise noise;
+	private final InterpolatedNoiseSampler noise;
 	@Nullable
 	private final SimplexNoiseSampler islandNoise;
 	private final OctavePerlinNoiseSampler densityNoise;
@@ -52,7 +52,7 @@ public class NoiseColumnSampler {
 		int verticalNoiseResolution,
 		int noiseSizeY,
 		GenerationShapeConfig config,
-		InterpolatedNoise noise,
+		InterpolatedNoiseSampler noise,
 		@Nullable SimplexNoiseSampler islandNoise,
 		OctavePerlinNoiseSampler densityNoise,
 		@Nullable NoiseCaveSampler noiseCaveSampler

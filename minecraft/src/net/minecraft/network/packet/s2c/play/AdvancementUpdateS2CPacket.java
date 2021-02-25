@@ -37,19 +37,19 @@ public class AdvancementUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		this.toSetProgress = ImmutableMap.copyOf(toSetProgress);
 	}
 
-	public AdvancementUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.clearCurrent = packetByteBuf.readBoolean();
-		this.toEarn = packetByteBuf.method_34067(PacketByteBuf::readIdentifier, Advancement.Task::fromPacket);
-		this.toRemove = packetByteBuf.method_34068(Sets::newLinkedHashSetWithExpectedSize, PacketByteBuf::readIdentifier);
-		this.toSetProgress = packetByteBuf.method_34067(PacketByteBuf::readIdentifier, AdvancementProgress::fromPacket);
+	public AdvancementUpdateS2CPacket(PacketByteBuf buf) {
+		this.clearCurrent = buf.readBoolean();
+		this.toEarn = buf.readMap(PacketByteBuf::readIdentifier, Advancement.Task::fromPacket);
+		this.toRemove = buf.readCollection(Sets::newLinkedHashSetWithExpectedSize, PacketByteBuf::readIdentifier);
+		this.toSetProgress = buf.readMap(PacketByteBuf::readIdentifier, AdvancementProgress::fromPacket);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeBoolean(this.clearCurrent);
-		buf.method_34063(this.toEarn, PacketByteBuf::writeIdentifier, (packetByteBuf, task) -> task.toPacket(packetByteBuf));
-		buf.method_34062(this.toRemove, PacketByteBuf::writeIdentifier);
-		buf.method_34063(this.toSetProgress, PacketByteBuf::writeIdentifier, (packetByteBuf, advancementProgress) -> advancementProgress.toPacket(packetByteBuf));
+		buf.writeMap(this.toEarn, PacketByteBuf::writeIdentifier, (bufx, task) -> task.toPacket(bufx));
+		buf.writeCollection(this.toRemove, PacketByteBuf::writeIdentifier);
+		buf.writeMap(this.toSetProgress, PacketByteBuf::writeIdentifier, (bufx, progress) -> progress.toPacket(bufx));
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

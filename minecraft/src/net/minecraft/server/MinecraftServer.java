@@ -232,27 +232,27 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public MinecraftServer(
-		Thread thread,
-		DynamicRegistryManager.Impl impl,
+		Thread serverThread,
+		DynamicRegistryManager.Impl registryManager,
 		LevelStorage.Session session,
 		SaveProperties saveProperties,
-		ResourcePackManager resourcePackManager,
+		ResourcePackManager dataPackManager,
 		Proxy proxy,
 		DataFixer dataFixer,
 		ServerResourceManager serverResourceManager,
-		MinecraftSessionService minecraftSessionService,
-		GameProfileRepository gameProfileRepository,
+		MinecraftSessionService sessionService,
+		GameProfileRepository gameProfileRepo,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super("Server");
-		this.registryManager = impl;
+		this.registryManager = registryManager;
 		this.saveProperties = saveProperties;
 		this.proxy = proxy;
-		this.dataPackManager = resourcePackManager;
+		this.dataPackManager = dataPackManager;
 		this.serverResourceManager = serverResourceManager;
-		this.sessionService = minecraftSessionService;
-		this.gameProfileRepo = gameProfileRepository;
+		this.sessionService = sessionService;
+		this.gameProfileRepo = gameProfileRepo;
 		this.userCache = userCache;
 		this.networkIo = new ServerNetworkIo(this);
 		this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
@@ -261,7 +261,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.dataFixer = dataFixer;
 		this.commandFunctionManager = new CommandFunctionManager(this, serverResourceManager.getFunctionLoader());
 		this.structureManager = new StructureManager(serverResourceManager.getResourceManager(), session, dataFixer);
-		this.serverThread = thread;
+		this.serverThread = serverThread;
 		this.workerExecutor = Util.getMainWorkerExecutor();
 	}
 
@@ -311,11 +311,11 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
 		WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
 		this.createWorlds(worldGenerationProgressListener);
-		this.method_27731();
+		this.updateDifficulty();
 		this.prepareStartRegion(worldGenerationProgressListener);
 	}
 
-	protected void method_27731() {
+	protected void updateDifficulty() {
 	}
 
 	protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
@@ -414,9 +414,9 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 		}
 	}
 
-	private static void setupSpawn(ServerWorld world, ServerWorldProperties serverWorldProperties, boolean bonusChest, boolean debugWorld) {
+	private static void setupSpawn(ServerWorld world, ServerWorldProperties worldProperties, boolean bonusChest, boolean debugWorld) {
 		if (debugWorld) {
-			serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(80), 0.0F);
+			worldProperties.setSpawnPos(BlockPos.ORIGIN.up(80), 0.0F);
 		} else {
 			ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
 			BiomeSource biomeSource = chunkGenerator.getBiomeSource();
@@ -442,7 +442,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX() + 8, blockPos2.getZ() + 8);
 			}
 
-			serverWorldProperties.setSpawnPos(chunkPos.getStartPos().add(8, i, 8), 0.0F);
+			worldProperties.setSpawnPos(chunkPos.getStartPos().add(8, i, 8), 0.0F);
 			int j = 0;
 			int k = 0;
 			int l = 0;
@@ -453,7 +453,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				if (j > -16 && j <= 16 && k > -16 && k <= 16) {
 					BlockPos blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k), bl);
 					if (blockPos3 != null) {
-						serverWorldProperties.setSpawnPos(blockPos3, 0.0F);
+						worldProperties.setSpawnPos(blockPos3, 0.0F);
 						break;
 					}
 				}
@@ -471,7 +471,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			if (bonusChest) {
 				ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeatures.BONUS_CHEST;
 				configuredFeature.generate(
-					world, chunkGenerator, world.random, new BlockPos(serverWorldProperties.getSpawnX(), serverWorldProperties.getSpawnY(), serverWorldProperties.getSpawnZ())
+					world, chunkGenerator, world.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ())
 				);
 			}
 		}
@@ -1354,7 +1354,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 				this.serverResourceManager.close();
 				this.serverResourceManager = serverResourceManager;
 				this.dataPackManager.setEnabledProfiles(datapacks);
-				this.saveProperties.updateLevelInfo(method_29735(this.dataPackManager));
+				this.saveProperties.updateLevelInfo(createDataPackSettings(this.dataPackManager));
 				serverResourceManager.loadRegistryTags();
 				this.getPlayerManager().saveAllPlayerData();
 				this.getPlayerManager().onDataPacksReloaded();
@@ -1398,14 +1398,14 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 			}
 
 			resourcePackManager.setEnabledProfiles(set);
-			return method_29735(resourcePackManager);
+			return createDataPackSettings(resourcePackManager);
 		}
 	}
 
-	private static DataPackSettings method_29735(ResourcePackManager resourcePackManager) {
-		Collection<String> collection = resourcePackManager.getEnabledNames();
+	private static DataPackSettings createDataPackSettings(ResourcePackManager dataPackManager) {
+		Collection<String> collection = dataPackManager.getEnabledNames();
 		List<String> list = ImmutableList.copyOf(collection);
-		List<String> list2 = (List<String>)resourcePackManager.getNames()
+		List<String> list2 = (List<String>)dataPackManager.getNames()
 			.stream()
 			.filter(string -> !collection.contains(string))
 			.collect(ImmutableList.toImmutableList());
@@ -1754,7 +1754,7 @@ public abstract class MinecraftServer extends ReentrantThreadExecutor<ServerTask
 	}
 
 	public TextStream createFilterer(ServerPlayerEntity player) {
-		return TextStream.field_28862;
+		return TextStream.UNFILTERED;
 	}
 
 	public boolean requireResourcePack() {

@@ -27,14 +27,14 @@ public class PlayerSpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.pitch = (byte)((int)(player.pitch * 256.0F / 360.0F));
 	}
 
-	public PlayerSpawnS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.uuid = packetByteBuf.readUuid();
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readByte();
-		this.pitch = packetByteBuf.readByte();
+	public PlayerSpawnS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.uuid = buf.readUuid();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readByte();
+		this.pitch = buf.readByte();
 	}
 
 	@Override

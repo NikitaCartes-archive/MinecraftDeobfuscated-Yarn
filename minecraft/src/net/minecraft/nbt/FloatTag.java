@@ -9,8 +9,8 @@ import net.minecraft.util.math.MathHelper;
 public class FloatTag extends AbstractNumberTag {
 	public static final FloatTag ZERO = new FloatTag(0.0F);
 	public static final TagReader<FloatTag> READER = new TagReader<FloatTag>() {
-		public FloatTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-			positionTracker.add(96L);
+		public FloatTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.add(96L);
 			return FloatTag.of(dataInput.readFloat());
 		}
 

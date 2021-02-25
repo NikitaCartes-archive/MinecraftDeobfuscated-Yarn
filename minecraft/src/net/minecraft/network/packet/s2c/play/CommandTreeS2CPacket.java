@@ -35,10 +35,10 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.commandTree = commandTree;
 	}
 
-	public CommandTreeS2CPacket(PacketByteBuf packetByteBuf) {
-		List<CommandTreeS2CPacket.CommandNodeData> list = packetByteBuf.method_34066(CommandTreeS2CPacket::readCommandNode);
+	public CommandTreeS2CPacket(PacketByteBuf buf) {
+		List<CommandTreeS2CPacket.CommandNodeData> list = buf.readList(CommandTreeS2CPacket::readCommandNode);
 		method_30946(list);
-		int i = packetByteBuf.readVarInt();
+		int i = buf.readVarInt();
 		this.commandTree = (RootCommandNode<CommandSource>)((CommandTreeS2CPacket.CommandNodeData)list.get(i)).node;
 	}
 
@@ -46,15 +46,15 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf buf) {
 		Object2IntMap<CommandNode<CommandSource>> object2IntMap = method_30944(this.commandTree);
 		List<CommandNode<CommandSource>> list = method_30945(object2IntMap);
-		buf.method_34062(list, (packetByteBuf, commandNode) -> writeNode(packetByteBuf, commandNode, object2IntMap));
+		buf.writeCollection(list, (packetByteBuf, commandNode) -> writeNode(packetByteBuf, commandNode, object2IntMap));
 		buf.writeVarInt(object2IntMap.get(this.commandTree));
 	}
 
-	private static void method_30946(List<CommandTreeS2CPacket.CommandNodeData> list) {
-		List<CommandTreeS2CPacket.CommandNodeData> list2 = Lists.<CommandTreeS2CPacket.CommandNodeData>newArrayList(list);
+	private static void method_30946(List<CommandTreeS2CPacket.CommandNodeData> nodeDatas) {
+		List<CommandTreeS2CPacket.CommandNodeData> list = Lists.<CommandTreeS2CPacket.CommandNodeData>newArrayList(nodeDatas);
 
-		while (!list2.isEmpty()) {
-			boolean bl = list2.removeIf(commandNodeData -> commandNodeData.build(list));
+		while (!list.isEmpty()) {
+			boolean bl = list.removeIf(nodeData -> nodeData.build(nodeDatas));
 			if (!bl) {
 				throw new IllegalStateException("Server sent an impossible command tree");
 			}
@@ -92,36 +92,36 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 		return objectArrayList;
 	}
 
-	private static CommandTreeS2CPacket.CommandNodeData readCommandNode(PacketByteBuf packetByteBuf) {
-		byte b = packetByteBuf.readByte();
-		int[] is = packetByteBuf.readIntArray();
-		int i = (b & 8) != 0 ? packetByteBuf.readVarInt() : 0;
-		ArgumentBuilder<CommandSource, ?> argumentBuilder = readArgumentBuilder(packetByteBuf, b);
+	private static CommandTreeS2CPacket.CommandNodeData readCommandNode(PacketByteBuf buf) {
+		byte b = buf.readByte();
+		int[] is = buf.readIntArray();
+		int i = (b & 8) != 0 ? buf.readVarInt() : 0;
+		ArgumentBuilder<CommandSource, ?> argumentBuilder = readArgumentBuilder(buf, b);
 		return new CommandTreeS2CPacket.CommandNodeData(argumentBuilder, b, i, is);
 	}
 
 	@Nullable
-	private static ArgumentBuilder<CommandSource, ?> readArgumentBuilder(PacketByteBuf packetByteBuf, byte b) {
+	private static ArgumentBuilder<CommandSource, ?> readArgumentBuilder(PacketByteBuf buf, byte b) {
 		int i = b & 3;
 		if (i == 2) {
-			String string = packetByteBuf.readString();
-			ArgumentType<?> argumentType = ArgumentTypes.fromPacket(packetByteBuf);
+			String string = buf.readString();
+			ArgumentType<?> argumentType = ArgumentTypes.fromPacket(buf);
 			if (argumentType == null) {
 				return null;
 			} else {
 				RequiredArgumentBuilder<CommandSource, ?> requiredArgumentBuilder = RequiredArgumentBuilder.argument(string, argumentType);
 				if ((b & 16) != 0) {
-					requiredArgumentBuilder.suggests(SuggestionProviders.byId(packetByteBuf.readIdentifier()));
+					requiredArgumentBuilder.suggests(SuggestionProviders.byId(buf.readIdentifier()));
 				}
 
 				return requiredArgumentBuilder;
 			}
 		} else {
-			return i == 1 ? LiteralArgumentBuilder.literal(packetByteBuf.readString()) : null;
+			return i == 1 ? LiteralArgumentBuilder.literal(buf.readString()) : null;
 		}
 	}
 
-	private static void writeNode(PacketByteBuf packetByteBuf, CommandNode<CommandSource> commandNode, Map<CommandNode<CommandSource>, Integer> map) {
+	private static void writeNode(PacketByteBuf buf, CommandNode<CommandSource> commandNode, Map<CommandNode<CommandSource>, Integer> map) {
 		byte b = 0;
 		if (commandNode.getRedirect() != null) {
 			b = (byte)(b | 8);
@@ -146,26 +146,26 @@ public class CommandTreeS2CPacket implements Packet<ClientPlayPacketListener> {
 			b = (byte)(b | 1);
 		}
 
-		packetByteBuf.writeByte(b);
-		packetByteBuf.writeVarInt(commandNode.getChildren().size());
+		buf.writeByte(b);
+		buf.writeVarInt(commandNode.getChildren().size());
 
 		for (CommandNode<CommandSource> commandNode2 : commandNode.getChildren()) {
-			packetByteBuf.writeVarInt((Integer)map.get(commandNode2));
+			buf.writeVarInt((Integer)map.get(commandNode2));
 		}
 
 		if (commandNode.getRedirect() != null) {
-			packetByteBuf.writeVarInt((Integer)map.get(commandNode.getRedirect()));
+			buf.writeVarInt((Integer)map.get(commandNode.getRedirect()));
 		}
 
 		if (commandNode instanceof ArgumentCommandNode) {
 			ArgumentCommandNode<CommandSource, ?> argumentCommandNode = (ArgumentCommandNode<CommandSource, ?>)commandNode;
-			packetByteBuf.writeString(argumentCommandNode.getName());
-			ArgumentTypes.toPacket(packetByteBuf, argumentCommandNode.getType());
+			buf.writeString(argumentCommandNode.getName());
+			ArgumentTypes.toPacket(buf, argumentCommandNode.getType());
 			if (argumentCommandNode.getCustomSuggestions() != null) {
-				packetByteBuf.writeIdentifier(SuggestionProviders.computeName(argumentCommandNode.getCustomSuggestions()));
+				buf.writeIdentifier(SuggestionProviders.computeName(argumentCommandNode.getCustomSuggestions()));
 			}
 		} else if (commandNode instanceof LiteralCommandNode) {
-			packetByteBuf.writeString(((LiteralCommandNode)commandNode).getLiteral());
+			buf.writeString(((LiteralCommandNode)commandNode).getLiteral());
 		}
 	}
 

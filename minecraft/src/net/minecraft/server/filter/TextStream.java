@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface TextStream {
-	TextStream field_28862 = new TextStream() {
+	TextStream UNFILTERED = new TextStream() {
 		@Override
 		public void onConnect() {
 		}
@@ -15,13 +15,13 @@ public interface TextStream {
 		}
 
 		@Override
-		public CompletableFuture<TextStream.class_5837> filterText(String text) {
-			return CompletableFuture.completedFuture(TextStream.class_5837.method_33802(text));
+		public CompletableFuture<TextStream.Message> filterText(String text) {
+			return CompletableFuture.completedFuture(TextStream.Message.permitted(text));
 		}
 
 		@Override
-		public CompletableFuture<List<TextStream.class_5837>> filterTexts(List<String> texts) {
-			return CompletableFuture.completedFuture(texts.stream().map(TextStream.class_5837::method_33802).collect(ImmutableList.toImmutableList()));
+		public CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts) {
+			return CompletableFuture.completedFuture(texts.stream().map(TextStream.Message::permitted).collect(ImmutableList.toImmutableList()));
 		}
 	};
 
@@ -29,34 +29,34 @@ public interface TextStream {
 
 	void onDisconnect();
 
-	CompletableFuture<TextStream.class_5837> filterText(String text);
+	CompletableFuture<TextStream.Message> filterText(String text);
 
-	CompletableFuture<List<TextStream.class_5837>> filterTexts(List<String> texts);
+	CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts);
 
-	public static class class_5837 {
-		public static final TextStream.class_5837 field_28863 = new TextStream.class_5837("", "");
-		private final String field_28864;
-		private final String field_28865;
+	public static class Message {
+		public static final TextStream.Message EMPTY = new TextStream.Message("", "");
+		private final String raw;
+		private final String filtered;
 
-		public class_5837(String string, String string2) {
-			this.field_28864 = string;
-			this.field_28865 = string2;
+		public Message(String raw, String filtered) {
+			this.raw = raw;
+			this.filtered = filtered;
 		}
 
-		public String method_33801() {
-			return this.field_28864;
+		public String getRaw() {
+			return this.raw;
 		}
 
-		public String method_33803() {
-			return this.field_28865;
+		public String getFiltered() {
+			return this.filtered;
 		}
 
-		public static TextStream.class_5837 method_33802(String string) {
-			return new TextStream.class_5837(string, string);
+		public static TextStream.Message permitted(String text) {
+			return new TextStream.Message(text, text);
 		}
 
-		public static TextStream.class_5837 method_33804(String string) {
-			return new TextStream.class_5837(string, "");
+		public static TextStream.Message censored(String raw) {
+			return new TextStream.Message(raw, "");
 		}
 	}
 }

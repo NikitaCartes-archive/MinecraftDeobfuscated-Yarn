@@ -71,36 +71,36 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	private final TextFilterer filterer;
 
 	public MinecraftDedicatedServer(
-		Thread thread,
-		DynamicRegistryManager.Impl impl,
+		Thread serverThread,
+		DynamicRegistryManager.Impl registryManager,
 		LevelStorage.Session session,
-		ResourcePackManager resourcePackManager,
+		ResourcePackManager dataPackManager,
 		ServerResourceManager serverResourceManager,
 		SaveProperties saveProperties,
-		ServerPropertiesLoader serverPropertiesLoader,
+		ServerPropertiesLoader propertiesLoader,
 		DataFixer dataFixer,
-		MinecraftSessionService minecraftSessionService,
-		GameProfileRepository gameProfileRepository,
+		MinecraftSessionService sessionService,
+		GameProfileRepository gameProfileRepo,
 		UserCache userCache,
 		WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory
 	) {
 		super(
-			thread,
-			impl,
+			serverThread,
+			registryManager,
 			session,
 			saveProperties,
-			resourcePackManager,
+			dataPackManager,
 			Proxy.NO_PROXY,
 			dataFixer,
 			serverResourceManager,
-			minecraftSessionService,
-			gameProfileRepository,
+			sessionService,
+			gameProfileRepo,
 			userCache,
 			worldGenerationProgressListenerFactory
 		);
-		this.propertiesLoader = serverPropertiesLoader;
+		this.propertiesLoader = propertiesLoader;
 		this.rconCommandOutput = new RconCommandOutput(this);
-		this.filterer = TextFilterer.method_33805(serverPropertiesLoader.getPropertiesHandler().textFilteringConfig);
+		this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
 	}
 
 	@Override
@@ -271,7 +271,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 	}
 
 	@Override
-	public void method_27731() {
+	public void updateDifficulty() {
 		this.setDifficulty(this.getProperties().difficulty, true);
 	}
 
@@ -544,8 +544,8 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 		return this.rconCommandOutput.asString();
 	}
 
-	public void setUseWhitelist(boolean bl) {
-		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.whiteList.set(this.getRegistryManager(), bl));
+	public void setUseWhitelist(boolean useWhitelist) {
+		this.propertiesLoader.apply(serverPropertiesHandler -> serverPropertiesHandler.whiteList.set(this.getRegistryManager(), useWhitelist));
 	}
 
 	@Override
@@ -576,7 +576,7 @@ public class MinecraftDedicatedServer extends MinecraftServer implements Dedicat
 
 	@Override
 	public TextStream createFilterer(ServerPlayerEntity player) {
-		return this.filterer != null ? this.filterer.createFilterer(player.getGameProfile()) : TextStream.field_28862;
+		return this.filterer != null ? this.filterer.createFilterer(player.getGameProfile()) : TextStream.UNFILTERED;
 	}
 
 	@Override

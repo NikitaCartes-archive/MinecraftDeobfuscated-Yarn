@@ -2,7 +2,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.class_5863;
+import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.world.gen.UniformIntDistribution;
 
 public class LargeDripstoneFeatureConfig implements FeatureConfig {
@@ -15,17 +15,17 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 					UniformIntDistribution.createValidatedCodec(1, 30, 30)
 						.fieldOf("column_radius")
 						.forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.columnRadius),
-					class_5863.method_33916(0.0F, 20.0F).fieldOf("height_scale").forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.heightScale),
+					FloatProvider.createValidatedCodec(0.0F, 20.0F).fieldOf("height_scale").forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.heightScale),
 					Codec.floatRange(0.1F, 1.0F)
 						.fieldOf("max_column_radius_to_cave_height_ratio")
 						.forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.maxColumnRadiusToCaveHeightRatio),
-					class_5863.method_33916(0.1F, 10.0F)
+					FloatProvider.createValidatedCodec(0.1F, 10.0F)
 						.fieldOf("stalactite_bluntness")
 						.forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.stalactiteBluntness),
-					class_5863.method_33916(0.1F, 10.0F)
+					FloatProvider.createValidatedCodec(0.1F, 10.0F)
 						.fieldOf("stalagmite_bluntness")
 						.forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.stalagmiteBluntness),
-					class_5863.method_33916(0.0F, 2.0F).fieldOf("wind_speed").forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.windSpeed),
+					FloatProvider.createValidatedCodec(0.0F, 2.0F).fieldOf("wind_speed").forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.windSpeed),
 					Codec.intRange(0, 100).fieldOf("min_radius_for_wind").forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.minRadiusForWind),
 					Codec.floatRange(0.0F, 5.0F).fieldOf("min_bluntness_for_wind").forGetter(largeDripstoneFeatureConfig -> largeDripstoneFeatureConfig.minBluntnessForWind)
 				)
@@ -33,22 +33,22 @@ public class LargeDripstoneFeatureConfig implements FeatureConfig {
 	);
 	public final int floorToCeilingSearchRange;
 	public final UniformIntDistribution columnRadius;
-	public final class_5863 heightScale;
+	public final FloatProvider heightScale;
 	public final float maxColumnRadiusToCaveHeightRatio;
-	public final class_5863 stalactiteBluntness;
-	public final class_5863 stalagmiteBluntness;
-	public final class_5863 windSpeed;
+	public final FloatProvider stalactiteBluntness;
+	public final FloatProvider stalagmiteBluntness;
+	public final FloatProvider windSpeed;
 	public final int minRadiusForWind;
 	public final float minBluntnessForWind;
 
 	public LargeDripstoneFeatureConfig(
 		int floorToCeilingSearchRange,
 		UniformIntDistribution columnRadius,
-		class_5863 heightScale,
+		FloatProvider heightScale,
 		float maxColumnRadiusToCaveHeightRatio,
-		class_5863 stalactiteBluntness,
-		class_5863 stalagmiteBluntness,
-		class_5863 windSpeed,
+		FloatProvider stalactiteBluntness,
+		FloatProvider stalagmiteBluntness,
+		FloatProvider windSpeed,
 		int minRadiusForWind,
 		float minBluntnessForWind
 	) {

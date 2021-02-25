@@ -24,9 +24,7 @@ public class ListCommand {
 	}
 
 	private static int executeUuids(ServerCommandSource source) {
-		return execute(
-			source, serverPlayerEntity -> new TranslatableText("commands.list.nameAndId", serverPlayerEntity.getName(), serverPlayerEntity.getGameProfile().getId())
-		);
+		return execute(source, player -> new TranslatableText("commands.list.nameAndId", player.getName(), player.getGameProfile().getId()));
 	}
 
 	private static int execute(ServerCommandSource source, Function<ServerPlayerEntity, Text> nameProvider) {

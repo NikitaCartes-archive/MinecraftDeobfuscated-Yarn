@@ -257,7 +257,7 @@ public class BookScreen extends Screen {
 	public static void method_33888(CompoundTag compoundTag, Consumer<String> consumer) {
 		ListTag listTag = compoundTag.getList("pages", 8).copy();
 		IntFunction<String> intFunction;
-		if (MinecraftClient.getInstance().method_33883() && compoundTag.contains("filtered_pages", 10)) {
+		if (MinecraftClient.getInstance().shouldFilterText() && compoundTag.contains("filtered_pages", 10)) {
 			CompoundTag compoundTag2 = compoundTag.getCompound("filtered_pages");
 			intFunction = ix -> {
 				String string = String.valueOf(ix);

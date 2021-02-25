@@ -14,8 +14,8 @@ public class EulaReader {
 	private final Path eulaFile;
 	private final boolean eulaAgreedTo;
 
-	public EulaReader(Path path) {
-		this.eulaFile = path;
+	public EulaReader(Path eulaFile) {
+		this.eulaFile = eulaFile;
 		this.eulaAgreedTo = SharedConstants.isDevelopment || this.checkEulaAgreement();
 	}
 

@@ -16,9 +16,9 @@ public class CooldownUpdateS2CPacket implements Packet<ClientPlayPacketListener>
 		this.cooldown = cooldown;
 	}
 
-	public CooldownUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.item = Item.byRawId(packetByteBuf.readVarInt());
-		this.cooldown = packetByteBuf.readVarInt();
+	public CooldownUpdateS2CPacket(PacketByteBuf buf) {
+		this.item = Item.byRawId(buf.readVarInt());
+		this.cooldown = buf.readVarInt();
 	}
 
 	@Override

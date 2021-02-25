@@ -29,20 +29,20 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.updateData = updateData;
 	}
 
-	public MapUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.scale = packetByteBuf.readByte();
-		this.locked = packetByteBuf.readBoolean();
-		if (packetByteBuf.readBoolean()) {
-			this.icons = packetByteBuf.method_34066(
-				packetByteBufx -> {
-					MapIcon.Type type = packetByteBufx.readEnumConstant(MapIcon.Type.class);
+	public MapUpdateS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.scale = buf.readByte();
+		this.locked = buf.readBoolean();
+		if (buf.readBoolean()) {
+			this.icons = buf.readList(
+				packetByteBuf -> {
+					MapIcon.Type type = packetByteBuf.readEnumConstant(MapIcon.Type.class);
 					return new MapIcon(
 						type,
-						packetByteBufx.readByte(),
-						packetByteBufx.readByte(),
-						(byte)(packetByteBufx.readByte() & 15),
-						packetByteBufx.readBoolean() ? packetByteBufx.readText() : null
+						packetByteBuf.readByte(),
+						packetByteBuf.readByte(),
+						(byte)(packetByteBuf.readByte() & 15),
+						packetByteBuf.readBoolean() ? packetByteBuf.readText() : null
 					);
 				}
 			);
@@ -50,12 +50,12 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 			this.icons = null;
 		}
 
-		int i = packetByteBuf.readUnsignedByte();
+		int i = buf.readUnsignedByte();
 		if (i > 0) {
-			int j = packetByteBuf.readUnsignedByte();
-			int k = packetByteBuf.readUnsignedByte();
-			int l = packetByteBuf.readUnsignedByte();
-			byte[] bs = packetByteBuf.readByteArray();
+			int j = buf.readUnsignedByte();
+			int k = buf.readUnsignedByte();
+			int l = buf.readUnsignedByte();
+			byte[] bs = buf.readByteArray();
 			this.updateData = new MapState.UpdateData(k, l, i, j, bs);
 		} else {
 			this.updateData = null;
@@ -69,7 +69,7 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeBoolean(this.locked);
 		if (this.icons != null) {
 			buf.writeBoolean(true);
-			buf.method_34062(this.icons, (packetByteBuf, mapIcon) -> {
+			buf.writeCollection(this.icons, (packetByteBuf, mapIcon) -> {
 				packetByteBuf.writeEnumConstant(mapIcon.getType());
 				packetByteBuf.writeByte(mapIcon.getX());
 				packetByteBuf.writeByte(mapIcon.getZ());
@@ -117,12 +117,12 @@ public class MapUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public byte method_32701() {
+	public byte getScale() {
 		return this.scale;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public boolean method_32702() {
+	public boolean isLocked() {
 		return this.locked;
 	}
 }

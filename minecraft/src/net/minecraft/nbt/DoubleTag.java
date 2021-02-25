@@ -9,8 +9,8 @@ import net.minecraft.util.math.MathHelper;
 public class DoubleTag extends AbstractNumberTag {
 	public static final DoubleTag ZERO = new DoubleTag(0.0);
 	public static final TagReader<DoubleTag> READER = new TagReader<DoubleTag>() {
-		public DoubleTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-			positionTracker.add(128L);
+		public DoubleTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.add(128L);
 			return DoubleTag.of(dataInput.readDouble());
 		}
 

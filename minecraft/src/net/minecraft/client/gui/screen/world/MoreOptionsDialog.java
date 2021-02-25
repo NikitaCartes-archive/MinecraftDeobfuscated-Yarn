@@ -96,8 +96,10 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		int i = this.parentWidth / 2 - 155;
 		int j = this.parentWidth / 2 + 5;
 		this.mapFeaturesButton = parent.addButton(
-			CyclingButtonWidget.method_32613(this.generatorOptions.shouldGenerateStructures())
-				.method_32623(cyclingButtonWidget -> cyclingButtonWidget.method_32611().append(". ").append(new TranslatableText("selectWorld.mapFeatures.info")))
+			CyclingButtonWidget.onOffBuilder(this.generatorOptions.shouldGenerateStructures())
+				.narration(
+					cyclingButtonWidget -> cyclingButtonWidget.getGenericNarrationMessage().append(". ").append(new TranslatableText("selectWorld.mapFeatures.info"))
+				)
 				.build(
 					i,
 					100,
@@ -109,12 +111,12 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		);
 		this.mapFeaturesButton.visible = false;
 		this.mapTypeButton = parent.addButton(
-			CyclingButtonWidget.<GeneratorType>method_32606(GeneratorType::getTranslationKey)
-				.method_32621((List<GeneratorType>)GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES)
-				.method_32623(
+			CyclingButtonWidget.<GeneratorType>builder(GeneratorType::getTranslationKey)
+				.values((List<GeneratorType>)GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES)
+				.narration(
 					cyclingButtonWidget -> cyclingButtonWidget.getValue() == GeneratorType.AMPLIFIED
-							? cyclingButtonWidget.method_32611().append(". ").append(AMPLIFIED_INFO_TEXT)
-							: cyclingButtonWidget.method_32611()
+							? cyclingButtonWidget.getGenericNarrationMessage().append(". ").append(AMPLIFIED_INFO_TEXT)
+							: cyclingButtonWidget.getGenericNarrationMessage()
 				)
 				.build(
 					j,
@@ -147,7 +149,7 @@ public class MoreOptionsDialog implements TickableElement, Drawable {
 		}));
 		this.customizeTypeButton.visible = false;
 		this.bonusItemsButton = parent.addButton(
-			CyclingButtonWidget.method_32613(this.generatorOptions.hasBonusChest() && !parent.hardcore)
+			CyclingButtonWidget.onOffBuilder(this.generatorOptions.hasBonusChest() && !parent.hardcore)
 				.build(
 					i,
 					151,

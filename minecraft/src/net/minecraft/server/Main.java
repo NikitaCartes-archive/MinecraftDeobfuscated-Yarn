@@ -159,7 +159,7 @@ public class Main {
 				GeneratorOptions generatorOptions;
 				if (optionSet.has(optionSpec3)) {
 					levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-					generatorOptions = GeneratorOptions.method_31112(impl);
+					generatorOptions = GeneratorOptions.createDemo(impl);
 				} else {
 					ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
 					levelInfo = new LevelInfo(

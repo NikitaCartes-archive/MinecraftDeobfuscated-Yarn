@@ -9,21 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import javax.annotation.Nullable;
-import net.minecraft.class_5888;
-import net.minecraft.class_5889;
-import net.minecraft.class_5890;
-import net.minecraft.class_5891;
-import net.minecraft.class_5892;
-import net.minecraft.class_5894;
-import net.minecraft.class_5895;
-import net.minecraft.class_5896;
-import net.minecraft.class_5897;
-import net.minecraft.class_5898;
-import net.minecraft.class_5899;
-import net.minecraft.class_5900;
-import net.minecraft.class_5903;
-import net.minecraft.class_5904;
-import net.minecraft.class_5905;
 import net.minecraft.network.listener.PacketListener;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
@@ -91,6 +76,7 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
@@ -98,8 +84,11 @@ import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
@@ -131,6 +120,7 @@ import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
+import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
@@ -157,14 +147,24 @@ import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderSizeChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
@@ -199,7 +199,7 @@ public enum NetworkState {
 					.register(BossBarS2CPacket.class, BossBarS2CPacket::new)
 					.register(DifficultyS2CPacket.class, DifficultyS2CPacket::new)
 					.register(GameMessageS2CPacket.class, GameMessageS2CPacket::new)
-					.register(class_5888.class, class_5888::new)
+					.register(ClearTitleS2CPacket.class, ClearTitleS2CPacket::new)
 					.register(CommandSuggestionsS2CPacket.class, CommandSuggestionsS2CPacket::new)
 					.register(CommandTreeS2CPacket.class, CommandTreeS2CPacket::new)
 					.register(ConfirmScreenActionS2CPacket.class, ConfirmScreenActionS2CPacket::new)
@@ -216,7 +216,7 @@ public enum NetworkState {
 					.register(UnloadChunkS2CPacket.class, UnloadChunkS2CPacket::new)
 					.register(GameStateChangeS2CPacket.class, GameStateChangeS2CPacket::new)
 					.register(OpenHorseScreenS2CPacket.class, OpenHorseScreenS2CPacket::new)
-					.register(class_5889.class, class_5889::new)
+					.register(WorldBorderInitializeS2CPacket.class, WorldBorderInitializeS2CPacket::new)
 					.register(KeepAliveS2CPacket.class, KeepAliveS2CPacket::new)
 					.register(ChunkDataS2CPacket.class, ChunkDataS2CPacket::new)
 					.register(WorldEventS2CPacket.class, WorldEventS2CPacket::new)
@@ -225,18 +225,18 @@ public enum NetworkState {
 					.register(GameJoinS2CPacket.class, GameJoinS2CPacket::new)
 					.register(MapUpdateS2CPacket.class, MapUpdateS2CPacket::new)
 					.register(SetTradeOffersS2CPacket.class, SetTradeOffersS2CPacket::new)
-					.register(EntityS2CPacket.MoveRelative.class, EntityS2CPacket.MoveRelative::method_34138)
-					.register(EntityS2CPacket.RotateAndMoveRelative.class, EntityS2CPacket.RotateAndMoveRelative::method_34139)
-					.register(EntityS2CPacket.Rotate.class, EntityS2CPacket.Rotate::method_34140)
+					.register(EntityS2CPacket.MoveRelative.class, EntityS2CPacket.MoveRelative::read)
+					.register(EntityS2CPacket.RotateAndMoveRelative.class, EntityS2CPacket.RotateAndMoveRelative::read)
+					.register(EntityS2CPacket.Rotate.class, EntityS2CPacket.Rotate::read)
 					.register(VehicleMoveS2CPacket.class, VehicleMoveS2CPacket::new)
 					.register(OpenWrittenBookS2CPacket.class, OpenWrittenBookS2CPacket::new)
 					.register(OpenScreenS2CPacket.class, OpenScreenS2CPacket::new)
 					.register(SignEditorOpenS2CPacket.class, SignEditorOpenS2CPacket::new)
 					.register(CraftFailedResponseS2CPacket.class, CraftFailedResponseS2CPacket::new)
 					.register(PlayerAbilitiesS2CPacket.class, PlayerAbilitiesS2CPacket::new)
-					.register(class_5890.class, class_5890::new)
-					.register(class_5891.class, class_5891::new)
-					.register(class_5892.class, class_5892::new)
+					.register(EndCombatS2CPacket.class, EndCombatS2CPacket::new)
+					.register(EnterCombatS2CPacket.class, EnterCombatS2CPacket::new)
+					.register(DeathMessageS2CPacket.class, DeathMessageS2CPacket::new)
 					.register(PlayerListS2CPacket.class, PlayerListS2CPacket::new)
 					.register(LookAtS2CPacket.class, LookAtS2CPacket::new)
 					.register(PlayerPositionLookS2CPacket.class, PlayerPositionLookS2CPacket::new)
@@ -248,12 +248,12 @@ public enum NetworkState {
 					.register(EntitySetHeadYawS2CPacket.class, EntitySetHeadYawS2CPacket::new)
 					.register(ChunkDeltaUpdateS2CPacket.class, ChunkDeltaUpdateS2CPacket::new)
 					.register(SelectAdvancementTabS2CPacket.class, SelectAdvancementTabS2CPacket::new)
-					.register(class_5894.class, class_5894::new)
-					.register(class_5895.class, class_5895::new)
-					.register(class_5896.class, class_5896::new)
-					.register(class_5897.class, class_5897::new)
-					.register(class_5898.class, class_5898::new)
-					.register(class_5899.class, class_5899::new)
+					.register(OverlayMessageS2CPacket.class, OverlayMessageS2CPacket::new)
+					.register(WorldBorderCenterChangedS2CPacket.class, WorldBorderCenterChangedS2CPacket::new)
+					.register(WorldBorderInterpolateSizeS2CPacket.class, WorldBorderInterpolateSizeS2CPacket::new)
+					.register(WorldBorderSizeChangedS2CPacket.class, WorldBorderSizeChangedS2CPacket::new)
+					.register(WorldBorderWarningTimeChangedS2CPacket.class, WorldBorderWarningTimeChangedS2CPacket::new)
+					.register(WorldBorderWarningBlocksChangedS2CPacket.class, WorldBorderWarningBlocksChangedS2CPacket::new)
 					.register(SetCameraEntityS2CPacket.class, SetCameraEntityS2CPacket::new)
 					.register(UpdateSelectedSlotS2CPacket.class, UpdateSelectedSlotS2CPacket::new)
 					.register(ChunkRenderDistanceCenterS2CPacket.class, ChunkRenderDistanceCenterS2CPacket::new)
@@ -268,12 +268,12 @@ public enum NetworkState {
 					.register(HealthUpdateS2CPacket.class, HealthUpdateS2CPacket::new)
 					.register(ScoreboardObjectiveUpdateS2CPacket.class, ScoreboardObjectiveUpdateS2CPacket::new)
 					.register(EntityPassengersSetS2CPacket.class, EntityPassengersSetS2CPacket::new)
-					.register(class_5900.class, class_5900::new)
+					.register(TeamS2CPacket.class, TeamS2CPacket::new)
 					.register(ScoreboardPlayerUpdateS2CPacket.class, ScoreboardPlayerUpdateS2CPacket::new)
-					.register(class_5903.class, class_5903::new)
+					.register(SubtitleS2CPacket.class, SubtitleS2CPacket::new)
 					.register(WorldTimeUpdateS2CPacket.class, WorldTimeUpdateS2CPacket::new)
-					.register(class_5904.class, class_5904::new)
-					.register(class_5905.class, class_5905::new)
+					.register(TitleS2CPacket.class, TitleS2CPacket::new)
+					.register(TitleFadeS2CPacket.class, TitleFadeS2CPacket::new)
 					.register(PlaySoundFromEntityS2CPacket.class, PlaySoundFromEntityS2CPacket::new)
 					.register(PlaySoundS2CPacket.class, PlaySoundS2CPacket::new)
 					.register(StopSoundS2CPacket.class, StopSoundS2CPacket::new)
@@ -308,10 +308,10 @@ public enum NetworkState {
 					.register(JigsawGeneratingC2SPacket.class, JigsawGeneratingC2SPacket::new)
 					.register(KeepAliveC2SPacket.class, KeepAliveC2SPacket::new)
 					.register(UpdateDifficultyLockC2SPacket.class, UpdateDifficultyLockC2SPacket::new)
-					.register(PlayerMoveC2SPacket.PositionOnly.class, PlayerMoveC2SPacket.PositionOnly::method_34221)
-					.register(PlayerMoveC2SPacket.Both.class, PlayerMoveC2SPacket.Both::method_34222)
-					.register(PlayerMoveC2SPacket.LookOnly.class, PlayerMoveC2SPacket.LookOnly::method_34223)
-					.register(PlayerMoveC2SPacket.class_5911.class, PlayerMoveC2SPacket.class_5911::method_34224)
+					.register(PlayerMoveC2SPacket.PositionAndOnGround.class, PlayerMoveC2SPacket.PositionAndOnGround::read)
+					.register(PlayerMoveC2SPacket.Full.class, PlayerMoveC2SPacket.Full::read)
+					.register(PlayerMoveC2SPacket.LookAndOnGround.class, PlayerMoveC2SPacket.LookAndOnGround::read)
+					.register(PlayerMoveC2SPacket.OnGroundOnly.class, PlayerMoveC2SPacket.OnGroundOnly::read)
 					.register(VehicleMoveC2SPacket.class, VehicleMoveC2SPacket::new)
 					.register(BoatPaddleStateC2SPacket.class, BoatPaddleStateC2SPacket::new)
 					.register(PickFromInventoryC2SPacket.class, PickFromInventoryC2SPacket::new)
@@ -397,8 +397,8 @@ public enum NetworkState {
 	}
 
 	@Nullable
-	public Packet<?> getPacketHandler(NetworkSide side, int packetId, PacketByteBuf packetByteBuf) {
-		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).createPacket(packetId, packetByteBuf);
+	public Packet<?> getPacketHandler(NetworkSide side, int packetId, PacketByteBuf buf) {
+		return ((NetworkState.PacketHandler)this.packetHandlers.get(side)).createPacket(packetId, buf);
 	}
 
 	public int getId() {
@@ -469,9 +469,9 @@ public enum NetworkState {
 		}
 
 		@Nullable
-		public Packet<?> createPacket(int id, PacketByteBuf packetByteBuf) {
+		public Packet<?> createPacket(int id, PacketByteBuf buf) {
 			Function<PacketByteBuf, ? extends Packet<T>> function = (Function<PacketByteBuf, ? extends Packet<T>>)this.packetFactories.get(id);
-			return function != null ? (Packet)function.apply(packetByteBuf) : null;
+			return function != null ? (Packet)function.apply(buf) : null;
 		}
 
 		public Iterable<Class<? extends Packet<?>>> getPacketTypes() {

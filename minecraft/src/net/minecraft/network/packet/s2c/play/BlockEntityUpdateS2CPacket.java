@@ -19,10 +19,10 @@ public class BlockEntityUpdateS2CPacket implements Packet<ClientPlayPacketListen
 		this.tag = tag;
 	}
 
-	public BlockEntityUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.pos = packetByteBuf.readBlockPos();
-		this.blockEntityType = packetByteBuf.readUnsignedByte();
-		this.tag = packetByteBuf.readCompoundTag();
+	public BlockEntityUpdateS2CPacket(PacketByteBuf buf) {
+		this.pos = buf.readBlockPos();
+		this.blockEntityType = buf.readUnsignedByte();
+		this.tag = buf.readCompoundTag();
 	}
 
 	@Override

@@ -20,10 +20,10 @@ public class CraftRequestC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.craftAll = craftAll;
 	}
 
-	public CraftRequestC2SPacket(PacketByteBuf packetByteBuf) {
-		this.syncId = packetByteBuf.readByte();
-		this.recipe = packetByteBuf.readIdentifier();
-		this.craftAll = packetByteBuf.readBoolean();
+	public CraftRequestC2SPacket(PacketByteBuf buf) {
+		this.syncId = buf.readByte();
+		this.recipe = buf.readIdentifier();
+		this.craftAll = buf.readBoolean();
 	}
 
 	@Override

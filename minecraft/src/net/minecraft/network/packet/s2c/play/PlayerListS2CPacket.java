@@ -18,10 +18,10 @@ import net.minecraft.text.Text;
 import net.minecraft.world.GameMode;
 
 public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
-	private final PlayerListS2CPacket.class_5893 action;
+	private final PlayerListS2CPacket.Action action;
 	private final List<PlayerListS2CPacket.Entry> entries;
 
-	public PlayerListS2CPacket(PlayerListS2CPacket.class_5893 action, ServerPlayerEntity... players) {
+	public PlayerListS2CPacket(PlayerListS2CPacket.Action action, ServerPlayerEntity... players) {
 		this.action = action;
 		this.entries = Lists.<PlayerListS2CPacket.Entry>newArrayListWithCapacity(players.length);
 
@@ -38,11 +38,11 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public PlayerListS2CPacket(PlayerListS2CPacket.class_5893 arg, Collection<ServerPlayerEntity> collection) {
-		this.action = arg;
-		this.entries = Lists.<PlayerListS2CPacket.Entry>newArrayListWithCapacity(collection.size());
+	public PlayerListS2CPacket(PlayerListS2CPacket.Action action, Collection<ServerPlayerEntity> players) {
+		this.action = action;
+		this.entries = Lists.<PlayerListS2CPacket.Entry>newArrayListWithCapacity(players.size());
 
-		for (ServerPlayerEntity serverPlayerEntity : collection) {
+		for (ServerPlayerEntity serverPlayerEntity : players) {
 			this.entries
 				.add(
 					new PlayerListS2CPacket.Entry(
@@ -55,15 +55,15 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public PlayerListS2CPacket(PacketByteBuf packetByteBuf) {
-		this.action = packetByteBuf.readEnumConstant(PlayerListS2CPacket.class_5893.class);
-		this.entries = packetByteBuf.method_34066(this.action::method_34150);
+	public PlayerListS2CPacket(PacketByteBuf buf) {
+		this.action = buf.readEnumConstant(PlayerListS2CPacket.Action.class);
+		this.entries = buf.readList(this.action::method_34150);
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.action);
-		buf.method_34062(this.entries, this.action::method_34151);
+		buf.writeCollection(this.entries, this.action::method_34151);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -76,26 +76,130 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public PlayerListS2CPacket.class_5893 getAction() {
+	public PlayerListS2CPacket.Action getAction() {
 		return this.action;
 	}
 
 	@Nullable
-	private static Text method_34149(PacketByteBuf packetByteBuf) {
-		return packetByteBuf.readBoolean() ? packetByteBuf.readText() : null;
+	private static Text method_34149(PacketByteBuf buf) {
+		return buf.readBoolean() ? buf.readText() : null;
 	}
 
-	private static void method_34148(PacketByteBuf packetByteBuf, @Nullable Text text) {
+	private static void method_34148(PacketByteBuf buf, @Nullable Text text) {
 		if (text == null) {
-			packetByteBuf.writeBoolean(false);
+			buf.writeBoolean(false);
 		} else {
-			packetByteBuf.writeBoolean(true);
-			packetByteBuf.writeText(text);
+			buf.writeBoolean(true);
+			buf.writeText(text);
 		}
 	}
 
 	public String toString() {
 		return MoreObjects.toStringHelper(this).add("action", this.action).add("entries", this.entries).toString();
+	}
+
+	public static enum Action {
+		ADD_PLAYER {
+			@Override
+			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf buf) {
+				GameProfile gameProfile = new GameProfile(buf.readUuid(), buf.readString(16));
+				PropertyMap propertyMap = gameProfile.getProperties();
+				buf.forEachInCollection(bufx -> {
+					String string = bufx.readString();
+					String string2 = bufx.readString();
+					if (bufx.readBoolean()) {
+						String string3 = bufx.readString();
+						propertyMap.put(string, new Property(string, string2, string3));
+					} else {
+						propertyMap.put(string, new Property(string, string2));
+					}
+				});
+				GameMode gameMode = GameMode.byId(buf.readVarInt());
+				int i = buf.readVarInt();
+				Text text = PlayerListS2CPacket.method_34149(buf);
+				return new PlayerListS2CPacket.Entry(gameProfile, i, gameMode, text);
+			}
+
+			@Override
+			protected void method_34151(PacketByteBuf buf, PlayerListS2CPacket.Entry entry) {
+				buf.writeUuid(entry.getProfile().getId());
+				buf.writeString(entry.getProfile().getName());
+				buf.writeCollection(entry.getProfile().getProperties().values(), (bufx, property) -> {
+					bufx.writeString(property.getName());
+					bufx.writeString(property.getValue());
+					if (property.hasSignature()) {
+						bufx.writeBoolean(true);
+						bufx.writeString(property.getSignature());
+					} else {
+						bufx.writeBoolean(false);
+					}
+				});
+				buf.writeVarInt(entry.getGameMode().getId());
+				buf.writeVarInt(entry.getLatency());
+				PlayerListS2CPacket.method_34148(buf, entry.getDisplayName());
+			}
+		},
+		UPDATE_GAME_MODE {
+			@Override
+			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf buf) {
+				GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
+				GameMode gameMode = GameMode.byId(buf.readVarInt());
+				return new PlayerListS2CPacket.Entry(gameProfile, 0, gameMode, null);
+			}
+
+			@Override
+			protected void method_34151(PacketByteBuf buf, PlayerListS2CPacket.Entry entry) {
+				buf.writeUuid(entry.getProfile().getId());
+				buf.writeVarInt(entry.getGameMode().getId());
+			}
+		},
+		UPDATE_LATENCY {
+			@Override
+			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf buf) {
+				GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
+				int i = buf.readVarInt();
+				return new PlayerListS2CPacket.Entry(gameProfile, i, null, null);
+			}
+
+			@Override
+			protected void method_34151(PacketByteBuf buf, PlayerListS2CPacket.Entry entry) {
+				buf.writeUuid(entry.getProfile().getId());
+				buf.writeVarInt(entry.getLatency());
+			}
+		},
+		UPDATE_DISPLAY_NAME {
+			@Override
+			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf buf) {
+				GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
+				Text text = PlayerListS2CPacket.method_34149(buf);
+				return new PlayerListS2CPacket.Entry(gameProfile, 0, null, text);
+			}
+
+			@Override
+			protected void method_34151(PacketByteBuf buf, PlayerListS2CPacket.Entry entry) {
+				buf.writeUuid(entry.getProfile().getId());
+				PlayerListS2CPacket.method_34148(buf, entry.getDisplayName());
+			}
+		},
+		REMOVE_PLAYER {
+			@Override
+			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf buf) {
+				GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
+				return new PlayerListS2CPacket.Entry(gameProfile, 0, null, null);
+			}
+
+			@Override
+			protected void method_34151(PacketByteBuf buf, PlayerListS2CPacket.Entry entry) {
+				buf.writeUuid(entry.getProfile().getId());
+			}
+		};
+
+		private Action() {
+		}
+
+		protected abstract PlayerListS2CPacket.Entry method_34150(PacketByteBuf buf);
+
+		protected abstract void method_34151(PacketByteBuf buf, PlayerListS2CPacket.Entry entry);
 	}
 
 	public static class Entry {
@@ -105,11 +209,11 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 		@Nullable
 		private final Text displayName;
 
-		public Entry(GameProfile gameProfile, int i, @Nullable GameMode gameMode, @Nullable Text text) {
-			this.profile = gameProfile;
-			this.latency = i;
+		public Entry(GameProfile profile, int latency, @Nullable GameMode gameMode, @Nullable Text displayName) {
+			this.profile = profile;
+			this.latency = latency;
 			this.gameMode = gameMode;
-			this.displayName = text;
+			this.displayName = displayName;
 		}
 
 		public GameProfile getProfile() {
@@ -137,109 +241,5 @@ public class PlayerListS2CPacket implements Packet<ClientPlayPacketListener> {
 				.add("displayName", this.displayName == null ? null : Text.Serializer.toJson(this.displayName))
 				.toString();
 		}
-	}
-
-	public static enum class_5893 {
-		field_29136 {
-			@Override
-			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf packetByteBuf) {
-				GameProfile gameProfile = new GameProfile(packetByteBuf.readUuid(), packetByteBuf.readString(16));
-				PropertyMap propertyMap = gameProfile.getProperties();
-				packetByteBuf.method_34065(packetByteBufx -> {
-					String string = packetByteBufx.readString();
-					String string2 = packetByteBufx.readString();
-					if (packetByteBufx.readBoolean()) {
-						String string3 = packetByteBufx.readString();
-						propertyMap.put(string, new Property(string, string2, string3));
-					} else {
-						propertyMap.put(string, new Property(string, string2));
-					}
-				});
-				GameMode gameMode = GameMode.byId(packetByteBuf.readVarInt());
-				int i = packetByteBuf.readVarInt();
-				Text text = PlayerListS2CPacket.method_34149(packetByteBuf);
-				return new PlayerListS2CPacket.Entry(gameProfile, i, gameMode, text);
-			}
-
-			@Override
-			protected void method_34151(PacketByteBuf packetByteBuf, PlayerListS2CPacket.Entry entry) {
-				packetByteBuf.writeUuid(entry.getProfile().getId());
-				packetByteBuf.writeString(entry.getProfile().getName());
-				packetByteBuf.method_34062(entry.getProfile().getProperties().values(), (packetByteBufx, property) -> {
-					packetByteBufx.writeString(property.getName());
-					packetByteBufx.writeString(property.getValue());
-					if (property.hasSignature()) {
-						packetByteBufx.writeBoolean(true);
-						packetByteBufx.writeString(property.getSignature());
-					} else {
-						packetByteBufx.writeBoolean(false);
-					}
-				});
-				packetByteBuf.writeVarInt(entry.getGameMode().getId());
-				packetByteBuf.writeVarInt(entry.getLatency());
-				PlayerListS2CPacket.method_34148(packetByteBuf, entry.getDisplayName());
-			}
-		},
-		field_29137 {
-			@Override
-			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf packetByteBuf) {
-				GameProfile gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
-				GameMode gameMode = GameMode.byId(packetByteBuf.readVarInt());
-				return new PlayerListS2CPacket.Entry(gameProfile, 0, gameMode, null);
-			}
-
-			@Override
-			protected void method_34151(PacketByteBuf packetByteBuf, PlayerListS2CPacket.Entry entry) {
-				packetByteBuf.writeUuid(entry.getProfile().getId());
-				packetByteBuf.writeVarInt(entry.getGameMode().getId());
-			}
-		},
-		field_29138 {
-			@Override
-			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf packetByteBuf) {
-				GameProfile gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
-				int i = packetByteBuf.readVarInt();
-				return new PlayerListS2CPacket.Entry(gameProfile, i, null, null);
-			}
-
-			@Override
-			protected void method_34151(PacketByteBuf packetByteBuf, PlayerListS2CPacket.Entry entry) {
-				packetByteBuf.writeUuid(entry.getProfile().getId());
-				packetByteBuf.writeVarInt(entry.getLatency());
-			}
-		},
-		field_29139 {
-			@Override
-			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf packetByteBuf) {
-				GameProfile gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
-				Text text = PlayerListS2CPacket.method_34149(packetByteBuf);
-				return new PlayerListS2CPacket.Entry(gameProfile, 0, null, text);
-			}
-
-			@Override
-			protected void method_34151(PacketByteBuf packetByteBuf, PlayerListS2CPacket.Entry entry) {
-				packetByteBuf.writeUuid(entry.getProfile().getId());
-				PlayerListS2CPacket.method_34148(packetByteBuf, entry.getDisplayName());
-			}
-		},
-		field_29140 {
-			@Override
-			protected PlayerListS2CPacket.Entry method_34150(PacketByteBuf packetByteBuf) {
-				GameProfile gameProfile = new GameProfile(packetByteBuf.readUuid(), null);
-				return new PlayerListS2CPacket.Entry(gameProfile, 0, null, null);
-			}
-
-			@Override
-			protected void method_34151(PacketByteBuf packetByteBuf, PlayerListS2CPacket.Entry entry) {
-				packetByteBuf.writeUuid(entry.getProfile().getId());
-			}
-		};
-
-		private class_5893() {
-		}
-
-		protected abstract PlayerListS2CPacket.Entry method_34150(PacketByteBuf packetByteBuf);
-
-		protected abstract void method_34151(PacketByteBuf packetByteBuf, PlayerListS2CPacket.Entry entry);
 	}
 }

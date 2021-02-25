@@ -480,7 +480,7 @@ public abstract class HorseBaseEntity extends AnimalEntity implements InventoryC
 
 		if (bl) {
 			this.playEatingAnimation();
-			this.emitGameEvent(GameEvent.EAT, this.method_33575());
+			this.emitGameEvent(GameEvent.EAT, this.getCameraBlockPos());
 		}
 
 		return bl;

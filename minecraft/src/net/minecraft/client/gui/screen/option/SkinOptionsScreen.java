@@ -24,7 +24,7 @@ public class SkinOptionsScreen extends GameOptionsScreen {
 
 		for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
 			this.addButton(
-				CyclingButtonWidget.method_32613(this.gameOptions.isPlayerModelPartEnabled(playerModelPart))
+				CyclingButtonWidget.onOffBuilder(this.gameOptions.isPlayerModelPartEnabled(playerModelPart))
 					.build(
 						this.width / 2 - 155 + i % 2 * 160,
 						this.height / 6 + 24 * (i >> 1),

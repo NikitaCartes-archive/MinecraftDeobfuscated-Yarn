@@ -97,7 +97,7 @@ public class RealmsMainScreen extends RealmsScreen {
 	private static int lastScrollYPosition = -1;
 	private static volatile boolean hasParentalConsent;
 	private static volatile boolean checkedParentalConsent;
-	private static volatile boolean checkedClientCompatability;
+	private static volatile boolean checkedClientCompatibility;
 	private static Screen realmsGenericErrorScreen;
 	private static boolean regionsPinged;
 	private final RateLimiter rateLimiter;
@@ -193,11 +193,11 @@ public class RealmsMainScreen extends RealmsScreen {
 			this.client.openScreen(realmsGenericErrorScreen);
 		} else {
 			this.connectLock = new ReentrantLock();
-			if (checkedClientCompatability && !hasParentalConsent()) {
+			if (checkedClientCompatibility && !hasParentalConsent()) {
 				this.checkParentalConsent();
 			}
 
-			this.checkClientCompatability();
+			this.checkClientCompatibility();
 			this.checkUnreadNews();
 			if (!this.dontSetConnectedToRealms) {
 				this.client.setConnectedToRealms(false);
@@ -473,9 +473,9 @@ public class RealmsMainScreen extends RealmsScreen {
 		}
 	}
 
-	private void checkClientCompatability() {
-		if (!checkedClientCompatability) {
-			checkedClientCompatability = true;
+	private void checkClientCompatibility() {
+		if (!checkedClientCompatibility) {
+			checkedClientCompatibility = true;
 			(new Thread("MCO Compatability Checker #1") {
 					public void run() {
 						RealmsClient realmsClient = RealmsClient.createRealmsClient();
@@ -496,7 +496,7 @@ public class RealmsMainScreen extends RealmsScreen {
 
 							RealmsMainScreen.this.checkParentalConsent();
 						} catch (RealmsServiceException var3) {
-							RealmsMainScreen.checkedClientCompatability = false;
+							RealmsMainScreen.checkedClientCompatibility = false;
 							RealmsMainScreen.LOGGER.error("Couldn't connect to realms", (Throwable)var3);
 							if (var3.httpResultCode == 401) {
 								RealmsMainScreen.realmsGenericErrorScreen = new RealmsGenericErrorScreen(

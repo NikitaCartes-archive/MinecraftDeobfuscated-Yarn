@@ -17,12 +17,12 @@ public class UpdateSignC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.text = new String[]{line1, line2, line3, line4};
 	}
 
-	public UpdateSignC2SPacket(PacketByteBuf packetByteBuf) {
-		this.pos = packetByteBuf.readBlockPos();
+	public UpdateSignC2SPacket(PacketByteBuf buf) {
+		this.pos = buf.readBlockPos();
 		this.text = new String[4];
 
 		for (int i = 0; i < 4; i++) {
-			this.text[i] = packetByteBuf.readString(384);
+			this.text[i] = buf.readString(384);
 		}
 	}
 

@@ -20,10 +20,10 @@ public class GameMessageS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.senderUuid = senderUuid;
 	}
 
-	public GameMessageS2CPacket(PacketByteBuf packetByteBuf) {
-		this.message = packetByteBuf.readText();
-		this.location = MessageType.byId(packetByteBuf.readByte());
-		this.senderUuid = packetByteBuf.readUuid();
+	public GameMessageS2CPacket(PacketByteBuf buf) {
+		this.message = buf.readText();
+		this.location = MessageType.byId(buf.readByte());
+		this.senderUuid = buf.readUuid();
 	}
 
 	@Override

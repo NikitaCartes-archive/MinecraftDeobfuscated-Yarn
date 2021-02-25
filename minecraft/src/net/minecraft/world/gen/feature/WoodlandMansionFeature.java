@@ -44,7 +44,7 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 		DefaultFeatureConfig defaultFeatureConfig,
 		HeightLimitView heightLimitView
 	) {
-		for (Biome biome2 : biomeSource.getBiomesInArea(chunkPos.method_33939(9), chunkGenerator.getSeaLevel(), chunkPos.method_33941(9), 32)) {
+		for (Biome biome2 : biomeSource.getBiomesInArea(chunkPos.getOffsetX(9), chunkGenerator.getSeaLevel(), chunkPos.getOffsetZ(9), 32)) {
 			if (!biome2.getGenerationSettings().hasStructureFeature(this)) {
 				return false;
 			}
@@ -84,15 +84,15 @@ public class WoodlandMansionFeature extends StructureFeature<DefaultFeatureConfi
 				j = -5;
 			}
 
-			int k = chunkPos.method_33939(7);
-			int l = chunkPos.method_33941(7);
+			int k = chunkPos.getOffsetX(7);
+			int l = chunkPos.getOffsetZ(7);
 			int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 			int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 			int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 			int p = chunkGenerator.getHeightInGround(k + i, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
 			int q = Math.min(Math.min(m, n), Math.min(o, p));
 			if (q >= 60) {
-				BlockPos blockPos = new BlockPos(chunkPos.method_33939(8), q + 1, chunkPos.method_33941(8));
+				BlockPos blockPos = new BlockPos(chunkPos.getOffsetX(8), q + 1, chunkPos.getOffsetZ(8));
 				List<WoodlandMansionGenerator.Piece> list = Lists.<WoodlandMansionGenerator.Piece>newLinkedList();
 				WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
 				this.children.addAll(list);

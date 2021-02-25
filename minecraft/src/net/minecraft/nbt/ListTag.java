@@ -11,8 +11,8 @@ import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class ListTag extends AbstractListTag<Tag> {
 	public static final TagReader<ListTag> READER = new TagReader<ListTag>() {
-		public ListTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-			positionTracker.add(296L);
+		public ListTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.add(296L);
 			if (i > 512) {
 				throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
 			} else {
@@ -21,12 +21,12 @@ public class ListTag extends AbstractListTag<Tag> {
 				if (b == 0 && j > 0) {
 					throw new RuntimeException("Missing type on ListTag");
 				} else {
-					positionTracker.add(32L * (long)j);
+					nbtTagSizeTracker.add(32L * (long)j);
 					TagReader<?> tagReader = TagReaders.of(b);
 					List<Tag> list = Lists.<Tag>newArrayListWithCapacity(j);
 
 					for (int k = 0; k < j; k++) {
-						list.add(tagReader.read(dataInput, i + 1, positionTracker));
+						list.add(tagReader.read(dataInput, i + 1, nbtTagSizeTracker));
 					}
 
 					return new ListTag(list, b);

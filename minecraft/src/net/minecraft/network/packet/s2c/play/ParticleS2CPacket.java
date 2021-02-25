@@ -37,22 +37,22 @@ public class ParticleS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.count = count;
 	}
 
-	public ParticleS2CPacket(PacketByteBuf packetByteBuf) {
-		ParticleType<?> particleType = Registry.PARTICLE_TYPE.get(packetByteBuf.readInt());
+	public ParticleS2CPacket(PacketByteBuf buf) {
+		ParticleType<?> particleType = Registry.PARTICLE_TYPE.get(buf.readInt());
 		if (particleType == null) {
 			particleType = ParticleTypes.BARRIER;
 		}
 
-		this.longDistance = packetByteBuf.readBoolean();
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.offsetX = packetByteBuf.readFloat();
-		this.offsetY = packetByteBuf.readFloat();
-		this.offsetZ = packetByteBuf.readFloat();
-		this.speed = packetByteBuf.readFloat();
-		this.count = packetByteBuf.readInt();
-		this.parameters = this.readParticleParameters(packetByteBuf, (ParticleType<ParticleEffect>)particleType);
+		this.longDistance = buf.readBoolean();
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.offsetX = buf.readFloat();
+		this.offsetY = buf.readFloat();
+		this.offsetZ = buf.readFloat();
+		this.speed = buf.readFloat();
+		this.count = buf.readInt();
+		this.parameters = this.readParticleParameters(buf, (ParticleType<ParticleEffect>)particleType);
 	}
 
 	private <T extends ParticleEffect> T readParticleParameters(PacketByteBuf buf, ParticleType<T> type) {

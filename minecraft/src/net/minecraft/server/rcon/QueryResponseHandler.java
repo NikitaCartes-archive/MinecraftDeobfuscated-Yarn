@@ -34,11 +34,11 @@ public class QueryResponseHandler extends RconBase {
 	private final Map<SocketAddress, QueryResponseHandler.Query> queries;
 	private final DataStreamHelper data;
 	private long lastResponseTime;
-	private final DedicatedServer field_23964;
+	private final DedicatedServer server;
 
 	private QueryResponseHandler(DedicatedServer server, int queryPort) {
 		super("Query Listener");
-		this.field_23964 = server;
+		this.server = server;
 		this.queryPort = queryPort;
 		this.hostname = server.getHostname();
 		this.port = server.getPort();
@@ -102,7 +102,7 @@ public class QueryResponseHandler extends RconBase {
 						dataStreamHelper.writeBytes(this.motd);
 						dataStreamHelper.writeBytes("SMP");
 						dataStreamHelper.writeBytes(this.levelName);
-						dataStreamHelper.writeBytes(Integer.toString(this.field_23964.getCurrentPlayerCount()));
+						dataStreamHelper.writeBytes(Integer.toString(this.server.getCurrentPlayerCount()));
 						dataStreamHelper.writeBytes(Integer.toString(this.maxPlayerCount));
 						dataStreamHelper.writeShort((short)this.port);
 						dataStreamHelper.writeBytes(this.ip);
@@ -147,13 +147,13 @@ public class QueryResponseHandler extends RconBase {
 			this.data.writeBytes("game_id");
 			this.data.writeBytes("MINECRAFT");
 			this.data.writeBytes("version");
-			this.data.writeBytes(this.field_23964.getVersion());
+			this.data.writeBytes(this.server.getVersion());
 			this.data.writeBytes("plugins");
-			this.data.writeBytes(this.field_23964.getPlugins());
+			this.data.writeBytes(this.server.getPlugins());
 			this.data.writeBytes("map");
 			this.data.writeBytes(this.levelName);
 			this.data.writeBytes("numplayers");
-			this.data.writeBytes("" + this.field_23964.getCurrentPlayerCount());
+			this.data.writeBytes("" + this.server.getCurrentPlayerCount());
 			this.data.writeBytes("maxplayers");
 			this.data.writeBytes("" + this.maxPlayerCount);
 			this.data.writeBytes("hostport");
@@ -164,7 +164,7 @@ public class QueryResponseHandler extends RconBase {
 			this.data.write(1);
 			this.data.writeBytes("player_");
 			this.data.write(0);
-			String[] strings = this.field_23964.getPlayerNames();
+			String[] strings = this.server.getPlayerNames();
 
 			for (String string : strings) {
 				this.data.writeBytes(string);

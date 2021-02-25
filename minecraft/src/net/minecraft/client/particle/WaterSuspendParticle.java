@@ -11,8 +11,8 @@ import net.minecraft.util.math.MathHelper;
 
 @Environment(EnvType.CLIENT)
 public class WaterSuspendParticle extends SpriteBillboardParticle {
-	private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double d, double e, double f) {
-		super(world, d, e - 0.125, f);
+	private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z) {
+		super(world, x, y - 0.125, z);
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
 		this.setSprite(spriteProvider);
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.2F);
@@ -22,8 +22,10 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 		this.gravityStrength = 0.0F;
 	}
 
-	private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double d, double e, double f, double g, double h, double i) {
-		super(world, d, e - 0.125, f, g, h, i);
+	private WaterSuspendParticle(
+		ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z, double velocityX, double velocityY, double velocityZ
+	) {
+		super(world, x, y - 0.125, z, velocityX, velocityY, velocityZ);
 		this.setBoundingBoxSpacing(0.01F, 0.01F);
 		this.setSprite(spriteProvider);
 		this.scale = this.scale * (this.random.nextFloat() * 0.6F + 0.6F);
@@ -58,6 +60,28 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 	}
 
 	@Environment(EnvType.CLIENT)
+	public static class SporeBlossomAirFactory implements ParticleFactory<DefaultParticleType> {
+		private final SpriteProvider spriteProvider;
+
+		public SporeBlossomAirFactory(SpriteProvider spriteProvider) {
+			this.spriteProvider = spriteProvider;
+		}
+
+		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
+			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, -0.8F, 0.0) {
+				@Override
+				public Optional<class_5878> method_34019() {
+					return Optional.of(class_5878.field_29077);
+				}
+			};
+			waterSuspendParticle.maxAge = MathHelper.nextBetween(clientWorld.random, 500, 1000);
+			waterSuspendParticle.gravityStrength = 0.01F;
+			waterSuspendParticle.setColor(0.32F, 0.5F, 0.22F);
+			return waterSuspendParticle;
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
 	public static class UnderwaterFactory implements ParticleFactory<DefaultParticleType> {
 		private final SpriteProvider spriteProvider;
 
@@ -85,28 +109,6 @@ public class WaterSuspendParticle extends SpriteBillboardParticle {
 			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, j, 0.0);
 			waterSuspendParticle.setColor(0.1F, 0.1F, 0.3F);
 			waterSuspendParticle.setBoundingBoxSpacing(0.001F, 0.001F);
-			return waterSuspendParticle;
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class class_5877 implements ParticleFactory<DefaultParticleType> {
-		private final SpriteProvider field_29073;
-
-		public class_5877(SpriteProvider spriteProvider) {
-			this.field_29073 = spriteProvider;
-		}
-
-		public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-			WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.field_29073, d, e, f, 0.0, -0.8F, 0.0) {
-				@Override
-				public Optional<class_5878> method_34019() {
-					return Optional.of(class_5878.field_29077);
-				}
-			};
-			waterSuspendParticle.maxAge = MathHelper.nextBetween(clientWorld.random, 500, 1000);
-			waterSuspendParticle.gravityStrength = 0.01F;
-			waterSuspendParticle.setColor(0.32F, 0.5F, 0.22F);
 			return waterSuspendParticle;
 		}
 	}

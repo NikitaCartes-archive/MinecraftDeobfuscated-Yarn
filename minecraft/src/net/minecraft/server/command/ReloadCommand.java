@@ -11,11 +11,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class ReloadCommand {
-	private static final Logger field_25343 = LogManager.getLogger();
+	private static final Logger LOGGER = LogManager.getLogger();
 
 	public static void method_29480(Collection<String> collection, ServerCommandSource serverCommandSource) {
 		serverCommandSource.getMinecraftServer().reloadResources(collection).exceptionally(throwable -> {
-			field_25343.warn("Failed to execute reload", throwable);
+			LOGGER.warn("Failed to execute reload", throwable);
 			serverCommandSource.sendError(new TranslatableText("commands.reload.failure"));
 			return null;
 		});

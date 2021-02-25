@@ -21,10 +21,10 @@ public class ResourcePackSendS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	public ResourcePackSendS2CPacket(PacketByteBuf packetByteBuf) {
-		this.url = packetByteBuf.readString();
-		this.hash = packetByteBuf.readString(40);
-		this.required = packetByteBuf.readBoolean();
+	public ResourcePackSendS2CPacket(PacketByteBuf buf) {
+		this.url = buf.readString();
+		this.hash = buf.readString(40);
+		this.required = buf.readBoolean();
 	}
 
 	@Override

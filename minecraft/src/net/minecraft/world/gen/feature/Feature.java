@@ -3,7 +3,6 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import net.minecraft.class_5875;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -25,7 +24,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"no_bonemeal_flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC)
 	);
 	public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig.CODEC));
-	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig.CODEC));
+	public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = register("block_pile", new BlockPileFeature(BlockPileFeatureConfig.CODEC));
 	public static final Feature<SpringFeatureConfig> SPRING_FEATURE = register("spring_feature", new SpringFeature(SpringFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<EmeraldOreFeatureConfig> EMERALD_ORE = register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig.CODEC));
@@ -81,7 +80,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<FillLayerFeatureConfig> FILL_LAYER = register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
 	public static final BonusChestFeature BONUS_CHEST = register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> BASALT_PILLAR = register("basalt_pillar", new BasaltPillarFeature(DefaultFeatureConfig.CODEC));
-	public static final Feature<OreFeatureConfig> SCATTERED_ORE = register("scattered_ore", new class_5875(OreFeatureConfig.CODEC));
+	public static final Feature<OreFeatureConfig> SCATTERED_ORE = register("scattered_ore", new ScatteredOreFeature(OreFeatureConfig.CODEC));
 	public static final Feature<RandomFeatureConfig> RANDOM_SELECTOR = register("random_selector", new RandomFeature(RandomFeatureConfig.CODEC));
 	public static final Feature<SimpleRandomFeatureConfig> SIMPLE_RANDOM_SELECTOR = register(
 		"simple_random_selector", new SimpleRandomFeature(SimpleRandomFeatureConfig.CODEC)
@@ -146,12 +145,12 @@ public abstract class Feature<FC extends FeatureConfig> {
 		return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
 	}
 
-	public static boolean method_33982(Function<BlockPos, BlockState> function, BlockPos blockPos, Predicate<BlockState> predicate) {
+	public static boolean testAdjacentStates(Function<BlockPos, BlockState> posToState, BlockPos pos, Predicate<BlockState> predicate) {
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
 		for (Direction direction : Direction.values()) {
-			mutable.set(blockPos, direction);
-			if (predicate.test(function.apply(mutable))) {
+			mutable.set(pos, direction);
+			if (predicate.test(posToState.apply(mutable))) {
 				return true;
 			}
 		}
@@ -159,7 +158,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		return false;
 	}
 
-	public static boolean method_33981(Function<BlockPos, BlockState> function, BlockPos blockPos) {
-		return method_33982(function, blockPos, AbstractBlock.AbstractBlockState::isAir);
+	public static boolean isExposedToAir(Function<BlockPos, BlockState> posToState, BlockPos pos) {
+		return testAdjacentStates(posToState, pos, AbstractBlock.AbstractBlockState::isAir);
 	}
 }

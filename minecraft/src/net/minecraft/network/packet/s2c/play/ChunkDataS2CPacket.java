@@ -54,19 +54,19 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public ChunkDataS2CPacket(PacketByteBuf packetByteBuf) {
-		this.chunkX = packetByteBuf.readInt();
-		this.chunkZ = packetByteBuf.readInt();
-		this.verticalStripBitmask = packetByteBuf.method_33558();
-		this.heightmaps = packetByteBuf.readCompoundTag();
-		this.biomeArray = packetByteBuf.readIntArray(BiomeArray.DEFAULT_LENGTH);
-		int i = packetByteBuf.readVarInt();
+	public ChunkDataS2CPacket(PacketByteBuf buf) {
+		this.chunkX = buf.readInt();
+		this.chunkZ = buf.readInt();
+		this.verticalStripBitmask = buf.readBitSet();
+		this.heightmaps = buf.readCompoundTag();
+		this.biomeArray = buf.readIntArray(BiomeArray.DEFAULT_LENGTH);
+		int i = buf.readVarInt();
 		if (i > 2097152) {
 			throw new RuntimeException("Chunk Packet trying to allocate too much memory on read.");
 		} else {
 			this.data = new byte[i];
-			packetByteBuf.readBytes(this.data);
-			this.blockEntities = packetByteBuf.method_34066(PacketByteBuf::readCompoundTag);
+			buf.readBytes(this.data);
+			this.blockEntities = buf.readList(PacketByteBuf::readCompoundTag);
 		}
 	}
 
@@ -74,12 +74,12 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 	public void write(PacketByteBuf buf) {
 		buf.writeInt(this.chunkX);
 		buf.writeInt(this.chunkZ);
-		buf.method_33557(this.verticalStripBitmask);
+		buf.writeBitSet(this.verticalStripBitmask);
 		buf.writeCompoundTag(this.heightmaps);
 		buf.writeIntArray(this.biomeArray);
 		buf.writeVarInt(this.data.length);
 		buf.writeBytes(this.data);
-		buf.method_34062(this.blockEntities, PacketByteBuf::writeCompoundTag);
+		buf.writeCollection(this.blockEntities, PacketByteBuf::writeCompoundTag);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {
@@ -97,7 +97,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 		return byteBuf;
 	}
 
-	public BitSet writeData(PacketByteBuf packetByteBuf, WorldChunk chunk) {
+	public BitSet writeData(PacketByteBuf buf, WorldChunk chunk) {
 		BitSet bitSet = new BitSet();
 		ChunkSection[] chunkSections = chunk.getSectionArray();
 		int i = 0;
@@ -106,7 +106,7 @@ public class ChunkDataS2CPacket implements Packet<ClientPlayPacketListener> {
 			ChunkSection chunkSection = chunkSections[i];
 			if (chunkSection != WorldChunk.EMPTY_SECTION && !chunkSection.isEmpty()) {
 				bitSet.set(i);
-				chunkSection.toPacket(packetByteBuf);
+				chunkSection.toPacket(buf);
 			}
 		}
 

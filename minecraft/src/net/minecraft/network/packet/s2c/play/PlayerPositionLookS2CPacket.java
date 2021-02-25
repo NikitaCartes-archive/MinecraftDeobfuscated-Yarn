@@ -31,15 +31,15 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 		this.shouldDismount = shouldDismount;
 	}
 
-	public PlayerPositionLookS2CPacket(PacketByteBuf packetByteBuf) {
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.yaw = packetByteBuf.readFloat();
-		this.pitch = packetByteBuf.readFloat();
-		this.flags = PlayerPositionLookS2CPacket.Flag.getFlags(packetByteBuf.readUnsignedByte());
-		this.teleportId = packetByteBuf.readVarInt();
-		this.shouldDismount = packetByteBuf.readBoolean();
+	public PlayerPositionLookS2CPacket(PacketByteBuf buf) {
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.yaw = buf.readFloat();
+		this.pitch = buf.readFloat();
+		this.flags = PlayerPositionLookS2CPacket.Flag.getFlags(buf.readUnsignedByte());
+		this.teleportId = buf.readVarInt();
+		this.shouldDismount = buf.readBoolean();
 	}
 
 	@Override
@@ -115,15 +115,15 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 			return 1 << this.shift;
 		}
 
-		private boolean isSet(int i) {
-			return (i & this.getMask()) == this.getMask();
+		private boolean isSet(int mask) {
+			return (mask & this.getMask()) == this.getMask();
 		}
 
-		public static Set<PlayerPositionLookS2CPacket.Flag> getFlags(int i) {
+		public static Set<PlayerPositionLookS2CPacket.Flag> getFlags(int mask) {
 			Set<PlayerPositionLookS2CPacket.Flag> set = EnumSet.noneOf(PlayerPositionLookS2CPacket.Flag.class);
 
 			for (PlayerPositionLookS2CPacket.Flag flag : values()) {
-				if (flag.isSet(i)) {
+				if (flag.isSet(mask)) {
 					set.add(flag);
 				}
 			}
@@ -131,10 +131,10 @@ public class PlayerPositionLookS2CPacket implements Packet<ClientPlayPacketListe
 			return set;
 		}
 
-		public static int getBitfield(Set<PlayerPositionLookS2CPacket.Flag> set) {
+		public static int getBitfield(Set<PlayerPositionLookS2CPacket.Flag> flags) {
 			int i = 0;
 
-			for (PlayerPositionLookS2CPacket.Flag flag : set) {
+			for (PlayerPositionLookS2CPacket.Flag flag : flags) {
 				i |= flag.getMask();
 			}
 

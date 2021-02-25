@@ -38,7 +38,7 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 	protected void init() {
 		super.init();
 		this.modeButton = this.addButton(
-			CyclingButtonWidget.<CommandBlockBlockEntity.Type>method_32606(type -> {
+			CyclingButtonWidget.<CommandBlockBlockEntity.Type>builder(type -> {
 					switch (type) {
 						case SEQUENCE:
 							return new TranslatableText("advMode.mode.sequence");
@@ -49,21 +49,21 @@ public class CommandBlockScreen extends AbstractCommandBlockScreen {
 							return new TranslatableText("advMode.mode.redstone");
 					}
 				})
-				.method_32624(CommandBlockBlockEntity.Type.values())
-				.method_32616()
-				.value(this.mode)
+				.values(CommandBlockBlockEntity.Type.values())
+				.omitKeyText()
+				.initially(this.mode)
 				.build(this.width / 2 - 50 - 100 - 4, 165, 100, 20, new TranslatableText("advMode.mode"), (cyclingButtonWidget, type) -> this.mode = type)
 		);
 		this.conditionalModeButton = this.addButton(
-			CyclingButtonWidget.method_32607(new TranslatableText("advMode.mode.conditional"), new TranslatableText("advMode.mode.unconditional"))
-				.method_32616()
-				.value(this.conditional)
+			CyclingButtonWidget.onOffBuilder(new TranslatableText("advMode.mode.conditional"), new TranslatableText("advMode.mode.unconditional"))
+				.omitKeyText()
+				.initially(this.conditional)
 				.build(this.width / 2 - 50, 165, 100, 20, new TranslatableText("advMode.type"), (cyclingButtonWidget, boolean_) -> this.conditional = boolean_)
 		);
 		this.redstoneTriggerButton = this.addButton(
-			CyclingButtonWidget.method_32607(new TranslatableText("advMode.mode.autoexec.bat"), new TranslatableText("advMode.mode.redstoneTriggered"))
-				.method_32616()
-				.value(this.autoActivate)
+			CyclingButtonWidget.onOffBuilder(new TranslatableText("advMode.mode.autoexec.bat"), new TranslatableText("advMode.mode.redstoneTriggered"))
+				.omitKeyText()
+				.initially(this.autoActivate)
 				.build(this.width / 2 + 50 + 4, 165, 100, 20, new TranslatableText("advMode.triggering"), (cyclingButtonWidget, boolean_) -> this.autoActivate = boolean_)
 		);
 		this.setButtonsActive(false);

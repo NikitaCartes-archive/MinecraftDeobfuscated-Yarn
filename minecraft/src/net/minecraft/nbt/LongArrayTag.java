@@ -11,10 +11,10 @@ import org.apache.commons.lang3.ArrayUtils;
 
 public class LongArrayTag extends AbstractListTag<LongTag> {
 	public static final TagReader<LongArrayTag> READER = new TagReader<LongArrayTag>() {
-		public LongArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-			positionTracker.add(192L);
+		public LongArrayTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.add(192L);
 			int j = dataInput.readInt();
-			positionTracker.add(64L * (long)j);
+			nbtTagSizeTracker.add(64L * (long)j);
 			long[] ls = new long[j];
 
 			for (int k = 0; k < j; k++) {

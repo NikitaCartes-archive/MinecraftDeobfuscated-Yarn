@@ -55,7 +55,7 @@ public class NbtIo {
 
 		CompoundTag var3;
 		try {
-			var3 = read(dataInputStream, PositionTracker.DEFAULT);
+			var3 = read(dataInputStream, NbtTagSizeTracker.EMPTY);
 		} catch (Throwable var12) {
 			var2 = var12;
 			throw var12;
@@ -184,7 +184,7 @@ public class NbtIo {
 				Throwable var4 = null;
 
 				try {
-					var5 = read(dataInputStream, PositionTracker.DEFAULT);
+					var5 = read(dataInputStream, NbtTagSizeTracker.EMPTY);
 				} catch (Throwable var28) {
 					var4 = var28;
 					throw var28;
@@ -223,10 +223,10 @@ public class NbtIo {
 	}
 
 	public static CompoundTag read(DataInput input) throws IOException {
-		return read(input, PositionTracker.DEFAULT);
+		return read(input, NbtTagSizeTracker.EMPTY);
 	}
 
-	public static CompoundTag read(DataInput input, PositionTracker tracker) throws IOException {
+	public static CompoundTag read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
 		Tag tag = read(input, 0, tracker);
 		if (tag instanceof CompoundTag) {
 			return (CompoundTag)tag;
@@ -247,7 +247,7 @@ public class NbtIo {
 		}
 	}
 
-	private static Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+	private static Tag read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
 		byte b = input.readByte();
 		if (b == 0) {
 			return EndTag.INSTANCE;

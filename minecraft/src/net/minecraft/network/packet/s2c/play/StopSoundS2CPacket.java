@@ -20,16 +20,16 @@ public class StopSoundS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.category = category;
 	}
 
-	public StopSoundS2CPacket(PacketByteBuf packetByteBuf) {
-		int i = packetByteBuf.readByte();
+	public StopSoundS2CPacket(PacketByteBuf buf) {
+		int i = buf.readByte();
 		if ((i & 1) > 0) {
-			this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
+			this.category = buf.readEnumConstant(SoundCategory.class);
 		} else {
 			this.category = null;
 		}
 
 		if ((i & 2) > 0) {
-			this.soundId = packetByteBuf.readIdentifier();
+			this.soundId = buf.readIdentifier();
 		} else {
 			this.soundId = null;
 		}

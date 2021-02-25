@@ -7,8 +7,8 @@ import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class IntTag extends AbstractNumberTag {
 	public static final TagReader<IntTag> READER = new TagReader<IntTag>() {
-		public IntTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-			positionTracker.add(96L);
+		public IntTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.add(96L);
 			return IntTag.of(dataInput.readInt());
 		}
 

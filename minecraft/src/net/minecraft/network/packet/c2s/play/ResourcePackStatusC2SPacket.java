@@ -11,8 +11,8 @@ public class ResourcePackStatusC2SPacket implements Packet<ServerPlayPacketListe
 		this.status = status;
 	}
 
-	public ResourcePackStatusC2SPacket(PacketByteBuf packetByteBuf) {
-		this.status = packetByteBuf.readEnumConstant(ResourcePackStatusC2SPacket.Status.class);
+	public ResourcePackStatusC2SPacket(PacketByteBuf buf) {
+		this.status = buf.readEnumConstant(ResourcePackStatusC2SPacket.Status.class);
 	}
 
 	@Override

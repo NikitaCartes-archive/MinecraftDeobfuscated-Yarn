@@ -11,21 +11,21 @@ import net.minecraft.network.listener.ClientPlayPacketListener;
 public class EntitiesDestroyS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final IntList entityIds;
 
-	public EntitiesDestroyS2CPacket(IntList intList) {
-		this.entityIds = new IntArrayList(intList);
+	public EntitiesDestroyS2CPacket(IntList entityIds) {
+		this.entityIds = new IntArrayList(entityIds);
 	}
 
 	public EntitiesDestroyS2CPacket(int... entityIds) {
 		this.entityIds = new IntArrayList(entityIds);
 	}
 
-	public EntitiesDestroyS2CPacket(PacketByteBuf packetByteBuf) {
-		this.entityIds = packetByteBuf.method_34059();
+	public EntitiesDestroyS2CPacket(PacketByteBuf buf) {
+		this.entityIds = buf.readIntList();
 	}
 
 	@Override
 	public void write(PacketByteBuf buf) {
-		buf.method_34060(this.entityIds);
+		buf.writeIntList(this.entityIds);
 	}
 
 	public void apply(ClientPlayPacketListener clientPlayPacketListener) {

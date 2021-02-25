@@ -174,10 +174,10 @@ public class CreateWorldScreen extends Screen {
 		int i = this.width / 2 - 155;
 		int j = this.width / 2 + 5;
 		this.gameModeSwitchButton = this.addButton(
-			CyclingButtonWidget.<CreateWorldScreen.Mode>method_32606(CreateWorldScreen.Mode::asText)
-				.method_32624(CreateWorldScreen.Mode.SURVIVAL, CreateWorldScreen.Mode.HARDCORE, CreateWorldScreen.Mode.CREATIVE)
-				.value(this.currentMode)
-				.method_32623(
+			CyclingButtonWidget.<CreateWorldScreen.Mode>builder(CreateWorldScreen.Mode::asText)
+				.values(CreateWorldScreen.Mode.SURVIVAL, CreateWorldScreen.Mode.HARDCORE, CreateWorldScreen.Mode.CREATIVE)
+				.initially(this.currentMode)
+				.narration(
 					cyclingButtonWidget -> AbstractButtonWidget.getNarrationMessage(cyclingButtonWidget.getMessage())
 							.append(". ")
 							.append(this.firstGameModeDescriptionLine)
@@ -187,14 +187,16 @@ public class CreateWorldScreen extends Screen {
 				.build(i, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, mode) -> this.tweakDefaultsTo(mode))
 		);
 		this.difficultyButton = this.addButton(
-			CyclingButtonWidget.<Difficulty>method_32606(Difficulty::getTranslatableName)
-				.method_32624(Difficulty.values())
-				.value(this.getDifficulty())
+			CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
+				.values(Difficulty.values())
+				.initially(this.getDifficulty())
 				.build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> this.currentDifficulty = difficulty)
 		);
 		this.enableCheatsButton = this.addButton(
-			CyclingButtonWidget.method_32613(this.cheatsEnabled && !this.hardcore)
-				.method_32623(cyclingButtonWidget -> cyclingButtonWidget.method_32611().append(". ").append(new TranslatableText("selectWorld.allowCommands.info")))
+			CyclingButtonWidget.onOffBuilder(this.cheatsEnabled && !this.hardcore)
+				.narration(
+					cyclingButtonWidget -> cyclingButtonWidget.getGenericNarrationMessage().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"))
+				)
 				.build(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), (cyclingButtonWidget, boolean_) -> {
 					this.tweakedCheats = true;
 					this.cheatsEnabled = boolean_;

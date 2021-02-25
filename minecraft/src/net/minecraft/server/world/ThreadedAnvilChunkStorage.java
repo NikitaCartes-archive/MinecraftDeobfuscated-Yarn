@@ -256,7 +256,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 			}
 		}
 
-		CompletableFuture<List<Either<Chunk, ChunkHolder.Unloaded>>> completableFuture2 = Util.method_33791(list);
+		CompletableFuture<List<Either<Chunk, ChunkHolder.Unloaded>>> completableFuture2 = Util.combineSafe(list);
 		return completableFuture2.thenApply(listx -> {
 			List<Chunk> list2 = Lists.<Chunk>newArrayList();
 			int lx = 0;
@@ -549,8 +549,8 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 		this.mainThreadExecutor
 			.send(
 				Util.debugRunnable(
-					() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), pos),
-					() -> "release light ticket " + pos
+					(Runnable)(() -> this.ticketManager.removeTicketWithLevel(ChunkTicketType.LIGHT, pos, 33 + ChunkStatus.getDistanceFromFull(ChunkStatus.FEATURES), pos)),
+					(Supplier<String>)(() -> "release light ticket " + pos)
 				)
 			);
 	}
@@ -804,7 +804,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 	void handlePlayerAddedOrRemoved(ServerPlayerEntity player, boolean added) {
 		boolean bl = this.doesNotGenerateChunks(player);
-		boolean bl2 = this.playerChunkWatchingManager.method_21715(player);
+		boolean bl2 = this.playerChunkWatchingManager.isWatchInactive(player);
 		int i = ChunkSectionPos.getSectionCoord(player.getBlockX());
 		int j = ChunkSectionPos.getSectionCoord(player.getBlockZ());
 		if (added) {

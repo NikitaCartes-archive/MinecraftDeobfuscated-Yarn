@@ -52,10 +52,10 @@ public class DamageTracker {
 		}
 	}
 
-	public void onDamage(DamageSource damageSource, float originalHealth, float f) {
+	public void onDamage(DamageSource damageSource, float originalHealth, float damage) {
 		this.update();
 		this.setFallDeathSuffix();
-		DamageRecord damageRecord = new DamageRecord(damageSource, this.entity.age, originalHealth, f, this.fallDeathSuffix, this.entity.fallDistance);
+		DamageRecord damageRecord = new DamageRecord(damageSource, this.entity.age, originalHealth, damage, this.fallDeathSuffix, this.entity.fallDistance);
 		this.recentDamage.add(damageRecord);
 		this.ageOnLastDamage = this.entity.age;
 		this.hasDamage = true;
@@ -194,7 +194,11 @@ public class DamageTracker {
 		return this.entity;
 	}
 
-	public int method_33937() {
+	/**
+	 * Gets the Entity ID of the biggest attacker
+	 * @see #getBiggestAttacker() for getting the entity itself
+	 */
+	public int getBiggestAttackerId() {
 		LivingEntity livingEntity = this.getBiggestAttacker();
 		return livingEntity == null ? -1 : livingEntity.getId();
 	}

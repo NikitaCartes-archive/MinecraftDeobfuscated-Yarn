@@ -16,9 +16,9 @@ public class DifficultyS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.difficultyLocked = difficultyLocked;
 	}
 
-	public DifficultyS2CPacket(PacketByteBuf packetByteBuf) {
-		this.difficulty = Difficulty.byOrdinal(packetByteBuf.readUnsignedByte());
-		this.difficultyLocked = packetByteBuf.readBoolean();
+	public DifficultyS2CPacket(PacketByteBuf buf) {
+		this.difficulty = Difficulty.byOrdinal(buf.readUnsignedByte());
+		this.difficultyLocked = buf.readBoolean();
 	}
 
 	@Override

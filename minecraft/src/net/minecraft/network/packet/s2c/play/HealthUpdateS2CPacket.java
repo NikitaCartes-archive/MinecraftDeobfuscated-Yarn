@@ -17,10 +17,10 @@ public class HealthUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.saturation = saturation;
 	}
 
-	public HealthUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.health = packetByteBuf.readFloat();
-		this.food = packetByteBuf.readVarInt();
-		this.saturation = packetByteBuf.readFloat();
+	public HealthUpdateS2CPacket(PacketByteBuf buf) {
+		this.health = buf.readFloat();
+		this.food = buf.readVarInt();
+		this.saturation = buf.readFloat();
 	}
 
 	@Override

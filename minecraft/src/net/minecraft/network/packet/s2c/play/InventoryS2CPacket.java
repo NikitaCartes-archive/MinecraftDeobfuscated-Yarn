@@ -29,13 +29,13 @@ public class InventoryS2CPacket implements Packet<ClientPlayPacketListener> {
 		}
 	}
 
-	public InventoryS2CPacket(PacketByteBuf packetByteBuf) {
-		this.syncId = packetByteBuf.readUnsignedByte();
-		int i = packetByteBuf.readShort();
+	public InventoryS2CPacket(PacketByteBuf buf) {
+		this.syncId = buf.readUnsignedByte();
+		int i = buf.readShort();
 		this.contents = DefaultedList.<ItemStack>ofSize(i, ItemStack.EMPTY);
 
 		for (int j = 0; j < i; j++) {
-			this.contents.set(j, packetByteBuf.readItemStack());
+			this.contents.set(j, buf.readItemStack());
 		}
 	}
 

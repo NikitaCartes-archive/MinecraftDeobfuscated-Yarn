@@ -17,9 +17,9 @@ public class QueryBlockNbtC2SPacket implements Packet<ServerPlayPacketListener> 
 		this.pos = pos;
 	}
 
-	public QueryBlockNbtC2SPacket(PacketByteBuf packetByteBuf) {
-		this.transactionId = packetByteBuf.readVarInt();
-		this.pos = packetByteBuf.readBlockPos();
+	public QueryBlockNbtC2SPacket(PacketByteBuf buf) {
+		this.transactionId = buf.readVarInt();
+		this.pos = buf.readBlockPos();
 	}
 
 	@Override

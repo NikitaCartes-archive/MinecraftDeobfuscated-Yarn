@@ -15,23 +15,23 @@ public class PlayerAbilitiesS2CPacket implements Packet<ClientPlayPacketListener
 	private final float flySpeed;
 	private final float walkSpeed;
 
-	public PlayerAbilitiesS2CPacket(PlayerAbilities playerAbilities) {
-		this.invulnerable = playerAbilities.invulnerable;
-		this.flying = playerAbilities.flying;
-		this.allowFlying = playerAbilities.allowFlying;
-		this.creativeMode = playerAbilities.creativeMode;
-		this.flySpeed = playerAbilities.getFlySpeed();
-		this.walkSpeed = playerAbilities.getWalkSpeed();
+	public PlayerAbilitiesS2CPacket(PlayerAbilities abilities) {
+		this.invulnerable = abilities.invulnerable;
+		this.flying = abilities.flying;
+		this.allowFlying = abilities.allowFlying;
+		this.creativeMode = abilities.creativeMode;
+		this.flySpeed = abilities.getFlySpeed();
+		this.walkSpeed = abilities.getWalkSpeed();
 	}
 
-	public PlayerAbilitiesS2CPacket(PacketByteBuf packetByteBuf) {
-		byte b = packetByteBuf.readByte();
+	public PlayerAbilitiesS2CPacket(PacketByteBuf buf) {
+		byte b = buf.readByte();
 		this.invulnerable = (b & 1) != 0;
 		this.flying = (b & 2) != 0;
 		this.allowFlying = (b & 4) != 0;
 		this.creativeMode = (b & 8) != 0;
-		this.flySpeed = packetByteBuf.readFloat();
-		this.walkSpeed = packetByteBuf.readFloat();
+		this.flySpeed = buf.readFloat();
+		this.walkSpeed = buf.readFloat();
 	}
 
 	@Override

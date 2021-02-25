@@ -13,7 +13,6 @@ import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5873;
 import net.minecraft.entity.SpawnGroup;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
@@ -44,6 +43,7 @@ import net.minecraft.world.chunk.ProtoChunk;
 import net.minecraft.world.gen.ChunkRandom;
 import net.minecraft.world.gen.GenerationStep;
 import net.minecraft.world.gen.StructureAccessor;
+import net.minecraft.world.gen.carver.CarverContext;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeatures;
@@ -145,7 +145,7 @@ public abstract class ChunkGenerator {
 		GenerationSettings generationSettings = this.populationSource
 			.getBiomeForNoiseGen(BiomeCoords.fromBlock(chunkPos.getStartX()), 0, BiomeCoords.fromBlock(chunkPos.getStartZ()))
 			.getGenerationSettings();
-		class_5873 lv = new class_5873(this);
+		CarverContext carverContext = new CarverContext(this);
 		BitSet bitSet = ((ProtoChunk)chunk).getOrCreateCarvingMask(carver);
 
 		for (int j = -8; j <= 8; j++) {
@@ -159,7 +159,7 @@ public abstract class ChunkGenerator {
 					ConfiguredCarver<?> configuredCarver = (ConfiguredCarver<?>)((Supplier)listIterator.next()).get();
 					chunkRandom.setCarverSeed(seed + (long)l, chunkPos2.x, chunkPos2.z);
 					if (configuredCarver.shouldCarve(chunkRandom)) {
-						configuredCarver.carve(lv, chunk, biomeAccess::getBiome, chunkRandom, this.getSeaLevel(), chunkPos2, bitSet);
+						configuredCarver.carve(carverContext, chunk, biomeAccess::getBiome, chunkRandom, this.getSeaLevel(), chunkPos2, bitSet);
 					}
 				}
 			}

@@ -67,24 +67,22 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.flatWorld = flatWorld;
 	}
 
-	public GameJoinS2CPacket(PacketByteBuf packetByteBuf) {
-		this.playerEntityId = packetByteBuf.readInt();
-		this.hardcore = packetByteBuf.readBoolean();
-		this.gameMode = GameMode.byId(packetByteBuf.readByte());
-		this.previousGameMode = GameMode.getOrNull(packetByteBuf.readByte());
-		this.dimensionIds = packetByteBuf.method_34068(
-			Sets::newHashSetWithExpectedSize, packetByteBufx -> RegistryKey.of(Registry.DIMENSION, packetByteBufx.readIdentifier())
-		);
-		this.registryManager = packetByteBuf.decode(DynamicRegistryManager.Impl.CODEC);
-		this.dimensionType = (DimensionType)packetByteBuf.decode(DimensionType.REGISTRY_CODEC).get();
-		this.dimensionId = RegistryKey.of(Registry.DIMENSION, packetByteBuf.readIdentifier());
-		this.sha256Seed = packetByteBuf.readLong();
-		this.maxPlayers = packetByteBuf.readVarInt();
-		this.viewDistance = packetByteBuf.readVarInt();
-		this.reducedDebugInfo = packetByteBuf.readBoolean();
-		this.showDeathScreen = packetByteBuf.readBoolean();
-		this.debugWorld = packetByteBuf.readBoolean();
-		this.flatWorld = packetByteBuf.readBoolean();
+	public GameJoinS2CPacket(PacketByteBuf buf) {
+		this.playerEntityId = buf.readInt();
+		this.hardcore = buf.readBoolean();
+		this.gameMode = GameMode.byId(buf.readByte());
+		this.previousGameMode = GameMode.getOrNull(buf.readByte());
+		this.dimensionIds = buf.readCollection(Sets::newHashSetWithExpectedSize, packetByteBuf -> RegistryKey.of(Registry.DIMENSION, packetByteBuf.readIdentifier()));
+		this.registryManager = buf.decode(DynamicRegistryManager.Impl.CODEC);
+		this.dimensionType = (DimensionType)buf.decode(DimensionType.REGISTRY_CODEC).get();
+		this.dimensionId = RegistryKey.of(Registry.DIMENSION, buf.readIdentifier());
+		this.sha256Seed = buf.readLong();
+		this.maxPlayers = buf.readVarInt();
+		this.viewDistance = buf.readVarInt();
+		this.reducedDebugInfo = buf.readBoolean();
+		this.showDeathScreen = buf.readBoolean();
+		this.debugWorld = buf.readBoolean();
+		this.flatWorld = buf.readBoolean();
 	}
 
 	@Override
@@ -93,7 +91,7 @@ public class GameJoinS2CPacket implements Packet<ClientPlayPacketListener> {
 		buf.writeBoolean(this.hardcore);
 		buf.writeByte(this.gameMode.getId());
 		buf.writeByte(GameMode.getId(this.previousGameMode));
-		buf.method_34062(this.dimensionIds, (packetByteBuf, registryKey) -> packetByteBuf.writeIdentifier(registryKey.getValue()));
+		buf.writeCollection(this.dimensionIds, (packetByteBuf, registryKey) -> packetByteBuf.writeIdentifier(registryKey.getValue()));
 		buf.encode(DynamicRegistryManager.Impl.CODEC, this.registryManager);
 		buf.encode(DimensionType.REGISTRY_CODEC, () -> this.dimensionType);
 		buf.writeIdentifier(this.dimensionId.getValue());

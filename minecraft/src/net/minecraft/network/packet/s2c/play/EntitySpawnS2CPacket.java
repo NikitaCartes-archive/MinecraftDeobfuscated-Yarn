@@ -69,19 +69,19 @@ public class EntitySpawnS2CPacket implements Packet<ClientPlayPacketListener> {
 		);
 	}
 
-	public EntitySpawnS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.uuid = packetByteBuf.readUuid();
-		this.entityTypeId = Registry.ENTITY_TYPE.get(packetByteBuf.readVarInt());
-		this.x = packetByteBuf.readDouble();
-		this.y = packetByteBuf.readDouble();
-		this.z = packetByteBuf.readDouble();
-		this.pitch = packetByteBuf.readByte();
-		this.yaw = packetByteBuf.readByte();
-		this.entityData = packetByteBuf.readInt();
-		this.velocityX = packetByteBuf.readShort();
-		this.velocityY = packetByteBuf.readShort();
-		this.velocityZ = packetByteBuf.readShort();
+	public EntitySpawnS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.uuid = buf.readUuid();
+		this.entityTypeId = Registry.ENTITY_TYPE.get(buf.readVarInt());
+		this.x = buf.readDouble();
+		this.y = buf.readDouble();
+		this.z = buf.readDouble();
+		this.pitch = buf.readByte();
+		this.yaw = buf.readByte();
+		this.entityData = buf.readInt();
+		this.velocityX = buf.readShort();
+		this.velocityY = buf.readShort();
+		this.velocityZ = buf.readShort();
 	}
 
 	@Override

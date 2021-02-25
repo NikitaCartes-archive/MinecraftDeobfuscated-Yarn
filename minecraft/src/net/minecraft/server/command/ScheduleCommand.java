@@ -79,7 +79,7 @@ public class ScheduleCommand {
 						.then(
 							CommandManager.argument("function", StringArgumentType.greedyString())
 								.suggests(SUGGESTION_PROVIDER)
-								.executes(commandContext -> method_22833(commandContext.getSource(), StringArgumentType.getString(commandContext, "function")))
+								.executes(commandContext -> clearEvent(commandContext.getSource(), StringArgumentType.getString(commandContext, "function")))
 						)
 				)
 		);
@@ -113,12 +113,12 @@ public class ScheduleCommand {
 		}
 	}
 
-	private static int method_22833(ServerCommandSource serverCommandSource, String string) throws CommandSyntaxException {
-		int i = serverCommandSource.getMinecraftServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22593(string);
+	private static int clearEvent(ServerCommandSource source, String eventName) throws CommandSyntaxException {
+		int i = source.getMinecraftServer().getSaveProperties().getMainWorldProperties().getScheduledEvents().method_22593(eventName);
 		if (i == 0) {
-			throw CLEARED_FAILURE_EXCEPTION.create(string);
+			throw CLEARED_FAILURE_EXCEPTION.create(eventName);
 		} else {
-			serverCommandSource.sendFeedback(new TranslatableText("commands.schedule.cleared.success", i, string), true);
+			source.sendFeedback(new TranslatableText("commands.schedule.cleared.success", i, eventName), true);
 			return i;
 		}
 	}

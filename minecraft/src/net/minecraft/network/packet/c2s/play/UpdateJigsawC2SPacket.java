@@ -29,13 +29,13 @@ public class UpdateJigsawC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.jointType = jointType;
 	}
 
-	public UpdateJigsawC2SPacket(PacketByteBuf packetByteBuf) {
-		this.pos = packetByteBuf.readBlockPos();
-		this.attachmentType = packetByteBuf.readIdentifier();
-		this.targetPool = packetByteBuf.readIdentifier();
-		this.pool = packetByteBuf.readIdentifier();
-		this.finalState = packetByteBuf.readString();
-		this.jointType = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(packetByteBuf.readString()).orElse(JigsawBlockEntity.Joint.ALIGNED);
+	public UpdateJigsawC2SPacket(PacketByteBuf buf) {
+		this.pos = buf.readBlockPos();
+		this.attachmentType = buf.readIdentifier();
+		this.targetPool = buf.readIdentifier();
+		this.pool = buf.readIdentifier();
+		this.finalState = buf.readString();
+		this.jointType = (JigsawBlockEntity.Joint)JigsawBlockEntity.Joint.byName(buf.readString()).orElse(JigsawBlockEntity.Joint.ALIGNED);
 	}
 
 	@Override

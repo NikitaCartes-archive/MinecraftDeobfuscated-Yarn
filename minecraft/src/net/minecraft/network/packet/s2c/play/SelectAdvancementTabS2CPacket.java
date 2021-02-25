@@ -20,9 +20,9 @@ public class SelectAdvancementTabS2CPacket implements Packet<ClientPlayPacketLis
 		clientPlayPacketListener.onSelectAdvancementTab(this);
 	}
 
-	public SelectAdvancementTabS2CPacket(PacketByteBuf packetByteBuf) {
-		if (packetByteBuf.readBoolean()) {
-			this.tabId = packetByteBuf.readIdentifier();
+	public SelectAdvancementTabS2CPacket(PacketByteBuf buf) {
+		if (buf.readBoolean()) {
+			this.tabId = buf.readIdentifier();
 		} else {
 			this.tabId = null;
 		}

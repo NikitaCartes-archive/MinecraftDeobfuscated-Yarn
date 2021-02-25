@@ -28,8 +28,8 @@ public class QueryResponseS2CPacket implements Packet<ClientQueryPacketListener>
 		this.metadata = metadata;
 	}
 
-	public QueryResponseS2CPacket(PacketByteBuf packetByteBuf) {
-		this.metadata = JsonHelper.deserialize(GSON, packetByteBuf.readString(32767), ServerMetadata.class);
+	public QueryResponseS2CPacket(PacketByteBuf buf) {
+		this.metadata = JsonHelper.deserialize(GSON, buf.readString(32767), ServerMetadata.class);
 	}
 
 	@Override

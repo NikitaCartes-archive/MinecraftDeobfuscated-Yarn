@@ -13,8 +13,8 @@ public class ChunkLoadDistanceS2CPacket implements Packet<ClientPlayPacketListen
 		this.distance = distance;
 	}
 
-	public ChunkLoadDistanceS2CPacket(PacketByteBuf packetByteBuf) {
-		this.distance = packetByteBuf.readVarInt();
+	public ChunkLoadDistanceS2CPacket(PacketByteBuf buf) {
+		this.distance = buf.readVarInt();
 	}
 
 	@Override

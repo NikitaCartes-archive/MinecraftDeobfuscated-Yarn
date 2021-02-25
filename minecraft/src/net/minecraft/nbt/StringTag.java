@@ -8,10 +8,10 @@ import net.minecraft.nbt.visitor.NbtTagVisitor;
 
 public class StringTag implements Tag {
 	public static final TagReader<StringTag> READER = new TagReader<StringTag>() {
-		public StringTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-			positionTracker.add(288L);
+		public StringTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+			nbtTagSizeTracker.add(288L);
 			String string = dataInput.readUTF();
-			positionTracker.add((long)(16 * string.length()));
+			nbtTagSizeTracker.add((long)(16 * string.length()));
 			return StringTag.of(string);
 		}
 

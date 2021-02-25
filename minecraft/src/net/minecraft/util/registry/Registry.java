@@ -17,7 +17,6 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5864;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntityType;
@@ -70,6 +69,7 @@ import net.minecraft.structure.rule.RuleTestType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.IndexedIterable;
+import net.minecraft.util.math.floatprovider.FloatProviderType;
 import net.minecraft.village.VillagerProfession;
 import net.minecraft.village.VillagerType;
 import net.minecraft.world.World;
@@ -95,7 +95,7 @@ import net.minecraft.world.gen.placer.BlockPlacerType;
 import net.minecraft.world.gen.stateprovider.BlockStateProviderType;
 import net.minecraft.world.gen.surfacebuilder.ConfiguredSurfaceBuilder;
 import net.minecraft.world.gen.surfacebuilder.SurfaceBuilder;
-import net.minecraft.world.gen.tree.TreeDecoratorType;
+import net.minecraft.world.gen.treedecorator.TreeDecoratorType;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 import net.minecraft.world.poi.PointOfInterestType;
 import org.apache.commons.lang3.Validate;
@@ -197,8 +197,8 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static final RegistryKey<Registry<Biome>> BIOME_KEY = createRegistryKey("worldgen/biome");
 	public static final RegistryKey<Registry<SurfaceBuilder<?>>> SURFACE_BUILD_KEY = createRegistryKey("worldgen/surface_builder");
 	public static final Registry<SurfaceBuilder<?>> SURFACE_BUILDER = create(SURFACE_BUILD_KEY, () -> SurfaceBuilder.DEFAULT);
-	public static final RegistryKey<Registry<class_5864<?>>> FLOAT_PROVIDER_TYPE_WORLDGEN = createRegistryKey("worldgen/float_provider_type");
-	public static final Registry<class_5864<?>> field_29076 = create(FLOAT_PROVIDER_TYPE_WORLDGEN, () -> class_5864.field_29008);
+	public static final RegistryKey<Registry<FloatProviderType<?>>> FLOAT_PROVIDER_TYPE_WORLDGEN = createRegistryKey("worldgen/float_provider_type");
+	public static final Registry<FloatProviderType<?>> FLOAT_PROVIDER_TYPE = create(FLOAT_PROVIDER_TYPE_WORLDGEN, () -> FloatProviderType.CONSTANT);
 	public static final RegistryKey<Registry<Carver<?>>> CARVER_KEY = createRegistryKey("worldgen/carver");
 	public static final Registry<Carver<?>> CARVER = create(CARVER_KEY, () -> Carver.CAVE);
 	public static final RegistryKey<Registry<Feature<?>>> FEATURE_KEY = createRegistryKey("worldgen/feature");
@@ -246,7 +246,7 @@ public abstract class Registry<T> implements Codec<T>, Keyable, IndexedIterable<
 	public static <T extends MutableRegistry<?>> void validate(MutableRegistry<T> registry) {
 		registry.forEach(mutableRegistry2 -> {
 			if (mutableRegistry2.getIds().isEmpty()) {
-				Util.method_33559("Registry '" + registry.getId((T)mutableRegistry2) + "' was empty after loading");
+				Util.error("Registry '" + registry.getId((T)mutableRegistry2) + "' was empty after loading");
 			}
 
 			if (mutableRegistry2 instanceof DefaultedRegistry) {

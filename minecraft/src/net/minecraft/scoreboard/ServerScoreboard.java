@@ -5,12 +5,12 @@ import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nullable;
-import net.minecraft.class_5900;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardPlayerUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -78,7 +78,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public boolean addPlayerToTeam(String playerName, Team team) {
 		if (super.addPlayerToTeam(playerName, team)) {
-			this.server.getPlayerManager().sendToAll(class_5900.method_34171(team, playerName, class_5900.class_5901.field_29155));
+			this.server.getPlayerManager().sendToAll(TeamS2CPacket.changePlayerTeam(team, playerName, TeamS2CPacket.Operation.ADD));
 			this.runUpdateListeners();
 			return true;
 		} else {
@@ -89,7 +89,7 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void removePlayerFromTeam(String playerName, Team team) {
 		super.removePlayerFromTeam(playerName, team);
-		this.server.getPlayerManager().sendToAll(class_5900.method_34171(team, playerName, class_5900.class_5901.field_29156));
+		this.server.getPlayerManager().sendToAll(TeamS2CPacket.changePlayerTeam(team, playerName, TeamS2CPacket.Operation.REMOVE));
 		this.runUpdateListeners();
 	}
 
@@ -122,21 +122,21 @@ public class ServerScoreboard extends Scoreboard {
 	@Override
 	public void updateScoreboardTeamAndPlayers(Team team) {
 		super.updateScoreboardTeamAndPlayers(team);
-		this.server.getPlayerManager().sendToAll(class_5900.method_34172(team, true));
+		this.server.getPlayerManager().sendToAll(TeamS2CPacket.updateTeam(team, true));
 		this.runUpdateListeners();
 	}
 
 	@Override
 	public void updateScoreboardTeam(Team team) {
 		super.updateScoreboardTeam(team);
-		this.server.getPlayerManager().sendToAll(class_5900.method_34172(team, false));
+		this.server.getPlayerManager().sendToAll(TeamS2CPacket.updateTeam(team, false));
 		this.runUpdateListeners();
 	}
 
 	@Override
 	public void updateRemovedTeam(Team team) {
 		super.updateRemovedTeam(team);
-		this.server.getPlayerManager().sendToAll(class_5900.method_34170(team));
+		this.server.getPlayerManager().sendToAll(TeamS2CPacket.updateRemovedTeam(team));
 		this.runUpdateListeners();
 	}
 

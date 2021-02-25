@@ -15,27 +15,29 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 	private final boolean chatColors;
 	private final int playerModelBitMask;
 	private final Arm mainArm;
-	private final boolean field_28961;
+	private final boolean filterText;
 
 	@Environment(EnvType.CLIENT)
-	public ClientSettingsC2SPacket(String language, int viewDistance, ChatVisibility chatVisibility, boolean chatColors, int modelBitMask, Arm mainArm, boolean bl) {
+	public ClientSettingsC2SPacket(
+		String language, int viewDistance, ChatVisibility chatVisibility, boolean chatColors, int modelBitMask, Arm mainArm, boolean filterText
+	) {
 		this.language = language;
 		this.viewDistance = viewDistance;
 		this.chatVisibility = chatVisibility;
 		this.chatColors = chatColors;
 		this.playerModelBitMask = modelBitMask;
 		this.mainArm = mainArm;
-		this.field_28961 = bl;
+		this.filterText = filterText;
 	}
 
-	public ClientSettingsC2SPacket(PacketByteBuf packetByteBuf) {
-		this.language = packetByteBuf.readString(16);
-		this.viewDistance = packetByteBuf.readByte();
-		this.chatVisibility = packetByteBuf.readEnumConstant(ChatVisibility.class);
-		this.chatColors = packetByteBuf.readBoolean();
-		this.playerModelBitMask = packetByteBuf.readUnsignedByte();
-		this.mainArm = packetByteBuf.readEnumConstant(Arm.class);
-		this.field_28961 = packetByteBuf.readBoolean();
+	public ClientSettingsC2SPacket(PacketByteBuf buf) {
+		this.language = buf.readString(16);
+		this.viewDistance = buf.readByte();
+		this.chatVisibility = buf.readEnumConstant(ChatVisibility.class);
+		this.chatColors = buf.readBoolean();
+		this.playerModelBitMask = buf.readUnsignedByte();
+		this.mainArm = buf.readEnumConstant(Arm.class);
+		this.filterText = buf.readBoolean();
 	}
 
 	@Override
@@ -46,7 +48,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		buf.writeBoolean(this.chatColors);
 		buf.writeByte(this.playerModelBitMask);
 		buf.writeEnumConstant(this.mainArm);
-		buf.writeBoolean(this.field_28961);
+		buf.writeBoolean(this.filterText);
 	}
 
 	public void apply(ServerPlayPacketListener serverPlayPacketListener) {
@@ -69,7 +71,7 @@ public class ClientSettingsC2SPacket implements Packet<ServerPlayPacketListener>
 		return this.mainArm;
 	}
 
-	public boolean method_33894() {
-		return this.field_28961;
+	public boolean shouldFilterText() {
+		return this.filterText;
 	}
 }

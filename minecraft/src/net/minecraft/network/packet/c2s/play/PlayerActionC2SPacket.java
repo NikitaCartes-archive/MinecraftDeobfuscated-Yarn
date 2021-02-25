@@ -20,10 +20,10 @@ public class PlayerActionC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.direction = direction;
 	}
 
-	public PlayerActionC2SPacket(PacketByteBuf packetByteBuf) {
-		this.action = packetByteBuf.readEnumConstant(PlayerActionC2SPacket.Action.class);
-		this.pos = packetByteBuf.readBlockPos();
-		this.direction = Direction.byId(packetByteBuf.readUnsignedByte());
+	public PlayerActionC2SPacket(PacketByteBuf buf) {
+		this.action = buf.readEnumConstant(PlayerActionC2SPacket.Action.class);
+		this.pos = buf.readBlockPos();
+		this.direction = Direction.byId(buf.readUnsignedByte());
 	}
 
 	@Override

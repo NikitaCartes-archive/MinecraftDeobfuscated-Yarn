@@ -14,8 +14,8 @@ public class DisconnectS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.reason = reason;
 	}
 
-	public DisconnectS2CPacket(PacketByteBuf packetByteBuf) {
-		this.reason = packetByteBuf.readText();
+	public DisconnectS2CPacket(PacketByteBuf buf) {
+		this.reason = buf.readText();
 	}
 
 	@Override

@@ -346,7 +346,7 @@ public class MineshaftGenerator {
 		}
 
 		private void fillSupportBeam(StructureWorldAccess world, BlockBox box, int x, int y, int z) {
-			BlockState blockState = this.mineshaftType.getWood();
+			BlockState blockState = this.mineshaftType.getLog();
 			BlockState blockState2 = this.mineshaftType.getPlanks();
 			if (this.getBlockAt(world, x, y, z, box).isOf(blockState2.getBlock())) {
 				this.method_33879(world, blockState, x, y, z, box);
@@ -715,7 +715,7 @@ public class MineshaftGenerator {
 		protected boolean canAddBlock(WorldView world, int x, int y, int z, BlockBox box) {
 			BlockState blockState = this.getBlockAt(world, x, y, z, box);
 			return !blockState.isOf(this.mineshaftType.getPlanks().getBlock())
-				&& !blockState.isOf(this.mineshaftType.getWood().getBlock())
+				&& !blockState.isOf(this.mineshaftType.getLog().getBlock())
 				&& !blockState.isOf(this.mineshaftType.getFence().getBlock())
 				&& !blockState.isOf(Blocks.CHAIN);
 		}

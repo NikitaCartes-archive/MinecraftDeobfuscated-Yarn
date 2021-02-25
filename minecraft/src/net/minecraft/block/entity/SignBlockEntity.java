@@ -25,16 +25,16 @@ import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 
 public class SignBlockEntity extends BlockEntity {
-	private static final String[] field_28905 = new String[]{"Text1", "Text2", "Text3", "Text4"};
-	private static final String[] field_28906 = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
-	private final Text[] text = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
-	private final Text[] field_28907 = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
+	private static final String[] TEXT_KEYS = new String[]{"Text1", "Text2", "Text3", "Text4"};
+	private static final String[] FILTERED_TEXT_KEYS = new String[]{"FilteredText1", "FilteredText2", "FilteredText3", "FilteredText4"};
+	private final Text[] texts = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
+	private final Text[] filteredTexts = new Text[]{LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY, LiteralText.EMPTY};
 	private boolean editable = true;
 	private PlayerEntity editor;
 	@Nullable
-	private OrderedText[] textBeingEdited;
+	private OrderedText[] textsBeingEdited;
 	@Environment(EnvType.CLIENT)
-	private boolean field_28908;
+	private boolean filterText;
 	private DyeColor textColor = DyeColor.BLACK;
 
 	public SignBlockEntity(BlockPos pos, BlockState state) {
@@ -46,12 +46,12 @@ public class SignBlockEntity extends BlockEntity {
 		super.writeNbt(tag);
 
 		for (int i = 0; i < 4; i++) {
-			Text text = this.text[i];
+			Text text = this.texts[i];
 			String string = Text.Serializer.toJson(text);
-			tag.putString(field_28905[i], string);
-			Text text2 = this.field_28907[i];
+			tag.putString(TEXT_KEYS[i], string);
+			Text text2 = this.filteredTexts[i];
 			if (!text2.equals(text)) {
-				tag.putString(field_28906[i], Text.Serializer.toJson(text2));
+				tag.putString(FILTERED_TEXT_KEYS[i], Text.Serializer.toJson(text2));
 			}
 		}
 
@@ -66,22 +66,22 @@ public class SignBlockEntity extends BlockEntity {
 		this.textColor = DyeColor.byName(tag.getString("Color"), DyeColor.BLACK);
 
 		for (int i = 0; i < 4; i++) {
-			String string = tag.getString(field_28905[i]);
-			Text text = this.method_33828(string);
-			this.text[i] = text;
-			String string2 = field_28906[i];
+			String string = tag.getString(TEXT_KEYS[i]);
+			Text text = this.parseTextFromJson(string);
+			this.texts[i] = text;
+			String string2 = FILTERED_TEXT_KEYS[i];
 			if (tag.contains(string2, 8)) {
-				this.field_28907[i] = this.method_33828(tag.getString(string2));
+				this.filteredTexts[i] = this.parseTextFromJson(tag.getString(string2));
 			} else {
-				this.field_28907[i] = text;
+				this.filteredTexts[i] = text;
 			}
 		}
 
-		this.textBeingEdited = null;
+		this.textsBeingEdited = null;
 	}
 
-	private Text method_33828(String string) {
-		Text text = this.method_33384(string);
+	private Text parseTextFromJson(String json) {
+		Text text = this.unparsedTextFromJson(json);
 		if (this.world instanceof ServerWorld) {
 			try {
 				return Texts.parse(this.getCommandSource(null), text, null, 0);
@@ -92,9 +92,9 @@ public class SignBlockEntity extends BlockEntity {
 		return text;
 	}
 
-	private Text method_33384(String string) {
+	private Text unparsedTextFromJson(String json) {
 		try {
-			Text text = Text.Serializer.fromJson(string);
+			Text text = Text.Serializer.fromJson(json);
 			if (text != null) {
 				return text;
 			}
@@ -105,36 +105,36 @@ public class SignBlockEntity extends BlockEntity {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public Text getTextOnRow(int row, boolean bl) {
-		return this.method_33830(bl)[row];
+	public Text getTextOnRow(int row, boolean filtered) {
+		return this.getTexts(filtered)[row];
 	}
 
 	public void setTextOnRow(int row, Text text) {
-		this.method_33827(row, text, text);
+		this.setTextOnRow(row, text, text);
 	}
 
-	public void method_33827(int i, Text text, Text text2) {
-		this.text[i] = text;
-		this.field_28907[i] = text2;
-		this.textBeingEdited = null;
+	public void setTextOnRow(int row, Text text, Text filteredText) {
+		this.texts[row] = text;
+		this.filteredTexts[row] = filteredText;
+		this.textsBeingEdited = null;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public OrderedText[] method_33829(boolean bl, Function<Text, OrderedText> function) {
-		if (this.textBeingEdited == null || this.field_28908 != bl) {
-			this.field_28908 = bl;
-			this.textBeingEdited = new OrderedText[4];
+	public OrderedText[] updateSign(boolean filterText, Function<Text, OrderedText> textOrderingFunction) {
+		if (this.textsBeingEdited == null || this.filterText != filterText) {
+			this.filterText = filterText;
+			this.textsBeingEdited = new OrderedText[4];
 
 			for (int i = 0; i < 4; i++) {
-				this.textBeingEdited[i] = (OrderedText)function.apply(this.getTextOnRow(i, bl));
+				this.textsBeingEdited[i] = (OrderedText)textOrderingFunction.apply(this.getTextOnRow(i, filterText));
 			}
 		}
 
-		return this.textBeingEdited;
+		return this.textsBeingEdited;
 	}
 
-	private Text[] method_33830(boolean bl) {
-		return bl ? this.field_28907 : this.text;
+	private Text[] getTexts(boolean filtered) {
+		return filtered ? this.filteredTexts : this.texts;
 	}
 
 	@Nullable
@@ -173,12 +173,12 @@ public class SignBlockEntity extends BlockEntity {
 		return this.editor;
 	}
 
-	public boolean onActivate(ServerPlayerEntity serverPlayerEntity) {
-		for (Text text : this.method_33830(serverPlayerEntity.method_33793())) {
+	public boolean onActivate(ServerPlayerEntity player) {
+		for (Text text : this.getTexts(player.shouldFilterText())) {
 			Style style = text.getStyle();
 			ClickEvent clickEvent = style.getClickEvent();
 			if (clickEvent != null && clickEvent.getAction() == ClickEvent.Action.RUN_COMMAND) {
-				serverPlayerEntity.getServer().getCommandManager().execute(this.getCommandSource(serverPlayerEntity), clickEvent.getValue());
+				player.getServer().getCommandManager().execute(this.getCommandSource(player), clickEvent.getValue());
 			}
 		}
 

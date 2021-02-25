@@ -23,9 +23,9 @@ public class WorldTimeUpdateS2CPacket implements Packet<ClientPlayPacketListener
 		this.timeOfDay = l;
 	}
 
-	public WorldTimeUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.time = packetByteBuf.readLong();
-		this.timeOfDay = packetByteBuf.readLong();
+	public WorldTimeUpdateS2CPacket(PacketByteBuf buf) {
+		this.time = buf.readLong();
+		this.timeOfDay = buf.readLong();
 	}
 
 	@Override

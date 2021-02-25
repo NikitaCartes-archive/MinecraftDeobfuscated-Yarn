@@ -42,14 +42,14 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 				break;
 			}
 
-			if (method_27103(structureWorldAccess, blockPos2, deltaFeatureConfig)) {
+			if (canPlace(structureWorldAccess, blockPos2, deltaFeatureConfig)) {
 				if (bl3) {
 					bl = true;
 					this.setBlockState(structureWorldAccess, blockPos2, deltaFeatureConfig.getRim());
 				}
 
 				BlockPos blockPos3 = blockPos2.add(i, 0, j);
-				if (method_27103(structureWorldAccess, blockPos3, deltaFeatureConfig)) {
+				if (canPlace(structureWorldAccess, blockPos3, deltaFeatureConfig)) {
 					bl = true;
 					this.setBlockState(structureWorldAccess, blockPos3, deltaFeatureConfig.getContents());
 				}
@@ -59,15 +59,15 @@ public class DeltaFeature extends Feature<DeltaFeatureConfig> {
 		return bl;
 	}
 
-	private static boolean method_27103(WorldAccess worldAccess, BlockPos blockPos, DeltaFeatureConfig deltaFeatureConfig) {
-		BlockState blockState = worldAccess.getBlockState(blockPos);
-		if (blockState.isOf(deltaFeatureConfig.getContents().getBlock())) {
+	private static boolean canPlace(WorldAccess world, BlockPos pos, DeltaFeatureConfig config) {
+		BlockState blockState = world.getBlockState(pos);
+		if (blockState.isOf(config.getContents().getBlock())) {
 			return false;
 		} else if (BLOCKS.contains(blockState.getBlock())) {
 			return false;
 		} else {
 			for (Direction direction : DIRECTIONS) {
-				boolean bl = worldAccess.getBlockState(blockPos.offset(direction)).isAir();
+				boolean bl = world.getBlockState(pos.offset(direction)).isAir();
 				if (bl && direction != Direction.UP || !bl && direction == Direction.UP) {
 					return false;
 				}

@@ -17,10 +17,10 @@ public class ScreenHandlerPropertyUpdateS2CPacket implements Packet<ClientPlayPa
 		this.value = value;
 	}
 
-	public ScreenHandlerPropertyUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.syncId = packetByteBuf.readUnsignedByte();
-		this.propertyId = packetByteBuf.readShort();
-		this.value = packetByteBuf.readShort();
+	public ScreenHandlerPropertyUpdateS2CPacket(PacketByteBuf buf) {
+		this.syncId = buf.readUnsignedByte();
+		this.propertyId = buf.readShort();
+		this.value = buf.readShort();
 	}
 
 	@Override

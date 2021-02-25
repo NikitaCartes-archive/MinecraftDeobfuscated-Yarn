@@ -66,7 +66,7 @@ public class ServerChunkManager extends ChunkManager {
 	private SpawnHelper.Info spawnEntry;
 
 	public ServerChunkManager(
-		ServerWorld serverWorld,
+		ServerWorld world,
 		LevelStorage.Session session,
 		DataFixer dataFixer,
 		StructureManager structureManager,
@@ -78,16 +78,16 @@ public class ServerChunkManager extends ChunkManager {
 		ChunkStatusChangeListener chunkStatusChangeListener,
 		Supplier<PersistentStateManager> supplier
 	) {
-		this.world = serverWorld;
-		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(serverWorld);
+		this.world = world;
+		this.mainThreadExecutor = new ServerChunkManager.MainThreadExecutor(world);
 		this.chunkGenerator = chunkGenerator;
 		this.serverThread = Thread.currentThread();
-		File file = session.getWorldDirectory(serverWorld.getRegistryKey());
+		File file = session.getWorldDirectory(world.getRegistryKey());
 		File file2 = new File(file, "data");
 		file2.mkdirs();
 		this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
 		this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(
-			serverWorld,
+			world,
 			session,
 			dataFixer,
 			structureManager,
@@ -496,8 +496,8 @@ public class ServerChunkManager extends ChunkManager {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public String getChunkLoadingDebugInfo(ChunkPos chunkPos) {
-		return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(chunkPos);
+	public String getChunkLoadingDebugInfo(ChunkPos pos) {
+		return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(pos);
 	}
 
 	public PersistentStateManager getPersistentStateManager() {

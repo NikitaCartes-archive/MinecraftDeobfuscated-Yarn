@@ -16,9 +16,9 @@ public class UpdateBeaconC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.secondaryEffectId = secondaryEffectId;
 	}
 
-	public UpdateBeaconC2SPacket(PacketByteBuf packetByteBuf) {
-		this.primaryEffectId = packetByteBuf.readVarInt();
-		this.secondaryEffectId = packetByteBuf.readVarInt();
+	public UpdateBeaconC2SPacket(PacketByteBuf buf) {
+		this.primaryEffectId = buf.readVarInt();
+		this.secondaryEffectId = buf.readVarInt();
 	}
 
 	@Override

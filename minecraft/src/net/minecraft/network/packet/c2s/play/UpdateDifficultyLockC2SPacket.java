@@ -18,8 +18,8 @@ public class UpdateDifficultyLockC2SPacket implements Packet<ServerPlayPacketLis
 		serverPlayPacketListener.onUpdateDifficultyLock(this);
 	}
 
-	public UpdateDifficultyLockC2SPacket(PacketByteBuf packetByteBuf) {
-		this.difficultyLocked = packetByteBuf.readBoolean();
+	public UpdateDifficultyLockC2SPacket(PacketByteBuf buf) {
+		this.difficultyLocked = buf.readBoolean();
 	}
 
 	@Override

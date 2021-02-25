@@ -37,11 +37,11 @@ public class CustomPayloadS2CPacket implements Packet<ClientPlayPacketListener> 
 		}
 	}
 
-	public CustomPayloadS2CPacket(PacketByteBuf packetByteBuf) {
-		this.channel = packetByteBuf.readIdentifier();
-		int i = packetByteBuf.readableBytes();
+	public CustomPayloadS2CPacket(PacketByteBuf buf) {
+		this.channel = buf.readIdentifier();
+		int i = buf.readableBytes();
 		if (i >= 0 && i <= 1048576) {
-			this.data = new PacketByteBuf(packetByteBuf.readBytes(i));
+			this.data = new PacketByteBuf(buf.readBytes(i));
 		} else {
 			throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
 		}

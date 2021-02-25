@@ -321,7 +321,7 @@ public class TeleportCommand {
 		public void look(ServerCommandSource source, Entity entity) {
 			if (this.target != null) {
 				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).method_14222(source.getEntityAnchor(), this.target, this.targetAnchor);
+					((ServerPlayerEntity)entity).lookAtEntity(source.getEntityAnchor(), this.target, this.targetAnchor);
 				} else {
 					entity.lookAt(source.getEntityAnchor(), this.targetPos);
 				}

@@ -15,8 +15,8 @@ public class BannedPlayerList extends ServerConfigList<GameProfile, BannedPlayer
 		return new BannedPlayerEntry(json);
 	}
 
-	public boolean contains(GameProfile gameProfile) {
-		return this.contains(gameProfile);
+	public boolean contains(GameProfile profile) {
+		return this.contains(profile);
 	}
 
 	@Override

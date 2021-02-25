@@ -61,27 +61,21 @@ public class UpdateStructureBlockC2SPacket implements Packet<ServerPlayPacketLis
 		this.seed = seed;
 	}
 
-	public UpdateStructureBlockC2SPacket(PacketByteBuf packetByteBuf) {
-		this.pos = packetByteBuf.readBlockPos();
-		this.action = packetByteBuf.readEnumConstant(StructureBlockBlockEntity.Action.class);
-		this.mode = packetByteBuf.readEnumConstant(StructureBlockMode.class);
-		this.structureName = packetByteBuf.readString();
+	public UpdateStructureBlockC2SPacket(PacketByteBuf buf) {
+		this.pos = buf.readBlockPos();
+		this.action = buf.readEnumConstant(StructureBlockBlockEntity.Action.class);
+		this.mode = buf.readEnumConstant(StructureBlockMode.class);
+		this.structureName = buf.readString();
 		int i = 48;
-		this.offset = new BlockPos(
-			MathHelper.clamp(packetByteBuf.readByte(), -48, 48),
-			MathHelper.clamp(packetByteBuf.readByte(), -48, 48),
-			MathHelper.clamp(packetByteBuf.readByte(), -48, 48)
-		);
+		this.offset = new BlockPos(MathHelper.clamp(buf.readByte(), -48, 48), MathHelper.clamp(buf.readByte(), -48, 48), MathHelper.clamp(buf.readByte(), -48, 48));
 		int j = 48;
-		this.size = new BlockPos(
-			MathHelper.clamp(packetByteBuf.readByte(), 0, 48), MathHelper.clamp(packetByteBuf.readByte(), 0, 48), MathHelper.clamp(packetByteBuf.readByte(), 0, 48)
-		);
-		this.mirror = packetByteBuf.readEnumConstant(BlockMirror.class);
-		this.rotation = packetByteBuf.readEnumConstant(BlockRotation.class);
-		this.metadata = packetByteBuf.readString(12);
-		this.integrity = MathHelper.clamp(packetByteBuf.readFloat(), 0.0F, 1.0F);
-		this.seed = packetByteBuf.readVarLong();
-		int k = packetByteBuf.readByte();
+		this.size = new BlockPos(MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48));
+		this.mirror = buf.readEnumConstant(BlockMirror.class);
+		this.rotation = buf.readEnumConstant(BlockRotation.class);
+		this.metadata = buf.readString(12);
+		this.integrity = MathHelper.clamp(buf.readFloat(), 0.0F, 1.0F);
+		this.seed = buf.readVarLong();
+		int k = buf.readByte();
 		this.ignoreEntities = (k & 1) != 0;
 		this.showAir = (k & 2) != 0;
 		this.showBoundingBox = (k & 4) != 0;

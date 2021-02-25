@@ -2007,7 +2007,7 @@ public abstract class LivingEntity extends Entity {
 				double ex = this.getY();
 				this.updateVelocity(0.02F, movementInput);
 				this.move(MovementType.SELF, this.getVelocity());
-				if (this.getFluidHeight(FluidTags.LAVA) <= this.method_29241()) {
+				if (this.getFluidHeight(FluidTags.LAVA) <= this.getSwimHeight()) {
 					this.setVelocity(this.getVelocity().multiply(0.5, 0.8F, 0.5));
 					Vec3d vec3d3 = this.method_26317(d, bl, this.getVelocity());
 					this.setVelocity(vec3d3);
@@ -2481,7 +2481,7 @@ public abstract class LivingEntity extends Entity {
 			}
 
 			boolean bl = this.isTouchingWater() && k > 0.0;
-			double l = this.method_29241();
+			double l = this.getSwimHeight();
 			if (!bl || this.onGround && !(k > l)) {
 				if (!this.isInLava() || this.onGround && !(k > l)) {
 					if ((this.onGround || bl && k <= l) && this.jumpingCooldown == 0) {
@@ -3159,7 +3159,7 @@ public abstract class LivingEntity extends Entity {
 
 	public ItemStack eatFood(World world, ItemStack stack) {
 		if (stack.isFood()) {
-			world.emitGameEvent(this, GameEvent.EAT, this.method_33575());
+			world.emitGameEvent(this, GameEvent.EAT, this.getCameraBlockPos());
 			world.playSound(
 				null,
 				this.getX(),

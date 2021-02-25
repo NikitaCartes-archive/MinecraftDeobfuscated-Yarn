@@ -69,7 +69,7 @@ public class TaskExecutor<T> implements MessageListener<T>, AutoCloseable, Runna
 			if (runnable == null) {
 				return false;
 			} else {
-				Util.method_33787(this.name, runnable).run();
+				Util.debugRunnable(this.name, runnable).run();
 				return true;
 			}
 		}

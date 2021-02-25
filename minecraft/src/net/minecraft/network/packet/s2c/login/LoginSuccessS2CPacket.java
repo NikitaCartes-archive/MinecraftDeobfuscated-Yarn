@@ -16,15 +16,15 @@ public class LoginSuccessS2CPacket implements Packet<ClientLoginPacketListener> 
 		this.profile = profile;
 	}
 
-	public LoginSuccessS2CPacket(PacketByteBuf packetByteBuf) {
+	public LoginSuccessS2CPacket(PacketByteBuf buf) {
 		int[] is = new int[4];
 
 		for (int i = 0; i < is.length; i++) {
-			is[i] = packetByteBuf.readInt();
+			is[i] = buf.readInt();
 		}
 
 		UUID uUID = DynamicSerializableUuid.toUuid(is);
-		String string = packetByteBuf.readString(16);
+		String string = buf.readString(16);
 		this.profile = new GameProfile(uUID, string);
 	}
 

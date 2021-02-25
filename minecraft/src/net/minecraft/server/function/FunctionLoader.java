@@ -70,7 +70,7 @@ public class FunctionLoader implements ResourceReloadListener {
 		Executor prepareExecutor,
 		Executor applyExecutor
 	) {
-		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.method_33174(manager), prepareExecutor);
+		CompletableFuture<Map<Identifier, Tag.Builder>> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
 		CompletableFuture<Map<Identifier, CompletableFuture<CommandFunction>>> completableFuture2 = CompletableFuture.supplyAsync(
 				() -> manager.findResources("functions", string -> string.endsWith(".mcfunction")), prepareExecutor
 			)
@@ -107,7 +107,7 @@ public class FunctionLoader implements ResourceReloadListener {
 					return null;
 				}).join());
 			this.functions = builder.build();
-			this.tags = this.tagLoader.applyReload((Map<Identifier, Tag.Builder>)pair.getFirst());
+			this.tags = this.tagLoader.buildGroup((Map<Identifier, Tag.Builder>)pair.getFirst());
 		}, applyExecutor);
 	}
 

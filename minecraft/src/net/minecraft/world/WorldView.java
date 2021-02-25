@@ -39,7 +39,7 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 		return this.getBiomeAccess().getBiome(pos);
 	}
 
-	default Stream<BlockState> method_29556(Box box) {
+	default Stream<BlockState> getStatesInBoxIfLoaded(Box box) {
 		int i = MathHelper.floor(box.minX);
 		int j = MathHelper.floor(box.maxX);
 		int k = MathHelper.floor(box.minY);
@@ -180,13 +180,13 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	}
 
 	@Deprecated
-	default boolean method_33598(int i, int j) {
-		return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(i), ChunkSectionPos.getSectionCoord(j));
+	default boolean isPosLoaded(int x, int z) {
+		return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z));
 	}
 
 	@Deprecated
 	default boolean isChunkLoaded(BlockPos pos) {
-		return this.method_33598(pos.getX(), pos.getZ());
+		return this.isPosLoaded(pos.getX(), pos.getZ());
 	}
 
 	@Deprecated
@@ -195,20 +195,20 @@ public interface WorldView extends BlockRenderView, CollisionView, BiomeAccess.S
 	}
 
 	@Deprecated
-	default boolean isRegionLoaded(int i, int minY, int j, int k, int maxY, int l) {
-		return maxY >= this.getBottomY() && minY < this.getTopY() ? this.method_33597(i, j, k, l) : false;
+	default boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
+		return maxY >= this.getBottomY() && minY < this.getTopY() ? this.isRegionLoaded(minX, minZ, maxX, maxZ) : false;
 	}
 
 	@Deprecated
-	default boolean method_33597(int i, int j, int k, int l) {
-		int m = ChunkSectionPos.getSectionCoord(i);
-		int n = ChunkSectionPos.getSectionCoord(k);
-		int o = ChunkSectionPos.getSectionCoord(j);
-		int p = ChunkSectionPos.getSectionCoord(l);
+	default boolean isRegionLoaded(int minX, int minZ, int maxX, int maxZ) {
+		int i = ChunkSectionPos.getSectionCoord(minX);
+		int j = ChunkSectionPos.getSectionCoord(maxX);
+		int k = ChunkSectionPos.getSectionCoord(minZ);
+		int l = ChunkSectionPos.getSectionCoord(maxZ);
 
-		for (int q = m; q <= n; q++) {
-			for (int r = o; r <= p; r++) {
-				if (!this.isChunkLoaded(q, r)) {
+		for (int m = i; m <= j; m++) {
+			for (int n = k; n <= l; n++) {
+				if (!this.isChunkLoaded(m, n)) {
 					return false;
 				}
 			}

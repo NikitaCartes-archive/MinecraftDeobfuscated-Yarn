@@ -16,9 +16,9 @@ public class QueryEntityNbtC2SPacket implements Packet<ServerPlayPacketListener>
 		this.entityId = entityId;
 	}
 
-	public QueryEntityNbtC2SPacket(PacketByteBuf packetByteBuf) {
-		this.transactionId = packetByteBuf.readVarInt();
-		this.entityId = packetByteBuf.readVarInt();
+	public QueryEntityNbtC2SPacket(PacketByteBuf buf) {
+		this.transactionId = buf.readVarInt();
+		this.entityId = buf.readVarInt();
 	}
 
 	@Override

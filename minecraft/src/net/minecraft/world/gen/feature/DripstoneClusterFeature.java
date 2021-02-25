@@ -4,7 +4,6 @@ import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Random;
-import net.minecraft.class_5861;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
@@ -12,6 +11,7 @@ import net.minecraft.tag.FluidTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.floatprovider.ClampedNormalFloatProvider;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -34,8 +34,8 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 			return false;
 		} else {
 			int i = dripstoneClusterFeatureConfig.height.getValue(random);
-			float f = dripstoneClusterFeatureConfig.wetness.method_33920(random);
-			float g = dripstoneClusterFeatureConfig.density.method_33920(random);
+			float f = dripstoneClusterFeatureConfig.wetness.get(random);
+			float g = dripstoneClusterFeatureConfig.density.get(random);
 			int j = dripstoneClusterFeatureConfig.radius.getValue(random);
 			int k = dripstoneClusterFeatureConfig.radius.getValue(random);
 
@@ -196,6 +196,6 @@ public class DripstoneClusterFeature extends Feature<DripstoneClusterFeatureConf
 	}
 
 	private static float clampedGaussian(Random random, float min, float max, float mean, float deviation) {
-		return class_5861.method_33903(random, mean, deviation, min, max);
+		return ClampedNormalFloatProvider.get(random, mean, deviation, min, max);
 	}
 }

@@ -17,10 +17,10 @@ public class OpenHorseScreenS2CPacket implements Packet<ClientPlayPacketListener
 		this.horseId = horseId;
 	}
 
-	public OpenHorseScreenS2CPacket(PacketByteBuf packetByteBuf) {
-		this.syncId = packetByteBuf.readUnsignedByte();
-		this.slotCount = packetByteBuf.readVarInt();
-		this.horseId = packetByteBuf.readInt();
+	public OpenHorseScreenS2CPacket(PacketByteBuf buf) {
+		this.syncId = buf.readUnsignedByte();
+		this.slotCount = buf.readVarInt();
+		this.horseId = buf.readInt();
 	}
 
 	@Override

@@ -15,9 +15,9 @@ public class UnloadChunkS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.z = z;
 	}
 
-	public UnloadChunkS2CPacket(PacketByteBuf packetByteBuf) {
-		this.x = packetByteBuf.readInt();
-		this.z = packetByteBuf.readInt();
+	public UnloadChunkS2CPacket(PacketByteBuf buf) {
+		this.x = buf.readInt();
+		this.z = buf.readInt();
 	}
 
 	@Override

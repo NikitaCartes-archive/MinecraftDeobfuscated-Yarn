@@ -110,10 +110,10 @@ public class JigsawBlockScreen extends Screen {
 		this.joint = this.jigsaw.getJoint();
 		int i = this.textRenderer.getWidth(JOINT_LABEL_TEXT) + 10;
 		this.jointRotationButton = this.addButton(
-			CyclingButtonWidget.<JigsawBlockEntity.Joint>method_32606(JigsawBlockEntity.Joint::asText)
-				.method_32624(JigsawBlockEntity.Joint.values())
-				.value(this.joint)
-				.method_32616()
+			CyclingButtonWidget.<JigsawBlockEntity.Joint>builder(JigsawBlockEntity.Joint::asText)
+				.values(JigsawBlockEntity.Joint.values())
+				.initially(this.joint)
+				.omitKeyText()
 				.build(this.width / 2 - 152 + i, 150, 300 - i, 20, JOINT_LABEL_TEXT, (cyclingButtonWidget, joint) -> this.joint = joint)
 		);
 		boolean bl = JigsawBlock.getFacing(this.jigsaw.getCachedState()).getAxis().isVertical();
@@ -135,7 +135,7 @@ public class JigsawBlockScreen extends Screen {
 			}
 		});
 		this.addButton(
-			CyclingButtonWidget.method_32613(this.keepJigsaws)
+			CyclingButtonWidget.onOffBuilder(this.keepJigsaws)
 				.build(this.width / 2 - 50, 180, 100, 20, new TranslatableText("jigsaw_block.keep_jigsaws"), (cyclingButtonWidget, boolean_) -> this.keepJigsaws = boolean_)
 		);
 		this.addButton(new ButtonWidget(this.width / 2 + 54, 180, 100, 20, new TranslatableText("jigsaw_block.generate"), buttonWidget -> {

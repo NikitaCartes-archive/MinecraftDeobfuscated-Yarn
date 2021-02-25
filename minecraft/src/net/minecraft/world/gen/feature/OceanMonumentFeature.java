@@ -44,8 +44,8 @@ public class OceanMonumentFeature extends StructureFeature<DefaultFeatureConfig>
 		DefaultFeatureConfig defaultFeatureConfig,
 		HeightLimitView heightLimitView
 	) {
-		int i = chunkPos.method_33939(9);
-		int j = chunkPos.method_33941(9);
+		int i = chunkPos.getOffsetX(9);
+		int j = chunkPos.getOffsetZ(9);
 
 		for (Biome biome2 : biomeSource.getBiomesInArea(i, chunkGenerator.getSeaLevel(), j, 16)) {
 			if (!biome2.getGenerationSettings().hasStructureFeature(this)) {

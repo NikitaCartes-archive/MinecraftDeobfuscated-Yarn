@@ -18,20 +18,20 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	private final RecipeBookOptions options;
 
 	public UnlockRecipesS2CPacket(
-		UnlockRecipesS2CPacket.Action action, Collection<Identifier> collection, Collection<Identifier> collection2, RecipeBookOptions options
+		UnlockRecipesS2CPacket.Action action, Collection<Identifier> recipeIdsToChange, Collection<Identifier> recipeIdsToInit, RecipeBookOptions options
 	) {
 		this.action = action;
-		this.recipeIdsToChange = ImmutableList.copyOf(collection);
-		this.recipeIdsToInit = ImmutableList.copyOf(collection2);
+		this.recipeIdsToChange = ImmutableList.copyOf(recipeIdsToChange);
+		this.recipeIdsToInit = ImmutableList.copyOf(recipeIdsToInit);
 		this.options = options;
 	}
 
-	public UnlockRecipesS2CPacket(PacketByteBuf packetByteBuf) {
-		this.action = packetByteBuf.readEnumConstant(UnlockRecipesS2CPacket.Action.class);
-		this.options = RecipeBookOptions.fromPacket(packetByteBuf);
-		this.recipeIdsToChange = packetByteBuf.method_34066(PacketByteBuf::readIdentifier);
+	public UnlockRecipesS2CPacket(PacketByteBuf buf) {
+		this.action = buf.readEnumConstant(UnlockRecipesS2CPacket.Action.class);
+		this.options = RecipeBookOptions.fromPacket(buf);
+		this.recipeIdsToChange = buf.readList(PacketByteBuf::readIdentifier);
 		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
-			this.recipeIdsToInit = packetByteBuf.method_34066(PacketByteBuf::readIdentifier);
+			this.recipeIdsToInit = buf.readList(PacketByteBuf::readIdentifier);
 		} else {
 			this.recipeIdsToInit = ImmutableList.of();
 		}
@@ -41,9 +41,9 @@ public class UnlockRecipesS2CPacket implements Packet<ClientPlayPacketListener> 
 	public void write(PacketByteBuf buf) {
 		buf.writeEnumConstant(this.action);
 		this.options.toPacket(buf);
-		buf.method_34062(this.recipeIdsToChange, PacketByteBuf::writeIdentifier);
+		buf.writeCollection(this.recipeIdsToChange, PacketByteBuf::writeIdentifier);
 		if (this.action == UnlockRecipesS2CPacket.Action.INIT) {
-			buf.method_34062(this.recipeIdsToInit, PacketByteBuf::writeIdentifier);
+			buf.writeCollection(this.recipeIdsToInit, PacketByteBuf::writeIdentifier);
 		}
 	}
 

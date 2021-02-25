@@ -29,9 +29,9 @@ public class GameStateChangeS2CPacket implements Packet<ClientPlayPacketListener
 		this.value = value;
 	}
 
-	public GameStateChangeS2CPacket(PacketByteBuf packetByteBuf) {
-		this.reason = GameStateChangeS2CPacket.Reason.REASONS.get(packetByteBuf.readUnsignedByte());
-		this.value = packetByteBuf.readFloat();
+	public GameStateChangeS2CPacket(PacketByteBuf buf) {
+		this.reason = GameStateChangeS2CPacket.Reason.REASONS.get(buf.readUnsignedByte());
+		this.value = buf.readFloat();
 	}
 
 	@Override

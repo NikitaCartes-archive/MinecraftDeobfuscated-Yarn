@@ -1146,17 +1146,17 @@ public class InGameHud extends DrawableHelper {
 		this.overlayTinted = tinted;
 	}
 
-	public void method_34001(int i, int j, int k) {
-		if (i >= 0) {
-			this.titleFadeInTicks = i;
+	public void setTitleTicks(int fadeInTicks, int remainTicks, int fadeOutTicks) {
+		if (fadeInTicks >= 0) {
+			this.titleFadeInTicks = fadeInTicks;
 		}
 
-		if (j >= 0) {
-			this.titleRemainTicks = j;
+		if (remainTicks >= 0) {
+			this.titleRemainTicks = remainTicks;
 		}
 
-		if (k >= 0) {
-			this.titleFadeOutTicks = k;
+		if (fadeOutTicks >= 0) {
+			this.titleFadeOutTicks = fadeOutTicks;
 		}
 
 		if (this.titleTotalTicks > 0) {
@@ -1164,16 +1164,16 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	public void method_34002(Text text) {
-		this.subtitle = text;
+	public void setSubtitle(Text subtitle) {
+		this.subtitle = subtitle;
 	}
 
-	public void method_34004(Text text) {
-		this.title = text;
+	public void setTitle(Text title) {
+		this.title = title;
 		this.titleTotalTicks = this.titleFadeInTicks + this.titleRemainTicks + this.titleFadeOutTicks;
 	}
 
-	public void method_34003() {
+	public void clearTitle() {
 		this.title = null;
 		this.subtitle = null;
 		this.titleTotalTicks = 0;

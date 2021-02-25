@@ -20,13 +20,13 @@ import net.minecraft.util.registry.RegistryKey;
  */
 public class RequiredTagList<T> {
 	private final RegistryKey<? extends Registry<T>> registryKey;
-	private final String field_28302;
+	private final String dataType;
 	private TagGroup<T> group = TagGroup.createEmpty();
 	private final List<RequiredTagList.TagWrapper<T>> tags = Lists.<RequiredTagList.TagWrapper<T>>newArrayList();
 
-	public RequiredTagList(RegistryKey<? extends Registry<T>> registryKey, String string) {
+	public RequiredTagList(RegistryKey<? extends Registry<T>> registryKey, String dataType) {
 		this.registryKey = registryKey;
-		this.field_28302 = string;
+		this.dataType = dataType;
 	}
 
 	public Tag.Identified<T> add(String id) {
@@ -66,12 +66,12 @@ public class RequiredTagList<T> {
 		return this.registryKey;
 	}
 
-	public String method_33149() {
-		return this.field_28302;
+	public String getDataType() {
+		return this.dataType;
 	}
 
-	protected void method_33147(TagManager.class_5749 arg) {
-		arg.method_33172(
+	protected void method_33147(TagManager.Builder builder) {
+		builder.add(
 			this.registryKey, TagGroup.create((Map<Identifier, Tag<T>>)this.tags.stream().collect(Collectors.toMap(Tag.Identified::getId, tagWrapper -> tagWrapper)))
 		);
 	}

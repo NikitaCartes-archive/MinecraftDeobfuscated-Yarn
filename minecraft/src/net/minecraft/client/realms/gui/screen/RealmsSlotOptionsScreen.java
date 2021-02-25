@@ -128,13 +128,13 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 		this.nameEdit.setText(this.options.getSlotName(this.activeSlot));
 		this.focusOn(this.nameEdit);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget = this.addButton(
-			CyclingButtonWidget.method_32613(this.pvp)
+			CyclingButtonWidget.onOffBuilder(this.pvp)
 				.build(i, row(1), this.column2_x, 20, new TranslatableText("mco.configure.world.pvp"), (cyclingButtonWidgetx, boolean_) -> this.pvp = boolean_)
 		);
 		this.addButton(
-			CyclingButtonWidget.<GameMode>method_32606(GameMode::getSimpleTranslatableName)
-				.method_32620(GAME_MODES)
-				.value(this.gameModeIndex)
+			CyclingButtonWidget.<GameMode>builder(GameMode::getSimpleTranslatableName)
+				.values(GAME_MODES)
+				.initially(this.gameModeIndex)
 				.build(
 					this.column1_x,
 					row(3),
@@ -145,19 +145,19 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 				)
 		);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget2 = this.addButton(
-			CyclingButtonWidget.method_32613(this.spawnAnimals)
+			CyclingButtonWidget.onOffBuilder(this.spawnAnimals)
 				.build(
 					i, row(3), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnAnimals"), (cyclingButtonWidgetx, boolean_) -> this.spawnAnimals = boolean_
 				)
 		);
-		CyclingButtonWidget<Boolean> cyclingButtonWidget3 = CyclingButtonWidget.method_32613(this.field_27943 != Difficulty.PEACEFUL && this.spawnMonsters)
+		CyclingButtonWidget<Boolean> cyclingButtonWidget3 = CyclingButtonWidget.onOffBuilder(this.field_27943 != Difficulty.PEACEFUL && this.spawnMonsters)
 			.build(
 				i, row(5), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnMonsters"), (cyclingButtonWidgetx, boolean_) -> this.spawnMonsters = boolean_
 			);
 		this.addButton(
-			CyclingButtonWidget.<Difficulty>method_32606(Difficulty::getTranslatableName)
-				.method_32620(DIFFICULTIES)
-				.value(this.field_27943)
+			CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
+				.values(DIFFICULTIES)
+				.initially(this.field_27943)
 				.build(this.column1_x, row(5), this.column2_x, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget2x, difficulty) -> {
 					this.field_27943 = difficulty;
 					if (this.worldType == RealmsServer.WorldType.NORMAL) {
@@ -172,11 +172,11 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 			new RealmsSlotOptionsScreen.SettingsSlider(this.column1_x, row(7), this.column2_x, this.difficultyIndex, 0.0F, 16.0F)
 		);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget4 = this.addButton(
-			CyclingButtonWidget.method_32613(this.spawnNPCs)
+			CyclingButtonWidget.onOffBuilder(this.spawnNPCs)
 				.build(i, row(7), this.column2_x, 20, new TranslatableText("mco.configure.world.spawnNPCs"), (cyclingButtonWidgetx, boolean_) -> this.spawnNPCs = boolean_)
 		);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget5 = this.addButton(
-			CyclingButtonWidget.method_32613(this.forceGameMode)
+			CyclingButtonWidget.onOffBuilder(this.forceGameMode)
 				.build(
 					this.column1_x,
 					row(9),
@@ -187,7 +187,7 @@ public class RealmsSlotOptionsScreen extends RealmsScreen {
 				)
 		);
 		CyclingButtonWidget<Boolean> cyclingButtonWidget6 = this.addButton(
-			CyclingButtonWidget.method_32613(this.commandBlocks)
+			CyclingButtonWidget.onOffBuilder(this.commandBlocks)
 				.build(
 					i,
 					row(9),

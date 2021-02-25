@@ -33,7 +33,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5838;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -154,7 +153,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	private final EntityList entityList = new EntityList();
 	private final ServerEntityManager<Entity> entityManager;
 	public boolean savingDisabled;
-	private final class_5838 field_28859;
+	private final SleepManager sleepManager;
 	private int idleTimeout;
 	private final PortalForcer portalForcer;
 	private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<>(
@@ -179,23 +178,23 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		Executor workerExecutor,
 		LevelStorage.Session session,
 		ServerWorldProperties properties,
-		RegistryKey<World> registryKey,
+		RegistryKey<World> worldKey,
 		DimensionType dimensionType,
 		WorldGenerationProgressListener worldGenerationProgressListener,
 		ChunkGenerator chunkGenerator,
 		boolean debugWorld,
-		long l,
+		long seed,
 		List<Spawner> spawners,
 		boolean shouldTickTime
 	) {
-		super(properties, registryKey, dimensionType, server::getProfiler, false, debugWorld, l);
+		super(properties, worldKey, dimensionType, server::getProfiler, false, debugWorld, seed);
 		this.shouldTickTime = shouldTickTime;
 		this.server = server;
 		this.spawners = spawners;
 		this.worldProperties = properties;
 		boolean bl = server.syncChunkWrites();
 		DataFixer dataFixer = server.getDataFixer();
-		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(registryKey), "entities"), dataFixer, bl, server);
+		ChunkDataAccess<Entity> chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(worldKey), "entities"), dataFixer, bl, server);
 		this.entityManager = new ServerEntityManager<>(Entity.class, new ServerWorld.ServerEntityHandler(), chunkDataAccess);
 		this.serverChunkManager = new ServerChunkManager(
 			this,
@@ -227,7 +226,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			this.enderDragonFight = null;
 		}
 
-		this.field_28859 = new class_5838();
+		this.sleepManager = new SleepManager();
 	}
 
 	public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
@@ -338,7 +337,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		}
 
 		int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
-		if (this.field_28859.method_33812(i) && this.field_28859.method_33813(i, this.players)) {
+		if (this.sleepManager.canSkipNight(i) && this.sleepManager.canResetTime(i, this.players)) {
 			if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
 				long l = this.properties.getTimeOfDay() + 24000L;
 				this.setTimeOfDay(l - l % 24000L);
@@ -439,7 +438,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	private void wakeSleepingPlayers() {
-		this.field_28859.method_33811();
+		this.sleepManager.clearSleeping();
 		((List)this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList())).forEach(player -> player.wakeUp(false, false));
 	}
 
@@ -578,10 +577,10 @@ public class ServerWorld extends World implements StructureWorldAccess {
 			if (!this.getServer().isSinglePlayer() || this.getServer().isRemote()) {
 				int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
 				Text text;
-				if (this.field_28859.method_33812(i)) {
+				if (this.sleepManager.canSkipNight(i)) {
 					text = new TranslatableText("sleep.skipping_night");
 				} else {
-					text = new TranslatableText("sleep.players_sleeping", this.field_28859.method_33815(), this.field_28859.method_33816(i));
+					text = new TranslatableText("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
 				}
 
 				for (ServerPlayerEntity serverPlayerEntity : this.players) {
@@ -592,7 +591,7 @@ public class ServerWorld extends World implements StructureWorldAccess {
 	}
 
 	public void updateSleepingPlayers() {
-		if (!this.players.isEmpty() && this.field_28859.method_33814(this.players)) {
+		if (!this.players.isEmpty() && this.sleepManager.update(this.players)) {
 			this.handleSleeping();
 		}
 	}
@@ -797,8 +796,8 @@ public class ServerWorld extends World implements StructureWorldAccess {
 		chunk.removeAllBlockEntities();
 	}
 
-	public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason removalReason) {
-		player.remove(removalReason);
+	public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason reason) {
+		player.remove(reason);
 	}
 
 	@Override
@@ -1018,9 +1017,9 @@ public class ServerWorld extends World implements StructureWorldAccess {
 
 	@Deprecated
 	@Nullable
-	public Entity method_31424(int i) {
-		Entity entity = this.getEntityLookup().get(i);
-		return entity != null ? entity : this.dragonParts.get(i);
+	public Entity getDragonPart(int id) {
+		Entity entity = this.getEntityLookup().get(id);
+		return entity != null ? entity : this.dragonParts.get(id);
 	}
 
 	@Nullable

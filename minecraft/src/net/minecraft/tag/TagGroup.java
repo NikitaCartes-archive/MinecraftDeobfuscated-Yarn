@@ -55,10 +55,13 @@ public interface TagGroup<T> {
 		return list;
 	}
 
-	default TagGroup.class_5748 toPacket(Registry<T> registry) {
+	/**
+	 * Serializes this tag group.
+	 */
+	default TagGroup.Serialized serialize(Registry<T> registry) {
 		Map<Identifier, Tag<T>> map = this.getTags();
 		Map<Identifier, IntList> map2 = Maps.<Identifier, IntList>newHashMapWithExpectedSize(map.size());
-		map.forEach((identifier, tag) -> {
+		map.forEach((id, tag) -> {
 			List<T> list = tag.values();
 			IntList intList = new IntArrayList(list.size());
 
@@ -66,22 +69,25 @@ public interface TagGroup<T> {
 				intList.add(registry.getRawId(object));
 			}
 
-			map2.put(identifier, intList);
+			map2.put(id, intList);
 		});
-		return new TagGroup.class_5748(map2);
+		return new TagGroup.Serialized(map2);
 	}
 
+	/**
+	 * Deserializes a serialized tag group.
+	 */
 	@Environment(EnvType.CLIENT)
-	static <T> TagGroup<T> method_33155(TagGroup.class_5748 arg, Registry<? extends T> registry) {
-		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMapWithExpectedSize(arg.field_28304.size());
-		arg.field_28304.forEach((identifier, intList) -> {
+	static <T> TagGroup<T> deserialize(TagGroup.Serialized serialized, Registry<? extends T> registry) {
+		Map<Identifier, Tag<T>> map = Maps.<Identifier, Tag<T>>newHashMapWithExpectedSize(serialized.contents.size());
+		serialized.contents.forEach((id, entries) -> {
 			Builder<T> builder = ImmutableSet.builder();
 
-			for (int i : intList) {
+			for (int i : entries) {
 				builder.add((T)registry.get(i));
 			}
 
-			map.put(identifier, Tag.of(builder.build()));
+			map.put(id, Tag.of(builder.build()));
 		});
 		return create(map);
 	}
@@ -113,19 +119,29 @@ public interface TagGroup<T> {
 		};
 	}
 
-	public static class class_5748 {
-		private final Map<Identifier, IntList> field_28304;
+	/**
+	 * A serialization-friendly POJO representation of a {@linkplain
+	 * TagGroup tag group}. This allows easy transport of tag groups
+	 * over Minecraft network protocol.
+	 * 
+	 * <p>This stores tag entries with raw integer IDs and requires a registry
+	 * for raw ID access to {@linkplain TagGroup#serialize(Registry) serialize}
+	 * or {@linkplain TagGroup#deserialize(TagGroup.Serialized, Registry)
+	 * deserialize} tag groups.
+	 */
+	public static class Serialized {
+		private final Map<Identifier, IntList> contents;
 
-		private class_5748(Map<Identifier, IntList> map) {
-			this.field_28304 = map;
+		private Serialized(Map<Identifier, IntList> contents) {
+			this.contents = contents;
 		}
 
-		public void method_33159(PacketByteBuf packetByteBuf) {
-			packetByteBuf.method_34063(this.field_28304, PacketByteBuf::writeIdentifier, PacketByteBuf::method_34060);
+		public void writeBuf(PacketByteBuf buf) {
+			buf.writeMap(this.contents, PacketByteBuf::writeIdentifier, PacketByteBuf::writeIntList);
 		}
 
-		public static TagGroup.class_5748 method_33160(PacketByteBuf packetByteBuf) {
-			return new TagGroup.class_5748(packetByteBuf.method_34067(PacketByteBuf::readIdentifier, PacketByteBuf::method_34059));
+		public static TagGroup.Serialized fromBuf(PacketByteBuf buf) {
+			return new TagGroup.Serialized(buf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readIntList));
 		}
 	}
 }

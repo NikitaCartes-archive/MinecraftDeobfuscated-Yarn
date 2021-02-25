@@ -291,7 +291,7 @@ public abstract class Option {
 				}
 			}
 		)
-		.method_32528(client -> {
+		.tooltip(client -> {
 			List<OrderedText> list = client.textRenderer.wrapLines(FAST_GRAPHICS_TOOLTIP, 200);
 			List<OrderedText> list2 = client.textRenderer.wrapLines(FANCY_GRAPHICS_TOOLTIP, 200);
 			List<OrderedText> list3 = client.textRenderer.wrapLines(FABULOUS_GRAPHICS_TOOLTIP, 200);

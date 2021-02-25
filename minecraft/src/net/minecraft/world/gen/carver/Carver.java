@@ -6,10 +6,6 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
-import net.minecraft.class_5869;
-import net.minecraft.class_5870;
-import net.minecraft.class_5871;
-import net.minecraft.class_5873;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -26,10 +22,10 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import org.apache.commons.lang3.mutable.MutableBoolean;
 
-public abstract class Carver<C extends class_5871> {
-	public static final Carver<class_5871> CAVE = register("cave", new CaveCarver(class_5871.field_29054));
-	public static final Carver<class_5871> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(class_5871.field_29054));
-	public static final Carver<class_5869> CANYON = register("canyon", new class_5870(class_5869.field_29041));
+public abstract class Carver<C extends CarverConfig> {
+	public static final Carver<CarverConfig> CAVE = register("cave", new CaveCarver(CarverConfig.CONFIG_CODEC));
+	public static final Carver<CarverConfig> NETHER_CAVE = register("nether_cave", new NetherCaveCarver(CarverConfig.CONFIG_CODEC));
+	public static final Carver<RavineCarverConfig> RAVINE = register("canyon", new RavineCarver(RavineCarverConfig.RAVINE_CODEC));
 	protected static final BlockState AIR = Blocks.AIR.getDefaultState();
 	protected static final BlockState CAVE_AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected static final FluidState WATER = Fluids.WATER.getDefaultState();
@@ -70,7 +66,7 @@ public abstract class Carver<C extends class_5871> {
 	protected Set<Fluid> carvableFluids = ImmutableSet.of(Fluids.WATER);
 	private final Codec<ConfiguredCarver<C>> codec;
 
-	private static <C extends class_5871, F extends Carver<C>> F register(String name, F carver) {
+	private static <C extends CarverConfig, F extends Carver<C>> F register(String name, F carver) {
 		return Registry.register(Registry.CARVER, name, carver);
 	}
 
@@ -90,63 +86,63 @@ public abstract class Carver<C extends class_5871> {
 		return 4;
 	}
 
-	protected boolean method_33978(
-		class_5873 arg,
-		C arg2,
+	protected boolean carveRegion(
+		CarverContext context,
+		C config,
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
-		long l,
-		int i,
-		double d,
-		double e,
-		double f,
-		double g,
-		double h,
-		BitSet bitSet,
-		Carver.class_5874 arg3
+		Function<BlockPos, Biome> posToBiome,
+		long seed,
+		int seaLevel,
+		double x,
+		double y,
+		double z,
+		double horizontalScale,
+		double verticalScale,
+		BitSet carvingMask,
+		Carver.SkipPredicate skipPredicate
 	) {
 		ChunkPos chunkPos = chunk.getPos();
-		int j = chunkPos.x;
-		int k = chunkPos.z;
-		Random random = new Random(l + (long)j + (long)k);
-		double m = (double)chunkPos.method_33940();
-		double n = (double)chunkPos.method_33942();
-		double o = 16.0 + g * 2.0;
-		if (!(Math.abs(d - m) > o) && !(Math.abs(f - n) > o)) {
-			int p = chunkPos.getStartX();
-			int q = chunkPos.getStartZ();
-			int r = Math.max(MathHelper.floor(d - g) - p - 1, 0);
-			int s = Math.min(MathHelper.floor(d + g) - p, 15);
-			int t = Math.max(MathHelper.floor(e - h) - 1, arg.getMinY() + 1);
-			int u = Math.min(MathHelper.floor(e + h) + 1, arg.getMinY() + arg.getMaxY() - 8);
-			int v = Math.max(MathHelper.floor(f - g) - q - 1, 0);
-			int w = Math.min(MathHelper.floor(f + g) - q, 15);
-			if (this.method_33977(chunk, r, s, t, u, v, w)) {
+		int i = chunkPos.x;
+		int j = chunkPos.z;
+		Random random = new Random(seed + (long)i + (long)j);
+		double d = (double)chunkPos.getCenterX();
+		double e = (double)chunkPos.getCenterZ();
+		double f = 16.0 + horizontalScale * 2.0;
+		if (!(Math.abs(x - d) > f) && !(Math.abs(z - e) > f)) {
+			int k = chunkPos.getStartX();
+			int l = chunkPos.getStartZ();
+			int m = Math.max(MathHelper.floor(x - horizontalScale) - k - 1, 0);
+			int n = Math.min(MathHelper.floor(x + horizontalScale) - k, 15);
+			int o = Math.max(MathHelper.floor(y - verticalScale) - 1, context.getMinY() + 1);
+			int p = Math.min(MathHelper.floor(y + verticalScale) + 1, context.getMinY() + context.getMaxY() - 8);
+			int q = Math.max(MathHelper.floor(z - horizontalScale) - l - 1, 0);
+			int r = Math.min(MathHelper.floor(z + horizontalScale) - l, 15);
+			if (this.isRegionUncarvable(chunk, m, n, o, p, q, r)) {
 				return false;
 			} else {
 				boolean bl = false;
 				BlockPos.Mutable mutable = new BlockPos.Mutable();
 				BlockPos.Mutable mutable2 = new BlockPos.Mutable();
 
-				for (int x = r; x <= s; x++) {
-					int y = chunkPos.method_33939(x);
-					double z = ((double)y + 0.5 - d) / g;
+				for (int s = m; s <= n; s++) {
+					int t = chunkPos.getOffsetX(s);
+					double g = ((double)t + 0.5 - x) / horizontalScale;
 
-					for (int aa = v; aa <= w; aa++) {
-						int ab = chunkPos.method_33941(aa);
-						double ac = ((double)ab + 0.5 - f) / g;
-						if (!(z * z + ac * ac >= 1.0)) {
+					for (int u = q; u <= r; u++) {
+						int v = chunkPos.getOffsetZ(u);
+						double h = ((double)v + 0.5 - z) / horizontalScale;
+						if (!(g * g + h * h >= 1.0)) {
 							MutableBoolean mutableBoolean = new MutableBoolean(false);
 
-							for (int ad = u; ad > t; ad--) {
-								double ae = ((double)ad - 0.5 - e) / h;
-								if (!arg3.shouldSkip(arg, z, ae, ac, ad)) {
-									int af = ad - arg.getMinY();
-									int ag = x | aa << 4 | af << 8;
-									if (!bitSet.get(ag) || method_33980(arg2)) {
-										bitSet.set(ag);
-										mutable.set(y, ad, ab);
-										bl |= this.carveAtPoint(arg, arg2, chunk, function, bitSet, random, mutable, mutable2, i, mutableBoolean);
+							for (int w = p; w > o; w--) {
+								double aa = ((double)w - 0.5 - y) / verticalScale;
+								if (!skipPredicate.shouldSkip(context, g, aa, h, w)) {
+									int ab = w - context.getMinY();
+									int ac = s | u << 4 | ab << 8;
+									if (!carvingMask.get(ac) || isDebug(config)) {
+										carvingMask.set(ac);
+										mutable.set(t, w, v);
+										bl |= this.carveAtPoint(context, config, chunk, posToBiome, carvingMask, random, mutable, mutable2, seaLevel, mutableBoolean);
 									}
 								}
 							}
@@ -162,34 +158,34 @@ public abstract class Carver<C extends class_5871> {
 	}
 
 	protected boolean carveAtPoint(
-		class_5873 arg,
-		C arg2,
+		CarverContext context,
+		C config,
 		Chunk chunk,
-		Function<BlockPos, Biome> function,
-		BitSet bitSet,
+		Function<BlockPos, Biome> posToBiome,
+		BitSet carvingMask,
 		Random random,
-		BlockPos.Mutable mutable,
-		BlockPos.Mutable mutable2,
+		BlockPos.Mutable pos,
+		BlockPos.Mutable downPos,
 		int mainChunkX,
-		MutableBoolean mutableBoolean
+		MutableBoolean foundSurface
 	) {
-		BlockState blockState = chunk.getBlockState(mutable);
-		BlockState blockState2 = chunk.getBlockState(mutable2.set(mutable, Direction.UP));
+		BlockState blockState = chunk.getBlockState(pos);
+		BlockState blockState2 = chunk.getBlockState(downPos.set(pos, Direction.UP));
 		if (blockState.isOf(Blocks.GRASS_BLOCK) || blockState.isOf(Blocks.MYCELIUM)) {
-			mutableBoolean.setTrue();
+			foundSurface.setTrue();
 		}
 
-		if (!this.canCarveBlock(blockState, blockState2) && !method_33980(arg2)) {
+		if (!this.canCarveBlock(blockState, blockState2) && !isDebug(config)) {
 			return false;
 		} else {
-			if (mutable.getY() < arg.getMinY() + 11 && !method_33980(arg2)) {
-				chunk.setBlockState(mutable, LAVA.getBlockState(), false);
+			if (pos.getY() < context.getMinY() + 11 && !isDebug(config)) {
+				chunk.setBlockState(pos, LAVA.getBlockState(), false);
 			} else {
-				chunk.setBlockState(mutable, method_33979(arg2), false);
-				if (mutableBoolean.isTrue()) {
-					mutable2.set(mutable, Direction.DOWN);
-					if (chunk.getBlockState(mutable2).isOf(Blocks.DIRT)) {
-						chunk.setBlockState(mutable2, ((Biome)function.apply(mutable)).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
+				chunk.setBlockState(pos, getState(config), false);
+				if (foundSurface.isTrue()) {
+					downPos.set(pos, Direction.DOWN);
+					if (chunk.getBlockState(downPos).isOf(Blocks.DIRT)) {
+						chunk.setBlockState(downPos, ((Biome)posToBiome.apply(pos)).getGenerationSettings().getSurfaceConfig().getTopMaterial(), false);
 					}
 				}
 			}
@@ -198,15 +194,15 @@ public abstract class Carver<C extends class_5871> {
 		}
 	}
 
-	private static BlockState method_33979(class_5871 arg) {
-		return method_33980(arg) ? arg.method_33969().method_33973() : CAVE_AIR;
+	private static BlockState getState(CarverConfig config) {
+		return isDebug(config) ? config.getDebugConfig().getDebugState() : CAVE_AIR;
 	}
 
 	public abstract boolean carve(
-		class_5873 arg, C arg2, Chunk chunk, Function<BlockPos, Biome> function, Random random, int chunkZ, ChunkPos chunkPos, BitSet bitSet
+		CarverContext context, C config, Chunk chunk, Function<BlockPos, Biome> posToBiome, Random random, int seaLevel, ChunkPos pos, BitSet carvingMask
 	);
 
-	public abstract boolean shouldCarve(C arg, Random random);
+	public abstract boolean shouldCarve(C config, Random random);
 
 	protected boolean canAlwaysCarveBlock(BlockState state) {
 		return this.alwaysCarvableBlocks.contains(state.getBlock());
@@ -216,22 +212,22 @@ public abstract class Carver<C extends class_5871> {
 		return this.canAlwaysCarveBlock(state) || (state.isOf(Blocks.SAND) || state.isOf(Blocks.GRAVEL)) && !stateAbove.getFluidState().isIn(FluidTags.WATER);
 	}
 
-	protected boolean method_33977(Chunk chunk, int i, int j, int k, int l, int m, int n) {
+	protected boolean isRegionUncarvable(Chunk chunk, int minX, int maxX, int minY, int maxY, int minZ, int maxZ) {
 		ChunkPos chunkPos = chunk.getPos();
-		int o = chunkPos.getStartX();
-		int p = chunkPos.getStartZ();
+		int i = chunkPos.getStartX();
+		int j = chunkPos.getStartZ();
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int q = i; q <= j; q++) {
-			for (int r = m; r <= n; r++) {
-				for (int s = k - 1; s <= l + 1; s++) {
-					mutable.set(o + q, s, p + r);
+		for (int k = minX; k <= maxX; k++) {
+			for (int l = minZ; l <= maxZ; l++) {
+				for (int m = minY - 1; m <= maxY + 1; m++) {
+					mutable.set(i + k, m, j + l);
 					if (this.carvableFluids.contains(chunk.getFluidState(mutable).getFluid())) {
 						return true;
 					}
 
-					if (s != l + 1 && !isOnBoundary(q, r, i, j, m, n)) {
-						s = l;
+					if (m != maxY + 1 && !isOnBoundary(k, l, minX, maxX, minZ, maxZ)) {
+						m = maxY;
 					}
 				}
 			}
@@ -240,25 +236,25 @@ public abstract class Carver<C extends class_5871> {
 		return false;
 	}
 
-	private static boolean isOnBoundary(int i, int j, int k, int l, int m, int n) {
-		return i == k || i == l || j == m || j == n;
+	private static boolean isOnBoundary(int x, int z, int minX, int maxX, int minZ, int maxZ) {
+		return x == minX || x == maxX || z == minZ || z == maxZ;
 	}
 
-	protected static boolean method_33976(ChunkPos chunkPos, double d, double e, int i, int j, float f) {
-		double g = (double)chunkPos.method_33940();
-		double h = (double)chunkPos.method_33942();
-		double k = d - g;
-		double l = e - h;
-		double m = (double)(j - i);
-		double n = (double)(f + 2.0F + 16.0F);
-		return k * k + l * l - m * m <= n * n;
+	protected static boolean canCarveBranch(ChunkPos pos, double x, double z, int branchIndex, int branchCount, float baseWidth) {
+		double d = (double)pos.getCenterX();
+		double e = (double)pos.getCenterZ();
+		double f = x - d;
+		double g = z - e;
+		double h = (double)(branchCount - branchIndex);
+		double i = (double)(baseWidth + 2.0F + 16.0F);
+		return f * f + g * g - h * h <= i * i;
 	}
 
-	private static boolean method_33980(class_5871 arg) {
-		return arg.method_33969().method_33970();
+	private static boolean isDebug(CarverConfig config) {
+		return config.getDebugConfig().isDebugMode();
 	}
 
-	public interface class_5874 {
-		boolean shouldSkip(class_5873 arg, double d, double e, double f, int i);
+	public interface SkipPredicate {
+		boolean shouldSkip(CarverContext context, double scaledRelativeX, double scaledRelativeY, double scaledRelativeZ, int y);
 	}
 }

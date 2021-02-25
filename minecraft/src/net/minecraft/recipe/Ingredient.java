@@ -87,7 +87,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 
 	public void write(PacketByteBuf buf) {
 		this.cacheMatchingStacks();
-		buf.method_34062(Arrays.asList(this.matchingStacks), PacketByteBuf::writeItemStack);
+		buf.writeCollection(Arrays.asList(this.matchingStacks), PacketByteBuf::writeItemStack);
 	}
 
 	public JsonElement toJson() {
@@ -131,7 +131,7 @@ public final class Ingredient implements Predicate<ItemStack> {
 	}
 
 	public static Ingredient fromPacket(PacketByteBuf buf) {
-		return ofEntries(buf.method_34066(PacketByteBuf::readItemStack).stream().map(itemStack -> new Ingredient.StackEntry(itemStack)));
+		return ofEntries(buf.readList(PacketByteBuf::readItemStack).stream().map(itemStack -> new Ingredient.StackEntry(itemStack)));
 	}
 
 	public static Ingredient fromJson(@Nullable JsonElement json) {

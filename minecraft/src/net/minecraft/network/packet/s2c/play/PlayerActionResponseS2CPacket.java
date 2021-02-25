@@ -26,11 +26,11 @@ public class PlayerActionResponseS2CPacket implements Packet<ClientPlayPacketLis
 		this.approved = approved;
 	}
 
-	public PlayerActionResponseS2CPacket(PacketByteBuf packetByteBuf) {
-		this.pos = packetByteBuf.readBlockPos();
-		this.state = Block.STATE_IDS.get(packetByteBuf.readVarInt());
-		this.action = packetByteBuf.readEnumConstant(PlayerActionC2SPacket.Action.class);
-		this.approved = packetByteBuf.readBoolean();
+	public PlayerActionResponseS2CPacket(PacketByteBuf buf) {
+		this.pos = buf.readBlockPos();
+		this.state = Block.STATE_IDS.get(buf.readVarInt());
+		this.action = buf.readEnumConstant(PlayerActionC2SPacket.Action.class);
+		this.approved = buf.readBoolean();
 	}
 
 	@Override

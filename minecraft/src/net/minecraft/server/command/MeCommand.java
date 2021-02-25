@@ -18,33 +18,31 @@ public class MeCommand {
 				.then(
 					CommandManager.argument("action", StringArgumentType.greedyString())
 						.executes(
-							commandContext -> {
-								String string = StringArgumentType.getString(commandContext, "action");
-								Entity entity = commandContext.getSource().getEntity();
-								MinecraftServer minecraftServer = commandContext.getSource().getMinecraftServer();
+							context -> {
+								String string = StringArgumentType.getString(context, "action");
+								Entity entity = context.getSource().getEntity();
+								MinecraftServer minecraftServer = context.getSource().getMinecraftServer();
 								if (entity != null) {
 									if (entity instanceof ServerPlayerEntity) {
 										ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
 										serverPlayerEntity.getTextStream()
 											.filterText(string)
 											.thenAcceptAsync(
-												arg -> {
-													String stringx = arg.method_33803();
-													Text text = stringx.isEmpty() ? null : method_31373(commandContext, stringx);
-													Text text2 = method_31373(commandContext, arg.method_33801());
+												message -> {
+													String stringx = message.getFiltered();
+													Text text = stringx.isEmpty() ? null : getEmoteText(context, stringx);
+													Text text2 = getEmoteText(context, message.getRaw());
 													minecraftServer.getPlayerManager()
-														.method_33810(
-															text2, serverPlayerEntity2 -> serverPlayerEntity.method_33795(serverPlayerEntity2) ? text : text2, MessageType.CHAT, entity.getUuid()
-														);
+														.broadcast(text2, player -> serverPlayerEntity.shouldFilterMessagesSentTo(player) ? text : text2, MessageType.CHAT, entity.getUuid());
 												},
 												minecraftServer
 											);
 										return 1;
 									}
 
-									minecraftServer.getPlayerManager().broadcastChatMessage(method_31373(commandContext, string), MessageType.CHAT, entity.getUuid());
+									minecraftServer.getPlayerManager().broadcastChatMessage(getEmoteText(context, string), MessageType.CHAT, entity.getUuid());
 								} else {
-									minecraftServer.getPlayerManager().broadcastChatMessage(method_31373(commandContext, string), MessageType.SYSTEM, Util.NIL_UUID);
+									minecraftServer.getPlayerManager().broadcastChatMessage(getEmoteText(context, string), MessageType.SYSTEM, Util.NIL_UUID);
 								}
 
 								return 1;
@@ -54,7 +52,7 @@ public class MeCommand {
 		);
 	}
 
-	private static Text method_31373(CommandContext<ServerCommandSource> commandContext, String string) {
-		return new TranslatableText("chat.type.emote", commandContext.getSource().getDisplayName(), string);
+	private static Text getEmoteText(CommandContext<ServerCommandSource> context, String arg) {
+		return new TranslatableText("chat.type.emote", context.getSource().getDisplayName(), arg);
 	}
 }

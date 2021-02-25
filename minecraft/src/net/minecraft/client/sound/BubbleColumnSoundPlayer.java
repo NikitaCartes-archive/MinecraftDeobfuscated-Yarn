@@ -23,7 +23,7 @@ public class BubbleColumnSoundPlayer implements ClientPlayerTickable {
 	@Override
 	public void tick() {
 		World world = this.player.world;
-		BlockState blockState = (BlockState)world.method_29556(this.player.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(1.0E-6))
+		BlockState blockState = (BlockState)world.getStatesInBoxIfLoaded(this.player.getBoundingBox().expand(0.0, -0.4F, 0.0).contract(1.0E-6))
 			.filter(blockStatex -> blockStatex.isOf(Blocks.BUBBLE_COLUMN))
 			.findFirst()
 			.orElse(null);

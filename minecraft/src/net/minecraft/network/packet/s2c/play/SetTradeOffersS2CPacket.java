@@ -24,13 +24,13 @@ public class SetTradeOffersS2CPacket implements Packet<ClientPlayPacketListener>
 		this.refreshable = refreshable;
 	}
 
-	public SetTradeOffersS2CPacket(PacketByteBuf packetByteBuf) {
-		this.syncId = packetByteBuf.readVarInt();
-		this.recipes = TradeOfferList.fromPacket(packetByteBuf);
-		this.levelProgress = packetByteBuf.readVarInt();
-		this.experience = packetByteBuf.readVarInt();
-		this.leveled = packetByteBuf.readBoolean();
-		this.refreshable = packetByteBuf.readBoolean();
+	public SetTradeOffersS2CPacket(PacketByteBuf buf) {
+		this.syncId = buf.readVarInt();
+		this.recipes = TradeOfferList.fromPacket(buf);
+		this.levelProgress = buf.readVarInt();
+		this.experience = buf.readVarInt();
+		this.leveled = buf.readBoolean();
+		this.refreshable = buf.readBoolean();
 	}
 
 	@Override

@@ -43,9 +43,9 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 		this.addChild(this.seedEdit);
 		this.setInitialFocus(this.seedEdit);
 		this.addButton(
-			CyclingButtonWidget.<RealmsWorldGeneratorType>method_32606(RealmsWorldGeneratorType::getText)
-				.method_32624(RealmsWorldGeneratorType.values())
-				.value(this.generatorType)
+			CyclingButtonWidget.<RealmsWorldGeneratorType>builder(RealmsWorldGeneratorType::getText)
+				.values(RealmsWorldGeneratorType.values())
+				.initially(this.generatorType)
 				.build(
 					this.width / 2 - 102,
 					row(4),
@@ -56,7 +56,7 @@ public class RealmsResetNormalWorldScreen extends RealmsScreen {
 				)
 		);
 		this.addButton(
-			CyclingButtonWidget.method_32613(this.mapFeatures)
+			CyclingButtonWidget.onOffBuilder(this.mapFeatures)
 				.build(
 					this.width / 2 - 102,
 					row(6) - 2,

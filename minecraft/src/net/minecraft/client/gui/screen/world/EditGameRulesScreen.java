@@ -117,9 +117,9 @@ public class EditGameRulesScreen extends Screen {
 
 		public BooleanRuleWidget(Text name, List<OrderedText> description, String ruleName, GameRules.BooleanRule booleanRule) {
 			super(description, name);
-			this.toggleButton = CyclingButtonWidget.method_32613(booleanRule.get())
-				.method_32616()
-				.method_32623(cyclingButtonWidget -> cyclingButtonWidget.method_32611().append("\n").append(ruleName))
+			this.toggleButton = CyclingButtonWidget.onOffBuilder(booleanRule.get())
+				.omitKeyText()
+				.narration(cyclingButtonWidget -> cyclingButtonWidget.getGenericNarrationMessage().append("\n").append(ruleName))
 				.build(10, 5, 44, 20, name, (cyclingButtonWidget, boolean_) -> booleanRule.set(boolean_, null));
 			this.children.add(this.toggleButton);
 		}

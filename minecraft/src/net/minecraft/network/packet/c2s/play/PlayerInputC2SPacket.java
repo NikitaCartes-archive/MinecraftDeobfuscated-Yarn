@@ -20,10 +20,10 @@ public class PlayerInputC2SPacket implements Packet<ServerPlayPacketListener> {
 		this.sneaking = sneaking;
 	}
 
-	public PlayerInputC2SPacket(PacketByteBuf packetByteBuf) {
-		this.sideways = packetByteBuf.readFloat();
-		this.forward = packetByteBuf.readFloat();
-		byte b = packetByteBuf.readByte();
+	public PlayerInputC2SPacket(PacketByteBuf buf) {
+		this.sideways = buf.readFloat();
+		this.forward = buf.readFloat();
+		byte b = buf.readByte();
 		this.jumping = (b & 1) > 0;
 		this.sneaking = (b & 2) > 0;
 	}

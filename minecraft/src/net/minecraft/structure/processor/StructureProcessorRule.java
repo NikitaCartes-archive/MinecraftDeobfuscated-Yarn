@@ -15,8 +15,8 @@ import net.minecraft.util.math.BlockPos;
 public class StructureProcessorRule {
 	public static final Codec<StructureProcessorRule> CODEC = RecordCodecBuilder.create(
 		instance -> instance.group(
-					RuleTest.field_25012.fieldOf("input_predicate").forGetter(structureProcessorRule -> structureProcessorRule.inputPredicate),
-					RuleTest.field_25012.fieldOf("location_predicate").forGetter(structureProcessorRule -> structureProcessorRule.locationPredicate),
+					RuleTest.TYPE_CODEC.fieldOf("input_predicate").forGetter(structureProcessorRule -> structureProcessorRule.inputPredicate),
+					RuleTest.TYPE_CODEC.fieldOf("location_predicate").forGetter(structureProcessorRule -> structureProcessorRule.locationPredicate),
 					PosRuleTest.field_25007
 						.optionalFieldOf("position_predicate", AlwaysTruePosRuleTest.INSTANCE)
 						.forGetter(structureProcessorRule -> structureProcessorRule.positionPredicate),

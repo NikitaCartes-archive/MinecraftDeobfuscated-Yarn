@@ -8,9 +8,9 @@ public class ServerPropertiesLoader {
 	private final Path path;
 	private ServerPropertiesHandler propertiesHandler;
 
-	public ServerPropertiesLoader(DynamicRegistryManager dynamicRegistryManager, Path path) {
+	public ServerPropertiesLoader(DynamicRegistryManager registryManager, Path path) {
 		this.path = path;
-		this.propertiesHandler = ServerPropertiesHandler.load(dynamicRegistryManager, path);
+		this.propertiesHandler = ServerPropertiesHandler.load(registryManager, path);
 	}
 
 	public ServerPropertiesHandler getPropertiesHandler() {

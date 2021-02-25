@@ -2563,8 +2563,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 	private static ResourcePackProfile createResourcePackProfile(
 		String name,
-		Text text,
-		boolean bl,
+		Text displayName,
+		boolean alwaysEnabled,
 		Supplier<ResourcePack> supplier,
 		PackResourceMetadata metadata,
 		ResourcePackProfile.InsertionPosition insertionPosition,
@@ -2580,7 +2580,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			supplier2 = createV4ResourcePackFactory(supplier2);
 		}
 
-		return new ResourcePackProfile(name, text, bl, supplier2, metadata, ResourceType.CLIENT_RESOURCES, insertionPosition, source);
+		return new ResourcePackProfile(name, displayName, alwaysEnabled, supplier2, metadata, ResourceType.CLIENT_RESOURCES, insertionPosition, source);
 	}
 
 	private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> packFactory) {
@@ -2599,7 +2599,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.entityModelLoader;
 	}
 
-	public boolean method_33883() {
+	public boolean shouldFilterText() {
 		return true;
 	}
 

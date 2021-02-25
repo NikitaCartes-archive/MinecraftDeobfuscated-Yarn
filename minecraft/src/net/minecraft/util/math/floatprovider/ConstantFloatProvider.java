@@ -1,0 +1,73 @@
+package net.minecraft.util.math.floatprovider;
+
+import com.mojang.datafixers.util.Either;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Random;
+
+public class ConstantFloatProvider extends FloatProvider {
+	public static ConstantFloatProvider ZERO = create(0.0F);
+	public static final Codec<ConstantFloatProvider> CODEC = Codec.either(
+			Codec.FLOAT,
+			RecordCodecBuilder.create(
+				instance -> instance.group(Codec.FLOAT.fieldOf("value").forGetter(constantFloatProvider -> constantFloatProvider.value))
+						.apply(instance, ConstantFloatProvider::new)
+			)
+		)
+		.xmap(
+			either -> either.map(ConstantFloatProvider::create, constantFloatProvider -> constantFloatProvider),
+			constantFloatProvider -> Either.left(constantFloatProvider.value)
+		);
+	private float value;
+
+	public static ConstantFloatProvider create(float value) {
+		return value == 0.0F ? ZERO : new ConstantFloatProvider(value);
+	}
+
+	private ConstantFloatProvider(float value) {
+		this.value = value;
+	}
+
+	public float getValue() {
+		return this.value;
+	}
+
+	@Override
+	public float get(Random random) {
+		return this.value;
+	}
+
+	@Override
+	public float getMin() {
+		return this.value;
+	}
+
+	@Override
+	public float getMax() {
+		return this.value + 1.0F;
+	}
+
+	public boolean equals(Object object) {
+		if (this == object) {
+			return true;
+		} else if (object != null && this.getClass() == object.getClass()) {
+			ConstantFloatProvider constantFloatProvider = (ConstantFloatProvider)object;
+			return this.value == constantFloatProvider.value;
+		} else {
+			return false;
+		}
+	}
+
+	public int hashCode() {
+		return Float.hashCode(this.value);
+	}
+
+	@Override
+	public FloatProviderType<?> getType() {
+		return FloatProviderType.CONSTANT;
+	}
+
+	public String toString() {
+		return Float.toString(this.value);
+	}
+}

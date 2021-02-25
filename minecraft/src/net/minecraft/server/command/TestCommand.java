@@ -61,14 +61,14 @@ public class TestCommand {
 				.then(CommandManager.literal("runthese").executes(commandContext -> executeRunThese(commandContext.getSource())))
 				.then(
 					CommandManager.literal("runfailed")
-						.executes(commandContext -> method_29411(commandContext.getSource(), false, 0, 8))
+						.executes(commandContext -> executeRerunFailed(commandContext.getSource(), false, 0, 8))
 						.then(
 							CommandManager.argument("onlyRequiredTests", BoolArgumentType.bool())
-								.executes(commandContext -> method_29411(commandContext.getSource(), BoolArgumentType.getBool(commandContext, "onlyRequiredTests"), 0, 8))
+								.executes(commandContext -> executeRerunFailed(commandContext.getSource(), BoolArgumentType.getBool(commandContext, "onlyRequiredTests"), 0, 8))
 								.then(
 									CommandManager.argument("rotationSteps", IntegerArgumentType.integer())
 										.executes(
-											commandContext -> method_29411(
+											commandContext -> executeRerunFailed(
 													commandContext.getSource(),
 													BoolArgumentType.getBool(commandContext, "onlyRequiredTests"),
 													IntegerArgumentType.getInteger(commandContext, "rotationSteps"),
@@ -78,7 +78,7 @@ public class TestCommand {
 										.then(
 											CommandManager.argument("testsPerRow", IntegerArgumentType.integer())
 												.executes(
-													commandContext -> method_29411(
+													commandContext -> executeRerunFailed(
 															commandContext.getSource(),
 															BoolArgumentType.getBool(commandContext, "onlyRequiredTests"),
 															IntegerArgumentType.getInteger(commandContext, "rotationSteps"),
@@ -157,7 +157,7 @@ public class TestCommand {
 								.executes(commandContext -> executeExport(commandContext.getSource(), StringArgumentType.getString(commandContext, "testName")))
 						)
 				)
-				.then(CommandManager.literal("exportthis").executes(commandContext -> method_29413(commandContext.getSource())))
+				.then(CommandManager.literal("exportthis").executes(commandContext -> executeExport(commandContext.getSource())))
 				.then(
 					CommandManager.literal("import")
 						.then(
@@ -297,7 +297,7 @@ public class TestCommand {
 			TestUtil.clearDebugMarkers(serverWorld);
 			sendMessage(source, "Running " + collection.size() + " tests...");
 			TestSet testSet = new TestSet();
-			collection.forEach(blockPosx -> run(serverWorld, blockPosx, testSet));
+			collection.forEach(pos -> run(serverWorld, pos, testSet));
 			return 1;
 		}
 	}
@@ -365,61 +365,61 @@ public class TestCommand {
 		}
 	}
 
-	private static int executeRunAll(ServerCommandSource source, int i, int j) {
+	private static int executeRunAll(ServerCommandSource source, int rotationSteps, int i) {
 		TestUtil.clearDebugMarkers(source.getWorld());
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions();
 		sendMessage(source, "Running all " + collection.size() + " tests...");
 		TestFunctions.clearFailedTestFunctions();
-		run(source, collection, i, j);
+		run(source, collection, rotationSteps, i);
 		return 1;
 	}
 
-	private static int executeRunAll(ServerCommandSource source, String testClass, int i, int j) {
+	private static int executeRunAll(ServerCommandSource source, String testClass, int rotationSteps, int i) {
 		Collection<TestFunction> collection = TestFunctions.getTestFunctions(testClass);
 		TestUtil.clearDebugMarkers(source.getWorld());
 		sendMessage(source, "Running " + collection.size() + " tests from " + testClass + "...");
 		TestFunctions.clearFailedTestFunctions();
-		run(source, collection, i, j);
+		run(source, collection, rotationSteps, i);
 		return 1;
 	}
 
-	private static int method_29411(ServerCommandSource serverCommandSource, boolean bl, int i, int j) {
+	private static int executeRerunFailed(ServerCommandSource source, boolean requiredOnly, int rotationSteps, int i) {
 		Collection<TestFunction> collection;
-		if (bl) {
+		if (requiredOnly) {
 			collection = (Collection<TestFunction>)TestFunctions.getFailedTestFunctions().stream().filter(TestFunction::isRequired).collect(Collectors.toList());
 		} else {
 			collection = TestFunctions.getFailedTestFunctions();
 		}
 
 		if (collection.isEmpty()) {
-			sendMessage(serverCommandSource, "No failed tests to rerun");
+			sendMessage(source, "No failed tests to rerun");
 			return 0;
 		} else {
-			TestUtil.clearDebugMarkers(serverCommandSource.getWorld());
-			sendMessage(serverCommandSource, "Rerunning " + collection.size() + " failed tests (" + (bl ? "only required tests" : "including optional tests") + ")");
-			run(serverCommandSource, collection, i, j);
+			TestUtil.clearDebugMarkers(source.getWorld());
+			sendMessage(source, "Rerunning " + collection.size() + " failed tests (" + (requiredOnly ? "only required tests" : "including optional tests") + ")");
+			run(source, collection, rotationSteps, i);
 			return 1;
 		}
 	}
 
-	private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int i, int j) {
+	private static void run(ServerCommandSource source, Collection<TestFunction> testFunctions, int rotationSteps, int i) {
 		BlockPos blockPos = new BlockPos(source.getPosition());
 		BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
 		ServerWorld serverWorld = source.getWorld();
-		BlockRotation blockRotation = StructureTestUtil.getRotation(i);
-		Collection<GameTest> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, j);
+		BlockRotation blockRotation = StructureTestUtil.getRotation(rotationSteps);
+		Collection<GameTest> collection = TestUtil.runTestFunctions(testFunctions, blockPos2, blockRotation, serverWorld, TestManager.INSTANCE, i);
 		TestSet testSet = new TestSet(collection);
 		testSet.addListener(new TestCommand.Listener(serverWorld, testSet));
-		testSet.addListener(gameTest -> TestFunctions.addFailedTestFunction(gameTest.getTestFunction()));
+		testSet.addListener(test -> TestFunctions.addFailedTestFunction(test.getTestFunction()));
 	}
 
 	private static void sendMessage(ServerCommandSource source, String message) {
 		source.sendFeedback(new LiteralText(message), false);
 	}
 
-	private static int method_29413(ServerCommandSource serverCommandSource) {
-		BlockPos blockPos = new BlockPos(serverCommandSource.getPosition());
-		ServerWorld serverWorld = serverCommandSource.getWorld();
+	private static int executeExport(ServerCommandSource source) {
+		BlockPos blockPos = new BlockPos(source.getPosition());
+		ServerWorld serverWorld = source.getWorld();
 		BlockPos blockPos2 = StructureTestUtil.findNearestStructureBlock(blockPos, 15, serverWorld);
 		if (blockPos2 == null) {
 			sendMessage(serverWorld, "Couldn't find any structure block within 15 radius", Formatting.RED);
@@ -427,7 +427,7 @@ public class TestCommand {
 		} else {
 			StructureBlockBlockEntity structureBlockBlockEntity = (StructureBlockBlockEntity)serverWorld.getBlockEntity(blockPos2);
 			String string = structureBlockBlockEntity.getStructurePath();
-			return executeExport(serverCommandSource, string);
+			return executeExport(source, string);
 		}
 	}
 
@@ -453,10 +453,10 @@ public class TestCommand {
 		}
 	}
 
-	private static int executeImport(ServerCommandSource serverCommandSource, String structure) {
+	private static int executeImport(ServerCommandSource source, String structure) {
 		Path path = Paths.get(StructureTestUtil.testStructuresDirectoryName, structure + ".snbt");
 		Identifier identifier = new Identifier("minecraft", structure);
-		Path path2 = serverCommandSource.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
+		Path path2 = source.getWorld().getStructureManager().getStructurePath(identifier, ".nbt");
 
 		try {
 			BufferedReader bufferedReader = Files.newBufferedReader(path);
@@ -484,7 +484,7 @@ public class TestCommand {
 				}
 			}
 
-			sendMessage(serverCommandSource, "Imported to " + path2.toAbsolutePath());
+			sendMessage(source, "Imported to " + path2.toAbsolutePath());
 			return 0;
 		} catch (CommandSyntaxException | IOException var20) {
 			System.err.println("Failed to load structure " + structure);
@@ -494,8 +494,7 @@ public class TestCommand {
 	}
 
 	private static void sendMessage(ServerWorld world, String message, Formatting formatting) {
-		world.getPlayers(serverPlayerEntity -> true)
-			.forEach(serverPlayerEntity -> serverPlayerEntity.sendSystemMessage(new LiteralText(formatting + message), Util.NIL_UUID));
+		world.getPlayers(player -> true).forEach(player -> player.sendSystemMessage(new LiteralText(formatting + message), Util.NIL_UUID));
 	}
 
 	static class Listener implements TestListener {

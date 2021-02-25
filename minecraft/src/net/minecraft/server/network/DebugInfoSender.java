@@ -48,18 +48,18 @@ public class DebugInfoSender {
 	}
 
 	public static void sendPoiAddition(ServerWorld world, BlockPos pos) {
-		method_24819(world, pos);
+		sendPoi(world, pos);
 	}
 
 	public static void sendPoiRemoval(ServerWorld world, BlockPos pos) {
-		method_24819(world, pos);
+		sendPoi(world, pos);
 	}
 
 	public static void sendPointOfInterest(ServerWorld world, BlockPos pos) {
-		method_24819(world, pos);
+		sendPoi(world, pos);
 	}
 
-	private static void method_24819(ServerWorld world, BlockPos pos) {
+	private static void sendPoi(ServerWorld world, BlockPos pos) {
 	}
 
 	public static void sendPathfindingData(World world, MobEntity mob, @Nullable Path path, float nodeReachProximity) {
@@ -68,7 +68,7 @@ public class DebugInfoSender {
 	public static void sendNeighborUpdate(World world, BlockPos pos) {
 	}
 
-	public static void sendStructureStart(StructureWorldAccess structureWorldAccess, StructureStart<?> structureStart) {
+	public static void sendStructureStart(StructureWorldAccess world, StructureStart<?> structureStart) {
 	}
 
 	public static void sendGoalSelector(World world, MobEntity mob, GoalSelector goalSelector) {

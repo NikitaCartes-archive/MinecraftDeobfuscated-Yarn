@@ -24,9 +24,9 @@ public class EntityTrackerUpdateS2CPacket implements Packet<ClientPlayPacketList
 		}
 	}
 
-	public EntityTrackerUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.trackedValues = DataTracker.deserializePacket(packetByteBuf);
+	public EntityTrackerUpdateS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.trackedValues = DataTracker.deserializePacket(buf);
 	}
 
 	@Override

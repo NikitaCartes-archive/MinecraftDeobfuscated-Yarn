@@ -28,21 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5888;
-import net.minecraft.class_5889;
-import net.minecraft.class_5890;
-import net.minecraft.class_5891;
-import net.minecraft.class_5892;
-import net.minecraft.class_5894;
-import net.minecraft.class_5895;
-import net.minecraft.class_5896;
-import net.minecraft.class_5897;
-import net.minecraft.class_5898;
-import net.minecraft.class_5899;
-import net.minecraft.class_5900;
-import net.minecraft.class_5903;
-import net.minecraft.class_5904;
-import net.minecraft.class_5905;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BannerBlockEntity;
@@ -156,6 +141,7 @@ import net.minecraft.network.packet.s2c.play.ChunkDataS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkDeltaUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkLoadDistanceS2CPacket;
 import net.minecraft.network.packet.s2c.play.ChunkRenderDistanceCenterS2CPacket;
+import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
@@ -163,8 +149,11 @@ import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
+import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
+import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAttachS2CPacket;
@@ -196,6 +185,7 @@ import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenHorseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.OpenWrittenBookS2CPacket;
+import net.minecraft.network.packet.s2c.play.OverlayMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.PaintingSpawnS2CPacket;
 import net.minecraft.network.packet.s2c.play.ParticleS2CPacket;
 import net.minecraft.network.packet.s2c.play.PlaySoundFromEntityS2CPacket;
@@ -222,14 +212,24 @@ import net.minecraft.network.packet.s2c.play.SetTradeOffersS2CPacket;
 import net.minecraft.network.packet.s2c.play.SignEditorOpenS2CPacket;
 import net.minecraft.network.packet.s2c.play.StatisticsS2CPacket;
 import net.minecraft.network.packet.s2c.play.StopSoundS2CPacket;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.SynchronizeTagsS2CPacket;
 import net.minecraft.network.packet.s2c.play.TagQueryResponseS2CPacket;
+import net.minecraft.network.packet.s2c.play.TeamS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnloadChunkS2CPacket;
 import net.minecraft.network.packet.s2c.play.UnlockRecipesS2CPacket;
 import net.minecraft.network.packet.s2c.play.UpdateSelectedSlotS2CPacket;
 import net.minecraft.network.packet.s2c.play.VehicleMoveS2CPacket;
 import net.minecraft.network.packet.s2c.play.VibrationS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderCenterChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInitializeS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderInterpolateSizeS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderSizeChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderWarningBlocksChangedS2CPacket;
+import net.minecraft.network.packet.s2c.play.WorldBorderWarningTimeChangedS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldEventS2CPacket;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -595,7 +595,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		playerEntity.updatePositionAndAngles(e, g, i, j, k);
 		this.connection.send(new TeleportConfirmC2SPacket(packet.getTeleportId()));
 		this.connection
-			.send(new PlayerMoveC2SPacket.Both(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.yaw, playerEntity.pitch, false));
+			.send(new PlayerMoveC2SPacket.Full(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ(), playerEntity.yaw, playerEntity.pitch, false));
 		if (!this.positionLookSetup) {
 			this.positionLookSetup = true;
 			this.client.openScreen(null);
@@ -883,7 +883,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onPlayerRespawn(PlayerRespawnS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		RegistryKey<World> registryKey = packet.getDimension();
-		DimensionType dimensionType = packet.method_29445();
+		DimensionType dimensionType = packet.getDimensionType();
 		ClientPlayerEntity clientPlayerEntity = this.client.player;
 		int i = clientPlayerEntity.getId();
 		this.positionLookSetup = false;
@@ -1195,7 +1195,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		if (mapState == null) {
 			mapState = mapRenderer.getMapTextureFromId(i);
 			if (mapState == null) {
-				mapState = MapState.of(packet.method_32701(), packet.method_32702(), this.client.world.getRegistryKey());
+				mapState = MapState.of(packet.getScale(), packet.isLocked(), this.client.world.getRegistryKey());
 			}
 
 			this.client.world.putMapState(string, mapState);
@@ -1351,7 +1351,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	@Override
 	public void onSynchronizeTags(SynchronizeTagsS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		TagManager tagManager = TagManager.fromPacket(this.registryManager, packet.getTagManager());
+		TagManager tagManager = TagManager.fromPacket(this.registryManager, packet.getGroups());
 		Multimap<RegistryKey<? extends Registry<?>>, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
 		if (!multimap.isEmpty()) {
 			LOGGER.warn("Incomplete server tags, disconnecting. Missing: {}", multimap);
@@ -1367,20 +1367,20 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_34073(class_5890 arg) {
+	public void onEndCombat(EndCombatS2CPacket packet) {
 	}
 
 	@Override
-	public void method_34074(class_5891 arg) {
+	public void onEnterCombat(EnterCombatS2CPacket packet) {
 	}
 
 	@Override
-	public void method_34075(class_5892 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		Entity entity = this.world.getEntityById(arg.method_34144());
+	public void onDeathMessage(DeathMessageS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		Entity entity = this.world.getEntityById(packet.getEntityId());
 		if (entity == this.client.player) {
 			if (this.client.player.showsDeathScreen()) {
-				this.client.openScreen(new DeathScreen(arg.method_34145(), this.world.getLevelProperties().isHardcore()));
+				this.client.openScreen(new DeathScreen(packet.getMessage(), this.world.getLevelProperties().isHardcore()));
 			} else {
 				this.client.player.requestRespawn();
 			}
@@ -1404,78 +1404,78 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void method_34072(class_5889 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
+	public void onWorldBorderInitialize(WorldBorderInitializeS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		WorldBorder worldBorder = this.world.getWorldBorder();
-		worldBorder.setCenter(arg.method_34124(), arg.method_34125());
-		long l = arg.method_34128();
+		worldBorder.setCenter(packet.getCenterX(), packet.getCenterZ());
+		long l = packet.getSizeLerpTime();
 		if (l > 0L) {
-			worldBorder.interpolateSize(arg.method_34127(), arg.method_34126(), l);
+			worldBorder.interpolateSize(packet.getSize(), packet.getSizeLerpTarget(), l);
 		} else {
-			worldBorder.setSize(arg.method_34126());
+			worldBorder.setSize(packet.getSizeLerpTarget());
 		}
 
-		worldBorder.setMaxRadius(arg.method_34129());
-		worldBorder.setWarningBlocks(arg.method_34131());
-		worldBorder.setWarningTime(arg.method_34130());
+		worldBorder.setMaxRadius(packet.getMaxRadius());
+		worldBorder.setWarningBlocks(packet.getWarningBlocks());
+		worldBorder.setWarningTime(packet.getWarningTime());
 	}
 
 	@Override
-	public void method_34077(class_5895 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.world.getWorldBorder().setCenter(arg.method_34158(), arg.method_34157());
+	public void onWorldBorderCenterChanged(WorldBorderCenterChangedS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.world.getWorldBorder().setCenter(packet.getCenterZ(), packet.getCenterX());
 	}
 
 	@Override
-	public void method_34078(class_5896 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.world.getWorldBorder().interpolateSize(arg.method_34160(), arg.method_34161(), arg.method_34162());
+	public void onWorldBorderInterpolateSize(WorldBorderInterpolateSizeS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.world.getWorldBorder().interpolateSize(packet.getSize(), packet.getSizeLerpTarget(), packet.getSizeLerpTime());
 	}
 
 	@Override
-	public void method_34079(class_5897 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.world.getWorldBorder().setSize(arg.method_34164());
+	public void onWorldBorderSizeChanged(WorldBorderSizeChangedS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.world.getWorldBorder().setSize(packet.getSizeLerpTarget());
 	}
 
 	@Override
-	public void method_34081(class_5899 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.world.getWorldBorder().setWarningBlocks(arg.method_34168());
+	public void onWorldBorderWarningBlocksChanged(WorldBorderWarningBlocksChangedS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.world.getWorldBorder().setWarningBlocks(packet.getWarningBlocks());
 	}
 
 	@Override
-	public void method_34080(class_5898 arg) {
-		NetworkThreadUtils.forceMainThread(arg, this, this.client);
-		this.world.getWorldBorder().setWarningTime(arg.method_34166());
+	public void onWorldBorderWarningTimeChanged(WorldBorderWarningTimeChangedS2CPacket packet) {
+		NetworkThreadUtils.forceMainThread(packet, this, this.client);
+		this.world.getWorldBorder().setWarningTime(packet.getWarningTime());
 	}
 
 	@Override
-	public void method_34071(class_5888 arg) {
-		this.client.inGameHud.method_34003();
-		if (arg.method_34116()) {
+	public void onTitleClear(ClearTitleS2CPacket packet) {
+		this.client.inGameHud.clearTitle();
+		if (packet.shouldReset()) {
 			this.client.inGameHud.setDefaultTitleFade();
 		}
 	}
 
 	@Override
-	public void method_34076(class_5894 arg) {
-		this.client.inGameHud.setOverlayMessage(arg.method_34155(), false);
+	public void onOverlayMessage(OverlayMessageS2CPacket packet) {
+		this.client.inGameHud.setOverlayMessage(packet.getMessage(), false);
 	}
 
 	@Override
-	public void method_34083(class_5904 arg) {
-		this.client.inGameHud.method_34004(arg.method_34192());
+	public void onTitle(TitleS2CPacket packet) {
+		this.client.inGameHud.setTitle(packet.getTitle());
 	}
 
 	@Override
-	public void method_34082(class_5903 arg) {
-		this.client.inGameHud.method_34002(arg.method_34190());
+	public void onSubtitle(SubtitleS2CPacket packet) {
+		this.client.inGameHud.setSubtitle(packet.getSubtitle());
 	}
 
 	@Override
-	public void method_34084(class_5905 arg) {
-		this.client.inGameHud.method_34001(arg.method_34194(), arg.method_34195(), arg.method_34196());
+	public void onTitleFade(TitleFadeS2CPacket packet) {
+		this.client.inGameHud.setTitleTicks(packet.getFadeInTicks(), packet.getRemainTicks(), packet.getFadeOutTicks());
 	}
 
 	@Override
@@ -1498,12 +1498,12 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 
 		for (PlayerListS2CPacket.Entry entry : packet.getEntries()) {
-			if (packet.getAction() == PlayerListS2CPacket.class_5893.field_29140) {
+			if (packet.getAction() == PlayerListS2CPacket.Action.REMOVE_PLAYER) {
 				this.client.getSocialInteractionsManager().setPlayerOffline(entry.getProfile().getId());
 				this.playerListEntries.remove(entry.getProfile().getId());
 			} else {
 				PlayerListEntry playerListEntry = (PlayerListEntry)this.playerListEntries.get(entry.getProfile().getId());
-				if (packet.getAction() == PlayerListS2CPacket.class_5893.field_29136) {
+				if (packet.getAction() == PlayerListS2CPacket.Action.ADD_PLAYER) {
 					playerListEntry = new PlayerListEntry(entry);
 					this.playerListEntries.put(playerListEntry.getProfile().getId(), playerListEntry);
 					this.client.getSocialInteractionsManager().setPlayerOnline(playerListEntry);
@@ -1511,18 +1511,18 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 
 				if (playerListEntry != null) {
 					switch (packet.getAction()) {
-						case field_29136:
+						case ADD_PLAYER:
 							playerListEntry.setGameMode(entry.getGameMode());
 							playerListEntry.setLatency(entry.getLatency());
 							playerListEntry.setDisplayName(entry.getDisplayName());
 							break;
-						case field_29137:
+						case UPDATE_GAME_MODE:
 							playerListEntry.setGameMode(entry.getGameMode());
 							break;
-						case field_29138:
+						case UPDATE_LATENCY:
 							playerListEntry.setLatency(entry.getLatency());
 							break;
-						case field_29139:
+						case UPDATE_DISPLAY_NAME:
 							playerListEntry.setDisplayName(entry.getDisplayName());
 					}
 				}
@@ -2010,47 +2010,47 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	}
 
 	@Override
-	public void onTeam(class_5900 packet) {
+	public void onTeam(TeamS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
-		class_5900.class_5901 lv = packet.method_34176();
+		TeamS2CPacket.Operation operation = packet.method_34176();
 		Team team;
-		if (lv == class_5900.class_5901.field_29155) {
-			team = scoreboard.addTeam(packet.method_34177());
+		if (operation == TeamS2CPacket.Operation.ADD) {
+			team = scoreboard.addTeam(packet.getTeamName());
 		} else {
-			team = scoreboard.getTeam(packet.method_34177());
+			team = scoreboard.getTeam(packet.getTeamName());
 		}
 
-		Optional<class_5900.class_5902> optional = packet.method_34179();
-		optional.ifPresent(arg -> {
-			team.setDisplayName(arg.method_34181());
-			team.setColor(arg.method_34184());
-			team.setFriendlyFlagsBitwise(arg.method_34183());
-			AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(arg.method_34185());
+		Optional<TeamS2CPacket.SerializableTeam> optional = packet.getTeam();
+		optional.ifPresent(serializableTeam -> {
+			team.setDisplayName(serializableTeam.getDisplayName());
+			team.setColor(serializableTeam.getColor());
+			team.setFriendlyFlagsBitwise(serializableTeam.getFriendlyFlagsBitwise());
+			AbstractTeam.VisibilityRule visibilityRule = AbstractTeam.VisibilityRule.getRule(serializableTeam.getNameTagVisibilityRule());
 			if (visibilityRule != null) {
 				team.setNameTagVisibilityRule(visibilityRule);
 			}
 
-			AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(arg.method_34186());
+			AbstractTeam.CollisionRule collisionRule = AbstractTeam.CollisionRule.getRule(serializableTeam.getCollisionRule());
 			if (collisionRule != null) {
 				team.setCollisionRule(collisionRule);
 			}
 
-			team.setPrefix(arg.method_34187());
-			team.setSuffix(arg.method_34188());
+			team.setPrefix(serializableTeam.getPrefix());
+			team.setSuffix(serializableTeam.getSuffix());
 		});
-		class_5900.class_5901 lv2 = packet.method_34174();
-		if (lv2 == class_5900.class_5901.field_29155) {
-			for (String string : packet.method_34178()) {
+		TeamS2CPacket.Operation operation2 = packet.method_34174();
+		if (operation2 == TeamS2CPacket.Operation.ADD) {
+			for (String string : packet.getPlayerNames()) {
 				scoreboard.addPlayerToTeam(string, team);
 			}
-		} else if (lv2 == class_5900.class_5901.field_29156) {
-			for (String string : packet.method_34178()) {
+		} else if (operation2 == TeamS2CPacket.Operation.REMOVE) {
+			for (String string : packet.getPlayerNames()) {
 				scoreboard.removePlayerFromTeam(string, team);
 			}
 		}
 
-		if (lv == class_5900.class_5901.field_29156) {
+		if (operation == TeamS2CPacket.Operation.REMOVE) {
 			scoreboard.removeTeam(team);
 		}
 	}

@@ -14,18 +14,18 @@ public class BlockUpdateS2CPacket implements Packet<ClientPlayPacketListener> {
 	private final BlockPos pos;
 	private final BlockState state;
 
-	public BlockUpdateS2CPacket(BlockPos blockPos, BlockState blockState) {
-		this.pos = blockPos;
-		this.state = blockState;
+	public BlockUpdateS2CPacket(BlockPos pos, BlockState state) {
+		this.pos = pos;
+		this.state = state;
 	}
 
 	public BlockUpdateS2CPacket(BlockView world, BlockPos pos) {
 		this(pos, world.getBlockState(pos));
 	}
 
-	public BlockUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-		this.pos = packetByteBuf.readBlockPos();
-		this.state = Block.STATE_IDS.get(packetByteBuf.readVarInt());
+	public BlockUpdateS2CPacket(PacketByteBuf buf) {
+		this.pos = buf.readBlockPos();
+		this.state = Block.STATE_IDS.get(buf.readVarInt());
 	}
 
 	@Override

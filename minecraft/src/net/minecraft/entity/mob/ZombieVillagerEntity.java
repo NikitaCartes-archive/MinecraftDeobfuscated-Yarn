@@ -139,7 +139,7 @@ public class ZombieVillagerEntity extends ZombieEntity implements VillagerDataCo
 					this.setConverting(player.getUuid(), this.random.nextInt(2401) + 3600);
 				}
 
-				this.emitGameEvent(GameEvent.MOB_INTERACT, this.method_33575());
+				this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
 				return ActionResult.SUCCESS;
 			} else {
 				return ActionResult.CONSUME;

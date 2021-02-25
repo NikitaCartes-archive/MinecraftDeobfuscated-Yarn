@@ -54,9 +54,9 @@ public abstract class AbstractCommandBlockScreen extends Screen {
 		);
 		boolean bl = this.getCommandExecutor().isTrackingOutput();
 		this.toggleTrackingOutputButton = this.addButton(
-			CyclingButtonWidget.method_32607(new LiteralText("O"), new LiteralText("X"))
-				.value(bl)
-				.method_32616()
+			CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X"))
+				.initially(bl)
+				.omitKeyText()
 				.build(
 					this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (cyclingButtonWidget, boolean_) -> {
 						CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();

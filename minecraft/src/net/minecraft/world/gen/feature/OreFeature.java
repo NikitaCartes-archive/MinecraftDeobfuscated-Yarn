@@ -4,11 +4,11 @@ import com.mojang.serialization.Codec;
 import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
-import net.minecraft.class_5867;
 import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.ChunkSectionCache;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
@@ -108,7 +108,7 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 			}
 		}
 
-		try (class_5867 lv = new class_5867(world)) {
+		try (ChunkSectionCache chunkSectionCache = new ChunkSectionCache(world)) {
 			for (int n = 0; n < j; n++) {
 				double o = ds[n * 4 + 3];
 				if (!(o < 0.0)) {
@@ -135,15 +135,15 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 											if (!bitSet.get(ah)) {
 												bitSet.set(ah);
 												mutable.set(ab, ad, af);
-												ChunkSection chunkSection = lv.method_33944(mutable);
+												ChunkSection chunkSection = chunkSectionCache.getSection(mutable);
 												int ai = ChunkSectionPos.getLocalCoord(ab);
 												int aj = ChunkSectionPos.getLocalCoord(ad);
 												int ak = ChunkSectionPos.getLocalCoord(af);
 												BlockState blockState = chunkSection.getBlockState(ai, aj, ak);
 
-												for (OreFeatureConfig.class_5876 lv2 : config.field_29063) {
-													if (method_33983(blockState, lv::method_33946, random, config, lv2, mutable)) {
-														chunkSection.setBlockState(ai, aj, ak, lv2.field_29069, false);
+												for (OreFeatureConfig.Target target : config.targets) {
+													if (shouldPlace(blockState, chunkSectionCache::getBlockState, random, config, target, mutable)) {
+														chunkSection.setBlockState(ai, aj, ak, target.state, false);
 														i++;
 														break;
 													}
@@ -162,26 +162,21 @@ public class OreFeature extends Feature<OreFeatureConfig> {
 		return i > 0;
 	}
 
-	public static boolean method_33983(
-		BlockState blockState,
-		Function<BlockPos, BlockState> function,
-		Random random,
-		OreFeatureConfig oreFeatureConfig,
-		OreFeatureConfig.class_5876 arg,
-		BlockPos.Mutable mutable
+	public static boolean shouldPlace(
+		BlockState state, Function<BlockPos, BlockState> posToState, Random random, OreFeatureConfig config, OreFeatureConfig.Target target, BlockPos.Mutable pos
 	) {
-		if (!arg.field_29068.test(blockState, random)) {
+		if (!target.target.test(state, random)) {
 			return false;
 		} else {
-			return method_33984(random, oreFeatureConfig.field_29064) ? true : !method_33981(function, mutable);
+			return shouldNotDiscard(random, config.discardOnAirChance) ? true : !isExposedToAir(posToState, pos);
 		}
 	}
 
-	protected static boolean method_33984(Random random, float f) {
-		if (f <= 0.0F) {
+	protected static boolean shouldNotDiscard(Random random, float chance) {
+		if (chance <= 0.0F) {
 			return true;
 		} else {
-			return f >= 1.0F ? false : random.nextFloat() >= f;
+			return chance >= 1.0F ? false : random.nextFloat() >= chance;
 		}
 	}
 }

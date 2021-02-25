@@ -14,8 +14,8 @@ public class VibrationS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.vibration = vibration;
 	}
 
-	public VibrationS2CPacket(PacketByteBuf packetByteBuf) {
-		this.vibration = Vibration.readFromBuf(packetByteBuf);
+	public VibrationS2CPacket(PacketByteBuf buf) {
+		this.vibration = Vibration.readFromBuf(buf);
 	}
 
 	@Override

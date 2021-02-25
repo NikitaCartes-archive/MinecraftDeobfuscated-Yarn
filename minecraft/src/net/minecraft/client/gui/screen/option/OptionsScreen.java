@@ -48,9 +48,9 @@ public class OptionsScreen extends Screen {
 
 		if (this.client.world != null) {
 			this.difficultyButton = this.addButton(
-				CyclingButtonWidget.<Difficulty>method_32606(Difficulty::getTranslatableName)
-					.method_32624(Difficulty.values())
-					.value(this.client.world.getDifficulty())
+				CyclingButtonWidget.<Difficulty>builder(Difficulty::getTranslatableName)
+					.values(Difficulty.values())
+					.initially(this.client.world.getDifficulty())
 					.build(
 						this.width / 2 - 155 + i % 2 * 160,
 						this.height / 6 - 12 + 24 * (i >> 1),

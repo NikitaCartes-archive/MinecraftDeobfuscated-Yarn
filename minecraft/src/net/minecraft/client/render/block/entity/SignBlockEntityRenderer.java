@@ -84,7 +84,7 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		int o = (int)((double)NativeImage.getBlue(l) * 0.4);
 		int p = NativeImage.getAbgrColor(0, o, n, m);
 		int q = 20;
-		OrderedText[] orderedTexts = signBlockEntity.method_33829(MinecraftClient.getInstance().method_33883(), text -> {
+		OrderedText[] orderedTexts = signBlockEntity.updateSign(MinecraftClient.getInstance().shouldFilterText(), text -> {
 			List<OrderedText> list = this.textRenderer.wrapLines(text, 90);
 			return list.isEmpty() ? OrderedText.EMPTY : (OrderedText)list.get(0);
 		});

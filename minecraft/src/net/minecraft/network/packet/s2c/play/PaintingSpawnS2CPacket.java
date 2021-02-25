@@ -27,12 +27,12 @@ public class PaintingSpawnS2CPacket implements Packet<ClientPlayPacketListener> 
 		this.motiveId = Registry.PAINTING_MOTIVE.getRawId(entity.motive);
 	}
 
-	public PaintingSpawnS2CPacket(PacketByteBuf packetByteBuf) {
-		this.id = packetByteBuf.readVarInt();
-		this.uuid = packetByteBuf.readUuid();
-		this.motiveId = packetByteBuf.readVarInt();
-		this.pos = packetByteBuf.readBlockPos();
-		this.facing = Direction.fromHorizontal(packetByteBuf.readUnsignedByte());
+	public PaintingSpawnS2CPacket(PacketByteBuf buf) {
+		this.id = buf.readVarInt();
+		this.uuid = buf.readUuid();
+		this.motiveId = buf.readVarInt();
+		this.pos = buf.readBlockPos();
+		this.facing = Direction.fromHorizontal(buf.readUnsignedByte());
 	}
 
 	@Override

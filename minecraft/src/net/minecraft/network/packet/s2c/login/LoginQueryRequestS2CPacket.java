@@ -12,12 +12,12 @@ public class LoginQueryRequestS2CPacket implements Packet<ClientLoginPacketListe
 	private final Identifier channel;
 	private final PacketByteBuf payload;
 
-	public LoginQueryRequestS2CPacket(PacketByteBuf packetByteBuf) {
-		this.queryId = packetByteBuf.readVarInt();
-		this.channel = packetByteBuf.readIdentifier();
-		int i = packetByteBuf.readableBytes();
+	public LoginQueryRequestS2CPacket(PacketByteBuf buf) {
+		this.queryId = buf.readVarInt();
+		this.channel = buf.readIdentifier();
+		int i = buf.readableBytes();
 		if (i >= 0 && i <= 1048576) {
-			this.payload = new PacketByteBuf(packetByteBuf.readBytes(i));
+			this.payload = new PacketByteBuf(buf.readBytes(i));
 		} else {
 			throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
 		}

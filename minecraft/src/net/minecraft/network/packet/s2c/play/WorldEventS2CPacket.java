@@ -20,11 +20,11 @@ public class WorldEventS2CPacket implements Packet<ClientPlayPacketListener> {
 		this.global = global;
 	}
 
-	public WorldEventS2CPacket(PacketByteBuf packetByteBuf) {
-		this.eventId = packetByteBuf.readInt();
-		this.pos = packetByteBuf.readBlockPos();
-		this.data = packetByteBuf.readInt();
-		this.global = packetByteBuf.readBoolean();
+	public WorldEventS2CPacket(PacketByteBuf buf) {
+		this.eventId = buf.readInt();
+		this.pos = buf.readBlockPos();
+		this.data = buf.readInt();
+		this.global = buf.readBoolean();
 	}
 
 	@Override

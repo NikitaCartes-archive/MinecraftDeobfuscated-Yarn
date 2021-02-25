@@ -30,19 +30,16 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 		}
 	}
 
-	public EntityAttributesS2CPacket(PacketByteBuf packetByteBuf) {
-		this.entityId = packetByteBuf.readVarInt();
-		this.entries = packetByteBuf.method_34066(
-			packetByteBufx -> {
-				Identifier identifier = packetByteBufx.readIdentifier();
+	public EntityAttributesS2CPacket(PacketByteBuf buf) {
+		this.entityId = buf.readVarInt();
+		this.entries = buf.readList(
+			bufx -> {
+				Identifier identifier = bufx.readIdentifier();
 				EntityAttribute entityAttribute = Registry.ATTRIBUTE.get(identifier);
-				double d = packetByteBufx.readDouble();
-				List<EntityAttributeModifier> list = packetByteBufx.method_34066(
-					packetByteBufxx -> new EntityAttributeModifier(
-							packetByteBufxx.readUuid(),
-							"Unknown synced attribute modifier",
-							packetByteBufxx.readDouble(),
-							EntityAttributeModifier.Operation.fromId(packetByteBufxx.readByte())
+				double d = bufx.readDouble();
+				List<EntityAttributeModifier> list = bufx.readList(
+					modifiers -> new EntityAttributeModifier(
+							modifiers.readUuid(), "Unknown synced attribute modifier", modifiers.readDouble(), EntityAttributeModifier.Operation.fromId(modifiers.readByte())
 						)
 				);
 				return new EntityAttributesS2CPacket.Entry(entityAttribute, d, list);
@@ -53,13 +50,13 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	@Override
 	public void write(PacketByteBuf buf) {
 		buf.writeVarInt(this.entityId);
-		buf.method_34062(this.entries, (packetByteBuf, entry) -> {
-			packetByteBuf.writeIdentifier(Registry.ATTRIBUTE.getId(entry.getId()));
-			packetByteBuf.writeDouble(entry.getBaseValue());
-			packetByteBuf.method_34062(entry.getModifiers(), (packetByteBufx, entityAttributeModifier) -> {
-				packetByteBufx.writeUuid(entityAttributeModifier.getId());
-				packetByteBufx.writeDouble(entityAttributeModifier.getValue());
-				packetByteBufx.writeByte(entityAttributeModifier.getOperation().getId());
+		buf.writeCollection(this.entries, (bufx, attribute) -> {
+			bufx.writeIdentifier(Registry.ATTRIBUTE.getId(attribute.getId()));
+			bufx.writeDouble(attribute.getBaseValue());
+			bufx.writeCollection(attribute.getModifiers(), (bufxx, modifier) -> {
+				bufxx.writeUuid(modifier.getId());
+				bufxx.writeDouble(modifier.getValue());
+				bufxx.writeByte(modifier.getOperation().getId());
 			});
 		});
 	}
@@ -79,18 +76,18 @@ public class EntityAttributesS2CPacket implements Packet<ClientPlayPacketListene
 	}
 
 	public static class Entry {
-		private final EntityAttribute id;
+		private final EntityAttribute attribute;
 		private final double baseValue;
 		private final Collection<EntityAttributeModifier> modifiers;
 
-		public Entry(EntityAttribute entityAttribute, double d, Collection<EntityAttributeModifier> collection) {
-			this.id = entityAttribute;
-			this.baseValue = d;
-			this.modifiers = collection;
+		public Entry(EntityAttribute attribute, double baseValue, Collection<EntityAttributeModifier> modifiers) {
+			this.attribute = attribute;
+			this.baseValue = baseValue;
+			this.modifiers = modifiers;
 		}
 
 		public EntityAttribute getId() {
-			return this.id;
+			return this.attribute;
 		}
 
 		public double getBaseValue() {
