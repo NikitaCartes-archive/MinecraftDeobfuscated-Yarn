@@ -56,8 +56,8 @@ public abstract class Particle {
     protected float field_28786 = 0.98f;
     protected boolean field_28787 = false;
 
-    protected Particle(ClientWorld clientWorld, double x, double y, double z) {
-        this.world = clientWorld;
+    protected Particle(ClientWorld world, double x, double y, double z) {
+        this.world = world;
         this.setBoundingBoxSpacing(0.2f, 0.2f);
         this.setPos(x, y, z);
         this.prevPosX = x;

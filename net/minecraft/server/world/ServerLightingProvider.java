@@ -127,7 +127,7 @@ implements AutoCloseable {
             }
             super.setColumnEnabled(chunkPos, true);
             if (!excludeBlocks) {
-                chunk.getLightSourcesStream().forEach(blockPos -> super.addLightSource((BlockPos)blockPos, chunk.getLuminance((BlockPos)blockPos)));
+                chunk.getLightSourcesStream().forEach(pos -> super.addLightSource((BlockPos)pos, chunk.getLuminance((BlockPos)pos)));
             }
             this.chunkStorage.releaseLightTicket(chunkPos);
         }, () -> "lightChunk " + chunkPos + " " + excludeBlocks));

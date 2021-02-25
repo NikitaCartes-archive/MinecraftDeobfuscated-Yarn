@@ -6,7 +6,7 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-import net.minecraft.nbt.PositionTracker;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
 import net.minecraft.nbt.visitor.NbtTagVisitor;
@@ -16,8 +16,8 @@ implements Tag {
     public static final TagReader<EndTag> READER = new TagReader<EndTag>(){
 
         @Override
-        public EndTag read(DataInput dataInput, int i, PositionTracker positionTracker) {
-            positionTracker.add(64L);
+        public EndTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
+            nbtTagSizeTracker.add(64L);
             return INSTANCE;
         }
 
@@ -37,7 +37,7 @@ implements Tag {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+        public /* synthetic */ Tag read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
             return this.read(input, depth, tracker);
         }
     };

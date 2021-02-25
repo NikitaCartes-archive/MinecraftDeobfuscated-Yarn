@@ -21,9 +21,9 @@ implements Packet<ClientPlayPacketListener> {
         this.headYaw = headYaw;
     }
 
-    public EntitySetHeadYawS2CPacket(PacketByteBuf packetByteBuf) {
-        this.entity = packetByteBuf.readVarInt();
-        this.headYaw = packetByteBuf.readByte();
+    public EntitySetHeadYawS2CPacket(PacketByteBuf buf) {
+        this.entity = buf.readVarInt();
+        this.headYaw = buf.readByte();
     }
 
     @Override

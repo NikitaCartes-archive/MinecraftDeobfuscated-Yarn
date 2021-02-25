@@ -23,16 +23,16 @@ implements Packet<ClientPlayPacketListener> {
         this.stats = stats;
     }
 
-    public StatisticsS2CPacket(PacketByteBuf packetByteBuf2) {
-        this.stats = packetByteBuf2.method_34069(Object2IntOpenHashMap::new, packetByteBuf -> {
-            int i = packetByteBuf.readVarInt();
-            int j = packetByteBuf.readVarInt();
-            return StatisticsS2CPacket.method_34086((StatType)Registry.STAT_TYPE.get(i), j);
+    public StatisticsS2CPacket(PacketByteBuf buf2) {
+        this.stats = buf2.readMap(Object2IntOpenHashMap::new, buf -> {
+            int i = buf.readVarInt();
+            int j = buf.readVarInt();
+            return StatisticsS2CPacket.getStat((StatType)Registry.STAT_TYPE.get(i), j);
         }, PacketByteBuf::readVarInt);
     }
 
-    private static <T> Stat<T> method_34086(StatType<T> statType, int i) {
-        return statType.getOrCreateStat(statType.getRegistry().get(i));
+    private static <T> Stat<T> getStat(StatType<T> statType, int id) {
+        return statType.getOrCreateStat(statType.getRegistry().get(id));
     }
 
     @Override
@@ -41,14 +41,14 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
-        buf.method_34063(this.stats, (packetByteBuf, stat) -> {
-            packetByteBuf.writeVarInt(Registry.STAT_TYPE.getRawId(stat.getType()));
-            packetByteBuf.writeVarInt(this.method_34085((Stat)stat));
+    public void write(PacketByteBuf buf2) {
+        buf2.writeMap(this.stats, (buf, stat) -> {
+            buf.writeVarInt(Registry.STAT_TYPE.getRawId(stat.getType()));
+            buf.writeVarInt(this.getStatNetworkId((Stat)stat));
         }, PacketByteBuf::writeVarInt);
     }
 
-    private <T> int method_34085(Stat<T> stat) {
+    private <T> int getStatNetworkId(Stat<T> stat) {
         return stat.getType().getRegistry().getRawId(stat.getValue());
     }
 

@@ -59,11 +59,11 @@ public class ItemCommand {
     }
 
     private static int executeBlockModify(ServerCommandSource source, BlockPos pos, int slot, LootFunction modifier) throws CommandSyntaxException {
-        Inventory inventory = ItemCommand.method_32723(source, pos, NOT_A_CONTAINER_TARGET_EXCEPTION);
+        Inventory inventory = ItemCommand.getInventoryAtPos(source, pos, NOT_A_CONTAINER_TARGET_EXCEPTION);
         if (slot < 0 || slot >= inventory.size()) {
             throw NO_SUCH_SLOT_TARGET_EXCEPTION.create(slot);
         }
-        ItemStack itemStack = ItemCommand.method_32715(source, modifier, inventory.getStack(slot));
+        ItemStack itemStack = ItemCommand.getStackWithModifier(source, modifier, inventory.getStack(slot));
         inventory.setStack(slot, itemStack);
         source.sendFeedback(new TranslatableText("commands.item.block.set.success", pos.getX(), pos.getY(), pos.getZ(), itemStack.toHoverableText()), true);
         return 1;
@@ -77,7 +77,7 @@ public class ItemCommand {
             if (entity instanceof ServerPlayerEntity) {
                 ((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
             }
-            if ((commandItemSlot = entity.getCommandItemSlot(slot)) == CommandItemSlot.EMPTY || !commandItemSlot.set(itemStack = ItemCommand.method_32715(source, modifier, commandItemSlot.get().copy()))) continue;
+            if ((commandItemSlot = entity.getCommandItemSlot(slot)) == CommandItemSlot.EMPTY || !commandItemSlot.set(itemStack = ItemCommand.getStackWithModifier(source, modifier, commandItemSlot.get().copy()))) continue;
             map.put(entity, itemStack);
             if (!(entity instanceof ServerPlayerEntity)) continue;
             ((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
@@ -95,7 +95,7 @@ public class ItemCommand {
     }
 
     private static int executeBlockReplace(ServerCommandSource source, BlockPos pos, int slot, ItemStack stack) throws CommandSyntaxException {
-        Inventory inventory = ItemCommand.method_32723(source, pos, NOT_A_CONTAINER_TARGET_EXCEPTION);
+        Inventory inventory = ItemCommand.getInventoryAtPos(source, pos, NOT_A_CONTAINER_TARGET_EXCEPTION);
         if (slot < 0 || slot >= inventory.size()) {
             throw NO_SUCH_SLOT_TARGET_EXCEPTION.create(slot);
         }
@@ -104,10 +104,10 @@ public class ItemCommand {
         return 1;
     }
 
-    private static Inventory method_32723(ServerCommandSource serverCommandSource, BlockPos blockPos, Dynamic3CommandExceptionType dynamic3CommandExceptionType) throws CommandSyntaxException {
-        BlockEntity blockEntity = serverCommandSource.getWorld().getBlockEntity(blockPos);
+    private static Inventory getInventoryAtPos(ServerCommandSource source, BlockPos pos, Dynamic3CommandExceptionType exception) throws CommandSyntaxException {
+        BlockEntity blockEntity = source.getWorld().getBlockEntity(pos);
         if (!(blockEntity instanceof Inventory)) {
-            throw dynamic3CommandExceptionType.create(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+            throw exception.create(pos.getX(), pos.getY(), pos.getZ());
         }
         return (Inventory)((Object)blockEntity);
     }
@@ -136,57 +136,57 @@ public class ItemCommand {
     }
 
     private static int executeEntityCopyBlock(ServerCommandSource source, BlockPos sourcePos, int sourceSlot, Collection<? extends Entity> targets, int slot) throws CommandSyntaxException {
-        return ItemCommand.executeEntityReplace(source, targets, slot, ItemCommand.method_32716(source, sourcePos, sourceSlot));
+        return ItemCommand.executeEntityReplace(source, targets, slot, ItemCommand.getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot));
     }
 
     private static int executeEntityCopyBlock(ServerCommandSource source, BlockPos sourcePos, int sourceSlot, Collection<? extends Entity> targets, int slot, LootFunction modifier) throws CommandSyntaxException {
-        return ItemCommand.executeEntityReplace(source, targets, slot, ItemCommand.method_32715(source, modifier, ItemCommand.method_32716(source, sourcePos, sourceSlot)));
+        return ItemCommand.executeEntityReplace(source, targets, slot, ItemCommand.getStackWithModifier(source, modifier, ItemCommand.getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot)));
     }
 
     private static int executeBlockCopyBlock(ServerCommandSource source, BlockPos sourcePos, int sourceSlot, BlockPos pos, int slot) throws CommandSyntaxException {
-        return ItemCommand.executeBlockReplace(source, pos, slot, ItemCommand.method_32716(source, sourcePos, sourceSlot));
+        return ItemCommand.executeBlockReplace(source, pos, slot, ItemCommand.getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot));
     }
 
     private static int executeBlockCopyBlock(ServerCommandSource source, BlockPos sourcePos, int sourceSlot, BlockPos pos, int slot, LootFunction modifier) throws CommandSyntaxException {
-        return ItemCommand.executeBlockReplace(source, pos, slot, ItemCommand.method_32715(source, modifier, ItemCommand.method_32716(source, sourcePos, sourceSlot)));
+        return ItemCommand.executeBlockReplace(source, pos, slot, ItemCommand.getStackWithModifier(source, modifier, ItemCommand.getStackInSlotFromInventoryAt(source, sourcePos, sourceSlot)));
     }
 
     private static int executeBlockCopyEntity(ServerCommandSource source, Entity sourceEntity, int sourceSlot, BlockPos pos, int slot) throws CommandSyntaxException {
-        return ItemCommand.executeBlockReplace(source, pos, slot, ItemCommand.method_32706(sourceEntity, sourceSlot));
+        return ItemCommand.executeBlockReplace(source, pos, slot, ItemCommand.getStackInSlot(sourceEntity, sourceSlot));
     }
 
     private static int executeBlockCopyEntity(ServerCommandSource source, Entity sourceEntity, int sourceSlot, BlockPos pos, int slot, LootFunction modifier) throws CommandSyntaxException {
-        return ItemCommand.executeBlockReplace(source, pos, slot, ItemCommand.method_32715(source, modifier, ItemCommand.method_32706(sourceEntity, sourceSlot)));
+        return ItemCommand.executeBlockReplace(source, pos, slot, ItemCommand.getStackWithModifier(source, modifier, ItemCommand.getStackInSlot(sourceEntity, sourceSlot)));
     }
 
     private static int executeEntityCopyEntity(ServerCommandSource source, Entity sourceEntity, int sourceSlot, Collection<? extends Entity> targets, int slot) throws CommandSyntaxException {
-        return ItemCommand.executeEntityReplace(source, targets, slot, ItemCommand.method_32706(sourceEntity, sourceSlot));
+        return ItemCommand.executeEntityReplace(source, targets, slot, ItemCommand.getStackInSlot(sourceEntity, sourceSlot));
     }
 
     private static int executeEntityCopyEntity(ServerCommandSource source, Entity sourceEntity, int sourceSlot, Collection<? extends Entity> targets, int slot, LootFunction modifier) throws CommandSyntaxException {
-        return ItemCommand.executeEntityReplace(source, targets, slot, ItemCommand.method_32715(source, modifier, ItemCommand.method_32706(sourceEntity, sourceSlot)));
+        return ItemCommand.executeEntityReplace(source, targets, slot, ItemCommand.getStackWithModifier(source, modifier, ItemCommand.getStackInSlot(sourceEntity, sourceSlot)));
     }
 
-    private static ItemStack method_32715(ServerCommandSource serverCommandSource, LootFunction lootFunction, ItemStack itemStack) {
-        ServerWorld serverWorld = serverCommandSource.getWorld();
-        LootContext.Builder builder = new LootContext.Builder(serverWorld).parameter(LootContextParameters.ORIGIN, serverCommandSource.getPosition()).optionalParameter(LootContextParameters.THIS_ENTITY, serverCommandSource.getEntity());
-        return (ItemStack)lootFunction.apply(itemStack, builder.build(LootContextTypes.COMMAND));
+    private static ItemStack getStackWithModifier(ServerCommandSource source, LootFunction modifier, ItemStack stack) {
+        ServerWorld serverWorld = source.getWorld();
+        LootContext.Builder builder = new LootContext.Builder(serverWorld).parameter(LootContextParameters.ORIGIN, source.getPosition()).optionalParameter(LootContextParameters.THIS_ENTITY, source.getEntity());
+        return (ItemStack)modifier.apply(stack, builder.build(LootContextTypes.COMMAND));
     }
 
-    private static ItemStack method_32706(Entity entity, int i) throws CommandSyntaxException {
-        CommandItemSlot commandItemSlot = entity.getCommandItemSlot(i);
+    private static ItemStack getStackInSlot(Entity entity, int slotId) throws CommandSyntaxException {
+        CommandItemSlot commandItemSlot = entity.getCommandItemSlot(slotId);
         if (commandItemSlot == CommandItemSlot.EMPTY) {
-            throw NO_SUCH_SLOT_SOURCE_EXCEPTION.create(i);
+            throw NO_SUCH_SLOT_SOURCE_EXCEPTION.create(slotId);
         }
         return commandItemSlot.get().copy();
     }
 
-    private static ItemStack method_32716(ServerCommandSource serverCommandSource, BlockPos blockPos, int i) throws CommandSyntaxException {
-        Inventory inventory = ItemCommand.method_32723(serverCommandSource, blockPos, NOT_A_CONTAINER_SOURCE_EXCEPTION);
-        if (i < 0 || i >= inventory.size()) {
-            throw NO_SUCH_SLOT_SOURCE_EXCEPTION.create(i);
+    private static ItemStack getStackInSlotFromInventoryAt(ServerCommandSource source, BlockPos pos, int slotId) throws CommandSyntaxException {
+        Inventory inventory = ItemCommand.getInventoryAtPos(source, pos, NOT_A_CONTAINER_SOURCE_EXCEPTION);
+        if (slotId < 0 || slotId >= inventory.size()) {
+            throw NO_SUCH_SLOT_SOURCE_EXCEPTION.create(slotId);
         }
-        return inventory.getStack(i).copy();
+        return inventory.getStack(slotId).copy();
     }
 }
 

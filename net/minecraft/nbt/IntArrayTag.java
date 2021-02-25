@@ -11,7 +11,7 @@ import java.util.List;
 import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.AbstractNumberTag;
 import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.PositionTracker;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
 import net.minecraft.nbt.visitor.NbtTagVisitor;
@@ -22,10 +22,10 @@ extends AbstractListTag<IntTag> {
     public static final TagReader<IntArrayTag> READER = new TagReader<IntArrayTag>(){
 
         @Override
-        public IntArrayTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            positionTracker.add(192L);
+        public IntArrayTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+            nbtTagSizeTracker.add(192L);
             int j = dataInput.readInt();
-            positionTracker.add(32L * (long)j);
+            nbtTagSizeTracker.add(32L * (long)j);
             int[] is = new int[j];
             for (int k = 0; k < j; ++k) {
                 is[k] = dataInput.readInt();
@@ -44,7 +44,7 @@ extends AbstractListTag<IntTag> {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+        public /* synthetic */ Tag read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
             return this.read(input, depth, tracker);
         }
     };

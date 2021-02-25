@@ -42,7 +42,7 @@ extends StructureFeature<DefaultFeatureConfig> {
 
     @Override
     protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long l, ChunkRandom chunkRandom, ChunkPos chunkPos, Biome biome, ChunkPos chunkPos2, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
-        Set<Biome> set = biomeSource.getBiomesInArea(chunkPos.method_33939(9), chunkGenerator.getSeaLevel(), chunkPos.method_33941(9), 32);
+        Set<Biome> set = biomeSource.getBiomesInArea(chunkPos.getOffsetX(9), chunkGenerator.getSeaLevel(), chunkPos.getOffsetZ(9), 32);
         for (Biome biome2 : set) {
             if (biome2.getGenerationSettings().hasStructureFeature(this)) continue;
             return false;
@@ -74,8 +74,8 @@ extends StructureFeature<DefaultFeatureConfig> {
             } else if (blockRotation == BlockRotation.COUNTERCLOCKWISE_90) {
                 j = -5;
             }
-            int k = chunkPos.method_33939(7);
-            int l = chunkPos.method_33941(7);
+            int k = chunkPos.getOffsetX(7);
+            int l = chunkPos.getOffsetZ(7);
             int m = chunkGenerator.getHeightInGround(k, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
             int n = chunkGenerator.getHeightInGround(k, l + j, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
             int o = chunkGenerator.getHeightInGround(k + i, l, Heightmap.Type.WORLD_SURFACE_WG, heightLimitView);
@@ -84,7 +84,7 @@ extends StructureFeature<DefaultFeatureConfig> {
             if (q < 60) {
                 return;
             }
-            BlockPos blockPos = new BlockPos(chunkPos.method_33939(8), q + 1, chunkPos.method_33941(8));
+            BlockPos blockPos = new BlockPos(chunkPos.getOffsetX(8), q + 1, chunkPos.getOffsetZ(8));
             LinkedList<WoodlandMansionGenerator.Piece> list = Lists.newLinkedList();
             WoodlandMansionGenerator.addPieces(structureManager, blockPos, blockRotation, list, this.random);
             this.children.addAll(list);

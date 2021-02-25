@@ -18,8 +18,8 @@ implements Packet<ServerPlayPacketListener> {
         this.slot = slot;
     }
 
-    public PickFromInventoryC2SPacket(PacketByteBuf packetByteBuf) {
-        this.slot = packetByteBuf.readVarInt();
+    public PickFromInventoryC2SPacket(PacketByteBuf buf) {
+        this.slot = buf.readVarInt();
     }
 
     @Override

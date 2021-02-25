@@ -69,7 +69,7 @@ implements ResourceReloadListener {
 
     @Override
     public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
-        CompletableFuture<Map> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.method_33174(manager), prepareExecutor);
+        CompletableFuture<Map> completableFuture = CompletableFuture.supplyAsync(() -> this.tagLoader.loadTags(manager), prepareExecutor);
         CompletionStage completableFuture2 = CompletableFuture.supplyAsync(() -> manager.findResources("functions", string -> string.endsWith(".mcfunction")), prepareExecutor).thenCompose(collection -> {
             HashMap<Identifier, CompletableFuture<CommandFunction>> map = Maps.newHashMap();
             ServerCommandSource serverCommandSource = new ServerCommandSource(CommandOutput.DUMMY, Vec3d.ZERO, Vec2f.ZERO, null, this.level, "", LiteralText.EMPTY, null, null);
@@ -96,7 +96,7 @@ implements ResourceReloadListener {
                 return null;
             })).join());
             this.functions = builder.build();
-            this.tags = this.tagLoader.applyReload((Map)pair.getFirst());
+            this.tags = this.tagLoader.buildGroup((Map)pair.getFirst());
         }, applyExecutor);
     }
 

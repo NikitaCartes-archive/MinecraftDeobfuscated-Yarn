@@ -23,8 +23,8 @@ implements Packet<ServerPlayPacketListener> {
         serverPlayPacketListener.onKeepAlive(this);
     }
 
-    public KeepAliveC2SPacket(PacketByteBuf packetByteBuf) {
-        this.id = packetByteBuf.readLong();
+    public KeepAliveC2SPacket(PacketByteBuf buf) {
+        this.id = buf.readLong();
     }
 
     @Override

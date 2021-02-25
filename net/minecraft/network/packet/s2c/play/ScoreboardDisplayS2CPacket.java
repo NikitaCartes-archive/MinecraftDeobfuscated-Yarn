@@ -22,9 +22,9 @@ implements Packet<ClientPlayPacketListener> {
         this.name = objective == null ? "" : objective.getName();
     }
 
-    public ScoreboardDisplayS2CPacket(PacketByteBuf packetByteBuf) {
-        this.slot = packetByteBuf.readByte();
-        this.name = packetByteBuf.readString(16);
+    public ScoreboardDisplayS2CPacket(PacketByteBuf buf) {
+        this.slot = buf.readByte();
+        this.name = buf.readString(16);
     }
 
     @Override

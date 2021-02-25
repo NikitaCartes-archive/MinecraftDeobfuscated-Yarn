@@ -20,8 +20,8 @@ implements Packet<ClientPlayPacketListener> {
         this.entityId = entity.getId();
     }
 
-    public SetCameraEntityS2CPacket(PacketByteBuf packetByteBuf) {
-        this.entityId = packetByteBuf.readVarInt();
+    public SetCameraEntityS2CPacket(PacketByteBuf buf) {
+        this.entityId = buf.readVarInt();
     }
 
     @Override

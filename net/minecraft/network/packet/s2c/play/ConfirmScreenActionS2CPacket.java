@@ -21,10 +21,10 @@ implements Packet<ClientPlayPacketListener> {
         this.accepted = accepted;
     }
 
-    public ConfirmScreenActionS2CPacket(PacketByteBuf packetByteBuf) {
-        this.syncId = packetByteBuf.readUnsignedByte();
-        this.actionId = packetByteBuf.readShort();
-        this.accepted = packetByteBuf.readBoolean();
+    public ConfirmScreenActionS2CPacket(PacketByteBuf buf) {
+        this.syncId = buf.readUnsignedByte();
+        this.actionId = buf.readShort();
+        this.accepted = buf.readBoolean();
     }
 
     @Override

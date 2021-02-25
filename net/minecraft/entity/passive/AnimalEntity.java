@@ -138,13 +138,13 @@ extends PassiveEntity {
             if (!this.world.isClient && i == 0 && this.canEat()) {
                 this.eat(player, hand, itemStack);
                 this.lovePlayer(player);
-                this.emitGameEvent(GameEvent.MOB_INTERACT, this.method_33575());
+                this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
                 return ActionResult.SUCCESS;
             }
             if (this.isBaby()) {
                 this.eat(player, hand, itemStack);
                 this.growUp((int)((float)(-i / 20) * 0.1f), true);
-                this.emitGameEvent(GameEvent.MOB_INTERACT, this.method_33575());
+                this.emitGameEvent(GameEvent.MOB_INTERACT, this.getCameraBlockPos());
                 return ActionResult.success(this.world.isClient);
             }
             if (this.world.isClient) {

@@ -16,76 +16,76 @@ import net.minecraft.text.Text;
 public class BossBarS2CPacket
 implements Packet<ClientPlayPacketListener> {
     private final UUID uuid;
-    private final class_5882 type;
-    private static final class_5882 field_29099 = new class_5882(){
+    private final Action action;
+    private static final Action REMOVE_ACTION = new Action(){
 
         @Override
-        public class_5883 method_34105() {
-            return class_5883.field_29108;
+        public Type getType() {
+            return Type.REMOVE;
         }
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public void method_34106(UUID uUID, class_5881 arg) {
-            arg.method_34099(uUID);
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.remove(uuid);
         }
 
         @Override
-        public void method_34107(PacketByteBuf packetByteBuf) {
+        public void toPacket(PacketByteBuf buf) {
         }
     };
 
-    private BossBarS2CPacket(UUID uUID, class_5882 arg) {
-        this.uuid = uUID;
-        this.type = arg;
+    private BossBarS2CPacket(UUID uuid, Action action) {
+        this.uuid = uuid;
+        this.action = action;
     }
 
-    public BossBarS2CPacket(PacketByteBuf packetByteBuf) {
-        this.uuid = packetByteBuf.readUuid();
-        class_5883 lv = packetByteBuf.readEnumConstant(class_5883.class);
-        this.type = (class_5882)lv.field_29113.apply(packetByteBuf);
+    public BossBarS2CPacket(PacketByteBuf buf) {
+        this.uuid = buf.readUuid();
+        Type type = buf.readEnumConstant(Type.class);
+        this.action = (Action)type.parser.apply(buf);
     }
 
-    public static BossBarS2CPacket method_34089(BossBar bossBar) {
-        return new BossBarS2CPacket(bossBar.getUuid(), new class_5880(bossBar));
+    public static BossBarS2CPacket add(BossBar bar) {
+        return new BossBarS2CPacket(bar.getUuid(), new AddAction(bar));
     }
 
-    public static BossBarS2CPacket method_34090(UUID uUID) {
-        return new BossBarS2CPacket(uUID, field_29099);
+    public static BossBarS2CPacket remove(UUID uuid) {
+        return new BossBarS2CPacket(uuid, REMOVE_ACTION);
     }
 
-    public static BossBarS2CPacket method_34094(BossBar bossBar) {
-        return new BossBarS2CPacket(bossBar.getUuid(), new class_5885(bossBar.getPercent()));
+    public static BossBarS2CPacket updateProgress(BossBar bar) {
+        return new BossBarS2CPacket(bar.getUuid(), new UpdateProgressAction(bar.getPercent()));
     }
 
-    public static BossBarS2CPacket method_34096(BossBar bossBar) {
-        return new BossBarS2CPacket(bossBar.getUuid(), new class_5884(bossBar.getName()));
+    public static BossBarS2CPacket updateName(BossBar bar) {
+        return new BossBarS2CPacket(bar.getUuid(), new UpdateNameAction(bar.getName()));
     }
 
-    public static BossBarS2CPacket method_34097(BossBar bossBar) {
-        return new BossBarS2CPacket(bossBar.getUuid(), new class_5887(bossBar.getColor(), bossBar.getOverlay()));
+    public static BossBarS2CPacket updateStyle(BossBar bar) {
+        return new BossBarS2CPacket(bar.getUuid(), new UpdateStyleAction(bar.getColor(), bar.getOverlay()));
     }
 
-    public static BossBarS2CPacket method_34098(BossBar bossBar) {
-        return new BossBarS2CPacket(bossBar.getUuid(), new class_5886(bossBar.shouldDarkenSky(), bossBar.hasDragonMusic(), bossBar.shouldThickenFog()));
+    public static BossBarS2CPacket updateProperties(BossBar bar) {
+        return new BossBarS2CPacket(bar.getUuid(), new UpdatePropertiesAction(bar.shouldDarkenSky(), bar.hasDragonMusic(), bar.shouldThickenFog()));
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeUuid(this.uuid);
-        buf.writeEnumConstant(this.type.method_34105());
-        this.type.method_34107(buf);
+        buf.writeEnumConstant(this.action.getType());
+        this.action.toPacket(buf);
     }
 
-    private static int method_34095(boolean bl, boolean bl2, boolean bl3) {
+    private static int maskProperties(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
         int i = 0;
-        if (bl) {
+        if (darkenSky) {
             i |= 1;
         }
-        if (bl2) {
+        if (dragonMusic) {
             i |= 2;
         }
-        if (bl3) {
+        if (thickenFog) {
             i |= 4;
         }
         return i;
@@ -97,231 +97,231 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_34091(class_5881 arg) {
-        this.type.method_34106(this.uuid, arg);
+    public void accept(Consumer visitor) {
+        this.action.accept(this.uuid, visitor);
     }
 
-    static class class_5886
-    implements class_5882 {
-        private final boolean field_29117;
-        private final boolean field_29118;
-        private final boolean field_29119;
+    static class UpdatePropertiesAction
+    implements Action {
+        private final boolean darkenSky;
+        private final boolean dragonMusic;
+        private final boolean thickenFog;
 
-        private class_5886(boolean bl, boolean bl2, boolean bl3) {
-            this.field_29117 = bl;
-            this.field_29118 = bl2;
-            this.field_29119 = bl3;
+        private UpdatePropertiesAction(boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+            this.darkenSky = darkenSky;
+            this.dragonMusic = dragonMusic;
+            this.thickenFog = thickenFog;
         }
 
-        private class_5886(PacketByteBuf packetByteBuf) {
-            short i = packetByteBuf.readUnsignedByte();
-            this.field_29117 = (i & 1) > 0;
-            this.field_29118 = (i & 2) > 0;
-            this.field_29119 = (i & 4) > 0;
+        private UpdatePropertiesAction(PacketByteBuf buf) {
+            short i = buf.readUnsignedByte();
+            this.darkenSky = (i & 1) > 0;
+            this.dragonMusic = (i & 2) > 0;
+            this.thickenFog = (i & 4) > 0;
         }
 
         @Override
-        public class_5883 method_34105() {
-            return class_5883.field_29112;
+        public Type getType() {
+            return Type.UPDATE_PROPERTIES;
         }
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public void method_34106(UUID uUID, class_5881 arg) {
-            arg.method_34104(uUID, this.field_29117, this.field_29118, this.field_29119);
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.updateProperties(uuid, this.darkenSky, this.dragonMusic, this.thickenFog);
         }
 
         @Override
-        public void method_34107(PacketByteBuf packetByteBuf) {
-            packetByteBuf.writeByte(BossBarS2CPacket.method_34095(this.field_29117, this.field_29118, this.field_29119));
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeByte(BossBarS2CPacket.maskProperties(this.darkenSky, this.dragonMusic, this.thickenFog));
         }
     }
 
-    static class class_5887
-    implements class_5882 {
-        private final BossBar.Color field_29120;
-        private final BossBar.Style field_29121;
+    static class UpdateStyleAction
+    implements Action {
+        private final BossBar.Color color;
+        private final BossBar.Style overlay;
 
-        private class_5887(BossBar.Color color, BossBar.Style style) {
-            this.field_29120 = color;
-            this.field_29121 = style;
+        private UpdateStyleAction(BossBar.Color color, BossBar.Style style) {
+            this.color = color;
+            this.overlay = style;
         }
 
-        private class_5887(PacketByteBuf packetByteBuf) {
-            this.field_29120 = packetByteBuf.readEnumConstant(BossBar.Color.class);
-            this.field_29121 = packetByteBuf.readEnumConstant(BossBar.Style.class);
+        private UpdateStyleAction(PacketByteBuf buf) {
+            this.color = buf.readEnumConstant(BossBar.Color.class);
+            this.overlay = buf.readEnumConstant(BossBar.Style.class);
         }
 
         @Override
-        public class_5883 method_34105() {
-            return class_5883.field_29111;
+        public Type getType() {
+            return Type.UPDATE_STYLE;
         }
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public void method_34106(UUID uUID, class_5881 arg) {
-            arg.method_34101(uUID, this.field_29120, this.field_29121);
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.updateStyle(uuid, this.color, this.overlay);
         }
 
         @Override
-        public void method_34107(PacketByteBuf packetByteBuf) {
-            packetByteBuf.writeEnumConstant(this.field_29120);
-            packetByteBuf.writeEnumConstant(this.field_29121);
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeEnumConstant(this.color);
+            buf.writeEnumConstant(this.overlay);
         }
     }
 
-    static class class_5884
-    implements class_5882 {
-        private final Text field_29115;
+    static class UpdateNameAction
+    implements Action {
+        private final Text name;
 
-        private class_5884(Text text) {
-            this.field_29115 = text;
+        private UpdateNameAction(Text name) {
+            this.name = name;
         }
 
-        private class_5884(PacketByteBuf packetByteBuf) {
-            this.field_29115 = packetByteBuf.readText();
+        private UpdateNameAction(PacketByteBuf buf) {
+            this.name = buf.readText();
         }
 
         @Override
-        public class_5883 method_34105() {
-            return class_5883.field_29110;
+        public Type getType() {
+            return Type.UPDATE_NAME;
         }
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public void method_34106(UUID uUID, class_5881 arg) {
-            arg.method_34102(uUID, this.field_29115);
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.updateName(uuid, this.name);
         }
 
         @Override
-        public void method_34107(PacketByteBuf packetByteBuf) {
-            packetByteBuf.writeText(this.field_29115);
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeText(this.name);
         }
     }
 
-    static class class_5885
-    implements class_5882 {
-        private final float field_29116;
+    static class UpdateProgressAction
+    implements Action {
+        private final float percent;
 
-        private class_5885(float f) {
-            this.field_29116 = f;
+        private UpdateProgressAction(float percent) {
+            this.percent = percent;
         }
 
-        private class_5885(PacketByteBuf packetByteBuf) {
-            this.field_29116 = packetByteBuf.readFloat();
+        private UpdateProgressAction(PacketByteBuf buf) {
+            this.percent = buf.readFloat();
         }
 
         @Override
-        public class_5883 method_34105() {
-            return class_5883.field_29109;
+        public Type getType() {
+            return Type.UPDATE_PROGRESS;
         }
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public void method_34106(UUID uUID, class_5881 arg) {
-            arg.method_34100(uUID, this.field_29116);
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.updateProgress(uuid, this.percent);
         }
 
         @Override
-        public void method_34107(PacketByteBuf packetByteBuf) {
-            packetByteBuf.writeFloat(this.field_29116);
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeFloat(this.percent);
         }
     }
 
-    static class class_5880
-    implements class_5882 {
-        private final Text field_29100;
-        private final float field_29101;
-        private final BossBar.Color field_29102;
-        private final BossBar.Style field_29103;
-        private final boolean field_29104;
-        private final boolean field_29105;
-        private final boolean field_29106;
+    static class AddAction
+    implements Action {
+        private final Text name;
+        private final float percent;
+        private final BossBar.Color color;
+        private final BossBar.Style overlay;
+        private final boolean darkenSky;
+        private final boolean dragonMusic;
+        private final boolean thickenFog;
 
-        private class_5880(BossBar bossBar) {
-            this.field_29100 = bossBar.getName();
-            this.field_29101 = bossBar.getPercent();
-            this.field_29102 = bossBar.getColor();
-            this.field_29103 = bossBar.getOverlay();
-            this.field_29104 = bossBar.shouldDarkenSky();
-            this.field_29105 = bossBar.hasDragonMusic();
-            this.field_29106 = bossBar.shouldThickenFog();
+        private AddAction(BossBar bar) {
+            this.name = bar.getName();
+            this.percent = bar.getPercent();
+            this.color = bar.getColor();
+            this.overlay = bar.getOverlay();
+            this.darkenSky = bar.shouldDarkenSky();
+            this.dragonMusic = bar.hasDragonMusic();
+            this.thickenFog = bar.shouldThickenFog();
         }
 
-        private class_5880(PacketByteBuf packetByteBuf) {
-            this.field_29100 = packetByteBuf.readText();
-            this.field_29101 = packetByteBuf.readFloat();
-            this.field_29102 = packetByteBuf.readEnumConstant(BossBar.Color.class);
-            this.field_29103 = packetByteBuf.readEnumConstant(BossBar.Style.class);
-            short i = packetByteBuf.readUnsignedByte();
-            this.field_29104 = (i & 1) > 0;
-            this.field_29105 = (i & 2) > 0;
-            this.field_29106 = (i & 4) > 0;
+        private AddAction(PacketByteBuf buf) {
+            this.name = buf.readText();
+            this.percent = buf.readFloat();
+            this.color = buf.readEnumConstant(BossBar.Color.class);
+            this.overlay = buf.readEnumConstant(BossBar.Style.class);
+            short i = buf.readUnsignedByte();
+            this.darkenSky = (i & 1) > 0;
+            this.dragonMusic = (i & 2) > 0;
+            this.thickenFog = (i & 4) > 0;
         }
 
         @Override
-        public class_5883 method_34105() {
-            return class_5883.field_29107;
+        public Type getType() {
+            return Type.ADD;
         }
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public void method_34106(UUID uUID, class_5881 arg) {
-            arg.method_34103(uUID, this.field_29100, this.field_29101, this.field_29102, this.field_29103, this.field_29104, this.field_29105, this.field_29106);
+        public void accept(UUID uuid, Consumer consumer) {
+            consumer.add(uuid, this.name, this.percent, this.color, this.overlay, this.darkenSky, this.dragonMusic, this.thickenFog);
         }
 
         @Override
-        public void method_34107(PacketByteBuf packetByteBuf) {
-            packetByteBuf.writeText(this.field_29100);
-            packetByteBuf.writeFloat(this.field_29101);
-            packetByteBuf.writeEnumConstant(this.field_29102);
-            packetByteBuf.writeEnumConstant(this.field_29103);
-            packetByteBuf.writeByte(BossBarS2CPacket.method_34095(this.field_29104, this.field_29105, this.field_29106));
+        public void toPacket(PacketByteBuf buf) {
+            buf.writeText(this.name);
+            buf.writeFloat(this.percent);
+            buf.writeEnumConstant(this.color);
+            buf.writeEnumConstant(this.overlay);
+            buf.writeByte(BossBarS2CPacket.maskProperties(this.darkenSky, this.dragonMusic, this.thickenFog));
         }
     }
 
-    static interface class_5882 {
-        public class_5883 method_34105();
+    static interface Action {
+        public Type getType();
 
         @Environment(value=EnvType.CLIENT)
-        public void method_34106(UUID var1, class_5881 var2);
+        public void accept(UUID var1, Consumer var2);
 
-        public void method_34107(PacketByteBuf var1);
+        public void toPacket(PacketByteBuf var1);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static interface class_5881 {
-        default public void method_34103(UUID uUID, Text text, float f, BossBar.Color color, BossBar.Style style, boolean bl, boolean bl2, boolean bl3) {
+    public static interface Consumer {
+        default public void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style overlay, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
         }
 
-        default public void method_34099(UUID uUID) {
+        default public void remove(UUID uuid) {
         }
 
-        default public void method_34100(UUID uUID, float f) {
+        default public void updateProgress(UUID uuid, float percent) {
         }
 
-        default public void method_34102(UUID uUID, Text text) {
+        default public void updateName(UUID uuid, Text name) {
         }
 
-        default public void method_34101(UUID uUID, BossBar.Color color, BossBar.Style style) {
+        default public void updateStyle(UUID id, BossBar.Color color, BossBar.Style overlay) {
         }
 
-        default public void method_34104(UUID uUID, boolean bl, boolean bl2, boolean bl3) {
+        default public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
         }
     }
 
-    static enum class_5883 {
-        field_29107(packetByteBuf -> new class_5880((PacketByteBuf)packetByteBuf)),
-        field_29108(packetByteBuf -> BossBarS2CPacket.method_34093()),
-        field_29109(packetByteBuf -> new class_5885((PacketByteBuf)packetByteBuf)),
-        field_29110(packetByteBuf -> new class_5884((PacketByteBuf)packetByteBuf)),
-        field_29111(packetByteBuf -> new class_5887((PacketByteBuf)packetByteBuf)),
-        field_29112(packetByteBuf -> new class_5886((PacketByteBuf)packetByteBuf));
+    static enum Type {
+        ADD(buf -> new AddAction((PacketByteBuf)buf)),
+        REMOVE(buf -> BossBarS2CPacket.getRemoveAction()),
+        UPDATE_PROGRESS(buf -> new UpdateProgressAction((PacketByteBuf)buf)),
+        UPDATE_NAME(buf -> new UpdateNameAction((PacketByteBuf)buf)),
+        UPDATE_STYLE(buf -> new UpdateStyleAction((PacketByteBuf)buf)),
+        UPDATE_PROPERTIES(buf -> new UpdatePropertiesAction((PacketByteBuf)buf));
 
-        private final Function<PacketByteBuf, class_5882> field_29113;
+        private final Function<PacketByteBuf, Action> parser;
 
-        private class_5883(Function<PacketByteBuf, class_5882> function) {
-            this.field_29113 = function;
+        private Type(Function<PacketByteBuf, Action> parser) {
+            this.parser = parser;
         }
     }
 }

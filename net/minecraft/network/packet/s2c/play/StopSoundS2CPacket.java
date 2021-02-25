@@ -24,10 +24,10 @@ implements Packet<ClientPlayPacketListener> {
         this.category = category;
     }
 
-    public StopSoundS2CPacket(PacketByteBuf packetByteBuf) {
-        byte i = packetByteBuf.readByte();
-        this.category = (i & 1) > 0 ? packetByteBuf.readEnumConstant(SoundCategory.class) : null;
-        this.soundId = (i & 2) > 0 ? packetByteBuf.readIdentifier() : null;
+    public StopSoundS2CPacket(PacketByteBuf buf) {
+        byte i = buf.readByte();
+        this.category = (i & 1) > 0 ? buf.readEnumConstant(SoundCategory.class) : null;
+        this.soundId = (i & 2) > 0 ? buf.readIdentifier() : null;
     }
 
     @Override

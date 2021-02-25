@@ -34,11 +34,11 @@ implements Packet<ClientPlayPacketListener> {
         this.velocityZ = (int)(g * 8000.0);
     }
 
-    public EntityVelocityUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-        this.id = packetByteBuf.readVarInt();
-        this.velocityX = packetByteBuf.readShort();
-        this.velocityY = packetByteBuf.readShort();
-        this.velocityZ = packetByteBuf.readShort();
+    public EntityVelocityUpdateS2CPacket(PacketByteBuf buf) {
+        this.id = buf.readVarInt();
+        this.velocityX = buf.readShort();
+        this.velocityY = buf.readShort();
+        this.velocityZ = buf.readShort();
     }
 
     @Override

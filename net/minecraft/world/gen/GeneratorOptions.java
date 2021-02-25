@@ -84,11 +84,11 @@ public class GeneratorOptions {
         this.legacyCustomOptions = legacyCustomOptions;
     }
 
-    public static GeneratorOptions method_31112(DynamicRegistryManager dynamicRegistryManager) {
-        Registry<Biome> registry = dynamicRegistryManager.get(Registry.BIOME_KEY);
+    public static GeneratorOptions createDemo(DynamicRegistryManager registryManager) {
+        Registry<Biome> registry = registryManager.get(Registry.BIOME_KEY);
         int i = "North Carolina".hashCode();
-        Registry<DimensionType> registry2 = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
-        Registry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+        Registry<DimensionType> registry2 = registryManager.get(Registry.DIMENSION_TYPE_KEY);
+        Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
         return new GeneratorOptions(i, true, true, GeneratorOptions.method_28608(registry2, DimensionType.createDefaultDimensionOptions(registry2, registry, registry3, i), GeneratorOptions.createOverworldGenerator(registry, registry3, i)));
     }
 
@@ -173,7 +173,7 @@ public class GeneratorOptions {
         return new GeneratorOptions(this.seed, this.generateStructures, !this.bonusChest, this.options);
     }
 
-    public static GeneratorOptions fromProperties(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
+    public static GeneratorOptions fromProperties(DynamicRegistryManager registryManager, Properties properties) {
         String string2 = MoreObjects.firstNonNull((String)properties.get("generator-settings"), "");
         properties.put("generator-settings", string2);
         String string22 = MoreObjects.firstNonNull((String)properties.get("level-seed"), "");
@@ -195,9 +195,9 @@ public class GeneratorOptions {
                 l = string22.hashCode();
             }
         }
-        Registry<DimensionType> registry = dynamicRegistryManager.get(Registry.DIMENSION_TYPE_KEY);
-        Registry<Biome> registry2 = dynamicRegistryManager.get(Registry.BIOME_KEY);
-        Registry<ChunkGeneratorSettings> registry3 = dynamicRegistryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
+        Registry<DimensionType> registry = registryManager.get(Registry.DIMENSION_TYPE_KEY);
+        Registry<Biome> registry2 = registryManager.get(Registry.BIOME_KEY);
+        Registry<ChunkGeneratorSettings> registry3 = registryManager.get(Registry.NOISE_SETTINGS_WORLDGEN);
         SimpleRegistry<DimensionOptions> simpleRegistry = DimensionType.createDefaultDimensionOptions(registry, registry2, registry3, l);
         switch (string5) {
             case "flat": {

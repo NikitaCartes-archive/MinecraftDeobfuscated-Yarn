@@ -37,12 +37,12 @@ implements Packet<ClientPlayPacketListener> {
         this.flags = b;
     }
 
-    public EntityStatusEffectS2CPacket(PacketByteBuf packetByteBuf) {
-        this.entityId = packetByteBuf.readVarInt();
-        this.effectId = packetByteBuf.readByte();
-        this.amplifier = packetByteBuf.readByte();
-        this.duration = packetByteBuf.readVarInt();
-        this.flags = packetByteBuf.readByte();
+    public EntityStatusEffectS2CPacket(PacketByteBuf buf) {
+        this.entityId = buf.readVarInt();
+        this.effectId = buf.readByte();
+        this.amplifier = buf.readByte();
+        this.duration = buf.readVarInt();
+        this.flags = buf.readByte();
     }
 
     @Override

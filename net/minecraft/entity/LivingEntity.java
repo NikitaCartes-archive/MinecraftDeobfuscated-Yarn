@@ -1789,7 +1789,7 @@ extends Entity {
                 double e = this.getY();
                 this.updateVelocity(0.02f, movementInput);
                 this.move(MovementType.SELF, this.getVelocity());
-                if (this.getFluidHeight(FluidTags.LAVA) <= this.method_29241()) {
+                if (this.getFluidHeight(FluidTags.LAVA) <= this.getSwimHeight()) {
                     this.setVelocity(this.getVelocity().multiply(0.5, 0.8f, 0.5));
                     vec3d3 = this.method_26317(d, bl, this.getVelocity());
                     this.setVelocity(vec3d3);
@@ -2191,7 +2191,7 @@ extends Entity {
         if (this.jumping && this.shouldSwimInFluids()) {
             double k = this.isInLava() ? this.getFluidHeight(FluidTags.LAVA) : this.getFluidHeight(FluidTags.WATER);
             boolean bl = this.isTouchingWater() && k > 0.0;
-            double l = this.method_29241();
+            double l = this.getSwimHeight();
             if (bl && (!this.onGround || k > l)) {
                 this.swimUpward(FluidTags.WATER);
             } else if (this.isInLava() && (!this.onGround || k > l)) {
@@ -2829,7 +2829,7 @@ extends Entity {
 
     public ItemStack eatFood(World world, ItemStack stack) {
         if (stack.isFood()) {
-            world.emitGameEvent((Entity)this, GameEvent.EAT, this.method_33575());
+            world.emitGameEvent((Entity)this, GameEvent.EAT, this.getCameraBlockPos());
             world.playSound(null, this.getX(), this.getY(), this.getZ(), this.getEatSound(stack), SoundCategory.NEUTRAL, 1.0f, 1.0f + (world.random.nextFloat() - world.random.nextFloat()) * 0.4f);
             this.applyFoodEffects(stack, world, this);
             if (!(this instanceof PlayerEntity) || !((PlayerEntity)this).getAbilities().creativeMode) {

@@ -6,6 +6,7 @@ package net.minecraft.client.gui.screen.ingame;
 import com.google.common.collect.ImmutableList;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.List;
 import java.util.Locale;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -130,7 +131,7 @@ extends Screen {
                 this.client.openScreen(null);
             }
         }));
-        this.addButton(CyclingButtonWidget.method_32606(structureBlockMode -> new TranslatableText("structure_block.mode." + structureBlockMode.asString())).method_32621(MODES_EXCEPT_DATA, MODES).method_32616().value(this.mode).build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (cyclingButtonWidget, structureBlockMode) -> {
+        this.addButton(CyclingButtonWidget.builder(structureBlockMode -> new TranslatableText("structure_block.mode." + structureBlockMode.asString())).values((List<StructureBlockMode>)MODES_EXCEPT_DATA, (List<StructureBlockMode>)MODES).omitKeyText().initially(this.mode).build(this.width / 2 - 4 - 150, 185, 50, 20, new LiteralText("MODE"), (cyclingButtonWidget, structureBlockMode) -> {
             this.structureBlock.setMode((StructureBlockMode)structureBlockMode);
             this.method_32650((StructureBlockMode)structureBlockMode);
         }));
@@ -140,10 +141,10 @@ extends Screen {
                 this.client.openScreen(null);
             }
         }));
-        this.buttonEntities = this.addButton(CyclingButtonWidget.method_32613(!this.structureBlock.shouldIgnoreEntities()).method_32616().build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setIgnoreEntities(boolean_ == false)));
-        this.buttonMirror = this.addButton(CyclingButtonWidget.method_32606(BlockMirror::getName).method_32624((BlockMirror[])BlockMirror.values()).method_32616().value(this.mirror).build(this.width / 2 - 20, 185, 40, 20, new LiteralText("MIRROR"), (cyclingButtonWidget, blockMirror) -> this.structureBlock.setMirror((BlockMirror)((Object)blockMirror))));
-        this.buttonShowAir = this.addButton(CyclingButtonWidget.method_32613(this.structureBlock.shouldShowAir()).method_32616().build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_AIR_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setShowAir((boolean)boolean_)));
-        this.buttonShowBoundingBox = this.addButton(CyclingButtonWidget.method_32613(this.structureBlock.shouldShowBoundingBox()).method_32616().build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_BOUNDING_BOX_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setShowBoundingBox((boolean)boolean_)));
+        this.buttonEntities = this.addButton(CyclingButtonWidget.onOffBuilder(!this.structureBlock.shouldIgnoreEntities()).omitKeyText().build(this.width / 2 + 4 + 100, 160, 50, 20, INCLUDE_ENTITIES_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setIgnoreEntities(boolean_ == false)));
+        this.buttonMirror = this.addButton(CyclingButtonWidget.builder(BlockMirror::getName).values((BlockMirror[])BlockMirror.values()).omitKeyText().initially(this.mirror).build(this.width / 2 - 20, 185, 40, 20, new LiteralText("MIRROR"), (cyclingButtonWidget, blockMirror) -> this.structureBlock.setMirror((BlockMirror)((Object)blockMirror))));
+        this.buttonShowAir = this.addButton(CyclingButtonWidget.onOffBuilder(this.structureBlock.shouldShowAir()).omitKeyText().build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_AIR_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setShowAir((boolean)boolean_)));
+        this.buttonShowBoundingBox = this.addButton(CyclingButtonWidget.onOffBuilder(this.structureBlock.shouldShowBoundingBox()).omitKeyText().build(this.width / 2 + 4 + 100, 80, 50, 20, SHOW_BOUNDING_BOX_TEXT, (cyclingButtonWidget, boolean_) -> this.structureBlock.setShowBoundingBox((boolean)boolean_)));
         this.buttonRotate0 = this.addButton(new ButtonWidget(this.width / 2 - 1 - 40 - 1 - 40 - 20, 185, 40, 20, new LiteralText("0"), buttonWidget -> {
             this.structureBlock.setRotation(BlockRotation.NONE);
             this.updateRotationButton();

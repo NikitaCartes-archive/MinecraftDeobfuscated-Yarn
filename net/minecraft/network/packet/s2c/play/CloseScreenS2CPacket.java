@@ -15,8 +15,8 @@ implements Packet<ClientPlayPacketListener> {
         this.syncId = syncId;
     }
 
-    public CloseScreenS2CPacket(PacketByteBuf packetByteBuf) {
-        this.syncId = packetByteBuf.readUnsignedByte();
+    public CloseScreenS2CPacket(PacketByteBuf buf) {
+        this.syncId = buf.readUnsignedByte();
     }
 
     @Override

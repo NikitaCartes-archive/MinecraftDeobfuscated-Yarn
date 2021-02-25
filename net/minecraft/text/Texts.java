@@ -45,14 +45,14 @@ public class Texts {
         for (Text text2 : text.getSiblings()) {
             mutableText.append(Texts.parse(source, text2, sender, depth + 1));
         }
-        return mutableText.fillStyle(Texts.method_27663(source, text.getStyle(), sender, depth));
+        return mutableText.fillStyle(Texts.parseStyle(source, text.getStyle(), sender, depth));
     }
 
-    private static Style method_27663(@Nullable ServerCommandSource serverCommandSource, Style style, @Nullable Entity entity, int i) throws CommandSyntaxException {
+    private static Style parseStyle(@Nullable ServerCommandSource source, Style style, @Nullable Entity sender, int depth) throws CommandSyntaxException {
         Text text;
         HoverEvent hoverEvent = style.getHoverEvent();
         if (hoverEvent != null && (text = hoverEvent.getValue(HoverEvent.Action.SHOW_TEXT)) != null) {
-            HoverEvent hoverEvent2 = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.parse(serverCommandSource, text, entity, i + 1));
+            HoverEvent hoverEvent2 = new HoverEvent(HoverEvent.Action.SHOW_TEXT, Texts.parse(source, text, sender, depth + 1));
             return style.withHoverEvent(hoverEvent2);
         }
         return style;

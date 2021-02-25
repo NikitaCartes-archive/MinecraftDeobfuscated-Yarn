@@ -49,10 +49,10 @@ extends RealmsScreen {
         this.seedEdit.setMaxLength(32);
         this.addChild(this.seedEdit);
         this.setInitialFocus(this.seedEdit);
-        this.addButton(CyclingButtonWidget.method_32606(RealmsWorldGeneratorType::getText).method_32624((RealmsWorldGeneratorType[])RealmsWorldGeneratorType.values()).value(this.generatorType).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(4), 205, 20, new TranslatableText("selectWorld.mapType"), (cyclingButtonWidget, generatorType) -> {
+        this.addButton(CyclingButtonWidget.builder(RealmsWorldGeneratorType::getText).values((RealmsWorldGeneratorType[])RealmsWorldGeneratorType.values()).initially(this.generatorType).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(4), 205, 20, new TranslatableText("selectWorld.mapType"), (cyclingButtonWidget, generatorType) -> {
             this.generatorType = generatorType;
         }));
-        this.addButton(CyclingButtonWidget.method_32613(this.mapFeatures).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(6) - 2, 205, 20, new TranslatableText("selectWorld.mapFeatures"), (cyclingButtonWidget, mapFeatures) -> {
+        this.addButton(CyclingButtonWidget.onOffBuilder(this.mapFeatures).build(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(6) - 2, 205, 20, new TranslatableText("selectWorld.mapFeatures"), (cyclingButtonWidget, mapFeatures) -> {
             this.mapFeatures = mapFeatures;
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 102, RealmsResetNormalWorldScreen.row(12), 97, 20, this.parentTitle, buttonWidget -> this.callback.accept(new ResetWorldInfo(this.seedEdit.getText(), this.generatorType, this.mapFeatures))));

@@ -16,8 +16,8 @@ implements Packet<ServerPlayPacketListener> {
         this.hand = hand;
     }
 
-    public HandSwingC2SPacket(PacketByteBuf packetByteBuf) {
-        this.hand = packetByteBuf.readEnumConstant(Hand.class);
+    public HandSwingC2SPacket(PacketByteBuf buf) {
+        this.hand = buf.readEnumConstant(Hand.class);
     }
 
     @Override

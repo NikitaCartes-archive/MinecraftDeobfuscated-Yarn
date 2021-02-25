@@ -15,8 +15,8 @@ implements Packet<ServerPlayPacketListener> {
         this.mode = mode;
     }
 
-    public ClientStatusC2SPacket(PacketByteBuf packetByteBuf) {
-        this.mode = packetByteBuf.readEnumConstant(Mode.class);
+    public ClientStatusC2SPacket(PacketByteBuf buf) {
+        this.mode = buf.readEnumConstant(Mode.class);
     }
 
     @Override

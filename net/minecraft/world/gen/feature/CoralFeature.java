@@ -31,12 +31,12 @@ extends Feature<DefaultFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         BlockPos blockPos = context.getOrigin();
         BlockState blockState = ((Block)BlockTags.CORAL_BLOCKS.getRandom(random)).getDefaultState();
-        return this.spawnCoral(structureWorldAccess, random, blockPos, blockState);
+        return this.generateCoral(structureWorldAccess, random, blockPos, blockState);
     }
 
-    protected abstract boolean spawnCoral(WorldAccess var1, Random var2, BlockPos var3, BlockState var4);
+    protected abstract boolean generateCoral(WorldAccess var1, Random var2, BlockPos var3, BlockState var4);
 
-    protected boolean spawnCoralPiece(WorldAccess world, Random random, BlockPos pos, BlockState state) {
+    protected boolean generateCoralPiece(WorldAccess world, Random random, BlockPos pos, BlockState state) {
         BlockPos blockPos = pos.up();
         BlockState blockState = world.getBlockState(pos);
         if (!blockState.isOf(Blocks.WATER) && !blockState.isIn(BlockTags.CORALS) || !world.getBlockState(blockPos).isOf(Blocks.WATER)) {

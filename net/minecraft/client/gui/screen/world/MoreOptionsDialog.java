@@ -100,15 +100,15 @@ Drawable {
         parent.addChild(this.seedTextField);
         int i = this.parentWidth / 2 - 155;
         int j = this.parentWidth / 2 + 5;
-        this.mapFeaturesButton = parent.addButton(CyclingButtonWidget.method_32613(this.generatorOptions.shouldGenerateStructures()).method_32623(cyclingButtonWidget -> cyclingButtonWidget.method_32611().append(". ").append(new TranslatableText("selectWorld.mapFeatures.info"))).build(i, 100, 150, 20, new TranslatableText("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> {
+        this.mapFeaturesButton = parent.addButton(CyclingButtonWidget.onOffBuilder(this.generatorOptions.shouldGenerateStructures()).narration(cyclingButtonWidget -> cyclingButtonWidget.getGenericNarrationMessage().append(". ").append(new TranslatableText("selectWorld.mapFeatures.info"))).build(i, 100, 150, 20, new TranslatableText("selectWorld.mapFeatures"), (cyclingButtonWidget, boolean_) -> {
             this.generatorOptions = this.generatorOptions.toggleGenerateStructures();
         }));
         this.mapFeaturesButton.visible = false;
-        this.mapTypeButton = parent.addButton(CyclingButtonWidget.method_32606(GeneratorType::getTranslationKey).method_32621(GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES).method_32623(cyclingButtonWidget -> {
+        this.mapTypeButton = parent.addButton(CyclingButtonWidget.builder(GeneratorType::getTranslationKey).values(GeneratorType.VALUES.stream().filter(GeneratorType::isNotDebug).collect(Collectors.toList()), GeneratorType.VALUES).narration(cyclingButtonWidget -> {
             if (cyclingButtonWidget.getValue() == GeneratorType.AMPLIFIED) {
-                return cyclingButtonWidget.method_32611().append(". ").append(AMPLIFIED_INFO_TEXT);
+                return cyclingButtonWidget.getGenericNarrationMessage().append(". ").append(AMPLIFIED_INFO_TEXT);
             }
-            return cyclingButtonWidget.method_32611();
+            return cyclingButtonWidget.getGenericNarrationMessage();
         }).build(j, 100, 150, 20, new TranslatableText("selectWorld.mapType"), (cyclingButtonWidget, generatorType) -> {
             this.generatorType = Optional.of(generatorType);
             this.generatorOptions = generatorType.createDefaultOptions(this.registryManager, this.generatorOptions.getSeed(), this.generatorOptions.shouldGenerateStructures(), this.generatorOptions.hasBonusChest());
@@ -126,7 +126,7 @@ Drawable {
             }
         }));
         this.customizeTypeButton.visible = false;
-        this.bonusItemsButton = parent.addButton(CyclingButtonWidget.method_32613(this.generatorOptions.hasBonusChest() && !parent.hardcore).build(i, 151, 150, 20, new TranslatableText("selectWorld.bonusItems"), (cyclingButtonWidget, boolean_) -> {
+        this.bonusItemsButton = parent.addButton(CyclingButtonWidget.onOffBuilder(this.generatorOptions.hasBonusChest() && !parent.hardcore).build(i, 151, 150, 20, new TranslatableText("selectWorld.bonusItems"), (cyclingButtonWidget, boolean_) -> {
             this.generatorOptions = this.generatorOptions.toggleBonusChest();
         }));
         this.bonusItemsButton.visible = false;

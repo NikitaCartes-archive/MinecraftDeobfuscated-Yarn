@@ -18,8 +18,8 @@ implements Packet<ClientPlayPacketListener> {
         this.hand = hand;
     }
 
-    public OpenWrittenBookS2CPacket(PacketByteBuf packetByteBuf) {
-        this.hand = packetByteBuf.readEnumConstant(Hand.class);
+    public OpenWrittenBookS2CPacket(PacketByteBuf buf) {
+        this.hand = buf.readEnumConstant(Hand.class);
     }
 
     @Override

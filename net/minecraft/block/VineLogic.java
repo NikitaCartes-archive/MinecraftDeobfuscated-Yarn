@@ -11,7 +11,7 @@ public class VineLogic {
         return state.isAir();
     }
 
-    public static int method_26381(Random random) {
+    public static int getGrowthLength(Random random) {
         double d = 1.0;
         int i = 0;
         while (random.nextDouble() < d) {

@@ -10,7 +10,6 @@ import java.util.function.Predicate;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5875;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -19,11 +18,11 @@ import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.TestableWorld;
 import net.minecraft.world.gen.CountConfig;
 import net.minecraft.world.gen.ProbabilityConfig;
-import net.minecraft.world.gen.feature.AbstractPileFeature;
 import net.minecraft.world.gen.feature.BambooFeature;
 import net.minecraft.world.gen.feature.BasaltColumnsFeature;
 import net.minecraft.world.gen.feature.BasaltColumnsFeatureConfig;
 import net.minecraft.world.gen.feature.BasaltPillarFeature;
+import net.minecraft.world.gen.feature.BlockPileFeature;
 import net.minecraft.world.gen.feature.BlockPileFeatureConfig;
 import net.minecraft.world.gen.feature.BlueIceFeature;
 import net.minecraft.world.gen.feature.BonusChestFeature;
@@ -86,6 +85,7 @@ import net.minecraft.world.gen.feature.RandomFeature;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.RandomPatchFeature;
 import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
+import net.minecraft.world.gen.feature.ScatteredOreFeature;
 import net.minecraft.world.gen.feature.SeaPickleFeature;
 import net.minecraft.world.gen.feature.SeagrassFeature;
 import net.minecraft.world.gen.feature.SimpleBlockFeature;
@@ -114,7 +114,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final FlowerFeature<RandomPatchFeatureConfig> FLOWER = Feature.register("flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC));
     public static final FlowerFeature<RandomPatchFeatureConfig> NO_BONEMEAL_FLOWER = Feature.register("no_bonemeal_flower", new DefaultFlowerFeature(RandomPatchFeatureConfig.CODEC));
     public static final Feature<RandomPatchFeatureConfig> RANDOM_PATCH = Feature.register("random_patch", new RandomPatchFeature(RandomPatchFeatureConfig.CODEC));
-    public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = Feature.register("block_pile", new AbstractPileFeature(BlockPileFeatureConfig.CODEC));
+    public static final Feature<BlockPileFeatureConfig> BLOCK_PILE = Feature.register("block_pile", new BlockPileFeature(BlockPileFeatureConfig.CODEC));
     public static final Feature<SpringFeatureConfig> SPRING_FEATURE = Feature.register("spring_feature", new SpringFeature(SpringFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> CHORUS_PLANT = Feature.register("chorus_plant", new ChorusPlantFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<EmeraldOreFeatureConfig> EMERALD_ORE = Feature.register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig.CODEC));
@@ -158,7 +158,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<FillLayerFeatureConfig> FILL_LAYER = Feature.register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
     public static final BonusChestFeature BONUS_CHEST = Feature.register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> BASALT_PILLAR = Feature.register("basalt_pillar", new BasaltPillarFeature(DefaultFeatureConfig.CODEC));
-    public static final Feature<OreFeatureConfig> SCATTERED_ORE = Feature.register("scattered_ore", new class_5875(OreFeatureConfig.CODEC));
+    public static final Feature<OreFeatureConfig> SCATTERED_ORE = Feature.register("scattered_ore", new ScatteredOreFeature(OreFeatureConfig.CODEC));
     public static final Feature<RandomFeatureConfig> RANDOM_SELECTOR = Feature.register("random_selector", new RandomFeature(RandomFeatureConfig.CODEC));
     public static final Feature<SimpleRandomFeatureConfig> SIMPLE_RANDOM_SELECTOR = Feature.register("simple_random_selector", new SimpleRandomFeature(SimpleRandomFeatureConfig.CODEC));
     public static final Feature<RandomBooleanFeatureConfig> RANDOM_BOOLEAN_SELECTOR = Feature.register("random_boolean_selector", new RandomBooleanFeature(RandomBooleanFeatureConfig.CODEC));
@@ -207,18 +207,18 @@ public abstract class Feature<FC extends FeatureConfig> {
         return world.testBlockState(pos, AbstractBlock.AbstractBlockState::isAir);
     }
 
-    public static boolean method_33982(Function<BlockPos, BlockState> function, BlockPos blockPos, Predicate<BlockState> predicate) {
+    public static boolean testAdjacentStates(Function<BlockPos, BlockState> posToState, BlockPos pos, Predicate<BlockState> predicate) {
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (Direction direction : Direction.values()) {
-            mutable.set(blockPos, direction);
-            if (!predicate.test(function.apply(mutable))) continue;
+            mutable.set(pos, direction);
+            if (!predicate.test(posToState.apply(mutable))) continue;
             return true;
         }
         return false;
     }
 
-    public static boolean method_33981(Function<BlockPos, BlockState> function, BlockPos blockPos) {
-        return Feature.method_33982(function, blockPos, AbstractBlock.AbstractBlockState::isAir);
+    public static boolean isExposedToAir(Function<BlockPos, BlockState> posToState, BlockPos pos) {
+        return Feature.testAdjacentStates(posToState, pos, AbstractBlock.AbstractBlockState::isAir);
     }
 }
 

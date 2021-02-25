@@ -25,8 +25,8 @@ implements Packet<ClientPlayPacketListener> {
         clientPlayPacketListener.onSelectAdvancementTab(this);
     }
 
-    public SelectAdvancementTabS2CPacket(PacketByteBuf packetByteBuf) {
-        this.tabId = packetByteBuf.readBoolean() ? packetByteBuf.readIdentifier() : null;
+    public SelectAdvancementTabS2CPacket(PacketByteBuf buf) {
+        this.tabId = buf.readBoolean() ? buf.readIdentifier() : null;
     }
 
     @Override

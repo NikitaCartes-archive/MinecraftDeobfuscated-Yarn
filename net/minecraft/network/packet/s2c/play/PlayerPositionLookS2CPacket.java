@@ -33,15 +33,15 @@ implements Packet<ClientPlayPacketListener> {
         this.shouldDismount = shouldDismount;
     }
 
-    public PlayerPositionLookS2CPacket(PacketByteBuf packetByteBuf) {
-        this.x = packetByteBuf.readDouble();
-        this.y = packetByteBuf.readDouble();
-        this.z = packetByteBuf.readDouble();
-        this.yaw = packetByteBuf.readFloat();
-        this.pitch = packetByteBuf.readFloat();
-        this.flags = Flag.getFlags(packetByteBuf.readUnsignedByte());
-        this.teleportId = packetByteBuf.readVarInt();
-        this.shouldDismount = packetByteBuf.readBoolean();
+    public PlayerPositionLookS2CPacket(PacketByteBuf buf) {
+        this.x = buf.readDouble();
+        this.y = buf.readDouble();
+        this.z = buf.readDouble();
+        this.yaw = buf.readFloat();
+        this.pitch = buf.readFloat();
+        this.flags = Flag.getFlags(buf.readUnsignedByte());
+        this.teleportId = buf.readVarInt();
+        this.shouldDismount = buf.readBoolean();
     }
 
     @Override
@@ -118,22 +118,22 @@ implements Packet<ClientPlayPacketListener> {
             return 1 << this.shift;
         }
 
-        private boolean isSet(int i) {
-            return (i & this.getMask()) == this.getMask();
+        private boolean isSet(int mask) {
+            return (mask & this.getMask()) == this.getMask();
         }
 
-        public static Set<Flag> getFlags(int i) {
+        public static Set<Flag> getFlags(int mask) {
             EnumSet<Flag> set = EnumSet.noneOf(Flag.class);
             for (Flag flag : Flag.values()) {
-                if (!flag.isSet(i)) continue;
+                if (!flag.isSet(mask)) continue;
                 set.add(flag);
             }
             return set;
         }
 
-        public static int getBitfield(Set<Flag> set) {
+        public static int getBitfield(Set<Flag> flags) {
             int i = 0;
-            for (Flag flag : set) {
+            for (Flag flag : flags) {
                 i |= flag.getMask();
             }
             return i;

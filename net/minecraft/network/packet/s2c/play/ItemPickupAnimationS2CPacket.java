@@ -21,10 +21,10 @@ implements Packet<ClientPlayPacketListener> {
         this.stackAmount = stackAmount;
     }
 
-    public ItemPickupAnimationS2CPacket(PacketByteBuf packetByteBuf) {
-        this.entityId = packetByteBuf.readVarInt();
-        this.collectorEntityId = packetByteBuf.readVarInt();
-        this.stackAmount = packetByteBuf.readVarInt();
+    public ItemPickupAnimationS2CPacket(PacketByteBuf buf) {
+        this.entityId = buf.readVarInt();
+        this.collectorEntityId = buf.readVarInt();
+        this.stackAmount = buf.readVarInt();
     }
 
     @Override

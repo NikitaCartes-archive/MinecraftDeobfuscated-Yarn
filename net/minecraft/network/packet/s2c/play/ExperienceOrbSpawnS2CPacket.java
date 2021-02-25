@@ -26,12 +26,12 @@ implements Packet<ClientPlayPacketListener> {
         this.experience = experienceOrbEntity.getExperienceAmount();
     }
 
-    public ExperienceOrbSpawnS2CPacket(PacketByteBuf packetByteBuf) {
-        this.id = packetByteBuf.readVarInt();
-        this.x = packetByteBuf.readDouble();
-        this.y = packetByteBuf.readDouble();
-        this.z = packetByteBuf.readDouble();
-        this.experience = packetByteBuf.readShort();
+    public ExperienceOrbSpawnS2CPacket(PacketByteBuf buf) {
+        this.id = buf.readVarInt();
+        this.x = buf.readDouble();
+        this.y = buf.readDouble();
+        this.z = buf.readDouble();
+        this.experience = buf.readShort();
     }
 
     @Override

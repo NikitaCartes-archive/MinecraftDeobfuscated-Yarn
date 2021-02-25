@@ -15,7 +15,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
     @Override
     public int sample(LayerRandomnessSource context, int n, int e, int s, int w, int center) {
         int[] is = new int[1];
-        if (this.isMountain(is, center) || this.areEdgesSimilar(is, n, e, s, w, center, 38, 37) || this.areEdgesSimilar(is, n, e, s, w, center, 39, 37) || this.areEdgesSimilar(is, n, e, s, w, center, 32, 5)) {
+        if (this.isMountainBiome(is, center) || this.areEdgesSimilar(is, n, e, s, w, center, 38, 37) || this.areEdgesSimilar(is, n, e, s, w, center, 39, 37) || this.areEdgesSimilar(is, n, e, s, w, center, 32, 5)) {
             return is[0];
         }
         if (center == 2 && (n == 12 || e == 12 || w == 12 || s == 12)) {
@@ -32,7 +32,7 @@ public enum EaseBiomeEdgeLayer implements CrossSamplingLayer
         return center;
     }
 
-    private boolean isMountain(int[] ids, int id) {
+    private boolean isMountainBiome(int[] ids, int id) {
         if (!BiomeLayers.areSimilar(id, 3)) {
             return false;
         }

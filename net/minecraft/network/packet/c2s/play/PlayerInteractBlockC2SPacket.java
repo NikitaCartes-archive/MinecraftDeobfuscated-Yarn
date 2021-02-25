@@ -22,9 +22,9 @@ implements Packet<ServerPlayPacketListener> {
         this.blockHitResult = blockHitResult;
     }
 
-    public PlayerInteractBlockC2SPacket(PacketByteBuf packetByteBuf) {
-        this.hand = packetByteBuf.readEnumConstant(Hand.class);
-        this.blockHitResult = packetByteBuf.readBlockHitResult();
+    public PlayerInteractBlockC2SPacket(PacketByteBuf buf) {
+        this.hand = buf.readEnumConstant(Hand.class);
+        this.blockHitResult = buf.readBlockHitResult();
     }
 
     @Override

@@ -48,14 +48,14 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public ChunkDeltaUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-        this.sectionPos = ChunkSectionPos.from(packetByteBuf.readLong());
-        this.field_26749 = packetByteBuf.readBoolean();
-        int i = packetByteBuf.readVarInt();
+    public ChunkDeltaUpdateS2CPacket(PacketByteBuf buf) {
+        this.sectionPos = ChunkSectionPos.from(buf.readLong());
+        this.field_26749 = buf.readBoolean();
+        int i = buf.readVarInt();
         this.positions = new short[i];
         this.blockStates = new BlockState[i];
         for (int j = 0; j < i; ++j) {
-            long l = packetByteBuf.readVarLong();
+            long l = buf.readVarLong();
             this.positions[j] = (short)(l & 0xFFFL);
             this.blockStates[j] = Block.STATE_IDS.get((int)(l >>> 12));
         }

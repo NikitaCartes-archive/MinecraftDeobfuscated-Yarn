@@ -23,10 +23,10 @@ implements Packet<ServerPlayPacketListener> {
         this.filteringCraftable = filteringCraftable;
     }
 
-    public RecipeCategoryOptionsC2SPacket(PacketByteBuf packetByteBuf) {
-        this.category = packetByteBuf.readEnumConstant(RecipeBookCategory.class);
-        this.guiOpen = packetByteBuf.readBoolean();
-        this.filteringCraftable = packetByteBuf.readBoolean();
+    public RecipeCategoryOptionsC2SPacket(PacketByteBuf buf) {
+        this.category = buf.readEnumConstant(RecipeBookCategory.class);
+        this.guiOpen = buf.readBoolean();
+        this.filteringCraftable = buf.readBoolean();
     }
 
     @Override

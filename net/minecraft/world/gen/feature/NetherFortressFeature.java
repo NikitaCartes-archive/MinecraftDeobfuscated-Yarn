@@ -54,7 +54,7 @@ extends StructureFeature<DefaultFeatureConfig> {
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, DefaultFeatureConfig defaultFeatureConfig, HeightLimitView heightLimitView) {
-            NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, chunkPos.method_33939(2), chunkPos.method_33941(2));
+            NetherFortressGenerator.Start start = new NetherFortressGenerator.Start(this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2));
             this.children.add(start);
             start.fillOpenings(start, this.children, this.random);
             List<StructurePiece> list = start.pieces;

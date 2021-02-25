@@ -16,8 +16,8 @@ implements Packet<ServerPlayPacketListener> {
         this.flying = abilities.flying;
     }
 
-    public UpdatePlayerAbilitiesC2SPacket(PacketByteBuf packetByteBuf) {
-        byte b = packetByteBuf.readByte();
+    public UpdatePlayerAbilitiesC2SPacket(PacketByteBuf buf) {
+        byte b = buf.readByte();
         this.flying = (b & 2) != 0;
     }
 

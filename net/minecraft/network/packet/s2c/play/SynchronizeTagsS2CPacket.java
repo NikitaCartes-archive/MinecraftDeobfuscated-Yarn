@@ -15,19 +15,19 @@ import net.minecraft.util.registry.RegistryKey;
 
 public class SynchronizeTagsS2CPacket
 implements Packet<ClientPlayPacketListener> {
-    private final Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> tagManager;
+    private final Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> groups;
 
-    public SynchronizeTagsS2CPacket(Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> map) {
-        this.tagManager = map;
+    public SynchronizeTagsS2CPacket(Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> groups) {
+        this.groups = groups;
     }
 
-    public SynchronizeTagsS2CPacket(PacketByteBuf packetByteBuf2) {
-        this.tagManager = packetByteBuf2.method_34067(packetByteBuf -> RegistryKey.ofRegistry(packetByteBuf.readIdentifier()), TagGroup.class_5748::method_33160);
+    public SynchronizeTagsS2CPacket(PacketByteBuf buf2) {
+        this.groups = buf2.readMap(buf -> RegistryKey.ofRegistry(buf.readIdentifier()), TagGroup.Serialized::fromBuf);
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
-        buf.method_34063(this.tagManager, (packetByteBuf, registryKey) -> packetByteBuf.writeIdentifier(registryKey.getValue()), (packetByteBuf, arg) -> arg.method_33159((PacketByteBuf)packetByteBuf));
+    public void write(PacketByteBuf buf2) {
+        buf2.writeMap(this.groups, (buf, registryKey) -> buf.writeIdentifier(registryKey.getValue()), (buf, serializedGroup) -> serializedGroup.writeBuf((PacketByteBuf)buf));
     }
 
     @Override
@@ -36,8 +36,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public Map<RegistryKey<? extends Registry<?>>, TagGroup.class_5748> getTagManager() {
-        return this.tagManager;
+    public Map<RegistryKey<? extends Registry<?>>, TagGroup.Serialized> getGroups() {
+        return this.groups;
     }
 }
 

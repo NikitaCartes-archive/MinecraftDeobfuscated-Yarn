@@ -15,8 +15,8 @@ implements Packet<ServerPlayPacketListener> {
         this.status = status;
     }
 
-    public ResourcePackStatusC2SPacket(PacketByteBuf packetByteBuf) {
-        this.status = packetByteBuf.readEnumConstant(Status.class);
+    public ResourcePackStatusC2SPacket(PacketByteBuf buf) {
+        this.status = buf.readEnumConstant(Status.class);
     }
 
     @Override

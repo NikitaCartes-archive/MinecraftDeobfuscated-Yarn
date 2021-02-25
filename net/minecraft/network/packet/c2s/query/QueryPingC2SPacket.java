@@ -18,8 +18,8 @@ implements Packet<ServerQueryPacketListener> {
         this.startTime = startTime;
     }
 
-    public QueryPingC2SPacket(PacketByteBuf packetByteBuf) {
-        this.startTime = packetByteBuf.readLong();
+    public QueryPingC2SPacket(PacketByteBuf buf) {
+        this.startTime = buf.readLong();
     }
 
     @Override

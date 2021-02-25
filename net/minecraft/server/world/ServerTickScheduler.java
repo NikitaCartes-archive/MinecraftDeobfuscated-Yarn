@@ -42,11 +42,11 @@ implements TickScheduler<T> {
     private final List<ScheduledTick<T>> consumedTickActions = Lists.newArrayList();
     private final Consumer<ScheduledTick<T>> tickConsumer;
 
-    public ServerTickScheduler(ServerWorld world, Predicate<T> invalidObjPredicate, Function<T, Identifier> idToName, Consumer<ScheduledTick<T>> consumer) {
+    public ServerTickScheduler(ServerWorld world, Predicate<T> invalidObjPredicate, Function<T, Identifier> idToName, Consumer<ScheduledTick<T>> tickConsumer) {
         this.invalidObjPredicate = invalidObjPredicate;
         this.idToName = idToName;
         this.world = world;
-        this.tickConsumer = consumer;
+        this.tickConsumer = tickConsumer;
     }
 
     public void tick() {
@@ -96,10 +96,10 @@ implements TickScheduler<T> {
         return this.currentTickActions.contains(new ScheduledTick<T>(pos, object));
     }
 
-    public List<ScheduledTick<T>> getScheduledTicksInChunk(ChunkPos chunkPos, boolean updateState, boolean getStaleTicks) {
-        int i = chunkPos.getStartX() - 2;
+    public List<ScheduledTick<T>> getScheduledTicksInChunk(ChunkPos pos, boolean updateState, boolean getStaleTicks) {
+        int i = pos.getStartX() - 2;
         int j = i + 16 + 2;
-        int k = chunkPos.getStartZ() - 2;
+        int k = pos.getStartZ() - 2;
         int l = k + 16 + 2;
         return this.getScheduledTicks(new BlockBox(i, this.world.getBottomY(), k, j, this.world.getTopY(), l), updateState, getStaleTicks);
     }
@@ -176,10 +176,10 @@ implements TickScheduler<T> {
         }
     }
 
-    private void addScheduledTick(ScheduledTick<T> scheduledTick) {
-        if (!this.scheduledTickActions.contains(scheduledTick)) {
-            this.scheduledTickActions.add(scheduledTick);
-            this.scheduledTickActionsInOrder.add(scheduledTick);
+    private void addScheduledTick(ScheduledTick<T> tick) {
+        if (!this.scheduledTickActions.contains(tick)) {
+            this.scheduledTickActions.add(tick);
+            this.scheduledTickActionsInOrder.add(tick);
         }
     }
 

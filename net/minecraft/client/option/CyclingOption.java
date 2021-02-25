@@ -21,54 +21,54 @@ import net.minecraft.text.Text;
 @Environment(value=EnvType.CLIENT)
 public class CyclingOption<T>
 extends Option {
-    private final class_5675<T> setter;
+    private final Setter<T> setter;
     private final Function<GameOptions, T> getter;
-    private final Supplier<CyclingButtonWidget.Builder<T>> field_27954;
-    private Function<MinecraftClient, CyclingButtonWidget.class_5679<T>> field_27955 = client -> value -> ImmutableList.of();
+    private final Supplier<CyclingButtonWidget.Builder<T>> buttonBuilderFactory;
+    private Function<MinecraftClient, CyclingButtonWidget.TooltipFactory<T>> tooltips = client -> value -> ImmutableList.of();
 
-    private CyclingOption(String key, Function<GameOptions, T> getter, class_5675<T> setter, Supplier<CyclingButtonWidget.Builder<T>> supplier) {
+    private CyclingOption(String key, Function<GameOptions, T> getter, Setter<T> setter, Supplier<CyclingButtonWidget.Builder<T>> buttonBuilderFactory) {
         super(key);
         this.getter = getter;
         this.setter = setter;
-        this.field_27954 = supplier;
+        this.buttonBuilderFactory = buttonBuilderFactory;
     }
 
-    public static <T> CyclingOption<T> create(String key, Supplier<List<T>> supplier, Function<T, Text> function, Function<GameOptions, T> getter, class_5675<T> setter) {
-        return new CyclingOption<T>(key, getter, setter, () -> CyclingButtonWidget.method_32606(function).method_32620((List)supplier.get()));
+    public static <T> CyclingOption<T> create(String key, Supplier<List<T>> valuesSupplier, Function<T, Text> valueToText, Function<GameOptions, T> getter, Setter<T> setter) {
+        return new CyclingOption<T>(key, getter, setter, () -> CyclingButtonWidget.builder(valueToText).values((List)valuesSupplier.get()));
     }
 
-    public static <T> CyclingOption<T> create(String key, List<T> list, List<T> list2, BooleanSupplier booleanSupplier, Function<T, Text> function, Function<GameOptions, T> getter, class_5675<T> setter) {
-        return new CyclingOption<T>(key, getter, setter, () -> CyclingButtonWidget.method_32606(function).method_32622(booleanSupplier, list, list2));
+    public static <T> CyclingOption<T> create(String key, List<T> defaults, List<T> alternatives, BooleanSupplier alternativeToggle, Function<T, Text> valueToText, Function<GameOptions, T> getter, Setter<T> setter) {
+        return new CyclingOption<T>(key, getter, setter, () -> CyclingButtonWidget.builder(valueToText).values(alternativeToggle, defaults, alternatives));
     }
 
-    public static <T> CyclingOption<T> create(String key, T[] objects, Function<T, Text> function, Function<GameOptions, T> getter, class_5675<T> setter) {
-        return new CyclingOption<T>(key, getter, setter, () -> CyclingButtonWidget.method_32606(function).method_32624(objects));
+    public static <T> CyclingOption<T> create(String key, T[] values, Function<T, Text> valueToText, Function<GameOptions, T> getter, Setter<T> setter) {
+        return new CyclingOption<T>(key, getter, setter, () -> CyclingButtonWidget.builder(valueToText).values(values));
     }
 
-    public static CyclingOption<Boolean> create(String key, Text text, Text text2, Function<GameOptions, Boolean> getter, class_5675<Boolean> setter) {
-        return new CyclingOption<Boolean>(key, getter, setter, () -> CyclingButtonWidget.method_32607(text, text2));
+    public static CyclingOption<Boolean> create(String key, Text on, Text off, Function<GameOptions, Boolean> getter, Setter<Boolean> setter) {
+        return new CyclingOption<Boolean>(key, getter, setter, () -> CyclingButtonWidget.onOffBuilder(on, off));
     }
 
-    public static CyclingOption<Boolean> create(String key, Function<GameOptions, Boolean> getter, class_5675<Boolean> setter) {
-        return new CyclingOption<Boolean>(key, getter, setter, CyclingButtonWidget::method_32614);
+    public static CyclingOption<Boolean> create(String key, Function<GameOptions, Boolean> getter, Setter<Boolean> setter) {
+        return new CyclingOption<Boolean>(key, getter, setter, CyclingButtonWidget::onOffBuilder);
     }
 
-    public static CyclingOption<Boolean> create(String key, Text text, Function<GameOptions, Boolean> getter, class_5675<Boolean> setter) {
-        return CyclingOption.create(key, getter, setter).method_32528(client -> {
-            List<OrderedText> list = client.textRenderer.wrapLines(text, 200);
+    public static CyclingOption<Boolean> create(String key, Text tooltip, Function<GameOptions, Boolean> getter, Setter<Boolean> setter) {
+        return CyclingOption.create(key, getter, setter).tooltip(client -> {
+            List<OrderedText> list = client.textRenderer.wrapLines(tooltip, 200);
             return value -> list;
         });
     }
 
-    public CyclingOption<T> method_32528(Function<MinecraftClient, CyclingButtonWidget.class_5679<T>> function) {
-        this.field_27955 = function;
+    public CyclingOption<T> tooltip(Function<MinecraftClient, CyclingButtonWidget.TooltipFactory<T>> tooltips) {
+        this.tooltips = tooltips;
         return this;
     }
 
     @Override
     public AbstractButtonWidget createButton(GameOptions options, int x, int y, int width) {
-        CyclingButtonWidget.class_5679<T> lv = this.field_27955.apply(MinecraftClient.getInstance());
-        return this.field_27954.get().method_32618(lv).value(this.getter.apply(options)).build(x, y, width, 20, this.getDisplayPrefix(), (button, value) -> {
+        CyclingButtonWidget.TooltipFactory<T> tooltipFactory = this.tooltips.apply(MinecraftClient.getInstance());
+        return this.buttonBuilderFactory.get().tooltip(tooltipFactory).initially(this.getter.apply(options)).build(x, y, width, 20, this.getDisplayPrefix(), (button, value) -> {
             this.setter.accept(options, this, value);
             options.write();
         });
@@ -76,7 +76,7 @@ extends Option {
 
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
-    public static interface class_5675<T> {
+    public static interface Setter<T> {
         public void accept(GameOptions var1, Option var2, T var3);
     }
 }

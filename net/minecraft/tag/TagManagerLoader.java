@@ -45,15 +45,15 @@ implements ResourceReloadListener {
     public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         ArrayList list = Lists.newArrayList();
         RequiredTagListRegistry.forEach(requiredTagList -> {
-            class_5751 lv = this.method_33178(manager, prepareExecutor, (RequiredTagList)requiredTagList);
-            if (lv != null) {
-                list.add(lv);
+            RequiredGroup requiredGroup = this.buildRequiredGroup(manager, prepareExecutor, (RequiredTagList)requiredTagList);
+            if (requiredGroup != null) {
+                list.add(requiredGroup);
             }
         });
-        return ((CompletableFuture)CompletableFuture.allOf((CompletableFuture[])list.stream().map(arg -> ((class_5751)arg).field_28314).toArray(CompletableFuture[]::new)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
-            TagManager.class_5749 lv = new TagManager.class_5749();
-            list.forEach(arg2 -> arg2.method_33183(lv));
-            TagManager tagManager = lv.method_33171();
+        return ((CompletableFuture)CompletableFuture.allOf((CompletableFuture[])list.stream().map(requiredGroup -> ((RequiredGroup)requiredGroup).groupLoadFuture).toArray(CompletableFuture[]::new)).thenCompose(synchronizer::whenPrepared)).thenAcceptAsync(void_ -> {
+            TagManager.Builder builder = new TagManager.Builder();
+            list.forEach(requiredGroup -> requiredGroup.addTo(builder));
+            TagManager tagManager = builder.build();
             Multimap<RegistryKey<Registry<?>>, Identifier> multimap = RequiredTagListRegistry.getMissingTags(tagManager);
             if (!multimap.isEmpty()) {
                 throw new IllegalStateException("Missing required tags: " + multimap.entries().stream().map(entry -> entry.getKey() + ":" + entry.getValue()).sorted().collect(Collectors.joining(",")));
@@ -64,29 +64,29 @@ implements ResourceReloadListener {
     }
 
     @Nullable
-    private <T> class_5751<T> method_33178(ResourceManager resourceManager, Executor executor, RequiredTagList<T> requiredTagList) {
-        Optional<Registry<T>> optional = this.registryManager.getOptional(requiredTagList.getRegistryKey());
+    private <T> RequiredGroup<T> buildRequiredGroup(ResourceManager resourceManager, Executor prepareExecutor, RequiredTagList<T> requirement) {
+        Optional<Registry<T>> optional = this.registryManager.getOptional(requirement.getRegistryKey());
         if (optional.isPresent()) {
             Registry<T> registry = optional.get();
-            TagGroupLoader tagGroupLoader = new TagGroupLoader(registry::getOrEmpty, requiredTagList.method_33149());
-            CompletableFuture<TagGroup> completableFuture = CompletableFuture.supplyAsync(() -> tagGroupLoader.method_33176(resourceManager), executor);
-            return new class_5751(requiredTagList, completableFuture);
+            TagGroupLoader tagGroupLoader = new TagGroupLoader(registry::getOrEmpty, requirement.getDataType());
+            CompletableFuture<TagGroup> completableFuture = CompletableFuture.supplyAsync(() -> tagGroupLoader.load(resourceManager), prepareExecutor);
+            return new RequiredGroup(requirement, completableFuture);
         }
-        LOGGER.warn("Can't find registry for {}", (Object)requiredTagList.getRegistryKey());
+        LOGGER.warn("Can't find registry for {}", (Object)requirement.getRegistryKey());
         return null;
     }
 
-    static class class_5751<T> {
-        private final RequiredTagList<T> field_28313;
-        private final CompletableFuture<? extends TagGroup<T>> field_28314;
+    static class RequiredGroup<T> {
+        private final RequiredTagList<T> requirement;
+        private final CompletableFuture<? extends TagGroup<T>> groupLoadFuture;
 
-        private class_5751(RequiredTagList<T> requiredTagList, CompletableFuture<? extends TagGroup<T>> completableFuture) {
-            this.field_28313 = requiredTagList;
-            this.field_28314 = completableFuture;
+        private RequiredGroup(RequiredTagList<T> requirement, CompletableFuture<? extends TagGroup<T>> groupLoadFuture) {
+            this.requirement = requirement;
+            this.groupLoadFuture = groupLoadFuture;
         }
 
-        public void method_33183(TagManager.class_5749 arg) {
-            arg.method_33172(this.field_28313.getRegistryKey(), this.field_28314.join());
+        public void addTo(TagManager.Builder builder) {
+            builder.add(this.requirement.getRegistryKey(), this.groupLoadFuture.join());
         }
     }
 }

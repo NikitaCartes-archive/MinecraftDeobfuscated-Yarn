@@ -22,10 +22,10 @@ implements Packet<ClientPlayPacketListener> {
         this.progress = progress;
     }
 
-    public BlockBreakingProgressS2CPacket(PacketByteBuf packetByteBuf) {
-        this.entityId = packetByteBuf.readVarInt();
-        this.pos = packetByteBuf.readBlockPos();
-        this.progress = packetByteBuf.readUnsignedByte();
+    public BlockBreakingProgressS2CPacket(PacketByteBuf buf) {
+        this.entityId = buf.readVarInt();
+        this.pos = buf.readBlockPos();
+        this.progress = buf.readUnsignedByte();
     }
 
     @Override

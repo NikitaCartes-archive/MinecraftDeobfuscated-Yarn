@@ -25,27 +25,27 @@ extends AbstractPressableButtonWidget
 implements OrderableTooltip {
     private static final BooleanSupplier HAS_ALT_DOWN = Screen::hasAltDown;
     private static final List<Boolean> BOOLEAN_VALUES = ImmutableList.of(Boolean.TRUE, Boolean.FALSE);
-    private final Text field_27963;
+    private final Text optionText;
     private int index;
     private T value;
-    private final class_5680<T> field_27966;
-    private final Function<T, Text> field_27967;
-    private final Function<CyclingButtonWidget<T>, MutableText> field_27968;
-    private final class_5678<T> field_27969;
-    private final class_5679<T> field_27970;
-    private final boolean field_27971;
+    private final Values<T> values;
+    private final Function<T, Text> valueToText;
+    private final Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory;
+    private final UpdateCallback<T> callback;
+    private final TooltipFactory<T> tooltipFactory;
+    private final boolean optionTextOmitted;
 
-    private CyclingButtonWidget(int i, int j, int k, int l, Text text, Text text2, int index, T value, class_5680<T> arg, Function<T, Text> function, Function<CyclingButtonWidget<T>, MutableText> function2, class_5678<T> arg2, class_5679<T> arg3, boolean bl) {
-        super(i, j, k, l, text);
-        this.field_27963 = text2;
+    private CyclingButtonWidget(int x, int y, int width, int height, Text message, Text optionText, int index, T value, Values<T> values, Function<T, Text> valueToText, Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory, UpdateCallback<T> callback, TooltipFactory<T> tooltipFactory, boolean optionTextOmitted) {
+        super(x, y, width, height, message);
+        this.optionText = optionText;
         this.index = index;
         this.value = value;
-        this.field_27966 = arg;
-        this.field_27967 = function;
-        this.field_27968 = function2;
-        this.field_27969 = arg2;
-        this.field_27970 = arg3;
-        this.field_27971 = bl;
+        this.values = values;
+        this.valueToText = valueToText;
+        this.narrationMessageFactory = narrationMessageFactory;
+        this.callback = callback;
+        this.tooltipFactory = tooltipFactory;
+        this.optionTextOmitted = optionTextOmitted;
     }
 
     @Override
@@ -58,11 +58,11 @@ implements OrderableTooltip {
     }
 
     private void cycle(int amount) {
-        List<T> list = this.field_27966.method_32626();
+        List<T> list = this.values.getCurrent();
         this.index = MathHelper.floorMod(this.index + amount, list.size());
         T object = list.get(this.index);
-        this.method_32609(object);
-        this.field_27969.onValueChange(this, object);
+        this.internalSetValue(object);
+        this.callback.onValueChange(this, object);
     }
 
     @Override
@@ -76,22 +76,22 @@ implements OrderableTooltip {
     }
 
     public void setValue(T value) {
-        List<T> list = this.field_27966.method_32626();
+        List<T> list = this.values.getCurrent();
         int i = list.indexOf(value);
         if (i != -1) {
             this.index = i;
         }
-        this.method_32609(value);
+        this.internalSetValue(value);
     }
 
-    private void method_32609(T value) {
-        MutableText text = this.field_27971 ? this.field_27967.apply(value) : this.getGenericTextForValue(value);
+    private void internalSetValue(T value) {
+        MutableText text = this.optionTextOmitted ? this.valueToText.apply(value) : this.composeGenericOptionText(value);
         this.setMessage(text);
         this.value = value;
     }
 
-    private MutableText getGenericTextForValue(T value) {
-        return ScreenTexts.composeGenericOptionText(this.field_27963, this.field_27967.apply(value));
+    private MutableText composeGenericOptionText(T value) {
+        return ScreenTexts.composeGenericOptionText(this.optionText, this.valueToText.apply(value));
     }
 
     public T getValue() {
@@ -100,69 +100,99 @@ implements OrderableTooltip {
 
     @Override
     protected MutableText getNarrationMessage() {
-        return this.field_27968.apply(this);
+        return this.narrationMessageFactory.apply(this);
     }
 
-    public MutableText method_32611() {
-        return CyclingButtonWidget.getNarrationMessage(this.field_27971 ? this.getGenericTextForValue(this.value) : this.getMessage());
+    /**
+     * Returns a generic narration message for this button.
+     * 
+     * <p>If the button omits the option text in rendering, such as showing only
+     * "Value", this narration message will still read out the option like
+     * "Option: Value".
+     */
+    public MutableText getGenericNarrationMessage() {
+        return CyclingButtonWidget.getNarrationMessage(this.optionTextOmitted ? this.composeGenericOptionText(this.value) : this.getMessage());
     }
 
     @Override
     public List<OrderedText> getOrderedTooltip() {
-        return (List)this.field_27970.apply(this.value);
+        return (List)this.tooltipFactory.apply(this.value);
     }
 
-    public static <T> Builder<T> method_32606(Function<T, Text> function) {
-        return new Builder<T>(function);
+    /**
+     * Creates a new builder for a cycling button widget.
+     */
+    public static <T> Builder<T> builder(Function<T, Text> valueToText) {
+        return new Builder<T>(valueToText);
     }
 
-    public static Builder<Boolean> method_32607(Text text, Text text2) {
-        return new Builder<Boolean>(value -> value != false ? text : text2).method_32620(BOOLEAN_VALUES);
+    /**
+     * Creates a builder for a cycling button widget that only has {@linkplain Boolean#TRUE}
+     * and {@linkplain Boolean#FALSE} values. It displays
+     * {@code on} for {@code true} and {@code off} for {@code false}.
+     * Its current initial value is {@code true}.
+     */
+    public static Builder<Boolean> onOffBuilder(Text on, Text off) {
+        return new Builder<Boolean>(value -> value != false ? on : off).values(BOOLEAN_VALUES);
     }
 
-    public static Builder<Boolean> method_32614() {
-        return new Builder<Boolean>(value -> value != false ? ScreenTexts.ON : ScreenTexts.OFF).method_32620(BOOLEAN_VALUES);
+    /**
+     * Creates a builder for a cycling button widget that only has {@linkplain Boolean#TRUE}
+     * and {@linkplain Boolean#FALSE} values. It displays
+     * {@link net.minecraft.client.gui.screen.ScreenTexts#ON} for {@code true} and
+     * {@link net.minecraft.client.gui.screen.ScreenTexts#OFF} for {@code false}.
+     * Its current initial value is {@code true}.
+     */
+    public static Builder<Boolean> onOffBuilder() {
+        return new Builder<Boolean>(value -> value != false ? ScreenTexts.ON : ScreenTexts.OFF).values(BOOLEAN_VALUES);
     }
 
-    public static Builder<Boolean> method_32613(boolean bl) {
-        return CyclingButtonWidget.method_32614().value(bl);
+    /**
+     * Creates a builder for a cycling button widget that only has {@linkplain Boolean#TRUE}
+     * and {@linkplain Boolean#FALSE} values. It displays
+     * {@link net.minecraft.client.gui.screen.ScreenTexts#ON} for {@code true} and
+     * {@link net.minecraft.client.gui.screen.ScreenTexts#OFF} for {@code false}.
+     * Its current initial value is set to {@code initialValue}.
+     */
+    public static Builder<Boolean> onOffBuilder(boolean initialValue) {
+        return CyclingButtonWidget.onOffBuilder().initially(initialValue);
     }
 
     @Environment(value=EnvType.CLIENT)
-    static interface class_5680<T> {
-        public List<T> method_32626();
+    static interface Values<T> {
+        public List<T> getCurrent();
 
-        public List<T> method_32629();
+        public List<T> getDefaults();
 
-        public static <T> class_5680<T> method_32627(List<T> list) {
-            final ImmutableList<T> list2 = ImmutableList.copyOf(list);
-            return new class_5680<T>(){
+        public static <T> Values<T> of(List<T> values) {
+            final ImmutableList<T> list = ImmutableList.copyOf(values);
+            return new Values<T>(){
 
                 @Override
-                public List<T> method_32626() {
-                    return list2;
+                public List<T> getCurrent() {
+                    return list;
                 }
 
                 @Override
-                public List<T> method_32629() {
-                    return list2;
+                public List<T> getDefaults() {
+                    return list;
                 }
             };
         }
 
-        public static <T> class_5680<T> method_32628(final BooleanSupplier booleanSupplier, List<T> list, List<T> list2) {
-            final ImmutableList<T> list3 = ImmutableList.copyOf(list);
-            final ImmutableList<T> list4 = ImmutableList.copyOf(list2);
-            return new class_5680<T>(){
+        public static <T> Values<T> of(final BooleanSupplier alternativeToggle, List<T> defaults, List<T> alternatives) {
+            final ImmutableList<T> list = ImmutableList.copyOf(defaults);
+            final ImmutableList<T> list2 = ImmutableList.copyOf(alternatives);
+            return new Values<T>(){
 
                 @Override
-                public List<T> method_32626() {
-                    return booleanSupplier.getAsBoolean() ? list4 : list3;
+                public List<T> getCurrent() {
+                    return alternativeToggle.getAsBoolean() ? list2 : list;
                 }
 
                 @Override
-                public List<T> method_32629() {
-                    return list3;
+                public List<T> getDefaults() {
+                    return list;
                 }
             };
         }
@@ -170,83 +200,83 @@ implements OrderableTooltip {
 
     @Environment(value=EnvType.CLIENT)
     public static class Builder<T> {
-        private int field_27972;
+        private int initialIndex;
         @Nullable
         private T value;
-        private final Function<T, Text> field_27974;
-        private class_5679<T> field_27975 = value -> ImmutableList.of();
-        private Function<CyclingButtonWidget<T>, MutableText> field_27976 = CyclingButtonWidget::method_32611;
-        private class_5680<T> field_27977 = class_5680.method_32627(ImmutableList.of());
-        private boolean field_27978;
+        private final Function<T, Text> valueToText;
+        private TooltipFactory<T> tooltipFactory = value -> ImmutableList.of();
+        private Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory = CyclingButtonWidget::getGenericNarrationMessage;
+        private Values<T> values = Values.of(ImmutableList.of());
+        private boolean optionTextOmitted;
 
-        public Builder(Function<T, Text> function) {
-            this.field_27974 = function;
+        public Builder(Function<T, Text> valueToText) {
+            this.valueToText = valueToText;
         }
 
-        public Builder<T> method_32620(List<T> list) {
-            this.field_27977 = class_5680.method_32627(list);
+        public Builder<T> values(List<T> values) {
+            this.values = Values.of(values);
             return this;
         }
 
         @SafeVarargs
-        public final Builder<T> method_32624(T ... objects) {
-            return this.method_32620(ImmutableList.copyOf(objects));
+        public final Builder<T> values(T ... values) {
+            return this.values((List<T>)ImmutableList.copyOf(values));
         }
 
-        public Builder<T> method_32621(List<T> list, List<T> list2) {
-            this.field_27977 = class_5680.method_32628(HAS_ALT_DOWN, list, list2);
+        public Builder<T> values(List<T> defaults, List<T> alternatives) {
+            this.values = Values.of(HAS_ALT_DOWN, defaults, alternatives);
             return this;
         }
 
-        public Builder<T> method_32622(BooleanSupplier booleanSupplier, List<T> list, List<T> list2) {
-            this.field_27977 = class_5680.method_32628(booleanSupplier, list, list2);
+        public Builder<T> values(BooleanSupplier alternativeToggle, List<T> defaults, List<T> alternatives) {
+            this.values = Values.of(alternativeToggle, defaults, alternatives);
             return this;
         }
 
-        public Builder<T> method_32618(class_5679<T> arg) {
-            this.field_27975 = arg;
+        public Builder<T> tooltip(TooltipFactory<T> tooltipFactory) {
+            this.tooltipFactory = tooltipFactory;
             return this;
         }
 
-        public Builder<T> value(T value) {
+        public Builder<T> initially(T value) {
             this.value = value;
-            int i = this.field_27977.method_32629().indexOf(value);
+            int i = this.values.getDefaults().indexOf(value);
             if (i != -1) {
-                this.field_27972 = i;
+                this.initialIndex = i;
             }
             return this;
         }
 
-        public Builder<T> method_32623(Function<CyclingButtonWidget<T>, MutableText> function) {
-            this.field_27976 = function;
+        public Builder<T> narration(Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory) {
+            this.narrationMessageFactory = narrationMessageFactory;
             return this;
         }
 
-        public Builder<T> method_32616() {
-            this.field_27978 = true;
+        public Builder<T> omitKeyText() {
+            this.optionTextOmitted = true;
             return this;
         }
 
-        public CyclingButtonWidget<T> build(int i, int j, int k, int l, Text text, class_5678<T> arg) {
-            List<T> list = this.field_27977.method_32629();
+        public CyclingButtonWidget<T> build(int x, int y, int width, int height, Text optionText, UpdateCallback<T> callback) {
+            List<T> list = this.values.getDefaults();
             if (list.isEmpty()) {
                 throw new IllegalStateException("No values for cycle button");
             }
-            T object = this.value != null ? this.value : list.get(this.field_27972);
-            Text text2 = this.field_27974.apply(object);
-            Text text3 = this.field_27978 ? text2 : ScreenTexts.composeGenericOptionText(text, text2);
-            return new CyclingButtonWidget(i, j, k, l, text3, text, this.field_27972, object, this.field_27977, this.field_27974, this.field_27976, arg, this.field_27975, this.field_27978);
+            T object = this.value != null ? this.value : list.get(this.initialIndex);
+            Text text = this.valueToText.apply(object);
+            Text text2 = this.optionTextOmitted ? text : ScreenTexts.composeGenericOptionText(optionText, text);
+            return new CyclingButtonWidget(x, y, width, height, text2, optionText, this.initialIndex, object, this.values, this.valueToText, this.narrationMessageFactory, callback, this.tooltipFactory, this.optionTextOmitted);
         }
     }
 
     @FunctionalInterface
     @Environment(value=EnvType.CLIENT)
-    public static interface class_5679<T>
+    public static interface TooltipFactory<T>
     extends Function<T, List<OrderedText>> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static interface class_5678<T> {
+    public static interface UpdateCallback<T> {
         public void onValueChange(CyclingButtonWidget var1, T var2);
     }
 }

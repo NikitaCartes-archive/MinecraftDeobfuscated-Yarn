@@ -22,13 +22,13 @@ implements Packet<ServerPlayPacketListener> {
         this.data = data;
     }
 
-    public CustomPayloadC2SPacket(PacketByteBuf packetByteBuf) {
-        this.channel = packetByteBuf.readIdentifier();
-        int i = packetByteBuf.readableBytes();
+    public CustomPayloadC2SPacket(PacketByteBuf buf) {
+        this.channel = buf.readIdentifier();
+        int i = buf.readableBytes();
         if (i < 0 || i > Short.MAX_VALUE) {
             throw new IllegalArgumentException("Payload may not be larger than 32767 bytes");
         }
-        this.data = new PacketByteBuf(packetByteBuf.readBytes(i));
+        this.data = new PacketByteBuf(buf.readBytes(i));
     }
 
     @Override

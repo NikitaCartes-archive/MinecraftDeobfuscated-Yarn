@@ -185,10 +185,10 @@ public abstract class AbstractPropertiesHandler<T extends AbstractPropertiesHand
             return this.value;
         }
 
-        public T set(DynamicRegistryManager dynamicRegistryManager, V object) {
+        public T set(DynamicRegistryManager registryManager, V object) {
             Properties properties = AbstractPropertiesHandler.this.copyProperties();
             properties.put(this.key, this.stringifier.apply(object));
-            return AbstractPropertiesHandler.this.create(dynamicRegistryManager, properties);
+            return AbstractPropertiesHandler.this.create(registryManager, properties);
         }
     }
 }

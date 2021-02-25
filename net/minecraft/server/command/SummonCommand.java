@@ -28,7 +28,7 @@ import net.minecraft.world.World;
 
 public class SummonCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed"));
-    private static final SimpleCommandExceptionType field_26629 = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed.uuid"));
+    private static final SimpleCommandExceptionType FAILED_UUID_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.failed.uuid"));
     private static final SimpleCommandExceptionType INVALID_POSITION_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.summon.invalidPosition"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
@@ -54,7 +54,7 @@ public class SummonCommand {
             ((MobEntity)entity22).initialize(source.getWorld(), source.getWorld().getLocalDifficulty(entity22.getBlockPos()), SpawnReason.COMMAND, null, null);
         }
         if (!serverWorld.shouldCreateNewEntityWithPassenger(entity22)) {
-            throw field_26629.create();
+            throw FAILED_UUID_EXCEPTION.create();
         }
         source.sendFeedback(new TranslatableText("commands.summon.success", entity22.getDisplayName()), true);
         return 1;

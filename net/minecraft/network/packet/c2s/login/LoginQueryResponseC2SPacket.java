@@ -21,14 +21,14 @@ implements Packet<ServerLoginPacketListener> {
         this.response = response;
     }
 
-    public LoginQueryResponseC2SPacket(PacketByteBuf packetByteBuf) {
-        this.queryId = packetByteBuf.readVarInt();
-        if (packetByteBuf.readBoolean()) {
-            int i = packetByteBuf.readableBytes();
+    public LoginQueryResponseC2SPacket(PacketByteBuf buf) {
+        this.queryId = buf.readVarInt();
+        if (buf.readBoolean()) {
+            int i = buf.readableBytes();
             if (i < 0 || i > 0x100000) {
                 throw new IllegalArgumentException("Payload may not be larger than 1048576 bytes");
             }
-            this.response = new PacketByteBuf(packetByteBuf.readBytes(i));
+            this.response = new PacketByteBuf(buf.readBytes(i));
         } else {
             this.response = null;
         }

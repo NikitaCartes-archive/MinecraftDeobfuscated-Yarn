@@ -30,7 +30,7 @@ implements Packet<ClientPlayPacketListener> {
     private final List<byte[]> blockLightUpdates;
     private final boolean field_25659;
 
-    public LightUpdateS2CPacket(ChunkPos chunkPos, LightingProvider lightingProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean bl) {
+    public LightUpdateS2CPacket(ChunkPos chunkPos, LightingProvider lightProvider, @Nullable BitSet bitSet, @Nullable BitSet bitSet2, boolean bl) {
         this.chunkX = chunkPos.x;
         this.chunkZ = chunkPos.z;
         this.field_25659 = bl;
@@ -40,17 +40,17 @@ implements Packet<ClientPlayPacketListener> {
         this.filledBlockLightMask = new BitSet();
         this.skyLightUpdates = Lists.newArrayList();
         this.blockLightUpdates = Lists.newArrayList();
-        for (int i = 0; i < lightingProvider.method_31928(); ++i) {
+        for (int i = 0; i < lightProvider.method_31928(); ++i) {
             if (bitSet == null || bitSet.get(i)) {
-                LightUpdateS2CPacket.method_33138(chunkPos, lightingProvider, LightType.SKY, i, this.skyLightMask, this.filledSkyLightMask, this.skyLightUpdates);
+                LightUpdateS2CPacket.method_33138(chunkPos, lightProvider, LightType.SKY, i, this.skyLightMask, this.filledSkyLightMask, this.skyLightUpdates);
             }
             if (bitSet2 != null && !bitSet2.get(i)) continue;
-            LightUpdateS2CPacket.method_33138(chunkPos, lightingProvider, LightType.BLOCK, i, this.blockLightMask, this.filledBlockLightMask, this.blockLightUpdates);
+            LightUpdateS2CPacket.method_33138(chunkPos, lightProvider, LightType.BLOCK, i, this.blockLightMask, this.filledBlockLightMask, this.blockLightUpdates);
         }
     }
 
-    private static void method_33138(ChunkPos chunkPos, LightingProvider lightingProvider, LightType lightType, int i, BitSet bitSet, BitSet bitSet2, List<byte[]> list) {
-        ChunkNibbleArray chunkNibbleArray = lightingProvider.get(lightType).getLightSection(ChunkSectionPos.from(chunkPos, lightingProvider.method_31929() + i));
+    private static void method_33138(ChunkPos chunkPos, LightingProvider lightProvider, LightType lightType, int i, BitSet bitSet, BitSet bitSet2, List<byte[]> list) {
+        ChunkNibbleArray chunkNibbleArray = lightProvider.get(lightType).getLightSection(ChunkSectionPos.from(chunkPos, lightProvider.method_31929() + i));
         if (chunkNibbleArray != null) {
             if (chunkNibbleArray.isUninitialized()) {
                 bitSet2.set(i);
@@ -61,16 +61,16 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public LightUpdateS2CPacket(PacketByteBuf packetByteBuf2) {
-        this.chunkX = packetByteBuf2.readVarInt();
-        this.chunkZ = packetByteBuf2.readVarInt();
-        this.field_25659 = packetByteBuf2.readBoolean();
-        this.skyLightMask = packetByteBuf2.method_33558();
-        this.blockLightMask = packetByteBuf2.method_33558();
-        this.filledSkyLightMask = packetByteBuf2.method_33558();
-        this.filledBlockLightMask = packetByteBuf2.method_33558();
-        this.skyLightUpdates = packetByteBuf2.method_34066(packetByteBuf -> packetByteBuf.readByteArray(2048));
-        this.blockLightUpdates = packetByteBuf2.method_34066(packetByteBuf -> packetByteBuf.readByteArray(2048));
+    public LightUpdateS2CPacket(PacketByteBuf buf) {
+        this.chunkX = buf.readVarInt();
+        this.chunkZ = buf.readVarInt();
+        this.field_25659 = buf.readBoolean();
+        this.skyLightMask = buf.readBitSet();
+        this.blockLightMask = buf.readBitSet();
+        this.filledSkyLightMask = buf.readBitSet();
+        this.filledBlockLightMask = buf.readBitSet();
+        this.skyLightUpdates = buf.readList(packetByteBuf -> packetByteBuf.readByteArray(2048));
+        this.blockLightUpdates = buf.readList(packetByteBuf -> packetByteBuf.readByteArray(2048));
     }
 
     @Override
@@ -78,12 +78,12 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeVarInt(this.chunkX);
         buf.writeVarInt(this.chunkZ);
         buf.writeBoolean(this.field_25659);
-        buf.method_33557(this.skyLightMask);
-        buf.method_33557(this.blockLightMask);
-        buf.method_33557(this.filledSkyLightMask);
-        buf.method_33557(this.filledBlockLightMask);
-        buf.method_34062(this.skyLightUpdates, PacketByteBuf::writeByteArray);
-        buf.method_34062(this.blockLightUpdates, PacketByteBuf::writeByteArray);
+        buf.writeBitSet(this.skyLightMask);
+        buf.writeBitSet(this.blockLightMask);
+        buf.writeBitSet(this.filledSkyLightMask);
+        buf.writeBitSet(this.filledBlockLightMask);
+        buf.writeCollection(this.skyLightUpdates, PacketByteBuf::writeByteArray);
+        buf.writeCollection(this.blockLightUpdates, PacketByteBuf::writeByteArray);
     }
 
     @Override

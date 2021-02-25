@@ -157,11 +157,11 @@ extends Screen {
         this.children.add(this.levelNameField);
         int i = this.width / 2 - 155;
         int j = this.width / 2 + 5;
-        this.gameModeSwitchButton = this.addButton(CyclingButtonWidget.method_32606(Mode::asText).method_32624((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).value(this.currentMode).method_32623(cyclingButtonWidget -> AbstractButtonWidget.getNarrationMessage(cyclingButtonWidget.getMessage()).append(". ").append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
-        this.difficultyButton = this.addButton(CyclingButtonWidget.method_32606(Difficulty::getTranslatableName).method_32624((Difficulty[])Difficulty.values()).value(this.getDifficulty()).build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> {
+        this.gameModeSwitchButton = this.addButton(CyclingButtonWidget.builder(Mode::asText).values((Mode[])new Mode[]{Mode.SURVIVAL, Mode.HARDCORE, Mode.CREATIVE}).initially(this.currentMode).narration(cyclingButtonWidget -> AbstractButtonWidget.getNarrationMessage(cyclingButtonWidget.getMessage()).append(". ").append(this.firstGameModeDescriptionLine).append(" ").append(this.secondGameModeDescriptionLine)).build(i, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, mode) -> this.tweakDefaultsTo((Mode)((Object)mode))));
+        this.difficultyButton = this.addButton(CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.getDifficulty()).build(j, 100, 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> {
             this.currentDifficulty = difficulty;
         }));
-        this.enableCheatsButton = this.addButton(CyclingButtonWidget.method_32613(this.cheatsEnabled && !this.hardcore).method_32623(cyclingButtonWidget -> cyclingButtonWidget.method_32611().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"))).build(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), (cyclingButtonWidget, boolean_) -> {
+        this.enableCheatsButton = this.addButton(CyclingButtonWidget.onOffBuilder(this.cheatsEnabled && !this.hardcore).narration(cyclingButtonWidget -> cyclingButtonWidget.getGenericNarrationMessage().append(". ").append(new TranslatableText("selectWorld.allowCommands.info"))).build(i, 151, 150, 20, new TranslatableText("selectWorld.allowCommands"), (cyclingButtonWidget, boolean_) -> {
             this.tweakedCheats = true;
             this.cheatsEnabled = boolean_;
         }));

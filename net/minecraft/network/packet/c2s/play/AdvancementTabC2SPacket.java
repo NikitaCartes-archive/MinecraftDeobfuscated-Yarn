@@ -34,9 +34,9 @@ implements Packet<ServerPlayPacketListener> {
         return new AdvancementTabC2SPacket(Action.CLOSED_SCREEN, null);
     }
 
-    public AdvancementTabC2SPacket(PacketByteBuf packetByteBuf) {
-        this.action = packetByteBuf.readEnumConstant(Action.class);
-        this.tabToOpen = this.action == Action.OPENED_TAB ? packetByteBuf.readIdentifier() : null;
+    public AdvancementTabC2SPacket(PacketByteBuf buf) {
+        this.action = buf.readEnumConstant(Action.class);
+        this.tabToOpen = this.action == Action.OPENED_TAB ? buf.readIdentifier() : null;
     }
 
     @Override

@@ -19,9 +19,9 @@ implements Packet<ClientPlayPacketListener> {
         this.chunkZ = z;
     }
 
-    public ChunkRenderDistanceCenterS2CPacket(PacketByteBuf packetByteBuf) {
-        this.chunkX = packetByteBuf.readVarInt();
-        this.chunkZ = packetByteBuf.readVarInt();
+    public ChunkRenderDistanceCenterS2CPacket(PacketByteBuf buf) {
+        this.chunkX = buf.readVarInt();
+        this.chunkZ = buf.readVarInt();
     }
 
     @Override

@@ -187,12 +187,12 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void tick() {
-        if (!this.world.method_33598(this.getBlockX(), this.getBlockZ())) {
+        if (!this.world.isPosLoaded(this.getBlockX(), this.getBlockZ())) {
             return;
         }
         super.tick();
         if (this.hasVehicle()) {
-            this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
+            this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.yaw, this.pitch, this.onGround));
             this.networkHandler.sendPacket(new PlayerInputC2SPacket(this.sidewaysSpeed, this.forwardSpeed, this.input.jumping, this.input.sneaking));
             Entity entity = this.getRootVehicle();
             if (entity != this && entity.isLogicalSideForUpdatingMovement()) {
@@ -243,16 +243,16 @@ extends AbstractClientPlayerEntity {
             boolean bl5 = bl4 = g != 0.0 || h != 0.0;
             if (this.hasVehicle()) {
                 Vec3d vec3d = this.getVelocity();
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(vec3d.x, -999.0, vec3d.z, this.yaw, this.pitch, this.onGround));
                 bl3 = false;
             } else if (bl3 && bl4) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Both(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.Full(this.getX(), this.getY(), this.getZ(), this.yaw, this.pitch, this.onGround));
             } else if (bl3) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionOnly(this.getX(), this.getY(), this.getZ(), this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.PositionAndOnGround(this.getX(), this.getY(), this.getZ(), this.onGround));
             } else if (bl4) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookOnly(this.yaw, this.pitch, this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.LookAndOnGround(this.yaw, this.pitch, this.onGround));
             } else if (this.lastOnGround != this.onGround) {
-                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.class_5911(this.onGround));
+                this.networkHandler.sendPacket(new PlayerMoveC2SPacket.OnGroundOnly(this.onGround));
             }
             if (bl3) {
                 this.lastX = this.getX();
@@ -434,10 +434,10 @@ extends AbstractClientPlayerEntity {
         }
     }
 
-    private boolean wouldCollideAt(BlockPos pos) {
+    private boolean wouldCollideAt(BlockPos pos2) {
         Box box = this.getBoundingBox();
-        Box box2 = new Box(pos.getX(), box.minY, pos.getZ(), (double)pos.getX() + 1.0, box.maxY, (double)pos.getZ() + 1.0).contract(1.0E-7);
-        return this.world.isBlockSpaceEmpty(this, box2, (blockState, blockPos) -> blockState.shouldSuffocate(this.world, (BlockPos)blockPos));
+        Box box2 = new Box(pos2.getX(), box.minY, pos2.getZ(), (double)pos2.getX() + 1.0, box.maxY, (double)pos2.getZ() + 1.0).contract(1.0E-7);
+        return this.world.isBlockSpaceEmpty(this, box2, (state, pos) -> state.shouldSuffocate(this.world, (BlockPos)pos));
     }
 
     @Override
@@ -545,7 +545,7 @@ extends AbstractClientPlayerEntity {
 
     @Override
     public void openEditSignScreen(SignBlockEntity sign) {
-        this.client.openScreen(new SignEditScreen(sign, this.client.method_33883()));
+        this.client.openScreen(new SignEditScreen(sign, this.client.shouldFilterText()));
     }
 
     @Override

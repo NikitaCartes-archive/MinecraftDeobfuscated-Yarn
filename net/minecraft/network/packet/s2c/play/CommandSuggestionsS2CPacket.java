@@ -25,29 +25,29 @@ implements Packet<ClientPlayPacketListener> {
         this.suggestions = suggestions;
     }
 
-    public CommandSuggestionsS2CPacket(PacketByteBuf packetByteBuf2) {
-        this.completionId = packetByteBuf2.readVarInt();
-        int i = packetByteBuf2.readVarInt();
-        int j = packetByteBuf2.readVarInt();
+    public CommandSuggestionsS2CPacket(PacketByteBuf buf2) {
+        this.completionId = buf2.readVarInt();
+        int i = buf2.readVarInt();
+        int j = buf2.readVarInt();
         StringRange stringRange = StringRange.between(i, i + j);
-        List<Suggestion> list = packetByteBuf2.method_34066(packetByteBuf -> {
-            String string = packetByteBuf.readString();
-            Text text = packetByteBuf.readBoolean() ? packetByteBuf.readText() : null;
+        List<Suggestion> list = buf2.readList(buf -> {
+            String string = buf.readString();
+            Text text = buf.readBoolean() ? buf.readText() : null;
             return new Suggestion(stringRange, string, text);
         });
         this.suggestions = new Suggestions(stringRange, list);
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
-        buf.writeVarInt(this.completionId);
-        buf.writeVarInt(this.suggestions.getRange().getStart());
-        buf.writeVarInt(this.suggestions.getRange().getLength());
-        buf.method_34062(this.suggestions.getList(), (packetByteBuf, suggestion) -> {
-            packetByteBuf.writeString(suggestion.getText());
-            packetByteBuf.writeBoolean(suggestion.getTooltip() != null);
+    public void write(PacketByteBuf buf2) {
+        buf2.writeVarInt(this.completionId);
+        buf2.writeVarInt(this.suggestions.getRange().getStart());
+        buf2.writeVarInt(this.suggestions.getRange().getLength());
+        buf2.writeCollection(this.suggestions.getList(), (buf, suggestion) -> {
+            buf.writeString(suggestion.getText());
+            buf.writeBoolean(suggestion.getTooltip() != null);
             if (suggestion.getTooltip() != null) {
-                packetByteBuf.writeText(Texts.toText(suggestion.getTooltip()));
+                buf.writeText(Texts.toText(suggestion.getTooltip()));
             }
         });
     }

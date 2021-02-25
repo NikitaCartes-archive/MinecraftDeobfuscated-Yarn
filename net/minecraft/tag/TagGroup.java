@@ -57,31 +57,37 @@ public interface TagGroup<T> {
         return list;
     }
 
-    default public class_5748 toPacket(Registry<T> registry) {
+    /**
+     * Serializes this tag group.
+     */
+    default public Serialized serialize(Registry<T> registry) {
         Map<Identifier, Tag<T>> map = this.getTags();
         HashMap map2 = Maps.newHashMapWithExpectedSize(map.size());
-        map.forEach((identifier, tag) -> {
+        map.forEach((id, tag) -> {
             List list = tag.values();
             IntArrayList intList = new IntArrayList(list.size());
             for (Object object : list) {
                 intList.add(registry.getRawId(object));
             }
-            map2.put(identifier, intList);
+            map2.put(id, intList);
         });
-        return new class_5748(map2);
+        return new Serialized(map2);
     }
 
+    /**
+     * Deserializes a serialized tag group.
+     */
     @Environment(value=EnvType.CLIENT)
-    public static <T> TagGroup<T> method_33155(class_5748 arg, Registry<? extends T> registry) {
-        HashMap map = Maps.newHashMapWithExpectedSize(arg.field_28304.size());
-        arg.field_28304.forEach((identifier, intList) -> {
+    public static <T> TagGroup<T> deserialize(Serialized serialized, Registry<? extends T> registry) {
+        HashMap map = Maps.newHashMapWithExpectedSize(serialized.contents.size());
+        serialized.contents.forEach((id, entries) -> {
             ImmutableSet.Builder builder = ImmutableSet.builder();
-            IntListIterator intListIterator = intList.iterator();
+            IntListIterator intListIterator = entries.iterator();
             while (intListIterator.hasNext()) {
                 int i = (Integer)intListIterator.next();
                 builder.add(registry.get(i));
             }
-            map.put((Identifier)identifier, Tag.of(builder.build()));
+            map.put((Identifier)id, Tag.of(builder.build()));
         });
         return TagGroup.create(map);
     }
@@ -116,19 +122,19 @@ public interface TagGroup<T> {
         };
     }
 
-    public static class class_5748 {
-        private final Map<Identifier, IntList> field_28304;
+    public static class Serialized {
+        private final Map<Identifier, IntList> contents;
 
-        private class_5748(Map<Identifier, IntList> map) {
-            this.field_28304 = map;
+        private Serialized(Map<Identifier, IntList> contents) {
+            this.contents = contents;
         }
 
-        public void method_33159(PacketByteBuf packetByteBuf) {
-            packetByteBuf.method_34063(this.field_28304, PacketByteBuf::writeIdentifier, PacketByteBuf::method_34060);
+        public void writeBuf(PacketByteBuf buf) {
+            buf.writeMap(this.contents, PacketByteBuf::writeIdentifier, PacketByteBuf::writeIntList);
         }
 
-        public static class_5748 method_33160(PacketByteBuf packetByteBuf) {
-            return new class_5748(packetByteBuf.method_34067(PacketByteBuf::readIdentifier, PacketByteBuf::method_34059));
+        public static Serialized fromBuf(PacketByteBuf buf) {
+            return new Serialized(buf.readMap(PacketByteBuf::readIdentifier, PacketByteBuf::readIntList));
         }
     }
 }

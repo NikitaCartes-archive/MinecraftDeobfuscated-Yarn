@@ -338,11 +338,11 @@ public abstract class ChunkTicketManager {
         protected final Long2ByteMap distanceFromNearestPlayer;
         protected final int maxDistance;
 
-        protected DistanceFromNearestPlayerTracker(int i) {
-            super(i + 2, 16, 256);
+        protected DistanceFromNearestPlayerTracker(int maxDistance) {
+            super(maxDistance + 2, 16, 256);
             this.distanceFromNearestPlayer = new Long2ByteOpenHashMap();
-            this.maxDistance = i;
-            this.distanceFromNearestPlayer.defaultReturnValue((byte)(i + 2));
+            this.maxDistance = maxDistance;
+            this.distanceFromNearestPlayer.defaultReturnValue((byte)(maxDistance + 2));
         }
 
         @Override

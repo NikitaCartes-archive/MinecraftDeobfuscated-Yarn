@@ -14,14 +14,14 @@ public class StayAboveWaterTask
 extends Task<MobEntity> {
     private final float chance;
 
-    public StayAboveWaterTask(float minWaterHeight) {
+    public StayAboveWaterTask(float chance) {
         super(ImmutableMap.of());
-        this.chance = minWaterHeight;
+        this.chance = chance;
     }
 
     @Override
     protected boolean shouldRun(ServerWorld serverWorld, MobEntity mobEntity) {
-        return mobEntity.isTouchingWater() && mobEntity.getFluidHeight(FluidTags.WATER) > mobEntity.method_29241() || mobEntity.isInLava();
+        return mobEntity.isTouchingWater() && mobEntity.getFluidHeight(FluidTags.WATER) > mobEntity.getSwimHeight() || mobEntity.isInLava();
     }
 
     @Override

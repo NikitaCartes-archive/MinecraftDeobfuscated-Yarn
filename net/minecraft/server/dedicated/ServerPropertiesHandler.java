@@ -94,8 +94,8 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
         this.generatorOptions = GeneratorOptions.fromProperties(registryManager, properties);
     }
 
-    public static ServerPropertiesHandler load(DynamicRegistryManager dynamicRegistryManager, Path path) {
-        return new ServerPropertiesHandler(ServerPropertiesHandler.loadProperties(path), dynamicRegistryManager);
+    public static ServerPropertiesHandler load(DynamicRegistryManager registryManager, Path path) {
+        return new ServerPropertiesHandler(ServerPropertiesHandler.loadProperties(path), registryManager);
     }
 
     @Override
@@ -104,8 +104,8 @@ extends AbstractPropertiesHandler<ServerPropertiesHandler> {
     }
 
     @Override
-    protected /* synthetic */ AbstractPropertiesHandler create(DynamicRegistryManager dynamicRegistryManager, Properties properties) {
-        return this.create(dynamicRegistryManager, properties);
+    protected /* synthetic */ AbstractPropertiesHandler create(DynamicRegistryManager registryManager, Properties properties) {
+        return this.create(registryManager, properties);
     }
 }
 

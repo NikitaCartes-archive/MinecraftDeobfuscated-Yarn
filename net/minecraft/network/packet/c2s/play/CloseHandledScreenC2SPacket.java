@@ -23,8 +23,8 @@ implements Packet<ServerPlayPacketListener> {
         serverPlayPacketListener.onCloseHandledScreen(this);
     }
 
-    public CloseHandledScreenC2SPacket(PacketByteBuf packetByteBuf) {
-        this.syncId = packetByteBuf.readByte();
+    public CloseHandledScreenC2SPacket(PacketByteBuf buf) {
+        this.syncId = buf.readByte();
     }
 
     @Override

@@ -71,7 +71,7 @@ public class PointOfInterestSet {
             if (pointOfInterestType2.equals(pointOfInterest.getType())) {
                 return false;
             }
-            Util.method_33559("POI data mismatch: already registered at " + blockPos);
+            Util.error("POI data mismatch: already registered at " + blockPos);
         }
         this.pointsOfInterestByPos.put(s, poi);
         this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType2, pointOfInterestType -> Sets.newHashSet()).add(poi);

@@ -53,7 +53,7 @@ extends Screen {
         this.doneButton = this.addButton(new ButtonWidget(this.width / 2 - 4 - 150, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.DONE, buttonWidget -> this.commitAndClose()));
         this.cancelButton = this.addButton(new ButtonWidget(this.width / 2 + 4, this.height / 4 + 120 + 12, 150, 20, ScreenTexts.CANCEL, buttonWidget -> this.onClose()));
         boolean bl = this.getCommandExecutor().isTrackingOutput();
-        this.toggleTrackingOutputButton = this.addButton(CyclingButtonWidget.method_32607(new LiteralText("O"), new LiteralText("X")).value(bl).method_32616().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (cyclingButtonWidget, boolean_) -> {
+        this.toggleTrackingOutputButton = this.addButton(CyclingButtonWidget.onOffBuilder(new LiteralText("O"), new LiteralText("X")).initially(bl).omitKeyText().build(this.width / 2 + 150 - 20, this.getTrackOutputButtonHeight(), 20, 20, new TranslatableText("advMode.trackOutput"), (cyclingButtonWidget, boolean_) -> {
             CommandBlockExecutor commandBlockExecutor = this.getCommandExecutor();
             commandBlockExecutor.shouldTrackOutput((boolean)boolean_);
             this.method_32642((boolean)boolean_);

@@ -78,16 +78,16 @@ extends ChunkManager {
     @Nullable
     private SpawnHelper.Info spawnEntry;
 
-    public ServerChunkManager(ServerWorld serverWorld, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> supplier) {
-        this.world = serverWorld;
-        this.mainThreadExecutor = new MainThreadExecutor(serverWorld);
+    public ServerChunkManager(ServerWorld world, LevelStorage.Session session, DataFixer dataFixer, StructureManager structureManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, boolean bl, WorldGenerationProgressListener worldGenerationProgressListener, ChunkStatusChangeListener chunkStatusChangeListener, Supplier<PersistentStateManager> supplier) {
+        this.world = world;
+        this.mainThreadExecutor = new MainThreadExecutor(world);
         this.chunkGenerator = chunkGenerator;
         this.serverThread = Thread.currentThread();
-        File file = session.getWorldDirectory(serverWorld.getRegistryKey());
+        File file = session.getWorldDirectory(world.getRegistryKey());
         File file2 = new File(file, "data");
         file2.mkdirs();
         this.persistentStateManager = new PersistentStateManager(file2, dataFixer);
-        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(serverWorld, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, chunkStatusChangeListener, supplier, viewDistance, bl);
+        this.threadedAnvilChunkStorage = new ThreadedAnvilChunkStorage(world, session, dataFixer, structureManager, workerExecutor, this.mainThreadExecutor, this, this.getChunkGenerator(), worldGenerationProgressListener, chunkStatusChangeListener, supplier, viewDistance, bl);
         this.lightProvider = this.threadedAnvilChunkStorage.getLightProvider();
         this.ticketManager = this.threadedAnvilChunkStorage.getTicketManager();
         this.initChunkCaches();
@@ -463,8 +463,8 @@ extends ChunkManager {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public String getChunkLoadingDebugInfo(ChunkPos chunkPos) {
-        return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(chunkPos);
+    public String getChunkLoadingDebugInfo(ChunkPos pos) {
+        return this.threadedAnvilChunkStorage.getChunkLoadingDebugInfo(pos);
     }
 
     public PersistentStateManager getPersistentStateManager() {

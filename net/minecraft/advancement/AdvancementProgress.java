@@ -98,11 +98,11 @@ implements Comparable<AdvancementProgress> {
     }
 
     public void toPacket(PacketByteBuf buf) {
-        buf.method_34063(this.criteriaProgresses, PacketByteBuf::writeString, (packetByteBuf, criterionProgress) -> criterionProgress.toPacket((PacketByteBuf)packetByteBuf));
+        buf.writeMap(this.criteriaProgresses, PacketByteBuf::writeString, (packetByteBuf, criterionProgress) -> criterionProgress.toPacket((PacketByteBuf)packetByteBuf));
     }
 
     public static AdvancementProgress fromPacket(PacketByteBuf buf) {
-        Map<String, CriterionProgress> map = buf.method_34067(PacketByteBuf::readString, CriterionProgress::fromPacket);
+        Map<String, CriterionProgress> map = buf.readMap(PacketByteBuf::readString, CriterionProgress::fromPacket);
         return new AdvancementProgress(map);
     }
 

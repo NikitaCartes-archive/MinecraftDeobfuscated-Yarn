@@ -244,7 +244,7 @@ extends RaiderEntity {
                 this.world.addParticle(ParticleTypes.POOF, vec3d.x, vec3d.y, vec3d.z, d, e, f);
                 ++var3_5;
             }
-            this.world.emitGameEvent((Entity)this, GameEvent.RAVAGER_ROAR, this.method_33575());
+            this.world.emitGameEvent((Entity)this, GameEvent.RAVAGER_ROAR, this.getCameraBlockPos());
         }
     }
 

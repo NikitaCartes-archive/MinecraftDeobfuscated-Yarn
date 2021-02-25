@@ -6,11 +6,11 @@ package net.minecraft.nbt;
 import java.io.DataInput;
 import java.io.IOException;
 import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.PositionTracker;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.Tag;
 
 public interface TagReader<T extends Tag> {
-    public T read(DataInput var1, int var2, PositionTracker var3) throws IOException;
+    public T read(DataInput var1, int var2, NbtTagSizeTracker var3) throws IOException;
 
     default public boolean isImmutable() {
         return false;
@@ -24,7 +24,7 @@ public interface TagReader<T extends Tag> {
         return new TagReader<EndTag>(){
 
             @Override
-            public EndTag read(DataInput dataInput, int i, PositionTracker positionTracker) {
+            public EndTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) {
                 throw new IllegalArgumentException("Invalid tag id: " + type);
             }
 
@@ -39,7 +39,7 @@ public interface TagReader<T extends Tag> {
             }
 
             @Override
-            public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+            public /* synthetic */ Tag read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
                 return this.read(input, depth, tracker);
             }
         };

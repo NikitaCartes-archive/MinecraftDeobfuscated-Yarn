@@ -17,8 +17,8 @@ implements Packet<ClientLoginPacketListener> {
         this.compressionThreshold = compressionThreshold;
     }
 
-    public LoginCompressionS2CPacket(PacketByteBuf packetByteBuf) {
-        this.compressionThreshold = packetByteBuf.readVarInt();
+    public LoginCompressionS2CPacket(PacketByteBuf buf) {
+        this.compressionThreshold = buf.readVarInt();
     }
 
     @Override

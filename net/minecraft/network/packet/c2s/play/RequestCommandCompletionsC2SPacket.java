@@ -20,9 +20,9 @@ implements Packet<ServerPlayPacketListener> {
         this.partialCommand = partialCommand;
     }
 
-    public RequestCommandCompletionsC2SPacket(PacketByteBuf packetByteBuf) {
-        this.completionId = packetByteBuf.readVarInt();
-        this.partialCommand = packetByteBuf.readString(32500);
+    public RequestCommandCompletionsC2SPacket(PacketByteBuf buf) {
+        this.completionId = buf.readVarInt();
+        this.partialCommand = buf.readString(32500);
     }
 
     @Override

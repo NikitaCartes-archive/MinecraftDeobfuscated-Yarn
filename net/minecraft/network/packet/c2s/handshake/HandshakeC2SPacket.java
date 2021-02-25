@@ -26,11 +26,11 @@ implements Packet<ServerHandshakePacketListener> {
         this.intendedState = intendedState;
     }
 
-    public HandshakeC2SPacket(PacketByteBuf packetByteBuf) {
-        this.protocolVersion = packetByteBuf.readVarInt();
-        this.address = packetByteBuf.readString(255);
-        this.port = packetByteBuf.readUnsignedShort();
-        this.intendedState = NetworkState.byId(packetByteBuf.readVarInt());
+    public HandshakeC2SPacket(PacketByteBuf buf) {
+        this.protocolVersion = buf.readVarInt();
+        this.address = buf.readString(255);
+        this.port = buf.readUnsignedShort();
+        this.intendedState = NetworkState.byId(buf.readVarInt());
     }
 
     @Override

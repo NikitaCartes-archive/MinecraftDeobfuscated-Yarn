@@ -29,7 +29,7 @@ public class BiomeLayerSampler {
         }
         Biome biome = biomeRegistry.get(registryKey);
         if (biome == null) {
-            Util.method_33559("Unknown biome id: " + i);
+            Util.error("Unknown biome id: " + i);
             return biomeRegistry.get(BuiltinBiomes.fromRawId(0));
         }
         return biome;

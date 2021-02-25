@@ -75,7 +75,7 @@ Runnable {
         if (runnable == null) {
             return false;
         }
-        Util.method_33787(this.name, runnable).run();
+        Util.debugRunnable(this.name, runnable).run();
         return true;
     }
 

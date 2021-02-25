@@ -215,20 +215,20 @@ public class Util {
         return type;
     }
 
-    public static Runnable method_33787(String string, Runnable runnable) {
+    public static Runnable debugRunnable(String activeThreadName, Runnable task) {
         if (SharedConstants.isDevelopment) {
             return () -> {
                 Thread thread = Thread.currentThread();
                 String string2 = thread.getName();
-                thread.setName(string);
+                thread.setName(activeThreadName);
                 try {
-                    runnable.run();
+                    task.run();
                 } finally {
                     thread.setName(string2);
                 }
             };
         }
-        return runnable;
+        return task;
     }
 
     public static OperatingSystem getOperatingSystem() {
@@ -308,20 +308,45 @@ public class Util {
         return IdentityHashStrategy.INSTANCE;
     }
 
-    public static <V> CompletableFuture<List<V>> method_33791(List<? extends CompletableFuture<? extends V>> list) {
-        return list.stream().reduce(CompletableFuture.completedFuture(Lists.newArrayList()), (completableFuture, completableFuture2) -> completableFuture2.thenCombine((CompletionStage)completableFuture, (object, list) -> {
-            ArrayList<Object> list2 = Lists.newArrayListWithCapacity(list.size() + 1);
-            list2.addAll((Collection<Object>)list);
-            list2.add(object);
-            return list2;
-        }), (completableFuture, completableFuture2) -> completableFuture.thenCombine((CompletionStage)completableFuture2, (list, list2) -> {
-            ArrayList list3 = Lists.newArrayListWithCapacity(list.size() + list2.size());
-            list3.addAll(list);
-            list3.addAll(list2);
-            return list3;
+    /**
+     * Combines a list of {@code futures} into one future that holds a list
+     * of their results.
+     * 
+     * <p>This version expects all futures to complete successfully and is not
+     * optimized in case any of the input futures throws.
+     * 
+     * @return the combined future
+     * @see #combine(List)
+     * 
+     * @param futures the completable futures to combine
+     */
+    public static <V> CompletableFuture<List<V>> combineSafe(List<? extends CompletableFuture<? extends V>> futures) {
+        return futures.stream().reduce(CompletableFuture.completedFuture(Lists.newArrayList()), (collected, each) -> each.thenCombine((CompletionStage)collected, (eachResult, collectedResults) -> {
+            ArrayList<Object> list = Lists.newArrayListWithCapacity(collectedResults.size() + 1);
+            list.addAll((Collection<Object>)collectedResults);
+            list.add(eachResult);
+            return list;
+        }), (firstCollected, secondCollected) -> firstCollected.thenCombine((CompletionStage)secondCollected, (firstResults, secondResults) -> {
+            ArrayList list = Lists.newArrayListWithCapacity(firstResults.size() + secondResults.size());
+            list.addAll(firstResults);
+            list.addAll(secondResults);
+            return list;
         }));
     }
 
+    /**
+     * Combines a list of {@code futures} into one future that holds a list
+     * of their results.
+     * 
+     * <p>The returned future is fail-fast; if any of the input futures fails,
+     * this returned future will be immediately completed exceptionally than
+     * waiting for other input futures.
+     * 
+     * @return the combined future
+     * @see #combineSafe(List)
+     * 
+     * @param futures the completable futures to combine
+     */
     public static <V> CompletableFuture<List<V>> combine(List<? extends CompletableFuture<? extends V>> futures) {
         ArrayList list = Lists.newArrayListWithCapacity(futures.size());
         CompletableFuture[] completableFutures = new CompletableFuture[futures.size()];
@@ -344,11 +369,11 @@ public class Util {
         return DataFixUtils.orElseGet(optional.map(Stream::of), Stream::empty);
     }
 
-    public static <T> Optional<T> ifPresentOrElse(Optional<T> optional, Consumer<T> consumer, Runnable runnable) {
+    public static <T> Optional<T> ifPresentOrElse(Optional<T> optional, Consumer<T> presentAction, Runnable elseAction) {
         if (optional.isPresent()) {
-            consumer.accept(optional.get());
+            presentAction.accept(optional.get());
         } else {
-            runnable.run();
+            elseAction.run();
         }
         return optional;
     }
@@ -357,22 +382,22 @@ public class Util {
         return runnable;
     }
 
-    public static final void method_33559(String string) {
-        LOGGER.error(string);
+    public static final void error(String message) {
+        LOGGER.error(message);
         if (SharedConstants.isDevelopment) {
-            Util.method_33560();
+            Util.pause();
         }
     }
 
     public static <T extends Throwable> T throwOrPause(T t) {
         if (SharedConstants.isDevelopment) {
             LOGGER.error("Trying to throw a fatal exception, pausing in IDE", t);
-            Util.method_33560();
+            Util.pause();
         }
         return t;
     }
 
-    private static void method_33560() {
+    private static void pause() {
         try {
             while (true) {
                 Thread.sleep(1000L);

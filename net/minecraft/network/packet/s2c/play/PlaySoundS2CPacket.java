@@ -34,14 +34,14 @@ implements Packet<ClientPlayPacketListener> {
         this.pitch = pitch;
     }
 
-    public PlaySoundS2CPacket(PacketByteBuf packetByteBuf) {
-        this.sound = (SoundEvent)Registry.SOUND_EVENT.get(packetByteBuf.readVarInt());
-        this.category = packetByteBuf.readEnumConstant(SoundCategory.class);
-        this.fixedX = packetByteBuf.readInt();
-        this.fixedY = packetByteBuf.readInt();
-        this.fixedZ = packetByteBuf.readInt();
-        this.volume = packetByteBuf.readFloat();
-        this.pitch = packetByteBuf.readFloat();
+    public PlaySoundS2CPacket(PacketByteBuf buf) {
+        this.sound = (SoundEvent)Registry.SOUND_EVENT.get(buf.readVarInt());
+        this.category = buf.readEnumConstant(SoundCategory.class);
+        this.fixedX = buf.readInt();
+        this.fixedY = buf.readInt();
+        this.fixedZ = buf.readInt();
+        this.volume = buf.readFloat();
+        this.pitch = buf.readFloat();
     }
 
     @Override

@@ -312,18 +312,18 @@ ServerPlayPacketListener {
         backingFilterer.apply(this.player.getTextStream(), (TextStream)text).thenAcceptAsync(consumer2, (Executor)threadExecutor);
     }
 
-    private void filterText(String text, Consumer<TextStream.class_5837> consumer) {
+    private void filterText(String text, Consumer<TextStream.Message> consumer) {
         this.filterText(text, consumer, TextStream::filterText);
     }
 
-    private void filterTexts(List<String> texts, Consumer<List<TextStream.class_5837>> consumer) {
+    private void filterTexts(List<String> texts, Consumer<List<TextStream.Message>> consumer) {
         this.filterText(texts, consumer, TextStream::filterTexts);
     }
 
     @Override
     public void onPlayerInput(PlayerInputC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-        this.player.method_14218(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
+        this.player.updateInput(packet.getSideways(), packet.getForward(), packet.isJumping(), packet.isSneaking());
     }
 
     private static boolean validatePlayerMove(PlayerMoveC2SPacket packet) {
@@ -392,14 +392,14 @@ ServerPlayPacketListener {
             }
             this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
             this.player.increaseTravelMotionStats(this.player.getX() - d, this.player.getY() - e, this.player.getZ() - f);
-            this.ridingEntity = q >= -0.03125 && !this.server.isFlightEnabled() && this.method_29780(entity);
+            this.ridingEntity = q >= -0.03125 && !this.server.isFlightEnabled() && this.isEntityOnAir(entity);
             this.updatedRiddenX = entity.getX();
             this.updatedRiddenY = entity.getY();
             this.updatedRiddenZ = entity.getZ();
         }
     }
 
-    private boolean method_29780(Entity entity) {
+    private boolean isEntityOnAir(Entity entity) {
         return entity.world.getStatesInBox(entity.getBoundingBox().expand(0.0625).stretch(0.0, -0.55, 0.0)).allMatch(AbstractBlock.AbstractBlockState::isAir);
     }
 
@@ -690,19 +690,19 @@ ServerPlayPacketListener {
         for (int j = 0; j < listTag.size(); ++j) {
             list2.add(listTag.getString(j));
         }
-        this.filterTexts(list2, bl ? list -> this.method_31276((TextStream.class_5837)list.get(0), list.subList(1, list.size()), i) : list -> this.method_31278((List<TextStream.class_5837>)list, i));
+        this.filterTexts(list2, bl ? list -> this.addBook((TextStream.Message)list.get(0), list.subList(1, list.size()), i) : list -> this.updateBookContent((List<TextStream.Message>)list, i));
     }
 
-    private void method_31278(List<TextStream.class_5837> list, int i) {
-        ItemStack itemStack = this.player.getInventory().getStack(i);
+    private void updateBookContent(List<TextStream.Message> pages, int slotId) {
+        ItemStack itemStack = this.player.getInventory().getStack(slotId);
         if (!itemStack.isOf(Items.WRITABLE_BOOK)) {
             return;
         }
-        this.method_33796(list, UnaryOperator.identity(), itemStack);
+        this.setTextToBook(pages, UnaryOperator.identity(), itemStack);
     }
 
-    private void method_31276(TextStream.class_5837 arg, List<TextStream.class_5837> list, int i) {
-        ItemStack itemStack = this.player.getInventory().getStack(i);
+    private void addBook(TextStream.Message title, List<TextStream.Message> pages, int slotId) {
+        ItemStack itemStack = this.player.getInventory().getStack(slotId);
         if (!itemStack.isOf(Items.WRITABLE_BOOK)) {
             return;
         }
@@ -712,36 +712,36 @@ ServerPlayPacketListener {
             itemStack2.setTag(compoundTag.copy());
         }
         itemStack2.putSubTag("author", StringTag.of(this.player.getName().getString()));
-        if (this.player.method_33793()) {
-            itemStack2.putSubTag("title", StringTag.of(arg.method_33803()));
+        if (this.player.shouldFilterText()) {
+            itemStack2.putSubTag("title", StringTag.of(title.getFiltered()));
         } else {
-            itemStack2.putSubTag("filtered_title", StringTag.of(arg.method_33803()));
-            itemStack2.putSubTag("title", StringTag.of(arg.method_33801()));
+            itemStack2.putSubTag("filtered_title", StringTag.of(title.getFiltered()));
+            itemStack2.putSubTag("title", StringTag.of(title.getRaw()));
         }
-        this.method_33796(list, string -> Text.Serializer.toJson(new LiteralText((String)string)), itemStack2);
-        this.player.getInventory().setStack(i, itemStack2);
+        this.setTextToBook(pages, string -> Text.Serializer.toJson(new LiteralText((String)string)), itemStack2);
+        this.player.getInventory().setStack(slotId, itemStack2);
     }
 
-    private void method_33796(List<TextStream.class_5837> list, UnaryOperator<String> unaryOperator, ItemStack itemStack) {
+    private void setTextToBook(List<TextStream.Message> messages, UnaryOperator<String> postProcessor, ItemStack book) {
         ListTag listTag = new ListTag();
-        if (this.player.method_33793()) {
-            list.stream().map(arg -> StringTag.of((String)unaryOperator.apply(arg.method_33803()))).forEach(listTag::add);
+        if (this.player.shouldFilterText()) {
+            messages.stream().map(message -> StringTag.of((String)postProcessor.apply(message.getFiltered()))).forEach(listTag::add);
         } else {
             CompoundTag compoundTag = new CompoundTag();
-            int j = list.size();
+            int j = messages.size();
             for (int i = 0; i < j; ++i) {
-                TextStream.class_5837 lv = list.get(i);
-                String string = lv.method_33801();
-                listTag.add(StringTag.of((String)unaryOperator.apply(string)));
-                String string2 = lv.method_33803();
+                TextStream.Message message2 = messages.get(i);
+                String string = message2.getRaw();
+                listTag.add(StringTag.of((String)postProcessor.apply(string)));
+                String string2 = message2.getFiltered();
                 if (string.equals(string2)) continue;
-                compoundTag.putString(String.valueOf(i), (String)unaryOperator.apply(string2));
+                compoundTag.putString(String.valueOf(i), (String)postProcessor.apply(string2));
             }
             if (!compoundTag.isEmpty()) {
-                itemStack.putSubTag("filtered_pages", compoundTag);
+                book.putSubTag("filtered_pages", compoundTag);
             }
         }
-        itemStack.putSubTag("pages", listTag);
+        book.putSubTag("pages", listTag);
     }
 
     @Override
@@ -858,7 +858,7 @@ ServerPlayPacketListener {
             this.requestTeleport(d, e, f, k, l);
             return;
         }
-        this.floating = t >= -0.03125 && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR && !this.server.isFlightEnabled() && !this.player.getAbilities().allowFlying && !this.player.hasStatusEffect(StatusEffects.LEVITATION) && !this.player.isFallFlying() && this.method_29780(this.player);
+        this.floating = t >= -0.03125 && this.player.interactionManager.getGameMode() != GameMode.SPECTATOR && !this.server.isFlightEnabled() && !this.player.getAbilities().allowFlying && !this.player.hasStatusEffect(StatusEffects.LEVITATION) && !this.player.isFallFlying() && this.isEntityOnAir(this.player);
         this.player.getServerWorld().getChunkManager().updateCameraPosition(this.player);
         this.player.handleFall(this.player.getY() - g, packet.isOnGround());
         this.player.setOnGround(packet.isOnGround());
@@ -871,8 +871,8 @@ ServerPlayPacketListener {
         this.updatedZ = this.player.getZ();
     }
 
-    private boolean isPlayerNotCollidingWithBlocks(WorldView worldView, Box box) {
-        Stream<VoxelShape> stream = worldView.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5f), entity -> true);
+    private boolean isPlayerNotCollidingWithBlocks(WorldView world, Box box) {
+        Stream<VoxelShape> stream = world.getCollisions(this.player, this.player.getBoundingBox().contract(1.0E-5f), entity -> true);
         VoxelShape voxelShape = VoxelShapes.cuboid(box.contract(1.0E-5f));
         return stream.anyMatch(voxelShape2 -> !VoxelShapes.matchesAnywhere(voxelShape2, voxelShape, BooleanBiFunction.AND));
     }
@@ -1089,26 +1089,26 @@ ServerPlayPacketListener {
         }
         if (string.startsWith("/")) {
             NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-            this.method_31286(TextStream.class_5837.method_33802(string));
+            this.method_31286(TextStream.Message.permitted(string));
         } else {
             this.filterText(string, this::method_31286);
         }
     }
 
-    private void method_31286(TextStream.class_5837 arg) {
+    private void method_31286(TextStream.Message message) {
         if (this.player.getClientChatVisibility() == ChatVisibility.HIDDEN) {
             this.sendPacket(new GameMessageS2CPacket(new TranslatableText("chat.disabled.options").formatted(Formatting.RED), MessageType.SYSTEM, Util.NIL_UUID));
             return;
         }
         this.player.updateLastActionTime();
-        String string = arg.method_33801();
+        String string = message.getRaw();
         if (string.startsWith("/")) {
             this.executeCommand(string);
         } else {
-            String string2 = arg.method_33803();
+            String string2 = message.getFiltered();
             TranslatableText text = string2.isEmpty() ? null : new TranslatableText("chat.type.text", this.player.getDisplayName(), string2);
             TranslatableText text2 = new TranslatableText("chat.type.text", this.player.getDisplayName(), string);
-            this.server.getPlayerManager().method_33810(text2, serverPlayerEntity -> this.player.method_33795((ServerPlayerEntity)serverPlayerEntity) ? text : text2, MessageType.CHAT, this.player.getUuid());
+            this.server.getPlayerManager().broadcast(text2, player -> this.player.shouldFilterMessagesSentTo((ServerPlayerEntity)player) ? text : text2, MessageType.CHAT, this.player.getUuid());
         }
         this.messageCooldown += 20;
         if (this.messageCooldown > 200 && !this.server.getPlayerManager().isOperator(this.player.getGameProfile())) {
@@ -1194,9 +1194,9 @@ ServerPlayPacketListener {
         if (entity != null) {
             double d = 36.0;
             if (this.player.squaredDistanceTo(entity) < 36.0) {
-                packet.method_34209(new PlayerInteractEntityC2SPacket.class_5908(){
+                packet.handle(new PlayerInteractEntityC2SPacket.Handler(){
 
-                    private void method_33897(Hand hand, class_5860 arg) {
+                    private void processInteract(Hand hand, class_5860 arg) {
                         ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand).copy();
                         ActionResult actionResult = arg.run(ServerPlayNetworkHandler.this.player, entity, hand);
                         if (actionResult.isAccepted()) {
@@ -1208,17 +1208,17 @@ ServerPlayPacketListener {
                     }
 
                     @Override
-                    public void method_34219(Hand hand) {
-                        this.method_33897(hand, PlayerEntity::interact);
+                    public void interact(Hand hand) {
+                        this.processInteract(hand, PlayerEntity::interact);
                     }
 
                     @Override
-                    public void method_34220(Hand hand2, Vec3d vec3d) {
-                        this.method_33897(hand2, (serverPlayerEntity, entity, hand) -> entity.interactAt(serverPlayerEntity, vec3d, hand));
+                    public void interactAt(Hand hand2, Vec3d pos) {
+                        this.processInteract(hand2, (player, entity, hand) -> entity.interactAt(player, pos, hand));
                     }
 
                     @Override
-                    public void method_34218() {
+                    public void attack() {
                         if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity || entity instanceof PersistentProjectileEntity || entity == ServerPlayNetworkHandler.this.player) {
                             ServerPlayNetworkHandler.this.disconnect(new TranslatableText("multiplayer.disconnect.invalid_entity_attacked"));
                             LOGGER.warn("Player {} tried to attack an invalid entity", (Object)ServerPlayNetworkHandler.this.player.getName().getString());
@@ -1365,13 +1365,13 @@ ServerPlayPacketListener {
     @Override
     public void onSignUpdate(UpdateSignC2SPacket packet) {
         List<String> list2 = Stream.of(packet.getText()).map(Formatting::strip).collect(Collectors.toList());
-        this.filterTexts(list2, list -> this.method_31282(packet, (List<TextStream.class_5837>)list));
+        this.filterTexts(list2, list -> this.onSignUpdate(packet, (List<TextStream.Message>)list));
     }
 
-    private void method_31282(UpdateSignC2SPacket updateSignC2SPacket, List<TextStream.class_5837> list) {
+    private void onSignUpdate(UpdateSignC2SPacket packet, List<TextStream.Message> signText) {
         this.player.updateLastActionTime();
         ServerWorld serverWorld = this.player.getServerWorld();
-        BlockPos blockPos = updateSignC2SPacket.getPos();
+        BlockPos blockPos = packet.getPos();
         if (serverWorld.isChunkLoaded(blockPos)) {
             BlockState blockState = serverWorld.getBlockState(blockPos);
             BlockEntity blockEntity = serverWorld.getBlockEntity(blockPos);
@@ -1383,13 +1383,13 @@ ServerPlayPacketListener {
                 LOGGER.warn("Player {} just tried to change non-editable sign", (Object)this.player.getName().getString());
                 return;
             }
-            for (int i = 0; i < list.size(); ++i) {
-                TextStream.class_5837 lv = list.get(i);
-                if (this.player.method_33793()) {
-                    signBlockEntity.setTextOnRow(i, new LiteralText(lv.method_33803()));
+            for (int i = 0; i < signText.size(); ++i) {
+                TextStream.Message message = signText.get(i);
+                if (this.player.shouldFilterText()) {
+                    signBlockEntity.setTextOnRow(i, new LiteralText(message.getFiltered()));
                     continue;
                 }
-                signBlockEntity.method_33827(i, new LiteralText(lv.method_33801()), new LiteralText(lv.method_33803()));
+                signBlockEntity.setTextOnRow(i, new LiteralText(message.getRaw()), new LiteralText(message.getFiltered()));
             }
             signBlockEntity.markDirty();
             serverWorld.updateListeners(blockPos, blockState, blockState, 3);

@@ -27,10 +27,10 @@ implements Packet<ServerPlayPacketListener> {
         this.trackOutput = trackOutput;
     }
 
-    public UpdateCommandBlockMinecartC2SPacket(PacketByteBuf packetByteBuf) {
-        this.entityId = packetByteBuf.readVarInt();
-        this.command = packetByteBuf.readString();
-        this.trackOutput = packetByteBuf.readBoolean();
+    public UpdateCommandBlockMinecartC2SPacket(PacketByteBuf buf) {
+        this.entityId = buf.readVarInt();
+        this.command = buf.readString();
+        this.trackOutput = buf.readBoolean();
     }
 
     @Override

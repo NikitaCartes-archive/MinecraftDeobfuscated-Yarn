@@ -82,11 +82,11 @@ implements DedicatedServer {
     @Nullable
     private final TextFilterer filterer;
 
-    public MinecraftDedicatedServer(Thread thread, DynamicRegistryManager.Impl impl, LevelStorage.Session session, ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, ServerPropertiesLoader serverPropertiesLoader, DataFixer dataFixer, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(thread, impl, session, saveProperties, resourcePackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
-        this.propertiesLoader = serverPropertiesLoader;
+    public MinecraftDedicatedServer(Thread serverThread, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, ServerPropertiesLoader propertiesLoader, DataFixer dataFixer, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(serverThread, registryManager, session, saveProperties, dataPackManager, Proxy.NO_PROXY, dataFixer, serverResourceManager, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
+        this.propertiesLoader = propertiesLoader;
         this.rconCommandOutput = new RconCommandOutput(this);
-        this.filterer = TextFilterer.method_33805(serverPropertiesLoader.getPropertiesHandler().textFilteringConfig);
+        this.filterer = TextFilterer.load(propertiesLoader.getPropertiesHandler().textFilteringConfig);
     }
 
     @Override
@@ -239,7 +239,7 @@ implements DedicatedServer {
     }
 
     @Override
-    public void method_27731() {
+    public void updateDifficulty() {
         this.setDifficulty(this.getProperties().difficulty, true);
     }
 
@@ -502,8 +502,8 @@ implements DedicatedServer {
         return this.rconCommandOutput.asString();
     }
 
-    public void setUseWhitelist(boolean bl) {
-        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.whiteList.set(this.getRegistryManager(), bl));
+    public void setUseWhitelist(boolean useWhitelist) {
+        this.propertiesLoader.apply(serverPropertiesHandler -> (ServerPropertiesHandler)serverPropertiesHandler.whiteList.set(this.getRegistryManager(), useWhitelist));
     }
 
     @Override
@@ -537,7 +537,7 @@ implements DedicatedServer {
         if (this.filterer != null) {
             return this.filterer.createFilterer(player.getGameProfile());
         }
-        return TextStream.field_28862;
+        return TextStream.UNFILTERED;
     }
 
     @Override

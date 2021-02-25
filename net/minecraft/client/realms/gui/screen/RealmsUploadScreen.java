@@ -72,7 +72,7 @@ extends RealmsScreen {
     private int animTick;
     private Long previousWrittenBytes;
     private Long previousTimeSnapshot;
-    private long bytesPersSecond;
+    private long bytesPerSecond;
     private final Runnable field_22728;
 
     public RealmsUploadScreen(long worldId, int slotId, RealmsResetWorldScreen parent, LevelSummary levelSummary, Runnable runnable) {
@@ -191,13 +191,13 @@ extends RealmsScreen {
                 if (l == 0L) {
                     l = 1L;
                 }
-                this.bytesPersSecond = 1000L * (this.uploadStatus.bytesWritten - this.previousWrittenBytes) / l;
-                this.drawUploadSpeed0(matrices, this.bytesPersSecond);
+                this.bytesPerSecond = 1000L * (this.uploadStatus.bytesWritten - this.previousWrittenBytes) / l;
+                this.drawUploadSpeed0(matrices, this.bytesPerSecond);
             }
             this.previousWrittenBytes = this.uploadStatus.bytesWritten;
             this.previousTimeSnapshot = Util.getMeasuringTimeMs();
         } else {
-            this.drawUploadSpeed0(matrices, this.bytesPersSecond);
+            this.drawUploadSpeed0(matrices, this.bytesPerSecond);
         }
     }
 

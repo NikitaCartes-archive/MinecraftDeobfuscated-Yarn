@@ -20,9 +20,9 @@ implements Packet<ClientPlayPacketListener> {
         this.angle = angle;
     }
 
-    public PlayerSpawnPositionS2CPacket(PacketByteBuf packetByteBuf) {
-        this.pos = packetByteBuf.readBlockPos();
-        this.angle = packetByteBuf.readFloat();
+    public PlayerSpawnPositionS2CPacket(PacketByteBuf buf) {
+        this.pos = buf.readBlockPos();
+        this.angle = buf.readFloat();
     }
 
     @Override

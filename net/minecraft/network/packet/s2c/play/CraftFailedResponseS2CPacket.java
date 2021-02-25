@@ -21,9 +21,9 @@ implements Packet<ClientPlayPacketListener> {
         this.recipeId = recipe.getId();
     }
 
-    public CraftFailedResponseS2CPacket(PacketByteBuf packetByteBuf) {
-        this.syncId = packetByteBuf.readByte();
-        this.recipeId = packetByteBuf.readIdentifier();
+    public CraftFailedResponseS2CPacket(PacketByteBuf buf) {
+        this.syncId = buf.readByte();
+        this.recipeId = buf.readIdentifier();
     }
 
     @Override

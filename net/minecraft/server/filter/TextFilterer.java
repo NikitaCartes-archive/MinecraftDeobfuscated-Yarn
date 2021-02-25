@@ -54,37 +54,37 @@ implements AutoCloseable {
     private final HashIgnorer ignorer;
     private final ExecutorService executor;
 
-    private TextFilterer(URI uRI, String string, int i, String string2, HashIgnorer hashIgnorer, int j) throws MalformedURLException {
-        this.apiKey = string;
-        this.ruleId = i;
-        this.serverId = string2;
-        this.ignorer = hashIgnorer;
-        this.chatEndpoint = uRI.resolve("/v1/chat").toURL();
-        this.joinEndpoint = uRI.resolve("/v1/join").toURL();
-        this.leaveEndpoint = uRI.resolve("/v1/leave").toURL();
-        this.executor = Executors.newFixedThreadPool(j, THREAD_FACTORY);
+    private TextFilterer(URI apiUrl, String apiKey, int ruleId, String serverId, HashIgnorer ignorer, int i) throws MalformedURLException {
+        this.apiKey = apiKey;
+        this.ruleId = ruleId;
+        this.serverId = serverId;
+        this.ignorer = ignorer;
+        this.chatEndpoint = apiUrl.resolve("/v1/chat").toURL();
+        this.joinEndpoint = apiUrl.resolve("/v1/join").toURL();
+        this.leaveEndpoint = apiUrl.resolve("/v1/leave").toURL();
+        this.executor = Executors.newFixedThreadPool(i, THREAD_FACTORY);
     }
 
     @Nullable
-    public static TextFilterer method_33805(String string) {
-        if (Strings.isNullOrEmpty(string)) {
+    public static TextFilterer load(String config) {
+        if (Strings.isNullOrEmpty(config)) {
             return null;
         }
         try {
-            JsonObject jsonObject = JsonHelper.deserialize(string);
+            JsonObject jsonObject = JsonHelper.deserialize(config);
             URI uRI = new URI(JsonHelper.getString(jsonObject, "apiServer"));
-            String string2 = JsonHelper.getString(jsonObject, "apiKey");
-            if (string2.isEmpty()) {
+            String string = JsonHelper.getString(jsonObject, "apiKey");
+            if (string.isEmpty()) {
                 throw new IllegalArgumentException("Missing API key");
             }
             int i = JsonHelper.getInt(jsonObject, "ruleId", 1);
-            String string3 = JsonHelper.getString(jsonObject, "serverId", "");
+            String string2 = JsonHelper.getString(jsonObject, "serverId", "");
             int j = JsonHelper.getInt(jsonObject, "hashesToDrop", -1);
             int k = JsonHelper.getInt(jsonObject, "maxConcurrentRequests", 7);
-            HashIgnorer hashIgnorer = HashIgnorer.method_33808(j);
-            return new TextFilterer(uRI, new Base64().encodeToString(string2.getBytes(StandardCharsets.US_ASCII)), i, string3, hashIgnorer, k);
+            HashIgnorer hashIgnorer = HashIgnorer.dropHashes(j);
+            return new TextFilterer(uRI, new Base64().encodeToString(string.getBytes(StandardCharsets.US_ASCII)), i, string2, hashIgnorer, k);
         } catch (Exception exception) {
-            LOGGER.warn("Failed to parse chat filter config {}", (Object)string, (Object)exception);
+            LOGGER.warn("Failed to parse chat filter config {}", (Object)config, (Object)exception);
             return null;
         }
     }
@@ -104,9 +104,9 @@ implements AutoCloseable {
         });
     }
 
-    private CompletableFuture<TextStream.class_5837> filterMessage(GameProfile gameProfile, String message, HashIgnorer ignorer, Executor executor) {
+    private CompletableFuture<TextStream.Message> filterMessage(GameProfile gameProfile, String message, HashIgnorer ignorer, Executor executor) {
         if (message.isEmpty()) {
-            return CompletableFuture.completedFuture(TextStream.class_5837.field_28863);
+            return CompletableFuture.completedFuture(TextStream.Message.EMPTY);
         }
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("rule", this.ruleId);
@@ -120,17 +120,17 @@ implements AutoCloseable {
                 JsonObject jsonObject2 = this.sendJsonRequest(jsonObject, this.chatEndpoint);
                 boolean bl = JsonHelper.getBoolean(jsonObject2, "response", false);
                 if (bl) {
-                    return TextStream.class_5837.method_33802(message);
+                    return TextStream.Message.permitted(message);
                 }
                 String string2 = JsonHelper.getString(jsonObject2, "hashed", null);
                 if (string2 == null) {
-                    return TextStream.class_5837.method_33804(message);
+                    return TextStream.Message.censored(message);
                 }
                 int i = JsonHelper.getArray(jsonObject2, "hashes").size();
-                return ignorer.shouldIgnore(string2, i) ? TextStream.class_5837.method_33804(message) : new TextStream.class_5837(message, string2);
+                return ignorer.shouldIgnore(string2, i) ? TextStream.Message.censored(message) : new TextStream.Message(message, string2);
             } catch (Exception exception) {
                 LOGGER.warn("Failed to validate message '{}'", (Object)message, (Object)exception);
-                return TextStream.class_5837.method_33804(message);
+                return TextStream.Message.censored(message);
             }
         }, executor);
     }
@@ -213,12 +213,12 @@ implements AutoCloseable {
         public static final HashIgnorer NEVER_IGNORE = (string, i) -> false;
         public static final HashIgnorer IGNORE_IF_MATCHES_ALL = (string, i) -> string.length() == i;
 
-        public static HashIgnorer method_33806(int i) {
-            return (string, j) -> j >= i;
+        public static HashIgnorer internalDropHashes(int hashesToDrop) {
+            return (string, j) -> j >= hashesToDrop;
         }
 
-        public static HashIgnorer method_33808(int i) {
-            switch (i) {
+        public static HashIgnorer dropHashes(int hashesToDrop) {
+            switch (hashesToDrop) {
                 case -1: {
                     return NEVER_IGNORE;
                 }
@@ -226,7 +226,7 @@ implements AutoCloseable {
                     return IGNORE_IF_MATCHES_ALL;
                 }
             }
-            return HashIgnorer.method_33806(i);
+            return HashIgnorer.internalDropHashes(hashesToDrop);
         }
 
         public boolean shouldIgnore(String var1, int var2);
@@ -254,13 +254,13 @@ implements AutoCloseable {
         }
 
         @Override
-        public CompletableFuture<List<TextStream.class_5837>> filterTexts(List<String> texts) {
+        public CompletableFuture<List<TextStream.Message>> filterTexts(List<String> texts) {
             List list = texts.stream().map(string -> TextFilterer.this.filterMessage(this.gameProfile, string, TextFilterer.this.ignorer, this.executor)).collect(ImmutableList.toImmutableList());
             return Util.combine(list).exceptionally(throwable -> ImmutableList.of());
         }
 
         @Override
-        public CompletableFuture<TextStream.class_5837> filterText(String text) {
+        public CompletableFuture<TextStream.Message> filterText(String text) {
             return TextFilterer.this.filterMessage(this.gameProfile, text, TextFilterer.this.ignorer, this.executor);
         }
     }

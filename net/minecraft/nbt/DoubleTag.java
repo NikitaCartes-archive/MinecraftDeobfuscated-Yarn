@@ -7,7 +7,7 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 import net.minecraft.nbt.AbstractNumberTag;
-import net.minecraft.nbt.PositionTracker;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReader;
 import net.minecraft.nbt.visitor.NbtTagVisitor;
@@ -19,8 +19,8 @@ extends AbstractNumberTag {
     public static final TagReader<DoubleTag> READER = new TagReader<DoubleTag>(){
 
         @Override
-        public DoubleTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
-            positionTracker.add(128L);
+        public DoubleTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
+            nbtTagSizeTracker.add(128L);
             return DoubleTag.of(dataInput.readDouble());
         }
 
@@ -40,7 +40,7 @@ extends AbstractNumberTag {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+        public /* synthetic */ Tag read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
             return this.read(input, depth, tracker);
         }
     };

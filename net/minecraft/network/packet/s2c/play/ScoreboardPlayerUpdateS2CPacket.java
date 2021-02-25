@@ -30,12 +30,12 @@ implements Packet<ClientPlayPacketListener> {
         this.mode = mode;
     }
 
-    public ScoreboardPlayerUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-        this.playerName = packetByteBuf.readString(40);
-        this.mode = packetByteBuf.readEnumConstant(ServerScoreboard.UpdateMode.class);
-        String string = packetByteBuf.readString(16);
+    public ScoreboardPlayerUpdateS2CPacket(PacketByteBuf buf) {
+        this.playerName = buf.readString(40);
+        this.mode = buf.readEnumConstant(ServerScoreboard.UpdateMode.class);
+        String string = buf.readString(16);
         this.objectiveName = Objects.equals(string, "") ? null : string;
-        this.score = this.mode != ServerScoreboard.UpdateMode.REMOVE ? packetByteBuf.readVarInt() : 0;
+        this.score = this.mode != ServerScoreboard.UpdateMode.REMOVE ? buf.readVarInt() : 0;
     }
 
     @Override

@@ -22,9 +22,9 @@ implements Packet<ClientPlayPacketListener> {
         this.status = status;
     }
 
-    public EntityStatusS2CPacket(PacketByteBuf packetByteBuf) {
-        this.id = packetByteBuf.readInt();
-        this.status = packetByteBuf.readByte();
+    public EntityStatusS2CPacket(PacketByteBuf buf) {
+        this.id = buf.readInt();
+        this.status = buf.readByte();
     }
 
     @Override

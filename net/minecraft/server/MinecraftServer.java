@@ -249,15 +249,15 @@ AutoCloseable {
         return (S)minecraftServer;
     }
 
-    public MinecraftServer(Thread thread, DynamicRegistryManager.Impl impl, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager resourcePackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+    public MinecraftServer(Thread serverThread, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, SaveProperties saveProperties, ResourcePackManager dataPackManager, Proxy proxy, DataFixer dataFixer, ServerResourceManager serverResourceManager, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
         super("Server");
-        this.registryManager = impl;
+        this.registryManager = registryManager;
         this.saveProperties = saveProperties;
         this.proxy = proxy;
-        this.dataPackManager = resourcePackManager;
+        this.dataPackManager = dataPackManager;
         this.serverResourceManager = serverResourceManager;
-        this.sessionService = minecraftSessionService;
-        this.gameProfileRepo = gameProfileRepository;
+        this.sessionService = sessionService;
+        this.gameProfileRepo = gameProfileRepo;
         this.userCache = userCache;
         this.networkIo = new ServerNetworkIo(this);
         this.worldGenerationProgressListenerFactory = worldGenerationProgressListenerFactory;
@@ -266,7 +266,7 @@ AutoCloseable {
         this.dataFixer = dataFixer;
         this.commandFunctionManager = new CommandFunctionManager(this, serverResourceManager.getFunctionLoader());
         this.structureManager = new StructureManager(serverResourceManager.getResourceManager(), session, dataFixer);
-        this.serverThread = thread;
+        this.serverThread = serverThread;
         this.workerExecutor = Util.getMainWorkerExecutor();
     }
 
@@ -316,11 +316,11 @@ AutoCloseable {
         this.saveProperties.addServerBrand(this.getServerModName(), this.getModdedStatusMessage().isPresent());
         WorldGenerationProgressListener worldGenerationProgressListener = this.worldGenerationProgressListenerFactory.create(11);
         this.createWorlds(worldGenerationProgressListener);
-        this.method_27731();
+        this.updateDifficulty();
         this.prepareStartRegion(worldGenerationProgressListener);
     }
 
-    protected void method_27731() {
+    protected void updateDifficulty() {
     }
 
     protected void createWorlds(WorldGenerationProgressListener worldGenerationProgressListener) {
@@ -383,11 +383,11 @@ AutoCloseable {
         }
     }
 
-    private static void setupSpawn(ServerWorld world, ServerWorldProperties serverWorldProperties, boolean bonusChest, boolean debugWorld) {
+    private static void setupSpawn(ServerWorld world, ServerWorldProperties worldProperties, boolean bonusChest, boolean debugWorld) {
         int i;
         ChunkPos chunkPos;
         if (debugWorld) {
-            serverWorldProperties.setSpawnPos(BlockPos.ORIGIN.up(80), 0.0f);
+            worldProperties.setSpawnPos(BlockPos.ORIGIN.up(80), 0.0f);
             return;
         }
         ChunkGenerator chunkGenerator = world.getChunkManager().getChunkGenerator();
@@ -408,7 +408,7 @@ AutoCloseable {
             BlockPos blockPos2 = chunkPos.getStartPos();
             i = world.getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX() + 8, blockPos2.getZ() + 8);
         }
-        serverWorldProperties.setSpawnPos(chunkPos.getStartPos().add(8, i, 8), 0.0f);
+        worldProperties.setSpawnPos(chunkPos.getStartPos().add(8, i, 8), 0.0f);
         int j = 0;
         int k = 0;
         int l = 0;
@@ -417,7 +417,7 @@ AutoCloseable {
         for (int o = 0; o < 1024; ++o) {
             BlockPos blockPos3;
             if (j > -16 && j <= 16 && k > -16 && k <= 16 && (blockPos3 = SpawnLocating.findServerSpawnPoint(world, new ChunkPos(chunkPos.x + j, chunkPos.z + k), bl)) != null) {
-                serverWorldProperties.setSpawnPos(blockPos3, 0.0f);
+                worldProperties.setSpawnPos(blockPos3, 0.0f);
                 break;
             }
             if (j == k || j < 0 && j == -k || j > 0 && j == 1 - k) {
@@ -430,7 +430,7 @@ AutoCloseable {
         }
         if (bonusChest) {
             ConfiguredFeature<?, ?> configuredFeature = ConfiguredFeatures.BONUS_CHEST;
-            configuredFeature.generate(world, chunkGenerator, world.random, new BlockPos(serverWorldProperties.getSpawnX(), serverWorldProperties.getSpawnY(), serverWorldProperties.getSpawnZ()));
+            configuredFeature.generate(world, chunkGenerator, world.random, new BlockPos(worldProperties.getSpawnX(), worldProperties.getSpawnY(), worldProperties.getSpawnZ()));
         }
     }
 
@@ -1235,7 +1235,7 @@ AutoCloseable {
             this.serverResourceManager.close();
             this.serverResourceManager = serverResourceManager;
             this.dataPackManager.setEnabledProfiles(datapacks);
-            this.saveProperties.updateLevelInfo(MinecraftServer.method_29735(this.dataPackManager));
+            this.saveProperties.updateLevelInfo(MinecraftServer.createDataPackSettings(this.dataPackManager));
             serverResourceManager.loadRegistryTags();
             this.getPlayerManager().saveAllPlayerData();
             this.getPlayerManager().onDataPacksReloaded();
@@ -1273,13 +1273,13 @@ AutoCloseable {
             set.add("vanilla");
         }
         resourcePackManager.setEnabledProfiles(set);
-        return MinecraftServer.method_29735(resourcePackManager);
+        return MinecraftServer.createDataPackSettings(resourcePackManager);
     }
 
-    private static DataPackSettings method_29735(ResourcePackManager resourcePackManager) {
-        Collection<String> collection = resourcePackManager.getEnabledNames();
+    private static DataPackSettings createDataPackSettings(ResourcePackManager dataPackManager) {
+        Collection<String> collection = dataPackManager.getEnabledNames();
         ImmutableList<String> list = ImmutableList.copyOf(collection);
-        List list2 = resourcePackManager.getNames().stream().filter(string -> !collection.contains(string)).collect(ImmutableList.toImmutableList());
+        List list2 = dataPackManager.getNames().stream().filter(string -> !collection.contains(string)).collect(ImmutableList.toImmutableList());
         return new DataPackSettings(list, list2);
     }
 
@@ -1527,7 +1527,7 @@ AutoCloseable {
     }
 
     public TextStream createFilterer(ServerPlayerEntity player) {
-        return TextStream.field_28862;
+        return TextStream.UNFILTERED;
     }
 
     public boolean requireResourcePack() {

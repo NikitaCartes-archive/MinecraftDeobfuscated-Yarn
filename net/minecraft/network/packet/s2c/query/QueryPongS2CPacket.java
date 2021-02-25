@@ -15,8 +15,8 @@ implements Packet<ClientQueryPacketListener> {
         this.startTime = startTime;
     }
 
-    public QueryPongS2CPacket(PacketByteBuf packetByteBuf) {
-        this.startTime = packetByteBuf.readLong();
+    public QueryPongS2CPacket(PacketByteBuf buf) {
+        this.startTime = buf.readLong();
     }
 
     @Override

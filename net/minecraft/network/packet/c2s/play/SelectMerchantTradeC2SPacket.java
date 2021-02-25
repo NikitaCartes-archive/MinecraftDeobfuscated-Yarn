@@ -18,8 +18,8 @@ implements Packet<ServerPlayPacketListener> {
         this.tradeId = tradeId;
     }
 
-    public SelectMerchantTradeC2SPacket(PacketByteBuf packetByteBuf) {
-        this.tradeId = packetByteBuf.readVarInt();
+    public SelectMerchantTradeC2SPacket(PacketByteBuf buf) {
+        this.tradeId = buf.readVarInt();
     }
 
     @Override

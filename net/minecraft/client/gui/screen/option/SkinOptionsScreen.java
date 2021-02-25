@@ -27,7 +27,7 @@ extends GameOptionsScreen {
     protected void init() {
         int i = 0;
         for (PlayerModelPart playerModelPart : PlayerModelPart.values()) {
-            this.addButton(CyclingButtonWidget.method_32613(this.gameOptions.isPlayerModelPartEnabled(playerModelPart)).build(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, playerModelPart.getOptionName(), (cyclingButtonWidget, boolean_) -> this.gameOptions.togglePlayerModelPart(playerModelPart, (boolean)boolean_)));
+            this.addButton(CyclingButtonWidget.onOffBuilder(this.gameOptions.isPlayerModelPartEnabled(playerModelPart)).build(this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150, 20, playerModelPart.getOptionName(), (cyclingButtonWidget, boolean_) -> this.gameOptions.togglePlayerModelPart(playerModelPart, (boolean)boolean_)));
             ++i;
         }
         this.addButton(Option.MAIN_HAND.createButton(this.gameOptions, this.width / 2 - 155 + i % 2 * 160, this.height / 6 + 24 * (i >> 1), 150));

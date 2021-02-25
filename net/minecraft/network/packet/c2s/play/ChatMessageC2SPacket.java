@@ -18,8 +18,8 @@ implements Packet<ServerPlayPacketListener> {
         this.chatMessage = chatMessage;
     }
 
-    public ChatMessageC2SPacket(PacketByteBuf packetByteBuf) {
-        this.chatMessage = packetByteBuf.readString(256);
+    public ChatMessageC2SPacket(PacketByteBuf buf) {
+        this.chatMessage = buf.readString(256);
     }
 
     @Override

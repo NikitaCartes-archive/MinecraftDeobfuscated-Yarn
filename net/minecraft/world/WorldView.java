@@ -49,7 +49,7 @@ BiomeAccess.Storage {
         return this.getBiomeAccess().getBiome(pos);
     }
 
-    default public Stream<BlockState> method_29556(Box box) {
+    default public Stream<BlockState> getStatesInBoxIfLoaded(Box box) {
         int n;
         int i = MathHelper.floor(box.minX);
         int j = MathHelper.floor(box.maxX);
@@ -191,13 +191,13 @@ BiomeAccess.Storage {
     }
 
     @Deprecated
-    default public boolean method_33598(int i, int j) {
-        return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(i), ChunkSectionPos.getSectionCoord(j));
+    default public boolean isPosLoaded(int x, int z) {
+        return this.isChunkLoaded(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z));
     }
 
     @Deprecated
     default public boolean isChunkLoaded(BlockPos pos) {
-        return this.method_33598(pos.getX(), pos.getZ());
+        return this.isPosLoaded(pos.getX(), pos.getZ());
     }
 
     @Deprecated
@@ -206,22 +206,22 @@ BiomeAccess.Storage {
     }
 
     @Deprecated
-    default public boolean isRegionLoaded(int i, int minY, int j, int k, int maxY, int l) {
+    default public boolean isRegionLoaded(int minX, int minY, int minZ, int maxX, int maxY, int maxZ) {
         if (maxY < this.getBottomY() || minY >= this.getTopY()) {
             return false;
         }
-        return this.method_33597(i, j, k, l);
+        return this.isRegionLoaded(minX, minZ, maxX, maxZ);
     }
 
     @Deprecated
-    default public boolean method_33597(int i, int j, int k, int l) {
-        int m = ChunkSectionPos.getSectionCoord(i);
-        int n = ChunkSectionPos.getSectionCoord(k);
-        int o = ChunkSectionPos.getSectionCoord(j);
-        int p = ChunkSectionPos.getSectionCoord(l);
-        for (int q = m; q <= n; ++q) {
-            for (int r = o; r <= p; ++r) {
-                if (this.isChunkLoaded(q, r)) continue;
+    default public boolean isRegionLoaded(int minX, int minZ, int maxX, int maxZ) {
+        int i = ChunkSectionPos.getSectionCoord(minX);
+        int j = ChunkSectionPos.getSectionCoord(maxX);
+        int k = ChunkSectionPos.getSectionCoord(minZ);
+        int l = ChunkSectionPos.getSectionCoord(maxZ);
+        for (int m = i; m <= j; ++m) {
+            for (int n = k; n <= l; ++n) {
+                if (this.isChunkLoaded(m, n)) continue;
                 return false;
             }
         }

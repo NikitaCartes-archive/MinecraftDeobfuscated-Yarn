@@ -17,8 +17,8 @@ implements Packet<ClientPlayPacketListener> {
         this.id = id;
     }
 
-    public KeepAliveS2CPacket(PacketByteBuf packetByteBuf) {
-        this.id = packetByteBuf.readLong();
+    public KeepAliveS2CPacket(PacketByteBuf buf) {
+        this.id = buf.readLong();
     }
 
     @Override

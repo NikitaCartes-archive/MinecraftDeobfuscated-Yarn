@@ -57,7 +57,7 @@ implements Spawner {
         int k = (24 + random.nextInt(24)) * (random.nextBoolean() ? -1 : 1);
         BlockPos.Mutable mutable = playerEntity.getBlockPos().mutableCopy().move(j, 0, k);
         int m = 10;
-        if (!world.method_33597(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10)) {
+        if (!world.isRegionLoaded(mutable.getX() - 10, mutable.getZ() - 10, mutable.getX() + 10, mutable.getZ() + 10)) {
             return 0;
         }
         Biome biome = world.getBiome(mutable);

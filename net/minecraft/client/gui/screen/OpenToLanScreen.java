@@ -32,10 +32,10 @@ extends Screen {
 
     @Override
     protected void init() {
-        this.addButton(CyclingButtonWidget.method_32606(GameMode::getSimpleTranslatableName).method_32624((GameMode[])new GameMode[]{GameMode.SURVIVAL, GameMode.SPECTATOR, GameMode.CREATIVE, GameMode.ADVENTURE}).value(this.gameMode).build(this.width / 2 - 155, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, gameMode) -> {
+        this.addButton(CyclingButtonWidget.builder(GameMode::getSimpleTranslatableName).values((GameMode[])new GameMode[]{GameMode.SURVIVAL, GameMode.SPECTATOR, GameMode.CREATIVE, GameMode.ADVENTURE}).initially(this.gameMode).build(this.width / 2 - 155, 100, 150, 20, GAME_MODE_TEXT, (cyclingButtonWidget, gameMode) -> {
             this.gameMode = gameMode;
         }));
-        this.addButton(CyclingButtonWidget.method_32613(this.allowCommands).build(this.width / 2 + 5, 100, 150, 20, ALLOW_COMMANDS_TEXT, (cyclingButtonWidget, boolean_) -> {
+        this.addButton(CyclingButtonWidget.onOffBuilder(this.allowCommands).build(this.width / 2 + 5, 100, 150, 20, ALLOW_COMMANDS_TEXT, (cyclingButtonWidget, boolean_) -> {
             this.allowCommands = boolean_;
         }));
         this.addButton(new ButtonWidget(this.width / 2 - 155, this.height - 28, 150, 20, new TranslatableText("lanServer.start"), buttonWidget -> {

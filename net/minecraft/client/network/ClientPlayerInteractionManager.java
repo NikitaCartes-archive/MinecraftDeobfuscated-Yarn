@@ -311,7 +311,7 @@ public class ClientPlayerInteractionManager {
 
     public void attackEntity(PlayerEntity player, Entity target) {
         this.syncSelectedSlot();
-        this.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.method_34206(target, player.isSneaking()));
+        this.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.attack(target, player.isSneaking()));
         if (this.gameMode != GameMode.SPECTATOR) {
             player.attack(target);
             player.resetLastAttackedTicks();
@@ -320,7 +320,7 @@ public class ClientPlayerInteractionManager {
 
     public ActionResult interactEntity(PlayerEntity player, Entity entity, Hand hand) {
         this.syncSelectedSlot();
-        this.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.method_34207(entity, player.isSneaking(), hand));
+        this.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.interact(entity, player.isSneaking(), hand));
         if (this.gameMode == GameMode.SPECTATOR) {
             return ActionResult.PASS;
         }
@@ -330,7 +330,7 @@ public class ClientPlayerInteractionManager {
     public ActionResult interactEntityAtLocation(PlayerEntity player, Entity entity, EntityHitResult hitResult, Hand hand) {
         this.syncSelectedSlot();
         Vec3d vec3d = hitResult.getPos().subtract(entity.getX(), entity.getY(), entity.getZ());
-        this.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.method_34208(entity, player.isSneaking(), hand, vec3d));
+        this.networkHandler.sendPacket(PlayerInteractEntityC2SPacket.interactAt(entity, player.isSneaking(), hand, vec3d));
         if (this.gameMode == GameMode.SPECTATOR) {
             return ActionResult.PASS;
         }

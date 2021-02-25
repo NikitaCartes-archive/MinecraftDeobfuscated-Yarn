@@ -2288,7 +2288,7 @@ WindowEventHandler {
         return this.bufferBuilders;
     }
 
-    private static ResourcePackProfile createResourcePackProfile(String name, Text text, boolean bl, Supplier<ResourcePack> supplier, PackResourceMetadata metadata, ResourcePackProfile.InsertionPosition insertionPosition, ResourcePackSource source) {
+    private static ResourcePackProfile createResourcePackProfile(String name, Text displayName, boolean alwaysEnabled, Supplier<ResourcePack> supplier, PackResourceMetadata metadata, ResourcePackProfile.InsertionPosition insertionPosition, ResourcePackSource source) {
         int i = metadata.getPackFormat();
         Supplier<ResourcePack> supplier2 = supplier;
         if (i <= 3) {
@@ -2297,7 +2297,7 @@ WindowEventHandler {
         if (i <= 4) {
             supplier2 = MinecraftClient.createV4ResourcePackFactory(supplier2);
         }
-        return new ResourcePackProfile(name, text, bl, supplier2, metadata, ResourceType.CLIENT_RESOURCES, insertionPosition, source);
+        return new ResourcePackProfile(name, displayName, alwaysEnabled, supplier2, metadata, ResourceType.CLIENT_RESOURCES, insertionPosition, source);
     }
 
     private static Supplier<ResourcePack> createV3ResourcePackFactory(Supplier<ResourcePack> packFactory) {
@@ -2316,7 +2316,7 @@ WindowEventHandler {
         return this.entityModelLoader;
     }
 
-    public boolean method_33883() {
+    public boolean shouldFilterText() {
         return true;
     }
 

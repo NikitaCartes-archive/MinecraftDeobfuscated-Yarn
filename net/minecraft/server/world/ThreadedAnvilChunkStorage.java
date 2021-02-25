@@ -253,7 +253,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 list2.add(completableFuture);
             }
         }
-        CompletableFuture completableFuture2 = Util.method_33791(list2);
+        CompletableFuture completableFuture2 = Util.combineSafe(list2);
         return completableFuture2.thenApply(list -> {
             ArrayList list2 = Lists.newArrayList();
             int l = 0;
@@ -717,7 +717,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
 
     void handlePlayerAddedOrRemoved(ServerPlayerEntity player, boolean added) {
         boolean bl = this.doesNotGenerateChunks(player);
-        boolean bl2 = this.playerChunkWatchingManager.method_21715(player);
+        boolean bl2 = this.playerChunkWatchingManager.isWatchInactive(player);
         int i = ChunkSectionPos.getSectionCoord(player.getBlockX());
         int j = ChunkSectionPos.getSectionCoord(player.getBlockZ());
         if (added) {

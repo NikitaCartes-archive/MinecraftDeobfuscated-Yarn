@@ -39,7 +39,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5838;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityInteraction;
 import net.minecraft.entity.EntityType;
@@ -87,6 +86,7 @@ import net.minecraft.server.world.ChunkTicketType;
 import net.minecraft.server.world.ServerChunkManager;
 import net.minecraft.server.world.ServerEntityManager;
 import net.minecraft.server.world.ServerTickScheduler;
+import net.minecraft.server.world.SleepManager;
 import net.minecraft.server.world.ThreadedAnvilChunkStorage;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -169,7 +169,7 @@ implements StructureWorldAccess {
     private final EntityList entityList = new EntityList();
     private final ServerEntityManager<Entity> entityManager;
     public boolean savingDisabled;
-    private final class_5838 field_28859;
+    private final SleepManager sleepManager;
     private int idleTimeout;
     private final PortalForcer portalForcer;
     private final ServerTickScheduler<Block> blockTickScheduler = new ServerTickScheduler<Block>(this, block -> block == null || block.getDefaultState().isAir(), Registry.BLOCK::getId, this::tickBlock);
@@ -185,15 +185,15 @@ implements StructureWorldAccess {
     private final StructureAccessor structureAccessor;
     private final boolean shouldTickTime;
 
-    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> registryKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long l, List<Spawner> spawners, boolean shouldTickTime) {
-        super(properties, registryKey, dimensionType, server::getProfiler, false, debugWorld, l);
+    public ServerWorld(MinecraftServer server, Executor workerExecutor, LevelStorage.Session session, ServerWorldProperties properties, RegistryKey<World> worldKey, DimensionType dimensionType, WorldGenerationProgressListener worldGenerationProgressListener, ChunkGenerator chunkGenerator, boolean debugWorld, long seed, List<Spawner> spawners, boolean shouldTickTime) {
+        super(properties, worldKey, dimensionType, server::getProfiler, false, debugWorld, seed);
         this.shouldTickTime = shouldTickTime;
         this.server = server;
         this.spawners = spawners;
         this.worldProperties = properties;
         boolean bl = server.syncChunkWrites();
         DataFixer dataFixer = server.getDataFixer();
-        EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(registryKey), "entities"), dataFixer, bl, server);
+        EntityChunkDataAccess chunkDataAccess = new EntityChunkDataAccess(this, new File(session.getWorldDirectory(worldKey), "entities"), dataFixer, bl, server);
         this.entityManager = new ServerEntityManager<Entity>(Entity.class, new ServerEntityHandler(), chunkDataAccess);
         this.serverChunkManager = new ServerChunkManager(this, session, dataFixer, server.getStructureManager(), workerExecutor, chunkGenerator, server.getPlayerManager().getViewDistance(), bl, worldGenerationProgressListener, this.entityManager::updateTrackingStatus, () -> server.getOverworld().getPersistentStateManager());
         this.portalForcer = new PortalForcer(this);
@@ -206,7 +206,7 @@ implements StructureWorldAccess {
         }
         this.structureAccessor = new StructureAccessor(this, server.getSaveProperties().getGeneratorOptions());
         this.enderDragonFight = this.getDimension().hasEnderDragonFight() ? new EnderDragonFight(this, server.getSaveProperties().getGeneratorOptions().getSeed(), server.getSaveProperties().getDragonFight()) : null;
-        this.field_28859 = new class_5838();
+        this.sleepManager = new SleepManager();
     }
 
     public void setWeather(int clearDuration, int rainDuration, boolean raining, boolean thundering) {
@@ -292,7 +292,7 @@ implements StructureWorldAccess {
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.RAIN_GRADIENT_CHANGED, this.rainGradient));
             this.server.getPlayerManager().sendToAll(new GameStateChangeS2CPacket(GameStateChangeS2CPacket.THUNDER_GRADIENT_CHANGED, this.thunderGradient));
         }
-        if (this.field_28859.method_33812(i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE)) && this.field_28859.method_33813(i, this.players)) {
+        if (this.sleepManager.canSkipNight(i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE)) && this.sleepManager.canResetTime(i, this.players)) {
             if (this.getGameRules().getBoolean(GameRules.DO_DAYLIGHT_CYCLE)) {
                 long l = this.properties.getTimeOfDay() + 24000L;
                 this.setTimeOfDay(l - l % 24000L);
@@ -389,7 +389,7 @@ implements StructureWorldAccess {
     }
 
     private void wakeSleepingPlayers() {
-        this.field_28859.method_33811();
+        this.sleepManager.clearSleeping();
         this.players.stream().filter(LivingEntity::isSleeping).collect(Collectors.toList()).forEach(player -> player.wakeUp(false, false));
     }
 
@@ -509,14 +509,14 @@ implements StructureWorldAccess {
             return;
         }
         int i = this.getGameRules().getInt(GameRules.PLAYERS_SLEEPING_PERCENTAGE);
-        TranslatableText text = this.field_28859.method_33812(i) ? new TranslatableText("sleep.skipping_night") : new TranslatableText("sleep.players_sleeping", this.field_28859.method_33815(), this.field_28859.method_33816(i));
+        TranslatableText text = this.sleepManager.canSkipNight(i) ? new TranslatableText("sleep.skipping_night") : new TranslatableText("sleep.players_sleeping", this.sleepManager.getSleeping(), this.sleepManager.getNightSkippingRequirement(i));
         for (ServerPlayerEntity serverPlayerEntity : this.players) {
             serverPlayerEntity.sendMessage(text, true);
         }
     }
 
     public void updateSleepingPlayers() {
-        if (!this.players.isEmpty() && this.field_28859.method_33814(this.players)) {
+        if (!this.players.isEmpty() && this.sleepManager.update(this.players)) {
             this.handleSleeping();
         }
     }
@@ -718,8 +718,8 @@ implements StructureWorldAccess {
         chunk.removeAllBlockEntities();
     }
 
-    public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason removalReason) {
-        player.remove(removalReason);
+    public void removePlayer(ServerPlayerEntity player, Entity.RemovalReason reason) {
+        player.remove(reason);
     }
 
     @Override
@@ -887,12 +887,12 @@ implements StructureWorldAccess {
 
     @Deprecated
     @Nullable
-    public Entity method_31424(int i) {
-        Entity entity = this.getEntityLookup().get(i);
+    public Entity getDragonPart(int id) {
+        Entity entity = this.getEntityLookup().get(id);
         if (entity != null) {
             return entity;
         }
-        return (Entity)this.dragonParts.get(i);
+        return (Entity)this.dragonParts.get(id);
     }
 
     @Nullable

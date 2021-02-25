@@ -55,7 +55,7 @@ extends Screen {
             ++i;
         }
         if (this.client.world != null) {
-            this.difficultyButton = this.addButton(CyclingButtonWidget.method_32606(Difficulty::getTranslatableName).method_32624((Difficulty[])Difficulty.values()).value(this.client.world.getDifficulty()).build(this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty)))));
+            this.difficultyButton = this.addButton(CyclingButtonWidget.builder(Difficulty::getTranslatableName).values((Difficulty[])Difficulty.values()).initially(this.client.world.getDifficulty()).build(this.width / 2 - 155 + i % 2 * 160, this.height / 6 - 12 + 24 * (i >> 1), 150, 20, new TranslatableText("options.difficulty"), (cyclingButtonWidget, difficulty) -> this.client.getNetworkHandler().sendPacket(new UpdateDifficultyC2SPacket((Difficulty)((Object)difficulty)))));
             if (this.client.isIntegratedServerRunning() && !this.client.world.getLevelProperties().isHardcore()) {
                 this.difficultyButton.setWidth(this.difficultyButton.getWidth() - 20);
                 this.lockDifficultyButton = this.addButton(new LockButtonWidget(this.difficultyButton.x + this.difficultyButton.getWidth(), this.difficultyButton.y, button -> this.client.openScreen(new ConfirmScreen(this::lockDifficulty, new TranslatableText("difficulty.lock.title"), new TranslatableText("difficulty.lock.question", this.client.world.getLevelProperties().getDifficulty().getTranslatableName())))));

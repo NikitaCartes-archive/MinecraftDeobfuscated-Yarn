@@ -25,10 +25,10 @@ implements Packet<ClientPlayPacketListener> {
         this.name = name;
     }
 
-    public OpenScreenS2CPacket(PacketByteBuf packetByteBuf) {
-        this.syncId = packetByteBuf.readVarInt();
-        this.screenHandlerId = packetByteBuf.readVarInt();
-        this.name = packetByteBuf.readText();
+    public OpenScreenS2CPacket(PacketByteBuf buf) {
+        this.syncId = buf.readVarInt();
+        this.screenHandlerId = buf.readVarInt();
+        this.name = buf.readText();
     }
 
     @Override

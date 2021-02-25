@@ -8,10 +8,10 @@ import java.util.BitSet;
 import java.util.Random;
 import java.util.function.Function;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5867;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.ChunkSectionCache;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
@@ -90,7 +90,7 @@ extends Feature<OreFeatureConfig> {
                 ds[k * 4 + 3] = -1.0;
             }
         }
-        try (class_5867 lv = new class_5867(world);){
+        try (ChunkSectionCache chunkSectionCache = new ChunkSectionCache(world);){
             for (int n = 0; n < j; ++n) {
                 double o = ds[n * 4 + 3];
                 if (o < 0.0) continue;
@@ -115,14 +115,14 @@ extends Feature<OreFeatureConfig> {
                             if (!(ac * ac + ae * ae + ag * ag < 1.0) || world.isOutOfHeightLimit(ad) || bitSet.get(ah = ab - x + (ad - y) * horizontalSize + (af - z) * horizontalSize * verticalSize)) continue;
                             bitSet.set(ah);
                             mutable.set(ab, ad, af);
-                            ChunkSection chunkSection = lv.method_33944(mutable);
+                            ChunkSection chunkSection = chunkSectionCache.getSection(mutable);
                             int ai = ChunkSectionPos.getLocalCoord(ab);
                             int aj = ChunkSectionPos.getLocalCoord(ad);
                             int ak = ChunkSectionPos.getLocalCoord(af);
                             BlockState blockState = chunkSection.getBlockState(ai, aj, ak);
-                            for (OreFeatureConfig.class_5876 lv2 : config.field_29063) {
-                                if (!OreFeature.method_33983(blockState, lv::method_33946, random, config, lv2, mutable)) continue;
-                                chunkSection.setBlockState(ai, aj, ak, lv2.field_29069, false);
+                            for (OreFeatureConfig.Target target : config.targets) {
+                                if (!OreFeature.shouldPlace(blockState, chunkSectionCache::getBlockState, random, config, target, mutable)) continue;
+                                chunkSection.setBlockState(ai, aj, ak, target.state, false);
                                 ++i;
                                 continue block15;
                             }
@@ -134,24 +134,24 @@ extends Feature<OreFeatureConfig> {
         return i > 0;
     }
 
-    public static boolean method_33983(BlockState blockState, Function<BlockPos, BlockState> function, Random random, OreFeatureConfig oreFeatureConfig, OreFeatureConfig.class_5876 arg, BlockPos.Mutable mutable) {
-        if (!arg.field_29068.test(blockState, random)) {
+    public static boolean shouldPlace(BlockState state, Function<BlockPos, BlockState> posToState, Random random, OreFeatureConfig config, OreFeatureConfig.Target target, BlockPos.Mutable pos) {
+        if (!target.target.test(state, random)) {
             return false;
         }
-        if (OreFeature.method_33984(random, oreFeatureConfig.field_29064)) {
+        if (OreFeature.shouldNotDiscard(random, config.discardOnAirChance)) {
             return true;
         }
-        return !OreFeature.method_33981(function, mutable);
+        return !OreFeature.isExposedToAir(posToState, pos);
     }
 
-    protected static boolean method_33984(Random random, float f) {
-        if (f <= 0.0f) {
+    protected static boolean shouldNotDiscard(Random random, float chance) {
+        if (chance <= 0.0f) {
             return true;
         }
-        if (f >= 1.0f) {
+        if (chance >= 1.0f) {
             return false;
         }
-        return random.nextFloat() >= f;
+        return random.nextFloat() >= chance;
     }
 }
 

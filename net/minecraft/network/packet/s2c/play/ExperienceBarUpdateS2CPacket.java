@@ -21,10 +21,10 @@ implements Packet<ClientPlayPacketListener> {
         this.experience = experience;
     }
 
-    public ExperienceBarUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-        this.barProgress = packetByteBuf.readFloat();
-        this.experience = packetByteBuf.readVarInt();
-        this.experienceLevel = packetByteBuf.readVarInt();
+    public ExperienceBarUpdateS2CPacket(PacketByteBuf buf) {
+        this.barProgress = buf.readFloat();
+        this.experience = buf.readVarInt();
+        this.experienceLevel = buf.readVarInt();
     }
 
     @Override

@@ -108,7 +108,7 @@ AutoCloseable {
             if (stream == null) {
                 this.idleActors.add(actor);
             } else {
-                Util.method_33791(stream.map(executeOrAddBlocking -> executeOrAddBlocking.map(actor::ask, addBlocking -> {
+                Util.combineSafe(stream.map(executeOrAddBlocking -> executeOrAddBlocking.map(actor::ask, addBlocking -> {
                     addBlocking.run();
                     return CompletableFuture.completedFuture(Unit.INSTANCE);
                 })).collect(Collectors.toList())).thenAccept(list -> this.enqueueExecution(queue, actor));

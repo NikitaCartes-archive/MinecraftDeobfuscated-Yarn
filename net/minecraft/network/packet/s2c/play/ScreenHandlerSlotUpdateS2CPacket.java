@@ -22,10 +22,10 @@ implements Packet<ClientPlayPacketListener> {
         this.stack = stack.copy();
     }
 
-    public ScreenHandlerSlotUpdateS2CPacket(PacketByteBuf packetByteBuf) {
-        this.syncId = packetByteBuf.readByte();
-        this.slot = packetByteBuf.readShort();
-        this.stack = packetByteBuf.readItemStack();
+    public ScreenHandlerSlotUpdateS2CPacket(PacketByteBuf buf) {
+        this.syncId = buf.readByte();
+        this.slot = buf.readShort();
+        this.stack = buf.readItemStack();
     }
 
     @Override

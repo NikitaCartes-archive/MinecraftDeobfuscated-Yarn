@@ -47,16 +47,16 @@ implements Packet<ClientPlayPacketListener> {
         return new Vec3d(x, y, z).multiply(2.44140625E-4);
     }
 
-    protected EntityS2CPacket(int entityId, short s, short t, short u, byte b, byte c, boolean bl, boolean bl2, boolean bl3) {
+    protected EntityS2CPacket(int entityId, short deltaX, short deltaY, short deltaZ, byte yaw, byte pitch, boolean onGround, boolean rotate, boolean positionChanged) {
         this.id = entityId;
-        this.deltaX = s;
-        this.deltaY = t;
-        this.deltaZ = u;
-        this.yaw = b;
-        this.pitch = c;
-        this.onGround = bl;
-        this.rotate = bl2;
-        this.positionChanged = bl3;
+        this.deltaX = deltaX;
+        this.deltaY = deltaY;
+        this.deltaZ = deltaZ;
+        this.yaw = yaw;
+        this.pitch = pitch;
+        this.onGround = onGround;
+        this.rotate = rotate;
+        this.positionChanged = positionChanged;
     }
 
     @Override
@@ -105,11 +105,11 @@ implements Packet<ClientPlayPacketListener> {
             super(entityId, (short)0, (short)0, (short)0, yaw, pitch, onGround, true, false);
         }
 
-        public static Rotate method_34140(PacketByteBuf packetByteBuf) {
-            int i = packetByteBuf.readVarInt();
-            byte b = packetByteBuf.readByte();
-            byte c = packetByteBuf.readByte();
-            boolean bl = packetByteBuf.readBoolean();
+        public static Rotate read(PacketByteBuf buf) {
+            int i = buf.readVarInt();
+            byte b = buf.readByte();
+            byte c = buf.readByte();
+            boolean bl = buf.readBoolean();
             return new Rotate(i, b, c, bl);
         }
 
@@ -128,12 +128,12 @@ implements Packet<ClientPlayPacketListener> {
             super(entityId, deltaX, deltaY, deltaZ, (byte)0, (byte)0, onGround, false, true);
         }
 
-        public static MoveRelative method_34138(PacketByteBuf packetByteBuf) {
-            int i = packetByteBuf.readVarInt();
-            short s = packetByteBuf.readShort();
-            short t = packetByteBuf.readShort();
-            short u = packetByteBuf.readShort();
-            boolean bl = packetByteBuf.readBoolean();
+        public static MoveRelative read(PacketByteBuf buf) {
+            int i = buf.readVarInt();
+            short s = buf.readShort();
+            short t = buf.readShort();
+            short u = buf.readShort();
+            boolean bl = buf.readBoolean();
             return new MoveRelative(i, s, t, u, bl);
         }
 
@@ -153,14 +153,14 @@ implements Packet<ClientPlayPacketListener> {
             super(entityId, deltaX, deltaY, deltaZ, yaw, pitch, onGround, true, true);
         }
 
-        public static RotateAndMoveRelative method_34139(PacketByteBuf packetByteBuf) {
-            int i = packetByteBuf.readVarInt();
-            short s = packetByteBuf.readShort();
-            short t = packetByteBuf.readShort();
-            short u = packetByteBuf.readShort();
-            byte b = packetByteBuf.readByte();
-            byte c = packetByteBuf.readByte();
-            boolean bl = packetByteBuf.readBoolean();
+        public static RotateAndMoveRelative read(PacketByteBuf buf) {
+            int i = buf.readVarInt();
+            short s = buf.readShort();
+            short t = buf.readShort();
+            short u = buf.readShort();
+            byte b = buf.readByte();
+            byte c = buf.readByte();
+            boolean bl = buf.readBoolean();
             return new RotateAndMoveRelative(i, s, t, u, b, c, bl);
         }
 

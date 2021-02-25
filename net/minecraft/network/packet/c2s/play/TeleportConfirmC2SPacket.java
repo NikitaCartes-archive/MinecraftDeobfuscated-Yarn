@@ -18,8 +18,8 @@ implements Packet<ServerPlayPacketListener> {
         this.teleportId = teleportId;
     }
 
-    public TeleportConfirmC2SPacket(PacketByteBuf packetByteBuf) {
-        this.teleportId = packetByteBuf.readVarInt();
+    public TeleportConfirmC2SPacket(PacketByteBuf buf) {
+        this.teleportId = buf.readVarInt();
     }
 
     @Override

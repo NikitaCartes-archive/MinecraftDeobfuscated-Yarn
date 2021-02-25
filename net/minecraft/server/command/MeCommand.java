@@ -21,31 +21,31 @@ import net.minecraft.util.Util;
 
 public class MeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("me").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("action", StringArgumentType.greedyString()).executes(commandContext -> {
-            String string = StringArgumentType.getString(commandContext, "action");
-            Entity entity = ((ServerCommandSource)commandContext.getSource()).getEntity();
-            MinecraftServer minecraftServer = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer();
+        dispatcher.register((LiteralArgumentBuilder)CommandManager.literal("me").then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.argument("action", StringArgumentType.greedyString()).executes(context -> {
+            String string = StringArgumentType.getString(context, "action");
+            Entity entity = ((ServerCommandSource)context.getSource()).getEntity();
+            MinecraftServer minecraftServer = ((ServerCommandSource)context.getSource()).getMinecraftServer();
             if (entity != null) {
                 if (entity instanceof ServerPlayerEntity) {
                     ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)entity;
-                    serverPlayerEntity.getTextStream().filterText(string).thenAcceptAsync(arg -> {
-                        String string = arg.method_33803();
-                        Text text = string.isEmpty() ? null : MeCommand.method_31373(commandContext, string);
-                        Text text2 = MeCommand.method_31373(commandContext, arg.method_33801());
-                        minecraftServer.getPlayerManager().method_33810(text2, serverPlayerEntity2 -> serverPlayerEntity.method_33795((ServerPlayerEntity)serverPlayerEntity2) ? text : text2, MessageType.CHAT, entity.getUuid());
+                    serverPlayerEntity.getTextStream().filterText(string).thenAcceptAsync(message -> {
+                        String string = message.getFiltered();
+                        Text text = string.isEmpty() ? null : MeCommand.getEmoteText(context, string);
+                        Text text2 = MeCommand.getEmoteText(context, message.getRaw());
+                        minecraftServer.getPlayerManager().broadcast(text2, player -> serverPlayerEntity.shouldFilterMessagesSentTo((ServerPlayerEntity)player) ? text : text2, MessageType.CHAT, entity.getUuid());
                     }, (Executor)minecraftServer);
                     return 1;
                 }
-                minecraftServer.getPlayerManager().broadcastChatMessage(MeCommand.method_31373(commandContext, string), MessageType.CHAT, entity.getUuid());
+                minecraftServer.getPlayerManager().broadcastChatMessage(MeCommand.getEmoteText(context, string), MessageType.CHAT, entity.getUuid());
             } else {
-                minecraftServer.getPlayerManager().broadcastChatMessage(MeCommand.method_31373(commandContext, string), MessageType.SYSTEM, Util.NIL_UUID);
+                minecraftServer.getPlayerManager().broadcastChatMessage(MeCommand.getEmoteText(context, string), MessageType.SYSTEM, Util.NIL_UUID);
             }
             return 1;
         })));
     }
 
-    private static Text method_31373(CommandContext<ServerCommandSource> commandContext, String string) {
-        return new TranslatableText("chat.type.emote", commandContext.getSource().getDisplayName(), string);
+    private static Text getEmoteText(CommandContext<ServerCommandSource> context, String arg) {
+        return new TranslatableText("chat.type.emote", context.getSource().getDisplayName(), arg);
     }
 }
 

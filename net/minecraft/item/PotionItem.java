@@ -74,7 +74,7 @@ extends Item {
                 playerEntity.getInventory().insertStack(new ItemStack(Items.GLASS_BOTTLE));
             }
         }
-        world.emitGameEvent((Entity)user, GameEvent.DRINKING_FINISH, user.method_33575());
+        world.emitGameEvent((Entity)user, GameEvent.DRINKING_FINISH, user.getCameraBlockPos());
         return stack;
     }
 

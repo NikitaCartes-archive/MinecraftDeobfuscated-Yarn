@@ -24,10 +24,10 @@ implements Packet<ServerPlayPacketListener> {
         this.direction = direction;
     }
 
-    public PlayerActionC2SPacket(PacketByteBuf packetByteBuf) {
-        this.action = packetByteBuf.readEnumConstant(Action.class);
-        this.pos = packetByteBuf.readBlockPos();
-        this.direction = Direction.byId(packetByteBuf.readUnsignedByte());
+    public PlayerActionC2SPacket(PacketByteBuf buf) {
+        this.action = buf.readEnumConstant(Action.class);
+        this.pos = buf.readBlockPos();
+        this.direction = Direction.byId(buf.readUnsignedByte());
     }
 
     @Override

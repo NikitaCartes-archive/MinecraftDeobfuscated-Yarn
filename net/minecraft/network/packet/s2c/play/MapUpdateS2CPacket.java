@@ -33,20 +33,20 @@ implements Packet<ClientPlayPacketListener> {
         this.updateData = updateData;
     }
 
-    public MapUpdateS2CPacket(PacketByteBuf packetByteBuf2) {
-        this.id = packetByteBuf2.readVarInt();
-        this.scale = packetByteBuf2.readByte();
-        this.locked = packetByteBuf2.readBoolean();
-        this.icons = packetByteBuf2.readBoolean() ? packetByteBuf2.method_34066(packetByteBuf -> {
+    public MapUpdateS2CPacket(PacketByteBuf buf) {
+        this.id = buf.readVarInt();
+        this.scale = buf.readByte();
+        this.locked = buf.readBoolean();
+        this.icons = buf.readBoolean() ? buf.readList(packetByteBuf -> {
             MapIcon.Type type = packetByteBuf.readEnumConstant(MapIcon.Type.class);
             return new MapIcon(type, packetByteBuf.readByte(), packetByteBuf.readByte(), (byte)(packetByteBuf.readByte() & 0xF), packetByteBuf.readBoolean() ? packetByteBuf.readText() : null);
         }) : null;
-        short i = packetByteBuf2.readUnsignedByte();
+        short i = buf.readUnsignedByte();
         if (i > 0) {
-            short j = packetByteBuf2.readUnsignedByte();
-            short k = packetByteBuf2.readUnsignedByte();
-            short l = packetByteBuf2.readUnsignedByte();
-            byte[] bs = packetByteBuf2.readByteArray();
+            short j = buf.readUnsignedByte();
+            short k = buf.readUnsignedByte();
+            short l = buf.readUnsignedByte();
+            byte[] bs = buf.readByteArray();
             this.updateData = new MapState.UpdateData(k, l, i, j, bs);
         } else {
             this.updateData = null;
@@ -60,7 +60,7 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeBoolean(this.locked);
         if (this.icons != null) {
             buf.writeBoolean(true);
-            buf.method_34062(this.icons, (packetByteBuf, mapIcon) -> {
+            buf.writeCollection(this.icons, (packetByteBuf, mapIcon) -> {
                 packetByteBuf.writeEnumConstant(mapIcon.getType());
                 packetByteBuf.writeByte(mapIcon.getX());
                 packetByteBuf.writeByte(mapIcon.getZ());
@@ -108,12 +108,12 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public byte method_32701() {
+    public byte getScale() {
         return this.scale;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public boolean method_32702() {
+    public boolean isLocked() {
         return this.locked;
     }
 }

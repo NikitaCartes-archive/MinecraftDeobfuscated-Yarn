@@ -51,13 +51,13 @@ public class TagGroupLoader<T> {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public Map<Identifier, Tag.Builder> method_33174(ResourceManager resourceManager) {
+    public Map<Identifier, Tag.Builder> loadTags(ResourceManager manager) {
         HashMap<Identifier, Tag.Builder> map = Maps.newHashMap();
-        for (Identifier identifier2 : resourceManager.findResources(this.dataType, string -> string.endsWith(".json"))) {
+        for (Identifier identifier2 : manager.findResources(this.dataType, string -> string.endsWith(".json"))) {
             String string2 = identifier2.getPath();
             Identifier identifier22 = new Identifier(identifier2.getNamespace(), string2.substring(this.dataType.length() + 1, string2.length() - JSON_EXTENSION_LENGTH));
             try {
-                for (Resource resource : resourceManager.getAllResources(identifier2)) {
+                for (Resource resource : manager.getAllResources(identifier2)) {
                     try {
                         InputStream inputStream = resource.getInputStream();
                         Throwable throwable = null;
@@ -139,7 +139,7 @@ public class TagGroupLoader<T> {
         }
     }
 
-    public TagGroup<T> applyReload(Map<Identifier, Tag.Builder> tags) {
+    public TagGroup<T> buildGroup(Map<Identifier, Tag.Builder> tags) {
         HashMap map = Maps.newHashMap();
         Function<Identifier, Tag> function = map::get;
         Function<Identifier, Object> function2 = identifier -> this.registryGetter.apply((Identifier)identifier).orElse(null);
@@ -151,8 +151,8 @@ public class TagGroupLoader<T> {
         return TagGroup.create(map);
     }
 
-    public TagGroup<T> method_33176(ResourceManager resourceManager) {
-        return this.applyReload(this.method_33174(resourceManager));
+    public TagGroup<T> load(ResourceManager manager) {
+        return this.buildGroup(this.loadTags(manager));
     }
 }
 

@@ -625,7 +625,7 @@ CommandOutput {
         }
         float i = this.getVelocityMultiplier();
         this.setVelocity(this.getVelocity().multiply(i, 1.0, i));
-        if (this.world.method_29556(this.getBoundingBox().contract(1.0E-6)).noneMatch(blockState -> blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
+        if (this.world.getStatesInBoxIfLoaded(this.getBoundingBox().contract(1.0E-6)).noneMatch(blockState -> blockState.isIn(BlockTags.FIRE) || blockState.isOf(Blocks.LAVA)) && this.fireTicks <= 0) {
             this.setFireTicks(-this.getBurningDuration());
         }
         if ((this.isWet() || this.inPowderSnow) && this.isOnFire()) {
@@ -1149,7 +1149,7 @@ CommandOutput {
     }
 
     public float getBrightnessAtEyes() {
-        if (this.world.method_33598(this.getBlockX(), this.getBlockZ())) {
+        if (this.world.isPosLoaded(this.getBlockX(), this.getBlockZ())) {
             return this.world.getBrightness(new BlockPos(this.getX(), this.getEyeY(), this.getZ()));
         }
         return 0.0f;
@@ -2705,7 +2705,7 @@ CommandOutput {
     }
 
     public boolean updateMovementInFluid(Tag<Fluid> tag, double d) {
-        if (this.method_33724()) {
+        if (this.isRegionUnloaded()) {
             return false;
         }
         Box box = this.getBoundingBox().contract(0.001);
@@ -2759,7 +2759,15 @@ CommandOutput {
         return bl2;
     }
 
-    public boolean method_33724() {
+    /**
+     * Returns whether any part of this entity's bounding box is in an unloaded
+     * region of the world the entity is in.
+     * 
+     * @implSpec This implementation expands this entity's bounding box by 1 in
+     * each axis and checks whether the expanded box's smallest enclosing
+     * axis-aligned integer box is fully loaded in the world.
+     */
+    public boolean isRegionUnloaded() {
         int n;
         Box box = this.getBoundingBox().expand(1.0);
         int i = MathHelper.floor(box.minX);
@@ -2774,7 +2782,21 @@ CommandOutput {
         return this.fluidHeight.getDouble(fluid);
     }
 
-    public double method_29241() {
+    /**
+     * Returns the minimum submerged height of this entity in fluid so that it
+     * would be affected by fluid physics.
+     * 
+     * @apiNote This is also used by living entities for checking whether to
+     * start swimming.
+     * 
+     * @implSpec This implementation returns {@code 0.4} if its
+     * {@linkplain #getStandingEyeHeight standing eye height} is larger than
+     * {@code 0.4}; otherwise it returns {@code 0.0} for shorter entities.
+     * 
+     * @implNote The swim height of 0 allows short entities like baby animals
+     * to start swimming to avoid suffocation.
+     */
+    public double getSwimHeight() {
         return (double)this.getStandingEyeHeight() < 0.4 ? 0.0 : 0.4;
     }
 
@@ -2801,7 +2823,7 @@ CommandOutput {
         return this.blockPos;
     }
 
-    public BlockPos method_33575() {
+    public BlockPos getCameraBlockPos() {
         return new BlockPos(this.getCameraPosVec(1.0f));
     }
 

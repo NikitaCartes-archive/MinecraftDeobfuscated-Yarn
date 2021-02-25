@@ -29,7 +29,7 @@ import net.minecraft.nbt.LongArrayTag;
 import net.minecraft.nbt.LongTag;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.PositionTracker;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.ShortTag;
 import net.minecraft.nbt.StringTag;
 import net.minecraft.nbt.Tag;
@@ -53,19 +53,19 @@ implements Tag {
     public static final TagReader<CompoundTag> READER = new TagReader<CompoundTag>(){
 
         @Override
-        public CompoundTag read(DataInput dataInput, int i, PositionTracker positionTracker) throws IOException {
+        public CompoundTag read(DataInput dataInput, int i, NbtTagSizeTracker nbtTagSizeTracker) throws IOException {
             byte b;
-            positionTracker.add(384L);
+            nbtTagSizeTracker.add(384L);
             if (i > 512) {
                 throw new RuntimeException("Tried to read NBT tag with too high complexity, depth > 512");
             }
             HashMap<String, Tag> map = Maps.newHashMap();
-            while ((b = CompoundTag.readByte(dataInput, positionTracker)) != 0) {
-                String string = CompoundTag.readString(dataInput, positionTracker);
-                positionTracker.add(224 + 16 * string.length());
-                Tag tag = CompoundTag.read(TagReaders.of(b), string, dataInput, i + 1, positionTracker);
+            while ((b = CompoundTag.readByte(dataInput, nbtTagSizeTracker)) != 0) {
+                String string = CompoundTag.readString(dataInput, nbtTagSizeTracker);
+                nbtTagSizeTracker.add(224 + 16 * string.length());
+                Tag tag = CompoundTag.read(TagReaders.of(b), string, dataInput, i + 1, nbtTagSizeTracker);
                 if (map.put(string, tag) == null) continue;
-                positionTracker.add(288L);
+                nbtTagSizeTracker.add(288L);
             }
             return new CompoundTag(map);
         }
@@ -81,7 +81,7 @@ implements Tag {
         }
 
         @Override
-        public /* synthetic */ Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+        public /* synthetic */ Tag read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
             return this.read(input, depth, tracker);
         }
     };
@@ -417,15 +417,15 @@ implements Tag {
         tag.write(output);
     }
 
-    private static byte readByte(DataInput input, PositionTracker tracker) throws IOException {
+    private static byte readByte(DataInput input, NbtTagSizeTracker tracker) throws IOException {
         return input.readByte();
     }
 
-    private static String readString(DataInput input, PositionTracker tracker) throws IOException {
+    private static String readString(DataInput input, NbtTagSizeTracker tracker) throws IOException {
         return input.readUTF();
     }
 
-    private static Tag read(TagReader<?> reader, String key, DataInput input, int depth, PositionTracker tracker) {
+    private static Tag read(TagReader<?> reader, String key, DataInput input, int depth, NbtTagSizeTracker tracker) {
         try {
             return reader.read(input, depth, tracker);
         } catch (IOException iOException) {

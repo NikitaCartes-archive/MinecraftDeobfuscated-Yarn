@@ -23,10 +23,10 @@ implements Packet<ServerPlayPacketListener> {
         this.keepJigsaws = keepJigsaws;
     }
 
-    public JigsawGeneratingC2SPacket(PacketByteBuf packetByteBuf) {
-        this.pos = packetByteBuf.readBlockPos();
-        this.maxDepth = packetByteBuf.readVarInt();
-        this.keepJigsaws = packetByteBuf.readBoolean();
+    public JigsawGeneratingC2SPacket(PacketByteBuf buf) {
+        this.pos = buf.readBlockPos();
+        this.maxDepth = buf.readVarInt();
+        this.keepJigsaws = buf.readBoolean();
     }
 
     @Override

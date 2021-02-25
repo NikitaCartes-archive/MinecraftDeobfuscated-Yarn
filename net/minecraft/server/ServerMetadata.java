@@ -99,8 +99,8 @@ public class ServerMetadata {
         }
 
         @Override
-        public /* synthetic */ JsonElement serialize(Object object, Type type, JsonSerializationContext jsonSerializationContext) {
-            return this.serialize((ServerMetadata)object, type, jsonSerializationContext);
+        public /* synthetic */ JsonElement serialize(Object serverMetadata, Type type, JsonSerializationContext context) {
+            return this.serialize((ServerMetadata)serverMetadata, type, context);
         }
 
         @Override
@@ -149,8 +149,8 @@ public class ServerMetadata {
             }
 
             @Override
-            public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
+                return this.deserialize(json, type, context);
             }
         }
     }
@@ -226,8 +226,8 @@ public class ServerMetadata {
             }
 
             @Override
-            public /* synthetic */ Object deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
-                return this.deserialize(jsonElement, type, jsonDeserializationContext);
+            public /* synthetic */ Object deserialize(JsonElement json, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+                return this.deserialize(json, type, jsonDeserializationContext);
             }
         }
     }

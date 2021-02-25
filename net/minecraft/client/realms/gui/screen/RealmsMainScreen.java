@@ -110,7 +110,7 @@ extends RealmsScreen {
     private static int lastScrollYPosition;
     private static volatile boolean hasParentalConsent;
     private static volatile boolean checkedParentalConsent;
-    private static volatile boolean checkedClientCompatability;
+    private static volatile boolean checkedClientCompatibility;
     private static Screen realmsGenericErrorScreen;
     private static boolean regionsPinged;
     private final RateLimiter rateLimiter;
@@ -204,10 +204,10 @@ extends RealmsScreen {
             return;
         }
         this.connectLock = new ReentrantLock();
-        if (checkedClientCompatability && !RealmsMainScreen.hasParentalConsent()) {
+        if (checkedClientCompatibility && !RealmsMainScreen.hasParentalConsent()) {
             this.checkParentalConsent();
         }
-        this.checkClientCompatability();
+        this.checkClientCompatibility();
         this.checkUnreadNews();
         if (!this.dontSetConnectedToRealms) {
             this.client.setConnectedToRealms(false);
@@ -425,9 +425,9 @@ extends RealmsScreen {
         Util.getOperatingSystem().open(string);
     }
 
-    private void checkClientCompatability() {
-        if (!checkedClientCompatability) {
-            checkedClientCompatability = true;
+    private void checkClientCompatibility() {
+        if (!checkedClientCompatibility) {
+            checkedClientCompatibility = true;
             new Thread("MCO Compatability Checker #1"){
 
                 @Override
@@ -447,7 +447,7 @@ extends RealmsScreen {
                         }
                         RealmsMainScreen.this.checkParentalConsent();
                     } catch (RealmsServiceException realmsServiceException) {
-                        checkedClientCompatability = false;
+                        checkedClientCompatibility = false;
                         LOGGER.error("Couldn't connect to realms", (Throwable)realmsServiceException);
                         if (realmsServiceException.httpResultCode == 401) {
                             realmsGenericErrorScreen = new RealmsGenericErrorScreen(new TranslatableText("mco.error.invalid.session.title"), new TranslatableText("mco.error.invalid.session.message"), RealmsMainScreen.this.lastScreen);

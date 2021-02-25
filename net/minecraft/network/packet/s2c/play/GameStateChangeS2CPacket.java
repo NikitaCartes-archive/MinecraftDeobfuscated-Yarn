@@ -33,9 +33,9 @@ implements Packet<ClientPlayPacketListener> {
         this.value = value;
     }
 
-    public GameStateChangeS2CPacket(PacketByteBuf packetByteBuf) {
-        this.reason = (Reason)Reason.REASONS.get(packetByteBuf.readUnsignedByte());
-        this.value = packetByteBuf.readFloat();
+    public GameStateChangeS2CPacket(PacketByteBuf buf) {
+        this.reason = (Reason)Reason.REASONS.get(buf.readUnsignedByte());
+        this.value = buf.readFloat();
     }
 
     @Override

@@ -46,12 +46,12 @@ extends MinecraftServer {
     private boolean paused;
     private int lanPort = -1;
     @Nullable
-    private GameMode field_28075;
+    private GameMode forcedGameMode;
     private LanServerPinger lanPinger;
     private UUID localPlayerUuid;
 
-    public IntegratedServer(Thread serverThread, MinecraftClient client, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager resourcePackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, MinecraftSessionService minecraftSessionService, GameProfileRepository gameProfileRepository, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
-        super(serverThread, registryManager, session, saveProperties, resourcePackManager, client.getNetworkProxy(), client.getDataFixer(), serverResourceManager, minecraftSessionService, gameProfileRepository, userCache, worldGenerationProgressListenerFactory);
+    public IntegratedServer(Thread serverThread, MinecraftClient client, DynamicRegistryManager.Impl registryManager, LevelStorage.Session session, ResourcePackManager dataPackManager, ServerResourceManager serverResourceManager, SaveProperties saveProperties, MinecraftSessionService sessionService, GameProfileRepository gameProfileRepo, UserCache userCache, WorldGenerationProgressListenerFactory worldGenerationProgressListenerFactory) {
+        super(serverThread, registryManager, session, saveProperties, dataPackManager, client.getNetworkProxy(), client.getDataFixer(), serverResourceManager, sessionService, gameProfileRepo, userCache, worldGenerationProgressListenerFactory);
         this.setServerName(client.getSession().getUsername());
         this.setDemo(client.isDemo());
         this.setPlayerManager(new IntegratedPlayerManager(this, this.registryManager, this.saveHandler));
@@ -166,7 +166,7 @@ extends MinecraftServer {
             this.lanPort = port;
             this.lanPinger = new LanServerPinger(this.getServerMotd(), port + "");
             this.lanPinger.start();
-            this.field_28075 = gameMode;
+            this.forcedGameMode = gameMode;
             this.getPlayerManager().setCheatsAllowed(cheatsAllowed);
             int i = this.getPermissionLevel(this.client.player.getGameProfile());
             this.client.player.setClientPermissionLevel(i);
@@ -217,7 +217,7 @@ extends MinecraftServer {
     @Override
     public void setDefaultGameMode(GameMode gameMode) {
         super.setDefaultGameMode(gameMode);
-        this.field_28075 = null;
+        this.forcedGameMode = null;
     }
 
     @Override
@@ -258,7 +258,7 @@ extends MinecraftServer {
     @Nullable
     public GameMode getForcedGameMode() {
         if (this.isRemote()) {
-            return MoreObjects.firstNonNull(this.field_28075, this.saveProperties.getGameMode());
+            return MoreObjects.firstNonNull(this.forcedGameMode, this.saveProperties.getGameMode());
         }
         return null;
     }

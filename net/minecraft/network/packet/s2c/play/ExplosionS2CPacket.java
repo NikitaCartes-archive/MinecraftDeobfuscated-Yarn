@@ -43,45 +43,45 @@ implements Packet<ClientPlayPacketListener> {
         }
     }
 
-    public ExplosionS2CPacket(PacketByteBuf packetByteBuf2) {
-        this.x = packetByteBuf2.readFloat();
-        this.y = packetByteBuf2.readFloat();
-        this.z = packetByteBuf2.readFloat();
-        this.radius = packetByteBuf2.readFloat();
+    public ExplosionS2CPacket(PacketByteBuf buf) {
+        this.x = buf.readFloat();
+        this.y = buf.readFloat();
+        this.z = buf.readFloat();
+        this.radius = buf.readFloat();
         int i = MathHelper.floor(this.x);
         int j = MathHelper.floor(this.y);
         int k = MathHelper.floor(this.z);
-        this.affectedBlocks = packetByteBuf2.method_34066(packetByteBuf -> {
+        this.affectedBlocks = buf.readList(packetByteBuf -> {
             int l = packetByteBuf.readByte() + i;
             int m = packetByteBuf.readByte() + j;
             int n = packetByteBuf.readByte() + k;
             return new BlockPos(l, m, n);
         });
-        this.playerVelocityX = packetByteBuf2.readFloat();
-        this.playerVelocityY = packetByteBuf2.readFloat();
-        this.playerVelocityZ = packetByteBuf2.readFloat();
+        this.playerVelocityX = buf.readFloat();
+        this.playerVelocityY = buf.readFloat();
+        this.playerVelocityZ = buf.readFloat();
     }
 
     @Override
-    public void write(PacketByteBuf buf) {
-        buf.writeFloat((float)this.x);
-        buf.writeFloat((float)this.y);
-        buf.writeFloat((float)this.z);
-        buf.writeFloat(this.radius);
+    public void write(PacketByteBuf buf2) {
+        buf2.writeFloat((float)this.x);
+        buf2.writeFloat((float)this.y);
+        buf2.writeFloat((float)this.z);
+        buf2.writeFloat(this.radius);
         int i = MathHelper.floor(this.x);
         int j = MathHelper.floor(this.y);
         int k = MathHelper.floor(this.z);
-        buf.method_34062(this.affectedBlocks, (packetByteBuf, blockPos) -> {
-            int l = blockPos.getX() - i;
-            int m = blockPos.getY() - j;
-            int n = blockPos.getZ() - k;
-            packetByteBuf.writeByte(l);
-            packetByteBuf.writeByte(m);
-            packetByteBuf.writeByte(n);
+        buf2.writeCollection(this.affectedBlocks, (buf, pos) -> {
+            int l = pos.getX() - i;
+            int m = pos.getY() - j;
+            int n = pos.getZ() - k;
+            buf.writeByte(l);
+            buf.writeByte(m);
+            buf.writeByte(n);
         });
-        buf.writeFloat(this.playerVelocityX);
-        buf.writeFloat(this.playerVelocityY);
-        buf.writeFloat(this.playerVelocityZ);
+        buf2.writeFloat(this.playerVelocityX);
+        buf2.writeFloat(this.playerVelocityY);
+        buf2.writeFloat(this.playerVelocityZ);
     }
 
     @Override

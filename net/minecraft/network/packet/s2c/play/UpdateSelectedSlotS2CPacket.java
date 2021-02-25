@@ -17,8 +17,8 @@ implements Packet<ClientPlayPacketListener> {
         this.selectedSlot = slot;
     }
 
-    public UpdateSelectedSlotS2CPacket(PacketByteBuf packetByteBuf) {
-        this.selectedSlot = packetByteBuf.readByte();
+    public UpdateSelectedSlotS2CPacket(PacketByteBuf buf) {
+        this.selectedSlot = buf.readByte();
     }
 
     @Override

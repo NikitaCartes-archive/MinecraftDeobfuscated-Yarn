@@ -27,7 +27,7 @@ import net.minecraft.world.gen.chunk.StructuresConfig;
 import net.minecraft.world.gen.feature.StructureFeature;
 
 public final class ChunkGeneratorSettings {
-    public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)Codec.INT.fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorSettings::getBedrockCeilingY), ((MapCodec)Codec.INT.fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorSettings::getBedrockFloorY), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("deepslate_enabled")).forGetter(ChunkGeneratorSettings::hasGrimstone)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
+    public static final Codec<ChunkGeneratorSettings> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)StructuresConfig.CODEC.fieldOf("structures")).forGetter(ChunkGeneratorSettings::getStructuresConfig), ((MapCodec)GenerationShapeConfig.CODEC.fieldOf("noise")).forGetter(ChunkGeneratorSettings::getGenerationShapeConfig), ((MapCodec)BlockState.CODEC.fieldOf("default_block")).forGetter(ChunkGeneratorSettings::getDefaultBlock), ((MapCodec)BlockState.CODEC.fieldOf("default_fluid")).forGetter(ChunkGeneratorSettings::getDefaultFluid), ((MapCodec)Codec.INT.fieldOf("bedrock_roof_position")).forGetter(ChunkGeneratorSettings::getBedrockCeilingY), ((MapCodec)Codec.INT.fieldOf("bedrock_floor_position")).forGetter(ChunkGeneratorSettings::getBedrockFloorY), ((MapCodec)Codec.INT.fieldOf("sea_level")).forGetter(ChunkGeneratorSettings::getSeaLevel), ((MapCodec)Codec.BOOL.fieldOf("disable_mob_generation")).forGetter(ChunkGeneratorSettings::isMobGenerationDisabled), ((MapCodec)Codec.BOOL.fieldOf("aquifers_enabled")).forGetter(ChunkGeneratorSettings::hasAquifers), ((MapCodec)Codec.BOOL.fieldOf("noise_caves_enabled")).forGetter(ChunkGeneratorSettings::hasNoiseCaves), ((MapCodec)Codec.BOOL.fieldOf("deepslate_enabled")).forGetter(ChunkGeneratorSettings::hasDeepslate)).apply((Applicative<ChunkGeneratorSettings, ?>)instance, ChunkGeneratorSettings::new));
     public static final Codec<Supplier<ChunkGeneratorSettings>> REGISTRY_CODEC = RegistryElementCodec.of(Registry.NOISE_SETTINGS_WORLDGEN, CODEC);
     private final StructuresConfig structuresConfig;
     private final GenerationShapeConfig generationShapeConfig;
@@ -39,7 +39,7 @@ public final class ChunkGeneratorSettings {
     private final boolean mobGenerationDisabled;
     private final boolean aquifers;
     private final boolean noiseCaves;
-    private final boolean grimstone;
+    private final boolean deepslate;
     public static final RegistryKey<ChunkGeneratorSettings> OVERWORLD = RegistryKey.of(Registry.NOISE_SETTINGS_WORLDGEN, new Identifier("overworld"));
     public static final RegistryKey<ChunkGeneratorSettings> AMPLIFIED = RegistryKey.of(Registry.NOISE_SETTINGS_WORLDGEN, new Identifier("amplified"));
     public static final RegistryKey<ChunkGeneratorSettings> NETHER = RegistryKey.of(Registry.NOISE_SETTINGS_WORLDGEN, new Identifier("nether"));
@@ -59,7 +59,7 @@ public final class ChunkGeneratorSettings {
         this.mobGenerationDisabled = mobGenerationDisabled;
         this.aquifers = aquifers;
         this.noiseCaves = noiseCaves;
-        this.grimstone = bl;
+        this.deepslate = bl;
     }
 
     public StructuresConfig getStructuresConfig() {
@@ -118,8 +118,8 @@ public final class ChunkGeneratorSettings {
         return this.noiseCaves;
     }
 
-    protected boolean hasGrimstone() {
-        return this.grimstone;
+    protected boolean hasDeepslate() {
+        return this.deepslate;
     }
 
     public boolean equals(RegistryKey<ChunkGeneratorSettings> registryKey) {

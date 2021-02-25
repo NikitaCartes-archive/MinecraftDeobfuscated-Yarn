@@ -27,10 +27,10 @@ implements Packet<ServerPlayPacketListener> {
         serverPlayPacketListener.onConfirmScreenAction(this);
     }
 
-    public ConfirmScreenActionC2SPacket(PacketByteBuf packetByteBuf) {
-        this.syncId = packetByteBuf.readByte();
-        this.actionId = packetByteBuf.readShort();
-        this.accepted = packetByteBuf.readByte() != 0;
+    public ConfirmScreenActionC2SPacket(PacketByteBuf buf) {
+        this.syncId = buf.readByte();
+        this.actionId = buf.readShort();
+        this.accepted = buf.readByte() != 0;
     }
 
     @Override

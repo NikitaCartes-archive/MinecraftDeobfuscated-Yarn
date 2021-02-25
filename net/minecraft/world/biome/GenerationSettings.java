@@ -18,10 +18,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import net.minecraft.class_5871;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.Util;
 import net.minecraft.world.gen.GenerationStep;
+import net.minecraft.world.gen.carver.CarverConfig;
 import net.minecraft.world.gen.carver.ConfiguredCarver;
 import net.minecraft.world.gen.feature.ConfiguredFeature;
 import net.minecraft.world.gen.feature.ConfiguredStructureFeature;
@@ -36,7 +36,7 @@ import org.apache.logging.log4j.Logger;
 public class GenerationSettings {
     public static final Logger LOGGER = LogManager.getLogger();
     public static final GenerationSettings INSTANCE = new GenerationSettings(() -> ConfiguredSurfaceBuilders.NOPE, ImmutableMap.of(), ImmutableList.of(), ImmutableList.of());
-    public static final MapCodec<GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)ConfiguredSurfaceBuilder.REGISTRY_CODEC.fieldOf("surface_builder")).forGetter(generationSettings -> generationSettings.surfaceBuilder), Codec.simpleMap(GenerationStep.Carver.CODEC, ConfiguredCarver.field_26755.promotePartial((Consumer)Util.addPrefix("Carver: ", LOGGER::error)), StringIdentifiable.toKeyable(GenerationStep.Carver.values())).fieldOf("carvers").forGetter(generationSettings -> generationSettings.carvers), ((MapCodec)ConfiguredFeature.field_26756.promotePartial((Consumer)Util.addPrefix("Feature: ", LOGGER::error)).listOf().fieldOf("features")).forGetter(generationSettings -> generationSettings.features), ((MapCodec)ConfiguredStructureFeature.REGISTRY_ELEMENT_CODEC.promotePartial((Consumer)Util.addPrefix("Structure start: ", LOGGER::error)).fieldOf("starts")).forGetter(generationSettings -> generationSettings.structureFeatures)).apply((Applicative<GenerationSettings, ?>)instance, GenerationSettings::new));
+    public static final MapCodec<GenerationSettings> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)ConfiguredSurfaceBuilder.REGISTRY_CODEC.fieldOf("surface_builder")).forGetter(generationSettings -> generationSettings.surfaceBuilder), Codec.simpleMap(GenerationStep.Carver.CODEC, ConfiguredCarver.LIST_CODEC.promotePartial((Consumer)Util.addPrefix("Carver: ", LOGGER::error)), StringIdentifiable.toKeyable(GenerationStep.Carver.values())).fieldOf("carvers").forGetter(generationSettings -> generationSettings.carvers), ((MapCodec)ConfiguredFeature.field_26756.promotePartial((Consumer)Util.addPrefix("Feature: ", LOGGER::error)).listOf().fieldOf("features")).forGetter(generationSettings -> generationSettings.features), ((MapCodec)ConfiguredStructureFeature.REGISTRY_ELEMENT_CODEC.promotePartial((Consumer)Util.addPrefix("Structure start: ", LOGGER::error)).fieldOf("starts")).forGetter(generationSettings -> generationSettings.structureFeatures)).apply((Applicative<GenerationSettings, ?>)instance, GenerationSettings::new));
     private final Supplier<ConfiguredSurfaceBuilder<?>> surfaceBuilder;
     private final Map<GenerationStep.Carver, List<Supplier<ConfiguredCarver<?>>>> carvers;
     private final List<List<Supplier<ConfiguredFeature<?, ?>>>> features;
@@ -112,7 +112,7 @@ public class GenerationSettings {
             return this;
         }
 
-        public <C extends class_5871> Builder carver(GenerationStep.Carver carverStep, ConfiguredCarver<C> carver2) {
+        public <C extends CarverConfig> Builder carver(GenerationStep.Carver carverStep, ConfiguredCarver<C> carver2) {
             this.carvers.computeIfAbsent(carverStep, carver -> Lists.newArrayList()).add(() -> carver2);
             return this;
         }

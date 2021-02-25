@@ -21,7 +21,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.PositionTracker;
+import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagReaders;
 import net.minecraft.util.crash.CrashException;
@@ -39,7 +39,7 @@ public class NbtIo {
 
     public static CompoundTag readCompressed(InputStream stream) throws IOException {
         try (DataInputStream dataInputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(stream)));){
-            CompoundTag compoundTag = NbtIo.read(dataInputStream, PositionTracker.DEFAULT);
+            CompoundTag compoundTag = NbtIo.read(dataInputStream, NbtTagSizeTracker.EMPTY);
             return compoundTag;
         }
     }
@@ -120,10 +120,10 @@ public class NbtIo {
     }
 
     public static CompoundTag read(DataInput input) throws IOException {
-        return NbtIo.read(input, PositionTracker.DEFAULT);
+        return NbtIo.read(input, NbtTagSizeTracker.EMPTY);
     }
 
-    public static CompoundTag read(DataInput input, PositionTracker tracker) throws IOException {
+    public static CompoundTag read(DataInput input, NbtTagSizeTracker tracker) throws IOException {
         Tag tag = NbtIo.read(input, 0, tracker);
         if (tag instanceof CompoundTag) {
             return (CompoundTag)tag;
@@ -144,7 +144,7 @@ public class NbtIo {
         tag.write(output);
     }
 
-    private static Tag read(DataInput input, int depth, PositionTracker tracker) throws IOException {
+    private static Tag read(DataInput input, int depth, NbtTagSizeTracker tracker) throws IOException {
         byte b = input.readByte();
         if (b == 0) {
             return EndTag.INSTANCE;

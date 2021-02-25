@@ -52,7 +52,7 @@ extends StructureFeature<MineshaftFeatureConfig> {
 
         @Override
         public void init(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, StructureManager structureManager, ChunkPos chunkPos, Biome biome, MineshaftFeatureConfig mineshaftFeatureConfig, HeightLimitView heightLimitView) {
-            MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, this.random, chunkPos.method_33939(2), chunkPos.method_33941(2), mineshaftFeatureConfig.type);
+            MineshaftGenerator.MineshaftRoom mineshaftRoom = new MineshaftGenerator.MineshaftRoom(0, this.random, chunkPos.getOffsetX(2), chunkPos.getOffsetZ(2), mineshaftFeatureConfig.type);
             this.children.add(mineshaftRoom);
             mineshaftRoom.fillOpenings(mineshaftRoom, this.children, this.random);
             this.setBoundingBoxFromChildren();
@@ -77,13 +77,13 @@ extends StructureFeature<MineshaftFeatureConfig> {
         public static final Codec<Type> CODEC;
         private static final Map<String, Type> BY_NAME;
         private final String name;
-        private final BlockState wood;
+        private final BlockState log;
         private final BlockState planks;
         private final BlockState fence;
 
-        private Type(String name, Block wood, Block planks, Block fence) {
+        private Type(String name, Block log, Block planks, Block fence) {
             this.name = name;
-            this.wood = wood.getDefaultState();
+            this.log = log.getDefaultState();
             this.planks = planks.getDefaultState();
             this.fence = fence.getDefaultState();
         }
@@ -103,8 +103,8 @@ extends StructureFeature<MineshaftFeatureConfig> {
             return Type.values()[index];
         }
 
-        public BlockState getWood() {
-            return this.wood;
+        public BlockState getLog() {
+            return this.log;
         }
 
         public BlockState getPlanks() {

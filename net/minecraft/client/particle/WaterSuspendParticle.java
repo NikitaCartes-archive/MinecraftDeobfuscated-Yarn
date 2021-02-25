@@ -20,8 +20,8 @@ import net.minecraft.util.math.MathHelper;
 @Environment(value=EnvType.CLIENT)
 public class WaterSuspendParticle
 extends SpriteBillboardParticle {
-    private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double d, double e, double f) {
-        super(world, d, e - 0.125, f);
+    private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z) {
+        super(world, x, y - 0.125, z);
         this.setBoundingBoxSpacing(0.01f, 0.01f);
         this.setSprite(spriteProvider);
         this.scale *= this.random.nextFloat() * 0.6f + 0.2f;
@@ -31,8 +31,8 @@ extends SpriteBillboardParticle {
         this.gravityStrength = 0.0f;
     }
 
-    private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double d, double e, double f, double g, double h, double i) {
-        super(world, d, e - 0.125, f, g, h, i);
+    private WaterSuspendParticle(ClientWorld world, SpriteProvider spriteProvider, double x, double y, double z, double velocityX, double velocityY, double velocityZ) {
+        super(world, x, y - 0.125, z, velocityX, velocityY, velocityZ);
         this.setBoundingBoxSpacing(0.01f, 0.01f);
         this.setSprite(spriteProvider);
         this.scale *= this.random.nextFloat() * 0.6f + 0.6f;
@@ -88,17 +88,17 @@ extends SpriteBillboardParticle {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static class class_5877
+    public static class SporeBlossomAirFactory
     implements ParticleFactory<DefaultParticleType> {
-        private final SpriteProvider field_29073;
+        private final SpriteProvider spriteProvider;
 
-        public class_5877(SpriteProvider spriteProvider) {
-            this.field_29073 = spriteProvider;
+        public SporeBlossomAirFactory(SpriteProvider spriteProvider) {
+            this.spriteProvider = spriteProvider;
         }
 
         @Override
         public Particle createParticle(DefaultParticleType defaultParticleType, ClientWorld clientWorld, double d, double e, double f, double g, double h, double i) {
-            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.field_29073, d, e, f, 0.0, (double)-0.8f, 0.0){
+            WaterSuspendParticle waterSuspendParticle = new WaterSuspendParticle(clientWorld, this.spriteProvider, d, e, f, 0.0, (double)-0.8f, 0.0){
 
                 @Override
                 public Optional<class_5878> method_34019() {

@@ -18,8 +18,8 @@ implements Packet<ClientPlayPacketListener> {
         this.pos = pos;
     }
 
-    public SignEditorOpenS2CPacket(PacketByteBuf packetByteBuf) {
-        this.pos = packetByteBuf.readBlockPos();
+    public SignEditorOpenS2CPacket(PacketByteBuf buf) {
+        this.pos = buf.readBlockPos();
     }
 
     @Override

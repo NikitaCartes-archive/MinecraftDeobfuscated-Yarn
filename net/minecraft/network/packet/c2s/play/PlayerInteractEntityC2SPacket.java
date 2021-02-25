@@ -18,59 +18,59 @@ import org.jetbrains.annotations.Nullable;
 public class PlayerInteractEntityC2SPacket
 implements Packet<ServerPlayPacketListener> {
     private final int entityId;
-    private final class_5906 type;
+    private final InteractTypeHandler type;
     private final boolean playerSneaking;
-    private static final class_5906 field_29170 = new class_5906(){
+    private static final InteractTypeHandler ATTACK = new InteractTypeHandler(){
 
         @Override
-        public class_5907 method_34211() {
-            return class_5907.field_29172;
+        public InteractType getType() {
+            return InteractType.ATTACK;
         }
 
         @Override
-        public void method_34213(class_5908 arg) {
-            arg.method_34218();
+        public void handle(Handler handler) {
+            handler.attack();
         }
 
         @Override
-        public void method_34212(PacketByteBuf packetByteBuf) {
+        public void write(PacketByteBuf buf) {
         }
     };
 
     @Environment(value=EnvType.CLIENT)
-    private PlayerInteractEntityC2SPacket(int i, boolean bl, class_5906 arg) {
-        this.entityId = i;
-        this.type = arg;
-        this.playerSneaking = bl;
+    private PlayerInteractEntityC2SPacket(int entityId, boolean playerSneaking, InteractTypeHandler type) {
+        this.entityId = entityId;
+        this.type = type;
+        this.playerSneaking = playerSneaking;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static PlayerInteractEntityC2SPacket method_34206(Entity entity, boolean bl) {
-        return new PlayerInteractEntityC2SPacket(entity.getId(), bl, field_29170);
+    public static PlayerInteractEntityC2SPacket attack(Entity entity, boolean playerSneaking) {
+        return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, ATTACK);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static PlayerInteractEntityC2SPacket method_34207(Entity entity, boolean bl, Hand hand) {
-        return new PlayerInteractEntityC2SPacket(entity.getId(), bl, new class_5909(hand));
+    public static PlayerInteractEntityC2SPacket interact(Entity entity, boolean playerSneaking, Hand hand) {
+        return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, new InteractHandler(hand));
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static PlayerInteractEntityC2SPacket method_34208(Entity entity, boolean bl, Hand hand, Vec3d vec3d) {
-        return new PlayerInteractEntityC2SPacket(entity.getId(), bl, new class_5910(hand, vec3d));
+    public static PlayerInteractEntityC2SPacket interactAt(Entity entity, boolean playerSneaking, Hand hand, Vec3d pos) {
+        return new PlayerInteractEntityC2SPacket(entity.getId(), playerSneaking, new InteractAtHandler(hand, pos));
     }
 
-    public PlayerInteractEntityC2SPacket(PacketByteBuf packetByteBuf) {
-        this.entityId = packetByteBuf.readVarInt();
-        class_5907 lv = packetByteBuf.readEnumConstant(class_5907.class);
-        this.type = (class_5906)lv.field_29174.apply(packetByteBuf);
-        this.playerSneaking = packetByteBuf.readBoolean();
+    public PlayerInteractEntityC2SPacket(PacketByteBuf buf) {
+        this.entityId = buf.readVarInt();
+        InteractType interactType = buf.readEnumConstant(InteractType.class);
+        this.type = (InteractTypeHandler)interactType.handlerGetter.apply(buf);
+        this.playerSneaking = buf.readBoolean();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeVarInt(this.entityId);
-        buf.writeEnumConstant(this.type.method_34211());
-        this.type.method_34212(buf);
+        buf.writeEnumConstant(this.type.getType());
+        this.type.write(buf);
         buf.writeBoolean(this.playerSneaking);
     }
 
@@ -80,107 +80,107 @@ implements Packet<ServerPlayPacketListener> {
     }
 
     @Nullable
-    public Entity getEntity(ServerWorld serverWorld) {
-        return serverWorld.method_31424(this.entityId);
+    public Entity getEntity(ServerWorld world) {
+        return world.getDragonPart(this.entityId);
     }
 
     public boolean isPlayerSneaking() {
         return this.playerSneaking;
     }
 
-    public void method_34209(class_5908 arg) {
-        this.type.method_34213(arg);
+    public void handle(Handler handler) {
+        this.type.handle(handler);
     }
 
-    static class class_5910
-    implements class_5906 {
-        private final Hand field_29177;
-        private final Vec3d field_29178;
+    static class InteractAtHandler
+    implements InteractTypeHandler {
+        private final Hand hand;
+        private final Vec3d pos;
 
         @Environment(value=EnvType.CLIENT)
-        private class_5910(Hand hand, Vec3d vec3d) {
-            this.field_29177 = hand;
-            this.field_29178 = vec3d;
+        private InteractAtHandler(Hand hand, Vec3d pos) {
+            this.hand = hand;
+            this.pos = pos;
         }
 
-        private class_5910(PacketByteBuf packetByteBuf) {
-            this.field_29178 = new Vec3d(packetByteBuf.readFloat(), packetByteBuf.readFloat(), packetByteBuf.readFloat());
-            this.field_29177 = packetByteBuf.readEnumConstant(Hand.class);
-        }
-
-        @Override
-        public class_5907 method_34211() {
-            return class_5907.field_29173;
+        private InteractAtHandler(PacketByteBuf buf) {
+            this.pos = new Vec3d(buf.readFloat(), buf.readFloat(), buf.readFloat());
+            this.hand = buf.readEnumConstant(Hand.class);
         }
 
         @Override
-        public void method_34213(class_5908 arg) {
-            arg.method_34220(this.field_29177, this.field_29178);
+        public InteractType getType() {
+            return InteractType.INTERACT_AT;
         }
 
         @Override
-        public void method_34212(PacketByteBuf packetByteBuf) {
-            packetByteBuf.writeFloat((float)this.field_29178.x);
-            packetByteBuf.writeFloat((float)this.field_29178.y);
-            packetByteBuf.writeFloat((float)this.field_29178.z);
-            packetByteBuf.writeEnumConstant(this.field_29177);
+        public void handle(Handler handler) {
+            handler.interactAt(this.hand, this.pos);
+        }
+
+        @Override
+        public void write(PacketByteBuf buf) {
+            buf.writeFloat((float)this.pos.x);
+            buf.writeFloat((float)this.pos.y);
+            buf.writeFloat((float)this.pos.z);
+            buf.writeEnumConstant(this.hand);
         }
     }
 
-    static class class_5909
-    implements class_5906 {
-        private final Hand field_29176;
+    static class InteractHandler
+    implements InteractTypeHandler {
+        private final Hand hand;
 
         @Environment(value=EnvType.CLIENT)
-        private class_5909(Hand hand) {
-            this.field_29176 = hand;
+        private InteractHandler(Hand hand) {
+            this.hand = hand;
         }
 
-        private class_5909(PacketByteBuf packetByteBuf) {
-            this.field_29176 = packetByteBuf.readEnumConstant(Hand.class);
-        }
-
-        @Override
-        public class_5907 method_34211() {
-            return class_5907.field_29171;
+        private InteractHandler(PacketByteBuf buf) {
+            this.hand = buf.readEnumConstant(Hand.class);
         }
 
         @Override
-        public void method_34213(class_5908 arg) {
-            arg.method_34219(this.field_29176);
+        public InteractType getType() {
+            return InteractType.INTERACT;
         }
 
         @Override
-        public void method_34212(PacketByteBuf packetByteBuf) {
-            packetByteBuf.writeEnumConstant(this.field_29176);
+        public void handle(Handler handler) {
+            handler.interact(this.hand);
+        }
+
+        @Override
+        public void write(PacketByteBuf buf) {
+            buf.writeEnumConstant(this.hand);
         }
     }
 
-    static interface class_5906 {
-        public class_5907 method_34211();
+    static interface InteractTypeHandler {
+        public InteractType getType();
 
-        public void method_34213(class_5908 var1);
+        public void handle(Handler var1);
 
-        public void method_34212(PacketByteBuf var1);
+        public void write(PacketByteBuf var1);
     }
 
-    public static interface class_5908 {
-        public void method_34219(Hand var1);
+    public static interface Handler {
+        public void interact(Hand var1);
 
-        public void method_34220(Hand var1, Vec3d var2);
+        public void interactAt(Hand var1, Vec3d var2);
 
-        public void method_34218();
+        public void attack();
     }
 
-    static enum class_5907 {
-        field_29171(packetByteBuf -> new class_5909((PacketByteBuf)packetByteBuf)),
-        field_29172(packetByteBuf -> PlayerInteractEntityC2SPacket.method_34210()),
-        field_29173(packetByteBuf -> new class_5910((PacketByteBuf)packetByteBuf));
+    static enum InteractType {
+        INTERACT(packetByteBuf -> new InteractHandler((PacketByteBuf)packetByteBuf)),
+        ATTACK(packetByteBuf -> PlayerInteractEntityC2SPacket.method_34210()),
+        INTERACT_AT(packetByteBuf -> new InteractAtHandler((PacketByteBuf)packetByteBuf));
 
-        private final Function<PacketByteBuf, class_5906> field_29174;
+        private final Function<PacketByteBuf, InteractTypeHandler> handlerGetter;
 
-        private class_5907(Function<PacketByteBuf, class_5906> function) {
-            this.field_29174 = function;
+        private InteractType(Function<PacketByteBuf, InteractTypeHandler> handlerGetter) {
+            this.handlerGetter = handlerGetter;
         }
     }
 }

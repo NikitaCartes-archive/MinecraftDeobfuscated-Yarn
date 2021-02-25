@@ -8,12 +8,12 @@ import java.util.Optional;
 import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
-import net.minecraft.class_5863;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.LargeDripstoneFeatureConfig;
@@ -62,8 +62,8 @@ extends Feature<LargeDripstoneFeatureConfig> {
         return true;
     }
 
-    private static DripstoneGenerator createGenerator(BlockPos pos, boolean isStalagmite, Random random, int scale, class_5863 bluntness, class_5863 heightScale) {
-        return new DripstoneGenerator(pos, isStalagmite, scale, bluntness.method_33920(random), heightScale.method_33920(random));
+    private static DripstoneGenerator createGenerator(BlockPos pos, boolean isStalagmite, Random random, int scale, FloatProvider bluntness, FloatProvider heightScale) {
+        return new DripstoneGenerator(pos, isStalagmite, scale, bluntness.get(random), heightScale.get(random));
     }
 
     static final class WindModifier {
@@ -71,9 +71,9 @@ extends Feature<LargeDripstoneFeatureConfig> {
         @Nullable
         private final Vec3d wind;
 
-        private WindModifier(int y, Random random, class_5863 wind) {
+        private WindModifier(int y, Random random, FloatProvider wind) {
             this.y = y;
-            float f = wind.method_33920(random);
+            float f = wind.get(random);
             float g = MathHelper.nextBetween(random, 0.0f, (float)Math.PI);
             this.wind = new Vec3d(MathHelper.cos(g) * f, 0.0, MathHelper.sin(g) * f);
         }

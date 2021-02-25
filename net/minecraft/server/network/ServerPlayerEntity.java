@@ -24,9 +24,6 @@ import net.minecraft.block.NetherPortalBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CommandBlockBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
-import net.minecraft.class_5890;
-import net.minecraft.class_5891;
-import net.minecraft.class_5892;
 import net.minecraft.client.option.ChatVisibility;
 import net.minecraft.command.argument.EntityAnchorArgumentType;
 import net.minecraft.entity.Entity;
@@ -56,7 +53,10 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
+import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
+import net.minecraft.network.packet.s2c.play.EndCombatS2CPacket;
+import net.minecraft.network.packet.s2c.play.EnterCombatS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntitiesDestroyS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityStatusEffectS2CPacket;
@@ -183,7 +183,7 @@ implements ScreenHandlerListener {
     private boolean spawnPointSet;
     private float spawnAngle;
     private final TextStream textStream;
-    private boolean field_28860 = true;
+    private boolean filterText = true;
     private int screenHandlerSyncId;
     public boolean skipPacketSlotUpdates;
     public int pingMilliseconds;
@@ -329,13 +329,13 @@ implements ScreenHandlerListener {
     @Override
     public void enterCombat() {
         super.enterCombat();
-        this.networkHandler.sendPacket(new class_5891());
+        this.networkHandler.sendPacket(new EnterCombatS2CPacket());
     }
 
     @Override
     public void endCombat() {
         super.endCombat();
-        this.networkHandler.sendPacket(new class_5890(this.getDamageTracker()));
+        this.networkHandler.sendPacket(new EndCombatS2CPacket(this.getDamageTracker()));
     }
 
     @Override
@@ -385,7 +385,7 @@ implements ScreenHandlerListener {
 
     public void playerTick() {
         try {
-            if (!this.isSpectator() || !this.method_33724()) {
+            if (!this.isSpectator() || !this.isRegionUnloaded()) {
                 super.tick();
             }
             for (int i = 0; i < this.getInventory().size(); ++i) {
@@ -448,13 +448,13 @@ implements ScreenHandlerListener {
         boolean bl = this.world.getGameRules().getBoolean(GameRules.SHOW_DEATH_MESSAGES);
         if (bl) {
             Text text = this.getDamageTracker().getDeathMessage();
-            this.networkHandler.sendPacket(new class_5892(this.getDamageTracker(), text), future -> {
+            this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text), future -> {
                 if (!future.isSuccess()) {
                     int i = 256;
                     String string = text.asTruncatedString(256);
                     TranslatableText text2 = new TranslatableText("death.attack.message_too_long", new LiteralText(string).formatted(Formatting.YELLOW));
                     MutableText text3 = new TranslatableText("death.attack.even_more_magic", this.getDisplayName()).styled(style -> style.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, text2)));
-                    this.networkHandler.sendPacket(new class_5892(this.getDamageTracker(), text3));
+                    this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), text3));
                 }
             });
             AbstractTeam abstractTeam = this.getScoreboardTeam();
@@ -466,7 +466,7 @@ implements ScreenHandlerListener {
                 this.server.getPlayerManager().sendToOtherTeams(this, text);
             }
         } else {
-            this.networkHandler.sendPacket(new class_5892(this.getDamageTracker(), LiteralText.EMPTY));
+            this.networkHandler.sendPacket(new DeathMessageS2CPacket(this.getDamageTracker(), LiteralText.EMPTY));
         }
         this.dropShoulderEntities();
         if (this.world.getGameRules().getBoolean(GameRules.FORGIVE_DEAD_PLAYERS)) {
@@ -805,7 +805,7 @@ implements ScreenHandlerListener {
     }
 
     public void handleFall(double heightDifference, boolean onGround) {
-        if (this.method_33724()) {
+        if (this.isRegionUnloaded()) {
             return;
         }
         BlockPos blockPos = this.getLandingPos();
@@ -930,23 +930,23 @@ implements ScreenHandlerListener {
         this.currentScreenHandler = this.playerScreenHandler;
     }
 
-    public void method_14218(float f, float g, boolean bl, boolean bl2) {
+    public void updateInput(float sidewaysSpeed, float forwardSpeed, boolean jumping, boolean sneaking) {
         if (this.hasVehicle()) {
-            if (f >= -1.0f && f <= 1.0f) {
-                this.sidewaysSpeed = f;
+            if (sidewaysSpeed >= -1.0f && sidewaysSpeed <= 1.0f) {
+                this.sidewaysSpeed = sidewaysSpeed;
             }
-            if (g >= -1.0f && g <= 1.0f) {
-                this.forwardSpeed = g;
+            if (forwardSpeed >= -1.0f && forwardSpeed <= 1.0f) {
+                this.forwardSpeed = forwardSpeed;
             }
-            this.jumping = bl;
-            this.setSneaking(bl2);
+            this.jumping = jumping;
+            this.setSneaking(sneaking);
         }
     }
 
     @Override
     public void increaseStat(Stat<?> stat, int amount) {
         this.statHandler.increaseStat(this, stat, amount);
-        this.getScoreboard().forEachScore(stat, this.getEntityName(), scoreboardPlayerScore -> scoreboardPlayerScore.incrementScore(amount));
+        this.getScoreboard().forEachScore(stat, this.getEntityName(), score -> score.incrementScore(amount));
     }
 
     @Override
@@ -1015,14 +1015,14 @@ implements ScreenHandlerListener {
         this.networkHandler.sendPacket(new LookAtS2CPacket(anchorPoint, target.x, target.y, target.z));
     }
 
-    public void method_14222(EntityAnchorArgumentType.EntityAnchor entityAnchor, Entity entity, EntityAnchorArgumentType.EntityAnchor entityAnchor2) {
-        Vec3d vec3d = entityAnchor2.positionAt(entity);
-        super.lookAt(entityAnchor, vec3d);
-        this.networkHandler.sendPacket(new LookAtS2CPacket(entityAnchor, entity, entityAnchor2));
+    public void lookAtEntity(EntityAnchorArgumentType.EntityAnchor anchorPoint, Entity targetEntity, EntityAnchorArgumentType.EntityAnchor targetAnchor) {
+        Vec3d vec3d = targetAnchor.positionAt(targetEntity);
+        super.lookAt(anchorPoint, vec3d);
+        this.networkHandler.sendPacket(new LookAtS2CPacket(anchorPoint, targetEntity, targetAnchor));
     }
 
     public void copyFrom(ServerPlayerEntity oldPlayer, boolean alive) {
-        this.field_28860 = oldPlayer.field_28860;
+        this.filterText = oldPlayer.filterText;
         this.interactionManager.setGameMode(oldPlayer.interactionManager.getGameMode(), oldPlayer.interactionManager.getPreviousGameMode());
         if (alive) {
             this.getInventory().clone(oldPlayer.getInventory());
@@ -1148,11 +1148,11 @@ implements ScreenHandlerListener {
     }
 
     public void sendMessage(Text message, MessageType type, UUID senderUuid) {
-        if (!this.method_33794(type)) {
+        if (!this.acceptsMessage(type)) {
             return;
         }
         this.networkHandler.sendPacket(new GameMessageS2CPacket(message, type, senderUuid), future -> {
-            if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.method_33794(MessageType.SYSTEM)) {
+            if (!future.isSuccess() && (type == MessageType.GAME_INFO || type == MessageType.SYSTEM) && this.acceptsMessage(MessageType.SYSTEM)) {
                 int i = 256;
                 String string = message.asTruncatedString(256);
                 MutableText text2 = new LiteralText(string).formatted(Formatting.YELLOW);
@@ -1171,7 +1171,7 @@ implements ScreenHandlerListener {
     public void setClientSettings(ClientSettingsC2SPacket packet) {
         this.clientChatVisibility = packet.getChatVisibility();
         this.clientChatColorsEnabled = packet.hasChatColors();
-        this.field_28860 = packet.method_33894();
+        this.filterText = packet.shouldFilterText();
         this.getDataTracker().set(PLAYER_MODEL_PARTS, (byte)packet.getPlayerModelBitMask());
         this.getDataTracker().set(MAIN_ARM, (byte)(packet.getMainArm() != Arm.LEFT ? 1 : 0));
     }
@@ -1180,13 +1180,13 @@ implements ScreenHandlerListener {
         return this.clientChatVisibility;
     }
 
-    private boolean method_33794(MessageType messageType) {
+    private boolean acceptsMessage(MessageType type) {
         switch (this.clientChatVisibility) {
             case HIDDEN: {
-                return messageType == MessageType.GAME_INFO;
+                return type == MessageType.GAME_INFO;
             }
             case SYSTEM: {
-                return messageType == MessageType.SYSTEM || messageType == MessageType.GAME_INFO;
+                return type == MessageType.SYSTEM || type == MessageType.GAME_INFO;
             }
         }
         return true;
@@ -1438,15 +1438,15 @@ implements ScreenHandlerListener {
         }
     }
 
-    public boolean method_33793() {
-        return this.field_28860;
+    public boolean shouldFilterText() {
+        return this.filterText;
     }
 
-    public boolean method_33795(ServerPlayerEntity serverPlayerEntity) {
-        if (serverPlayerEntity == this) {
+    public boolean shouldFilterMessagesSentTo(ServerPlayerEntity player) {
+        if (player == this) {
             return false;
         }
-        return this.field_28860 || serverPlayerEntity.field_28860;
+        return this.filterText || player.filterText;
     }
 }
 

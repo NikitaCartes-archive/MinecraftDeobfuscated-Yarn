@@ -22,9 +22,9 @@ implements Packet<ClientPlayPacketListener> {
         this.tag = tag;
     }
 
-    public TagQueryResponseS2CPacket(PacketByteBuf packetByteBuf) {
-        this.transactionId = packetByteBuf.readVarInt();
-        this.tag = packetByteBuf.readCompoundTag();
+    public TagQueryResponseS2CPacket(PacketByteBuf buf) {
+        this.transactionId = buf.readVarInt();
+        this.tag = buf.readCompoundTag();
     }
 
     @Override

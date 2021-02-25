@@ -24,15 +24,15 @@ implements Packet<ClientPlayPacketListener> {
         this.equipmentList = equipmentList;
     }
 
-    public EntityEquipmentUpdateS2CPacket(PacketByteBuf packetByteBuf) {
+    public EntityEquipmentUpdateS2CPacket(PacketByteBuf buf) {
         byte i;
-        this.id = packetByteBuf.readVarInt();
+        this.id = buf.readVarInt();
         EquipmentSlot[] equipmentSlots = EquipmentSlot.values();
         this.equipmentList = Lists.newArrayList();
         do {
-            i = packetByteBuf.readByte();
+            i = buf.readByte();
             EquipmentSlot equipmentSlot = equipmentSlots[i & 0x7F];
-            ItemStack itemStack = packetByteBuf.readItemStack();
+            ItemStack itemStack = buf.readItemStack();
             this.equipmentList.add(Pair.of(equipmentSlot, itemStack));
         } while ((i & 0xFFFFFF80) != 0);
     }

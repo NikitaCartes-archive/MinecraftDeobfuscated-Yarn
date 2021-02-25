@@ -144,7 +144,7 @@ public class Main {
                 LevelInfo levelInfo;
                 if (optionSet.has(optionSpec3)) {
                     levelInfo = MinecraftServer.DEMO_LEVEL_INFO;
-                    generatorOptions = GeneratorOptions.method_31112(impl);
+                    generatorOptions = GeneratorOptions.createDemo(impl);
                 } else {
                     ServerPropertiesHandler serverPropertiesHandler = serverPropertiesLoader.getPropertiesHandler();
                     levelInfo = new LevelInfo(serverPropertiesHandler.levelName, serverPropertiesHandler.gameMode, serverPropertiesHandler.hardcore, serverPropertiesHandler.difficulty, false, new GameRules(), dataPackSettings2);

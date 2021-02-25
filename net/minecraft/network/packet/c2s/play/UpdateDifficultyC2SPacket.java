@@ -21,8 +21,8 @@ implements Packet<ServerPlayPacketListener> {
         serverPlayPacketListener.onUpdateDifficulty(this);
     }
 
-    public UpdateDifficultyC2SPacket(PacketByteBuf packetByteBuf) {
-        this.difficulty = Difficulty.byOrdinal(packetByteBuf.readUnsignedByte());
+    public UpdateDifficultyC2SPacket(PacketByteBuf buf) {
+        this.difficulty = Difficulty.byOrdinal(buf.readUnsignedByte());
     }
 
     @Override
