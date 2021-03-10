@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,8 +35,9 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		this.renderBackground(matrices);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = this.x;
 		int j = this.y;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
@@ -76,39 +78,39 @@ public class CartographyTableScreen extends HandledScreen<CartographyTableScreen
 		int j = this.y;
 		if (bl2 && !bl4) {
 			this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
-			this.drawMap(integer, mapState, i + 85, j + 31, 0.226F);
+			this.drawMap(matrices, integer, mapState, i + 85, j + 31, 0.226F);
 		} else if (bl) {
 			this.drawTexture(matrices, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
-			this.drawMap(integer, mapState, i + 86, j + 16, 0.34F);
-			this.client.getTextureManager().bindTexture(TEXTURE);
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, 0.0F, 1.0F);
+			this.drawMap(matrices, integer, mapState, i + 86, j + 16, 0.34F);
+			RenderSystem.setShaderTexture(0, TEXTURE);
+			matrices.push();
+			matrices.translate(0.0, 0.0, 1.0);
 			this.drawTexture(matrices, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
-			this.drawMap(integer, mapState, i + 70, j + 32, 0.34F);
-			RenderSystem.popMatrix();
+			this.drawMap(matrices, integer, mapState, i + 70, j + 32, 0.34F);
+			matrices.pop();
 		} else if (bl3) {
 			this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
-			this.drawMap(integer, mapState, i + 71, j + 17, 0.45F);
-			this.client.getTextureManager().bindTexture(TEXTURE);
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, 0.0F, 1.0F);
+			this.drawMap(matrices, integer, mapState, i + 71, j + 17, 0.45F);
+			RenderSystem.setShaderTexture(0, TEXTURE);
+			matrices.push();
+			matrices.translate(0.0, 0.0, 1.0);
 			this.drawTexture(matrices, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
-			RenderSystem.popMatrix();
+			matrices.pop();
 		} else {
 			this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
-			this.drawMap(integer, mapState, i + 71, j + 17, 0.45F);
+			this.drawMap(matrices, integer, mapState, i + 71, j + 17, 0.45F);
 		}
 	}
 
-	private void drawMap(@Nullable Integer integer, @Nullable MapState mapState, int i, int j, float f) {
+	private void drawMap(MatrixStack matrixStack, @Nullable Integer integer, @Nullable MapState mapState, int i, int j, float f) {
 		if (integer != null && mapState != null) {
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)i, (float)j, 1.0F);
-			RenderSystem.scalef(f, f, 1.0F);
+			matrixStack.push();
+			matrixStack.translate((double)i, (double)j, 1.0);
+			matrixStack.scale(f, f, 1.0F);
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-			this.client.gameRenderer.getMapRenderer().draw(new MatrixStack(), immediate, integer, mapState, true, 15728880);
+			this.client.gameRenderer.getMapRenderer().draw(matrixStack, immediate, integer, mapState, true, 15728880);
 			immediate.draw();
-			RenderSystem.popMatrix();
+			matrixStack.pop();
 		}
 	}
 }

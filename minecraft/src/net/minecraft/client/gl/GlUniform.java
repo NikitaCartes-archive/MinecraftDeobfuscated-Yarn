@@ -7,6 +7,7 @@ import java.nio.IntBuffer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.system.MemoryUtil;
@@ -50,6 +51,10 @@ public class GlUniform extends Uniform implements AutoCloseable {
 
 	public static int getAttribLocation(int program, CharSequence name) {
 		return GlStateManager.getAttribLocation(program, name);
+	}
+
+	public static void method_34419(int i, int j, CharSequence charSequence) {
+		GlStateManager.bindAttribLocation(i, j, charSequence);
 	}
 
 	public void close() {
@@ -97,14 +102,14 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public void set(float value1) {
+	public final void set(float value1) {
 		this.floatData.position(0);
 		this.floatData.put(0, value1);
 		this.markStateDirty();
 	}
 
 	@Override
-	public void set(float value1, float value2) {
+	public final void set(float value1, float value2) {
 		this.floatData.position(0);
 		this.floatData.put(0, value1);
 		this.floatData.put(1, value2);
@@ -112,7 +117,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public void set(float value1, float value2, float value3) {
+	public final void set(float value1, float value2, float value3) {
 		this.floatData.position(0);
 		this.floatData.put(0, value1);
 		this.floatData.put(1, value2);
@@ -121,7 +126,16 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public void set(float value1, float value2, float value3, float value4) {
+	public final void method_34413(Vec3f vec3f) {
+		this.floatData.position(0);
+		this.floatData.put(0, vec3f.getX());
+		this.floatData.put(1, vec3f.getY());
+		this.floatData.put(2, vec3f.getZ());
+		this.markStateDirty();
+	}
+
+	@Override
+	public final void set(float value1, float value2, float value3, float value4) {
 		this.floatData.position(0);
 		this.floatData.put(value1);
 		this.floatData.put(value2);
@@ -132,7 +146,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public void setForDataType(float value1, float value2, float value3, float value4) {
+	public final void setForDataType(float value1, float value2, float value3, float value4) {
 		this.floatData.position(0);
 		if (this.dataType >= 4) {
 			this.floatData.put(0, value1);
@@ -154,7 +168,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public void set(int value1, int value2, int value3, int value4) {
+	public final void set(int value1, int value2, int value3, int value4) {
 		this.intData.position(0);
 		if (this.dataType >= 0) {
 			this.intData.put(0, value1);
@@ -176,7 +190,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public void set(float[] values) {
+	public final void set(float[] values) {
 		if (values.length < this.count) {
 			LOGGER.warn("Uniform.set called with a too-small value array (expected {}, got {}). Ignoring.", this.count, values.length);
 		} else {
@@ -188,7 +202,7 @@ public class GlUniform extends Uniform implements AutoCloseable {
 	}
 
 	@Override
-	public void set(Matrix4f values) {
+	public final void set(Matrix4f values) {
 		this.floatData.position(0);
 		values.writeToBuffer(this.floatData);
 		this.markStateDirty();

@@ -139,7 +139,7 @@ public class CommandBossBar extends ServerBossBar {
 		compoundTag.putInt("Value", this.value);
 		compoundTag.putInt("Max", this.maxValue);
 		compoundTag.putString("Color", this.getColor().getName());
-		compoundTag.putString("Overlay", this.getOverlay().getName());
+		compoundTag.putString("Overlay", this.getStyle().getName());
 		compoundTag.putBoolean("DarkenScreen", this.shouldDarkenSky());
 		compoundTag.putBoolean("PlayBossMusic", this.hasDragonMusic());
 		compoundTag.putBoolean("CreateWorldFog", this.shouldThickenFog());
@@ -159,7 +159,7 @@ public class CommandBossBar extends ServerBossBar {
 		commandBossBar.setValue(tag.getInt("Value"));
 		commandBossBar.setMaxValue(tag.getInt("Max"));
 		commandBossBar.setColor(BossBar.Color.byName(tag.getString("Color")));
-		commandBossBar.setOverlay(BossBar.Style.byName(tag.getString("Overlay")));
+		commandBossBar.setStyle(BossBar.Style.byName(tag.getString("Overlay")));
 		commandBossBar.setDarkenSky(tag.getBoolean("DarkenScreen"));
 		commandBossBar.setDragonMusic(tag.getBoolean("PlayBossMusic"));
 		commandBossBar.setThickenFog(tag.getBoolean("CreateWorldFog"));

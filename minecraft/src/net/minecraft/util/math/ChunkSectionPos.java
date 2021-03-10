@@ -270,6 +270,10 @@ public class ChunkSectionPos extends Vec3i {
 		return asLong(this.getSectionX(), this.getSectionY(), this.getSectionZ());
 	}
 
+	public ChunkSectionPos add(int i, int j, int k) {
+		return i == 0 && j == 0 && k == 0 ? this : new ChunkSectionPos(this.getSectionX() + i, this.getSectionY() + j, this.getSectionZ() + k);
+	}
+
 	public Stream<BlockPos> streamBlocks() {
 		return BlockPos.stream(this.getMinX(), this.getMinY(), this.getMinZ(), this.getMaxX(), this.getMaxY(), this.getMaxZ());
 	}

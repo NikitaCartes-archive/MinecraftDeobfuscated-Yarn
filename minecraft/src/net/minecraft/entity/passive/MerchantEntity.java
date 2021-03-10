@@ -127,7 +127,7 @@ public abstract class MerchantEntity extends PassiveEntity implements Npc, Merch
 		this.ambientSoundChance = -this.getMinAmbientSoundDelay();
 		this.afterUsing(offer);
 		if (this.customer instanceof ServerPlayerEntity) {
-			Criteria.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, offer.getMutableSellItem());
+			Criteria.VILLAGER_TRADE.handle((ServerPlayerEntity)this.customer, this, offer.getSellItem());
 		}
 	}
 

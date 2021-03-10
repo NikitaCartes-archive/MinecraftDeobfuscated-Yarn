@@ -17,6 +17,9 @@ public class BlockStateProviderType<P extends BlockStateProvider> {
 	public static final BlockStateProviderType<PillarBlockStateProvider> ROTATED_BLOCK_PROVIDER = register(
 		"rotated_block_provider", PillarBlockStateProvider.CODEC
 	);
+	public static final BlockStateProviderType<RandomizedIntBlockStateProvider> RANDOMIZED_INT_STATE_PROVIDER = register(
+		"randomized_int_state_provider", RandomizedIntBlockStateProvider.CODEC
+	);
 	private final Codec<P> codec;
 
 	private static <P extends BlockStateProvider> BlockStateProviderType<P> register(String id, Codec<P> codec) {

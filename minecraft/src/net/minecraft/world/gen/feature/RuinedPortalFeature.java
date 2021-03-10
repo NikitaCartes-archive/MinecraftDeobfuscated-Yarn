@@ -21,7 +21,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.Heightmap;
@@ -189,21 +188,21 @@ public class RuinedPortalFeature extends StructureFeature<RuinedPortalFeatureCon
 			BlockPos blockPos = new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2);
 			BlockPos blockPos2 = chunkPos.getStartPos();
 			BlockBox blockBox = structure.calculateBoundingBox(blockPos2, blockRotation, blockPos, blockMirror);
-			Vec3i vec3i = blockBox.getCenter();
-			int i = vec3i.getX();
-			int j = vec3i.getZ();
+			BlockPos blockPos3 = blockBox.getCenter();
+			int i = blockPos3.getX();
+			int j = blockPos3.getZ();
 			int k = chunkGenerator.getHeight(i, j, RuinedPortalStructurePiece.getHeightmapType(verticalPlacement), heightLimitView) - 1;
 			int l = RuinedPortalFeature.method_27211(
 				this.random, chunkGenerator, verticalPlacement, properties.airPocket, k, blockBox.getBlockCountY(), blockBox, heightLimitView
 			);
-			BlockPos blockPos3 = new BlockPos(blockPos2.getX(), l, blockPos2.getZ());
+			BlockPos blockPos4 = new BlockPos(blockPos2.getX(), l, blockPos2.getZ());
 			if (ruinedPortalFeatureConfig.portalType == RuinedPortalFeature.Type.MOUNTAIN
 				|| ruinedPortalFeatureConfig.portalType == RuinedPortalFeature.Type.OCEAN
 				|| ruinedPortalFeatureConfig.portalType == RuinedPortalFeature.Type.STANDARD) {
-				properties.cold = RuinedPortalFeature.isColdAt(blockPos3, biome);
+				properties.cold = RuinedPortalFeature.isColdAt(blockPos4, biome);
 			}
 
-			this.children.add(new RuinedPortalStructurePiece(blockPos3, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));
+			this.children.add(new RuinedPortalStructurePiece(blockPos4, verticalPlacement, properties, identifier, structure, blockRotation, blockMirror, blockPos));
 			this.setBoundingBoxFromChildren();
 		}
 	}

@@ -41,7 +41,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 	}
 
 	protected int getBlockLight(T itemFrameEntity, BlockPos blockPos) {
-		return itemFrameEntity.isGlowItemFrame() ? 5 : super.getBlockLight(itemFrameEntity, blockPos);
+		return itemFrameEntity.getType() == EntityType.GLOW_ITEM_FRAME ? 5 : super.getBlockLight(itemFrameEntity, blockPos);
 	}
 
 	public void render(T itemFrameEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i) {
@@ -115,7 +115,7 @@ public class ItemFrameEntityRenderer<T extends ItemFrameEntity> extends EntityRe
 	}
 
 	private ModelIdentifier getModelId(T entity, ItemStack stack) {
-		boolean bl = entity.isGlowItemFrame();
+		boolean bl = entity.getType() == EntityType.GLOW_ITEM_FRAME;
 		if (stack.isOf(Items.FILLED_MAP)) {
 			return bl ? MAP_GLOW_FRAME : MAP_FRAME;
 		} else {

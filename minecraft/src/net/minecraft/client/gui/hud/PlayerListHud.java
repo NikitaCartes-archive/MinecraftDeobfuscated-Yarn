@@ -145,8 +145,7 @@ public class PlayerListHud extends DrawableHelper {
 			int x = q + t * p + t * 5;
 			int y = r + w * 9;
 			fill(matrices, x, y, x + p, y + 8, u);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			RenderSystem.enableAlphaTest();
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			if (v < list.size()) {
@@ -157,7 +156,7 @@ public class PlayerListHud extends DrawableHelper {
 					boolean bl2 = playerEntity != null
 						&& playerEntity.isPartVisible(PlayerModelPart.CAPE)
 						&& ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
-					this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
+					RenderSystem.setShaderTexture(0, playerListEntry2.getSkinTexture());
 					int z = 8 + (bl2 ? 8 : 0);
 					int aa = 8 * (bl2 ? -1 : 1);
 					DrawableHelper.drawTexture(matrices, x, y, 8, 8, 8.0F, (float)z, 8, aa, 64, 64);
@@ -200,8 +199,8 @@ public class PlayerListHud extends DrawableHelper {
 	}
 
 	protected void renderLatencyIcon(MatrixStack matrices, int i, int j, int k, PlayerListEntry entry) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 		int l = 0;
 		int m;
 		if (entry.getLatency() < 0) {
@@ -226,7 +225,7 @@ public class PlayerListHud extends DrawableHelper {
 	private void renderScoreboardObjective(ScoreboardObjective objective, int i, String string, int j, int k, PlayerListEntry entry, MatrixStack matrices) {
 		int l = objective.getScoreboard().getPlayerScore(string, objective).getScore();
 		if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
-			this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
+			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 			long m = Util.getMeasuringTimeMs();
 			if (this.showTime == entry.method_2976()) {
 				if (l < entry.method_2973()) {

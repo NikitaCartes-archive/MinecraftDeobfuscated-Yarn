@@ -58,7 +58,7 @@ public class CraftingResultSlot extends Slot {
 	}
 
 	@Override
-	public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+	public void onTakeItem(PlayerEntity player, ItemStack stack) {
 		this.onCrafted(stack);
 		DefaultedList<ItemStack> defaultedList = player.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.input, player.world);
 
@@ -81,7 +81,5 @@ public class CraftingResultSlot extends Slot {
 				}
 			}
 		}
-
-		return stack;
 	}
 }

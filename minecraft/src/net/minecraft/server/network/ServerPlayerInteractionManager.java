@@ -292,7 +292,7 @@ public class ServerPlayerInteractionManager {
 				}
 
 				if (!player.isUsingItem()) {
-					player.refreshScreenHandler(player.playerScreenHandler);
+					player.playerScreenHandler.syncState();
 				}
 
 				return typedActionResult.getResult();

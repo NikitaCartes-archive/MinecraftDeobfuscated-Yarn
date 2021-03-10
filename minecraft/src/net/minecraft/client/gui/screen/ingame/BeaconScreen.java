@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.AbstractPressableButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.texture.Sprite;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.effect.StatusEffect;
@@ -25,7 +26,6 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 
 @Environment(EnvType.CLIENT)
 public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
@@ -42,10 +42,6 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 		this.backgroundWidth = 230;
 		this.backgroundHeight = 219;
 		handler.addListener(new ScreenHandlerListener() {
-			@Override
-			public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
-			}
-
 			@Override
 			public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
 			}
@@ -139,8 +135,9 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = (this.width - this.backgroundWidth) / 2;
 		int j = (this.height - this.backgroundHeight) / 2;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
@@ -170,8 +167,9 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(BeaconScreen.TEXTURE);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShaderTexture(0, BeaconScreen.TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int i = 219;
 			int j = 0;
 			if (!this.active) {
@@ -283,7 +281,7 @@ public class BeaconScreen extends HandledScreen<BeaconScreenHandler> {
 
 		@Override
 		protected void renderExtra(MatrixStack matrices) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(this.sprite.getAtlas().getId());
+			RenderSystem.setShaderTexture(0, this.sprite.getAtlas().getId());
 			drawSprite(matrices, this.x + 2, this.y + 2, this.getZOffset(), 18, 18, this.sprite);
 		}
 	}

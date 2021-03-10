@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
@@ -65,7 +66,8 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int i = 29;
 		if (!this.results.hasCraftableRecipes()) {
 			i += 25;
@@ -77,12 +79,14 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 		}
 
 		boolean bl = this.bounce > 0.0F;
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
 		if (bl) {
 			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
-			RenderSystem.scalef(f, f, 1.0F);
-			RenderSystem.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
+			matrixStack.push();
+			matrixStack.translate((double)(this.x + 8), (double)(this.y + 12), 0.0);
+			matrixStack.scale(f, f, 1.0F);
+			matrixStack.translate((double)(-(this.x + 8)), (double)(-(this.y + 12)), 0.0);
+			RenderSystem.applyModelViewMatrix();
 			this.bounce -= delta;
 		}
 
@@ -98,7 +102,8 @@ public class AnimatedResultButton extends AbstractButtonWidget {
 
 		minecraftClient.getItemRenderer().renderInGui(itemStack, this.x + k, this.y + k);
 		if (bl) {
-			RenderSystem.popMatrix();
+			matrixStack.pop();
+			RenderSystem.applyModelViewMatrix();
 		}
 	}
 

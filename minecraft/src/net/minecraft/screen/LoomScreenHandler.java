@@ -1,6 +1,5 @@
 package net.minecraft.screen;
 
-import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -80,21 +79,21 @@ public class LoomScreenHandler extends ScreenHandler {
 			}
 
 			@Override
-			public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+			public void onTakeItem(PlayerEntity player, ItemStack stack) {
 				LoomScreenHandler.this.bannerSlot.takeStack(1);
 				LoomScreenHandler.this.dyeSlot.takeStack(1);
 				if (!LoomScreenHandler.this.bannerSlot.hasStack() || !LoomScreenHandler.this.dyeSlot.hasStack()) {
 					LoomScreenHandler.this.selectedPattern.set(0);
 				}
 
-				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				context.run((world, blockPos) -> {
 					long l = world.getTime();
 					if (LoomScreenHandler.this.lastTakeResultTime != l) {
 						world.playSound(null, blockPos, SoundEvents.UI_LOOM_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						LoomScreenHandler.this.lastTakeResultTime = l;
 					}
-				}));
-				return super.onTakeItem(player, stack);
+				});
+				super.onTakeItem(player, stack);
 			}
 		});
 
@@ -222,7 +221,7 @@ public class LoomScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.input)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, this.input));
 	}
 
 	private void updateOutputSlot() {

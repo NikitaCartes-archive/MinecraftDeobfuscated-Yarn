@@ -56,8 +56,8 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 		this.model.animateModel(enderDragonEntity, 0.0F, 0.0F, g);
 		if (enderDragonEntity.ticksSinceDeath > 0) {
 			float k = (float)enderDragonEntity.ticksSinceDeath / 200.0F;
-			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEXTURE, k));
-			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, 1.0F);
+			VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEXTURE));
+			this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0F, 1.0F, 1.0F, k);
 			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(DRAGON_DECAL);
 			this.model.render(matrixStack, vertexConsumer2, i, OverlayTexture.getUv(0.0F, bl), 1.0F, 1.0F, 1.0F, 1.0F);
 		} else {
@@ -373,7 +373,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				i = (float)((double)i + Math.sin((double)this.neck.pitch) * 10.0);
 				j = (float)((double)j - Math.cos((double)this.neck.yaw) * Math.cos((double)this.neck.pitch) * 10.0);
 				h = (float)((double)h - Math.sin((double)this.neck.yaw) * Math.cos((double)this.neck.pitch) * 10.0);
-				this.neck.render(matrices, vertices, light, overlay);
+				this.neck.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
 			}
 
 			this.head.pivotY = i;
@@ -383,13 +383,13 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			this.head.yaw = MathHelper.fwrapDegrees(fs[0] - ds[0]) * (float) (Math.PI / 180.0);
 			this.head.pitch = MathHelper.fwrapDegrees((double)this.dragon.method_6823(6, ds, fs)) * (float) (Math.PI / 180.0) * 1.5F * 5.0F;
 			this.head.roll = -MathHelper.fwrapDegrees(fs[0] - (double)m) * (float) (Math.PI / 180.0);
-			this.head.render(matrices, vertices, light, overlay);
+			this.head.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
 			matrices.push();
 			matrices.translate(0.0, 1.0, 0.0);
 			matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-l * 1.5F));
 			matrices.translate(0.0, -1.0, 0.0);
 			this.body.roll = 0.0F;
-			this.body.render(matrices, vertices, light, overlay);
+			this.body.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
 			float q = f * (float) (Math.PI * 2);
 			this.leftWing.pitch = 0.125F - (float)Math.cos((double)q) * 0.2F;
 			this.leftWing.yaw = -0.25F;
@@ -411,7 +411,8 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				this.leftFrontFoot,
 				this.leftHindLeg,
 				this.leftHindLegTip,
-				this.leftHindFoot
+				this.leftHindFoot,
+				alpha
 			);
 			this.setLimbRotation(
 				matrices,
@@ -425,7 +426,8 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				this.rightFrontFoot,
 				this.rightHindLeg,
 				this.rightHindLegTip,
-				this.rightHindFoot
+				this.rightHindFoot,
+				alpha
 			);
 			matrices.pop();
 			float p = -((float)Math.sin((double)(f * (float) (Math.PI * 2)))) * 0.0F;
@@ -447,7 +449,7 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 				i = (float)((double)i + Math.sin((double)this.neck.pitch) * 10.0);
 				j = (float)((double)j - Math.cos((double)this.neck.yaw) * Math.cos((double)this.neck.pitch) * 10.0);
 				h = (float)((double)h - Math.sin((double)this.neck.yaw) * Math.cos((double)this.neck.pitch) * 10.0);
-				this.neck.render(matrices, vertices, light, overlay);
+				this.neck.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, alpha);
 			}
 
 			matrices.pop();
@@ -465,7 +467,8 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			ModelPart frontFoot,
 			ModelPart hindLeg,
 			ModelPart hindLegTip,
-			ModelPart hindFoot
+			ModelPart hindFoot,
+			float f
 		) {
 			hindLeg.pitch = 1.0F + offset * 0.1F;
 			hindLegTip.pitch = 0.5F + offset * 0.1F;
@@ -473,9 +476,9 @@ public class EnderDragonEntityRenderer extends EntityRenderer<EnderDragonEntity>
 			frontLeg.pitch = 1.3F + offset * 0.1F;
 			frontLegTip.pitch = -0.5F - offset * 0.1F;
 			frontFoot.pitch = 0.75F + offset * 0.1F;
-			wing.render(matrices, vertices, light, overlay);
-			frontLeg.render(matrices, vertices, light, overlay);
-			hindLeg.render(matrices, vertices, light, overlay);
+			wing.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, f);
+			frontLeg.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, f);
+			hindLeg.render(matrices, vertices, light, overlay, 1.0F, 1.0F, 1.0F, f);
 		}
 	}
 }

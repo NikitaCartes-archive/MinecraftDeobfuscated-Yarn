@@ -49,27 +49,15 @@ public class LightmapTextureManager implements AutoCloseable {
 	}
 
 	public void disable() {
-		RenderSystem.activeTexture(33986);
-		RenderSystem.disableTexture();
-		RenderSystem.activeTexture(33984);
+		RenderSystem.setShaderTexture(2, 0);
 	}
 
 	public void enable() {
-		RenderSystem.activeTexture(33986);
-		RenderSystem.matrixMode(5890);
-		RenderSystem.loadIdentity();
-		float f = 0.00390625F;
-		RenderSystem.scalef(0.00390625F, 0.00390625F, 0.00390625F);
-		RenderSystem.translatef(8.0F, 8.0F, 8.0F);
-		RenderSystem.matrixMode(5888);
+		RenderSystem.setShaderTexture(2, this.textureIdentifier);
 		this.client.getTextureManager().bindTexture(this.textureIdentifier);
 		RenderSystem.texParameter(3553, 10241, 9729);
 		RenderSystem.texParameter(3553, 10240, 9729);
-		RenderSystem.texParameter(3553, 10242, 10496);
-		RenderSystem.texParameter(3553, 10243, 10496);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.enableTexture();
-		RenderSystem.activeTexture(33984);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	public void update(float delta) {

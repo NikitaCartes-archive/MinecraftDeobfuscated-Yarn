@@ -14,17 +14,6 @@ public class DiffuseLighting {
 	private static final Vec3f field_24428 = Util.make(new Vec3f(0.2F, 1.0F, -0.7F), Vec3f::normalize);
 	private static final Vec3f field_24429 = Util.make(new Vec3f(-0.2F, -1.0F, 0.7F), Vec3f::normalize);
 
-	public static void enable() {
-		RenderSystem.enableLighting();
-		RenderSystem.enableColorMaterial();
-		RenderSystem.colorMaterial(1032, 5634);
-	}
-
-	public static void disable() {
-		RenderSystem.disableLighting();
-		RenderSystem.disableColorMaterial();
-	}
-
 	public static void enableForLevel(Matrix4f modelMatrix) {
 		RenderSystem.setupLevelDiffuseLighting(field_24428, field_24429, modelMatrix);
 	}

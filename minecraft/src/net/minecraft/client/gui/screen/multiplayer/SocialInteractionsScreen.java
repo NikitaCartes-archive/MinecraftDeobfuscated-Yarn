@@ -1,6 +1,7 @@
 package net.minecraft.client.gui.screen.multiplayer;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.UUID;
@@ -188,7 +189,7 @@ public class SocialInteractionsScreen extends Screen {
 	public void renderBackground(MatrixStack matrices) {
 		int i = this.method_31362() + 3;
 		super.renderBackground(matrices);
-		this.client.getTextureManager().bindTexture(SOCIAL_INTERACTIONS_TEXTURE);
+		RenderSystem.setShaderTexture(0, SOCIAL_INTERACTIONS_TEXTURE);
 		this.drawTexture(matrices, i, 64, 1, 1, 236, 8);
 		int j = this.method_31360();
 

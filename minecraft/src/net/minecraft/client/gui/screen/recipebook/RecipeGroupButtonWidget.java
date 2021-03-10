@@ -8,6 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
@@ -46,14 +47,15 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.bounce > 0.0F) {
 			float f = 1.0F + 0.1F * (float)Math.sin((double)(this.bounce / 15.0F * (float) Math.PI));
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(this.x + 8), (float)(this.y + 12), 0.0F);
-			RenderSystem.scalef(1.0F, f, 1.0F);
-			RenderSystem.translatef((float)(-(this.x + 8)), (float)(-(this.y + 12)), 0.0F);
+			matrices.push();
+			matrices.translate((double)(this.x + 8), (double)(this.y + 12), 0.0);
+			matrices.scale(1.0F, f, 1.0F);
+			matrices.translate((double)(-(this.x + 8)), (double)(-(this.y + 12)), 0.0);
 		}
 
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().bindTexture(this.texture);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderTexture(0, this.texture);
 		RenderSystem.disableDepthTest();
 		int i = this.u;
 		int j = this.v;
@@ -70,12 +72,12 @@ public class RecipeGroupButtonWidget extends ToggleButtonWidget {
 			k -= 2;
 		}
 
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		this.drawTexture(matrices, k, this.y, i, j, this.width, this.height);
 		RenderSystem.enableDepthTest();
 		this.renderIcons(minecraftClient.getItemRenderer());
 		if (this.bounce > 0.0F) {
-			RenderSystem.popMatrix();
+			matrices.pop();
 			this.bounce -= delta;
 		}
 	}

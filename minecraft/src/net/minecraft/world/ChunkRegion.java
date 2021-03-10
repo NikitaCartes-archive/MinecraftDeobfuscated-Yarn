@@ -230,7 +230,7 @@ public class ChunkRegion implements StructureWorldAccess {
 		}
 
 		if (state.hasBlockEntity()) {
-			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12807) {
+			if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.LEVELCHUNK) {
 				BlockEntity blockEntity = ((BlockEntityProvider)state.getBlock()).createBlockEntity(pos, state);
 				if (blockEntity != null) {
 					chunk.setBlockEntity(blockEntity);

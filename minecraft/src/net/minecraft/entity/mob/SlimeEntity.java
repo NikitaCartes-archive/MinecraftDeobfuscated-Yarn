@@ -74,17 +74,18 @@ public class SlimeEntity extends MobEntity implements Monster {
 	}
 
 	protected void setSize(int size, boolean heal) {
-		this.dataTracker.set(SLIME_SIZE, size);
+		int i = MathHelper.clamp(size, 1, 127);
+		this.dataTracker.set(SLIME_SIZE, i);
 		this.refreshPosition();
 		this.calculateDimensions();
-		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)(size * size));
-		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)size));
-		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue((double)size);
+		this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue((double)(i * i));
+		this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue((double)(0.2F + 0.1F * (float)i));
+		this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue((double)i);
 		if (heal) {
 			this.setHealth(this.getMaxHealth());
 		}
 
-		this.experiencePoints = size;
+		this.experiencePoints = i;
 	}
 
 	public int getSize() {
@@ -100,12 +101,7 @@ public class SlimeEntity extends MobEntity implements Monster {
 
 	@Override
 	public void readCustomDataFromNbt(CompoundTag tag) {
-		int i = tag.getInt("Size");
-		if (i < 0) {
-			i = 0;
-		}
-
-		this.setSize(i + 1, false);
+		this.setSize(tag.getInt("Size") + 1, false);
 		super.readCustomDataFromNbt(tag);
 		this.onGroundLastTick = tag.getBoolean("wasOnGround");
 	}

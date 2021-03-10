@@ -113,7 +113,7 @@ public class SocialInteractionsPlayerListEntry extends ElementListWidget.Entry<S
 			this.client.textRenderer.draw(matrices, text, (float)k, (float)(l + 12), LIGHT_GRAY_COLOR);
 		}
 
-		this.client.getTextureManager().bindTexture((Identifier)this.skinTexture.get());
+		RenderSystem.setShaderTexture(0, (Identifier)this.skinTexture.get());
 		DrawableHelper.drawTexture(matrices, i, j, 24, 24, 8.0F, 8.0F, 8, 8, 64, 64);
 		RenderSystem.enableBlend();
 		DrawableHelper.drawTexture(matrices, i, j, 24, 24, 40.0F, 8.0F, 8, 8, 64, 64);

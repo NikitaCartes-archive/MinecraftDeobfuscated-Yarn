@@ -170,11 +170,11 @@ public class DebugRenderer {
 			double d = camera.getPos().x;
 			double e = camera.getPos().y;
 			double f = camera.getPos().z;
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(x - d), (float)(y - e) + 0.07F, (float)(z - f));
-			RenderSystem.normal3f(0.0F, 1.0F, 0.0F);
-			RenderSystem.multMatrix(new Matrix4f(camera.getRotation()));
-			RenderSystem.scalef(size, -size, size);
+			MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			matrixStack.push();
+			matrixStack.translate((double)((float)(x - d)), (double)((float)(y - e) + 0.07F), (double)((float)(z - f)));
+			matrixStack.method_34425(new Matrix4f(camera.getRotation()));
+			matrixStack.scale(size, -size, size);
 			RenderSystem.enableTexture();
 			if (visibleThroughObjects) {
 				RenderSystem.disableDepthTest();
@@ -183,16 +183,17 @@ public class DebugRenderer {
 			}
 
 			RenderSystem.depthMask(true);
-			RenderSystem.scalef(-1.0F, 1.0F, 1.0F);
+			matrixStack.scale(-1.0F, 1.0F, 1.0F);
+			RenderSystem.applyModelViewMatrix();
 			float g = center ? (float)(-textRenderer.getWidth(string)) / 2.0F : 0.0F;
 			g -= offset / size;
-			RenderSystem.enableAlphaTest();
 			VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
 			textRenderer.draw(string, g, 0.0F, color, false, AffineTransformation.identity().getMatrix(), immediate, visibleThroughObjects, 0, 15728880);
 			immediate.draw();
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			RenderSystem.enableDepthTest();
-			RenderSystem.popMatrix();
+			matrixStack.pop();
+			RenderSystem.applyModelViewMatrix();
 		}
 	}
 

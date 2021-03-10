@@ -6,18 +6,18 @@ import net.minecraft.util.math.BlockPos;
 
 public class OxidizableStairsBlock extends StairsBlock implements Oxidizable {
 	private final Oxidizable.OxidizationLevel oxidizationLevel;
-	private final Block waxed;
+	private final Block degraded;
 
 	public OxidizableStairsBlock(BlockState blockState, AbstractBlock.Settings settings) {
 		super(blockState, settings);
 		this.oxidizationLevel = Oxidizable.OxidizationLevel.values()[Oxidizable.OxidizationLevel.values().length - 1];
-		this.waxed = this;
+		this.degraded = this;
 	}
 
-	public OxidizableStairsBlock(BlockState baseBlockState, AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block waxed) {
+	public OxidizableStairsBlock(BlockState baseBlockState, AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block degraded) {
 		super(baseBlockState, settings);
 		this.oxidizationLevel = oxidizationLevel;
-		this.waxed = waxed;
+		this.degraded = degraded;
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public class OxidizableStairsBlock extends StairsBlock implements Oxidizable {
 
 	@Override
 	public boolean hasRandomTicks(BlockState state) {
-		return this.waxed != this;
+		return this.degraded != this;
 	}
 
 	public Oxidizable.OxidizationLevel getDegradationLevel() {
@@ -36,7 +36,7 @@ public class OxidizableStairsBlock extends StairsBlock implements Oxidizable {
 
 	@Override
 	public BlockState getDegradationResult(BlockState state) {
-		return this.waxed
+		return this.degraded
 			.getDefaultState()
 			.with(FACING, state.get(FACING))
 			.with(HALF, state.get(HALF))

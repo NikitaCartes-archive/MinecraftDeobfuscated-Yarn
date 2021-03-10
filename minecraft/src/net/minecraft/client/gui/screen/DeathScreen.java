@@ -1,6 +1,5 @@
 package net.minecraft.client.gui.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -106,10 +105,10 @@ public class DeathScreen extends Screen {
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		this.fillGradient(matrices, 0, 0, this.width, this.height, 1615855616, -1602211792);
-		RenderSystem.pushMatrix();
-		RenderSystem.scalef(2.0F, 2.0F, 2.0F);
+		matrices.push();
+		matrices.scale(2.0F, 2.0F, 2.0F);
 		drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 16777215);
-		RenderSystem.popMatrix();
+		matrices.pop();
 		if (this.message != null) {
 			drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 16777215);
 		}

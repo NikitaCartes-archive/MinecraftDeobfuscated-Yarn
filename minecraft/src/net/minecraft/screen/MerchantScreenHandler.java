@@ -57,12 +57,12 @@ public class MerchantScreenHandler extends ScreenHandler {
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.merchantInventory.updateRecipes();
+		this.merchantInventory.updateOffers();
 		super.onContentChanged(inventory);
 	}
 
 	public void setRecipeIndex(int index) {
-		this.merchantInventory.setRecipeIndex(index);
+		this.merchantInventory.setOfferIndex(index);
 	}
 
 	@Override

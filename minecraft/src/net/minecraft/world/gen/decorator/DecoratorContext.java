@@ -42,7 +42,11 @@ public class DecoratorContext implements HeightContext {
 		return this.world.getBlockState(pos);
 	}
 
-	public int method_33868() {
+	public int getBottomY() {
 		return this.world.getBottomY();
+	}
+
+	public StructureWorldAccess getWorld() {
+		return this.world;
 	}
 }

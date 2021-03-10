@@ -67,7 +67,7 @@ public final class ChunkGeneratorSettings {
 		boolean mobGenerationDisabled,
 		boolean aquifers,
 		boolean noiseCaves,
-		boolean bl
+		boolean deepslate
 	) {
 		this.structuresConfig = structuresConfig;
 		this.generationShapeConfig = generationShapeConfig;
@@ -79,7 +79,7 @@ public final class ChunkGeneratorSettings {
 		this.mobGenerationDisabled = mobGenerationDisabled;
 		this.aquifers = aquifers;
 		this.noiseCaves = noiseCaves;
-		this.deepslate = bl;
+		this.deepslate = deepslate;
 	}
 
 	public StructuresConfig getStructuresConfig() {

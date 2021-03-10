@@ -6,6 +6,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
@@ -21,9 +22,11 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 	private static final Identifier TEXTURE = new Identifier("textures/gui/container/anvil.png");
 	private static final Text TOO_EXPENSIVE_TEXT = new TranslatableText("container.repair.expensive");
 	private TextFieldWidget nameField;
+	private final PlayerEntity field_29348;
 
 	public AnvilScreen(AnvilScreenHandler handler, PlayerInventory inventory, Text title) {
 		super(handler, inventory, title, TEXTURE);
+		this.field_29348 = inventory.player;
 		this.titleX = 60;
 	}
 
@@ -99,7 +102,7 @@ public class AnvilScreen extends ForgingScreen<AnvilScreenHandler> {
 				text = null;
 			} else {
 				text = new TranslatableText("container.repair.cost", i);
-				if (!this.handler.getSlot(2).canTakeItems(this.playerInventory.player)) {
+				if (!this.handler.getSlot(2).canTakeItems(this.field_29348)) {
 					j = 16736352;
 				}
 			}

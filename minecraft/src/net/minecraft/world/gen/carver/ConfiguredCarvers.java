@@ -40,7 +40,7 @@ public class ConfiguredCarvers {
 		Carver.RAVINE
 			.configure(
 				new RavineCarverConfig(
-					0.005F,
+					0.00125F,
 					CarverDebugConfig.create(false, Blocks.OAK_BUTTON.getDefaultState()),
 					YOffset.fixed(40),
 					YOffset.fixed(80),

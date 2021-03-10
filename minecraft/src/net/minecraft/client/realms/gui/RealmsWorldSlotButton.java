@@ -178,33 +178,33 @@ public class RealmsWorldSlotButton extends ButtonWidget implements TickableEleme
 		if (bl3) {
 			RealmsTextureManager.bindWorldTemplate(String.valueOf(l), string);
 		} else if (bl2) {
-			textureManager.bindTexture(EMPTY_FRAME);
+			RenderSystem.setShaderTexture(0, EMPTY_FRAME);
 		} else if (string != null && l != -1L) {
 			RealmsTextureManager.bindWorldTemplate(String.valueOf(l), string);
 		} else if (i == 1) {
-			textureManager.bindTexture(PANORAMA_0);
+			RenderSystem.setShaderTexture(0, PANORAMA_0);
 		} else if (i == 2) {
-			textureManager.bindTexture(PANORAMA_2);
+			RenderSystem.setShaderTexture(0, PANORAMA_2);
 		} else if (i == 3) {
-			textureManager.bindTexture(PANORAMA_3);
+			RenderSystem.setShaderTexture(0, PANORAMA_3);
 		}
 
 		if (bl) {
 			float f = 0.85F + 0.15F * MathHelper.cos((float)this.animTick * 0.2F);
-			RenderSystem.color4f(f, f, f, 1.0F);
+			RenderSystem.setShaderColor(f, f, f, 1.0F);
 		} else {
-			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
+			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
 		drawTexture(matrices, x + 3, y + 3, 0.0F, 0.0F, 74, 74, 74, 74);
-		textureManager.bindTexture(SLOT_FRAME);
+		RenderSystem.setShaderTexture(0, SLOT_FRAME);
 		boolean bl5 = bl4 && action != RealmsWorldSlotButton.Action.NOTHING;
 		if (bl5) {
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		} else if (bl) {
-			RenderSystem.color4f(0.8F, 0.8F, 0.8F, 1.0F);
+			RenderSystem.setShaderColor(0.8F, 0.8F, 0.8F, 1.0F);
 		} else {
-			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
+			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
 		}
 
 		drawTexture(matrices, x, y, 0.0F, 0.0F, 80, 80, 80, 80);

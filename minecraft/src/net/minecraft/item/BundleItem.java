@@ -10,7 +10,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.screen.slot.Slot;
@@ -39,16 +39,16 @@ public class BundleItem extends Item {
 	}
 
 	@Override
-	public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+	public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
 		if (clickType != ClickType.RIGHT) {
 			return false;
 		} else {
 			ItemStack itemStack = slot.getStack();
 			if (itemStack.isEmpty()) {
-				removeFirstStack(stack).ifPresent(itemStack2 -> addToBundle(stack, slot.method_32756(itemStack2)));
-			} else if (itemStack.getItem().hasStoredInventory()) {
+				removeFirstStack(stack).ifPresent(itemStack2 -> addToBundle(stack, slot.insertStack(itemStack2)));
+			} else if (itemStack.getItem().canBeNested()) {
 				int i = (64 - getBundleOccupancy(stack)) / getItemOccupancy(itemStack);
-				addToBundle(stack, slot.method_32753(itemStack.getCount(), i, playerInventory.player));
+				addToBundle(stack, slot.takeStackRange(itemStack.getCount(), i, player));
 			}
 
 			return true;
@@ -56,10 +56,10 @@ public class BundleItem extends Item {
 	}
 
 	@Override
-	public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
-		if (clickType == ClickType.RIGHT && slot.method_32754(playerInventory.player)) {
+	public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, CommandItemSlot cursorSlot) {
+		if (clickType == ClickType.RIGHT && slot.canTakePartial(player)) {
 			if (otherStack.isEmpty()) {
-				removeFirstStack(stack).ifPresent(playerInventory::setCursorStack);
+				removeFirstStack(stack).ifPresent(cursorSlot::set);
 			} else {
 				otherStack.decrement(addToBundle(stack, otherStack));
 			}
@@ -100,7 +100,7 @@ public class BundleItem extends Item {
 	}
 
 	private static int addToBundle(ItemStack bundle, ItemStack stack) {
-		if (!stack.isEmpty() && stack.getItem().hasStoredInventory()) {
+		if (!stack.isEmpty() && stack.getItem().canBeNested()) {
 			CompoundTag compoundTag = bundle.getOrCreateTag();
 			if (!compoundTag.contains("Items")) {
 				compoundTag.put("Items", new ListTag());

@@ -35,7 +35,9 @@ public abstract class EnergySwirlOverlayFeatureRenderer<T extends Entity & SkinO
 			EntityModel<T> entityModel = this.getEnergySwirlModel();
 			entityModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
 			this.getContextModel().copyStateTo(entityModel);
-			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(f), f * 0.01F));
+			VertexConsumer vertexConsumer = vertexConsumers.getBuffer(
+				RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(f) % 1.0F, f * 0.01F % 1.0F)
+			);
 			entityModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
 			entityModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 0.5F, 0.5F, 0.5F, 1.0F);
 		}

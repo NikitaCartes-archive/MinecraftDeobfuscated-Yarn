@@ -26,6 +26,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
@@ -126,10 +127,10 @@ public class JigsawBlockEntity extends BlockEntity {
 		BlockPos blockPos = this.getPos();
 		List<PoolStructurePiece> list = Lists.<PoolStructurePiece>newArrayList();
 		Structure structure = new Structure();
-		structure.saveFromWorld(world, blockPos, new BlockPos(1, 1, 1), false, null);
+		structure.saveFromWorld(world, blockPos, new Vec3i(1, 1, 1), false, null);
 		StructurePoolElement structurePoolElement = new SinglePoolElement(structure);
 		PoolStructurePiece poolStructurePiece = new PoolStructurePiece(
-			structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos)
+			structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos)
 		);
 		StructurePoolBasedGenerator.method_27230(
 			world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random, world

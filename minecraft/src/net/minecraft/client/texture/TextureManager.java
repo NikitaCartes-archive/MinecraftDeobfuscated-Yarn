@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.Map.Entry;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -105,9 +104,18 @@ public class TextureManager implements ResourceReloadListener, TextureTickListen
 		}
 	}
 
-	@Nullable
 	public AbstractTexture getTexture(Identifier id) {
-		return (AbstractTexture)this.textures.get(id);
+		AbstractTexture abstractTexture = (AbstractTexture)this.textures.get(id);
+		if (abstractTexture == null) {
+			abstractTexture = new ResourceTexture(id);
+			this.registerTexture(id, abstractTexture);
+		}
+
+		return abstractTexture;
+	}
+
+	public AbstractTexture method_34590(Identifier identifier, AbstractTexture abstractTexture) {
+		return (AbstractTexture)this.textures.getOrDefault(identifier, abstractTexture);
 	}
 
 	public Identifier registerDynamicTexture(String prefix, NativeImageBackedTexture texture) {
@@ -146,8 +154,8 @@ public class TextureManager implements ResourceReloadListener, TextureTickListen
 	}
 
 	public void destroyTexture(Identifier id) {
-		AbstractTexture abstractTexture = this.getTexture(id);
-		if (abstractTexture != null) {
+		AbstractTexture abstractTexture = this.method_34590(id, MissingSprite.getMissingSpriteTexture());
+		if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
 			TextureUtil.deleteId(abstractTexture.getGlId());
 		}
 	}

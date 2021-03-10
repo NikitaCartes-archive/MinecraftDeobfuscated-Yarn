@@ -25,6 +25,7 @@ import net.minecraft.Bootstrap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.WindowSettings;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.util.GlException;
 import net.minecraft.client.util.Session;
 import net.minecraft.entity.player.PlayerEntity;
@@ -190,6 +191,8 @@ public class Main {
 				LOGGER.error("Unhandled game exception", var68);
 			}
 		}
+
+		BufferRenderer.unbindAll();
 
 		try {
 			minecraftClient.scheduleStop();

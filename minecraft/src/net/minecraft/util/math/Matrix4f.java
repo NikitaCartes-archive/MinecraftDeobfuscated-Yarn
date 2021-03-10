@@ -362,8 +362,24 @@ public final class Matrix4f {
 		matrix4f.a22 = -2.0F / f;
 		matrix4f.a33 = 1.0F;
 		matrix4f.a03 = -1.0F;
-		matrix4f.a13 = -1.0F;
+		matrix4f.a13 = 1.0F;
 		matrix4f.a23 = -(farPlane + nearPlane) / f;
+		return matrix4f;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static Matrix4f method_34239(float f, float g, float h, float i, float j, float k) {
+		Matrix4f matrix4f = new Matrix4f();
+		float l = g - f;
+		float m = h - i;
+		float n = k - j;
+		matrix4f.a00 = 2.0F / l;
+		matrix4f.a11 = 2.0F / m;
+		matrix4f.a22 = -2.0F / n;
+		matrix4f.a03 = -(g + f) / l;
+		matrix4f.a13 = -(h + i) / m;
+		matrix4f.a23 = -(k + j) / n;
+		matrix4f.a33 = 1.0F;
 		return matrix4f;
 	}
 

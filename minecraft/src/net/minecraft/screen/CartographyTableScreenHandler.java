@@ -1,6 +1,5 @@
 package net.minecraft.screen;
 
-import java.util.function.BiConsumer;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -61,18 +60,18 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 			}
 
 			@Override
-			public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+			public void onTakeItem(PlayerEntity player, ItemStack stack) {
 				CartographyTableScreenHandler.this.slots.get(0).takeStack(1);
 				CartographyTableScreenHandler.this.slots.get(1).takeStack(1);
 				stack.getItem().onCraft(stack, player.world, player);
-				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				context.run((world, blockPos) -> {
 					long l = world.getTime();
 					if (CartographyTableScreenHandler.this.lastTakeResultTime != l) {
 						world.playSound(null, blockPos, SoundEvents.UI_CARTOGRAPHY_TABLE_TAKE_RESULT, SoundCategory.BLOCKS, 1.0F, 1.0F);
 						CartographyTableScreenHandler.this.lastTakeResultTime = l;
 					}
-				}));
-				return super.onTakeItem(player, stack);
+				});
+				super.onTakeItem(player, stack);
 			}
 		});
 
@@ -107,7 +106,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	}
 
 	private void updateResult(ItemStack itemStack, ItemStack itemStack2, ItemStack oldResult) {
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+		this.context.run((world, blockPos) -> {
 			MapState mapState = FilledMapItem.getOrCreateMapState(itemStack, world);
 			if (mapState != null) {
 				ItemStack itemStack4;
@@ -138,7 +137,7 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 					this.sendContentUpdates();
 				}
 			}
-		}));
+		});
 	}
 
 	@Override
@@ -200,6 +199,6 @@ public class CartographyTableScreenHandler extends ScreenHandler {
 	public void close(PlayerEntity player) {
 		super.close(player);
 		this.resultSlot.removeStack(2);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.inventory)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, this.inventory));
 	}
 }

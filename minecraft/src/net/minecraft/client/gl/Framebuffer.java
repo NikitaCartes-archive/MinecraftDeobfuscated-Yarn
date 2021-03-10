@@ -1,15 +1,18 @@
 package net.minecraft.client.gl;
 
-import com.mojang.blaze3d.platform.FramebufferInfo;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5944;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureUtil;
+import net.minecraft.util.math.Matrix4f;
 
 @Environment(EnvType.CLIENT)
 public class Framebuffer {
@@ -54,7 +57,7 @@ public class Framebuffer {
 		}
 
 		this.initFbo(width, height, getError);
-		GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0);
+		GlStateManager.bindFramebuffer(36160, 0);
 	}
 
 	public void delete() {
@@ -72,33 +75,18 @@ public class Framebuffer {
 		}
 
 		if (this.fbo > -1) {
-			GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0);
-			GlStateManager.deleteFramebuffers(this.fbo);
+			GlStateManager.bindFramebuffer(36160, 0);
+			GlStateManager.deleteFramebuffer(this.fbo);
 			this.fbo = -1;
 		}
 	}
 
 	public void copyDepthFrom(Framebuffer framebuffer) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		if (GlStateManager.supportsGl30()) {
-			GlStateManager.bindFramebuffer(36008, framebuffer.fbo);
-			GlStateManager.bindFramebuffer(36009, this.fbo);
-			GlStateManager.blitFramebuffer(0, 0, framebuffer.textureWidth, framebuffer.textureHeight, 0, 0, this.textureWidth, this.textureHeight, 256, 9728);
-		} else {
-			GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, this.fbo);
-			int i = GlStateManager.getFramebufferDepthAttachment();
-			if (i != 0) {
-				int j = GlStateManager.getActiveBoundTexture();
-				GlStateManager.bindTexture(i);
-				GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, framebuffer.fbo);
-				GlStateManager.copyTexSubImage2d(
-					3553, 0, 0, 0, 0, 0, Math.min(this.textureWidth, framebuffer.textureWidth), Math.min(this.textureHeight, framebuffer.textureHeight)
-				);
-				GlStateManager.bindTexture(j);
-			}
-		}
-
-		GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0);
+		GlStateManager.bindFramebuffer(36008, framebuffer.fbo);
+		GlStateManager.bindFramebuffer(36009, this.fbo);
+		GlStateManager.blitFramebuffer(0, 0, framebuffer.textureWidth, framebuffer.textureHeight, 0, 0, this.textureWidth, this.textureHeight, 256, 9728);
+		GlStateManager.bindFramebuffer(36160, 0);
 	}
 
 	public void initFbo(int width, int height, boolean getError) {
@@ -107,15 +95,13 @@ public class Framebuffer {
 		this.viewportHeight = height;
 		this.textureWidth = width;
 		this.textureHeight = height;
-		this.fbo = GlStateManager.genFramebuffers();
+		this.fbo = GlStateManager.genFramebuffer();
 		this.colorAttachment = TextureUtil.generateId();
 		if (this.useDepthAttachment) {
 			this.depthAttachment = TextureUtil.generateId();
 			GlStateManager.bindTexture(this.depthAttachment);
 			GlStateManager.texParameter(3553, 10241, 9728);
 			GlStateManager.texParameter(3553, 10240, 9728);
-			GlStateManager.texParameter(3553, 10242, 10496);
-			GlStateManager.texParameter(3553, 10243, 10496);
 			GlStateManager.texParameter(3553, 34892, 0);
 			GlStateManager.texImage2D(3553, 0, 6402, this.textureWidth, this.textureHeight, 0, 6402, 5126, null);
 		}
@@ -123,10 +109,10 @@ public class Framebuffer {
 		this.setTexFilter(9728);
 		GlStateManager.bindTexture(this.colorAttachment);
 		GlStateManager.texImage2D(3553, 0, 32856, this.textureWidth, this.textureHeight, 0, 6408, 5121, null);
-		GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, this.fbo);
-		GlStateManager.framebufferTexture2D(FramebufferInfo.FRAME_BUFFER, FramebufferInfo.COLOR_ATTACHMENT, 3553, this.colorAttachment, 0);
+		GlStateManager.bindFramebuffer(36160, this.fbo);
+		GlStateManager.framebufferTexture2D(36160, 36064, 3553, this.colorAttachment, 0);
 		if (this.useDepthAttachment) {
-			GlStateManager.framebufferTexture2D(FramebufferInfo.FRAME_BUFFER, FramebufferInfo.DEPTH_ATTACHMENT, 3553, this.depthAttachment, 0);
+			GlStateManager.framebufferTexture2D(36160, 36096, 3553, this.depthAttachment, 0);
 		}
 
 		this.checkFramebufferStatus();
@@ -140,32 +126,25 @@ public class Framebuffer {
 		GlStateManager.bindTexture(this.colorAttachment);
 		GlStateManager.texParameter(3553, 10241, i);
 		GlStateManager.texParameter(3553, 10240, i);
-		GlStateManager.texParameter(3553, 10242, 10496);
-		GlStateManager.texParameter(3553, 10243, 10496);
 		GlStateManager.bindTexture(0);
 	}
 
 	public void checkFramebufferStatus() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		int i = GlStateManager.checkFramebufferStatus(FramebufferInfo.FRAME_BUFFER);
-		if (i != FramebufferInfo.FRAME_BUFFER_COMPLETE) {
-			if (i == FramebufferInfo.FRAME_BUFFER_INCOMPLETE_ATTACHMENT) {
+		int i = GlStateManager.checkFramebufferStatus(36160);
+		if (i != 36053) {
+			if (i == 36054) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
-			} else if (i == FramebufferInfo.FRAME_BUFFER_INCOMPLETE_MISSING_ATTACHMENT) {
+			} else if (i == 36055) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
-			} else if (i == FramebufferInfo.FRAME_BUFFER_INCOMPLETE_DRAW_BUFFER) {
+			} else if (i == 36059) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
-			} else if (i == FramebufferInfo.FRAME_BUFFER_INCOMPLETE_READ_BUFFER) {
+			} else if (i == 36060) {
 				throw new RuntimeException("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
 			} else {
 				throw new RuntimeException("glCheckFramebufferStatus returned unknown status:" + i);
 			}
 		}
-	}
-
-	public void beginRead() {
-		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		GlStateManager.bindTexture(this.colorAttachment);
 	}
 
 	public void endRead() {
@@ -183,7 +162,7 @@ public class Framebuffer {
 
 	private void bind(boolean updateViewport) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-		GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, this.fbo);
+		GlStateManager.bindFramebuffer(36160, this.fbo);
 		if (updateViewport) {
 			GlStateManager.viewport(0, 0, this.viewportWidth, this.viewportHeight);
 		}
@@ -191,9 +170,9 @@ public class Framebuffer {
 
 	public void endWrite() {
 		if (!RenderSystem.isOnRenderThread()) {
-			RenderSystem.recordRenderCall(() -> GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0));
+			RenderSystem.recordRenderCall(() -> GlStateManager.bindFramebuffer(36160, 0));
 		} else {
-			GlStateManager.bindFramebuffer(FramebufferInfo.FRAME_BUFFER, 0);
+			GlStateManager.bindFramebuffer(36160, 0);
 		}
 	}
 
@@ -222,23 +201,25 @@ public class Framebuffer {
 		GlStateManager.colorMask(true, true, true, false);
 		GlStateManager.disableDepthTest();
 		GlStateManager.depthMask(false);
-		GlStateManager.matrixMode(5889);
-		GlStateManager.loadIdentity();
-		GlStateManager.ortho(0.0, (double)width, (double)height, 0.0, 1000.0, 3000.0);
-		GlStateManager.matrixMode(5888);
-		GlStateManager.loadIdentity();
-		GlStateManager.translatef(0.0F, 0.0F, -2000.0F);
 		GlStateManager.viewport(0, 0, width, height);
-		GlStateManager.enableTexture();
-		GlStateManager.disableLighting();
-		GlStateManager.disableAlphaTest();
 		if (bl) {
 			GlStateManager.disableBlend();
-			GlStateManager.enableColorMaterial();
 		}
 
-		GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.beginRead();
+		MinecraftClient minecraftClient = MinecraftClient.getInstance();
+		class_5944 lv = minecraftClient.gameRenderer.field_29403;
+		lv.method_34583("DiffuseSampler", this.colorAttachment);
+		Matrix4f matrix4f = Matrix4f.projectionMatrix((float)width, (float)(-height), 1000.0F, 3000.0F);
+		RenderSystem.setProjectionMatrix(matrix4f);
+		if (lv.field_29470 != null) {
+			lv.field_29470.set(Matrix4f.translate(0.0F, 0.0F, -2000.0F));
+		}
+
+		if (lv.field_29471 != null) {
+			lv.field_29471.set(matrix4f);
+		}
+
+		lv.method_34586();
 		float f = (float)width;
 		float g = (float)height;
 		float h = (float)this.viewportWidth / (float)this.textureWidth;
@@ -250,8 +231,9 @@ public class Framebuffer {
 		bufferBuilder.vertex((double)f, (double)g, 0.0).texture(h, 0.0F).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex((double)f, 0.0, 0.0).texture(h, i).color(255, 255, 255, 255).next();
 		bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0F, i).color(255, 255, 255, 255).next();
-		tessellator.draw();
-		this.endRead();
+		bufferBuilder.end();
+		BufferRenderer.method_34424(bufferBuilder);
+		lv.method_34585();
 		GlStateManager.depthMask(true);
 		GlStateManager.colorMask(true, true, true, true);
 	}

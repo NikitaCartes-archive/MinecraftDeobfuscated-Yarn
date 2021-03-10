@@ -32,8 +32,8 @@ public abstract class SliderWidget extends AbstractButtonWidget {
 
 	@Override
 	protected void renderBg(MatrixStack matrices, MinecraftClient client, int mouseX, int mouseY) {
-		client.getTextureManager().bindTexture(WIDGETS_LOCATION);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		int i = (this.isHovered() ? 2 : 1) * 20;
 		this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + i, 4, 20);
 		this.drawTexture(matrices, this.x + (int)(this.value * (double)(this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);

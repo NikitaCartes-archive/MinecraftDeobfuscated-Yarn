@@ -222,7 +222,7 @@ public class AxolotlEntity extends AnimalEntity implements Bucketable {
 
 	@Override
 	public double getAttackDistanceScalingFactor(@Nullable Entity entity) {
-		return this.isPlayingDead() ? 0.0 : 1.0;
+		return this.isPlayingDead() ? 0.0 : super.getAttackDistanceScalingFactor(entity);
 	}
 
 	@Nullable

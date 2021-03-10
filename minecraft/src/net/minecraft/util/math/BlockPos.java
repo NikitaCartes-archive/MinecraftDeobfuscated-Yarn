@@ -109,8 +109,8 @@ public class BlockPos extends Vec3i {
 		return x == 0.0 && y == 0.0 && z == 0.0 ? this : new BlockPos((double)this.getX() + x, (double)this.getY() + y, (double)this.getZ() + z);
 	}
 
-	public BlockPos add(int x, int y, int z) {
-		return x == 0 && y == 0 && z == 0 ? this : new BlockPos(this.getX() + x, this.getY() + y, this.getZ() + z);
+	public BlockPos add(int i, int j, int k) {
+		return i == 0 && j == 0 && k == 0 ? this : new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
 	}
 
 	public BlockPos add(Vec3i pos) {
@@ -484,8 +484,8 @@ public class BlockPos extends Vec3i {
 		}
 
 		@Override
-		public BlockPos add(int x, int y, int z) {
-			return super.add(x, y, z).toImmutable();
+		public BlockPos add(int i, int j, int k) {
+			return super.add(i, j, k).toImmutable();
 		}
 
 		@Override

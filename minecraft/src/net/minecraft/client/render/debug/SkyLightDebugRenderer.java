@@ -25,7 +25,6 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		World world = this.client.world;
-		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
@@ -54,6 +53,5 @@ public class SkyLightDebugRenderer implements DebugRenderer.Renderer {
 		}
 
 		RenderSystem.enableTexture();
-		RenderSystem.popMatrix();
 	}
 }

@@ -221,8 +221,8 @@ public class RealmsPlayerScreen extends RealmsScreen {
 		int i = row(12) + 20;
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
-		this.client.getTextureManager().bindTexture(OPTIONS_BACKGROUND);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, OPTIONS_BACKGROUND);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = 32.0F;
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
 		bufferBuilder.vertex(0.0, (double)this.height, 0.0).texture(0.0F, (float)(this.height - i) / 32.0F + 0.0F).color(64, 64, 64, 255).next();
@@ -265,8 +265,8 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	private void drawRemoveIcon(MatrixStack matrices, int i, int j, int k, int l) {
 		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
-		this.client.getTextureManager().bindTexture(CROSS_PLAYER_ICON);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, CROSS_PLAYER_ICON);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 7.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 7, 8, 14);
 		if (bl) {
@@ -277,8 +277,8 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	private void drawOpped(MatrixStack matrices, int i, int j, int k, int l) {
 		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
-		this.client.getTextureManager().bindTexture(OP_ICON);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, OP_ICON);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 8.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
@@ -289,8 +289,8 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 	private void drawNormal(MatrixStack matrices, int i, int j, int k, int l) {
 		boolean bl = k >= i && k <= i + 9 && l >= j && l <= j + 9 && l < row(12) + 20 && l > row(1);
-		this.client.getTextureManager().bindTexture(USER_ICON);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, USER_ICON);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		float f = bl ? 8.0F : 0.0F;
 		DrawableHelper.drawTexture(matrices, i, j, 0.0F, f, 8, 8, 8, 16);
 		if (bl) {
@@ -423,7 +423,7 @@ public class RealmsPlayerScreen extends RealmsScreen {
 
 			RealmsPlayerScreen.this.drawRemoveIcon(matrices, RealmsPlayerScreen.this.column1_x + RealmsPlayerScreen.this.column_width - 22, y + 2, mouseX, mouseY);
 			RealmsTextureManager.withBoundFace(playerInfo.getUuid(), () -> {
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 8.0F, 8.0F, 8, 8, 64, 64);
 				DrawableHelper.drawTexture(matrices, RealmsPlayerScreen.this.column1_x + 2 + 2, y + 1, 8, 8, 40.0F, 8.0F, 8, 8, 64, 64);
 			});

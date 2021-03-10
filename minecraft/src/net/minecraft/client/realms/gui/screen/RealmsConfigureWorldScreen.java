@@ -406,8 +406,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private void drawExpired(MatrixStack matrices, int i, int j, int k, int l) {
-		this.client.getTextureManager().bindTexture(EXPIRED_ICON);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, EXPIRED_ICON);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
 			this.toolTip = EXPIRED_TEXT;
@@ -415,8 +415,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private void drawExpiring(MatrixStack matrices, int i, int j, int k, int l, int m) {
-		this.client.getTextureManager().bindTexture(EXPIRES_SOON_ICON);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, EXPIRES_SOON_ICON);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.animTick % 20 < 10) {
 			DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 20, 28);
 		} else {
@@ -435,8 +435,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private void drawOpen(MatrixStack matrices, int i, int j, int k, int l) {
-		this.client.getTextureManager().bindTexture(ON_ICON);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, ON_ICON);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
 			this.toolTip = OPEN_TEXT;
@@ -444,8 +444,8 @@ public class RealmsConfigureWorldScreen extends RealmsScreen {
 	}
 
 	private void drawClosed(MatrixStack matrices, int i, int j, int k, int l) {
-		this.client.getTextureManager().bindTexture(OFF_ICON);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, OFF_ICON);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		DrawableHelper.drawTexture(matrices, i, j, 0.0F, 0.0F, 10, 28, 10, 28);
 		if (k >= i && k <= i + 9 && l >= j && l <= j + 27) {
 			this.toolTip = CLOSED_TEXT;

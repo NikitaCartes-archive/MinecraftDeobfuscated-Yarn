@@ -29,7 +29,7 @@ public class DisconnectedRealmsScreen extends RealmsScreen {
 	public void init() {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
 		minecraftClient.setConnectedToRealms(false);
-		minecraftClient.getResourcePackDownloader().clear();
+		minecraftClient.getResourcePackProvider().clear();
 		Realms.narrateNow(this.title.getString() + ": " + this.reason.getString());
 		this.lines = MultilineText.create(this.textRenderer, this.reason, this.width - 50);
 		this.textHeight = this.lines.count() * 9;

@@ -52,8 +52,8 @@ public class DemoScreen extends Screen {
 	@Override
 	public void renderBackground(MatrixStack matrices) {
 		super.renderBackground(matrices);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(DEMO_BG);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, DEMO_BG);
 		int i = (this.width - 248) / 2;
 		int j = (this.height - 166) / 2;
 		this.drawTexture(matrices, i, j, 0, 0, 248, 166);

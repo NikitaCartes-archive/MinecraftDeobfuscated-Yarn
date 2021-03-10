@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -19,7 +20,7 @@ public interface ParticleTextureSheet {
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			RenderSystem.depthMask(true);
-			textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
@@ -37,7 +38,8 @@ public interface ParticleTextureSheet {
 		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
-			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
+			RenderSystem.setShader(GameRenderer::method_34546);
+			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
@@ -54,10 +56,9 @@ public interface ParticleTextureSheet {
 		@Override
 		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			RenderSystem.depthMask(true);
-			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
+			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			RenderSystem.enableBlend();
 			RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-			RenderSystem.alphaFunc(516, 0.003921569F);
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 
@@ -75,7 +76,7 @@ public interface ParticleTextureSheet {
 		public void begin(BufferBuilder bufferBuilder, TextureManager textureManager) {
 			RenderSystem.disableBlend();
 			RenderSystem.depthMask(true);
-			textureManager.bindTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
+			RenderSystem.setShaderTexture(0, SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
 			bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
 		}
 

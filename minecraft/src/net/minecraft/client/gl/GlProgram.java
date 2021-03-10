@@ -12,4 +12,6 @@ public interface GlProgram {
 	GlShader getVertexShader();
 
 	GlShader getFragmentShader();
+
+	void method_34418();
 }

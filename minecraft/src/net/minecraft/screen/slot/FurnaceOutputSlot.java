@@ -30,10 +30,9 @@ public class FurnaceOutputSlot extends Slot {
 	}
 
 	@Override
-	public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+	public void onTakeItem(PlayerEntity player, ItemStack stack) {
 		this.onCrafted(stack);
 		super.onTakeItem(player, stack);
-		return stack;
 	}
 
 	@Override

@@ -560,6 +560,9 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 		this.getOrCreateTagBuilder(BlockTags.IRON_ORES).add(Blocks.IRON_ORE, Blocks.DEEPSLATE_IRON_ORE);
 		this.getOrCreateTagBuilder(BlockTags.DIAMOND_ORES).add(Blocks.DIAMOND_ORE, Blocks.DEEPSLATE_DIAMOND_ORE);
 		this.getOrCreateTagBuilder(BlockTags.REDSTONE_ORES).add(Blocks.REDSTONE_ORE, Blocks.DEEPSLATE_REDSTONE_ORE);
+		this.getOrCreateTagBuilder(BlockTags.COAL_ORES).add(Blocks.COAL_ORE, Blocks.DEEPSLATE_COAL_ORE);
+		this.getOrCreateTagBuilder(BlockTags.EMERALD_ORES).add(Blocks.EMERALD_ORE, Blocks.DEEPSLATE_EMERALD_ORE);
+		this.getOrCreateTagBuilder(BlockTags.COPPER_ORES).add(Blocks.COPPER_ORE, Blocks.DEEPSLATE_COPPER_ORE);
 		this.getOrCreateTagBuilder(BlockTags.LAPIS_ORES).add(Blocks.LAPIS_ORE, Blocks.DEEPSLATE_LAPIS_ORE);
 		this.getOrCreateTagBuilder(BlockTags.SOUL_FIRE_BASE_BLOCKS).add(Blocks.SOUL_SAND, Blocks.SOUL_SOIL);
 		this.getOrCreateTagBuilder(BlockTags.NON_FLAMMABLE_WOOD)
@@ -678,23 +681,8 @@ public class BlockTagsProvider extends AbstractTagProvider<Block> {
 			.addTag(BlockTags.CAVE_VINES)
 			.add(Blocks.DIRT)
 			.add(Blocks.GRAVEL)
-			.add(Blocks.SAND)
-			.add(Blocks.MOSS_BLOCK)
-			.addTag(BlockTags.FLOWERS)
-			.add(Blocks.GRASS)
-			.add(Blocks.TALL_GRASS)
-			.add(Blocks.MOSS_CARPET)
-			.add(Blocks.SMALL_DRIPLEAF)
-			.add(Blocks.BIG_DRIPLEAF)
-			.add(Blocks.BIG_DRIPLEAF_STEM)
-			.add(Blocks.VINE);
-		this.getOrCreateTagBuilder(BlockTags.AZALEA_LOG_REPLACEABLE)
-			.addTag(BlockTags.FLOWERS)
-			.addTag(BlockTags.LEAVES)
-			.add(Blocks.GRASS)
-			.add(Blocks.FERN)
-			.add(Blocks.SWEET_BERRY_BUSH)
-			.add(Blocks.SMALL_DRIPLEAF);
+			.add(Blocks.SAND);
+		this.getOrCreateTagBuilder(BlockTags.LUSH_GROUND_REPLACEABLE).addTag(BlockTags.LUSH_PLANTS_REPLACEABLE).add(Blocks.CLAY).add(Blocks.MOSS_BLOCK);
 		this.getOrCreateTagBuilder(BlockTags.OCCLUDES_VIBRATION_SIGNALS).addTag(BlockTags.WOOL);
 	}
 

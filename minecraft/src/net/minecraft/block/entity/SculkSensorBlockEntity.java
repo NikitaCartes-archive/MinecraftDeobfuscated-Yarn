@@ -55,12 +55,12 @@ public class SculkSensorBlockEntity extends BlockEntity implements SculkSensorLi
 		BlockState blockState = this.getCachedState();
 		if (!world.isClient() && SculkSensorBlock.isInactive(blockState)) {
 			this.lastVibrationFrequency = SculkSensorBlock.FREQUENCIES.getInt(event);
-			SculkSensorBlock.setActive(world, this.pos, blockState, method_32910(distance, listener.getRange()));
+			SculkSensorBlock.setActive(world, this.pos, blockState, getPower(distance, listener.getRange()));
 		}
 	}
 
-	public static int method_32910(int i, int range) {
-		double d = (double)i / (double)range;
+	public static int getPower(int distance, int range) {
+		double d = (double)distance / (double)range;
 		return Math.max(1, 15 - MathHelper.floor(d * 15.0));
 	}
 }

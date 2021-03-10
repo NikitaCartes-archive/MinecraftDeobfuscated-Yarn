@@ -4,23 +4,18 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Heightmap;
 
-public class SpreadDoubleHeightmapDecorator<DC extends DecoratorConfig> extends AbstractHeightmapDecorator<DC> {
-	public SpreadDoubleHeightmapDecorator(Codec<DC> codec) {
+public class SpreadDoubleHeightmapDecorator extends Decorator<HeightmapDecoratorConfig> {
+	public SpreadDoubleHeightmapDecorator(Codec<HeightmapDecoratorConfig> codec) {
 		super(codec);
 	}
 
-	@Override
-	protected Heightmap.Type getHeightmapType(DC config) {
-		return Heightmap.Type.MOTION_BLOCKING;
-	}
-
-	@Override
-	public Stream<BlockPos> getPositions(DecoratorContext context, Random random, DC config, BlockPos pos) {
-		int i = pos.getX();
-		int j = pos.getZ();
-		int k = context.getTopY(this.getHeightmapType(config), i, j);
-		return k == context.method_33868() ? Stream.of() : Stream.of(new BlockPos(i, context.method_33868() + random.nextInt((k - context.method_33868()) * 2), j));
+	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, HeightmapDecoratorConfig heightmapDecoratorConfig, BlockPos blockPos) {
+		int i = blockPos.getX();
+		int j = blockPos.getZ();
+		int k = decoratorContext.getTopY(heightmapDecoratorConfig.heightmap, i, j);
+		return k == decoratorContext.getBottomY()
+			? Stream.of()
+			: Stream.of(new BlockPos(i, decoratorContext.getBottomY() + random.nextInt((k - decoratorContext.getBottomY()) * 2), j));
 	}
 }

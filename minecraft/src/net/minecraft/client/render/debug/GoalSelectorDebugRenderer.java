@@ -33,7 +33,6 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		Camera camera = this.client.gameRenderer.getCamera();
-		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
@@ -52,7 +51,6 @@ public class GoalSelectorDebugRenderer implements DebugRenderer.Renderer {
 		});
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableTexture();
-		RenderSystem.popMatrix();
 	}
 
 	@Environment(EnvType.CLIENT)
