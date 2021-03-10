@@ -1,18 +1,26 @@
 package net.minecraft.client.render;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5944;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
+import org.apache.commons.lang3.tuple.Triple;
 
 @Environment(EnvType.CLIENT)
 public abstract class RenderPhase {
@@ -71,38 +79,71 @@ public abstract class RenderPhase {
 			RenderSystem.defaultBlendFunc();
 		}
 	);
-	protected static final RenderPhase.Alpha ZERO_ALPHA = new RenderPhase.Alpha(0.0F);
-	protected static final RenderPhase.Alpha ONE_TENTH_ALPHA = new RenderPhase.Alpha(0.003921569F);
-	protected static final RenderPhase.Alpha HALF_ALPHA = new RenderPhase.Alpha(0.5F);
-	protected static final RenderPhase.ShadeModel SHADE_MODEL = new RenderPhase.ShadeModel(false);
-	protected static final RenderPhase.ShadeModel SMOOTH_SHADE_MODEL = new RenderPhase.ShadeModel(true);
+	protected static final RenderPhase.class_5942 field_29434 = new RenderPhase.class_5942();
+	protected static final RenderPhase.class_5942 field_29435 = new RenderPhase.class_5942(GameRenderer::method_34544);
+	protected static final RenderPhase.class_5942 field_29436 = new RenderPhase.class_5942(GameRenderer::method_34545);
+	protected static final RenderPhase.class_5942 field_29437 = new RenderPhase.class_5942(GameRenderer::method_34547);
+	protected static final RenderPhase.class_5942 field_29438 = new RenderPhase.class_5942(GameRenderer::method_34539);
+	protected static final RenderPhase.class_5942 field_29439 = new RenderPhase.class_5942(GameRenderer::method_34541);
+	protected static final RenderPhase.class_5942 field_29440 = new RenderPhase.class_5942(GameRenderer::method_34542);
+	protected static final RenderPhase.class_5942 field_29441 = new RenderPhase.class_5942(GameRenderer::method_34548);
+	protected static final RenderPhase.class_5942 field_29442 = new RenderPhase.class_5942(GameRenderer::method_34540);
+	protected static final RenderPhase.class_5942 field_29443 = new RenderPhase.class_5942(GameRenderer::method_34495);
+	protected static final RenderPhase.class_5942 field_29444 = new RenderPhase.class_5942(GameRenderer::method_34496);
+	protected static final RenderPhase.class_5942 field_29445 = new RenderPhase.class_5942(GameRenderer::method_34497);
+	protected static final RenderPhase.class_5942 field_29446 = new RenderPhase.class_5942(GameRenderer::method_34498);
+	protected static final RenderPhase.class_5942 field_29447 = new RenderPhase.class_5942(GameRenderer::method_34499);
+	protected static final RenderPhase.class_5942 field_29448 = new RenderPhase.class_5942(GameRenderer::method_34500);
+	protected static final RenderPhase.class_5942 field_29449 = new RenderPhase.class_5942(GameRenderer::method_34501);
+	protected static final RenderPhase.class_5942 field_29450 = new RenderPhase.class_5942(GameRenderer::method_34502);
+	protected static final RenderPhase.class_5942 field_29451 = new RenderPhase.class_5942(GameRenderer::method_34503);
+	protected static final RenderPhase.class_5942 field_29452 = new RenderPhase.class_5942(GameRenderer::method_34504);
+	protected static final RenderPhase.class_5942 field_29404 = new RenderPhase.class_5942(GameRenderer::method_34505);
+	protected static final RenderPhase.class_5942 field_29405 = new RenderPhase.class_5942(GameRenderer::method_34506);
+	protected static final RenderPhase.class_5942 field_29406 = new RenderPhase.class_5942(GameRenderer::method_34507);
+	protected static final RenderPhase.class_5942 field_29407 = new RenderPhase.class_5942(GameRenderer::method_34508);
+	protected static final RenderPhase.class_5942 field_29408 = new RenderPhase.class_5942(GameRenderer::method_34509);
+	protected static final RenderPhase.class_5942 field_29409 = new RenderPhase.class_5942(GameRenderer::method_34510);
+	protected static final RenderPhase.class_5942 field_29410 = new RenderPhase.class_5942(GameRenderer::method_34511);
+	protected static final RenderPhase.class_5942 field_29411 = new RenderPhase.class_5942(GameRenderer::method_34512);
+	protected static final RenderPhase.class_5942 field_29412 = new RenderPhase.class_5942(GameRenderer::method_34513);
+	protected static final RenderPhase.class_5942 field_29413 = new RenderPhase.class_5942(GameRenderer::method_34514);
+	protected static final RenderPhase.class_5942 field_29414 = new RenderPhase.class_5942(GameRenderer::method_34515);
+	protected static final RenderPhase.class_5942 field_29415 = new RenderPhase.class_5942(GameRenderer::method_34516);
+	protected static final RenderPhase.class_5942 field_29416 = new RenderPhase.class_5942(GameRenderer::method_34517);
+	protected static final RenderPhase.class_5942 field_29417 = new RenderPhase.class_5942(GameRenderer::method_34518);
+	protected static final RenderPhase.class_5942 field_29418 = new RenderPhase.class_5942(GameRenderer::method_34519);
+	protected static final RenderPhase.class_5942 field_29419 = new RenderPhase.class_5942(GameRenderer::method_34520);
+	protected static final RenderPhase.class_5942 field_29420 = new RenderPhase.class_5942(GameRenderer::method_34523);
+	protected static final RenderPhase.class_5942 field_29421 = new RenderPhase.class_5942(GameRenderer::method_34524);
+	protected static final RenderPhase.class_5942 field_29422 = new RenderPhase.class_5942(GameRenderer::method_34525);
+	protected static final RenderPhase.class_5942 field_29423 = new RenderPhase.class_5942(GameRenderer::method_34526);
+	protected static final RenderPhase.class_5942 field_29424 = new RenderPhase.class_5942(GameRenderer::method_34527);
+	protected static final RenderPhase.class_5942 field_29425 = new RenderPhase.class_5942(GameRenderer::method_34528);
+	protected static final RenderPhase.class_5942 field_29426 = new RenderPhase.class_5942(GameRenderer::method_34536);
+	protected static final RenderPhase.class_5942 field_29427 = new RenderPhase.class_5942(GameRenderer::method_34529);
+	protected static final RenderPhase.class_5942 field_29428 = new RenderPhase.class_5942(GameRenderer::method_34530);
+	protected static final RenderPhase.class_5942 field_29429 = new RenderPhase.class_5942(GameRenderer::method_34531);
+	protected static final RenderPhase.class_5942 field_29430 = new RenderPhase.class_5942(GameRenderer::method_34532);
+	protected static final RenderPhase.class_5942 field_29431 = new RenderPhase.class_5942(GameRenderer::method_34533);
+	protected static final RenderPhase.class_5942 field_29432 = new RenderPhase.class_5942(GameRenderer::method_34534);
+	protected static final RenderPhase.class_5942 field_29433 = new RenderPhase.class_5942(GameRenderer::method_34535);
 	protected static final RenderPhase.Texture MIPMAP_BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, true);
 	protected static final RenderPhase.Texture BLOCK_ATLAS_TEXTURE = new RenderPhase.Texture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE, false, false);
-	protected static final RenderPhase.Texture NO_TEXTURE = new RenderPhase.Texture();
+	protected static final RenderPhase.class_5939 NO_TEXTURE = new RenderPhase.class_5939();
 	protected static final RenderPhase.Texturing DEFAULT_TEXTURING = new RenderPhase.Texturing("default_texturing", () -> {
 	}, () -> {
 	});
-	protected static final RenderPhase.Texturing OUTLINE_TEXTURING = new RenderPhase.Texturing(
-		"outline_texturing", () -> RenderSystem.setupOutline(), () -> RenderSystem.teardownOutline()
+	protected static final RenderPhase.Texturing GLINT_TEXTURING = new RenderPhase.Texturing(
+		"glint_texturing", () -> setupGlintTexturing(8.0F), () -> RenderSystem.resetTextureMatrix()
 	);
-	protected static final RenderPhase.Texturing GLINT_TEXTURING = new RenderPhase.Texturing("glint_texturing", () -> setupGlintTexturing(8.0F), () -> {
-		RenderSystem.matrixMode(5890);
-		RenderSystem.popMatrix();
-		RenderSystem.matrixMode(5888);
-	});
 	protected static final RenderPhase.Texturing ENTITY_GLINT_TEXTURING = new RenderPhase.Texturing(
-		"entity_glint_texturing", () -> setupGlintTexturing(0.16F), () -> {
-			RenderSystem.matrixMode(5890);
-			RenderSystem.popMatrix();
-			RenderSystem.matrixMode(5888);
-		}
+		"entity_glint_texturing", () -> setupGlintTexturing(0.16F), () -> RenderSystem.resetTextureMatrix()
 	);
 	protected static final RenderPhase.Lightmap ENABLE_LIGHTMAP = new RenderPhase.Lightmap(true);
 	protected static final RenderPhase.Lightmap DISABLE_LIGHTMAP = new RenderPhase.Lightmap(false);
 	protected static final RenderPhase.Overlay ENABLE_OVERLAY_COLOR = new RenderPhase.Overlay(true);
 	protected static final RenderPhase.Overlay DISABLE_OVERLAY_COLOR = new RenderPhase.Overlay(false);
-	protected static final RenderPhase.DiffuseLighting ENABLE_DIFFUSE_LIGHTING = new RenderPhase.DiffuseLighting(true);
-	protected static final RenderPhase.DiffuseLighting DISABLE_DIFFUSE_LIGHTING = new RenderPhase.DiffuseLighting(false);
 	protected static final RenderPhase.Cull ENABLE_CULLING = new RenderPhase.Cull(true);
 	protected static final RenderPhase.Cull DISABLE_CULLING = new RenderPhase.Cull(false);
 	protected static final RenderPhase.DepthTest ALWAYS_DEPTH_TEST = new RenderPhase.DepthTest("always", 519);
@@ -122,22 +163,14 @@ public abstract class RenderPhase {
 		RenderSystem.disablePolygonOffset();
 	});
 	protected static final RenderPhase.Layering VIEW_OFFSET_Z_LAYERING = new RenderPhase.Layering("view_offset_z_layering", () -> {
-		RenderSystem.pushMatrix();
-		RenderSystem.scalef(0.99975586F, 0.99975586F, 0.99975586F);
-	}, RenderSystem::popMatrix);
-	protected static final RenderPhase.Fog NO_FOG = new RenderPhase.Fog("no_fog", () -> {
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.push();
+		matrixStack.scale(0.99975586F, 0.99975586F, 0.99975586F);
+		RenderSystem.applyModelViewMatrix();
 	}, () -> {
-	});
-	protected static final RenderPhase.Fog FOG = new RenderPhase.Fog("fog", () -> {
-		BackgroundRenderer.setFogBlack();
-		RenderSystem.enableFog();
-	}, () -> RenderSystem.disableFog());
-	protected static final RenderPhase.Fog BLACK_FOG = new RenderPhase.Fog("black_fog", () -> {
-		RenderSystem.fog(2918, 0.0F, 0.0F, 0.0F, 1.0F);
-		RenderSystem.enableFog();
-	}, () -> {
-		BackgroundRenderer.setFogBlack();
-		RenderSystem.disableFog();
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.pop();
+		RenderSystem.applyModelViewMatrix();
 	});
 	protected static final RenderPhase.Target MAIN_TARGET = new RenderPhase.Target("main_target", () -> {
 	}, () -> {
@@ -219,6 +252,10 @@ public abstract class RenderPhase {
 		}
 	}
 
+	protected boolean method_34551(RenderPhase renderPhase) {
+		return this.name.equals(renderPhase.name);
+	}
+
 	public int hashCode() {
 		return this.name.hashCode();
 	}
@@ -228,57 +265,13 @@ public abstract class RenderPhase {
 	}
 
 	private static void setupGlintTexturing(float scale) {
-		RenderSystem.matrixMode(5890);
-		RenderSystem.pushMatrix();
-		RenderSystem.loadIdentity();
 		long l = Util.getMeasuringTimeMs() * 8L;
 		float f = (float)(l % 110000L) / 110000.0F;
 		float g = (float)(l % 30000L) / 30000.0F;
-		RenderSystem.translatef(-f, g, 0.0F);
-		RenderSystem.rotatef(10.0F, 0.0F, 0.0F, 1.0F);
-		RenderSystem.scalef(scale, scale, scale);
-		RenderSystem.matrixMode(5888);
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class Alpha extends RenderPhase {
-		private final float alpha;
-
-		public Alpha(float alpha) {
-			super("alpha", () -> {
-				if (alpha > 0.0F) {
-					RenderSystem.enableAlphaTest();
-					RenderSystem.alphaFunc(516, alpha);
-				} else {
-					RenderSystem.disableAlphaTest();
-				}
-			}, () -> {
-				RenderSystem.disableAlphaTest();
-				RenderSystem.defaultAlphaFunc();
-			});
-			this.alpha = alpha;
-		}
-
-		@Override
-		public boolean equals(@Nullable Object object) {
-			if (this == object) {
-				return true;
-			} else if (object == null || this.getClass() != object.getClass()) {
-				return false;
-			} else {
-				return !super.equals(object) ? false : this.alpha == ((RenderPhase.Alpha)object).alpha;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(new Object[]{super.hashCode(), this.alpha});
-		}
-
-		@Override
-		public String toString() {
-			return this.name + '[' + this.alpha + ']';
-		}
+		Matrix4f matrix4f = Matrix4f.translate(-f, g, 0.0F);
+		matrix4f.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(10.0F));
+		matrix4f.multiply(Matrix4f.scale(scale, scale, scale));
+		RenderSystem.setTextureMatrix(matrix4f);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -341,28 +334,6 @@ public abstract class RenderPhase {
 		@Override
 		public String toString() {
 			return this.name + '[' + this.depthFunction + ']';
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class DiffuseLighting extends RenderPhase.Toggleable {
-		public DiffuseLighting(boolean guiLighting) {
-			super("diffuse_lighting", () -> {
-				if (guiLighting) {
-					net.minecraft.client.render.DiffuseLighting.enable();
-				}
-			}, () -> {
-				if (guiLighting) {
-					net.minecraft.client.render.DiffuseLighting.disable();
-				}
-			}, guiLighting);
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class Fog extends RenderPhase {
-		public Fog(String string, Runnable runnable, Runnable runnable2) {
-			super(string, runnable, runnable2);
 		}
 	}
 
@@ -437,17 +408,7 @@ public abstract class RenderPhase {
 		private final float y;
 
 		public OffsetTexturing(float x, float y) {
-			super("offset_texturing", () -> {
-				RenderSystem.matrixMode(5890);
-				RenderSystem.pushMatrix();
-				RenderSystem.loadIdentity();
-				RenderSystem.translatef(x, y, 0.0F);
-				RenderSystem.matrixMode(5888);
-			}, () -> {
-				RenderSystem.matrixMode(5890);
-				RenderSystem.popMatrix();
-				RenderSystem.matrixMode(5888);
-			});
+			super("offset_texturing", () -> RenderSystem.setTextureMatrix(Matrix4f.translate(x, y, 0.0F)), () -> RenderSystem.resetTextureMatrix());
 			this.x = x;
 			this.y = y;
 		}
@@ -486,82 +447,6 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static final class PortalTexturing extends RenderPhase.Texturing {
-		private final int layer;
-
-		public PortalTexturing(int layer) {
-			super("portal_texturing", () -> {
-				RenderSystem.matrixMode(5890);
-				RenderSystem.pushMatrix();
-				RenderSystem.loadIdentity();
-				RenderSystem.translatef(0.5F, 0.5F, 0.0F);
-				RenderSystem.scalef(0.5F, 0.5F, 1.0F);
-				RenderSystem.translatef(17.0F / (float)layer, (2.0F + (float)layer / 1.5F) * ((float)(Util.getMeasuringTimeMs() % 800000L) / 800000.0F), 0.0F);
-				RenderSystem.rotatef(((float)(layer * layer) * 4321.0F + (float)layer * 9.0F) * 2.0F, 0.0F, 0.0F, 1.0F);
-				RenderSystem.scalef(4.5F - (float)layer / 4.0F, 4.5F - (float)layer / 4.0F, 1.0F);
-				RenderSystem.mulTextureByProjModelView();
-				RenderSystem.matrixMode(5888);
-				RenderSystem.setupEndPortalTexGen();
-			}, () -> {
-				RenderSystem.matrixMode(5890);
-				RenderSystem.popMatrix();
-				RenderSystem.matrixMode(5888);
-				RenderSystem.clearTexGen();
-			});
-			this.layer = layer;
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				RenderPhase.PortalTexturing portalTexturing = (RenderPhase.PortalTexturing)object;
-				return this.layer == portalTexturing.layer;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Integer.hashCode(this.layer);
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
-	public static class ShadeModel extends RenderPhase {
-		private final boolean smooth;
-
-		public ShadeModel(boolean smooth) {
-			super("shade_model", () -> RenderSystem.shadeModel(smooth ? 7425 : 7424), () -> RenderSystem.shadeModel(7424));
-			this.smooth = smooth;
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (this == object) {
-				return true;
-			} else if (object != null && this.getClass() == object.getClass()) {
-				RenderPhase.ShadeModel shadeModel = (RenderPhase.ShadeModel)object;
-				return this.smooth == shadeModel.smooth;
-			} else {
-				return false;
-			}
-		}
-
-		@Override
-		public int hashCode() {
-			return Boolean.hashCode(this.smooth);
-		}
-
-		@Override
-		public String toString() {
-			return this.name + '[' + (this.smooth ? "smooth" : "flat") + ']';
-		}
-	}
-
-	@Environment(EnvType.CLIENT)
 	public static class Target extends RenderPhase {
 		public Target(String string, Runnable runnable, Runnable runnable2) {
 			super(string, runnable, runnable2);
@@ -569,29 +454,22 @@ public abstract class RenderPhase {
 	}
 
 	@Environment(EnvType.CLIENT)
-	public static class Texture extends RenderPhase {
+	public static class Texture extends RenderPhase.class_5939 {
 		private final Optional<Identifier> id;
 		private final boolean bilinear;
 		private final boolean mipmap;
 
-		public Texture(Identifier id, boolean bilinear, boolean mipmap) {
-			super("texture", () -> {
+		public Texture(Identifier identifier, boolean bl, boolean bl2) {
+			super(() -> {
 				RenderSystem.enableTexture();
 				TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-				textureManager.bindTexture(id);
-				textureManager.getTexture(id).setFilter(bilinear, mipmap);
+				textureManager.getTexture(identifier).setFilter(bl, bl2);
+				RenderSystem.setShaderTexture(0, identifier);
 			}, () -> {
 			});
-			this.id = Optional.of(id);
-			this.bilinear = bilinear;
-			this.mipmap = mipmap;
-		}
-
-		public Texture() {
-			super("texture", () -> RenderSystem.disableTexture(), () -> RenderSystem.enableTexture());
-			this.id = Optional.empty();
-			this.bilinear = false;
-			this.mipmap = false;
+			this.id = Optional.of(identifier);
+			this.bilinear = bl;
+			this.mipmap = bl2;
 		}
 
 		@Override
@@ -616,6 +494,7 @@ public abstract class RenderPhase {
 			return this.name + '[' + this.id + "(blur=" + this.bilinear + ", mipmap=" + this.mipmap + ")]";
 		}
 
+		@Override
 		protected Optional<Identifier> getId() {
 			return this.id;
 		}
@@ -714,6 +593,104 @@ public abstract class RenderPhase {
 		@Override
 		public String toString() {
 			return this.name + "[writeColor=" + this.color + ", writeDepth=" + this.depth + ']';
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_5939 extends RenderPhase {
+		public class_5939(Runnable runnable, Runnable runnable2) {
+			super("texture", runnable, runnable2);
+		}
+
+		private class_5939() {
+			super("texture", () -> {
+			}, () -> {
+			});
+		}
+
+		protected Optional<Identifier> getId() {
+			return Optional.empty();
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_5940 extends RenderPhase.class_5939 {
+		private final Optional<Identifier> field_29453;
+
+		private class_5940(ImmutableList<Triple<Identifier, Boolean, Boolean>> immutableList) {
+			super(() -> {
+				int i = 0;
+
+				for (Triple<Identifier, Boolean, Boolean> triple : immutableList) {
+					TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
+					textureManager.getTexture(triple.getLeft()).setFilter(triple.getMiddle(), triple.getRight());
+					RenderSystem.setShaderTexture(i++, triple.getLeft());
+				}
+			}, () -> {
+			});
+			this.field_29453 = immutableList.stream().findFirst().map(Triple::getLeft);
+		}
+
+		@Override
+		protected Optional<Identifier> getId() {
+			return this.field_29453;
+		}
+
+		public static RenderPhase.class_5940.class_5941 method_34560() {
+			return new RenderPhase.class_5940.class_5941();
+		}
+
+		@Environment(EnvType.CLIENT)
+		public static final class class_5941 {
+			private final Builder<Triple<Identifier, Boolean, Boolean>> field_29454 = new Builder<>();
+
+			public RenderPhase.class_5940.class_5941 method_34563(Identifier identifier, boolean bl, boolean bl2) {
+				this.field_29454.add(Triple.of(identifier, bl, bl2));
+				return this;
+			}
+
+			public RenderPhase.class_5940 method_34562() {
+				return new RenderPhase.class_5940(this.field_29454.build());
+			}
+		}
+	}
+
+	@Environment(EnvType.CLIENT)
+	public static class class_5942 extends RenderPhase {
+		private final Optional<Supplier<class_5944>> field_29455;
+
+		public class_5942(Supplier<class_5944> supplier) {
+			super("shader", () -> RenderSystem.setShader(supplier), () -> {
+			});
+			this.field_29455 = Optional.of(supplier);
+		}
+
+		public class_5942() {
+			super("shader", () -> RenderSystem.setShader(() -> null), () -> {
+			});
+			this.field_29455 = Optional.empty();
+		}
+
+		@Override
+		public boolean equals(Object object) {
+			if (this == object) {
+				return true;
+			} else if (object != null && this.getClass() == object.getClass()) {
+				RenderPhase.class_5942 lv = (RenderPhase.class_5942)object;
+				return this.field_29455.equals(lv.field_29455);
+			} else {
+				return false;
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			return this.field_29455.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return this.name + '[' + this.field_29455 + "]";
 		}
 	}
 }

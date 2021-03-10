@@ -170,7 +170,7 @@ public class PistonBlockEntity extends BlockEntity {
 
 					if (!(i <= 0.0)) {
 						i = Math.min(i, d) + 0.01;
-						method_23672(direction, entity, i, direction);
+						moveEntity(direction, entity, i, direction);
 						if (!blockEntity.extending && blockEntity.source) {
 							push(pos, entity, direction, d);
 						}
@@ -180,28 +180,28 @@ public class PistonBlockEntity extends BlockEntity {
 		}
 	}
 
-	private static void method_23672(Direction direction, Entity entity, double d, Direction direction2) {
+	private static void moveEntity(Direction direction, Entity entity, double d, Direction direction2) {
 		field_12205.set(direction);
 		entity.move(MovementType.PISTON, new Vec3d(d * (double)direction2.getOffsetX(), d * (double)direction2.getOffsetY(), d * (double)direction2.getOffsetZ()));
 		field_12205.set(null);
 	}
 
-	private static void method_23674(World world, BlockPos blockPos, float f, PistonBlockEntity pistonBlockEntity) {
-		if (pistonBlockEntity.isPushingHoneyBlock()) {
-			Direction direction = pistonBlockEntity.getMovementDirection();
+	private static void moveEntitiesInHoneyBlock(World world, BlockPos pos, float f, PistonBlockEntity blockEntity) {
+		if (blockEntity.isPushingHoneyBlock()) {
+			Direction direction = blockEntity.getMovementDirection();
 			if (direction.getAxis().isHorizontal()) {
-				double d = pistonBlockEntity.pushedBlock.getCollisionShape(world, blockPos).getMax(Direction.Axis.Y);
-				Box box = offsetHeadBox(blockPos, new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0), pistonBlockEntity);
-				double e = (double)(f - pistonBlockEntity.progress);
+				double d = blockEntity.pushedBlock.getCollisionShape(world, pos).getMax(Direction.Axis.Y);
+				Box box = offsetHeadBox(pos, new Box(0.0, d, 0.0, 1.0, 1.5000000999999998, 1.0), blockEntity);
+				double e = (double)(f - blockEntity.progress);
 
-				for (Entity entity : world.getOtherEntities((Entity)null, box, entityx -> method_23671(box, entityx))) {
-					method_23672(direction, entity, e, direction);
+				for (Entity entity : world.getOtherEntities((Entity)null, box, entityx -> canMoveEntity(box, entityx))) {
+					moveEntity(direction, entity, e, direction);
 				}
 			}
 		}
 	}
 
-	private static boolean method_23671(Box box, Entity entity) {
+	private static boolean canMoveEntity(Box box, Entity entity) {
 		return entity.getPistonBehavior() == PistonBehavior.NORMAL
 			&& entity.isOnGround()
 			&& entity.getX() >= box.minX
@@ -254,7 +254,7 @@ public class PistonBlockEntity extends BlockEntity {
 			double e = getIntersectionSize(box2, direction2, box.intersection(box2)) + 0.01;
 			if (Math.abs(d - e) < 0.01) {
 				d = Math.min(d, amount) + 0.01;
-				method_23672(direction, entity, d, direction2);
+				moveEntity(direction, entity, d, direction2);
 			}
 		}
 	}
@@ -310,7 +310,7 @@ public class PistonBlockEntity extends BlockEntity {
 		} else {
 			float f = blockEntity.progress + 0.5F;
 			pushEntities(world, pos, f, blockEntity);
-			method_23674(world, pos, f, blockEntity);
+			moveEntitiesInHoneyBlock(world, pos, f, blockEntity);
 			blockEntity.progress = f;
 			if (blockEntity.progress >= 1.0F) {
 				blockEntity.progress = 1.0F;

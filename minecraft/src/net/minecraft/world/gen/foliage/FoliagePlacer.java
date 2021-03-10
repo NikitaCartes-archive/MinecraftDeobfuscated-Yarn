@@ -76,7 +76,7 @@ public abstract class FoliagePlacer {
 	/**
 	 * Used to exclude certain positions such as corners when creating a square of leaves.
 	 */
-	protected abstract boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk);
+	protected abstract boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk);
 
 	/**
 	 * Normalizes x and z coords before checking if they are invalid.
@@ -104,7 +104,7 @@ public abstract class FoliagePlacer {
 		TreeFeatureConfig config,
 		BlockPos pos,
 		int radius,
-		Set<BlockPos> leaves,
+		Set<BlockPos> positions,
 		int y,
 		boolean giantTrunk,
 		BlockBox box
@@ -116,13 +116,19 @@ public abstract class FoliagePlacer {
 			for (int k = -radius; k <= radius + i; k++) {
 				if (!this.isPositionInvalid(random, j, y, k, radius, giantTrunk)) {
 					mutable.set(pos, j, y, k);
-					if (TreeFeature.canReplace(world, mutable)) {
-						world.setBlockState(mutable, config.leavesProvider.getBlockState(random, mutable), 19);
-						box.encompass(new BlockBox(mutable, mutable));
-						leaves.add(mutable.toImmutable());
-					}
+					this.placeFoliageBlock(world, random, config, positions, box, mutable);
 				}
 			}
+		}
+	}
+
+	protected void placeFoliageBlock(
+		ModifiableTestableWorld world, Random random, TreeFeatureConfig config, Set<BlockPos> positions, BlockBox box, BlockPos.Mutable mutablePos
+	) {
+		if (TreeFeature.canReplace(world, mutablePos)) {
+			world.setBlockState(mutablePos, config.foliageProvider.getBlockState(random, mutablePos), 19);
+			box.encompass(new BlockBox(mutablePos));
+			positions.add(mutablePos.toImmutable());
 		}
 	}
 

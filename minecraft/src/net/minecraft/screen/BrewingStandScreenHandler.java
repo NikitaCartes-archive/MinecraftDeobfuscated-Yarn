@@ -170,14 +170,13 @@ public class BrewingStandScreenHandler extends ScreenHandler {
 		}
 
 		@Override
-		public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+		public void onTakeItem(PlayerEntity player, ItemStack stack) {
 			Potion potion = PotionUtil.getPotion(stack);
 			if (player instanceof ServerPlayerEntity) {
 				Criteria.BREWED_POTION.trigger((ServerPlayerEntity)player, potion);
 			}
 
 			super.onTakeItem(player, stack);
-			return stack;
 		}
 
 		public static boolean matches(ItemStack stack) {

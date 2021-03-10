@@ -464,10 +464,10 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 
 		private void drawImage(MatrixStack matrices, int y, int xm, int ym, int i, WorldTemplate worldTemplate) {
 			RealmsTextureManager.bindWorldTemplate(worldTemplate.id, worldTemplate.image);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, y + 1, xm + 1, 0.0F, 0.0F, 38, 38, 38, 38);
-			RealmsSelectWorldTemplateScreen.this.client.getTextureManager().bindTexture(RealmsSelectWorldTemplateScreen.SLOT_FRAME);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderTexture(0, RealmsSelectWorldTemplateScreen.SLOT_FRAME);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			DrawableHelper.drawTexture(matrices, y, xm, 0.0F, 0.0F, 40, 40, 40, 40);
 		}
 
@@ -493,24 +493,18 @@ public class RealmsSelectWorldTemplateScreen extends RealmsScreen {
 			}
 
 			if (!bl3) {
-				RealmsSelectWorldTemplateScreen.this.client.getTextureManager().bindTexture(RealmsSelectWorldTemplateScreen.LINK_ICONS);
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				RenderSystem.pushMatrix();
-				RenderSystem.scalef(1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderTexture(0, RealmsSelectWorldTemplateScreen.LINK_ICONS);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				float f = bl ? 15.0F : 0.0F;
 				DrawableHelper.drawTexture(matrices, i + m, j, f, 0.0F, 15, 15, 30, 15);
-				RenderSystem.popMatrix();
 			}
 
 			if (!"".equals(string2)) {
-				RealmsSelectWorldTemplateScreen.this.client.getTextureManager().bindTexture(RealmsSelectWorldTemplateScreen.TRAILER_ICONS);
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				RenderSystem.pushMatrix();
-				RenderSystem.scalef(1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderTexture(0, RealmsSelectWorldTemplateScreen.TRAILER_ICONS);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				int n = i + m + (bl3 ? 0 : 17);
 				float g = bl2 ? 15.0F : 0.0F;
 				DrawableHelper.drawTexture(matrices, n, j, g, 0.0F, 15, 15, 30, 15);
-				RenderSystem.popMatrix();
 			}
 
 			if (bl) {

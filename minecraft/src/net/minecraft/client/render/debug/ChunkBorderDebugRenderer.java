@@ -24,9 +24,6 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		RenderSystem.enableDepthTest();
-		RenderSystem.shadeModel(7425);
-		RenderSystem.enableAlphaTest();
-		RenderSystem.defaultAlphaFunc();
 		Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -38,7 +35,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		double f = (double)chunkPos.getStartX() - cameraX;
 		double g = (double)chunkPos.getStartZ() - cameraZ;
 		RenderSystem.lineWidth(1.0F);
-		bufferBuilder.begin(VertexFormat.DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
 		for (int i = -16; i <= 32; i += 16) {
 			for (int j = -16; j <= 32; j += 16) {
@@ -84,7 +81,7 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 
 		tessellator.draw();
 		RenderSystem.lineWidth(2.0F);
-		bufferBuilder.begin(VertexFormat.DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
+		bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
 
 		for (int i = 0; i <= 16; i += 16) {
 			for (int j = 0; j <= 16; j += 16) {
@@ -110,6 +107,5 @@ public class ChunkBorderDebugRenderer implements DebugRenderer.Renderer {
 		RenderSystem.lineWidth(1.0F);
 		RenderSystem.enableBlend();
 		RenderSystem.enableTexture();
-		RenderSystem.shadeModel(7424);
 	}
 }

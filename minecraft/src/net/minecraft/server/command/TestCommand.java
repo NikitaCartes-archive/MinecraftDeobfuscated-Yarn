@@ -223,7 +223,7 @@ public class TestCommand {
 			ServerWorld serverWorld = source.getWorld();
 			BlockPos blockPos = new BlockPos(source.getPosition());
 			BlockPos blockPos2 = new BlockPos(blockPos.getX(), source.getWorld().getTopPosition(Heightmap.Type.WORLD_SURFACE, blockPos).getY(), blockPos.getZ() + 3);
-			StructureTestUtil.createTestArea(structure.toLowerCase(), blockPos2, new BlockPos(x, y, z), BlockRotation.NONE, serverWorld);
+			StructureTestUtil.createTestArea(structure.toLowerCase(), blockPos2, new Vec3i(x, y, z), BlockRotation.NONE, serverWorld);
 
 			for (int i = 0; i < x; i++) {
 				for (int j = 0; j < z; j++) {

@@ -71,7 +71,7 @@ public class AdvancementRewards {
 		}
 
 		if (bl) {
-			player.playerScreenHandler.sendContentUpdates();
+			player.currentScreenHandler.sendContentUpdates();
 		}
 
 		if (this.recipes.length > 0) {

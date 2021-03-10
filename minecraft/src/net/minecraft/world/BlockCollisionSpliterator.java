@@ -32,7 +32,7 @@ public class BlockCollisionSpliterator extends AbstractSpliterator<VoxelShape> {
 	private final BiPredicate<BlockState, BlockPos> blockPredicate;
 
 	public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box) {
-		this(world, entity, box, (blockState, blockPos) -> true);
+		this(world, entity, box, (state, pos) -> true);
 	}
 
 	public BlockCollisionSpliterator(CollisionView world, @Nullable Entity entity, Box box, BiPredicate<BlockState, BlockPos> blockPredicate) {

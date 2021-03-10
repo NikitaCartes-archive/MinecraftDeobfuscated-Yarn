@@ -17,7 +17,6 @@ import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -83,7 +82,7 @@ public interface CauldronBehavior {
 				if (stack.isEmpty()) {
 					player.setStackInHand(hand, itemStack);
 				} else if (player.getInventory().insertStack(itemStack)) {
-					((ServerPlayerEntity)player).refreshScreenHandler(player.playerScreenHandler);
+					player.playerScreenHandler.syncState();
 				} else {
 					player.dropItem(itemStack, false);
 				}

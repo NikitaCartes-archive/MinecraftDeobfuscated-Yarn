@@ -213,7 +213,7 @@ public abstract class ChunkGenerator {
 		int i = chunkPos.getStartX();
 		int j = chunkPos.getStartZ();
 		BlockPos blockPos = new BlockPos(i, region.getBottomY(), j);
-		Biome biome = this.populationSource.method_31609(chunkPos);
+		Biome biome = this.populationSource.getBiomeForNoiseGen(chunkPos);
 		ChunkRandom chunkRandom = new ChunkRandom();
 		long l = chunkRandom.setPopulationSeed(region.getSeed(), i, j);
 
@@ -260,7 +260,7 @@ public abstract class ChunkGenerator {
 	public void setStructureStarts(
 		DynamicRegistryManager dynamicRegistryManager, StructureAccessor structureAccessor, Chunk chunk, StructureManager structureManager, long worldSeed
 	) {
-		Biome biome = this.populationSource.method_31609(chunk.getPos());
+		Biome biome = this.populationSource.getBiomeForNoiseGen(chunk.getPos());
 		this.setStructureStart(ConfiguredStructureFeatures.STRONGHOLD, dynamicRegistryManager, structureAccessor, chunk, structureManager, worldSeed, biome);
 
 		for (Supplier<ConfiguredStructureFeature<?, ?>> supplier : biome.getGenerationSettings().getStructureFeatures()) {

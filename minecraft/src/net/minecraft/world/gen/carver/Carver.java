@@ -178,7 +178,7 @@ public abstract class Carver<C extends CarverConfig> {
 		if (!this.canCarveBlock(blockState, blockState2) && !isDebug(config)) {
 			return false;
 		} else {
-			if (pos.getY() < context.getMinY() + 11 && !isDebug(config)) {
+			if (pos.getY() < context.getMinY() + 9 && !isDebug(config)) {
 				chunk.setBlockState(pos, LAVA.getBlockState(), false);
 			} else {
 				chunk.setBlockState(pos, getState(config), false);

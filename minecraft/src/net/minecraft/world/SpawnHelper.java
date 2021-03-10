@@ -70,8 +70,8 @@ public final class SpawnHelper {
 			if (spawnGroup != SpawnGroup.MISC) {
 				BlockPos blockPos = entity.getBlockPos();
 				long l = ChunkPos.toLong(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
-				chunkSource.query(l, worldChunk -> {
-					SpawnSettings.SpawnDensity spawnDensity = getBiomeDirectly(blockPos, worldChunk).getSpawnSettings().getSpawnDensity(entity.getType());
+				chunkSource.query(l, chunk -> {
+					SpawnSettings.SpawnDensity spawnDensity = getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entity.getType());
 					if (spawnDensity != null) {
 						gravityField.addPoint(entity.getBlockPos(), spawnDensity.getMass());
 					}
@@ -97,7 +97,7 @@ public final class SpawnHelper {
 				&& (rareSpawn || !spawnGroup.isRare())
 				&& info.isBelowCap(spawnGroup)) {
 				spawnEntitiesInChunk(
-					spawnGroup, world, chunk, (entityType, blockPos, chunkx) -> info.test(entityType, blockPos, chunkx), (mobEntity, chunkx) -> info.run(mobEntity, chunkx)
+					spawnGroup, world, chunk, (entityType, pos, chunkx) -> info.test(entityType, pos, chunkx), (entity, chunkx) -> info.run(entity, chunkx)
 				);
 			}
 		}
@@ -248,7 +248,7 @@ public final class SpawnHelper {
 		if (spawnGroup == SpawnGroup.WATER_AMBIENT && biome.getCategory() == Biome.Category.RIVER && random.nextFloat() < 0.98F) {
 			return Optional.empty();
 		} else {
-			List<SpawnSettings.SpawnEntry> list = method_29950(world, structureAccessor, chunkGenerator, spawnGroup, pos, biome);
+			List<SpawnSettings.SpawnEntry> list = getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, biome);
 			return list.isEmpty() ? Optional.empty() : WeightedPicker.getRandom(random, list);
 		}
 	}
@@ -261,17 +261,17 @@ public final class SpawnHelper {
 		SpawnSettings.SpawnEntry spawnEntry,
 		BlockPos pos
 	) {
-		return method_29950(world, structureAccessor, chunkGenerator, spawnGroup, pos, null).contains(spawnEntry);
+		return getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, null).contains(spawnEntry);
 	}
 
-	private static List<SpawnSettings.SpawnEntry> method_29950(
-		ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos blockPos, @Nullable Biome biome
+	private static List<SpawnSettings.SpawnEntry> getSpawnEntries(
+		ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos pos, @Nullable Biome biome
 	) {
 		return spawnGroup == SpawnGroup.MONSTER
-				&& serverWorld.getBlockState(blockPos.down()).isOf(Blocks.NETHER_BRICKS)
-				&& structureAccessor.getStructureAt(blockPos, false, StructureFeature.FORTRESS).hasChildren()
+				&& world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS)
+				&& structureAccessor.getStructureAt(pos, false, StructureFeature.FORTRESS).hasChildren()
 			? StructureFeature.FORTRESS.getMonsterSpawns()
-			: chunkGenerator.getEntitySpawnList(biome != null ? biome : serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos);
+			: chunkGenerator.getEntitySpawnList(biome != null ? biome : world.getBiome(pos), structureAccessor, spawnGroup, pos);
 	}
 
 	private static BlockPos getSpawnPos(World world, WorldChunk chunk) {

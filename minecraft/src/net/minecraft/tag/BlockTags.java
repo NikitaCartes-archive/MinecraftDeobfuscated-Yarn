@@ -51,6 +51,9 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> DIAMOND_ORES = register("diamond_ores");
 	public static final Tag.Identified<Block> REDSTONE_ORES = register("redstone_ores");
 	public static final Tag.Identified<Block> LAPIS_ORES = register("lapis_ores");
+	public static final Tag.Identified<Block> COAL_ORES = register("coal_ores");
+	public static final Tag.Identified<Block> EMERALD_ORES = register("emerald_ores");
+	public static final Tag.Identified<Block> COPPER_ORES = register("copper_ores");
 	public static final Tag.Identified<Block> NON_FLAMMABLE_WOOD = register("non_flammable_wood");
 	public static final Tag.Identified<Block> CANDLES = register("candles");
 	public static final Tag.Identified<Block> FLOWER_POTS = register("flower_pots");
@@ -106,7 +109,7 @@ public final class BlockTags {
 	public static final Tag.Identified<Block> DRIPSTONE_REPLACEABLE_BLOCKS = register("dripstone_replaceable_blocks");
 	public static final Tag.Identified<Block> CAVE_VINES = register("cave_vines");
 	public static final Tag.Identified<Block> LUSH_PLANTS_REPLACEABLE = register("lush_plants_replaceable");
-	public static final Tag.Identified<Block> AZALEA_LOG_REPLACEABLE = register("azalea_log_replaceable");
+	public static final Tag.Identified<Block> LUSH_GROUND_REPLACEABLE = register("lush_ground_replaceable");
 
 	private static Tag.Identified<Block> register(String id) {
 		return REQUIRED_TAGS.add(id);

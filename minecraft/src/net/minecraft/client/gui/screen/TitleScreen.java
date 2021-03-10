@@ -23,6 +23,7 @@ import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.realms.gui.screen.RealmsBridgeScreen;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.toast.SystemToast;
@@ -32,6 +33,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.util.registry.DynamicRegistryManager;
 import net.minecraft.world.gen.GeneratorOptions;
 import net.minecraft.world.level.storage.LevelStorage;
@@ -269,16 +271,18 @@ public class TitleScreen extends Screen {
 		int i = 274;
 		int j = this.width / 2 - 137;
 		int k = 30;
-		this.client.getTextureManager().bindTexture(PANORAMA_OVERLAY);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.doBackgroundFade ? (float)MathHelper.ceil(MathHelper.clamp(f, 0.0F, 1.0F)) : 1.0F);
 		drawTexture(matrices, 0, 0, this.width, this.height, 0.0F, 0.0F, 16, 128, 16, 128);
 		float g = this.doBackgroundFade ? MathHelper.clamp(f - 1.0F, 0.0F, 1.0F) : 1.0F;
 		int l = MathHelper.ceil(g * 255.0F) << 24;
 		if ((l & -67108864) != 0) {
-			this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, g);
+			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
 			if (this.isMinceraft) {
 				this.method_29343(j, 30, (integer, integer2) -> {
 					this.drawTexture(matrices, integer + 0, integer2, 0, 0, 99, 44);
@@ -294,17 +298,17 @@ public class TitleScreen extends Screen {
 				});
 			}
 
-			this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
+			RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);
 			drawTexture(matrices, j + 88, 67, 0.0F, 0.0F, 98, 14, 128, 16);
 			if (this.splashText != null) {
-				RenderSystem.pushMatrix();
-				RenderSystem.translatef((float)(this.width / 2 + 90), 70.0F, 0.0F);
-				RenderSystem.rotatef(-20.0F, 0.0F, 0.0F, 1.0F);
+				matrices.push();
+				matrices.translate((double)(this.width / 2 + 90), 70.0, 0.0);
+				matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-20.0F));
 				float h = 1.8F - MathHelper.abs(MathHelper.sin((float)(Util.getMeasuringTimeMs() % 1000L) / 1000.0F * (float) (Math.PI * 2)) * 0.1F);
 				h = h * 100.0F / (float)(this.textRenderer.getWidth(this.splashText) + 32);
-				RenderSystem.scalef(h, h, h);
+				matrices.scale(h, h, h);
 				drawCenteredString(matrices, this.textRenderer, this.splashText, 0, -8, 16776960 | l);
-				RenderSystem.popMatrix();
+				matrices.pop();
 			}
 
 			String string = "Minecraft " + SharedConstants.getGameVersion().getName();

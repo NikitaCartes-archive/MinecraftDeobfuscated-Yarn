@@ -97,7 +97,7 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.DISK_GRAVEL);
 	}
 
-	public static void addClay(GenerationSettings.Builder builder) {
+	public static void addClayDisk(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.DISK_CLAY);
 	}
 
@@ -154,6 +154,20 @@ public class DefaultBiomeFeatures {
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_SHATTERED_SAVANNA);
 	}
 
+	public static void addLushCavesDecoration(GenerationSettings.Builder builder) {
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.LUSH_CAVES_CEILING_VEGETATION);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CAVE_VINES);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.LUSH_CAVES_CLAY);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.LUSH_CAVES_VEGETATION);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.ROOTED_AZALEA_TREES);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPORE_BLOSSOM);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.CLASSIC_VINES_CAVE_FEATURE);
+	}
+
+	public static void addClayOre(GenerationSettings.Builder builder) {
+		builder.feature(GenerationStep.Feature.UNDERGROUND_ORES, ConfiguredFeatures.ORE_CLAY);
+	}
+
 	public static void addMountainTrees(GenerationSettings.Builder builder) {
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_MOUNTAIN);
 	}
@@ -171,11 +185,11 @@ public class DefaultBiomeFeatures {
 	}
 
 	public static void addBadlandsPlateauTrees(GenerationSettings.Builder builder) {
-		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.OAK_BADLANDS);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_BADLANDS);
 	}
 
 	public static void addSnowySpruceTrees(GenerationSettings.Builder builder) {
-		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SPRUCE_SNOWY);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_SNOWY);
 	}
 
 	public static void addJungleGrass(GenerationSettings.Builder builder) {
@@ -208,7 +222,7 @@ public class DefaultBiomeFeatures {
 	}
 
 	public static void addSwampFeatures(GenerationSettings.Builder builder) {
-		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.SWAMP_TREE);
+		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.TREES_SWAMP);
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.FLOWER_SWAMP);
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_GRASS_NORMAL);
 		builder.feature(GenerationStep.Feature.VEGETAL_DECORATION, ConfiguredFeatures.PATCH_DEAD_BUSH);
@@ -299,7 +313,8 @@ public class DefaultBiomeFeatures {
 	}
 
 	public static void addFossils(GenerationSettings.Builder builder) {
-		builder.feature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, ConfiguredFeatures.FOSSIL);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, ConfiguredFeatures.FOSSIL_UPPER);
+		builder.feature(GenerationStep.Feature.UNDERGROUND_STRUCTURES, ConfiguredFeatures.FOSSIL_LOWER);
 	}
 
 	public static void addKelp(GenerationSettings.Builder builder) {

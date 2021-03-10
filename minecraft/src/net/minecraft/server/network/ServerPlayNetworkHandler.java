@@ -7,8 +7,8 @@ import com.mojang.brigadier.ParseResults;
 import com.mojang.brigadier.StringReader;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import it.unimi.dsi.fastutil.ints.Int2ShortMap;
-import it.unimi.dsi.fastutil.ints.Int2ShortOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap.Entry;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +67,6 @@ import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
-import net.minecraft.network.packet.c2s.play.ConfirmScreenActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -104,7 +103,6 @@ import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
@@ -132,7 +130,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashCallable;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
@@ -166,7 +163,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	private long keepAliveId;
 	private int messageCooldown;
 	private int creativeItemDropThreshold;
-	private final Int2ShortMap transactions = new Int2ShortOpenHashMap();
 	private double lastTickX;
 	private double lastTickY;
 	private double lastTickZ;
@@ -1249,9 +1245,9 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 			if (this.player.squaredDistanceTo(entity) < 36.0) {
 				packet.handle(
 					new PlayerInteractEntityC2SPacket.Handler() {
-						private void processInteract(Hand hand, ServerPlayNetworkHandler.class_5860 arg) {
+						private void processInteract(Hand hand, ServerPlayNetworkHandler.Interaction action) {
 							ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand).copy();
-							ActionResult actionResult = arg.run(ServerPlayNetworkHandler.this.player, entity, hand);
+							ActionResult actionResult = action.run(ServerPlayNetworkHandler.this.player, entity, hand);
 							if (actionResult.isAccepted()) {
 								Criteria.PLAYER_INTERACTED_WITH_ENTITY.test(ServerPlayNetworkHandler.this.player, itemStack, entity);
 								if (actionResult.shouldSwingHand()) {
@@ -1326,36 +1322,20 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onClickSlot(ClickSlotC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.currentScreenHandler.syncId == packet.getSyncId() && this.player.currentScreenHandler.isNotRestricted(this.player)) {
+		if (this.player.currentScreenHandler.syncId == packet.getSyncId()) {
 			if (this.player.isSpectator()) {
-				DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-
-				for (int i = 0; i < this.player.currentScreenHandler.slots.size(); i++) {
-					defaultedList.add(this.player.currentScreenHandler.slots.get(i).getStack());
-				}
-
-				this.player.onHandlerRegistered(this.player.currentScreenHandler, defaultedList);
+				this.player.currentScreenHandler.syncState();
 			} else {
-				ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getClickData(), packet.getActionType(), this.player);
-				if (ItemStack.areEqual(packet.getStack(), itemStack)) {
-					this.player.networkHandler.sendPacket(new ConfirmScreenActionS2CPacket(packet.getSyncId(), packet.getActionId(), true));
-					this.player.skipPacketSlotUpdates = true;
-					this.player.currentScreenHandler.sendContentUpdates();
-					this.player.updateCursorStack();
-					this.player.skipPacketSlotUpdates = false;
-				} else {
-					this.transactions.put(this.player.currentScreenHandler.syncId, packet.getActionId());
-					this.player.networkHandler.sendPacket(new ConfirmScreenActionS2CPacket(packet.getSyncId(), packet.getActionId(), false));
-					this.player.currentScreenHandler.setPlayerRestriction(this.player, false);
-					DefaultedList<ItemStack> defaultedList2 = DefaultedList.of();
+				this.player.currentScreenHandler.disableSyncing();
+				this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getClickData(), packet.getActionType(), this.player);
 
-					for (int j = 0; j < this.player.currentScreenHandler.slots.size(); j++) {
-						ItemStack itemStack2 = this.player.currentScreenHandler.slots.get(j).getStack();
-						defaultedList2.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
-					}
-
-					this.player.onHandlerRegistered(this.player.currentScreenHandler, defaultedList2);
+				for (Entry<ItemStack> entry : Int2ObjectMaps.fastIterable(packet.getModifiedStacks())) {
+					this.player.currentScreenHandler.setPreviousTrackedSlot(entry.getIntKey(), (ItemStack)entry.getValue());
 				}
+
+				this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());
+				this.player.currentScreenHandler.enableSyncing();
+				this.player.currentScreenHandler.sendContentUpdates();
 			}
 		}
 	}
@@ -1366,7 +1346,6 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 		this.player.updateLastActionTime();
 		if (!this.player.isSpectator()
 			&& this.player.currentScreenHandler.syncId == packet.getSyncId()
-			&& this.player.currentScreenHandler.isNotRestricted(this.player)
 			&& this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler) {
 			this.server
 				.getRecipeManager()
@@ -1379,9 +1358,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	public void onButtonClick(ButtonClickC2SPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
 		this.player.updateLastActionTime();
-		if (this.player.currentScreenHandler.syncId == packet.getSyncId()
-			&& this.player.currentScreenHandler.isNotRestricted(this.player)
-			&& !this.player.isSpectator()) {
+		if (this.player.currentScreenHandler.syncId == packet.getSyncId() && !this.player.isSpectator()) {
 			this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
 			this.player.currentScreenHandler.sendContentUpdates();
 		}
@@ -1415,24 +1392,11 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 					this.player.playerScreenHandler.setStackInSlot(packet.getSlot(), itemStack);
 				}
 
-				this.player.playerScreenHandler.setPlayerRestriction(this.player, true);
 				this.player.playerScreenHandler.sendContentUpdates();
 			} else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
 				this.creativeItemDropThreshold += 20;
 				this.player.dropItem(itemStack, true);
 			}
-		}
-	}
-
-	@Override
-	public void onConfirmScreenAction(ConfirmScreenActionC2SPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-		int i = this.player.currentScreenHandler.syncId;
-		if (i == packet.getSyncId()
-			&& this.transactions.getOrDefault(i, (short)(packet.getActionId() + 1)) == packet.getActionId()
-			&& !this.player.currentScreenHandler.isNotRestricted(this.player)
-			&& !this.player.isSpectator()) {
-			this.player.currentScreenHandler.setPlayerRestriction(this.player, true);
 		}
 	}
 
@@ -1522,7 +1486,7 @@ public class ServerPlayNetworkHandler implements EntityTrackingListener, ServerP
 	}
 
 	@FunctionalInterface
-	interface class_5860 {
+	interface Interaction {
 		ActionResult run(ServerPlayerEntity player, Entity entity, Hand hand);
 	}
 }

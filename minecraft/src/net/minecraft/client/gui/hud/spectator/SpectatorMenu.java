@@ -2,10 +2,10 @@ package net.minecraft.client.gui.hud.spectator;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.hud.SpectatorHud;
 import net.minecraft.client.util.math.MatrixStack;
@@ -135,7 +135,7 @@ public class SpectatorMenu {
 
 		@Override
 		public void renderIcon(MatrixStack matrices, float f, int i) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
+			RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
 			if (this.direction < 0) {
 				DrawableHelper.drawTexture(matrices, 0, 0, 144.0F, 0.0F, 16, 16, 256, 256);
 			} else {
@@ -166,7 +166,7 @@ public class SpectatorMenu {
 
 		@Override
 		public void renderIcon(MatrixStack matrices, float f, int i) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
+			RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
 			DrawableHelper.drawTexture(matrices, 0, 0, 128.0F, 0.0F, 16, 16, 256, 256);
 		}
 

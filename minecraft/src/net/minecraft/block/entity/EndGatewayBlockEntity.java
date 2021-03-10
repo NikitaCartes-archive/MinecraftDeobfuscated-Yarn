@@ -155,7 +155,7 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 			ServerWorld serverWorld = (ServerWorld)world;
 			blockEntity.teleportCooldown = 100;
 			if (blockEntity.exitPortalPos == null && world.getRegistryKey() == World.END) {
-				BlockPos blockPos = method_31699(serverWorld, pos);
+				BlockPos blockPos = setupExitPortalLocation(serverWorld, pos);
 				blockPos = blockPos.up(10);
 				LOGGER.debug("Creating portal at {}", blockPos);
 				createPortal(serverWorld, blockPos, EndGatewayFeatureConfig.createConfig(pos, false));
@@ -195,8 +195,15 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		return blockPos.up();
 	}
 
-	private static BlockPos method_31699(ServerWorld world, BlockPos pos) {
-		Vec3d vec3d = method_31701(world, pos);
+	/**
+	 * Finds teleport location and creates an island to teleport to (if there is none).
+	 * 
+	 * <p>This does not create an exit portal.
+	 * 
+	 * @return the position of the exit portal
+	 */
+	private static BlockPos setupExitPortalLocation(ServerWorld world, BlockPos pos) {
+		Vec3d vec3d = findTeleportLocation(world, pos);
 		WorldChunk worldChunk = getChunk(world, vec3d);
 		BlockPos blockPos = findPortalPosition(worldChunk);
 		if (blockPos == null) {
@@ -210,16 +217,16 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		return findExitPortalPos(world, blockPos, 16, true);
 	}
 
-	private static Vec3d method_31701(ServerWorld world, BlockPos pos) {
+	private static Vec3d findTeleportLocation(ServerWorld world, BlockPos pos) {
 		Vec3d vec3d = new Vec3d((double)pos.getX(), 0.0, (double)pos.getZ()).normalize();
 		int i = 1024;
 		Vec3d vec3d2 = vec3d.multiply(1024.0);
 
-		for (int j = 16; !method_31698(world, vec3d2) && j-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(-16.0))) {
+		for (int j = 16; !isChunkEmpty(world, vec3d2) && j-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(-16.0))) {
 			LOGGER.debug("Skipping backwards past nonempty chunk at {}", vec3d2);
 		}
 
-		for (int var6 = 16; method_31698(world, vec3d2) && var6-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(16.0))) {
+		for (int var6 = 16; isChunkEmpty(world, vec3d2) && var6-- > 0; vec3d2 = vec3d2.add(vec3d.multiply(16.0))) {
 			LOGGER.debug("Skipping forward past empty chunk at {}", vec3d2);
 		}
 
@@ -227,20 +234,20 @@ public class EndGatewayBlockEntity extends EndPortalBlockEntity {
 		return vec3d2;
 	}
 
-	private static boolean method_31698(ServerWorld world, Vec3d vec3d) {
-		return getChunk(world, vec3d).getHighestNonEmptySectionYOffset() <= world.getBottomY();
+	private static boolean isChunkEmpty(ServerWorld world, Vec3d pos) {
+		return getChunk(world, pos).getHighestNonEmptySectionYOffset() <= world.getBottomY();
 	}
 
-	private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean bl) {
+	private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean force) {
 		BlockPos blockPos = null;
 
 		for (int i = -searchRadius; i <= searchRadius; i++) {
 			for (int j = -searchRadius; j <= searchRadius; j++) {
-				if (i != 0 || j != 0 || bl) {
+				if (i != 0 || j != 0 || force) {
 					for (int k = world.getTopY() - 1; k > (blockPos == null ? world.getBottomY() : blockPos.getY()); k--) {
 						BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
 						BlockState blockState = world.getBlockState(blockPos2);
-						if (blockState.isFullCube(world, blockPos2) && (bl || !blockState.isOf(Blocks.BEDROCK))) {
+						if (blockState.isFullCube(world, blockPos2) && (force || !blockState.isOf(Blocks.BEDROCK))) {
 							blockPos = blockPos2;
 							break;
 						}

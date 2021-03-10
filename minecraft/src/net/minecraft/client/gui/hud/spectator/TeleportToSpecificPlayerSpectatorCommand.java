@@ -48,8 +48,8 @@ public class TeleportToSpecificPlayerSpectatorCommand implements SpectatorMenuCo
 
 	@Override
 	public void renderIcon(MatrixStack matrices, float f, int i) {
-		MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, (float)i / 255.0F);
+		RenderSystem.setShaderTexture(0, this.skinId);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, (float)i / 255.0F);
 		DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 8.0F, 8.0F, 8, 8, 64, 64);
 		DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 40.0F, 8.0F, 8, 8, 64, 64);
 	}

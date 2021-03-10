@@ -15,6 +15,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -147,7 +148,8 @@ public class CreditsScreen extends Screen {
 	}
 
 	private void renderBackground(int mouseX, int mouseY, float tickDelta) {
-		this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
+		RenderSystem.setShader(GameRenderer::method_34543);
+		RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
 		int i = this.width;
 		float f = -this.time * 0.5F * this.speed;
 		float g = (float)this.height - this.time * 0.5F * this.speed;
@@ -183,27 +185,25 @@ public class CreditsScreen extends Screen {
 		int k = this.height + 50;
 		this.time += delta;
 		float f = -this.time * this.speed;
-		RenderSystem.pushMatrix();
-		RenderSystem.translatef(0.0F, f, 0.0F);
-		this.client.getTextureManager().bindTexture(MINECRAFT_TITLE_TEXTURE);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.enableAlphaTest();
+		matrices.push();
+		matrices.translate(0.0, (double)f, 0.0);
+		RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		this.method_29343(j, k, (integer, integer2) -> {
 			this.drawTexture(matrices, integer + 0, integer2, 0, 0, 155, 44);
 			this.drawTexture(matrices, integer + 155, integer2, 0, 45, 155, 44);
 		});
 		RenderSystem.disableBlend();
-		this.client.getTextureManager().bindTexture(EDITION_TITLE_TEXTURE);
+		RenderSystem.setShaderTexture(0, EDITION_TITLE_TEXTURE);
 		drawTexture(matrices, j + 88, k + 37, 0.0F, 0.0F, 98, 14, 128, 16);
-		RenderSystem.disableAlphaTest();
 		int l = k + 100;
 
 		for (int m = 0; m < this.credits.size(); m++) {
 			if (m == this.credits.size() - 1) {
 				float g = (float)l + f - (float)(this.height / 2 - 6);
 				if (g < 0.0F) {
-					RenderSystem.translatef(0.0F, -g, 0.0F);
+					matrices.translate(0.0, (double)(-g), 0.0);
 				}
 			}
 
@@ -220,8 +220,9 @@ public class CreditsScreen extends Screen {
 			l += 12;
 		}
 
-		RenderSystem.popMatrix();
-		this.client.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
+		matrices.pop();
+		RenderSystem.setShader(GameRenderer::method_34543);
+		RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);
 		int m = this.width;

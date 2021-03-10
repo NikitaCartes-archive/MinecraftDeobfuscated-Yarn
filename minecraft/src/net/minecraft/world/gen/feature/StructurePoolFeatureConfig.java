@@ -6,8 +6,9 @@ import java.util.function.Supplier;
 import net.minecraft.structure.pool.StructurePool;
 
 /**
- * A feature config that specifies a starting pool and a size for
- * {@link net.minecraft.structure.pool.StructurePoolBasedGenerator#method_30419(net.minecraft.util.registry.DynamicRegistryManager, net.minecraft.world.gen.feature.StructurePoolFeatureConfig, net.minecraft.structure.pool.StructurePoolBasedGenerator.PieceFactory, net.minecraft.world.gen.chunk.ChunkGenerator, net.minecraft.structure.StructureManager, net.minecraft.util.math.BlockPos, java.util.List, java.util.Random, boolean, boolean)}.
+ * A feature config that specifies a starting pool and a size for {@linkplain
+ * net.minecraft.structure.pool.StructurePoolBasedGenerator#method_30419
+ * method_30419}.
  */
 public class StructurePoolFeatureConfig implements FeatureConfig {
 	public static final Codec<StructurePoolFeatureConfig> CODEC = RecordCodecBuilder.create(

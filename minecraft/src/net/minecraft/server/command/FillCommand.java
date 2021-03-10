@@ -43,7 +43,7 @@ public class FillCommand {
 										.executes(
 											commandContext -> execute(
 													commandContext.getSource(),
-													new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
+													BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
 													BlockStateArgumentType.getBlockState(commandContext, "block"),
 													FillCommand.Mode.REPLACE,
 													null
@@ -54,7 +54,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
-															new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
 															BlockStateArgumentType.getBlockState(commandContext, "block"),
 															FillCommand.Mode.REPLACE,
 															null
@@ -65,7 +65,7 @@ public class FillCommand {
 														.executes(
 															commandContext -> execute(
 																	commandContext.getSource(),
-																	new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
+																	BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
 																	BlockStateArgumentType.getBlockState(commandContext, "block"),
 																	FillCommand.Mode.REPLACE,
 																	BlockPredicateArgumentType.getBlockPredicate(commandContext, "filter")
@@ -78,7 +78,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
-															new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
 															BlockStateArgumentType.getBlockState(commandContext, "block"),
 															FillCommand.Mode.REPLACE,
 															cachedBlockPosition -> cachedBlockPosition.getWorld().isAir(cachedBlockPosition.getBlockPos())
@@ -90,7 +90,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
-															new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
 															BlockStateArgumentType.getBlockState(commandContext, "block"),
 															FillCommand.Mode.OUTLINE,
 															null
@@ -102,7 +102,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
-															new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
 															BlockStateArgumentType.getBlockState(commandContext, "block"),
 															FillCommand.Mode.HOLLOW,
 															null
@@ -114,7 +114,7 @@ public class FillCommand {
 												.executes(
 													commandContext -> execute(
 															commandContext.getSource(),
-															new BlockBox(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
+															BlockBox.create(BlockPosArgumentType.getLoadedBlockPos(commandContext, "from"), BlockPosArgumentType.getLoadedBlockPos(commandContext, "to")),
 															BlockStateArgumentType.getBlockState(commandContext, "block"),
 															FillCommand.Mode.DESTROY,
 															null

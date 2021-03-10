@@ -190,6 +190,7 @@ public class ModelLoader {
 
 		profiler.swap("special");
 		this.addModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
+		this.addModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory"));
 		profiler.swap("textures");
 		Set<Pair<String, String>> set = Sets.<Pair<String, String>>newLinkedHashSet();
 		Set<SpriteIdentifier> set2 = (Set<SpriteIdentifier>)this.modelsToBake

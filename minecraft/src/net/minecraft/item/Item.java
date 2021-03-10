@@ -23,7 +23,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
@@ -196,11 +196,11 @@ public class Item implements ItemConvertible {
 		return MathHelper.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
 	}
 
-	public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+	public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
 		return false;
 	}
 
-	public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+	public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, CommandItemSlot cursorSlot) {
 		return false;
 	}
 
@@ -452,7 +452,10 @@ public class Item implements ItemConvertible {
 		return null;
 	}
 
-	public boolean hasStoredInventory() {
+	/**
+	 * @return true if the item can be placed inside of shulker boxes or bundles.
+	 */
+	public boolean canBeNested() {
 		return true;
 	}
 

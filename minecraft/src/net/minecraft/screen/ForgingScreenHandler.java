@@ -1,6 +1,5 @@
 package net.minecraft.screen;
 
-import java.util.function.BiConsumer;
 import javax.annotation.Nullable;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,8 +9,6 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 
 public abstract class ForgingScreenHandler extends ScreenHandler {
 	protected final CraftingResultInventory output = new CraftingResultInventory();
@@ -27,7 +24,7 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 
 	protected abstract boolean canTakeOutput(PlayerEntity player, boolean present);
 
-	protected abstract ItemStack onTakeOutput(PlayerEntity player, ItemStack stack);
+	protected abstract void onTakeOutput(PlayerEntity player, ItemStack stack);
 
 	protected abstract boolean canUse(BlockState state);
 
@@ -49,8 +46,8 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 			}
 
 			@Override
-			public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-				return ForgingScreenHandler.this.onTakeOutput(player, stack);
+			public void onTakeItem(PlayerEntity player, ItemStack stack) {
+				ForgingScreenHandler.this.onTakeOutput(player, stack);
 			}
 		});
 
@@ -78,13 +75,13 @@ public abstract class ForgingScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.input)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, this.input));
 	}
 
 	@Override
 	public boolean canUse(PlayerEntity player) {
 		return this.context
-			.run(
+			.get(
 				(world, blockPos) -> !this.canUse(world.getBlockState(blockPos))
 						? false
 						: player.squaredDistanceTo((double)blockPos.getX() + 0.5, (double)blockPos.getY() + 0.5, (double)blockPos.getZ() + 0.5) <= 64.0,

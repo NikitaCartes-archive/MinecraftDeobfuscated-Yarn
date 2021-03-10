@@ -36,6 +36,7 @@ public class SignBlockEntity extends BlockEntity {
 	@Environment(EnvType.CLIENT)
 	private boolean filterText;
 	private DyeColor textColor = DyeColor.BLACK;
+	private boolean glowingText;
 
 	public SignBlockEntity(BlockPos pos, BlockState state) {
 		super(BlockEntityType.SIGN, pos, state);
@@ -56,6 +57,7 @@ public class SignBlockEntity extends BlockEntity {
 		}
 
 		tag.putString("Color", this.textColor.getName());
+		tag.putBoolean("GlowingText", this.glowingText);
 		return tag;
 	}
 
@@ -78,6 +80,7 @@ public class SignBlockEntity extends BlockEntity {
 		}
 
 		this.textsBeingEdited = null;
+		this.glowingText = tag.getBoolean("GlowingText");
 	}
 
 	private Text parseTextFromJson(String json) {
@@ -200,11 +203,29 @@ public class SignBlockEntity extends BlockEntity {
 	public boolean setTextColor(DyeColor value) {
 		if (value != this.getTextColor()) {
 			this.textColor = value;
-			this.markDirty();
-			this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
+			this.updateListeners();
 			return true;
 		} else {
 			return false;
 		}
+	}
+
+	public boolean isGlowingText() {
+		return this.glowingText;
+	}
+
+	public boolean setGlowingText(boolean glowingText) {
+		if (this.glowingText != glowingText) {
+			this.glowingText = glowingText;
+			this.updateListeners();
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private void updateListeners() {
+		this.markDirty();
+		this.world.updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
 	}
 }

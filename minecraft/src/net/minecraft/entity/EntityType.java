@@ -21,6 +21,7 @@ import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.decoration.EndCrystalEntity;
+import net.minecraft.entity.decoration.GlowItemFrameEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.LeashKnotEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
@@ -271,9 +272,9 @@ public class EntityType<T extends Entity> implements TypeFilter<Entity, T> {
 	public static final EntityType<GiantEntity> GIANT = register(
 		"giant", EntityType.Builder.create(GiantEntity::new, SpawnGroup.MONSTER).setDimensions(3.6F, 12.0F).maxTrackingRange(10)
 	);
-	public static final EntityType<ItemFrameEntity> GLOW_ITEM_FRAME = register(
+	public static final EntityType<GlowItemFrameEntity> GLOW_ITEM_FRAME = register(
 		"glow_item_frame",
-		EntityType.Builder.<ItemFrameEntity>create(ItemFrameEntity::new, SpawnGroup.MISC)
+		EntityType.Builder.<GlowItemFrameEntity>create(GlowItemFrameEntity::new, SpawnGroup.MISC)
 			.setDimensions(0.5F, 0.5F)
 			.maxTrackingRange(10)
 			.trackingTickInterval(Integer.MAX_VALUE)

@@ -28,6 +28,7 @@ public enum Direction implements StringIdentifiable {
 	WEST(4, 5, 1, "west", Direction.AxisDirection.NEGATIVE, Direction.Axis.X, new Vec3i(-1, 0, 0)),
 	EAST(5, 4, 3, "east", Direction.AxisDirection.POSITIVE, Direction.Axis.X, new Vec3i(1, 0, 0));
 
+	public static final Codec<Direction> field_29502 = StringIdentifiable.createCodec(Direction::values, Direction::byName);
 	private final int id;
 	private final int idOpposite;
 	private final int idHorizontal;
@@ -211,7 +212,6 @@ public enum Direction implements StringIdentifiable {
 	}
 
 	@Nullable
-	@Environment(EnvType.CLIENT)
 	public static Direction byName(@Nullable String name) {
 		return name == null ? null : (Direction)NAME_MAP.get(name.toLowerCase(Locale.ROOT));
 	}

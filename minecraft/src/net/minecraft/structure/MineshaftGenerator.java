@@ -18,7 +18,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.loot.LootTables;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -30,8 +30,12 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 import net.minecraft.world.gen.feature.MineshaftFeature;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MineshaftGenerator {
+	private static final Logger field_29326 = LogManager.getLogger();
+
 	private static MineshaftGenerator.MineshaftPart pickPiece(
 		List<StructurePiece> pieces, Random random, int x, int y, int z, @Nullable Direction orientation, int chainLength, MineshaftFeature.Type type
 	) {
@@ -805,11 +809,11 @@ public class MineshaftGenerator {
 
 		public MineshaftRoom(StructureManager structureManager, CompoundTag nbt) {
 			super(StructurePieceType.MINESHAFT_ROOM, nbt);
-			ListTag listTag = nbt.getList("Entrances", 11);
-
-			for (int i = 0; i < listTag.size(); i++) {
-				this.entrances.add(new BlockBox(listTag.getIntArray(i)));
-			}
+			BlockBox.CODEC
+				.listOf()
+				.parse(NbtOps.INSTANCE, nbt.getList("Entrances", 11))
+				.resultOrPartial(MineshaftGenerator.field_29326::error)
+				.ifPresent(this.entrances::addAll);
 		}
 
 		@Override
@@ -969,13 +973,11 @@ public class MineshaftGenerator {
 		@Override
 		protected void writeNbt(CompoundTag tag) {
 			super.writeNbt(tag);
-			ListTag listTag = new ListTag();
-
-			for (BlockBox blockBox : this.entrances) {
-				listTag.add(blockBox.toNbt());
-			}
-
-			tag.put("Entrances", listTag);
+			BlockBox.CODEC
+				.listOf()
+				.encodeStart(NbtOps.INSTANCE, this.entrances)
+				.resultOrPartial(MineshaftGenerator.field_29326::error)
+				.ifPresent(tagx -> tag.put("Entrances", tagx));
 		}
 	}
 

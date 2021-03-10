@@ -1,5 +1,6 @@
 package net.minecraft.client.gui.screen.ingame;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -10,6 +11,7 @@ import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BannerBlockEntityRenderer;
@@ -69,7 +71,8 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 	@Override
 	protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
 		this.renderBackground(matrices);
-		this.client.getTextureManager().bindTexture(TEXTURE);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderTexture(0, TEXTURE);
 		int i = this.x;
 		int j = this.y;
 		this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
@@ -120,7 +123,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 				int p = o - this.firstPatternButtonId;
 				int q = l + p % 4 * 14;
 				int r = m + p / 4 * 14;
-				this.client.getTextureManager().bindTexture(TEXTURE);
+				RenderSystem.setShaderTexture(0, TEXTURE);
 				int s = this.backgroundHeight;
 				if (o == this.handler.getSelectedPattern()) {
 					s += 14;
@@ -134,7 +137,7 @@ public class LoomScreen extends HandledScreen<LoomScreenHandler> {
 		} else if (this.canApplySpecialPattern) {
 			int l = i + 60;
 			int m = j + 13;
-			this.client.getTextureManager().bindTexture(TEXTURE);
+			RenderSystem.setShaderTexture(0, TEXTURE);
 			this.drawTexture(matrices, l, m, 0, this.backgroundHeight, 14, 14);
 			int n = this.handler.getSelectedPattern();
 			this.method_22692(n, l, m);

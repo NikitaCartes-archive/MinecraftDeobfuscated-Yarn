@@ -218,9 +218,9 @@ public class CloneCommand {
 	private static int execute(
 		ServerCommandSource source, BlockPos begin, BlockPos end, BlockPos destination, Predicate<CachedBlockPosition> filter, CloneCommand.Mode mode
 	) throws CommandSyntaxException {
-		BlockBox blockBox = new BlockBox(begin, end);
+		BlockBox blockBox = BlockBox.create(begin, end);
 		BlockPos blockPos = destination.add(blockBox.getDimensions());
-		BlockBox blockBox2 = new BlockBox(destination, blockPos);
+		BlockBox blockBox2 = BlockBox.create(destination, blockPos);
 		if (!mode.allowsOverlap() && blockBox2.intersects(blockBox)) {
 			throw OVERLAP_EXCEPTION.create();
 		} else {

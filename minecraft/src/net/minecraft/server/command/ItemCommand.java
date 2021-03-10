@@ -315,17 +315,13 @@ public class ItemCommand {
 		Map<Entity, ItemStack> map = Maps.<Entity, ItemStack>newHashMapWithExpectedSize(targets.size());
 
 		for (Entity entity : targets) {
-			if (entity instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
-			}
-
 			CommandItemSlot commandItemSlot = entity.getCommandItemSlot(slot);
 			if (commandItemSlot != CommandItemSlot.EMPTY) {
 				ItemStack itemStack = getStackWithModifier(source, modifier, commandItemSlot.get().copy());
 				if (commandItemSlot.set(itemStack)) {
 					map.put(entity, itemStack);
 					if (entity instanceof ServerPlayerEntity) {
-						((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
+						((ServerPlayerEntity)entity).currentScreenHandler.sendContentUpdates();
 					}
 				}
 			}
@@ -372,15 +368,11 @@ public class ItemCommand {
 		List<Entity> list = Lists.<Entity>newArrayListWithCapacity(targets.size());
 
 		for (Entity entity : targets) {
-			if (entity instanceof ServerPlayerEntity) {
-				((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
-			}
-
 			CommandItemSlot commandItemSlot = entity.getCommandItemSlot(slot);
 			if (commandItemSlot != CommandItemSlot.EMPTY && commandItemSlot.set(stack.copy())) {
 				list.add(entity);
 				if (entity instanceof ServerPlayerEntity) {
-					((ServerPlayerEntity)entity).playerScreenHandler.sendContentUpdates();
+					((ServerPlayerEntity)entity).currentScreenHandler.sendContentUpdates();
 				}
 			}
 		}

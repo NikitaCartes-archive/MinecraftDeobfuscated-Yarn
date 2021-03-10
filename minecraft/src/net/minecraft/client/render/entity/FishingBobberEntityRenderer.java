@@ -89,13 +89,12 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			float v = (float)(o - s);
 			float w = (float)(p - t) + r;
 			float x = (float)(q - u);
-			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
-			Matrix4f matrix4f2 = matrixStack.peek().getModel();
+			VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.method_34572());
+			MatrixStack.Entry entry2 = matrixStack.peek();
 			int y = 16;
 
-			for (int z = 0; z < 16; z++) {
-				method_23172(v, w, x, vertexConsumer2, matrix4f2, method_23954(z, 16));
-				method_23172(v, w, x, vertexConsumer2, matrix4f2, method_23954(z + 1, 16));
+			for (int z = 0; z <= 16; z++) {
+				method_23172(v, w, x, vertexConsumer2, entry2, method_23954(z, 16), method_23954(z + 1, 17));
 			}
 
 			matrixStack.pop();
@@ -117,8 +116,18 @@ public class FishingBobberEntityRenderer extends EntityRenderer<FishingBobberEnt
 			.next();
 	}
 
-	private static void method_23172(float f, float g, float h, VertexConsumer vertexConsumer, Matrix4f matrix4f, float i) {
-		vertexConsumer.vertex(matrix4f, f * i, g * (i * i + i) * 0.5F + 0.25F, h * i).color(0, 0, 0, 255).next();
+	private static void method_23172(float f, float g, float h, VertexConsumer vertexConsumer, MatrixStack.Entry entry, float i, float j) {
+		float k = f * i;
+		float l = g * (i * i + i) * 0.5F + 0.25F;
+		float m = h * i;
+		float n = f * j - k;
+		float o = g * (j * j + j) * 0.5F + 0.25F - l;
+		float p = h * j - m;
+		float q = MathHelper.sqrt(n * n + o * o + p * p);
+		n /= q;
+		o /= q;
+		p /= q;
+		vertexConsumer.vertex(entry.getModel(), k, l, m).color(0, 0, 0, 255).normal(entry.getNormal(), n, o, p).next();
 	}
 
 	public Identifier getTexture(FishingBobberEntity fishingBobberEntity) {

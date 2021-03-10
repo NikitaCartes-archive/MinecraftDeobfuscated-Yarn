@@ -39,10 +39,10 @@ public class CheckboxWidget extends AbstractPressableButtonWidget {
 	@Override
 	public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		MinecraftClient minecraftClient = MinecraftClient.getInstance();
-		minecraftClient.getTextureManager().bindTexture(TEXTURE);
+		RenderSystem.setShaderTexture(0, TEXTURE);
 		RenderSystem.enableDepthTest();
 		TextRenderer textRenderer = minecraftClient.textRenderer;
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);

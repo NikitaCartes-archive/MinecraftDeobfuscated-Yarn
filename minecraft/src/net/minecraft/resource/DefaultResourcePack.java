@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -27,6 +28,8 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 import javax.annotation.Nullable;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.resource.metadata.PackResourceMetadata;
 import net.minecraft.resource.metadata.ResourceMetadataReader;
 import net.minecraft.util.Identifier;
@@ -34,11 +37,11 @@ import net.minecraft.util.Util;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class DefaultResourcePack implements ResourcePack {
+public class DefaultResourcePack implements ResourcePack, ResourceFactory {
 	public static Path resourcePath;
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static Class<?> resourceClass;
-	private static final Map<ResourceType, FileSystem> typeToFileSystem = Util.make(Maps.<ResourceType, FileSystem>newHashMap(), hashMap -> {
+	private static final Map<ResourceType, FileSystem> typeToFileSystem = Util.make(Maps.<ResourceType, FileSystem>newHashMap(), map -> {
 		synchronized (DefaultResourcePack.class) {
 			for (ResourceType resourceType : ResourceType.values()) {
 				URL uRL = DefaultResourcePack.class.getResource("/" + resourceType.getDirectory() + "/.mcassetsroot");
@@ -53,7 +56,7 @@ public class DefaultResourcePack implements ResourcePack {
 							fileSystem = FileSystems.newFileSystem(uRI, Collections.emptyMap());
 						}
 
-						hashMap.put(resourceType, fileSystem);
+						map.put(resourceType, fileSystem);
 					}
 				} catch (IOException | URISyntaxException var12) {
 					LOGGER.error("Couldn't get a list of all vanilla resources", (Throwable)var12);
@@ -150,17 +153,15 @@ public class DefaultResourcePack implements ResourcePack {
 		return set;
 	}
 
-	private static void getIdentifiers(
-		Collection<Identifier> collection, int maxDepth, String namespace, Path path, String searchLocation, Predicate<String> predicate
-	) throws IOException {
-		Path path2 = path.resolve(namespace);
-		Stream<Path> stream = Files.walk(path2.resolve(searchLocation), maxDepth, new FileVisitOption[0]);
+	private static void getIdentifiers(Collection<Identifier> results, int maxDepth, String namespace, Path root, String prefix, Predicate<String> pathFilter) throws IOException {
+		Path path = root.resolve(namespace);
+		Stream<Path> stream = Files.walk(path.resolve(prefix), maxDepth, new FileVisitOption[0]);
 		Throwable var8 = null;
 
 		try {
-			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]) && predicate.test(pathx.getFileName().toString()))
-				.map(path2x -> new Identifier(namespace, path2.relativize(path2x).toString().replaceAll("\\\\", "/")))
-				.forEach(collection::add);
+			stream.filter(pathx -> !pathx.endsWith(".mcmeta") && Files.isRegularFile(pathx, new LinkOption[0]) && pathFilter.test(pathx.getFileName().toString()))
+				.map(pathx -> new Identifier(namespace, path.relativize(pathx).toString().replaceAll("\\\\", "/")))
+				.forEach(results::add);
 		} catch (Throwable var17) {
 			var8 = var17;
 			throw var17;
@@ -285,5 +286,48 @@ public class DefaultResourcePack implements ResourcePack {
 
 	@Override
 	public void close() {
+	}
+
+	@Override
+	public Resource getResource(Identifier id) throws IOException {
+		return new Resource() {
+			@Nullable
+			InputStream stream;
+
+			public void close() throws IOException {
+				if (this.stream != null) {
+					this.stream.close();
+				}
+			}
+
+			@Environment(EnvType.CLIENT)
+			@Override
+			public Identifier getId() {
+				return id;
+			}
+
+			@Override
+			public InputStream getInputStream() {
+				try {
+					this.stream = DefaultResourcePack.this.open(ResourceType.CLIENT_RESOURCES, id);
+				} catch (IOException var2) {
+					throw new UncheckedIOException("Could not get client resource from vanilla pack", var2);
+				}
+
+				return this.stream;
+			}
+
+			@Nullable
+			@Environment(EnvType.CLIENT)
+			@Override
+			public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
+				return null;
+			}
+
+			@Override
+			public String getResourcePackName() {
+				return id.toString();
+			}
+		};
 	}
 }

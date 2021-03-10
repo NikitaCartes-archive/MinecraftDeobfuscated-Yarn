@@ -24,6 +24,7 @@ public final class Vec3f {
 	public static Vec3f POSITIVE_Y = new Vec3f(0.0F, 1.0F, 0.0F);
 	public static Vec3f NEGATIVE_Z = new Vec3f(0.0F, 0.0F, -1.0F);
 	public static Vec3f POSITIVE_Z = new Vec3f(0.0F, 0.0F, 1.0F);
+	public static Vec3f field_29501 = new Vec3f(0.0F, 0.0F, 0.0F);
 	private float x;
 	private float y;
 	private float z;
@@ -35,6 +36,11 @@ public final class Vec3f {
 		this.x = x;
 		this.y = y;
 		this.z = z;
+	}
+
+	@Environment(EnvType.CLIENT)
+	public Vec3f(Vector4f vector4f) {
+		this(vector4f.getX(), vector4f.getY(), vector4f.getZ());
 	}
 
 	public Vec3f(Vec3d other) {

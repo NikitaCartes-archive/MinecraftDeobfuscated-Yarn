@@ -199,12 +199,12 @@ public final class Biome {
 		}
 	}
 
-	public boolean method_33599(BlockPos blockPos) {
-		return this.getTemperature(blockPos) < 0.15F;
+	public boolean isCold(BlockPos pos) {
+		return this.getTemperature(pos) < 0.15F;
 	}
 
 	public boolean canSetSnow(WorldView world, BlockPos blockPos) {
-		if (!this.method_33599(blockPos)) {
+		if (!this.isCold(blockPos)) {
 			return false;
 		} else {
 			if (blockPos.getY() >= world.getBottomY() && blockPos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, blockPos) < 10) {
@@ -240,10 +240,11 @@ public final class Biome {
 
 					try {
 						int p = region.getBottomY() + 1;
+						int q = region.getTopY() - 1;
 						structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature)
 							.forEach(
 								structureStart -> structureStart.generateStructure(
-										region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopY() - 1, o + 15), new ChunkPos(l, m)
+										region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, q, o + 15), new ChunkPos(l, m)
 									)
 							);
 					} catch (Exception var21) {
@@ -520,7 +521,8 @@ public final class Biome {
 		RIVER("river"),
 		SWAMP("swamp"),
 		MUSHROOM("mushroom"),
-		NETHER("nether");
+		NETHER("nether"),
+		UNDERGROUND("underground");
 
 		public static final Codec<Biome.Category> CODEC = StringIdentifiable.createCodec(Biome.Category::values, Biome.Category::byName);
 		private static final Map<String, Biome.Category> BY_NAME = (Map<String, Biome.Category>)Arrays.stream(values())

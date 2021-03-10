@@ -41,38 +41,33 @@ public class RealmsTextureManager {
 
 	public static void bindWorldTemplate(String id, @Nullable String image) {
 		if (image == null) {
-			MinecraftClient.getInstance().getTextureManager().bindTexture(ISLES);
+			RenderSystem.setShaderTexture(0, ISLES);
 		} else {
 			int i = getTextureId(id, image);
-			RenderSystem.bindTexture(i);
+			RenderSystem.setShaderTexture(0, i);
 		}
 	}
 
 	public static void withBoundFace(String uuid, Runnable r) {
-		RenderSystem.pushTextureAttributes();
-
-		try {
-			bindFace(uuid);
-			r.run();
-		} finally {
-			RenderSystem.popAttributes();
-		}
+		bindFace(uuid);
+		r.run();
 	}
 
 	private static void bindDefaultFace(UUID uuid) {
-		MinecraftClient.getInstance().getTextureManager().bindTexture(DefaultSkinHelper.getTexture(uuid));
+		RenderSystem.setShaderTexture(0, DefaultSkinHelper.getTexture(uuid));
 	}
 
 	private static void bindFace(String uuid) {
 		UUID uUID = UUIDTypeAdapter.fromString(uuid);
 		if (textures.containsKey(uuid)) {
-			RenderSystem.bindTexture(((RealmsTextureManager.RealmsTexture)textures.get(uuid)).textureId);
+			int i = ((RealmsTextureManager.RealmsTexture)textures.get(uuid)).textureId;
+			RenderSystem.setShaderTexture(0, i);
 		} else if (skinFetchStatus.containsKey(uuid)) {
 			if (!(Boolean)skinFetchStatus.get(uuid)) {
 				bindDefaultFace(uUID);
 			} else if (fetchedSkins.containsKey(uuid)) {
 				int i = getTextureId(uuid, (String)fetchedSkins.get(uuid));
-				RenderSystem.bindTexture(i);
+				RenderSystem.setShaderTexture(0, i);
 			} else {
 				bindDefaultFace(uUID);
 			}
@@ -173,7 +168,7 @@ public class RealmsTextureManager {
 		}
 
 		RenderSystem.activeTexture(33984);
-		RenderSystem.bindTexture(i);
+		RenderSystem.bindTextureForSetup(i);
 		TextureUtil.uploadImage(intBuffer, j, k);
 		textures.put(id, new RealmsTextureManager.RealmsTexture(image, i));
 		return i;

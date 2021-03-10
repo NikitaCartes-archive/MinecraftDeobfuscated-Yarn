@@ -24,16 +24,14 @@ public abstract class Decorator<DC extends DecoratorConfig> {
 	public static final Decorator<CountExtraDecoratorConfig> COUNT_EXTRA = register("count_extra", new CountExtraDecorator(CountExtraDecoratorConfig.CODEC));
 	public static final Decorator<ChanceDecoratorConfig> LAVA_LAKE = register("lava_lake", new LavaLakeDecorator(ChanceDecoratorConfig.CODEC));
 	public static final Decorator<CountConfig> GLOWSTONE = register("glowstone", new GlowstoneDecorator(CountConfig.CODEC));
-	public static final Decorator<NopeDecoratorConfig> HEIGHTMAP = register("heightmap", new MotionBlockingHeightmapDecorator<>(NopeDecoratorConfig.CODEC));
-	public static final Decorator<NopeDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = register(
-		"heightmap_spread_double", new SpreadDoubleHeightmapDecorator<>(NopeDecoratorConfig.CODEC)
+	public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP = register("heightmap", new HeightmapDecorator(HeightmapDecoratorConfig.CODEC));
+	public static final Decorator<HeightmapDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = register(
+		"heightmap_spread_double", new SpreadDoubleHeightmapDecorator(HeightmapDecoratorConfig.CODEC)
 	);
-	public static final Decorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = register(
-		"top_solid_heightmap", new TopSolidHeightmapDecorator(NopeDecoratorConfig.CODEC)
+	public static final Decorator<WaterThresholdDecoratorConfig> HEIGHTMAP_WITH_WATER_THRESHOLD = register(
+		"heightmap_with_water_threshold", new WaterThresholdDecorator(WaterThresholdDecoratorConfig.CODEC)
 	);
-	public static final Decorator<NopeDecoratorConfig> HEIGHTMAP_WORLD_SURFACE = register(
-		"heightmap_world_surface", new WorldSurfaceHeightmapDecorator(NopeDecoratorConfig.CODEC)
-	);
+	public static final Decorator<CaveSurfaceDecoratorConfig> CAVE_SURFACE = register("cave_surface", new CaveSurfaceDecorator(CaveSurfaceDecoratorConfig.CODEC));
 	public static final Decorator<RangeDecoratorConfig> RANGE = register("range", new RangeDecorator(RangeDecoratorConfig.CODEC));
 	public static final Decorator<BiasedRangedDecoratorConfig> RANGE_BIASED_TO_BOTTOM = register(
 		"range_biased_to_bottom", new BiasedRangeDecorator(BiasedRangedDecoratorConfig.CODEC)

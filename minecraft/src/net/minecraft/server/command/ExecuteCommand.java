@@ -691,8 +691,8 @@ public class ExecuteCommand {
 	}
 
 	private static OptionalInt testBlocksCondition(ServerWorld world, BlockPos start, BlockPos end, BlockPos destination, boolean masked) throws CommandSyntaxException {
-		BlockBox blockBox = new BlockBox(start, end);
-		BlockBox blockBox2 = new BlockBox(destination, destination.add(blockBox.getDimensions()));
+		BlockBox blockBox = BlockBox.create(start, end);
+		BlockBox blockBox2 = BlockBox.create(destination, destination.add(blockBox.getDimensions()));
 		BlockPos blockPos = new BlockPos(blockBox2.minX - blockBox.minX, blockBox2.minY - blockBox.minY, blockBox2.minZ - blockBox.minZ);
 		int i = blockBox.getBlockCountX() * blockBox.getBlockCountY() * blockBox.getBlockCountZ();
 		if (i > 32768) {

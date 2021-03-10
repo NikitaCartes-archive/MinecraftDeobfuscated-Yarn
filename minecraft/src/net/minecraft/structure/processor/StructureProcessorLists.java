@@ -524,6 +524,19 @@ public class StructureProcessorLists {
 			)
 		)
 	);
+	public static final StructureProcessorList FOSSIL_ROT = register("fossil_rot", ImmutableList.of(new BlockRotStructureProcessor(0.9F)));
+	public static final StructureProcessorList FOSSIL_COAL = register("fossil_coal", ImmutableList.of(new BlockRotStructureProcessor(0.1F)));
+	public static final StructureProcessorList FOSSIL_DIAMONDS = register(
+		"fossil_diamonds",
+		ImmutableList.of(
+			new BlockRotStructureProcessor(0.1F),
+			new RuleStructureProcessor(
+				ImmutableList.of(
+					new StructureProcessorRule(new BlockMatchRuleTest(Blocks.COAL_ORE), AlwaysTrueRuleTest.INSTANCE, Blocks.DEEPSLATE_DIAMOND_ORE.getDefaultState())
+				)
+			)
+		)
+	);
 
 	private static StructureProcessorList register(String id, ImmutableList<StructureProcessor> processorList) {
 		Identifier identifier = new Identifier(id);

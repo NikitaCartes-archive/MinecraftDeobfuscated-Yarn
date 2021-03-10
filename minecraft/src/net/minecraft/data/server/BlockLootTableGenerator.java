@@ -981,6 +981,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.WEATHERED_COPPER);
 		this.addDrop(Blocks.OXIDIZED_COPPER);
 		this.addDrop(Blocks.COPPER_ORE);
+		this.addDrop(Blocks.DEEPSLATE_COPPER_ORE);
 		this.addDrop(Blocks.CUT_COPPER);
 		this.addDrop(Blocks.EXPOSED_CUT_COPPER);
 		this.addDrop(Blocks.WEATHERED_CUT_COPPER);
@@ -1021,6 +1022,8 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.DEEPSLATE_BRICK_STAIRS);
 		this.addDrop(Blocks.DEEPSLATE_BRICK_WALL);
 		this.addDrop(Blocks.CHISELED_DEEPSLATE);
+		this.addDrop(Blocks.CRACKED_DEEPSLATE_BRICKS);
+		this.addDrop(Blocks.CRACKED_DEEPSLATE_TILES);
 		this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
 		this.addDrop(Blocks.TRIPWIRE, Items.STRING);
 		this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);
@@ -1384,7 +1387,9 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDrop(Blocks.BROWN_MUSHROOM_BLOCK, blockx -> mushroomBlockDrops(blockx, Blocks.BROWN_MUSHROOM));
 		this.addDrop(Blocks.RED_MUSHROOM_BLOCK, blockx -> mushroomBlockDrops(blockx, Blocks.RED_MUSHROOM));
 		this.addDrop(Blocks.COAL_ORE, blockx -> oreDrops(blockx, Items.COAL));
+		this.addDrop(Blocks.DEEPSLATE_COAL_ORE, blockx -> oreDrops(blockx, Items.COAL));
 		this.addDrop(Blocks.EMERALD_ORE, blockx -> oreDrops(blockx, Items.EMERALD));
+		this.addDrop(Blocks.DEEPSLATE_EMERALD_ORE, blockx -> oreDrops(blockx, Items.EMERALD));
 		this.addDrop(Blocks.NETHER_QUARTZ_ORE, blockx -> oreDrops(blockx, Items.QUARTZ));
 		this.addDrop(Blocks.DIAMOND_ORE, blockx -> oreDrops(blockx, Items.DIAMOND));
 		this.addDrop(Blocks.DEEPSLATE_DIAMOND_ORE, blockx -> oreDrops(blockx, Items.DIAMOND));
@@ -1687,6 +1692,7 @@ public class BlockLootTableGenerator implements Consumer<BiConsumer<Identifier, 
 		this.addDropWithSilkTouch(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS);
 		this.addDropWithSilkTouch(Blocks.INFESTED_CRACKED_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS);
 		this.addDropWithSilkTouch(Blocks.INFESTED_CHISELED_STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS);
+		this.addDropWithSilkTouch(Blocks.INFESTED_DEEPSLATE, Blocks.DEEPSLATE);
 		this.addVinePlantDrop(Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT);
 		this.addVinePlantDrop(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT);
 		this.addDrop(Blocks.CAKE, dropsNothing());

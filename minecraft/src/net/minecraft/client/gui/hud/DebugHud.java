@@ -96,13 +96,11 @@ public class DebugHud extends DrawableHelper {
 
 	public void render(MatrixStack matrices) {
 		this.client.getProfiler().push("debug");
-		RenderSystem.pushMatrix();
 		Entity entity = this.client.getCameraEntity();
 		this.blockHit = entity.raycast(20.0, 0.0F, false);
 		this.fluidHit = entity.raycast(20.0, 0.0F, true);
 		this.renderLeftText(matrices);
 		this.renderRightText(matrices);
-		RenderSystem.popMatrix();
 		if (this.client.options.debugTpsEnabled) {
 			int i = this.client.getWindow().getScaledWidth();
 			this.drawMetricsData(matrices, this.client.getMetricsData(), 0, i / 2, true);

@@ -74,7 +74,7 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 
 	@Override
 	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-		update(world, pos.up(), calculateDrag(world, pos));
+		method_34267(world, pos, state, world.getBlockState(pos.down()));
 	}
 
 	@Override
@@ -82,23 +82,39 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 		return Fluids.WATER.getStill(false);
 	}
 
-	public static void update(WorldAccess world, BlockPos pos, boolean drag) {
-		BlockPos.Mutable mutable = pos.mutableCopy();
+	public static void method_34268(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState) {
+		method_34267(worldAccess, blockPos, worldAccess.getBlockState(blockPos), blockState);
+	}
 
-		while (isStillWater(world, mutable)) {
-			world.setBlockState(mutable, Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(drag)), 2);
-			mutable.move(Direction.UP);
+	public static void method_34267(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+		if (isStillWater(blockState)) {
+			BlockState blockState3 = method_34269(blockState2);
+			worldAccess.setBlockState(blockPos, blockState3, 2);
+			BlockPos.Mutable mutable = blockPos.mutableCopy().move(Direction.UP);
+
+			while (isStillWater(worldAccess.getBlockState(mutable))) {
+				if (!worldAccess.setBlockState(mutable, blockState3, 2)) {
+					return;
+				}
+
+				mutable.move(Direction.UP);
+			}
 		}
 	}
 
-	public static boolean isStillWater(WorldAccess world, BlockPos pos) {
-		FluidState fluidState = world.getFluidState(pos);
-		return world.getBlockState(pos).isOf(Blocks.WATER) && fluidState.getLevel() >= 8 && fluidState.isStill();
+	private static boolean isStillWater(BlockState blockState) {
+		return blockState.isOf(Blocks.BUBBLE_COLUMN)
+			|| blockState.isOf(Blocks.WATER) && blockState.getFluidState().getLevel() >= 8 && blockState.getFluidState().isStill();
 	}
 
-	private static boolean calculateDrag(BlockView world, BlockPos pos) {
-		BlockState blockState = world.getBlockState(pos);
-		return blockState.isOf(Blocks.BUBBLE_COLUMN) ? (Boolean)blockState.get(DRAG) : !blockState.isOf(Blocks.SOUL_SAND);
+	private static BlockState method_34269(BlockState blockState) {
+		if (blockState.isOf(Blocks.BUBBLE_COLUMN)) {
+			return blockState;
+		} else if (blockState.isOf(Blocks.SOUL_SAND)) {
+			return Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(false));
+		} else {
+			return blockState.isOf(Blocks.MAGMA_BLOCK) ? Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(true)) : Blocks.WATER.getDefaultState();
+		}
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -138,18 +154,14 @@ public class BubbleColumnBlock extends Block implements FluidDrainable {
 	public BlockState getStateForNeighborUpdate(
 		BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos
 	) {
-		if (!state.canPlaceAt(world, pos)) {
-			return Blocks.WATER.getDefaultState();
-		} else {
-			if (direction == Direction.DOWN) {
-				world.setBlockState(pos, Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, Boolean.valueOf(calculateDrag(world, neighborPos))), 2);
-			} else if (direction == Direction.UP && !neighborState.isOf(Blocks.BUBBLE_COLUMN) && isStillWater(world, neighborPos)) {
-				world.getBlockTickScheduler().schedule(pos, this, 5);
-			}
-
-			world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
-			return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
+		world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+		if (!state.canPlaceAt(world, pos)
+			|| direction == Direction.DOWN
+			|| direction == Direction.UP && !neighborState.isOf(Blocks.BUBBLE_COLUMN) && isStillWater(neighborState)) {
+			world.getBlockTickScheduler().schedule(pos, this, 5);
 		}
+
+		return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
 	}
 
 	@Override

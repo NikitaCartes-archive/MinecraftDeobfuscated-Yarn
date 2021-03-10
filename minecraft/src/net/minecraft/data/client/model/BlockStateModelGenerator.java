@@ -55,10 +55,9 @@ public class BlockStateModelGenerator {
 	private final BiConsumer<Identifier, Supplier<JsonElement>> modelCollector;
 	private final Consumer<Item> simpleItemModelExemptionCollector;
 	private final List<Block> field_28549 = ImmutableList.of(Blocks.OAK_TRAPDOOR, Blocks.DARK_OAK_TRAPDOOR, Blocks.IRON_TRAPDOOR);
-	private final Map<Block, BlockStateModelGenerator.class_5879> field_29080 = ImmutableMap.<Block, BlockStateModelGenerator.class_5879>builder()
-		.put(Blocks.STONE, Models.CUBE_MIRRORED_ALL::upload)
-		.put(Blocks.COBBLED_DEEPSLATE, Models.CUBE_MIRRORED_ALL::upload)
-		.put(Blocks.DEEPSLATE, Models.CUBE_COLUMN_MIRRORED::upload)
+	private final Map<Block, BlockStateModelGenerator.class_5879> field_29504 = ImmutableMap.<Block, BlockStateModelGenerator.class_5879>builder()
+		.put(Blocks.STONE, BlockStateModelGenerator::method_34608)
+		.put(Blocks.DEEPSLATE, BlockStateModelGenerator::method_34631)
 		.build();
 	private final Map<Block, TexturedModel> field_28551 = ImmutableMap.<Block, TexturedModel>builder()
 		.put(Blocks.SANDSTONE, TexturedModel.WALL_CUBE_BOTTOM_TOP.get(Blocks.SANDSTONE))
@@ -76,10 +75,24 @@ public class BlockStateModelGenerator {
 		.put(Blocks.SMOOTH_QUARTZ, TexturedModel.getCubeAll(Texture.getSubId(Blocks.QUARTZ_BLOCK, "_bottom")))
 		.put(Blocks.BLACKSTONE, TexturedModel.field_23959.get(Blocks.BLACKSTONE))
 		.put(Blocks.DEEPSLATE, TexturedModel.field_23959.get(Blocks.DEEPSLATE))
+		.put(
+			Blocks.CHISELED_QUARTZ_BLOCK,
+			TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_QUARTZ_BLOCK).texture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_QUARTZ_BLOCK)))
+		)
+		.put(Blocks.CHISELED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_SANDSTONE).texture(texture -> {
+			texture.put(TextureKey.END, Texture.getSubId(Blocks.SANDSTONE, "_top"));
+			texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_SANDSTONE));
+		}))
+		.put(Blocks.CHISELED_RED_SANDSTONE, TexturedModel.CUBE_COLUMN.get(Blocks.CHISELED_RED_SANDSTONE).texture(texture -> {
+			texture.put(TextureKey.END, Texture.getSubId(Blocks.RED_SANDSTONE, "_top"));
+			texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_RED_SANDSTONE));
+		}))
 		.build();
 	private static final Map<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>> VARIANT_POOL_FUNCTIONS = ImmutableMap.<BlockFamily.Variant, BiConsumer<BlockStateModelGenerator.BlockTexturePool, Block>>builder()
 		.put(BlockFamily.Variant.BUTTON, BlockStateModelGenerator.BlockTexturePool::button)
 		.put(BlockFamily.Variant.DOOR, (object, block) -> ((BlockStateModelGenerator.BlockTexturePool)object).method_33527(block))
+		.put(BlockFamily.Variant.CHISELED, (object, block) -> ((BlockStateModelGenerator.BlockTexturePool)object).method_34661(block))
+		.put(BlockFamily.Variant.CRACKED, (object, block) -> ((BlockStateModelGenerator.BlockTexturePool)object).method_34661(block))
 		.put(BlockFamily.Variant.FENCE, BlockStateModelGenerator.BlockTexturePool::fence)
 		.put(BlockFamily.Variant.FENCE_GATE, BlockStateModelGenerator.BlockTexturePool::fenceGate)
 		.put(BlockFamily.Variant.SIGN, BlockStateModelGenerator.BlockTexturePool::sign)
@@ -130,6 +143,16 @@ public class BlockStateModelGenerator {
 			);
 		}
 	);
+
+	private static BlockStateSupplier method_34608(Block block, Identifier identifier, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer) {
+		Identifier identifier2 = Models.CUBE_MIRRORED_ALL.upload(block, texture, biConsumer);
+		return createBlockStateWithTwoModelAndRandomInversion(block, identifier, identifier2);
+	}
+
+	private static BlockStateSupplier method_34631(Block block, Identifier identifier, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer) {
+		Identifier identifier2 = Models.CUBE_COLUMN_MIRRORED.upload(block, texture, biConsumer);
+		return createBlockStateWithTwoModelAndRandomInversion(block, identifier, identifier2).coordinate(createAxisRotatedVariantMap());
+	}
 
 	public BlockStateModelGenerator(
 		Consumer<BlockStateSupplier> consumer, BiConsumer<Identifier, Supplier<JsonElement>> modelCollector, Consumer<Item> simpleItemModelExemptionCollector
@@ -1084,13 +1107,8 @@ public class BlockStateModelGenerator {
 		this.blockStateCollector.accept(createSingletonBlockState(block, modelFactory.upload(block, this.modelCollector)));
 	}
 
-	private void registerSingleton(Block block, Texture texture, Model model) {
-		Identifier identifier = model.upload(block, texture, this.modelCollector);
-		this.blockStateCollector.accept(createSingletonBlockState(block, identifier));
-	}
-
 	private BlockStateModelGenerator.BlockTexturePool registerCubeAllModelTexturePool(Block block) {
-		TexturedModel texturedModel = this.field_28551.containsKey(block) ? (TexturedModel)this.field_28551.get(block) : TexturedModel.CUBE_ALL.get(block);
+		TexturedModel texturedModel = (TexturedModel)this.field_28551.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
 		return new BlockStateModelGenerator.BlockTexturePool(texturedModel.getTexture()).base(block, texturedModel.getModel());
 	}
 
@@ -2046,11 +2064,6 @@ public class BlockStateModelGenerator {
 							)
 					)
 			);
-	}
-
-	private void registerCubeColumn(Block block, Block endTexture) {
-		Texture texture = new Texture().put(TextureKey.END, Texture.getSubId(endTexture, "_top")).put(TextureKey.SIDE, Texture.getId(block));
-		this.registerSingleton(block, texture, Models.CUBE_COLUMN);
 	}
 
 	private void registerChorusFlower() {
@@ -3425,11 +3438,13 @@ public class BlockStateModelGenerator {
 		this.registerItemModel(Items.STRUCTURE_VOID);
 		this.registerBuiltinWithParticle(Blocks.MOVING_PISTON, Texture.getSubId(Blocks.PISTON, "_side"));
 		this.registerSingleton(Blocks.COAL_ORE, TexturedModel.CUBE_ALL);
+		this.registerSingleton(Blocks.DEEPSLATE_COAL_ORE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.COAL_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.DIAMOND_ORE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.DEEPSLATE_DIAMOND_ORE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.DIAMOND_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.EMERALD_ORE, TexturedModel.CUBE_ALL);
+		this.registerSingleton(Blocks.DEEPSLATE_EMERALD_ORE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.EMERALD_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.GOLD_ORE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.NETHER_GOLD_ORE, TexturedModel.CUBE_ALL);
@@ -3449,11 +3464,8 @@ public class BlockStateModelGenerator {
 		this.registerSingleton(Blocks.REDSTONE_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.GILDED_BLACKSTONE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.BLUE_ICE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.CHISELED_NETHER_BRICKS, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.CLAY, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.COARSE_DIRT, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.CRACKED_NETHER_BRICKS, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.CRACKED_STONE_BRICKS, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.CRYING_OBSIDIAN, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.END_STONE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.GLOWSTONE, TexturedModel.CUBE_ALL);
@@ -3480,22 +3492,14 @@ public class BlockStateModelGenerator {
 		this.registerSingleton(Blocks.TARGET, TexturedModel.CUBE_COLUMN);
 		this.registerSingleton(Blocks.WARPED_WART_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.WET_SPONGE, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS, TexturedModel.CUBE_ALL);
-		this.registerSingleton(
-			Blocks.CHISELED_QUARTZ_BLOCK, TexturedModel.CUBE_COLUMN.withTexture(texture -> texture.put(TextureKey.SIDE, Texture.getId(Blocks.CHISELED_QUARTZ_BLOCK)))
-		);
-		this.registerSingleton(Blocks.CHISELED_STONE_BRICKS, TexturedModel.CUBE_ALL);
-		this.registerCubeColumn(Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE);
-		this.registerCubeColumn(Blocks.CHISELED_RED_SANDSTONE, Blocks.RED_SANDSTONE);
-		this.registerSingleton(Blocks.CHISELED_POLISHED_BLACKSTONE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.AMETHYST_BLOCK, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.BUDDING_AMETHYST, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.CALCITE, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.TUFF, TexturedModel.CUBE_ALL);
 		this.registerSingleton(Blocks.DRIPSTONE_BLOCK, TexturedModel.CUBE_ALL);
-		this.registerSingleton(Blocks.CHISELED_DEEPSLATE, TexturedModel.CUBE_ALL);
 		this.method_33504();
 		this.registerSimpleCubeAll(Blocks.COPPER_ORE);
+		this.registerSimpleCubeAll(Blocks.DEEPSLATE_COPPER_ORE);
 		this.registerSimpleCubeAll(Blocks.COPPER_BLOCK);
 		this.registerSimpleCubeAll(Blocks.EXPOSED_COPPER);
 		this.registerSimpleCubeAll(Blocks.WEATHERED_COPPER);
@@ -3964,6 +3968,7 @@ public class BlockStateModelGenerator {
 		this.registerInfested(Blocks.MOSSY_STONE_BRICKS, Blocks.INFESTED_MOSSY_STONE_BRICKS);
 		this.registerInfestedStone();
 		this.registerInfested(Blocks.STONE_BRICKS, Blocks.INFESTED_STONE_BRICKS);
+		this.registerInfested(Blocks.DEEPSLATE, Blocks.INFESTED_DEEPSLATE);
 		SpawnEggItem.getAll().forEach(spawnEggItem -> this.registerParentedItemModel(spawnEggItem, ModelIds.getMinecraftNamespacedItem("template_spawn_egg")));
 	}
 
@@ -4005,11 +4010,12 @@ public class BlockStateModelGenerator {
 
 		public BlockStateModelGenerator.BlockTexturePool base(Block block, Model model) {
 			this.baseModelId = model.upload(block, this.texture, BlockStateModelGenerator.this.modelCollector);
-			if (BlockStateModelGenerator.this.field_29080.containsKey(block)) {
-				Identifier identifier = ((BlockStateModelGenerator.class_5879)BlockStateModelGenerator.this.field_29080.get(block))
-					.create(block, this.texture, BlockStateModelGenerator.this.modelCollector);
+			if (BlockStateModelGenerator.this.field_29504.containsKey(block)) {
 				BlockStateModelGenerator.this.blockStateCollector
-					.accept(BlockStateModelGenerator.createBlockStateWithTwoModelAndRandomInversion(block, this.baseModelId, identifier));
+					.accept(
+						((BlockStateModelGenerator.class_5879)BlockStateModelGenerator.this.field_29504.get(block))
+							.create(block, this.baseModelId, this.texture, BlockStateModelGenerator.this.modelCollector)
+					);
 			} else {
 				BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createSingletonBlockState(block, this.baseModelId));
 			}
@@ -4108,6 +4114,13 @@ public class BlockStateModelGenerator {
 			Identifier identifier3 = this.method_33524(Models.OUTER_STAIRS, block);
 			BlockStateModelGenerator.this.blockStateCollector.accept(BlockStateModelGenerator.createStairsBlockState(block, identifier, identifier2, identifier3));
 			BlockStateModelGenerator.this.registerParentedItemModel(block, identifier2);
+			return this;
+		}
+
+		private BlockStateModelGenerator.BlockTexturePool method_34661(Block block) {
+			TexturedModel texturedModel = (TexturedModel)BlockStateModelGenerator.this.field_28551.getOrDefault(block, TexturedModel.CUBE_ALL.get(block));
+			BlockStateModelGenerator.this.blockStateCollector
+				.accept(BlockStateModelGenerator.createSingletonBlockState(block, texturedModel.upload(block, BlockStateModelGenerator.this.modelCollector)));
 			return this;
 		}
 
@@ -4219,6 +4232,6 @@ public class BlockStateModelGenerator {
 
 	@FunctionalInterface
 	interface class_5879 {
-		Identifier create(Block block, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer);
+		BlockStateSupplier create(Block block, Identifier identifier, Texture texture, BiConsumer<Identifier, Supplier<JsonElement>> biConsumer);
 	}
 }

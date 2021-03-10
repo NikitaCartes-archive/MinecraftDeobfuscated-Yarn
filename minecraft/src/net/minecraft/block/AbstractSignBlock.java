@@ -28,7 +28,6 @@ import net.minecraft.world.WorldAccess;
 
 public abstract class AbstractSignBlock extends BlockWithEntity implements Waterloggable {
 	public static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
-	public static final BooleanProperty LIT = Properties.LIT;
 	protected static final VoxelShape SHAPE = Block.createCuboidShape(4.0, 0.0, 4.0, 12.0, 16.0, 12.0);
 	private final SignType type;
 
@@ -70,24 +69,24 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 		boolean bl2 = itemStack.isOf(Items.GLOW_INK_SAC);
 		boolean bl3 = itemStack.isOf(Items.INK_SAC);
 		boolean bl4 = (bl2 || bl || bl3) && player.getAbilities().allowModifyWorld;
-		boolean bl5 = (Boolean)state.get(LIT);
-		if ((!bl2 || !bl5) && (!bl3 || bl5)) {
-			if (world.isClient) {
-				return bl4 ? ActionResult.SUCCESS : ActionResult.CONSUME;
+		if (world.isClient) {
+			return bl4 ? ActionResult.SUCCESS : ActionResult.CONSUME;
+		} else {
+			BlockEntity blockEntity = world.getBlockEntity(pos);
+			if (!(blockEntity instanceof SignBlockEntity)) {
+				return ActionResult.PASS;
 			} else {
-				BlockEntity blockEntity = world.getBlockEntity(pos);
-				if (blockEntity instanceof SignBlockEntity) {
-					SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
+				SignBlockEntity signBlockEntity = (SignBlockEntity)blockEntity;
+				boolean bl5 = signBlockEntity.isGlowingText();
+				if ((!bl2 || !bl5) && (!bl3 || bl5)) {
 					if (bl4) {
 						boolean bl6;
 						if (bl2) {
 							world.playSound(null, pos, SoundEvents.ITEM_GLOW_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-							world.setBlockState(pos, state.with(LIT, Boolean.valueOf(true)));
-							bl6 = true;
+							bl6 = signBlockEntity.setGlowingText(true);
 						} else if (bl3) {
 							world.playSound(null, pos, SoundEvents.ITEM_INK_SAC_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
-							world.setBlockState(pos, state.with(LIT, Boolean.valueOf(false)));
-							bl6 = true;
+							bl6 = signBlockEntity.setGlowingText(false);
 						} else {
 							world.playSound(null, pos, SoundEvents.ITEM_DYE_USE, SoundCategory.BLOCKS, 1.0F, 1.0F);
 							bl6 = signBlockEntity.setTextColor(((DyeItem)itemStack.getItem()).getColor());
@@ -103,8 +102,6 @@ public abstract class AbstractSignBlock extends BlockWithEntity implements Water
 					return ActionResult.PASS;
 				}
 			}
-		} else {
-			return ActionResult.PASS;
 		}
 	}
 

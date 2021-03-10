@@ -2,6 +2,7 @@ package net.minecraft.item;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
+import net.minecraft.entity.decoration.GlowItemFrameEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -41,7 +42,7 @@ public class DecorationItem extends Item {
 					return ActionResult.success(world.isClient);
 				}
 
-				abstractDecorationEntity = new ItemFrameEntity(EntityType.GLOW_ITEM_FRAME, world, blockPos2, direction);
+				abstractDecorationEntity = new GlowItemFrameEntity(world, blockPos2, direction);
 			}
 
 			CompoundTag compoundTag = itemStack.getTag();

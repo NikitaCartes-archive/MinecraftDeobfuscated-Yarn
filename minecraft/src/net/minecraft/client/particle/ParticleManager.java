@@ -31,6 +31,7 @@ import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -401,17 +402,17 @@ public class ParticleManager implements ResourceReloadListener {
 		MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f
 	) {
 		lightmapTextureManager.enable();
-		RenderSystem.enableAlphaTest();
-		RenderSystem.defaultAlphaFunc();
 		RenderSystem.enableDepthTest();
-		RenderSystem.enableFog();
-		RenderSystem.pushMatrix();
-		RenderSystem.multMatrix(matrixStack.peek().getModel());
+		MatrixStack matrixStack2 = RenderSystem.getModelViewStack();
+		matrixStack2.push();
+		matrixStack2.method_34425(matrixStack.peek().getModel());
+		RenderSystem.applyModelViewMatrix();
 
 		for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
 			Iterable<Particle> iterable = (Iterable<Particle>)this.particles.get(particleTextureSheet);
 			if (iterable != null) {
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShader(GameRenderer::method_34546);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				Tessellator tessellator = Tessellator.getInstance();
 				BufferBuilder bufferBuilder = tessellator.getBuffer();
 				particleTextureSheet.begin(bufferBuilder, this.textureManager);
@@ -419,8 +420,8 @@ public class ParticleManager implements ResourceReloadListener {
 				for (Particle particle : iterable) {
 					try {
 						particle.buildGeometry(bufferBuilder, camera, f);
-					} catch (Throwable var16) {
-						CrashReport crashReport = CrashReport.create(var16, "Rendering Particle");
+					} catch (Throwable var17) {
+						CrashReport crashReport = CrashReport.create(var17, "Rendering Particle");
 						CrashReportSection crashReportSection = crashReport.addElement("Particle being rendered");
 						crashReportSection.add("Particle", particle::toString);
 						crashReportSection.add("Particle Type", particleTextureSheet::toString);
@@ -432,13 +433,11 @@ public class ParticleManager implements ResourceReloadListener {
 			}
 		}
 
-		RenderSystem.popMatrix();
+		matrixStack2.pop();
+		RenderSystem.applyModelViewMatrix();
 		RenderSystem.depthMask(true);
-		RenderSystem.depthFunc(515);
 		RenderSystem.disableBlend();
-		RenderSystem.defaultAlphaFunc();
 		lightmapTextureManager.disable();
-		RenderSystem.disableFog();
 	}
 
 	public void setWorld(@Nullable ClientWorld world) {

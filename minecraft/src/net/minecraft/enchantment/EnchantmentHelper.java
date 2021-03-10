@@ -59,8 +59,8 @@ public class EnchantmentHelper {
 	 * <p>For enchanted books, it retrieves from the item stack's stored than
 	 * regular enchantments.
 	 * 
-	 * @see net.minecraft.item.ItemStack#getEnchantments()
-	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentTag(net.minecraft.item.ItemStack)
+	 * @see ItemStack#getEnchantments()
+	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentNbt(ItemStack)
 	 */
 	public static Map<Enchantment, Integer> get(ItemStack stack) {
 		ListTag listTag = stack.isOf(Items.ENCHANTED_BOOK) ? EnchantedBookItem.getEnchantmentNbt(stack) : stack.getEnchantments();
@@ -89,8 +89,8 @@ public class EnchantmentHelper {
 	 * <p>For enchanted books, it sets the enchantments to the item stack's
 	 * stored enchantments than regular enchantments.
 	 * 
-	 * @see net.minecraft.item.ItemStack#getEnchantments()
-	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentTag(net.minecraft.item.ItemStack)
+	 * @see ItemStack#getEnchantments()
+	 * @see net.minecraft.item.EnchantedBookItem#getEnchantmentNbt(ItemStack)
 	 */
 	public static void set(Map<Enchantment, Integer> enchantments, ItemStack stack) {
 		ListTag listTag = new ListTag();

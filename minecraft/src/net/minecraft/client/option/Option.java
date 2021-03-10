@@ -1,7 +1,6 @@
 package net.minecraft.client.option;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -274,7 +273,7 @@ public abstract class Option {
 			"options.graphics",
 			Arrays.asList(GraphicsMode.values()),
 			(List<GraphicsMode>)Stream.of(GraphicsMode.values()).filter(graphicsMode -> graphicsMode != GraphicsMode.FABULOUS).collect(Collectors.toList()),
-			() -> !GlStateManager.supportsGl30() || MinecraftClient.getInstance().getVideoWarningManager().hasCancelledAfterWarning(),
+			() -> MinecraftClient.getInstance().getVideoWarningManager().hasCancelledAfterWarning(),
 			graphicsMode -> {
 				MutableText mutableText = new TranslatableText(graphicsMode.getTranslationKey());
 				return graphicsMode == GraphicsMode.FABULOUS ? mutableText.formatted(Formatting.ITALIC) : mutableText;

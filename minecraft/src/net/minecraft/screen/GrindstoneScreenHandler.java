@@ -2,7 +2,6 @@ package net.minecraft.screen;
 
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
@@ -18,7 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -59,17 +57,16 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 			}
 
 			@Override
-			public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-				context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+			public void onTakeItem(PlayerEntity player, ItemStack stack) {
+				context.run((world, blockPos) -> {
 					if (world instanceof ServerWorld) {
 						ExperienceOrbEntity.spawn((ServerWorld)world, Vec3d.ofCenter(blockPos), this.getExperience(world));
 					}
 
 					world.syncWorldEvent(1042, blockPos, 0);
-				}));
+				});
 				GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
 				GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);
-				return stack;
 			}
 
 			private int getExperience(World world) {
@@ -221,7 +218,7 @@ public class GrindstoneScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.input)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, this.input));
 	}
 
 	@Override

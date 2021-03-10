@@ -243,6 +243,7 @@ public class ItemModelGenerator {
 		this.register(Items.SPECTRAL_ARROW, Models.GENERATED);
 		this.register(Items.SPIDER_EYE, Models.GENERATED);
 		this.register(Items.SPRUCE_BOAT, Models.GENERATED);
+		this.register(Items.SPYGLASS, Models.GENERATED);
 		this.register(Items.STICK, Models.HANDHELD);
 		this.register(Items.STONE_AXE, Models.HANDHELD);
 		this.register(Items.STONE_HOE, Models.HANDHELD);

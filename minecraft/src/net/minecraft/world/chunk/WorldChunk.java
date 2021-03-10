@@ -394,7 +394,7 @@ public class WorldChunk implements Chunk {
 	public void addBlockEntity(BlockEntity blockEntity) {
 		this.setBlockEntity(blockEntity);
 		if (this.canTickBlockEntities()) {
-			this.method_32919(blockEntity);
+			this.updateGameEventListener(blockEntity);
 			this.updateTicker(blockEntity);
 		}
 	}
@@ -724,7 +724,7 @@ public class WorldChunk implements Chunk {
 
 	public void disableTickSchedulers() {
 		if (this.blockTickScheduler instanceof ChunkTickScheduler) {
-			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState(blockPos).getBlock());
+			((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), pos -> this.getBlockState(pos).getBlock());
 			this.blockTickScheduler = DummyClientTickScheduler.get();
 		} else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
 			((SimpleTickScheduler)this.blockTickScheduler).scheduleTo(this.world.getBlockTickScheduler());
@@ -732,7 +732,7 @@ public class WorldChunk implements Chunk {
 		}
 
 		if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
-			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState(blockPos).getFluid());
+			((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), pos -> this.getFluidState(pos).getFluid());
 			this.fluidTickScheduler = DummyClientTickScheduler.get();
 		} else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
 			((SimpleTickScheduler)this.fluidTickScheduler).scheduleTo(this.world.getFluidTickScheduler());
@@ -794,14 +794,14 @@ public class WorldChunk implements Chunk {
 		this.blockEntities.values().forEach(this::removeBlockEntity);
 	}
 
-	public void updateAllBlockEntityTickers() {
+	public void updateAllBlockEntities() {
 		this.blockEntities.values().forEach(blockEntity -> {
-			this.method_32919(blockEntity);
+			this.updateGameEventListener(blockEntity);
 			this.updateTicker(blockEntity);
 		});
 	}
 
-	private <T extends BlockEntity> void method_32919(T blockEntity) {
+	private <T extends BlockEntity> void updateGameEventListener(T blockEntity) {
 		if (!this.world.isClient) {
 			Block block = blockEntity.getCachedState().getBlock();
 			if (block instanceof BlockEntityProvider) {
@@ -820,7 +820,7 @@ public class WorldChunk implements Chunk {
 		if (blockEntityTicker == null) {
 			this.removeBlockEntityTicker(blockEntity.getPos());
 		} else {
-			this.blockEntityTickers.compute(blockEntity.getPos(), (blockPos, wrappedBlockEntityTickInvoker) -> {
+			this.blockEntityTickers.compute(blockEntity.getPos(), (pos, wrappedBlockEntityTickInvoker) -> {
 				BlockEntityTickInvoker blockEntityTickInvoker = this.wrapTicker(blockEntity, blockEntityTicker);
 				if (wrappedBlockEntityTickInvoker != null) {
 					wrappedBlockEntityTickInvoker.setWrapped(blockEntityTickInvoker);

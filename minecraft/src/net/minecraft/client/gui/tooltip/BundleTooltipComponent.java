@@ -96,8 +96,8 @@ public class BundleTooltipComponent implements TooltipComponent {
 	}
 
 	private void draw(MatrixStack matrices, int x, int y, int z, TextureManager textureManager, BundleTooltipComponent.Sprite sprite) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		textureManager.bindTexture(TEXTURE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderTexture(0, TEXTURE);
 		DrawableHelper.drawTexture(matrices, x, y, z, (float)sprite.u, (float)sprite.v, sprite.width, sprite.height, 128, 128);
 	}
 

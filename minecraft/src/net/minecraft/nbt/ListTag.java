@@ -148,17 +148,6 @@ public class ListTag extends AbstractListTag<Tag> {
 		return 0;
 	}
 
-	public int[] getIntArray(int index) {
-		if (index >= 0 && index < this.value.size()) {
-			Tag tag = (Tag)this.value.get(index);
-			if (tag.getType() == 11) {
-				return ((IntArrayTag)tag).getIntArray();
-			}
-		}
-
-		return new int[0];
-	}
-
 	public double getDouble(int index) {
 		if (index >= 0 && index < this.value.size()) {
 			Tag tag = (Tag)this.value.get(index);

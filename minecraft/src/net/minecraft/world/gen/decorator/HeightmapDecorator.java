@@ -5,16 +5,15 @@ import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
 
-public abstract class HeightmapDecorator<DC extends DecoratorConfig> extends AbstractHeightmapDecorator<DC> {
-	public HeightmapDecorator(Codec<DC> codec) {
+public class HeightmapDecorator extends Decorator<HeightmapDecoratorConfig> {
+	public HeightmapDecorator(Codec<HeightmapDecoratorConfig> codec) {
 		super(codec);
 	}
 
-	@Override
-	public Stream<BlockPos> getPositions(DecoratorContext context, Random random, DC config, BlockPos pos) {
-		int i = pos.getX();
-		int j = pos.getZ();
-		int k = context.getTopY(this.getHeightmapType(config), i, j);
-		return k > context.method_33868() ? Stream.of(new BlockPos(i, k, j)) : Stream.of();
+	public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, HeightmapDecoratorConfig heightmapDecoratorConfig, BlockPos blockPos) {
+		int i = blockPos.getX();
+		int j = blockPos.getZ();
+		int k = decoratorContext.getTopY(heightmapDecoratorConfig.heightmap, i, j);
+		return k > decoratorContext.getBottomY() ? Stream.of(new BlockPos(i, k, j)) : Stream.of();
 	}
 }

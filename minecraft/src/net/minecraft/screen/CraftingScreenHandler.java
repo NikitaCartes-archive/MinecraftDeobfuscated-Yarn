@@ -1,7 +1,6 @@
 package net.minecraft.screen;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.Blocks;
@@ -20,7 +19,6 @@ import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingInventory> {
@@ -56,7 +54,9 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 		}
 	}
 
-	protected static void updateResult(int syncId, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory) {
+	protected static void updateResult(
+		ScreenHandler screenHandler, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory
+	) {
 		if (!world.isClient) {
 			ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity)player;
 			ItemStack itemStack = ItemStack.EMPTY;
@@ -69,13 +69,14 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 			}
 
 			resultInventory.setStack(0, itemStack);
-			serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, 0, itemStack));
+			screenHandler.setPreviousTrackedSlot(0, itemStack);
+			serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(screenHandler.syncId, 0, itemStack));
 		}
 	}
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> updateResult(this.syncId, world, this.player, this.input, this.result)));
+		this.context.run((world, blockPos) -> updateResult(this, world, this.player, this.input, this.result));
 	}
 
 	@Override
@@ -97,7 +98,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.input)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, this.input));
 	}
 
 	@Override
@@ -113,7 +114,7 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 			ItemStack itemStack2 = slot.getStack();
 			itemStack = itemStack2.copy();
 			if (index == 0) {
-				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, world, player)));
+				this.context.run((world, blockPos) -> itemStack2.getItem().onCraft(itemStack2, world, player));
 				if (!this.insertItem(itemStack2, 10, 46, true)) {
 					return ItemStack.EMPTY;
 				}
@@ -143,9 +144,9 @@ public class CraftingScreenHandler extends AbstractRecipeScreenHandler<CraftingI
 				return ItemStack.EMPTY;
 			}
 
-			ItemStack itemStack3 = slot.onTakeItem(player, itemStack2);
+			slot.onTakeItem(player, itemStack2);
 			if (index == 0) {
-				player.dropItem(itemStack3, false);
+				player.dropItem(itemStack2, false);
 			}
 		}
 

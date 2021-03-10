@@ -102,6 +102,7 @@ import net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.render.BackgroundRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferBuilderStorage;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.RenderTickCounter;
 import net.minecraft.client.render.Tessellator;
@@ -215,6 +216,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.profiler.DummyProfiler;
 import net.minecraft.util.profiler.ProfileResult;
 import net.minecraft.util.profiler.Profiler;
@@ -493,8 +495,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.onWindowFocusChanged(true);
 
 		try {
-			InputStream inputStream = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
-			InputStream inputStream2 = this.getResourcePackDownloader().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
+			InputStream inputStream = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_16x16.png"));
+			InputStream inputStream2 = this.getResourcePackProvider().getPack().open(ResourceType.CLIENT_RESOURCES, new Identifier("icons/icon_32x32.png"));
 			this.window.setIcon(inputStream, inputStream2);
 		} catch (IOException var9) {
 			LOGGER.error("Couldn't set icon", (Throwable)var9);
@@ -582,6 +584,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 			this.openScreen(new TitleScreen(true));
 		}
 
+		this.gameRenderer.method_34521(this.getResourcePackProvider().getPack());
 		SplashScreen.init(this);
 		List<ResourcePack> list = this.resourcePackManager.createResourcePacks();
 		this.setOverlay(
@@ -923,6 +926,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		}
 
 		this.currentScreen = screen;
+		BufferRenderer.unbindAll();
 		if (screen != null) {
 			this.mouse.unlockCursor();
 			KeyBinding.unpressAll();
@@ -1035,8 +1039,14 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		this.soundManager.updateListenerPosition(this.gameRenderer.getCamera());
 		this.profiler.pop();
 		this.profiler.push("render");
-		RenderSystem.pushMatrix();
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.push();
+		RenderSystem.applyModelViewMatrix();
 		RenderSystem.clear(16640, IS_SYSTEM_MAC);
+		this.framebuffer.clearColor[0] = 0.1F;
+		this.framebuffer.clearColor[1] = 0.2F;
+		this.framebuffer.clearColor[2] = 0.3F;
+		this.framebuffer.clear(IS_SYSTEM_MAC);
 		this.framebuffer.beginWrite(true);
 		BackgroundRenderer.method_23792();
 		this.profiler.push("display");
@@ -1059,15 +1069,17 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 
 		this.profiler.push("blit");
 		this.framebuffer.endWrite();
-		RenderSystem.popMatrix();
-		RenderSystem.pushMatrix();
+		matrixStack.pop();
+		matrixStack.push();
+		RenderSystem.applyModelViewMatrix();
 		this.framebuffer.draw(this.window.getFramebufferWidth(), this.window.getFramebufferHeight());
-		RenderSystem.popMatrix();
+		matrixStack.pop();
+		RenderSystem.applyModelViewMatrix();
 		this.profiler.swap("updateDisplay");
 		this.window.swapBuffers();
-		int i = this.getFramerateLimit();
-		if ((double)i < Option.FRAMERATE_LIMIT.getMax()) {
-			RenderSystem.limitDisplayFPS(i);
+		int j = this.getFramerateLimit();
+		if ((double)j < Option.FRAMERATE_LIMIT.getMax()) {
+			RenderSystem.limitDisplayFPS(j);
 		}
 
 		this.profiler.swap("yield");
@@ -1221,12 +1233,12 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		List<ProfilerTiming> list = profileResult.getTimings(this.openProfilerSection);
 		ProfilerTiming profilerTiming = (ProfilerTiming)list.remove(0);
 		RenderSystem.clear(256, IS_SYSTEM_MAC);
-		RenderSystem.matrixMode(5889);
-		RenderSystem.loadIdentity();
-		RenderSystem.ortho(0.0, (double)this.window.getFramebufferWidth(), (double)this.window.getFramebufferHeight(), 0.0, 1000.0, 3000.0);
-		RenderSystem.matrixMode(5888);
-		RenderSystem.loadIdentity();
-		RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
+		Matrix4f matrix4f = Matrix4f.method_34239(0.0F, (float)this.window.getFramebufferWidth(), 0.0F, (float)this.window.getFramebufferHeight(), 1000.0F, 3000.0F);
+		RenderSystem.setProjectionMatrix(matrix4f);
+		MatrixStack matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.loadIdentity();
+		matrixStack.translate(0.0, 0.0, -2000.0);
+		RenderSystem.applyModelViewMatrix();
 		RenderSystem.lineWidth(1.0F);
 		RenderSystem.disableTexture();
 		Tessellator tessellator = Tessellator.getInstance();
@@ -1825,9 +1837,8 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 							userCache,
 							i -> {
 								WorldGenerationProgressTracker worldGenerationProgressTracker = new WorldGenerationProgressTracker(i + 0);
-								worldGenerationProgressTracker.start();
 								this.worldGenProgressTracker.set(worldGenerationProgressTracker);
-								return new QueueingWorldGenerationProgressListener(worldGenerationProgressTracker, this.renderTaskQueue::add);
+								return QueueingWorldGenerationProgressListener.method_34228(worldGenerationProgressTracker, this.renderTaskQueue::add);
 							}
 						)
 				);
@@ -2344,7 +2355,7 @@ public class MinecraftClient extends ReentrantThreadExecutor<Runnable> implement
 		return this.resourcePackManager;
 	}
 
-	public ClientBuiltinResourcePackProvider getResourcePackDownloader() {
+	public ClientBuiltinResourcePackProvider getResourcePackProvider() {
 		return this.builtinPackProvider;
 	}
 

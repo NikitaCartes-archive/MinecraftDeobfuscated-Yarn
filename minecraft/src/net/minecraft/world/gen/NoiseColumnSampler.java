@@ -138,14 +138,14 @@ public class NoiseColumnSampler {
 			int ae = ad + minY;
 			double af = this.noise.sample(x, ae, z, y, aa, ab, ac);
 			double ag = this.getOffset(ae, d, e, v) + af;
-			ag = this.sampleNoiseCaves(x * this.horizontalNoiseResolution, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, af, ag);
+			ag = this.sampleNoiseCaves(x * this.horizontalNoiseResolution, ae * this.verticalNoiseResolution, z * this.horizontalNoiseResolution, ag);
 			ag = this.applySlides(ag, ae);
 			buffer[ad] = ag;
 		}
 	}
 
-	private double sampleNoiseCaves(int x, int y, int z, double noise, double offset) {
-		return this.noiseCaveSampler != null ? this.noiseCaveSampler.sample(x, y, z, noise, offset) : offset;
+	private double sampleNoiseCaves(int x, int y, int z, double noise) {
+		return this.noiseCaveSampler != null ? this.noiseCaveSampler.sample(x, y, z, noise) : noise;
 	}
 
 	/**

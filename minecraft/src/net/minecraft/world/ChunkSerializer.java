@@ -112,7 +112,7 @@ public class ChunkSerializer {
 		long l = compoundTag.getLong("InhabitedTime");
 		ChunkStatus.ChunkType chunkType = getChunkType(tag);
 		Chunk chunk;
-		if (chunkType == ChunkStatus.ChunkType.field_12807) {
+		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 			TickScheduler<Block> tickScheduler;
 			if (compoundTag.contains("TileTicks", 9)) {
 				tickScheduler = SimpleTickScheduler.fromNbt(compoundTag.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get);
@@ -188,7 +188,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		if (chunkType == ChunkStatus.ChunkType.field_12807) {
+		if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
 			return new ReadOnlyChunk((WorldChunk)chunk);
 		} else {
 			ProtoChunk protoChunk2 = (ProtoChunk)chunk;
@@ -294,7 +294,7 @@ public class ChunkSerializer {
 		}
 
 		compoundTag2.put("TileEntities", listTag2);
-		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12808) {
+		if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.PROTOCHUNK) {
 			ProtoChunk protoChunk = (ProtoChunk)chunk;
 			ListTag listTag3 = new ListTag();
 			listTag3.addAll(protoChunk.getEntities());
@@ -352,7 +352,7 @@ public class ChunkSerializer {
 			}
 		}
 
-		return ChunkStatus.ChunkType.field_12808;
+		return ChunkStatus.ChunkType.PROTOCHUNK;
 	}
 
 	private static void loadEntities(ServerWorld world, CompoundTag tag, WorldChunk chunk) {

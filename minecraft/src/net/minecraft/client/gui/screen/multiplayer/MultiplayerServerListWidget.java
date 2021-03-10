@@ -22,6 +22,9 @@ import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;
@@ -214,6 +217,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		private final ServerInfo server;
 		private final Identifier iconTextureId;
 		private String iconUri;
+		@Nullable
 		private NativeImageBackedTexture icon;
 		private long time;
 
@@ -222,7 +226,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			this.server = server;
 			this.client = MinecraftClient.getInstance();
 			this.iconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(server.address) + "/icon");
-			this.icon = (NativeImageBackedTexture)this.client.getTextureManager().getTexture(this.iconTextureId);
+			AbstractTexture abstractTexture = this.client.getTextureManager().method_34590(this.iconTextureId, MissingSprite.getMissingSpriteTexture());
+			if (abstractTexture != MissingSprite.getMissingSpriteTexture() && abstractTexture instanceof NativeImageBackedTexture) {
+				this.icon = (NativeImageBackedTexture)abstractTexture;
+			}
 		}
 
 		@Override
@@ -297,8 +304,9 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				list2 = Collections.emptyList();
 			}
 
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
+			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
 			DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, (float)(k * 10), (float)(176 + l * 8), 10, 8, 256, 256);
 			String string = this.server.getIcon();
 			if (!Objects.equals(string, this.iconUri)) {
@@ -310,10 +318,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 				}
 			}
 
-			if (this.icon != null) {
-				this.draw(matrices, x, y, this.iconTextureId);
-			} else {
+			if (this.icon == null) {
 				this.draw(matrices, x, y, MultiplayerServerListWidget.UNKNOWN_SERVER_TEXTURE);
+			} else {
+				this.draw(matrices, x, y, this.iconTextureId);
 			}
 
 			int m = mouseX - x;
@@ -325,9 +333,10 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 			}
 
 			if (this.client.options.touchscreen || hovered) {
-				this.client.getTextureManager().bindTexture(MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE);
+				RenderSystem.setShaderTexture(0, MultiplayerServerListWidget.SERVER_SELECTION_TEXTURE);
 				DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShader(GameRenderer::method_34542);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				int o = mouseX - x;
 				int p = mouseY - y;
 				if (this.method_20136()) {
@@ -361,7 +370,7 @@ public class MultiplayerServerListWidget extends AlwaysSelectedEntryListWidget<M
 		}
 
 		protected void draw(MatrixStack matrices, int x, int y, Identifier textureId) {
-			this.client.getTextureManager().bindTexture(textureId);
+			RenderSystem.setShaderTexture(0, textureId);
 			RenderSystem.enableBlend();
 			DrawableHelper.drawTexture(matrices, x, y, 0.0F, 0.0F, 32, 32, 32, 32);
 			RenderSystem.disableBlend();

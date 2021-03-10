@@ -15,6 +15,7 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
@@ -31,8 +32,11 @@ import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.StructureWeightType;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public abstract class StructurePiece {
+	private static final Logger field_29327 = LogManager.getLogger();
 	protected static final BlockState AIR = Blocks.CAVE_AIR.getDefaultState();
 	protected BlockBox boundingBox;
 	@Nullable
@@ -63,7 +67,7 @@ public abstract class StructurePiece {
 	public StructurePiece(StructurePieceType type, CompoundTag tag) {
 		this(type, tag.getInt("GD"));
 		if (tag.contains("BB")) {
-			this.boundingBox = new BlockBox(tag.getIntArray("BB"));
+			this.boundingBox = (BlockBox)BlockBox.CODEC.parse(NbtOps.INSTANCE, tag.get("BB")).resultOrPartial(field_29327::error).orElse(new BlockBox(BlockPos.ORIGIN));
 		}
 
 		int i = tag.getInt("O");
@@ -73,7 +77,7 @@ public abstract class StructurePiece {
 	public final CompoundTag toNbt() {
 		CompoundTag compoundTag = new CompoundTag();
 		compoundTag.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
-		compoundTag.put("BB", this.boundingBox.toNbt());
+		BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(field_29327::error).ifPresent(tag -> compoundTag.put("BB", tag));
 		Direction direction = this.getFacing();
 		compoundTag.putInt("O", direction == null ? -1 : direction.getHorizontal());
 		compoundTag.putInt("GD", this.chainLength);

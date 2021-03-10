@@ -1,11 +1,10 @@
 package net.minecraft.block.entity;
 
-import com.google.common.collect.Lists;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Random;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -31,13 +30,14 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 
 public class StructureBlockBlockEntity extends BlockEntity {
 	private Identifier structureName;
 	private String author = "";
 	private String metadata = "";
 	private BlockPos offset = new BlockPos(0, 1, 0);
-	private BlockPos size = BlockPos.ORIGIN;
+	private Vec3i size = Vec3i.ZERO;
 	private BlockMirror mirror = BlockMirror.NONE;
 	private BlockRotation rotation = BlockRotation.NONE;
 	private StructureBlockMode mode;
@@ -90,7 +90,7 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		int l = MathHelper.clamp(tag.getInt("sizeX"), 0, 48);
 		int m = MathHelper.clamp(tag.getInt("sizeY"), 0, 48);
 		int n = MathHelper.clamp(tag.getInt("sizeZ"), 0, 48);
-		this.size = new BlockPos(l, m, n);
+		this.size = new Vec3i(l, m, n);
 
 		try {
 			this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
@@ -190,12 +190,12 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		this.offset = pos;
 	}
 
-	public BlockPos getSize() {
+	public Vec3i getSize() {
 		return this.size;
 	}
 
-	public void setSize(BlockPos pos) {
-		this.size = pos;
+	public void setSize(Vec3i vec3i) {
+		this.size = vec3i;
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -269,17 +269,16 @@ public class StructureBlockBlockEntity extends BlockEntity {
 		} else {
 			BlockPos blockPos = this.getPos();
 			int i = 80;
-			BlockPos blockPos2 = new BlockPos(blockPos.getX() - 80, 0, blockPos.getZ() - 80);
+			BlockPos blockPos2 = new BlockPos(blockPos.getX() - 80, this.world.getBottomY(), blockPos.getZ() - 80);
 			BlockPos blockPos3 = new BlockPos(blockPos.getX() + 80, this.world.getTopY() - 1, blockPos.getZ() + 80);
-			List<StructureBlockBlockEntity> list = this.findStructureBlockEntities(blockPos2, blockPos3);
-			List<StructureBlockBlockEntity> list2 = this.findCorners(list);
-			if (list2.size() < 1) {
-				return false;
-			} else {
-				BlockBox blockBox = this.makeBoundingBox(blockPos, list2);
-				if (blockBox.maxX - blockBox.minX > 1 && blockBox.maxY - blockBox.minY > 1 && blockBox.maxZ - blockBox.minZ > 1) {
+			Stream<BlockPos> stream = this.streamCornerPos(blockPos2, blockPos3);
+			return getStructureBox(blockPos, stream).filter(blockBox -> {
+				int ix = blockBox.maxX - blockBox.minX;
+				int j = blockBox.maxY - blockBox.minY;
+				int k = blockBox.maxZ - blockBox.minZ;
+				if (ix > 1 && j > 1 && k > 1) {
 					this.offset = new BlockPos(blockBox.minX - blockPos.getX() + 1, blockBox.minY - blockPos.getY() + 1, blockBox.minZ - blockPos.getZ() + 1);
-					this.size = new BlockPos(blockBox.maxX - blockBox.minX - 1, blockBox.maxY - blockBox.minY - 1, blockBox.maxZ - blockBox.minZ - 1);
+					this.size = new Vec3i(ix - 1, j - 1, k - 1);
 					this.markDirty();
 					BlockState blockState = this.world.getBlockState(blockPos);
 					this.world.updateListeners(blockPos, blockState, blockState, 3);
@@ -287,63 +286,38 @@ public class StructureBlockBlockEntity extends BlockEntity {
 				} else {
 					return false;
 				}
-			}
+			}).isPresent();
 		}
 	}
 
-	private List<StructureBlockBlockEntity> findCorners(List<StructureBlockBlockEntity> structureBlockEntities) {
-		Predicate<StructureBlockBlockEntity> predicate = structureBlockBlockEntity -> structureBlockBlockEntity.mode == StructureBlockMode.CORNER
-				&& Objects.equals(this.structureName, structureBlockBlockEntity.structureName);
-		return (List<StructureBlockBlockEntity>)structureBlockEntities.stream().filter(predicate).collect(Collectors.toList());
+	/**
+	 * Streams positions of {@link StructureBlockMode#CORNER} mode structure blocks with matching names.
+	 */
+	private Stream<BlockPos> streamCornerPos(BlockPos start, BlockPos end) {
+		return BlockPos.stream(start, end)
+			.filter(pos -> this.world.getBlockState(pos).isOf(Blocks.STRUCTURE_BLOCK))
+			.map(this.world::getBlockEntity)
+			.filter(blockEntity -> blockEntity instanceof StructureBlockBlockEntity)
+			.map(blockEntity -> (StructureBlockBlockEntity)blockEntity)
+			.filter(blockEntity -> blockEntity.mode == StructureBlockMode.CORNER && Objects.equals(this.structureName, blockEntity.structureName))
+			.map(BlockEntity::getPos);
 	}
 
-	private List<StructureBlockBlockEntity> findStructureBlockEntities(BlockPos pos1, BlockPos pos2) {
-		List<StructureBlockBlockEntity> list = Lists.<StructureBlockBlockEntity>newArrayList();
-
-		for (BlockPos blockPos : BlockPos.iterate(pos1, pos2)) {
-			BlockState blockState = this.world.getBlockState(blockPos);
-			if (blockState.isOf(Blocks.STRUCTURE_BLOCK)) {
-				BlockEntity blockEntity = this.world.getBlockEntity(blockPos);
-				if (blockEntity != null && blockEntity instanceof StructureBlockBlockEntity) {
-					list.add((StructureBlockBlockEntity)blockEntity);
-				}
-			}
-		}
-
-		return list;
-	}
-
-	private BlockBox makeBoundingBox(BlockPos center, List<StructureBlockBlockEntity> corners) {
-		BlockBox blockBox;
-		if (corners.size() > 1) {
-			BlockPos blockPos = ((StructureBlockBlockEntity)corners.get(0)).getPos();
-			blockBox = new BlockBox(blockPos, blockPos);
+	private static Optional<BlockBox> getStructureBox(BlockPos pos, Stream<BlockPos> corners) {
+		Iterator<BlockPos> iterator = corners.iterator();
+		if (!iterator.hasNext()) {
+			return Optional.empty();
 		} else {
-			blockBox = new BlockBox(center, center);
+			BlockPos blockPos = (BlockPos)iterator.next();
+			BlockBox blockBox = new BlockBox(blockPos);
+			if (iterator.hasNext()) {
+				iterator.forEachRemaining(blockBox::encompass);
+			} else {
+				blockBox.encompass(pos);
+			}
+
+			return Optional.of(blockBox);
 		}
-
-		for (StructureBlockBlockEntity structureBlockBlockEntity : corners) {
-			BlockPos blockPos2 = structureBlockBlockEntity.getPos();
-			if (blockPos2.getX() < blockBox.minX) {
-				blockBox.minX = blockPos2.getX();
-			} else if (blockPos2.getX() > blockBox.maxX) {
-				blockBox.maxX = blockPos2.getX();
-			}
-
-			if (blockPos2.getY() < blockBox.minY) {
-				blockBox.minY = blockPos2.getY();
-			} else if (blockPos2.getY() > blockBox.maxY) {
-				blockBox.maxY = blockPos2.getY();
-			}
-
-			if (blockPos2.getZ() < blockBox.minZ) {
-				blockBox.minZ = blockPos2.getZ();
-			} else if (blockPos2.getZ() > blockBox.maxZ) {
-				blockBox.maxZ = blockPos2.getZ();
-			}
-		}
-
-		return blockBox;
 	}
 
 	public boolean saveStructure() {
@@ -410,10 +384,10 @@ public class StructureBlockBlockEntity extends BlockEntity {
 			this.author = structure.getAuthor();
 		}
 
-		BlockPos blockPos2 = structure.getSize();
-		boolean bl2 = this.size.equals(blockPos2);
+		Vec3i vec3i = structure.getSize();
+		boolean bl2 = this.size.equals(vec3i);
 		if (!bl2) {
-			this.size = blockPos2;
+			this.size = vec3i;
 			this.markDirty();
 			BlockState blockState = world.getBlockState(blockPos);
 			world.updateListeners(blockPos, blockState, blockState, 3);
@@ -432,8 +406,8 @@ public class StructureBlockBlockEntity extends BlockEntity {
 					.setRandom(createRandom(this.seed));
 			}
 
-			BlockPos blockPos3 = blockPos.add(this.offset);
-			structure.place(world, blockPos3, blockPos3, structurePlacementData, createRandom(this.seed), 2);
+			BlockPos blockPos2 = blockPos.add(this.offset);
+			structure.place(world, blockPos2, blockPos2, structurePlacementData, createRandom(this.seed), 2);
 			return true;
 		}
 	}

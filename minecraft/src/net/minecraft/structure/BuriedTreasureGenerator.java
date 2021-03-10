@@ -18,7 +18,7 @@ public class BuriedTreasureGenerator {
 	public static class Piece extends StructurePiece {
 		public Piece(BlockPos pos) {
 			super(StructurePieceType.BURIED_TREASURE, 0);
-			this.boundingBox = new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX(), pos.getY(), pos.getZ());
+			this.boundingBox = new BlockBox(pos);
 		}
 
 		public Piece(StructureManager manager, CompoundTag tag) {
@@ -66,7 +66,7 @@ public class BuriedTreasureGenerator {
 						}
 					}
 
-					this.boundingBox = new BlockBox(mutable.getX(), mutable.getY(), mutable.getZ(), mutable.getX(), mutable.getY(), mutable.getZ());
+					this.boundingBox = new BlockBox(mutable);
 					return this.addChest(world, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);
 				}
 

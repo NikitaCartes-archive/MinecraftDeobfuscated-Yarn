@@ -16,25 +16,12 @@ import net.minecraft.util.Identifier;
 /**
  * Provides resource loading capabilities to Minecraft.
  */
-public interface ResourceManager {
+public interface ResourceManager extends ResourceFactory {
 	/**
 	 * Gets a set of all namespaces offered by the resource packs loaded by this manager.
 	 */
 	@Environment(EnvType.CLIENT)
 	Set<String> getAllNamespaces();
-
-	/**
-	 * Finds and returns the corresponding resource for a resource's identifier.
-	 * 
-	 * <p>Starts by scanning each resource pack from highest priority to lowest. If no resource packs were found
-	 * to contain the requested entry, will throw a {@code FileNotFoundException}.
-	 * 
-	 * @throws java.io.FileNotFoundException if the identified resource could not be found, or could not be loaded.
-	 * @throws IOException if the identified resource was found but a stream to it could not be opened.
-	 * 
-	 * @param id the resource identifier to search for
-	 */
-	Resource getResource(Identifier id) throws IOException;
 
 	/**
 	 * Checks whether any of the currently-loaded resource packs contain an entry for the given id.

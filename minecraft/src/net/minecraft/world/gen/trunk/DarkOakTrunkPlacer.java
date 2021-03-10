@@ -15,7 +15,9 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class DarkOakTrunkPlacer extends TrunkPlacer {
-	public static final Codec<DarkOakTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> method_28904(instance).apply(instance, DarkOakTrunkPlacer::new));
+	public static final Codec<DarkOakTrunkPlacer> CODEC = RecordCodecBuilder.create(
+		instance -> fillTrunkPlacerFields(instance).apply(instance, DarkOakTrunkPlacer::new)
+	);
 
 	public DarkOakTrunkPlacer(int i, int j, int k) {
 		super(i, j, k);
@@ -32,10 +34,10 @@ public class DarkOakTrunkPlacer extends TrunkPlacer {
 	) {
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 		BlockPos blockPos = pos.down();
-		setToDirt(world, blockPos);
-		setToDirt(world, blockPos.east());
-		setToDirt(world, blockPos.south());
-		setToDirt(world, blockPos.south().east());
+		setToDirt(world, random, blockPos, config);
+		setToDirt(world, random, blockPos.east(), config);
+		setToDirt(world, random, blockPos.south(), config);
+		setToDirt(world, random, blockPos.south().east(), config);
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		int i = trunkHeight - random.nextInt(4);
 		int j = 2 - random.nextInt(3);

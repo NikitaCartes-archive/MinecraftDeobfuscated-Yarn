@@ -33,7 +33,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -215,9 +214,9 @@ public class RuinedPortalStructurePiece extends SimpleStructurePiece {
 	private void placeNetherrackBase(Random random, WorldAccess world) {
 		boolean bl = this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_LAND_SURFACE
 			|| this.verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR;
-		Vec3i vec3i = this.boundingBox.getCenter();
-		int i = vec3i.getX();
-		int j = vec3i.getZ();
+		BlockPos blockPos = this.boundingBox.getCenter();
+		int i = blockPos.getX();
+		int j = blockPos.getZ();
 		float[] fs = new float[]{1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 0.9F, 0.9F, 0.8F, 0.7F, 0.6F, 0.4F, 0.2F};
 		int k = fs.length;
 		int l = (this.boundingBox.getBlockCountX() + this.boundingBox.getBlockCountZ()) / 2;

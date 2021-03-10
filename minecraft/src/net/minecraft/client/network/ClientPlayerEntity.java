@@ -318,7 +318,6 @@ public class ClientPlayerEntity extends AbstractClientPlayerEntity {
 	}
 
 	public void closeScreen() {
-		this.getInventory().setCursorStack(ItemStack.EMPTY);
 		super.closeHandledScreen();
 		this.client.openScreen(null);
 	}

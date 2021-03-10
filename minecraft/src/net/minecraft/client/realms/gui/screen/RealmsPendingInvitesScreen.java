@@ -276,7 +276,7 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 			RealmsPendingInvitesScreen.this.textRenderer.draw(matrices, RealmsUtil.method_25282(pendingInvite.date), (float)(i + 38), (float)(j + 24), 7105644);
 			RealmsAcceptRejectButton.render(matrices, this.buttons, RealmsPendingInvitesScreen.this.pendingInvitationSelectionList, i, j, k, l);
 			RealmsTextureManager.withBoundFace(pendingInvite.worldOwnerUuid, () -> {
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				DrawableHelper.drawTexture(matrices, i, j, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
 				DrawableHelper.drawTexture(matrices, i, j, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
 			});
@@ -290,8 +290,8 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 
 			@Override
 			protected void render(MatrixStack matrices, int x, int y, boolean bl) {
-				RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(RealmsPendingInvitesScreen.ACCEPT_ICON);
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderTexture(0, RealmsPendingInvitesScreen.ACCEPT_ICON);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				float f = bl ? 19.0F : 0.0F;
 				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
 				if (bl) {
@@ -313,8 +313,8 @@ public class RealmsPendingInvitesScreen extends RealmsScreen {
 
 			@Override
 			protected void render(MatrixStack matrices, int x, int y, boolean bl) {
-				RealmsPendingInvitesScreen.this.client.getTextureManager().bindTexture(RealmsPendingInvitesScreen.REJECT_ICON);
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderTexture(0, RealmsPendingInvitesScreen.REJECT_ICON);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 				float f = bl ? 19.0F : 0.0F;
 				DrawableHelper.drawTexture(matrices, x, y, f, 0.0F, 18, 18, 37, 18);
 				if (bl) {

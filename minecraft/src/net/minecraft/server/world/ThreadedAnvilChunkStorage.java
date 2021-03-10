@@ -507,7 +507,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 	}
 
 	private byte method_27053(ChunkPos chunkPos, ChunkStatus.ChunkType chunkType) {
-		return this.chunkToType.put(chunkPos.toLong(), (byte)(chunkType == ChunkStatus.ChunkType.field_12808 ? -1 : 1));
+		return this.chunkToType.put(chunkPos.toLong(), (byte)(chunkType == ChunkStatus.ChunkType.PROTOCHUNK ? -1 : 1));
 	}
 
 	private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> upgradeChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
@@ -591,7 +591,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 				worldChunk.loadToWorld();
 				if (this.loadedChunks.add(chunkPos.toLong())) {
 					worldChunk.setLoadedToWorld(true);
-					worldChunk.updateAllBlockEntityTickers();
+					worldChunk.updateAllBlockEntities();
 				}
 
 				return worldChunk;
@@ -637,7 +637,7 @@ public class ThreadedAnvilChunkStorage extends VersionedChunkStorage implements 
 
 			try {
 				ChunkStatus chunkStatus = chunk.getStatus();
-				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.field_12807) {
+				if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
 					if (this.method_27055(chunkPos)) {
 						return false;
 					}

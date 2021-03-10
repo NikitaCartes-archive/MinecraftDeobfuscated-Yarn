@@ -20,7 +20,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TestableWorld;
@@ -75,38 +74,16 @@ public class TreeFeature extends Feature<TreeFeatureConfig> {
 		int j = config.foliagePlacer.getRandomHeight(random, i, config);
 		int k = i - j;
 		int l = config.foliagePlacer.getRandomRadius(random, k);
-		BlockPos blockPos;
-		if (!config.skipFluidCheck) {
-			int m = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
-			int n = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
-			if (n - m > config.maxWaterDepth) {
-				return false;
-			}
-
-			int o;
-			if (config.heightmap == Heightmap.Type.OCEAN_FLOOR) {
-				o = m;
-			} else if (config.heightmap == Heightmap.Type.WORLD_SURFACE) {
-				o = n;
-			} else {
-				o = world.getTopPosition(config.heightmap, pos).getY();
-			}
-
-			blockPos = new BlockPos(pos.getX(), o, pos.getZ());
-		} else {
-			blockPos = pos;
-		}
-
-		if (blockPos.getY() < world.getBottomY() + 1 || blockPos.getY() + i + 1 > world.getTopY()) {
+		if (pos.getY() < world.getBottomY() + 1 || pos.getY() + i + 1 > world.getTopY()) {
 			return false;
-		} else if (!canPlaceTreeOn(world, blockPos.down())) {
+		} else if (!canPlaceTreeOn(world, pos.down())) {
 			return false;
 		} else {
 			OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
-			int nx = this.getTopPosition(world, i, blockPos, config);
-			if (nx >= i || optionalInt.isPresent() && nx >= optionalInt.getAsInt()) {
-				List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, nx, blockPos, logPositions, box, config);
-				list.forEach(node -> config.foliagePlacer.generate(world, random, config, n, node, j, l, leavesPositions, box));
+			int m = this.getTopPosition(world, i, pos, config);
+			if (m >= i || optionalInt.isPresent() && m >= optionalInt.getAsInt()) {
+				List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, m, pos, logPositions, box, config);
+				list.forEach(node -> config.foliagePlacer.generate(world, random, config, m, node, j, l, leavesPositions, box));
 				return true;
 			} else {
 				return false;

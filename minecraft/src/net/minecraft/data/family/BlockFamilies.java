@@ -142,6 +142,7 @@ public class BlockFamilies {
 		.wall(Blocks.POLISHED_BLACKSTONE_BRICK_WALL)
 		.stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS)
 		.slab(Blocks.POLISHED_BLACKSTONE_BRICK_SLAB)
+		.method_34593(Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS)
 		.build();
 	public static final BlockFamily BRICK = register(Blocks.BRICKS).wall(Blocks.BRICK_WALL).stairs(Blocks.BRICK_STAIRS).slab(Blocks.BRICK_SLAB).build();
 	public static final BlockFamily END_STONE_BRICK = register(Blocks.END_STONE_BRICKS)
@@ -224,6 +225,7 @@ public class BlockFamilies {
 		.stairs(Blocks.NETHER_BRICK_STAIRS)
 		.slab(Blocks.NETHER_BRICK_SLAB)
 		.chsieled(Blocks.CHISELED_NETHER_BRICKS)
+		.method_34593(Blocks.CRACKED_NETHER_BRICKS)
 		.build();
 	public static final BlockFamily RED_NETHER_BRICK = register(Blocks.RED_NETHER_BRICKS)
 		.slab(Blocks.RED_NETHER_BRICK_SLAB)
@@ -286,30 +288,33 @@ public class BlockFamilies {
 		.stairs(Blocks.STONE_BRICK_STAIRS)
 		.slab(Blocks.STONE_BRICK_SLAB)
 		.chsieled(Blocks.CHISELED_STONE_BRICKS)
+		.method_34593(Blocks.CRACKED_STONE_BRICKS)
 		.noGenerateRecipes()
 		.build();
 	public static final BlockFamily field_28946 = register(Blocks.DEEPSLATE).build();
 	public static final BlockFamily field_29079 = register(Blocks.COBBLED_DEEPSLATE)
 		.slab(Blocks.COBBLED_DEEPSLATE_SLAB)
 		.stairs(Blocks.COBBLED_DEEPSLATE_STAIRS)
+		.wall(Blocks.COBBLED_DEEPSLATE_WALL)
 		.chsieled(Blocks.CHISELED_DEEPSLATE)
 		.polished(Blocks.POLISHED_DEEPSLATE)
-		.wall(Blocks.COBBLED_DEEPSLATE_WALL)
 		.build();
 	public static final BlockFamily field_28947 = register(Blocks.POLISHED_DEEPSLATE)
 		.slab(Blocks.POLISHED_DEEPSLATE_SLAB)
 		.stairs(Blocks.POLISHED_DEEPSLATE_STAIRS)
 		.wall(Blocks.POLISHED_DEEPSLATE_WALL)
 		.build();
-	public static final BlockFamily field_28948 = register(Blocks.DEEPSLATE_TILES)
-		.slab(Blocks.DEEPSLATE_TILE_SLAB)
-		.stairs(Blocks.DEEPSLATE_TILE_STAIRS)
-		.wall(Blocks.DEEPSLATE_TILE_WALL)
-		.build();
 	public static final BlockFamily field_28949 = register(Blocks.DEEPSLATE_BRICKS)
 		.slab(Blocks.DEEPSLATE_BRICK_SLAB)
 		.stairs(Blocks.DEEPSLATE_BRICK_STAIRS)
 		.wall(Blocks.DEEPSLATE_BRICK_WALL)
+		.method_34593(Blocks.CRACKED_DEEPSLATE_BRICKS)
+		.build();
+	public static final BlockFamily field_28948 = register(Blocks.DEEPSLATE_TILES)
+		.slab(Blocks.DEEPSLATE_TILE_SLAB)
+		.stairs(Blocks.DEEPSLATE_TILE_STAIRS)
+		.wall(Blocks.DEEPSLATE_TILE_WALL)
+		.method_34593(Blocks.CRACKED_DEEPSLATE_TILES)
 		.build();
 
 	private static BlockFamily.Builder register(Block baseBlock) {

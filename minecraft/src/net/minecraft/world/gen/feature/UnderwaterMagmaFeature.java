@@ -13,7 +13,7 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.WorldAccess;
-import net.minecraft.world.gen.feature.util.DripstoneColumn;
+import net.minecraft.world.gen.feature.util.CaveSurface;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
 public class UnderwaterMagmaFeature extends Feature<UnderwaterMagmaFeatureConfig> {
@@ -53,8 +53,8 @@ public class UnderwaterMagmaFeature extends Feature<UnderwaterMagmaFeatureConfig
 	private static OptionalInt getFloorHeight(StructureWorldAccess world, BlockPos pos, UnderwaterMagmaFeatureConfig config) {
 		Predicate<BlockState> predicate = state -> state.isOf(Blocks.WATER);
 		Predicate<BlockState> predicate2 = state -> !state.isOf(Blocks.WATER);
-		Optional<DripstoneColumn> optional = DripstoneColumn.create(world, pos, config.floorSearchRange, predicate, predicate2);
-		return (OptionalInt)optional.map(DripstoneColumn::getFloorHeight).orElseGet(OptionalInt::empty);
+		Optional<CaveSurface> optional = CaveSurface.create(world, pos, config.floorSearchRange, predicate, predicate2);
+		return (OptionalInt)optional.map(CaveSurface::getFloorHeight).orElseGet(OptionalInt::empty);
 	}
 
 	private boolean isValidPosition(StructureWorldAccess world, BlockPos pos) {

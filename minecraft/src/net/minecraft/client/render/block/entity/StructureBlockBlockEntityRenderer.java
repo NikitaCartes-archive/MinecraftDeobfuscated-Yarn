@@ -13,6 +13,7 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.BlockView;
 
 @Environment(EnvType.CLIENT)
@@ -25,27 +26,27 @@ public class StructureBlockBlockEntityRenderer implements BlockEntityRenderer<St
 	) {
 		if (MinecraftClient.getInstance().player.isCreativeLevelTwoOp() || MinecraftClient.getInstance().player.isSpectator()) {
 			BlockPos blockPos = structureBlockBlockEntity.getOffset();
-			BlockPos blockPos2 = structureBlockBlockEntity.getSize();
-			if (blockPos2.getX() >= 1 && blockPos2.getY() >= 1 && blockPos2.getZ() >= 1) {
+			Vec3i vec3i = structureBlockBlockEntity.getSize();
+			if (vec3i.getX() >= 1 && vec3i.getY() >= 1 && vec3i.getZ() >= 1) {
 				if (structureBlockBlockEntity.getMode() == StructureBlockMode.SAVE || structureBlockBlockEntity.getMode() == StructureBlockMode.LOAD) {
 					double d = (double)blockPos.getX();
 					double e = (double)blockPos.getZ();
 					double g = (double)blockPos.getY();
-					double h = g + (double)blockPos2.getY();
+					double h = g + (double)vec3i.getY();
 					double k;
 					double l;
 					switch (structureBlockBlockEntity.getMirror()) {
 						case LEFT_RIGHT:
-							k = (double)blockPos2.getX();
-							l = (double)(-blockPos2.getZ());
+							k = (double)vec3i.getX();
+							l = (double)(-vec3i.getZ());
 							break;
 						case FRONT_BACK:
-							k = (double)(-blockPos2.getX());
-							l = (double)blockPos2.getZ();
+							k = (double)(-vec3i.getX());
+							l = (double)vec3i.getZ();
 							break;
 						default:
-							k = (double)blockPos2.getX();
-							l = (double)blockPos2.getZ();
+							k = (double)vec3i.getX();
+							l = (double)vec3i.getZ();
 					}
 
 					double m;

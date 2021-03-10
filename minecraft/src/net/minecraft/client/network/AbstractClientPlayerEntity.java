@@ -7,6 +7,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.PlayerSkinTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -84,21 +85,19 @@ public abstract class AbstractClientPlayerEntity extends PlayerEntity {
 		return playerListEntry == null ? null : playerListEntry.getElytraTexture();
 	}
 
-	public static PlayerSkinTexture loadSkin(Identifier id, String playerName) {
+	public static void loadSkin(Identifier id, String playerName) {
 		TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-		AbstractTexture abstractTexture = textureManager.getTexture(id);
-		if (abstractTexture == null) {
-			abstractTexture = new PlayerSkinTexture(
+		AbstractTexture abstractTexture = textureManager.method_34590(id, MissingSprite.getMissingSpriteTexture());
+		if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
+			AbstractTexture var4 = new PlayerSkinTexture(
 				null,
 				String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(playerName)),
 				DefaultSkinHelper.getTexture(getOfflinePlayerUuid(playerName)),
 				true,
 				null
 			);
-			textureManager.registerTexture(id, abstractTexture);
+			textureManager.registerTexture(id, var4);
 		}
-
-		return (PlayerSkinTexture)abstractTexture;
 	}
 
 	public static Identifier getSkinId(String playerName) {

@@ -216,19 +216,19 @@ public class RealmsResetWorldScreen extends RealmsScreen {
 	}
 
 	private void drawFrame(MatrixStack matrices, int x, int y, Text text, Identifier texture, boolean hovered, boolean mouseOver) {
-		this.client.getTextureManager().bindTexture(texture);
+		RenderSystem.setShaderTexture(0, texture);
 		if (hovered) {
-			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
+			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
 		} else {
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		DrawableHelper.drawTexture(matrices, x + 2, y + 14, 0.0F, 0.0F, 56, 56, 56, 56);
-		this.client.getTextureManager().bindTexture(SLOT_FRAME_TEXTURE);
+		RenderSystem.setShaderTexture(0, SLOT_FRAME_TEXTURE);
 		if (hovered) {
-			RenderSystem.color4f(0.56F, 0.56F, 0.56F, 1.0F);
+			RenderSystem.setShaderColor(0.56F, 0.56F, 0.56F, 1.0F);
 		} else {
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		DrawableHelper.drawTexture(matrices, x, y + 12, 0.0F, 0.0F, 60, 60, 60, 60);

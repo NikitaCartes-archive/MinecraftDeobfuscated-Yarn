@@ -1,5 +1,6 @@
 package net.minecraft.world.gen.chunk;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Sets;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
@@ -23,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.NoiseInterpolator;
 import net.minecraft.util.math.noise.DoublePerlinNoiseSampler;
 import net.minecraft.util.math.noise.InterpolatedNoiseSampler;
 import net.minecraft.util.math.noise.NoiseSampler;
@@ -151,9 +153,13 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 
 	private double[] sampleNoiseColumn(int x, int z, int minY, int noiseSizeY) {
 		double[] ds = new double[noiseSizeY + 1];
-		this.noiseColumnSampler
-			.sampleNoiseColumn(ds, x, z, ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig(), this.getSeaLevel(), minY, noiseSizeY);
+		this.sampleNoiseColumn(ds, x, z, minY, noiseSizeY);
 		return ds;
+	}
+
+	private void sampleNoiseColumn(double[] buffer, int x, int z, int minY, int noiseSizeY) {
+		GenerationShapeConfig generationShapeConfig = ((ChunkGeneratorSettings)this.settings.get()).getGenerationShapeConfig();
+		this.noiseColumnSampler.sampleNoiseColumn(buffer, x, z, generationShapeConfig, this.getSeaLevel(), minY, noiseSizeY);
 	}
 
 	@Override
@@ -258,6 +264,8 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 		BlockState blockState;
 		if (d > 0.0) {
 			blockState = blockInterpolator.sample(x, y, z, (ChunkGeneratorSettings)this.settings.get());
+		} else if (this.hasAquifers && y < this.getMinimumY() + 9) {
+			blockState = Blocks.LAVA.getDefaultState();
 		} else {
 			int i = aquiferSampler == null ? this.getSeaLevel() : aquiferSampler.getWaterLevel();
 			if (y < i) {
@@ -383,79 +391,57 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				noiseSizeY * this.verticalNoiseResolution
 			)
 			: null;
-		double[][][] ds = new double[2][this.noiseSizeZ + 1][noiseSizeY + 1];
-
-		for (int n = 0; n < this.noiseSizeZ + 1; n++) {
-			ds[0][n] = new double[noiseSizeY + 1];
-			double[] es = ds[0][n];
-			int o = j * this.noiseSizeX;
-			int p = k * this.noiseSizeZ + n;
-			this.noiseColumnSampler.sampleNoiseColumn(es, o, p, generationShapeConfig, this.getSeaLevel(), minY, noiseSizeY);
-			ds[1][n] = new double[noiseSizeY + 1];
-		}
-
+		NoiseInterpolator noiseInterpolator = new NoiseInterpolator(this.noiseSizeX, noiseSizeY, this.noiseSizeZ, j, k, minY, this::sampleNoiseColumn);
+		List<NoiseInterpolator> list = ImmutableList.of(noiseInterpolator);
+		list.forEach(NoiseInterpolator::sampleStartNoise);
 		BlockPos.Mutable mutable = new BlockPos.Mutable();
 
-		for (int q = 0; q < this.noiseSizeX; q++) {
-			int o = j * this.noiseSizeX + q + 1;
-
-			for (int p = 0; p < this.noiseSizeZ + 1; p++) {
-				double[] fs = ds[1][p];
-				int r = k * this.noiseSizeZ + p;
-				this.noiseColumnSampler.sampleNoiseColumn(fs, o, r, generationShapeConfig, this.getSeaLevel(), minY, noiseSizeY);
-			}
+		for (int n = 0; n < this.noiseSizeX; n++) {
+			int o = n;
+			list.forEach(noiseInterpolatorx -> noiseInterpolatorx.sampleEndNoise(o));
 
 			for (int p = 0; p < this.noiseSizeZ; p++) {
 				ChunkSection chunkSection = chunk.getSection(chunk.countVerticalSections() - 1);
 
-				for (int r = noiseSizeY - 1; r >= 0; r--) {
-					double d = ds[0][p][r];
-					double e = ds[0][p + 1][r];
-					double f = ds[1][p][r];
-					double g = ds[1][p + 1][r];
-					double h = ds[0][p][r + 1];
-					double s = ds[0][p + 1][r + 1];
-					double t = ds[1][p][r + 1];
-					double u = ds[1][p + 1][r + 1];
+				for (int q = noiseSizeY - 1; q >= 0; q--) {
+					int r = p;
+					int s = q;
+					list.forEach(noiseInterpolatorx -> noiseInterpolatorx.sampleNoiseCorners(s, r));
 
-					for (int v = this.verticalNoiseResolution - 1; v >= 0; v--) {
-						int w = r * this.verticalNoiseResolution + v + i;
-						int x = w & 15;
-						int y = chunk.getSectionIndex(w);
-						if (chunk.getSectionIndex(chunkSection.getYOffset()) != y) {
-							chunkSection = chunk.getSection(y);
+					for (int t = this.verticalNoiseResolution - 1; t >= 0; t--) {
+						int u = q * this.verticalNoiseResolution + t + i;
+						int v = u & 15;
+						int w = chunk.getSectionIndex(u);
+						if (chunk.getSectionIndex(chunkSection.getYOffset()) != w) {
+							chunkSection = chunk.getSection(w);
 						}
 
-						double z = (double)v / (double)this.verticalNoiseResolution;
-						double aa = MathHelper.lerp(z, d, h);
-						double ab = MathHelper.lerp(z, f, t);
-						double ac = MathHelper.lerp(z, e, s);
-						double ad = MathHelper.lerp(z, g, u);
+						double d = (double)t / (double)this.verticalNoiseResolution;
+						list.forEach(noiseInterpolatorx -> noiseInterpolatorx.sampleNoiseY(d));
 
-						for (int ae = 0; ae < this.horizontalNoiseResolution; ae++) {
-							int af = l + q * this.horizontalNoiseResolution + ae;
-							int ag = af & 15;
-							double ah = (double)ae / (double)this.horizontalNoiseResolution;
-							double ai = MathHelper.lerp(ah, aa, ab);
-							double aj = MathHelper.lerp(ah, ac, ad);
+						for (int x = 0; x < this.horizontalNoiseResolution; x++) {
+							int y = l + n * this.horizontalNoiseResolution + x;
+							int z = y & 15;
+							double e = (double)x / (double)this.horizontalNoiseResolution;
+							list.forEach(noiseInterpolatorx -> noiseInterpolatorx.sampleNoiseX(e));
 
-							for (int ak = 0; ak < this.horizontalNoiseResolution; ak++) {
-								int al = m + p * this.horizontalNoiseResolution + ak;
-								int am = al & 15;
-								double an = (double)ak / (double)this.horizontalNoiseResolution;
-								double ao = MathHelper.lerp(an, ai, aj);
-								BlockState blockState = this.getBlockState(structureWeightSampler, aquiferSampler, this.blockInterpolator, af, w, al, ao);
+							for (int aa = 0; aa < this.horizontalNoiseResolution; aa++) {
+								int ab = m + p * this.horizontalNoiseResolution + aa;
+								int ac = ab & 15;
+								double f = (double)aa / (double)this.horizontalNoiseResolution;
+								double g = noiseInterpolator.sampleNoise(f);
+								BlockState blockState = this.getBlockState(structureWeightSampler, aquiferSampler, this.blockInterpolator, y, u, ab, g);
 								if (blockState != AIR) {
 									if (blockState.getLuminance() != 0 && chunk instanceof ProtoChunk) {
-										mutable.set(af, w, al);
+										mutable.set(y, u, ab);
 										((ProtoChunk)chunk).addLightSource(mutable);
 									}
 
-									chunkSection.setBlockState(ag, x, am, blockState, false);
-									heightmap.trackUpdate(ag, w, am, blockState);
-									heightmap2.trackUpdate(ag, w, am, blockState);
+									chunkSection.setBlockState(z, v, ac, blockState, false);
+									heightmap.trackUpdate(z, u, ac, blockState);
+									heightmap2.trackUpdate(z, u, ac, blockState);
 									if (aquiferSampler != null && aquiferSampler.needsFluidTick() && !blockState.getFluidState().isEmpty()) {
-										mutable.set(af, w, al);
+										mutable.set(y, u, ab);
 										chunk.getFluidTickScheduler().schedule(mutable, blockState.getFluidState().getFluid(), 0);
 									}
 								}
@@ -465,16 +451,10 @@ public final class NoiseChunkGenerator extends ChunkGenerator {
 				}
 			}
 
-			this.swapElements(ds);
+			list.forEach(NoiseInterpolator::swapBuffers);
 		}
 
 		return chunk;
-	}
-
-	public <T> void swapElements(T[] array) {
-		T object = array[0];
-		array[0] = array[1];
-		array[1] = object;
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5913;
 import net.minecraft.client.texture.TextureUtil;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,9 +17,8 @@ public class GlShader {
 	private final GlShader.Type shaderType;
 	private final String name;
 	private final int shaderRef;
-	private int refCount;
 
-	private GlShader(GlShader.Type shaderType, int shaderRef, String name) {
+	protected GlShader(GlShader.Type shaderType, int shaderRef, String name) {
 		this.shaderType = shaderType;
 		this.shaderRef = shaderRef;
 		this.name = name;
@@ -26,41 +26,46 @@ public class GlShader {
 
 	public void attachTo(GlProgram glProgram) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		this.refCount++;
-		GlStateManager.attachShader(glProgram.getProgramRef(), this.shaderRef);
+		GlStateManager.attachShader(glProgram.getProgramRef(), this.method_34417());
 	}
 
 	public void release() {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		this.refCount--;
-		if (this.refCount <= 0) {
-			GlStateManager.deleteShader(this.shaderRef);
-			this.shaderType.getLoadedShaders().remove(this.name);
-		}
+		GlStateManager.deleteShader(this.shaderRef);
+		this.shaderType.getLoadedShaders().remove(this.name);
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public static GlShader createFromResource(GlShader.Type type, String name, InputStream sourceCode, String string) throws IOException {
+	public static GlShader createFromResource(GlShader.Type type, String name, InputStream inputStream, String string, class_5913 arg) throws IOException {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		String string2 = TextureUtil.readAllToString(sourceCode);
-		if (string2 == null) {
+		int i = method_34416(type, name, inputStream, string, arg);
+		GlShader glShader = new GlShader(type, i, name);
+		type.getLoadedShaders().put(name, glShader);
+		return glShader;
+	}
+
+	protected static int method_34416(GlShader.Type type, String string, InputStream inputStream, String string2, class_5913 arg) throws IOException {
+		String string3 = TextureUtil.readAllToString(inputStream);
+		if (string3 == null) {
 			throw new IOException("Could not load program " + type.getName());
 		} else {
 			int i = GlStateManager.createShader(type.getGlType());
-			GlStateManager.shaderSource(i, string2);
+			GlStateManager.shaderSource(i, arg.method_34229(string3));
 			GlStateManager.compileShader(i);
 			if (GlStateManager.getShader(i, 35713) == 0) {
-				String string3 = StringUtils.trim(GlStateManager.getShaderInfoLog(i, 32768));
-				throw new IOException("Couldn't compile " + type.getName() + " program (" + string + ", " + name + ") : " + string3);
+				String string4 = StringUtils.trim(GlStateManager.getShaderInfoLog(i, 32768));
+				throw new IOException("Couldn't compile " + type.getName() + " program (" + string2 + ", " + string + ") : " + string4);
 			} else {
-				GlShader glShader = new GlShader(type, i, name);
-				type.getLoadedShaders().put(name, glShader);
-				return glShader;
+				return i;
 			}
 		}
+	}
+
+	protected int method_34417() {
+		return this.shaderRef;
 	}
 
 	@Environment(EnvType.CLIENT)

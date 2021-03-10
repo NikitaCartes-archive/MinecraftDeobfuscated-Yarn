@@ -37,7 +37,6 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 		}
 
 		if (this.enabled && !this.entries.isEmpty()) {
-			RenderSystem.pushMatrix();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			Vec3d vec3d = new Vec3d(this.client.player.getX(), this.client.player.getEyeY(), this.client.player.getZ());
@@ -80,13 +79,13 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				int o = this.client.textRenderer.getWidth(text);
 				int p = MathHelper.floor(MathHelper.clampedLerp(255.0, 75.0, (double)((float)(Util.getMeasuringTimeMs() - subtitleEntry.getTime()) / 3000.0F)));
 				int q = p << 16 | p << 8 | p;
-				RenderSystem.pushMatrix();
-				RenderSystem.translatef(
-					(float)this.client.getWindow().getScaledWidth() - (float)l * 1.0F - 2.0F,
-					(float)(this.client.getWindow().getScaledHeight() - 30) - (float)(i * (m + 1)) * 1.0F,
-					0.0F
+				matrices.push();
+				matrices.translate(
+					(double)((float)this.client.getWindow().getScaledWidth() - (float)l * 1.0F - 2.0F),
+					(double)((float)(this.client.getWindow().getScaledHeight() - 30) - (float)(i * (m + 1)) * 1.0F),
+					0.0
 				);
-				RenderSystem.scalef(1.0F, 1.0F, 1.0F);
+				matrices.scale(1.0F, 1.0F, 1.0F);
 				fill(matrices, -l - 1, -n - 1, l + 1, n + 1, this.client.options.getTextBackgroundColor(0.8F));
 				RenderSystem.enableBlend();
 				if (!bl) {
@@ -98,12 +97,11 @@ public class SubtitlesHud extends DrawableHelper implements SoundInstanceListene
 				}
 
 				this.client.textRenderer.draw(matrices, text, (float)(-o / 2), (float)(-n), q + -16777216);
-				RenderSystem.popMatrix();
+				matrices.pop();
 				i++;
 			}
 
 			RenderSystem.disableBlend();
-			RenderSystem.popMatrix();
 		}
 	}
 

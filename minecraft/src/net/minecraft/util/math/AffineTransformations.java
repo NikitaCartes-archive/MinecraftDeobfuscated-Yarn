@@ -14,11 +14,11 @@ public class AffineTransformations {
 	private static final Logger LOGGER = LogManager.getLogger();
 	public static final Map<Direction, AffineTransformation> DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
 		enumMap.put(Direction.SOUTH, AffineTransformation.identity());
-		enumMap.put(Direction.EAST, new AffineTransformation(null, new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), 90.0F, true), null, null));
-		enumMap.put(Direction.WEST, new AffineTransformation(null, new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), -90.0F, true), null, null));
-		enumMap.put(Direction.NORTH, new AffineTransformation(null, new Quaternion(new Vec3f(0.0F, 1.0F, 0.0F), 180.0F, true), null, null));
-		enumMap.put(Direction.UP, new AffineTransformation(null, new Quaternion(new Vec3f(1.0F, 0.0F, 0.0F), -90.0F, true), null, null));
-		enumMap.put(Direction.DOWN, new AffineTransformation(null, new Quaternion(new Vec3f(1.0F, 0.0F, 0.0F), 90.0F, true), null, null));
+		enumMap.put(Direction.EAST, new AffineTransformation(null, Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0F), null, null));
+		enumMap.put(Direction.WEST, new AffineTransformation(null, Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0F), null, null));
+		enumMap.put(Direction.NORTH, new AffineTransformation(null, Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0F), null, null));
+		enumMap.put(Direction.UP, new AffineTransformation(null, Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0F), null, null));
+		enumMap.put(Direction.DOWN, new AffineTransformation(null, Vec3f.POSITIVE_X.getDegreesQuaternion(90.0F), null, null));
 	});
 	public static final Map<Direction, AffineTransformation> INVERTED_DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
 		for (Direction direction : Direction.values()) {

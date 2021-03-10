@@ -13,6 +13,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.StructureWorldAccess;
@@ -128,16 +129,16 @@ public class ShipwreckGenerator {
 		) {
 			int i = world.getTopY();
 			int j = 0;
-			BlockPos blockPos = this.structure.getSize();
+			Vec3i vec3i = this.structure.getSize();
 			Heightmap.Type type = this.grounded ? Heightmap.Type.WORLD_SURFACE_WG : Heightmap.Type.OCEAN_FLOOR_WG;
-			int k = blockPos.getX() * blockPos.getZ();
+			int k = vec3i.getX() * vec3i.getZ();
 			if (k == 0) {
 				j = world.getTopY(type, this.pos.getX(), this.pos.getZ());
 			} else {
-				BlockPos blockPos2 = this.pos.add(blockPos.getX() - 1, 0, blockPos.getZ() - 1);
+				BlockPos blockPos = this.pos.add(vec3i.getX() - 1, 0, vec3i.getZ() - 1);
 
-				for (BlockPos blockPos3 : BlockPos.iterate(this.pos, blockPos2)) {
-					int l = world.getTopY(type, blockPos3.getX(), blockPos3.getZ());
+				for (BlockPos blockPos2 : BlockPos.iterate(this.pos, blockPos)) {
+					int l = world.getTopY(type, blockPos2.getX(), blockPos2.getZ());
 					j += l;
 					i = Math.min(i, l);
 				}
@@ -145,7 +146,7 @@ public class ShipwreckGenerator {
 				j /= k;
 			}
 
-			int m = this.grounded ? i - blockPos.getY() / 2 - random.nextInt(3) : j;
+			int m = this.grounded ? i - vec3i.getY() / 2 - random.nextInt(3) : j;
 			this.pos = new BlockPos(this.pos.getX(), m, this.pos.getZ());
 			return super.generate(world, structureAccessor, chunkGenerator, random, boundingBox, chunkPos, pos);
 		}

@@ -11,6 +11,7 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientAdvancementManager;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.packet.c2s.play.AdvancementTabC2SPacket;
@@ -118,28 +119,31 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 			drawCenteredText(matrices, this.textRenderer, EMPTY_TEXT, l, k + 18 + 56 - 9 / 2, -1);
 			drawCenteredText(matrices, this.textRenderer, SAD_LABEL_TEXT, l, k + 18 + 113 - 9, -1);
 		} else {
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)(j + 9), (float)(k + 18), 0.0F);
+			MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			matrixStack.push();
+			matrixStack.translate((double)(j + 9), (double)(k + 18), 0.0);
+			RenderSystem.applyModelViewMatrix();
 			advancementTab.render(matrices);
-			RenderSystem.popMatrix();
+			matrixStack.pop();
+			RenderSystem.applyModelViewMatrix();
 			RenderSystem.depthFunc(515);
 			RenderSystem.disableDepthTest();
 		}
 	}
 
 	public void drawWidgets(MatrixStack matrices, int i, int j) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
-		this.client.getTextureManager().bindTexture(WINDOW_TEXTURE);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderTexture(0, WINDOW_TEXTURE);
 		this.drawTexture(matrices, i, j, 0, 0, 252, 140);
 		if (this.tabs.size() > 1) {
-			this.client.getTextureManager().bindTexture(TABS_TEXTURE);
+			RenderSystem.setShaderTexture(0, TABS_TEXTURE);
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
 				advancementTab.drawBackground(matrices, i, j, advancementTab == this.selectedTab);
 			}
 
-			RenderSystem.enableRescaleNormal();
 			RenderSystem.defaultBlendFunc();
 
 			for (AdvancementTab advancementTab : this.tabs.values()) {
@@ -153,14 +157,17 @@ public class AdvancementsScreen extends Screen implements ClientAdvancementManag
 	}
 
 	private void drawWidgetTooltip(MatrixStack matrices, int i, int j, int k, int l) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		if (this.selectedTab != null) {
-			RenderSystem.pushMatrix();
+			MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			matrixStack.push();
+			matrixStack.translate((double)(k + 9), (double)(l + 18), 400.0);
+			RenderSystem.applyModelViewMatrix();
 			RenderSystem.enableDepthTest();
-			RenderSystem.translatef((float)(k + 9), (float)(l + 18), 400.0F);
 			this.selectedTab.drawWidgetTooltip(matrices, i - k - 9, j - l - 18, k, l);
 			RenderSystem.disableDepthTest();
-			RenderSystem.popMatrix();
+			matrixStack.pop();
+			RenderSystem.applyModelViewMatrix();
 		}
 
 		if (this.tabs.size() > 1) {

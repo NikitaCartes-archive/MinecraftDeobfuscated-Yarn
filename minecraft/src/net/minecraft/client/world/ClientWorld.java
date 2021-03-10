@@ -386,10 +386,10 @@ public class ClientWorld extends World {
 	}
 
 	@Override
-	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean bl) {
+	public void playSound(double x, double y, double z, SoundEvent sound, SoundCategory category, float volume, float pitch, boolean useDistance) {
 		double d = this.client.gameRenderer.getCamera().getPos().squaredDistanceTo(x, y, z);
 		PositionedSoundInstance positionedSoundInstance = new PositionedSoundInstance(sound, category, volume, pitch, x, y, z);
-		if (bl && d > 100.0) {
+		if (useDistance && d > 100.0) {
 			double e = Math.sqrt(d) / 40.0;
 			this.client.getSoundManager().play(positionedSoundInstance, (int)(e * 20.0));
 		} else {

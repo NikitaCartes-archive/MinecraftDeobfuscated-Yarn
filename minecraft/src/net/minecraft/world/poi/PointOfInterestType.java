@@ -25,9 +25,8 @@ public class PointOfInterestType {
 	private static final Supplier<Set<PointOfInterestType>> VILLAGER_WORKSTATIONS = Suppliers.memoize(
 		() -> (Set<PointOfInterestType>)Registry.VILLAGER_PROFESSION.stream().map(VillagerProfession::getWorkStation).collect(Collectors.toSet())
 	);
-	public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> ((Set)VILLAGER_WORKSTATIONS.get())
-			.contains(pointOfInterestType);
-	public static final Predicate<PointOfInterestType> ALWAYS_TRUE = pointOfInterestType -> true;
+	public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = poiType -> ((Set)VILLAGER_WORKSTATIONS.get()).contains(poiType);
+	public static final Predicate<PointOfInterestType> ALWAYS_TRUE = poiType -> true;
 	private static final Set<BlockState> BED_STATES = (Set<BlockState>)ImmutableList.of(
 			Blocks.RED_BED,
 			Blocks.BLACK_BED,
@@ -48,7 +47,7 @@ public class PointOfInterestType {
 		)
 		.stream()
 		.flatMap(block -> block.getStateManager().getStates().stream())
-		.filter(blockState -> blockState.get(BedBlock.PART) == BedPart.HEAD)
+		.filter(state -> state.get(BedBlock.PART) == BedPart.HEAD)
 		.collect(ImmutableSet.toImmutableSet());
 	private static final Map<BlockState, PointOfInterestType> BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE = Maps.<BlockState, PointOfInterestType>newHashMap();
 	public static final PointOfInterestType UNEMPLOYED = register("unemployed", ImmutableSet.of(), 1, IS_USED_BY_PROFESSION, 1);
@@ -96,7 +95,7 @@ public class PointOfInterestType {
 		this.id = id;
 		this.blockStates = ImmutableSet.copyOf(blockStates);
 		this.ticketCount = ticketCount;
-		this.completionCondition = pointOfInterestType -> pointOfInterestType == this;
+		this.completionCondition = poiType -> poiType == this;
 		this.searchDistance = searchDistance;
 	}
 

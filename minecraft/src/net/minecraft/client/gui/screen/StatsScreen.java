@@ -15,6 +15,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
@@ -149,14 +150,13 @@ public class StatsScreen extends Screen implements StatsListener {
 
 	private void renderStatItem(MatrixStack matrices, int x, int y, Item item) {
 		this.renderIcon(matrices, x + 1, y + 1, 0, 0);
-		RenderSystem.enableRescaleNormal();
 		this.itemRenderer.renderGuiItemIcon(item.getDefaultStack(), x + 2, y + 2);
-		RenderSystem.disableRescaleNormal();
 	}
 
 	private void renderIcon(MatrixStack matrices, int x, int y, int u, int v) {
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		this.client.getTextureManager().bindTexture(STATS_ICON_TEXTURE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderTexture(0, STATS_ICON_TEXTURE);
 		drawTexture(matrices, x, y, this.getZOffset(), (float)u, (float)v, 18, 18, 128, 128);
 	}
 
@@ -420,10 +420,10 @@ public class StatsScreen extends Screen implements StatsListener {
 				int j = mouseY - 12;
 				int k = StatsScreen.this.textRenderer.getWidth(text);
 				this.fillGradient(matrices, i - 3, j - 3, i + k + 3, j + 8 + 3, -1073741824, -1073741824);
-				RenderSystem.pushMatrix();
-				RenderSystem.translatef(0.0F, 0.0F, 400.0F);
+				matrices.push();
+				matrices.translate(0.0, 0.0, 400.0);
 				StatsScreen.this.textRenderer.drawWithShadow(matrices, text, (float)i, (float)j, -1);
-				RenderSystem.popMatrix();
+				matrices.pop();
 			}
 		}
 

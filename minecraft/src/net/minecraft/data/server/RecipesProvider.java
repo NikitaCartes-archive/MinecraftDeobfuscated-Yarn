@@ -837,6 +837,18 @@ public class RecipesProvider implements DataProvider {
 			.pattern("WWW")
 			.criterion("has_quartz", conditionsFromItem(Items.QUARTZ))
 			.offerTo(exporter);
+		ShapedRecipeJsonFactory.create(Blocks.DEEPSLATE_BRICKS, 4)
+			.input('S', Blocks.POLISHED_DEEPSLATE)
+			.pattern("SS")
+			.pattern("SS")
+			.criterion("has_polished_deepslate", conditionsFromItem(Blocks.POLISHED_DEEPSLATE))
+			.offerTo(exporter);
+		ShapedRecipeJsonFactory.create(Blocks.DEEPSLATE_TILES, 4)
+			.input('S', Blocks.DEEPSLATE_BRICKS)
+			.pattern("SS")
+			.pattern("SS")
+			.criterion("has_deepslate_bricks", conditionsFromItem(Blocks.DEEPSLATE_BRICKS))
+			.offerTo(exporter);
 		ShapedRecipeJsonFactory.create(Blocks.DETECTOR_RAIL, 6)
 			.input('R', Items.REDSTONE)
 			.input('#', Blocks.STONE_PRESSURE_PLATE)
@@ -2403,8 +2415,8 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.CHORUS_FRUIT), Items.POPPED_CHORUS_FRUIT, 0.1F, 200)
 			.criterion("has_chorus_fruit", conditionsFromItem(Items.CHORUS_FRUIT))
 			.offerTo(exporter);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.COAL_ORE.asItem()), Items.COAL, 0.1F, 200)
-			.criterion("has_coal_ore", conditionsFromItem(Blocks.COAL_ORE))
+		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.COAL_ORES), Items.COAL, 0.1F, 200)
+			.criterion("has_coal_ore", conditionsFromTag(ItemTags.COAL_ORES))
 			.offerTo(exporter, "coal_from_smelting");
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Items.BEEF), Items.COOKED_BEEF, 0.35F, 200)
 			.criterion("has_beef", conditionsFromItem(Items.BEEF))
@@ -2436,8 +2448,8 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.LAPIS_ORES), Items.LAPIS_LAZULI, 0.2F, 200)
 			.criterion("has_lapis_ore", conditionsFromTag(ItemTags.LAPIS_ORES))
 			.offerTo(exporter, "lapis_from_smelting");
-		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.EMERALD_ORE.asItem()), Items.EMERALD, 1.0F, 200)
-			.criterion("has_emerald_ore", conditionsFromItem(Blocks.EMERALD_ORE))
+		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.EMERALD_ORES), Items.EMERALD, 1.0F, 200)
+			.criterion("has_emerald_ore", conditionsFromTag(ItemTags.EMERALD_ORES))
 			.offerTo(exporter, "emerald_from_smelting");
 		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.SAND), Blocks.GLASS.asItem(), 0.1F, 200)
 			.criterion("has_sand", conditionsFromTag(ItemTags.SAND))
@@ -2518,8 +2530,8 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.IRON_ORES), Items.IRON_INGOT, 0.7F, 200)
 			.criterion("has_iron_ore", conditionsFromTag(ItemTags.IRON_ORES))
 			.offerTo(exporter);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.COPPER_ORE), Items.COPPER_INGOT, 0.7F, 200)
-			.criterion("has_copper_ore", conditionsFromItem(Blocks.COPPER_ORE.asItem()))
+		CookingRecipeJsonFactory.createSmelting(Ingredient.fromTag(ItemTags.COPPER_ORES), Items.COPPER_INGOT, 0.7F, 200)
+			.criterion("has_copper_ore", conditionsFromTag(ItemTags.COPPER_ORES))
 			.offerTo(exporter);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.CLAY), Blocks.TERRACOTTA.asItem(), 0.35F, 200)
 			.criterion("has_clay_block", conditionsFromItem(Blocks.CLAY))
@@ -2605,20 +2617,17 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.ANCIENT_DEBRIS), Items.NETHERITE_SCRAP, 2.0F, 200)
 			.criterion("has_ancient_debris", conditionsFromItem(Blocks.ANCIENT_DEBRIS))
 			.offerTo(exporter);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.POLISHED_BLACKSTONE_BRICKS), Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS.asItem(), 0.1F, 200)
-			.criterion("has_blackstone_bricks", conditionsFromItem(Blocks.POLISHED_BLACKSTONE_BRICKS))
-			.offerTo(exporter);
-		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.NETHER_BRICKS), Blocks.CRACKED_NETHER_BRICKS.asItem(), 0.1F, 200)
-			.criterion("has_nether_bricks", conditionsFromItem(Blocks.NETHER_BRICKS))
-			.offerTo(exporter);
 		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.BASALT), Blocks.SMOOTH_BASALT, 0.1F, 200)
 			.criterion("has_basalt", conditionsFromItem(Blocks.BASALT))
+			.offerTo(exporter);
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(Blocks.COBBLED_DEEPSLATE), Blocks.DEEPSLATE, 0.1F, 200)
+			.criterion("has_cobbled_deepslate", conditionsFromItem(Blocks.COBBLED_DEEPSLATE))
 			.offerTo(exporter);
 		CookingRecipeJsonFactory.createBlasting(Ingredient.fromTag(ItemTags.IRON_ORES), Items.IRON_INGOT, 0.7F, 100)
 			.criterion("has_iron_ore", conditionsFromTag(ItemTags.IRON_ORES))
 			.offerTo(exporter, "iron_ingot_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.COPPER_ORE), Items.COPPER_INGOT, 0.7F, 100)
-			.criterion("has_copper_ore", conditionsFromItem(Blocks.COPPER_ORE.asItem()))
+		CookingRecipeJsonFactory.createBlasting(Ingredient.fromTag(ItemTags.COPPER_ORES), Items.COPPER_INGOT, 0.7F, 100)
+			.criterion("has_copper_ore", conditionsFromTag(ItemTags.COPPER_ORES))
 			.offerTo(exporter, "copper_ingot_from_blasting");
 		CookingRecipeJsonFactory.createBlasting(Ingredient.fromTag(ItemTags.GOLD_ORES), Items.GOLD_INGOT, 1.0F, 100)
 			.criterion("has_gold_ore", conditionsFromTag(ItemTags.GOLD_ORES))
@@ -2632,11 +2641,11 @@ public class RecipesProvider implements DataProvider {
 		CookingRecipeJsonFactory.createBlasting(Ingredient.fromTag(ItemTags.REDSTONE_ORES), Items.REDSTONE, 0.7F, 100)
 			.criterion("has_redstone_ore", conditionsFromTag(ItemTags.REDSTONE_ORES))
 			.offerTo(exporter, "redstone_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.COAL_ORE.asItem()), Items.COAL, 0.1F, 100)
-			.criterion("has_coal_ore", conditionsFromItem(Blocks.COAL_ORE))
+		CookingRecipeJsonFactory.createBlasting(Ingredient.fromTag(ItemTags.COAL_ORES), Items.COAL, 0.1F, 100)
+			.criterion("has_coal_ore", conditionsFromTag(ItemTags.COAL_ORES))
 			.offerTo(exporter, "coal_from_blasting");
-		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.EMERALD_ORE.asItem()), Items.EMERALD, 1.0F, 100)
-			.criterion("has_emerald_ore", conditionsFromItem(Blocks.EMERALD_ORE))
+		CookingRecipeJsonFactory.createBlasting(Ingredient.fromTag(ItemTags.EMERALD_ORES), Items.EMERALD, 1.0F, 100)
+			.criterion("has_emerald_ore", conditionsFromTag(ItemTags.EMERALD_ORES))
 			.offerTo(exporter, "emerald_from_blasting");
 		CookingRecipeJsonFactory.createBlasting(Ingredient.ofItems(Blocks.NETHER_QUARTZ_ORE), Items.QUARTZ, 0.2F, 100)
 			.criterion("has_nether_quartz_ore", conditionsFromItem(Blocks.NETHER_QUARTZ_ORE))
@@ -3112,15 +3121,39 @@ public class RecipesProvider implements DataProvider {
 		method_33717(exporter, Blocks.COBBLED_DEEPSLATE_STAIRS, Blocks.COBBLED_DEEPSLATE);
 		method_33717(exporter, Blocks.COBBLED_DEEPSLATE_WALL, Blocks.COBBLED_DEEPSLATE);
 		method_33717(exporter, Blocks.CHISELED_DEEPSLATE, Blocks.COBBLED_DEEPSLATE);
+		method_33717(exporter, Blocks.POLISHED_DEEPSLATE, Blocks.COBBLED_DEEPSLATE);
+		method_33715(exporter, Blocks.POLISHED_DEEPSLATE_SLAB, Blocks.COBBLED_DEEPSLATE, 2);
+		method_33717(exporter, Blocks.POLISHED_DEEPSLATE_STAIRS, Blocks.COBBLED_DEEPSLATE);
+		method_33717(exporter, Blocks.POLISHED_DEEPSLATE_WALL, Blocks.COBBLED_DEEPSLATE);
+		method_33717(exporter, Blocks.DEEPSLATE_BRICKS, Blocks.COBBLED_DEEPSLATE);
+		method_33715(exporter, Blocks.DEEPSLATE_BRICK_SLAB, Blocks.COBBLED_DEEPSLATE, 2);
+		method_33717(exporter, Blocks.DEEPSLATE_BRICK_STAIRS, Blocks.COBBLED_DEEPSLATE);
+		method_33717(exporter, Blocks.DEEPSLATE_BRICK_WALL, Blocks.COBBLED_DEEPSLATE);
+		method_33717(exporter, Blocks.DEEPSLATE_TILES, Blocks.COBBLED_DEEPSLATE);
+		method_33715(exporter, Blocks.DEEPSLATE_TILE_SLAB, Blocks.COBBLED_DEEPSLATE, 2);
+		method_33717(exporter, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.COBBLED_DEEPSLATE);
+		method_33717(exporter, Blocks.DEEPSLATE_TILE_WALL, Blocks.COBBLED_DEEPSLATE);
 		method_33715(exporter, Blocks.POLISHED_DEEPSLATE_SLAB, Blocks.POLISHED_DEEPSLATE, 2);
 		method_33717(exporter, Blocks.POLISHED_DEEPSLATE_STAIRS, Blocks.POLISHED_DEEPSLATE);
 		method_33717(exporter, Blocks.POLISHED_DEEPSLATE_WALL, Blocks.POLISHED_DEEPSLATE);
-		method_33715(exporter, Blocks.DEEPSLATE_TILE_SLAB, Blocks.DEEPSLATE_TILES, 2);
-		method_33717(exporter, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILES);
-		method_33717(exporter, Blocks.DEEPSLATE_TILE_WALL, Blocks.DEEPSLATE_TILES);
+		method_33717(exporter, Blocks.DEEPSLATE_BRICKS, Blocks.POLISHED_DEEPSLATE);
+		method_33715(exporter, Blocks.DEEPSLATE_BRICK_SLAB, Blocks.POLISHED_DEEPSLATE, 2);
+		method_33717(exporter, Blocks.DEEPSLATE_BRICK_STAIRS, Blocks.POLISHED_DEEPSLATE);
+		method_33717(exporter, Blocks.DEEPSLATE_BRICK_WALL, Blocks.POLISHED_DEEPSLATE);
+		method_33717(exporter, Blocks.DEEPSLATE_TILES, Blocks.POLISHED_DEEPSLATE);
+		method_33715(exporter, Blocks.DEEPSLATE_TILE_SLAB, Blocks.POLISHED_DEEPSLATE, 2);
+		method_33717(exporter, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.POLISHED_DEEPSLATE);
+		method_33717(exporter, Blocks.DEEPSLATE_TILE_WALL, Blocks.POLISHED_DEEPSLATE);
 		method_33715(exporter, Blocks.DEEPSLATE_BRICK_SLAB, Blocks.DEEPSLATE_BRICKS, 2);
 		method_33717(exporter, Blocks.DEEPSLATE_BRICK_STAIRS, Blocks.DEEPSLATE_BRICKS);
 		method_33717(exporter, Blocks.DEEPSLATE_BRICK_WALL, Blocks.DEEPSLATE_BRICKS);
+		method_33717(exporter, Blocks.DEEPSLATE_TILES, Blocks.DEEPSLATE_BRICKS);
+		method_33715(exporter, Blocks.DEEPSLATE_TILE_SLAB, Blocks.DEEPSLATE_BRICKS, 2);
+		method_33717(exporter, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_BRICKS);
+		method_33717(exporter, Blocks.DEEPSLATE_TILE_WALL, Blocks.DEEPSLATE_BRICKS);
+		method_33715(exporter, Blocks.DEEPSLATE_TILE_SLAB, Blocks.DEEPSLATE_TILES, 2);
+		method_33717(exporter, Blocks.DEEPSLATE_TILE_STAIRS, Blocks.DEEPSLATE_TILES);
+		method_33717(exporter, Blocks.DEEPSLATE_TILE_WALL, Blocks.DEEPSLATE_TILES);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_CHESTPLATE, Items.NETHERITE_CHESTPLATE);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_LEGGINGS, Items.NETHERITE_LEGGINGS);
 		offerNetheriteUpgradeRecipe(exporter, Items.DIAMOND_HELMET, Items.NETHERITE_HELMET);
@@ -3387,6 +3420,12 @@ public class RecipesProvider implements DataProvider {
 			.offerTo(consumer, method_33714(itemConvertible, itemConvertible2) + "_stonecutting");
 	}
 
+	private static void method_34662(Consumer<RecipeJsonProvider> consumer, ItemConvertible itemConvertible, ItemConvertible itemConvertible2) {
+		CookingRecipeJsonFactory.createSmelting(Ingredient.ofItems(itemConvertible2), itemConvertible, 0.1F, 200)
+			.criterion(hasItem(itemConvertible2), conditionsFromItem(itemConvertible2))
+			.offerTo(consumer);
+	}
+
 	private static void generateCookingRecipes(Consumer<RecipeJsonProvider> exporter, String cooker, CookingRecipeSerializer<?> serializer, int cookingTime) {
 		CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.BEEF), Items.COOKED_BEEF, 0.35F, cookingTime, serializer)
 			.criterion("has_beef", conditionsFromItem(Items.BEEF))
@@ -3424,14 +3463,18 @@ public class RecipesProvider implements DataProvider {
 					BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonFactory> biFunction = (BiFunction<ItemConvertible, ItemConvertible, CraftingRecipeJsonFactory>)VARIANT_FACTORIES.get(
 						variant
 					);
+					ItemConvertible itemConvertible = getVariantRecipeInput(family, variant);
 					if (biFunction != null) {
-						ItemConvertible itemConvertible = getVariantRecipeInput(family, variant);
 						CraftingRecipeJsonFactory craftingRecipeJsonFactory = (CraftingRecipeJsonFactory)biFunction.apply(block, itemConvertible);
 						family.getGroup().ifPresent(string -> craftingRecipeJsonFactory.group(string + "_" + variant.getName()));
 						craftingRecipeJsonFactory.criterion(
 							(String)family.getUnlockCriterionName().orElseGet(() -> hasItem(itemConvertible)), conditionsFromItem(itemConvertible)
 						);
 						craftingRecipeJsonFactory.offerTo(exporter);
+					}
+
+					if (variant == BlockFamily.Variant.CRACKED) {
+						method_34662(exporter, block, itemConvertible);
 					}
 				}
 			);
@@ -3446,7 +3489,15 @@ public class RecipesProvider implements DataProvider {
 	 * <p>Purpur is handled separately because both purpur and purpur pillars can be used to craft purpur slabs and stairs.
 	 */
 	private static Block getVariantRecipeInput(BlockFamily family, BlockFamily.Variant variant) {
-		return variant == BlockFamily.Variant.CHISELED ? family.getVariant(BlockFamily.Variant.SLAB) : family.getBaseBlock();
+		if (variant == BlockFamily.Variant.CHISELED) {
+			if (!family.getVariants().containsKey(BlockFamily.Variant.SLAB)) {
+				throw new IllegalStateException("Slab is not defined for the family.");
+			} else {
+				return family.getVariant(BlockFamily.Variant.SLAB);
+			}
+		} else {
+			return family.getBaseBlock();
+		}
 	}
 
 	private static EnterBlockCriterion.Conditions requireEnteringFluid(Block block) {

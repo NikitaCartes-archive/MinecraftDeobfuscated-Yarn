@@ -32,7 +32,7 @@ public abstract class Feature<FC extends FeatureConfig> {
 		"void_start_platform", new VoidStartPlatformFeature(DefaultFeatureConfig.CODEC)
 	);
 	public static final Feature<DefaultFeatureConfig> DESERT_WELL = register("desert_well", new DesertWellFeature(DefaultFeatureConfig.CODEC));
-	public static final Feature<DefaultFeatureConfig> FOSSIL = register("fossil", new FossilFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<FossilFeatureConfig> FOSSIL = register("fossil", new FossilFeature(FossilFeatureConfig.CODEC));
 	public static final Feature<HugeMushroomFeatureConfig> HUGE_RED_MUSHROOM = register(
 		"huge_red_mushroom", new HugeRedMushroomFeature(HugeMushroomFeatureConfig.CODEC)
 	);
@@ -43,6 +43,14 @@ public abstract class Feature<FC extends FeatureConfig> {
 	public static final Feature<DefaultFeatureConfig> GLOWSTONE_BLOB = register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> FREEZE_TOP_LAYER = register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig.CODEC));
 	public static final Feature<DefaultFeatureConfig> VINES = register("vines", new VinesFeature(DefaultFeatureConfig.CODEC));
+	public static final Feature<GrowingPlantFeatureConfig> GROWING_PLANT = register("growing_plant", new GrowingPlantFeature(GrowingPlantFeatureConfig.CODEC));
+	public static final Feature<VegetationPatchFeatureConfig> VEGETATION_PATCH = register(
+		"vegetation_patch", new VegetationPatchFeature(VegetationPatchFeatureConfig.CODEC)
+	);
+	public static final Feature<VegetationPatchFeatureConfig> WATERLOGGED_VEGETATION_PATCH = register(
+		"waterlogged_vegetation_patch", new WaterloggedVegetationPatchFeature(VegetationPatchFeatureConfig.CODEC)
+	);
+	public static final Feature<RootSystemFeatureConfig> ROOT_SYSTEM = register("root_system", new RootSystemFeature(RootSystemFeatureConfig.CODEC));
 	public static final Feature<GlowLichenFeatureConfig> GLOW_LICHEN = register("glow_lichen", new GlowLichenFeature(GlowLichenFeatureConfig.CODEC));
 	public static final Feature<UnderwaterMagmaFeatureConfig> UNDERWATER_MAGMA = register(
 		"underwater_magma", new UnderwaterMagmaFeature(UnderwaterMagmaFeatureConfig.CODEC)
@@ -134,7 +142,8 @@ public abstract class Feature<FC extends FeatureConfig> {
 			|| state.isOf(Blocks.GRASS_BLOCK)
 			|| state.isOf(Blocks.PODZOL)
 			|| state.isOf(Blocks.COARSE_DIRT)
-			|| state.isOf(Blocks.MYCELIUM);
+			|| state.isOf(Blocks.MYCELIUM)
+			|| state.isOf(Blocks.ROOTED_DIRT);
 	}
 
 	public static boolean isSoil(TestableWorld world, BlockPos pos) {

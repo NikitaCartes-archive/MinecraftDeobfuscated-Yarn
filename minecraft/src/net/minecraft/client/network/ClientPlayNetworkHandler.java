@@ -124,7 +124,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
-import net.minecraft.network.packet.c2s.play.ConfirmScreenActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
 import net.minecraft.network.packet.c2s.play.KeepAliveC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
@@ -145,7 +144,6 @@ import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -976,7 +974,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 		this.client.getTutorialManager().onSlotUpdate(itemStack);
 		if (packet.getSyncId() == -1) {
 			if (!(this.client.currentScreen instanceof CreativeInventoryScreen)) {
-				playerEntity.getInventory().setCursorStack(itemStack);
+				playerEntity.currentScreenHandler.setCursorStack(itemStack);
 			}
 		} else if (packet.getSyncId() == -2) {
 			playerEntity.getInventory().setStack(i, itemStack);
@@ -999,22 +997,6 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			} else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId && (packet.getSyncId() != 0 || !bl)) {
 				playerEntity.currentScreenHandler.setStackInSlot(i, itemStack);
 			}
-		}
-	}
-
-	@Override
-	public void onConfirmScreenAction(ConfirmScreenActionS2CPacket packet) {
-		NetworkThreadUtils.forceMainThread(packet, this, this.client);
-		ScreenHandler screenHandler = null;
-		PlayerEntity playerEntity = this.client.player;
-		if (packet.getSyncId() == 0) {
-			screenHandler = playerEntity.playerScreenHandler;
-		} else if (packet.getSyncId() == playerEntity.currentScreenHandler.syncId) {
-			screenHandler = playerEntity.currentScreenHandler;
-		}
-
-		if (screenHandler != null && !packet.wasAccepted()) {
-			this.sendPacket(new ConfirmScreenActionC2SPacket(packet.getSyncId(), packet.getActionId(), true));
 		}
 	}
 
@@ -1599,7 +1581,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 					File file2 = new File(file, string3);
 					if (file2.isFile()) {
 						this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-						CompletableFuture<?> completableFuture = this.client.getResourcePackDownloader().loadServerPack(file2, ResourcePackSource.PACK_SOURCE_WORLD);
+						CompletableFuture<?> completableFuture = this.client.getResourcePackProvider().loadServerPack(file2, ResourcePackSource.PACK_SOURCE_WORLD);
 						this.feedbackAfterDownload(completableFuture);
 						return;
 					}
@@ -1611,7 +1593,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 				ServerInfo serverInfo = this.client.getCurrentServerEntry();
 				if (serverInfo != null && serverInfo.getResourcePack() == ServerInfo.ResourcePackState.ENABLED) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-					this.feedbackAfterDownload(this.client.getResourcePackDownloader().download(string, string2));
+					this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
 				} else if (serverInfo != null && serverInfo.getResourcePack() != ServerInfo.ResourcePackState.PROMPT) {
 					this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 					if (bl) {
@@ -1632,7 +1614,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 													}
 
 													this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
-													this.feedbackAfterDownload(this.client.getResourcePackDownloader().download(string, string2));
+													this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
 												} else {
 													this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.DECLINED);
 													if (bl) {
@@ -2013,7 +1995,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onTeam(TeamS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		Scoreboard scoreboard = this.world.getScoreboard();
-		TeamS2CPacket.Operation operation = packet.method_34176();
+		TeamS2CPacket.Operation operation = packet.getTeamOperation();
 		Team team;
 		if (operation == TeamS2CPacket.Operation.ADD) {
 			team = scoreboard.addTeam(packet.getTeamName());
@@ -2039,7 +2021,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 			team.setPrefix(serializableTeam.getPrefix());
 			team.setSuffix(serializableTeam.getSuffix());
 		});
-		TeamS2CPacket.Operation operation2 = packet.method_34174();
+		TeamS2CPacket.Operation operation2 = packet.getPlayerListOperation();
 		if (operation2 == TeamS2CPacket.Operation.ADD) {
 			for (String string : packet.getPlayerNames()) {
 				scoreboard.addPlayerToTeam(string, team);
@@ -2118,7 +2100,7 @@ public class ClientPlayNetworkHandler implements ClientPlayPacketListener {
 	public void onCraftFailedResponse(CraftFailedResponseS2CPacket packet) {
 		NetworkThreadUtils.forceMainThread(packet, this, this.client);
 		ScreenHandler screenHandler = this.client.player.currentScreenHandler;
-		if (screenHandler.syncId == packet.getSyncId() && screenHandler.isNotRestricted(this.client.player)) {
+		if (screenHandler.syncId == packet.getSyncId()) {
 			this.recipeManager.get(packet.getRecipeId()).ifPresent(recipe -> {
 				if (this.client.currentScreen instanceof RecipeBookProvider) {
 					RecipeBookWidget recipeBookWidget = ((RecipeBookProvider)this.client.currentScreen).getRecipeBookWidget();

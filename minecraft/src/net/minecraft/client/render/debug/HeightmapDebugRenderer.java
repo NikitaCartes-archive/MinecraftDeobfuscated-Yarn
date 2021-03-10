@@ -31,7 +31,6 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
 		WorldAccess worldAccess = this.client.world;
-		RenderSystem.pushMatrix();
 		RenderSystem.disableBlend();
 		RenderSystem.disableTexture();
 		RenderSystem.enableDepthTest();
@@ -75,7 +74,6 @@ public class HeightmapDebugRenderer implements DebugRenderer.Renderer {
 
 		tessellator.draw();
 		RenderSystem.enableTexture();
-		RenderSystem.popMatrix();
 	}
 
 	private Vec3f method_27037(Heightmap.Type type) {

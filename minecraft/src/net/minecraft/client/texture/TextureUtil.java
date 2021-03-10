@@ -11,6 +11,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.ThreadLocalRandom;
+import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.SharedConstants;
@@ -100,6 +101,7 @@ public class TextureUtil {
 		return byteBuffer;
 	}
 
+	@Nullable
 	public static String readAllToString(InputStream inputStream) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
 		ByteBuffer byteBuffer = null;
@@ -132,8 +134,6 @@ public class TextureUtil {
 		GL11.glPixelStorei(3316, 0);
 		GL11.glPixelStorei(3317, 4);
 		GL11.glTexImage2D(3553, 0, 6408, width, height, 0, 32993, 33639, imageData);
-		GL11.glTexParameteri(3553, 10242, 10497);
-		GL11.glTexParameteri(3553, 10243, 10497);
 		GL11.glTexParameteri(3553, 10240, 9728);
 		GL11.glTexParameteri(3553, 10241, 9729);
 	}

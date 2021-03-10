@@ -34,7 +34,6 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 
 	@Override
 	public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableTexture();
@@ -63,6 +62,5 @@ public class WorldGenAttemptDebugRenderer implements DebugRenderer.Renderer {
 
 		tessellator.draw();
 		RenderSystem.enableTexture();
-		RenderSystem.popMatrix();
 	}
 }

@@ -121,7 +121,9 @@ public class AquiferSampler {
 		double f = this.maxDistance(m, n);
 		this.waterLevel = r;
 		this.needsFluidTick = d > 0.0;
-		if (d > -1.0) {
+		if (this.waterLevel >= y && y <= 9) {
+			this.densityAddition = 1.0;
+		} else if (d > -1.0) {
 			double g = 1.0 + (this.edgeDensityNoise.sample((double)x, (double)y, (double)z) + 0.1) / 4.0;
 			double h = this.calculateDensity(y, g, r, s);
 			double ah = this.calculateDensity(y, g, r, t);

@@ -1,14 +1,17 @@
 package net.minecraft.client.render;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import java.io.IOException;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5944;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.client.MinecraftClient;
@@ -31,6 +34,7 @@ import net.minecraft.entity.mob.SpiderEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.SynchronousResourceReloadListener;
 import net.minecraft.util.Identifier;
@@ -116,13 +120,119 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 	private int forcedShaderIndex = SHADER_COUNT;
 	private boolean shadersEnabled;
 	private final Camera camera = new Camera();
+	public class_5944 field_29403;
+	private final Map<String, class_5944> field_29350 = Maps.<String, class_5944>newHashMap();
+	@Nullable
+	private static class_5944 field_29351;
+	@Nullable
+	private static class_5944 field_29352;
+	@Nullable
+	private static class_5944 field_29353;
+	@Nullable
+	private static class_5944 field_29354;
+	@Nullable
+	private static class_5944 field_29355;
+	@Nullable
+	private static class_5944 field_29356;
+	@Nullable
+	private static class_5944 field_29357;
+	@Nullable
+	private static class_5944 field_29358;
+	@Nullable
+	private static class_5944 field_29359;
+	@Nullable
+	private static class_5944 field_29360;
+	@Nullable
+	private static class_5944 field_29361;
+	@Nullable
+	private static class_5944 field_29362;
+	@Nullable
+	private static class_5944 field_29363;
+	@Nullable
+	private static class_5944 field_29364;
+	@Nullable
+	private static class_5944 field_29365;
+	@Nullable
+	private static class_5944 field_29366;
+	@Nullable
+	private static class_5944 field_29377;
+	@Nullable
+	private static class_5944 field_29378;
+	@Nullable
+	private static class_5944 field_29379;
+	@Nullable
+	private static class_5944 field_29380;
+	@Nullable
+	private static class_5944 field_29381;
+	@Nullable
+	private static class_5944 field_29382;
+	@Nullable
+	private static class_5944 field_29383;
+	@Nullable
+	private static class_5944 field_29384;
+	@Nullable
+	private static class_5944 field_29385;
+	@Nullable
+	private static class_5944 field_29386;
+	@Nullable
+	private static class_5944 field_29387;
+	@Nullable
+	private static class_5944 field_29388;
+	@Nullable
+	private static class_5944 field_29389;
+	@Nullable
+	private static class_5944 field_29390;
+	@Nullable
+	private static class_5944 field_29391;
+	@Nullable
+	private static class_5944 field_29392;
+	@Nullable
+	private static class_5944 field_29393;
+	@Nullable
+	private static class_5944 field_29394;
+	@Nullable
+	private static class_5944 field_29395;
+	@Nullable
+	private static class_5944 field_29396;
+	@Nullable
+	private static class_5944 field_29397;
+	@Nullable
+	private static class_5944 field_29398;
+	@Nullable
+	private static class_5944 field_29399;
+	@Nullable
+	private static class_5944 field_29400;
+	@Nullable
+	private static class_5944 field_29401;
+	@Nullable
+	private static class_5944 field_29402;
+	@Nullable
+	private static class_5944 field_29367;
+	@Nullable
+	private static class_5944 field_29368;
+	@Nullable
+	private static class_5944 field_29369;
+	@Nullable
+	private static class_5944 field_29370;
+	@Nullable
+	private static class_5944 field_29371;
+	@Nullable
+	private static class_5944 field_29372;
+	@Nullable
+	private static class_5944 field_29373;
+	@Nullable
+	private static class_5944 field_29374;
+	@Nullable
+	private static class_5944 field_29375;
+	@Nullable
+	private static class_5944 field_29376;
 
-	public GameRenderer(MinecraftClient client, ResourceManager resourceManager, BufferBuilderStorage bufferBuilderStorage) {
-		this.client = client;
+	public GameRenderer(MinecraftClient minecraftClient, ResourceManager resourceManager, BufferBuilderStorage bufferBuilderStorage) {
+		this.client = minecraftClient;
 		this.resourceContainer = resourceManager;
-		this.firstPersonRenderer = client.getHeldItemRenderer();
-		this.mapRenderer = new MapRenderer(client.getTextureManager());
-		this.lightmapTextureManager = new LightmapTextureManager(this, client);
+		this.firstPersonRenderer = minecraftClient.getHeldItemRenderer();
+		this.mapRenderer = new MapRenderer(minecraftClient.getTextureManager());
+		this.lightmapTextureManager = new LightmapTextureManager(this, minecraftClient);
 		this.buffers = bufferBuilderStorage;
 		this.shader = null;
 	}
@@ -132,6 +242,10 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		this.mapRenderer.close();
 		this.overlayTexture.close();
 		this.disableShader();
+		this.method_34537();
+		if (this.field_29403 != null) {
+			this.field_29403.close();
+		}
 	}
 
 	public void disableShader() {
@@ -184,6 +298,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 
 	@Override
 	public void apply(ResourceManager manager) {
+		this.method_34538(manager);
 		if (this.shader != null) {
 			this.shader.close();
 		}
@@ -194,6 +309,97 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		} else {
 			this.loadShader(SHADERS_LOCATIONS[this.forcedShaderIndex]);
 		}
+	}
+
+	public void method_34521(ResourceFactory factory) {
+		if (this.field_29403 != null) {
+			throw new RuntimeException("Blit shader already preloaded");
+		} else {
+			try {
+				this.field_29403 = new class_5944(factory, "blit_screen", VertexFormats.field_29336);
+				field_29351 = this.method_34522(factory, "position", VertexFormats.POSITION);
+				field_29352 = this.method_34522(factory, "position_color", VertexFormats.POSITION_COLOR);
+				field_29353 = this.method_34522(factory, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
+				field_29354 = this.method_34522(factory, "position_tex", VertexFormats.POSITION_TEXTURE);
+				field_29355 = this.method_34522(factory, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
+			} catch (IOException var3) {
+				throw new RuntimeException("could not preload blit shader", var3);
+			}
+		}
+	}
+
+	private class_5944 method_34522(ResourceFactory resourceFactory, String string, VertexFormat vertexFormat) throws IOException {
+		class_5944 lv = new class_5944(resourceFactory, string, vertexFormat);
+		this.field_29350.put(string, lv);
+		return lv;
+	}
+
+	public void method_34538(ResourceManager resourceManager) {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		this.method_34537();
+
+		try {
+			field_29356 = this.method_34522(resourceManager, "block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29357 = this.method_34522(resourceManager, "new_entity", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29358 = this.method_34522(resourceManager, "particle", VertexFormats.POSITION_TEXTURE_COLOR_LIGHT);
+			field_29351 = this.method_34522(resourceManager, "position", VertexFormats.POSITION);
+			field_29352 = this.method_34522(resourceManager, "position_color", VertexFormats.POSITION_COLOR);
+			field_29359 = this.method_34522(resourceManager, "position_color_lightmap", VertexFormats.POSITION_COLOR_LIGHT);
+			field_29353 = this.method_34522(resourceManager, "position_color_tex", VertexFormats.POSITION_COLOR_TEXTURE);
+			field_29360 = this.method_34522(resourceManager, "position_color_tex_lightmap", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+			field_29354 = this.method_34522(resourceManager, "position_tex", VertexFormats.POSITION_TEXTURE);
+			field_29355 = this.method_34522(resourceManager, "position_tex_color", VertexFormats.POSITION_TEXTURE_COLOR);
+			field_29361 = this.method_34522(resourceManager, "position_tex_color_normal", VertexFormats.POSITION_TEXTURE_COLOR_NORMAL);
+			field_29362 = this.method_34522(resourceManager, "position_tex_lightmap_color", VertexFormats.POSITION_TEXTURE_LIGHT_COLOR);
+			field_29363 = this.method_34522(resourceManager, "rendertype_solid", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29364 = this.method_34522(resourceManager, "rendertype_cutout_mipped", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29365 = this.method_34522(resourceManager, "rendertype_cutout", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29366 = this.method_34522(resourceManager, "rendertype_translucent", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29377 = this.method_34522(resourceManager, "rendertype_translucent_moving_block", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29378 = this.method_34522(resourceManager, "rendertype_translucent_no_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29379 = this.method_34522(resourceManager, "rendertype_armor_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29380 = this.method_34522(resourceManager, "rendertype_entity_solid", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29381 = this.method_34522(resourceManager, "rendertype_entity_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29382 = this.method_34522(resourceManager, "rendertype_entity_cutout_no_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29383 = this.method_34522(resourceManager, "rendertype_entity_cutout_no_cull_z_offset", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29384 = this.method_34522(resourceManager, "rendertype_item_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29385 = this.method_34522(resourceManager, "rendertype_entity_translucent_cull", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29386 = this.method_34522(resourceManager, "rendertype_entity_translucent", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29387 = this.method_34522(resourceManager, "rendertype_entity_smooth_cutout", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29388 = this.method_34522(resourceManager, "rendertype_beacon_beam", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29389 = this.method_34522(resourceManager, "rendertype_entity_decal", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29390 = this.method_34522(resourceManager, "rendertype_entity_no_outline", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29391 = this.method_34522(resourceManager, "rendertype_entity_shadow", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29392 = this.method_34522(resourceManager, "rendertype_entity_alpha", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29393 = this.method_34522(resourceManager, "rendertype_eyes", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29394 = this.method_34522(resourceManager, "rendertype_energy_swirl", VertexFormats.POSITION_COLOR_TEXTURE_OVERLAY_LIGHT_NORMAL);
+			field_29395 = this.method_34522(resourceManager, "rendertype_leash", VertexFormats.POSITION_COLOR_LIGHT);
+			field_29396 = this.method_34522(resourceManager, "rendertype_water_mask", VertexFormats.POSITION);
+			field_29397 = this.method_34522(resourceManager, "rendertype_outline", VertexFormats.POSITION_COLOR_TEXTURE);
+			field_29398 = this.method_34522(resourceManager, "rendertype_armor_glint", VertexFormats.POSITION_TEXTURE);
+			field_29399 = this.method_34522(resourceManager, "rendertype_armor_entity_glint", VertexFormats.POSITION_TEXTURE);
+			field_29400 = this.method_34522(resourceManager, "rendertype_glint_translucent", VertexFormats.POSITION_TEXTURE);
+			field_29401 = this.method_34522(resourceManager, "rendertype_glint", VertexFormats.POSITION_TEXTURE);
+			field_29402 = this.method_34522(resourceManager, "rendertype_glint_direct", VertexFormats.POSITION_TEXTURE);
+			field_29367 = this.method_34522(resourceManager, "rendertype_entity_glint", VertexFormats.POSITION_TEXTURE);
+			field_29368 = this.method_34522(resourceManager, "rendertype_entity_glint_direct", VertexFormats.POSITION_TEXTURE);
+			field_29369 = this.method_34522(resourceManager, "rendertype_text", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+			field_29370 = this.method_34522(resourceManager, "rendertype_text_see_through", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT);
+			field_29371 = this.method_34522(resourceManager, "rendertype_lightning", VertexFormats.POSITION_COLOR);
+			field_29372 = this.method_34522(resourceManager, "rendertype_tripwire", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+			field_29373 = this.method_34522(resourceManager, "rendertype_end_portal", VertexFormats.POSITION);
+			field_29374 = this.method_34522(resourceManager, "rendertype_end_gateway", VertexFormats.POSITION);
+			field_29375 = this.method_34522(resourceManager, "rendertype_lines", VertexFormats.field_29337);
+			field_29376 = this.method_34522(resourceManager, "rendertype_crumbling", VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL);
+		} catch (IOException var3) {
+			throw new RuntimeException("could not reload shaders", var3);
+		}
+	}
+
+	private void method_34537() {
+		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
+		this.field_29350.values().forEach(class_5944::close);
+		this.field_29350.clear();
 	}
 
 	public void tick() {
@@ -325,7 +531,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 
 			CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
 			if (cameraSubmersionType == CameraSubmersionType.LAVA || cameraSubmersionType == CameraSubmersionType.WATER) {
-				d = d * 60.0 / 70.0;
+				d *= (double)MathHelper.lerp(this.client.options.fovEffectScale, 1.0F, 0.85714287F);
 			}
 
 			return d;
@@ -408,10 +614,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 	}
 
 	public void loadProjectionMatrix(Matrix4f matrix4f) {
-		RenderSystem.matrixMode(5889);
-		RenderSystem.loadIdentity();
-		RenderSystem.multMatrix(matrix4f);
-		RenderSystem.matrixMode(5888);
+		RenderSystem.setProjectionMatrix(matrix4f);
 	}
 
 	public Matrix4f getBasicProjectionMatrix(double d) {
@@ -470,13 +673,9 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				if (this.shader != null && this.shadersEnabled) {
 					RenderSystem.disableBlend();
 					RenderSystem.disableDepthTest();
-					RenderSystem.disableAlphaTest();
 					RenderSystem.enableTexture();
-					RenderSystem.matrixMode(5890);
-					RenderSystem.pushMatrix();
-					RenderSystem.loadIdentity();
+					RenderSystem.resetTextureMatrix();
 					this.shader.render(tickDelta);
-					RenderSystem.popMatrix();
 				}
 
 				this.client.getFramebuffer().beginWrite(true);
@@ -484,16 +683,21 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 
 			Window window = this.client.getWindow();
 			RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
-			RenderSystem.matrixMode(5889);
-			RenderSystem.loadIdentity();
-			RenderSystem.ortho(
-				0.0, (double)window.getFramebufferWidth() / window.getScaleFactor(), (double)window.getFramebufferHeight() / window.getScaleFactor(), 0.0, 1000.0, 3000.0
+			Matrix4f matrix4f = Matrix4f.method_34239(
+				0.0F,
+				(float)((double)window.getFramebufferWidth() / window.getScaleFactor()),
+				0.0F,
+				(float)((double)window.getFramebufferHeight() / window.getScaleFactor()),
+				1000.0F,
+				3000.0F
 			);
-			RenderSystem.matrixMode(5888);
-			RenderSystem.loadIdentity();
-			RenderSystem.translatef(0.0F, 0.0F, -2000.0F);
+			RenderSystem.setProjectionMatrix(matrix4f);
+			MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			matrixStack.loadIdentity();
+			matrixStack.translate(0.0, 0.0, -2000.0);
+			RenderSystem.applyModelViewMatrix();
 			DiffuseLighting.enableGuiDepthLighting();
-			MatrixStack matrixStack = new MatrixStack();
+			MatrixStack matrixStack2 = new MatrixStack();
 			if (tick && this.client.world != null) {
 				this.client.getProfiler().swap("gui");
 				if (this.client.player != null) {
@@ -504,9 +708,8 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 				}
 
 				if (!this.client.options.hudHidden || this.client.currentScreen != null) {
-					RenderSystem.defaultAlphaFunc();
 					this.renderFloatingItem(this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight(), tickDelta);
-					this.client.inGameHud.render(matrixStack, tickDelta);
+					this.client.inGameHud.render(matrixStack2, tickDelta);
 					RenderSystem.clear(256, MinecraftClient.IS_SYSTEM_MAC);
 				}
 
@@ -515,18 +718,18 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 
 			if (this.client.overlay != null) {
 				try {
-					this.client.overlay.render(matrixStack, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var13) {
-					CrashReport crashReport = CrashReport.create(var13, "Rendering overlay");
+					this.client.overlay.render(matrixStack2, i, j, this.client.getLastFrameDuration());
+				} catch (Throwable var15) {
+					CrashReport crashReport = CrashReport.create(var15, "Rendering overlay");
 					CrashReportSection crashReportSection = crashReport.addElement("Overlay render details");
 					crashReportSection.add("Overlay name", (CrashCallable<String>)(() -> this.client.overlay.getClass().getCanonicalName()));
 					throw new CrashException(crashReport);
 				}
 			} else if (this.client.currentScreen != null) {
 				try {
-					this.client.currentScreen.render(matrixStack, i, j, this.client.getLastFrameDuration());
-				} catch (Throwable var12) {
-					CrashReport crashReport = CrashReport.create(var12, "Rendering screen");
+					this.client.currentScreen.render(matrixStack2, i, j, this.client.getLastFrameDuration());
+				} catch (Throwable var14) {
+					CrashReport crashReport = CrashReport.create(var14, "Rendering screen");
 					CrashReportSection crashReportSection = crashReport.addElement("Screen render details");
 					crashReportSection.add("Screen name", (CrashCallable<String>)(() -> this.client.currentScreen.getClass().getCanonicalName()));
 					crashReportSection.add(
@@ -693,9 +896,6 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			float k = j * (float) Math.PI;
 			float l = this.floatingItemWidth * (float)(scaledWidth / 4);
 			float m = this.floatingItemHeight * (float)(scaledHeight / 4);
-			RenderSystem.enableAlphaTest();
-			RenderSystem.pushMatrix();
-			RenderSystem.pushLightingAttributes();
 			RenderSystem.enableDepthTest();
 			RenderSystem.disableCull();
 			MatrixStack matrixStack = new MatrixStack();
@@ -714,8 +914,6 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 			this.client.getItemRenderer().renderItem(this.floatingItem, ModelTransformation.Mode.FIXED, 15728880, OverlayTexture.DEFAULT_UV, matrixStack, immediate, 0);
 			matrixStack.pop();
 			immediate.draw();
-			RenderSystem.popAttributes();
-			RenderSystem.popMatrix();
 			RenderSystem.enableCull();
 			RenderSystem.disableDepthTest();
 		}
@@ -736,8 +934,8 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		RenderSystem.depthMask(false);
 		RenderSystem.enableBlend();
 		RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ONE);
-		RenderSystem.color4f(g, h, k, 1.0F);
-		this.client.getTextureManager().bindTexture(NAUSEA_OVERLAY);
+		RenderSystem.setShaderColor(g, h, k, 1.0F);
+		RenderSystem.setShaderTexture(0, NAUSEA_OVERLAY);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -746,7 +944,7 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 		bufferBuilder.vertex(m + e, n, -90.0).texture(1.0F, 0.0F).next();
 		bufferBuilder.vertex(m, n, -90.0).texture(0.0F, 0.0F).next();
 		tessellator.draw();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.defaultBlendFunc();
 		RenderSystem.disableBlend();
 		RenderSystem.depthMask(true);
@@ -771,5 +969,260 @@ public class GameRenderer implements SynchronousResourceReloadListener, AutoClos
 
 	public OverlayTexture getOverlayTexture() {
 		return this.overlayTexture;
+	}
+
+	@Nullable
+	public static class_5944 method_34539() {
+		return field_29351;
+	}
+
+	@Nullable
+	public static class_5944 method_34540() {
+		return field_29352;
+	}
+
+	@Nullable
+	public static class_5944 method_34541() {
+		return field_29353;
+	}
+
+	@Nullable
+	public static class_5944 method_34542() {
+		return field_29354;
+	}
+
+	@Nullable
+	public static class_5944 method_34543() {
+		return field_29355;
+	}
+
+	@Nullable
+	public static class_5944 method_34544() {
+		return field_29356;
+	}
+
+	@Nullable
+	public static class_5944 method_34545() {
+		return field_29357;
+	}
+
+	@Nullable
+	public static class_5944 method_34546() {
+		return field_29358;
+	}
+
+	@Nullable
+	public static class_5944 method_34547() {
+		return field_29359;
+	}
+
+	@Nullable
+	public static class_5944 method_34548() {
+		return field_29360;
+	}
+
+	@Nullable
+	public static class_5944 method_34549() {
+		return field_29361;
+	}
+
+	@Nullable
+	public static class_5944 method_34495() {
+		return field_29363;
+	}
+
+	@Nullable
+	public static class_5944 method_34496() {
+		return field_29364;
+	}
+
+	@Nullable
+	public static class_5944 method_34497() {
+		return field_29365;
+	}
+
+	@Nullable
+	public static class_5944 method_34498() {
+		return field_29366;
+	}
+
+	@Nullable
+	public static class_5944 method_34499() {
+		return field_29377;
+	}
+
+	@Nullable
+	public static class_5944 method_34500() {
+		return field_29378;
+	}
+
+	@Nullable
+	public static class_5944 method_34501() {
+		return field_29379;
+	}
+
+	@Nullable
+	public static class_5944 method_34502() {
+		return field_29380;
+	}
+
+	@Nullable
+	public static class_5944 method_34503() {
+		return field_29381;
+	}
+
+	@Nullable
+	public static class_5944 method_34504() {
+		return field_29382;
+	}
+
+	@Nullable
+	public static class_5944 method_34505() {
+		return field_29383;
+	}
+
+	@Nullable
+	public static class_5944 method_34506() {
+		return field_29384;
+	}
+
+	@Nullable
+	public static class_5944 method_34507() {
+		return field_29385;
+	}
+
+	@Nullable
+	public static class_5944 method_34508() {
+		return field_29386;
+	}
+
+	@Nullable
+	public static class_5944 method_34509() {
+		return field_29387;
+	}
+
+	@Nullable
+	public static class_5944 method_34510() {
+		return field_29388;
+	}
+
+	@Nullable
+	public static class_5944 method_34511() {
+		return field_29389;
+	}
+
+	@Nullable
+	public static class_5944 method_34512() {
+		return field_29390;
+	}
+
+	@Nullable
+	public static class_5944 method_34513() {
+		return field_29391;
+	}
+
+	@Nullable
+	public static class_5944 method_34514() {
+		return field_29392;
+	}
+
+	@Nullable
+	public static class_5944 method_34515() {
+		return field_29393;
+	}
+
+	@Nullable
+	public static class_5944 method_34516() {
+		return field_29394;
+	}
+
+	@Nullable
+	public static class_5944 method_34517() {
+		return field_29395;
+	}
+
+	@Nullable
+	public static class_5944 method_34518() {
+		return field_29396;
+	}
+
+	@Nullable
+	public static class_5944 method_34519() {
+		return field_29397;
+	}
+
+	@Nullable
+	public static class_5944 method_34520() {
+		return field_29398;
+	}
+
+	@Nullable
+	public static class_5944 method_34523() {
+		return field_29399;
+	}
+
+	@Nullable
+	public static class_5944 method_34524() {
+		return field_29400;
+	}
+
+	@Nullable
+	public static class_5944 method_34525() {
+		return field_29401;
+	}
+
+	@Nullable
+	public static class_5944 method_34526() {
+		return field_29402;
+	}
+
+	@Nullable
+	public static class_5944 method_34527() {
+		return field_29367;
+	}
+
+	@Nullable
+	public static class_5944 method_34528() {
+		return field_29368;
+	}
+
+	@Nullable
+	public static class_5944 method_34529() {
+		return field_29369;
+	}
+
+	@Nullable
+	public static class_5944 method_34530() {
+		return field_29370;
+	}
+
+	@Nullable
+	public static class_5944 method_34531() {
+		return field_29371;
+	}
+
+	@Nullable
+	public static class_5944 method_34532() {
+		return field_29372;
+	}
+
+	@Nullable
+	public static class_5944 method_34533() {
+		return field_29373;
+	}
+
+	@Nullable
+	public static class_5944 method_34534() {
+		return field_29374;
+	}
+
+	@Nullable
+	public static class_5944 method_34535() {
+		return field_29375;
+	}
+
+	@Nullable
+	public static class_5944 method_34536() {
+		return field_29376;
 	}
 }

@@ -212,19 +212,19 @@ public abstract class MobSpawnerLogic {
 		this.renderedEntity = null;
 	}
 
-	public CompoundTag writeNbt(@Nullable World world, BlockPos blockPos, CompoundTag compoundTag) {
-		Identifier identifier = this.getEntityId(world, blockPos);
+	public CompoundTag writeNbt(@Nullable World world, BlockPos pos, CompoundTag nbt) {
+		Identifier identifier = this.getEntityId(world, pos);
 		if (identifier == null) {
-			return compoundTag;
+			return nbt;
 		} else {
-			compoundTag.putShort("Delay", (short)this.spawnDelay);
-			compoundTag.putShort("MinSpawnDelay", (short)this.minSpawnDelay);
-			compoundTag.putShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
-			compoundTag.putShort("SpawnCount", (short)this.spawnCount);
-			compoundTag.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
-			compoundTag.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
-			compoundTag.putShort("SpawnRange", (short)this.spawnRange);
-			compoundTag.put("SpawnData", this.spawnEntry.getEntityNbt().copy());
+			nbt.putShort("Delay", (short)this.spawnDelay);
+			nbt.putShort("MinSpawnDelay", (short)this.minSpawnDelay);
+			nbt.putShort("MaxSpawnDelay", (short)this.maxSpawnDelay);
+			nbt.putShort("SpawnCount", (short)this.spawnCount);
+			nbt.putShort("MaxNearbyEntities", (short)this.maxNearbyEntities);
+			nbt.putShort("RequiredPlayerRange", (short)this.requiredPlayerRange);
+			nbt.putShort("SpawnRange", (short)this.spawnRange);
+			nbt.put("SpawnData", this.spawnEntry.getEntityNbt().copy());
 			ListTag listTag = new ListTag();
 			if (this.spawnPotentials.isEmpty()) {
 				listTag.add(this.spawnEntry.serialize());
@@ -234,8 +234,8 @@ public abstract class MobSpawnerLogic {
 				}
 			}
 
-			compoundTag.put("SpawnPotentials", listTag);
-			return compoundTag;
+			nbt.put("SpawnPotentials", listTag);
+			return nbt;
 		}
 	}
 

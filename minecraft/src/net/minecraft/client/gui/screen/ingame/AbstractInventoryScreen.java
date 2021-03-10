@@ -52,7 +52,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 		int i = this.x - 124;
 		Collection<StatusEffectInstance> collection = this.client.player.getStatusEffects();
 		if (!collection.isEmpty()) {
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int j = 33;
 			if (collection.size() > 5) {
 				j = 132 / (collection.size() - 1);
@@ -66,11 +66,11 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 	}
 
 	private void drawStatusEffectBackgrounds(MatrixStack matrices, int i, int j, Iterable<StatusEffectInstance> iterable) {
-		this.client.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+		RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
 		int k = this.y;
 
 		for (StatusEffectInstance statusEffectInstance : iterable) {
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			this.drawTexture(matrices, i, k, 0, 166, 140, 32);
 			k += j;
 		}
@@ -83,7 +83,7 @@ public abstract class AbstractInventoryScreen<T extends ScreenHandler> extends H
 		for (StatusEffectInstance statusEffectInstance : iterable) {
 			StatusEffect statusEffect = statusEffectInstance.getEffectType();
 			Sprite sprite = statusEffectSpriteManager.getSprite(statusEffect);
-			this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
+			RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
 			drawSprite(matrices, i + 6, k + 7, this.getZOffset(), 18, 18, sprite);
 			k += j;
 		}

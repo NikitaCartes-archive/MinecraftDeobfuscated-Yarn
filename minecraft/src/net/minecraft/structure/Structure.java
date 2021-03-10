@@ -1,5 +1,6 @@
 package net.minecraft.structure;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.datafixers.util.Pair;
@@ -41,6 +42,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
 import net.minecraft.world.EmptyBlockView;
@@ -51,10 +53,10 @@ import net.minecraft.world.WorldAccess;
 public class Structure {
 	private final List<Structure.PalettedBlockInfoList> blockInfoLists = Lists.<Structure.PalettedBlockInfoList>newArrayList();
 	private final List<Structure.StructureEntityInfo> entities = Lists.<Structure.StructureEntityInfo>newArrayList();
-	private BlockPos size = BlockPos.ORIGIN;
+	private Vec3i size = Vec3i.ZERO;
 	private String author = "?";
 
-	public BlockPos getSize() {
+	public Vec3i getSize() {
 		return this.size;
 	}
 
@@ -66,15 +68,15 @@ public class Structure {
 		return this.author;
 	}
 
-	public void saveFromWorld(World world, BlockPos start, BlockPos size, boolean includeEntities, @Nullable Block ignoredBlock) {
-		if (size.getX() >= 1 && size.getY() >= 1 && size.getZ() >= 1) {
-			BlockPos blockPos = start.add(size).add(-1, -1, -1);
+	public void saveFromWorld(World world, BlockPos start, Vec3i vec3i, boolean includeEntities, @Nullable Block ignoredBlock) {
+		if (vec3i.getX() >= 1 && vec3i.getY() >= 1 && vec3i.getZ() >= 1) {
+			BlockPos blockPos = start.add(vec3i).add(-1, -1, -1);
 			List<Structure.StructureBlockInfo> list = Lists.<Structure.StructureBlockInfo>newArrayList();
 			List<Structure.StructureBlockInfo> list2 = Lists.<Structure.StructureBlockInfo>newArrayList();
 			List<Structure.StructureBlockInfo> list3 = Lists.<Structure.StructureBlockInfo>newArrayList();
 			BlockPos blockPos2 = new BlockPos(Math.min(start.getX(), blockPos.getX()), Math.min(start.getY(), blockPos.getY()), Math.min(start.getZ(), blockPos.getZ()));
 			BlockPos blockPos3 = new BlockPos(Math.max(start.getX(), blockPos.getX()), Math.max(start.getY(), blockPos.getY()), Math.max(start.getZ(), blockPos.getZ()));
-			this.size = size;
+			this.size = vec3i;
 
 			for (BlockPos blockPos4 : BlockPos.iterate(blockPos2, blockPos3)) {
 				BlockPos blockPos5 = blockPos4.subtract(blockPos2);
@@ -412,11 +414,11 @@ public class Structure {
 		}
 	}
 
-	public BlockPos getRotatedSize(BlockRotation rotation) {
+	public Vec3i getRotatedSize(BlockRotation rotation) {
 		switch (rotation) {
 			case COUNTERCLOCKWISE_90:
 			case CLOCKWISE_90:
-				return new BlockPos(this.size.getZ(), this.size.getY(), this.size.getX());
+				return new Vec3i(this.size.getZ(), this.size.getY(), this.size.getX());
 			default:
 				return this.size;
 		}
@@ -514,51 +516,15 @@ public class Structure {
 	}
 
 	public BlockBox calculateBoundingBox(BlockPos pos, BlockRotation rotation, BlockPos blockPos, BlockMirror mirror) {
-		BlockPos blockPos2 = this.getRotatedSize(rotation);
-		int i = blockPos.getX();
-		int j = blockPos.getZ();
-		int k = blockPos2.getX() - 1;
-		int l = blockPos2.getY() - 1;
-		int m = blockPos2.getZ() - 1;
-		BlockBox blockBox = new BlockBox(0, 0, 0, 0, 0, 0);
-		switch (rotation) {
-			case COUNTERCLOCKWISE_90:
-				blockBox = new BlockBox(i - j, 0, i + j - m, i - j + k, l, i + j);
-				break;
-			case CLOCKWISE_90:
-				blockBox = new BlockBox(i + j - k, 0, j - i, i + j, l, j - i + m);
-				break;
-			case CLOCKWISE_180:
-				blockBox = new BlockBox(i + i - k, 0, j + j - m, i + i, l, j + j);
-				break;
-			case NONE:
-				blockBox = new BlockBox(0, 0, 0, k, l, m);
-		}
-
-		switch (mirror) {
-			case LEFT_RIGHT:
-				this.mirrorBoundingBox(rotation, m, k, blockBox, Direction.NORTH, Direction.SOUTH);
-				break;
-			case FRONT_BACK:
-				this.mirrorBoundingBox(rotation, k, m, blockBox, Direction.WEST, Direction.EAST);
-			case NONE:
-		}
-
-		blockBox.move(pos.getX(), pos.getY(), pos.getZ());
-		return blockBox;
+		return method_34400(pos, rotation, blockPos, mirror, this.size);
 	}
 
-	private void mirrorBoundingBox(BlockRotation rotation, int offsetX, int offsetZ, BlockBox boundingBox, Direction direction, Direction direction2) {
-		BlockPos blockPos = BlockPos.ORIGIN;
-		if (rotation == BlockRotation.CLOCKWISE_90 || rotation == BlockRotation.COUNTERCLOCKWISE_90) {
-			blockPos = blockPos.offset(rotation.rotate(direction), offsetZ);
-		} else if (rotation == BlockRotation.CLOCKWISE_180) {
-			blockPos = blockPos.offset(direction2, offsetX);
-		} else {
-			blockPos = blockPos.offset(direction, offsetX);
-		}
-
-		boundingBox.move(blockPos.getX(), 0, blockPos.getZ());
+	@VisibleForTesting
+	protected static BlockBox method_34400(BlockPos blockPos, BlockRotation blockRotation, BlockPos blockPos2, BlockMirror blockMirror, Vec3i vec3i) {
+		Vec3i vec3i2 = vec3i.add(-1, -1, -1);
+		BlockPos blockPos3 = transformAround(BlockPos.ORIGIN, blockMirror, blockRotation, blockPos2);
+		BlockPos blockPos4 = transformAround(BlockPos.ORIGIN.add(vec3i2), blockMirror, blockRotation, blockPos2);
+		return BlockBox.create(blockPos3, blockPos4).move(blockPos);
 	}
 
 	public CompoundTag writeNbt(CompoundTag tag) {
@@ -646,7 +612,7 @@ public class Structure {
 		this.blockInfoLists.clear();
 		this.entities.clear();
 		ListTag listTag = tag.getList("size", 3);
-		this.size = new BlockPos(listTag.getInt(0), listTag.getInt(1), listTag.getInt(2));
+		this.size = new Vec3i(listTag.getInt(0), listTag.getInt(1), listTag.getInt(2));
 		ListTag listTag2 = tag.getList("blocks", 10);
 		if (tag.contains("palettes", 9)) {
 			ListTag listTag3 = tag.getList("palettes", 9);

@@ -59,11 +59,10 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 	}
 
 	protected void renderSpectatorMenu(MatrixStack matrices, float f, int i, int j, SpectatorMenuState spectatorMenuState) {
-		RenderSystem.enableRescaleNormal();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, f);
-		this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, f);
+		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 		this.drawTexture(matrices, i - 91, j, 0, 0, 182, 22);
 		if (spectatorMenuState.getSelectedSlot() >= 0) {
 			this.drawTexture(matrices, i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
@@ -73,20 +72,19 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 			this.renderSpectatorCommand(matrices, k, this.client.getWindow().getScaledWidth() / 2 - 90 + k * 20 + 2, (float)(j + 3), f, spectatorMenuState.getCommand(k));
 		}
 
-		RenderSystem.disableRescaleNormal();
 		RenderSystem.disableBlend();
 	}
 
 	private void renderSpectatorCommand(MatrixStack matrices, int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
-		this.client.getTextureManager().bindTexture(SPECTATOR_TEXTURE);
+		RenderSystem.setShaderTexture(0, SPECTATOR_TEXTURE);
 		if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
 			int k = (int)(g * 255.0F);
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef((float)j, f, 0.0F);
+			matrices.push();
+			matrices.translate((double)j, (double)f, 0.0);
 			float h = spectatorMenuCommand.isEnabled() ? 1.0F : 0.25F;
-			RenderSystem.color4f(h, h, h, g);
+			RenderSystem.setShaderColor(h, h, h, g);
 			spectatorMenuCommand.renderIcon(matrices, h, k);
-			RenderSystem.popMatrix();
+			matrices.pop();
 			if (k > 3 && spectatorMenuCommand.isEnabled()) {
 				Text text = this.client.options.keysHotbar[i].getBoundKeyLocalizedText();
 				this.client
@@ -104,12 +102,10 @@ public class SpectatorHud extends DrawableHelper implements SpectatorMenuCloseCa
 			if (text != null) {
 				int j = (this.client.getWindow().getScaledWidth() - this.client.textRenderer.getWidth(text)) / 2;
 				int k = this.client.getWindow().getScaledHeight() - 35;
-				RenderSystem.pushMatrix();
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
 				this.client.textRenderer.drawWithShadow(matrices, text, (float)j, (float)k, 16777215 + (i << 24));
 				RenderSystem.disableBlend();
-				RenderSystem.popMatrix();
 			}
 		}
 	}

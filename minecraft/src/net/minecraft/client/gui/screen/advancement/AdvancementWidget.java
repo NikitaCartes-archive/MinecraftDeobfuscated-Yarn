@@ -12,6 +12,7 @@ import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -134,7 +135,8 @@ public class AdvancementWidget extends DrawableHelper {
 				advancementObtainedStatus = AdvancementObtainedStatus.UNOBTAINED;
 			}
 
-			this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
+			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 			this.drawTexture(
 				matrices, x + this.xPos + 3, y + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26
 			);
@@ -186,8 +188,9 @@ public class AdvancementWidget extends DrawableHelper {
 		}
 
 		int m = this.width - l;
-		this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.enableBlend();
 		int n = y + this.yPos;
 		int o;

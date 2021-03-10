@@ -15,7 +15,7 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class MegaJungleTrunkPlacer extends GiantTrunkPlacer {
 	public static final Codec<MegaJungleTrunkPlacer> CODEC = RecordCodecBuilder.create(
-		instance -> method_28904(instance).apply(instance, MegaJungleTrunkPlacer::new)
+		instance -> fillTrunkPlacerFields(instance).apply(instance, MegaJungleTrunkPlacer::new)
 	);
 
 	public MegaJungleTrunkPlacer(int i, int j, int k) {

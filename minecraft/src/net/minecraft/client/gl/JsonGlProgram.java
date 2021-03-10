@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InvalidClassException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,8 @@ import java.util.function.IntSupplier;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5936;
+import net.minecraft.class_5937;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.util.Identifier;
@@ -27,7 +30,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Environment(EnvType.CLIENT)
-public class JsonGlProgram implements GlProgram, AutoCloseable {
+public class JsonGlProgram implements class_5936, AutoCloseable {
 	private static final Logger LOGGER = LogManager.getLogger();
 	private static final Uniform dummyUniform = new Uniform();
 	private static JsonGlProgram activeProgram;
@@ -44,8 +47,8 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	private final GlBlendState blendState;
 	private final List<Integer> attribLocs;
 	private final List<String> attribNames;
-	private final GlShader vertexShader;
-	private final GlShader fragmentShader;
+	private final class_5937 vertexShader;
+	private final class_5937 fragmentShader;
 
 	public JsonGlProgram(ResourceManager resource, String name) throws IOException {
 		Identifier identifier = new Identifier("shaders/program/" + name + ".json");
@@ -143,20 +146,27 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 		this.markUniformsDirty();
 	}
 
-	public static GlShader getShader(ResourceManager resourceManager, GlShader.Type type, String name) throws IOException {
+	public static class_5937 getShader(ResourceManager resourceManager, GlShader.Type type, String name) throws IOException {
 		GlShader glShader = (GlShader)type.getLoadedShaders().get(name);
-		if (glShader == null) {
-			Identifier identifier = new Identifier("shaders/program/" + name + type.getFileExtension());
-			Resource resource = resourceManager.getResource(identifier);
+		if (glShader != null && !(glShader instanceof class_5937)) {
+			throw new InvalidClassException("Program is not of type EffectProgram");
+		} else {
+			class_5937 lv;
+			if (glShader == null) {
+				Identifier identifier = new Identifier("shaders/program/" + name + type.getFileExtension());
+				Resource resource = resourceManager.getResource(identifier);
 
-			try {
-				glShader = GlShader.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName());
-			} finally {
-				IOUtils.closeQuietly(resource);
+				try {
+					lv = class_5937.method_34415(type, name, resource.getInputStream(), resource.getResourcePackName());
+				} finally {
+					IOUtils.closeQuietly(resource);
+				}
+			} else {
+				lv = (class_5937)glShader;
 			}
-		}
 
-		return glShader;
+			return lv;
+		}
 	}
 
 	public static GlBlendState deserializeBlendState(JsonObject json) {
@@ -392,6 +402,12 @@ public class JsonGlProgram implements GlProgram, AutoCloseable {
 	@Override
 	public GlShader getFragmentShader() {
 		return this.fragmentShader;
+	}
+
+	@Override
+	public void method_34418() {
+		this.fragmentShader.method_34414(this);
+		this.vertexShader.method_34414(this);
 	}
 
 	@Override

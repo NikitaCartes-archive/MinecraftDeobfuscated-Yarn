@@ -1,7 +1,6 @@
 package net.minecraft.screen;
 
 import java.util.Map;
-import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.AnvilBlock;
@@ -15,8 +14,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.text.LiteralText;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,7 +44,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 	}
 
 	@Override
-	protected ItemStack onTakeOutput(PlayerEntity player, ItemStack stack) {
+	protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
 		if (!player.getAbilities().creativeMode) {
 			player.addExperienceLevels(-this.levelCost.get());
 		}
@@ -66,7 +63,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 		}
 
 		this.levelCost.set(0);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+		this.context.run((world, blockPos) -> {
 			BlockState blockState = world.getBlockState(blockPos);
 			if (!player.getAbilities().creativeMode && blockState.isIn(BlockTags.ANVIL) && player.getRandom().nextFloat() < 0.12F) {
 				BlockState blockState2 = AnvilBlock.getLandingState(blockState);
@@ -80,8 +77,7 @@ public class AnvilScreenHandler extends ForgingScreenHandler {
 			} else {
 				world.syncWorldEvent(1030, blockPos, 0);
 			}
-		}));
-		return stack;
+		});
 	}
 
 	@Override

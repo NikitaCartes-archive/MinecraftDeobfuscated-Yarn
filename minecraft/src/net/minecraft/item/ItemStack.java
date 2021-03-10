@@ -45,7 +45,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.screen.slot.Slot;
@@ -320,12 +320,12 @@ public final class ItemStack {
 		return this.item.getItemBarColor(this);
 	}
 
-	public boolean onStackClicked(Slot slot, ClickType clickType, PlayerInventory playerInventory) {
-		return this.getItem().onStackClicked(this, slot, clickType, playerInventory);
+	public boolean onStackClicked(Slot slot, ClickType clickType, PlayerEntity player) {
+		return this.getItem().onStackClicked(this, slot, clickType, player);
 	}
 
-	public boolean onClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
-		return this.getItem().onClicked(this, stack, slot, clickType, playerInventory);
+	public boolean onClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player, CommandItemSlot cursorSlot) {
+		return this.getItem().onClicked(this, stack, slot, clickType, player, cursorSlot);
 	}
 
 	public void postHit(LivingEntity target, PlayerEntity attacker) {

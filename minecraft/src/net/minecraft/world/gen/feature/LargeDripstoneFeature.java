@@ -13,7 +13,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.feature.util.DripstoneColumn;
+import net.minecraft.world.gen.feature.util.CaveSurface;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -31,11 +31,11 @@ public class LargeDripstoneFeature extends Feature<LargeDripstoneFeatureConfig> 
 		if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
 			return false;
 		} else {
-			Optional<DripstoneColumn> optional = DripstoneColumn.create(
+			Optional<CaveSurface> optional = CaveSurface.create(
 				structureWorldAccess, blockPos, largeDripstoneFeatureConfig.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava
 			);
-			if (optional.isPresent() && optional.get() instanceof DripstoneColumn.Bounded) {
-				DripstoneColumn.Bounded bounded = (DripstoneColumn.Bounded)optional.get();
+			if (optional.isPresent() && optional.get() instanceof CaveSurface.Bounded) {
+				CaveSurface.Bounded bounded = (CaveSurface.Bounded)optional.get();
 				if (bounded.getHeight() < 4) {
 					return false;
 				} else {

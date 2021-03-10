@@ -31,8 +31,8 @@ public class BossBarHud extends DrawableHelper {
 
 			for (ClientBossBar clientBossBar : this.bossBars.values()) {
 				int k = i / 2 - 91;
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				this.client.getTextureManager().bindTexture(BARS_TEXTURE);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderTexture(0, BARS_TEXTURE);
 				this.renderBossBar(matrices, k, j, clientBossBar);
 				Text text = clientBossBar.getName();
 				int m = this.client.textRenderer.getWidth(text);
@@ -49,58 +49,56 @@ public class BossBarHud extends DrawableHelper {
 
 	private void renderBossBar(MatrixStack matrices, int x, int y, BossBar bossBar) {
 		this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2, 182, 5);
-		if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
-			this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2, 182, 5);
+		if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
+			this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2, 182, 5);
 		}
 
 		int i = (int)(bossBar.getPercent() * 183.0F);
 		if (i > 0) {
 			this.drawTexture(matrices, x, y, 0, bossBar.getColor().ordinal() * 5 * 2 + 5, i, 5);
-			if (bossBar.getOverlay() != BossBar.Style.PROGRESS) {
-				this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getOverlay().ordinal() - 1) * 5 * 2 + 5, i, 5);
+			if (bossBar.getStyle() != BossBar.Style.PROGRESS) {
+				this.drawTexture(matrices, x, y, 0, 80 + (bossBar.getStyle().ordinal() - 1) * 5 * 2 + 5, i, 5);
 			}
 		}
 	}
 
 	public void handlePacket(BossBarS2CPacket packet) {
-		packet.accept(
-			new BossBarS2CPacket.Consumer() {
-				@Override
-				public void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style overlay, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
-					BossBarHud.this.bossBars.put(uuid, new ClientBossBar(uuid, name, percent, color, overlay, darkenSky, dragonMusic, thickenFog));
-				}
-
-				@Override
-				public void remove(UUID uuid) {
-					BossBarHud.this.bossBars.remove(uuid);
-				}
-
-				@Override
-				public void updateProgress(UUID uuid, float percent) {
-					((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setPercent(percent);
-				}
-
-				@Override
-				public void updateName(UUID uuid, Text name) {
-					((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setName(name);
-				}
-
-				@Override
-				public void updateStyle(UUID id, BossBar.Color color, BossBar.Style overlay) {
-					ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(id);
-					clientBossBar.setColor(color);
-					clientBossBar.setOverlay(overlay);
-				}
-
-				@Override
-				public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
-					ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uuid);
-					clientBossBar.setDarkenSky(darkenSky);
-					clientBossBar.setDragonMusic(dragonMusic);
-					clientBossBar.setThickenFog(thickenFog);
-				}
+		packet.accept(new BossBarS2CPacket.Consumer() {
+			@Override
+			public void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+				BossBarHud.this.bossBars.put(uuid, new ClientBossBar(uuid, name, percent, color, style, darkenSky, dragonMusic, thickenFog));
 			}
-		);
+
+			@Override
+			public void remove(UUID uuid) {
+				BossBarHud.this.bossBars.remove(uuid);
+			}
+
+			@Override
+			public void updateProgress(UUID uuid, float percent) {
+				((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setPercent(percent);
+			}
+
+			@Override
+			public void updateName(UUID uuid, Text name) {
+				((ClientBossBar)BossBarHud.this.bossBars.get(uuid)).setName(name);
+			}
+
+			@Override
+			public void updateStyle(UUID id, BossBar.Color color, BossBar.Style style) {
+				ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(id);
+				clientBossBar.setColor(color);
+				clientBossBar.setStyle(style);
+			}
+
+			@Override
+			public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+				ClientBossBar clientBossBar = (ClientBossBar)BossBarHud.this.bossBars.get(uuid);
+				clientBossBar.setDarkenSky(darkenSky);
+				clientBossBar.setDragonMusic(dragonMusic);
+				clientBossBar.setThickenFog(thickenFog);
+			}
+		});
 	}
 
 	public void clear() {

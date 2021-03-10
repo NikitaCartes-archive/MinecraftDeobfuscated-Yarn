@@ -92,7 +92,7 @@ public class SignBlockEntityRenderer implements BlockEntityRenderer<SignBlockEnt
 		for (int r = 0; r < 4; r++) {
 			OrderedText orderedText = orderedTexts[r];
 			float s = (float)(-this.textRenderer.getWidth(orderedText) / 2);
-			int t = blockState.get(AbstractSignBlock.LIT) ? 15728880 : i;
+			int t = signBlockEntity.isGlowingText() ? 15728880 : i;
 			this.textRenderer.draw(orderedText, s, (float)(r * 10 - 20), p, false, matrixStack.peek().getModel(), vertexConsumerProvider, false, 0, t);
 		}
 

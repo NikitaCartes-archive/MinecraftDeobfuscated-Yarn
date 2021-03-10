@@ -226,17 +226,14 @@ public class CustomizeFlatLevelScreen extends Screen {
 
 			private void renderIcon(MatrixStack matrices, int x, int y, ItemStack iconItem) {
 				this.renderIconBackgroundTexture(matrices, x + 1, y + 1);
-				RenderSystem.enableRescaleNormal();
 				if (!iconItem.isEmpty()) {
 					CustomizeFlatLevelScreen.this.itemRenderer.renderGuiItemIcon(iconItem, x + 2, y + 2);
 				}
-
-				RenderSystem.disableRescaleNormal();
 			}
 
 			private void renderIconBackgroundTexture(MatrixStack matrices, int x, int y) {
-				RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-				SuperflatLayersListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_TEXTURE);
+				RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+				RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
 				DrawableHelper.drawTexture(matrices, x, y, CustomizeFlatLevelScreen.this.getZOffset(), 0.0F, 0.0F, 18, 18, 128, 128);
 			}
 		}

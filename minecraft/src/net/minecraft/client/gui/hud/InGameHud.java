@@ -28,6 +28,7 @@ import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -67,6 +68,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.minecraft.world.border.WorldBorder;
@@ -185,17 +187,18 @@ public class InGameHud extends DrawableHelper {
 		}
 
 		if (!this.client.options.hudHidden) {
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 			RenderSystem.enableBlend();
-			RenderSystem.enableAlphaTest();
 			this.renderCrosshair(matrices);
+			RenderSystem.setShader(GameRenderer::method_34542);
 			RenderSystem.defaultBlendFunc();
 			this.client.getProfiler().push("bossHealth");
 			this.bossBarHud.render(matrices);
 			this.client.getProfiler().pop();
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
 			if (this.client.interactionManager.hasStatusBars()) {
 				this.renderStatusBars(matrices);
 			}
@@ -219,7 +222,6 @@ public class InGameHud extends DrawableHelper {
 		if (this.client.player.getSleepTimer() > 0) {
 			this.client.getProfiler().push("sleep");
 			RenderSystem.disableDepthTest();
-			RenderSystem.disableAlphaTest();
 			float h = (float)this.client.player.getSleepTimer();
 			float j = h / 100.0F;
 			if (j > 1.0F) {
@@ -228,10 +230,9 @@ public class InGameHud extends DrawableHelper {
 
 			int k = (int)(220.0F * j) << 24 | 1052704;
 			fill(matrices, 0, 0, this.scaledWidth, this.scaledHeight, k);
-			RenderSystem.enableAlphaTest();
 			RenderSystem.enableDepthTest();
 			this.client.getProfiler().pop();
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 
 		if (this.client.isDemo()) {
@@ -253,8 +254,8 @@ public class InGameHud extends DrawableHelper {
 				}
 
 				if (l > 8) {
-					RenderSystem.pushMatrix();
-					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight - 68), 0.0F);
+					matrices.push();
+					matrices.translate((double)(this.scaledWidth / 2), (double)(this.scaledHeight - 68), 0.0);
 					RenderSystem.enableBlend();
 					RenderSystem.defaultBlendFunc();
 					int k = 16777215;
@@ -267,7 +268,7 @@ public class InGameHud extends DrawableHelper {
 					this.drawTextBackground(matrices, textRenderer, -4, n, 16777215 | m);
 					textRenderer.draw(matrices, this.overlayMessage, (float)(-n / 2), -4.0F, k | m);
 					RenderSystem.disableBlend();
-					RenderSystem.popMatrix();
+					matrices.pop();
 				}
 
 				this.client.getProfiler().pop();
@@ -288,28 +289,28 @@ public class InGameHud extends DrawableHelper {
 
 				lx = MathHelper.clamp(lx, 0, 255);
 				if (lx > 8) {
-					RenderSystem.pushMatrix();
-					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), 0.0F);
+					matrices.push();
+					matrices.translate((double)(this.scaledWidth / 2), (double)(this.scaledHeight / 2), 0.0);
 					RenderSystem.enableBlend();
 					RenderSystem.defaultBlendFunc();
-					RenderSystem.pushMatrix();
-					RenderSystem.scalef(4.0F, 4.0F, 4.0F);
+					matrices.push();
+					matrices.scale(4.0F, 4.0F, 4.0F);
 					int k = lx << 24 & 0xFF000000;
 					int m = textRenderer.getWidth(this.title);
 					this.drawTextBackground(matrices, textRenderer, -10, m, 16777215 | k);
 					textRenderer.drawWithShadow(matrices, this.title, (float)(-m / 2), -10.0F, 16777215 | k);
-					RenderSystem.popMatrix();
+					matrices.pop();
 					if (this.subtitle != null) {
-						RenderSystem.pushMatrix();
-						RenderSystem.scalef(2.0F, 2.0F, 2.0F);
+						matrices.push();
+						matrices.scale(2.0F, 2.0F, 2.0F);
 						int n = textRenderer.getWidth(this.subtitle);
 						this.drawTextBackground(matrices, textRenderer, 5, n, 16777215 | k);
 						textRenderer.drawWithShadow(matrices, this.subtitle, (float)(-n / 2), 5.0F, 16777215 | k);
-						RenderSystem.popMatrix();
+						matrices.pop();
 					}
 
 					RenderSystem.disableBlend();
-					RenderSystem.popMatrix();
+					matrices.pop();
 				}
 
 				this.client.getProfiler().pop();
@@ -333,13 +334,12 @@ public class InGameHud extends DrawableHelper {
 
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
-			RenderSystem.disableAlphaTest();
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, (float)(this.scaledHeight - 48), 0.0F);
+			matrices.push();
+			matrices.translate(0.0, (double)(this.scaledHeight - 48), 0.0);
 			this.client.getProfiler().push("chat");
 			this.chatHud.render(matrices, this.ticks);
 			this.client.getProfiler().pop();
-			RenderSystem.popMatrix();
+			matrices.pop();
 			scoreboardObjective2 = scoreboard.getObjectiveForSlot(0);
 			if (!this.client.options.keyPlayerList.isPressed()
 				|| this.client.isInSingleplayer() && this.client.player.networkHandler.getPlayerList().size() <= 1 && scoreboardObjective2 == null) {
@@ -350,8 +350,7 @@ public class InGameHud extends DrawableHelper {
 			}
 		}
 
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-		RenderSystem.enableAlphaTest();
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private void drawTextBackground(MatrixStack matrices, TextRenderer textRenderer, int yOffset, int width, int color) {
@@ -367,14 +366,17 @@ public class InGameHud extends DrawableHelper {
 		if (gameOptions.getPerspective().isFirstPerson()) {
 			if (this.client.interactionManager.getCurrentGameMode() != GameMode.SPECTATOR || this.shouldRenderSpectatorCrosshair(this.client.crosshairTarget)) {
 				if (gameOptions.debugEnabled && !gameOptions.hudHidden && !this.client.player.hasReducedDebugInfo() && !gameOptions.reducedDebugInfo) {
-					RenderSystem.pushMatrix();
-					RenderSystem.translatef((float)(this.scaledWidth / 2), (float)(this.scaledHeight / 2), (float)this.getZOffset());
 					Camera camera = this.client.gameRenderer.getCamera();
-					RenderSystem.rotatef(camera.getPitch(), -1.0F, 0.0F, 0.0F);
-					RenderSystem.rotatef(camera.getYaw(), 0.0F, 1.0F, 0.0F);
-					RenderSystem.scalef(-1.0F, -1.0F, -1.0F);
+					MatrixStack matrixStack = RenderSystem.getModelViewStack();
+					matrixStack.push();
+					matrixStack.translate((double)(this.scaledWidth / 2), (double)(this.scaledHeight / 2), (double)this.getZOffset());
+					matrixStack.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(camera.getPitch()));
+					matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(camera.getYaw()));
+					matrixStack.scale(-1.0F, -1.0F, -1.0F);
+					RenderSystem.applyModelViewMatrix();
 					RenderSystem.renderCrosshair(10);
-					RenderSystem.popMatrix();
+					matrixStack.pop();
+					RenderSystem.applyModelViewMatrix();
 				} else {
 					RenderSystem.blendFuncSeparate(
 						GlStateManager.SrcFactor.ONE_MINUS_DST_COLOR, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
@@ -426,7 +428,7 @@ public class InGameHud extends DrawableHelper {
 			int j = 0;
 			StatusEffectSpriteManager statusEffectSpriteManager = this.client.getStatusEffectSpriteManager();
 			List<Runnable> list = Lists.<Runnable>newArrayListWithExpectedSize(collection.size());
-			this.client.getTextureManager().bindTexture(HandledScreen.BACKGROUND_TEXTURE);
+			RenderSystem.setShaderTexture(0, HandledScreen.BACKGROUND_TEXTURE);
 
 			for (StatusEffectInstance statusEffectInstance : Ordering.natural().reverse().sortedCopy(collection)) {
 				StatusEffect statusEffect = statusEffectInstance.getEffectType();
@@ -446,7 +448,7 @@ public class InGameHud extends DrawableHelper {
 						l += 26;
 					}
 
-					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 					float f = 1.0F;
 					if (statusEffectInstance.isAmbient()) {
 						this.drawTexture(matrices, k, l, 165, 166, 24, 24);
@@ -464,8 +466,8 @@ public class InGameHud extends DrawableHelper {
 					int o = l;
 					float g = f;
 					list.add((Runnable)() -> {
-						this.client.getTextureManager().bindTexture(sprite.getAtlas().getId());
-						RenderSystem.color4f(1.0F, 1.0F, 1.0F, g);
+						RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+						RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, g);
 						drawSprite(matrices, n + 3, o + 3, this.getZOffset(), 18, 18, sprite);
 					});
 				}
@@ -475,11 +477,12 @@ public class InGameHud extends DrawableHelper {
 		}
 	}
 
-	protected void renderHotbar(float tickDelta, MatrixStack matrices) {
+	private void renderHotbar(float tickDelta, MatrixStack matrices) {
 		PlayerEntity playerEntity = this.getCameraPlayer();
 		if (playerEntity != null) {
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-			this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
 			ItemStack itemStack = playerEntity.getOffHandStack();
 			Arm arm = playerEntity.getMainArm().getOpposite();
 			int i = this.scaledWidth / 2;
@@ -498,7 +501,6 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			this.setZOffset(j);
-			RenderSystem.enableRescaleNormal();
 			RenderSystem.enableBlend();
 			RenderSystem.defaultBlendFunc();
 			int m = 1;
@@ -527,22 +529,21 @@ public class InGameHud extends DrawableHelper {
 						p = i - 91 - 22;
 					}
 
-					this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
+					RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
 					int q = (int)(f * 19.0F);
-					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+					RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 					this.drawTexture(matrices, p, o, 0, 94, 18, 18);
 					this.drawTexture(matrices, p, o + 18 - q, 18, 112 - q, 18, q);
 				}
 			}
 
-			RenderSystem.disableRescaleNormal();
 			RenderSystem.disableBlend();
 		}
 	}
 
 	public void renderMountJumpBar(MatrixStack matrices, int x) {
 		this.client.getProfiler().push("jumpBar");
-		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
+		RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
 		float f = this.client.player.getMountJumpStrength();
 		int i = 182;
 		int j = (int)(f * 183.0F);
@@ -557,7 +558,7 @@ public class InGameHud extends DrawableHelper {
 
 	public void renderExperienceBar(MatrixStack matrices, int x) {
 		this.client.getProfiler().push("expBar");
-		this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
+		RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
 		int i = this.client.player.getNextLevelExperience();
 		if (i > 0) {
 			int j = 182;
@@ -605,13 +606,11 @@ public class InGameHud extends DrawableHelper {
 			}
 
 			if (l > 0) {
-				RenderSystem.pushMatrix();
 				RenderSystem.enableBlend();
 				RenderSystem.defaultBlendFunc();
 				fill(matrices, j - 2, k - 2, j + i + 2, k + 9 + 2, this.client.options.getTextBackgroundColor(0));
 				this.getFontRenderer().drawWithShadow(matrices, mutableText, (float)j, (float)k, 16777215 + (l << 24));
 				RenderSystem.disableBlend();
-				RenderSystem.popMatrix();
 			}
 		}
 
@@ -940,9 +939,8 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, opacity);
-		RenderSystem.disableAlphaTest();
-		this.client.getTextureManager().bindTexture(texture);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, opacity);
+		RenderSystem.setShaderTexture(0, texture);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -953,16 +951,14 @@ public class InGameHud extends DrawableHelper {
 		tessellator.draw();
 		RenderSystem.depthMask(true);
 		RenderSystem.enableDepthTest();
-		RenderSystem.enableAlphaTest();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private void renderSpyglassOverlay(float scale) {
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.disableAlphaTest();
-		this.client.getTextureManager().bindTexture(SPYGLASS_SCOPE);
+		RenderSystem.setShaderTexture(0, SPYGLASS_SCOPE);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		float f = (float)Math.min(this.scaledWidth, this.scaledHeight);
@@ -979,6 +975,7 @@ public class InGameHud extends DrawableHelper {
 		bufferBuilder.vertex((double)m, (double)l, -90.0).texture(1.0F, 0.0F).next();
 		bufferBuilder.vertex((double)k, (double)l, -90.0).texture(0.0F, 0.0F).next();
 		tessellator.draw();
+		RenderSystem.setShader(GameRenderer::method_34540);
 		RenderSystem.disableTexture();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
 		bufferBuilder.vertex(0.0, (double)this.scaledHeight, -90.0).color(0, 0, 0, 255).next();
@@ -1001,8 +998,7 @@ public class InGameHud extends DrawableHelper {
 		RenderSystem.enableTexture();
 		RenderSystem.depthMask(true);
 		RenderSystem.enableDepthTest();
-		RenderSystem.enableAlphaTest();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private void updateVignetteDarkness(Entity entity) {
@@ -1031,12 +1027,13 @@ public class InGameHud extends DrawableHelper {
 			GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO
 		);
 		if (f > 0.0F) {
-			RenderSystem.color4f(0.0F, f, f, 1.0F);
+			RenderSystem.setShaderColor(0.0F, f, f, 1.0F);
 		} else {
-			RenderSystem.color4f(this.vignetteDarkness, this.vignetteDarkness, this.vignetteDarkness, 1.0F);
+			RenderSystem.setShaderColor(this.vignetteDarkness, this.vignetteDarkness, this.vignetteDarkness, 1.0F);
 		}
 
-		this.client.getTextureManager().bindTexture(VIGNETTE_TEXTURE);
+		RenderSystem.setShader(GameRenderer::method_34542);
+		RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();
 		bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
@@ -1047,7 +1044,7 @@ public class InGameHud extends DrawableHelper {
 		tessellator.draw();
 		RenderSystem.depthMask(true);
 		RenderSystem.enableDepthTest();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 		RenderSystem.defaultBlendFunc();
 	}
 
@@ -1058,12 +1055,11 @@ public class InGameHud extends DrawableHelper {
 			nauseaStrength = nauseaStrength * 0.8F + 0.2F;
 		}
 
-		RenderSystem.disableAlphaTest();
 		RenderSystem.disableDepthTest();
 		RenderSystem.depthMask(false);
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, nauseaStrength);
-		this.client.getTextureManager().bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, nauseaStrength);
+		RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
 		Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
 		float f = sprite.getMinU();
 		float g = sprite.getMinV();
@@ -1079,24 +1075,27 @@ public class InGameHud extends DrawableHelper {
 		tessellator.draw();
 		RenderSystem.depthMask(true);
 		RenderSystem.enableDepthTest();
-		RenderSystem.enableAlphaTest();
-		RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 	}
 
 	private void renderHotbarItem(int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int i) {
 		if (!stack.isEmpty()) {
+			MatrixStack matrixStack = RenderSystem.getModelViewStack();
 			float f = (float)stack.getCooldown() - tickDelta;
 			if (f > 0.0F) {
-				RenderSystem.pushMatrix();
 				float g = 1.0F + f / 5.0F;
-				RenderSystem.translatef((float)(x + 8), (float)(y + 12), 0.0F);
-				RenderSystem.scalef(1.0F / g, (g + 1.0F) / 2.0F, 1.0F);
-				RenderSystem.translatef((float)(-(x + 8)), (float)(-(y + 12)), 0.0F);
+				matrixStack.push();
+				matrixStack.translate((double)(x + 8), (double)(y + 12), 0.0);
+				matrixStack.scale(1.0F / g, (g + 1.0F) / 2.0F, 1.0F);
+				matrixStack.translate((double)(-(x + 8)), (double)(-(y + 12)), 0.0);
+				RenderSystem.applyModelViewMatrix();
 			}
 
 			this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, i);
+			RenderSystem.setShader(GameRenderer::method_34540);
 			if (f > 0.0F) {
-				RenderSystem.popMatrix();
+				matrixStack.pop();
+				RenderSystem.applyModelViewMatrix();
 			}
 
 			this.itemRenderer.renderGuiItemOverlay(this.client.textRenderer, stack, x, y);

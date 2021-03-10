@@ -1,7 +1,11 @@
 package net.minecraft.client.network;
 
+import com.google.common.collect.Lists;
 import com.mojang.datafixers.util.Pair;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import java.util.List;
 import javax.annotation.Nullable;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -29,6 +33,7 @@ import net.minecraft.network.packet.c2s.play.PlayerInteractEntityC2SPacket;
 import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
 import net.minecraft.network.packet.c2s.play.UpdateSelectedSlotC2SPacket;
 import net.minecraft.recipe.Recipe;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.sound.SoundCategory;
@@ -36,6 +41,7 @@ import net.minecraft.stat.StatHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
@@ -351,11 +357,28 @@ public class ClientPlayerInteractionManager {
 	/**
 	 * @see net.minecraft.screen.ScreenHandler#onSlotClick(int, int, net.minecraft.screen.slot.SlotActionType, net.minecraft.entity.player.PlayerEntity)
 	 */
-	public ItemStack clickSlot(int syncId, int slotId, int clickData, SlotActionType actionType, PlayerEntity player) {
-		short s = player.currentScreenHandler.getNextActionId(player.getInventory());
-		ItemStack itemStack = player.currentScreenHandler.onSlotClick(slotId, clickData, actionType, player);
-		this.networkHandler.sendPacket(new ClickSlotC2SPacket(syncId, slotId, clickData, actionType, itemStack, s));
-		return itemStack;
+	public void clickSlot(int syncId, int slotId, int clickData, SlotActionType actionType, PlayerEntity playerEntity) {
+		DefaultedList<Slot> defaultedList = playerEntity.currentScreenHandler.slots;
+		int i = defaultedList.size();
+		List<ItemStack> list = Lists.<ItemStack>newArrayListWithCapacity(i);
+
+		for (Slot slot : defaultedList) {
+			list.add(slot.getStack().copy());
+		}
+
+		playerEntity.currentScreenHandler.onSlotClick(slotId, clickData, actionType, playerEntity);
+		Int2ObjectMap<ItemStack> int2ObjectMap = new Int2ObjectOpenHashMap<>();
+
+		for (int j = 0; j < i; j++) {
+			ItemStack itemStack = (ItemStack)list.get(j);
+			ItemStack itemStack2 = defaultedList.get(j).getStack();
+			if (!ItemStack.areEqual(itemStack, itemStack2)) {
+				int2ObjectMap.put(j, itemStack2.copy());
+			}
+		}
+
+		this.networkHandler
+			.sendPacket(new ClickSlotC2SPacket(syncId, slotId, clickData, actionType, playerEntity.currentScreenHandler.getCursorStack().copy(), int2ObjectMap));
 	}
 
 	public void clickRecipe(int syncId, Recipe<?> recipe, boolean craftAll) {

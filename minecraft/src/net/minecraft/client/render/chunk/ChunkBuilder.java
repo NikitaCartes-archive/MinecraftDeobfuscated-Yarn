@@ -54,6 +54,7 @@ import org.apache.logging.log4j.Logger;
 @Environment(EnvType.CLIENT)
 public class ChunkBuilder {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private static final VertexFormat field_29500 = VertexFormats.POSITION_COLOR_TEXTURE_LIGHT_NORMAL;
 	private final PriorityQueue<ChunkBuilder.BuiltChunk.Task> rebuildQueue = Queues.newPriorityQueue();
 	private final Queue<BlockBufferBuilderStorage> threadBuffers;
 	private final Queue<Runnable> uploadQueue = Queues.<Runnable>newConcurrentLinkedQueue();

@@ -50,7 +50,6 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			BlockPos blockPos = new BlockPos(cameraX, 0.0, cameraZ);
 			this.entries.removeIf(GameEventDebugRenderer.Entry::hasExpired);
 			this.listeners.removeIf(listener -> listener.isTooFar(world, blockPos));
-			RenderSystem.pushMatrix();
 			RenderSystem.disableTexture();
 			RenderSystem.enableDepthTest();
 			RenderSystem.enableBlend();
@@ -144,7 +143,6 @@ public class GameEventDebugRenderer implements DebugRenderer.Renderer {
 			RenderSystem.depthMask(true);
 			RenderSystem.enableTexture();
 			RenderSystem.disableBlend();
-			RenderSystem.popMatrix();
 		}
 	}
 

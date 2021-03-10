@@ -52,16 +52,14 @@ public class PathfindingDebugRenderer implements DebugRenderer.Renderer {
 	}
 
 	public static void drawPath(Path path, float nodeSize, boolean bl, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {
-		RenderSystem.pushMatrix();
 		RenderSystem.enableBlend();
 		RenderSystem.defaultBlendFunc();
-		RenderSystem.color4f(0.0F, 1.0F, 0.0F, 0.75F);
+		RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, 0.75F);
 		RenderSystem.disableTexture();
 		RenderSystem.lineWidth(6.0F);
 		drawPathInternal(path, nodeSize, bl, drawLabels, cameraX, cameraY, cameraZ);
 		RenderSystem.enableTexture();
 		RenderSystem.disableBlend();
-		RenderSystem.popMatrix();
 	}
 
 	private static void drawPathInternal(Path path, float nodeSize, boolean bl, boolean drawLabels, double cameraX, double cameraY, double cameraZ) {

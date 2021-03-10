@@ -6,11 +6,20 @@ import java.util.OptionalInt;
 import java.util.function.Supplier;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.CaveVinesBodyBlock;
+import net.minecraft.block.CaveVinesHeadBlock;
 import net.minecraft.block.MushroomBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.state.property.Properties;
+import net.minecraft.structure.processor.StructureProcessorLists;
+import net.minecraft.tag.BlockTags;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.collection.WeightedList;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.VerticalSurfaceType;
 import net.minecraft.util.math.floatprovider.ClampedNormalFloatProvider;
 import net.minecraft.util.math.floatprovider.UniformFloatProvider;
 import net.minecraft.util.registry.BuiltinRegistries;
@@ -23,6 +32,7 @@ import net.minecraft.world.gen.UniformIntDistribution;
 import net.minecraft.world.gen.YOffset;
 import net.minecraft.world.gen.decorator.BiasedRangedDecoratorConfig;
 import net.minecraft.world.gen.decorator.CarvingMaskDecoratorConfig;
+import net.minecraft.world.gen.decorator.CaveSurfaceDecoratorConfig;
 import net.minecraft.world.gen.decorator.ChanceDecoratorConfig;
 import net.minecraft.world.gen.decorator.ConfiguredDecorator;
 import net.minecraft.world.gen.decorator.CountExtraDecoratorConfig;
@@ -30,8 +40,10 @@ import net.minecraft.world.gen.decorator.CountNoiseBiasedDecoratorConfig;
 import net.minecraft.world.gen.decorator.CountNoiseDecoratorConfig;
 import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.decorator.HeightmapDecoratorConfig;
 import net.minecraft.world.gen.decorator.NopeDecoratorConfig;
 import net.minecraft.world.gen.decorator.RangeDecoratorConfig;
+import net.minecraft.world.gen.decorator.WaterThresholdDecoratorConfig;
 import net.minecraft.world.gen.feature.size.ThreeLayersFeatureSize;
 import net.minecraft.world.gen.feature.size.TwoLayersFeatureSize;
 import net.minecraft.world.gen.foliage.AcaciaFoliagePlacer;
@@ -42,6 +54,7 @@ import net.minecraft.world.gen.foliage.JungleFoliagePlacer;
 import net.minecraft.world.gen.foliage.LargeOakFoliagePlacer;
 import net.minecraft.world.gen.foliage.MegaPineFoliagePlacer;
 import net.minecraft.world.gen.foliage.PineFoliagePlacer;
+import net.minecraft.world.gen.foliage.RandomSpreadFoliagePlacer;
 import net.minecraft.world.gen.foliage.SpruceFoliagePlacer;
 import net.minecraft.world.gen.placer.ColumnPlacer;
 import net.minecraft.world.gen.placer.DoublePlantPlacer;
@@ -49,6 +62,7 @@ import net.minecraft.world.gen.placer.SimpleBlockPlacer;
 import net.minecraft.world.gen.stateprovider.ForestFlowerBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.PillarBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.PlainsFlowerBlockStateProvider;
+import net.minecraft.world.gen.stateprovider.RandomizedIntBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.SimpleBlockStateProvider;
 import net.minecraft.world.gen.stateprovider.WeightedBlockStateProvider;
 import net.minecraft.world.gen.treedecorator.AlterGroundTreeDecorator;
@@ -56,6 +70,7 @@ import net.minecraft.world.gen.treedecorator.BeehiveTreeDecorator;
 import net.minecraft.world.gen.treedecorator.CocoaBeansTreeDecorator;
 import net.minecraft.world.gen.treedecorator.LeavesVineTreeDecorator;
 import net.minecraft.world.gen.treedecorator.TrunkVineTreeDecorator;
+import net.minecraft.world.gen.trunk.BendingTrunkPlacer;
 import net.minecraft.world.gen.trunk.DarkOakTrunkPlacer;
 import net.minecraft.world.gen.trunk.ForkingTrunkPlacer;
 import net.minecraft.world.gen.trunk.GiantTrunkPlacer;
@@ -230,7 +245,7 @@ public class ConfiguredFeatures {
 		Feature.SIMPLE_BLOCK
 			.configure(
 				new SimpleBlockFeatureConfig(
-					ConfiguredFeatures.States.SEAGRASS,
+					new SimpleBlockStateProvider(ConfiguredFeatures.States.SEAGRASS),
 					ImmutableList.of(ConfiguredFeatures.States.STONE),
 					ImmutableList.of(ConfiguredFeatures.States.WATER_BLOCK),
 					ImmutableList.of(ConfiguredFeatures.States.WATER_BLOCK)
@@ -283,7 +298,9 @@ public class ConfiguredFeatures {
 			.spreadHorizontally()
 			.decorate(Decorator.COUNT_NOISE_BIASED.configure(new CountNoiseBiasedDecoratorConfig(160, 80.0, 0.3)))
 	);
-	public static final ConfiguredFeature<?, ?> VINES = register("vines", Feature.VINES.configure(FeatureConfig.DEFAULT).spreadHorizontally().repeat(50));
+	public static final ConfiguredFeature<?, ?> VINES = register(
+		"vines", Feature.VINES.configure(FeatureConfig.DEFAULT).rangeOf(YOffset.fixed(64), YOffset.fixed(100)).spreadHorizontally().repeat(127)
+	);
 	public static final ConfiguredFeature<?, ?> LAKE_WATER = register(
 		"lake_water",
 		Feature.LAKE
@@ -347,7 +364,40 @@ public class ConfiguredFeatures {
 	public static final ConfiguredFeature<?, ?> DESERT_WELL = register(
 		"desert_well", Feature.DESERT_WELL.configure(FeatureConfig.DEFAULT).decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).applyChance(1000)
 	);
-	public static final ConfiguredFeature<?, ?> FOSSIL = register("fossil", Feature.FOSSIL.configure(FeatureConfig.DEFAULT).applyChance(64));
+	private static final ImmutableList<Identifier> field_29529 = ImmutableList.of(
+		new Identifier("fossil/spine_1"),
+		new Identifier("fossil/spine_2"),
+		new Identifier("fossil/spine_3"),
+		new Identifier("fossil/spine_4"),
+		new Identifier("fossil/skull_1"),
+		new Identifier("fossil/skull_2"),
+		new Identifier("fossil/skull_3"),
+		new Identifier("fossil/skull_4")
+	);
+	private static final ImmutableList<Identifier> field_29530 = ImmutableList.of(
+		new Identifier("fossil/spine_1_coal"),
+		new Identifier("fossil/spine_2_coal"),
+		new Identifier("fossil/spine_3_coal"),
+		new Identifier("fossil/spine_4_coal"),
+		new Identifier("fossil/skull_1_coal"),
+		new Identifier("fossil/skull_2_coal"),
+		new Identifier("fossil/skull_3_coal"),
+		new Identifier("fossil/skull_4_coal")
+	);
+	public static final ConfiguredFeature<?, ?> FOSSIL_UPPER = register(
+		"fossil_upper",
+		Feature.FOSSIL
+			.configure(new FossilFeatureConfig(field_29529, field_29530, StructureProcessorLists.FOSSIL_ROT, StructureProcessorLists.FOSSIL_COAL, 4))
+			.rangeOf(YOffset.fixed(0), YOffset.getTop())
+			.applyChance(64)
+	);
+	public static final ConfiguredFeature<?, ?> FOSSIL_LOWER = register(
+		"fossil_lower",
+		Feature.FOSSIL
+			.configure(new FossilFeatureConfig(field_29529, field_29530, StructureProcessorLists.FOSSIL_ROT, StructureProcessorLists.FOSSIL_DIAMONDS, 4))
+			.rangeOf(YOffset.getBottom(), YOffset.fixed(-8))
+			.applyChance(64)
+	);
 	public static final ConfiguredFeature<?, ?> SPRING_LAVA_DOUBLE = register(
 		"spring_lava_double",
 		Feature.SPRING_FEATURE
@@ -731,7 +781,10 @@ public class ConfiguredFeatures {
 		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.LAPIS_ORE),
 		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.DEEPSLATE_LAPIS_ORE)
 	);
-	public static final OreFeatureConfig COAL_CONFIG = new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COAL_ORE, 17);
+	public static final ImmutableList<OreFeatureConfig.Target> INFESTED_TARGETS = ImmutableList.of(
+		OreFeatureConfig.create(OreFeatureConfig.Rules.STONE_ORE_REPLACEABLES, ConfiguredFeatures.States.INFESTED_STONE),
+		OreFeatureConfig.create(OreFeatureConfig.Rules.DEEPSLATE_ORE_REPLACEABLES, ConfiguredFeatures.States.INFESTED_DEEPSLATE)
+	);
 	public static final OreFeatureConfig IRON_CONFIG = new OreFeatureConfig(IRON_ORE_TARGETS, 9);
 	public static final OreFeatureConfig REDSTONE_CONFIG = new OreFeatureConfig(REDSTONE_ORE_TARGETS, 8);
 	public static final ConfiguredFeature<?, ?> ORE_MAGMA = register(
@@ -847,39 +900,49 @@ public class ConfiguredFeatures {
 			.repeat(2)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_COAL_UPPER = register(
-		"ore_coal_upper", Feature.ORE.configure(COAL_CONFIG).rangeOf(YOffset.fixed(136), YOffset.getTop()).spreadHorizontally().repeat(30)
+		"ore_coal_upper",
+		Feature.ORE
+			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COAL_ORE, 17))
+			.rangeOf(YOffset.fixed(136), YOffset.getTop())
+			.spreadHorizontally()
+			.repeat(30)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_COAL_LOWER = register(
-		"ore_coal_lower", Feature.ORE.configure(COAL_CONFIG).averageDepth(YOffset.fixed(96), 96).spreadHorizontally().repeat(20)
+		"ore_coal_lower",
+		Feature.ORE
+			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COAL_ORE, 17, 0.5F))
+			.averageDepth(YOffset.fixed(96), 96)
+			.spreadHorizontally()
+			.repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_IRON_UPPER = register(
 		"ore_iron_upper", Feature.ORE.configure(IRON_CONFIG).averageDepth(YOffset.fixed(256), 128).spreadHorizontally().repeat(40)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_IRON_MIDDLE = register(
-		"ore_iron_middle", Feature.ORE.configure(IRON_CONFIG).averageDepth(YOffset.fixed(32), 48).spreadHorizontally().repeat(10)
+		"ore_iron_middle", Feature.ORE.configure(IRON_CONFIG).averageDepth(YOffset.fixed(16), 40).spreadHorizontally().repeat(6)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_IRON_LOWER = register(
 		"ore_iron_lower",
-		Feature.ORE.configure(new OreFeatureConfig(IRON_ORE_TARGETS, 4)).rangeOf(YOffset.getBottom(), YOffset.fixed(-8)).spreadHorizontally().repeat(4)
+		Feature.ORE.configure(new OreFeatureConfig(IRON_ORE_TARGETS, 4)).rangeOf(YOffset.getBottom(), YOffset.fixed(-32)).spreadHorizontally().repeat(3)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_GOLD_EXTRA = register(
 		"ore_gold_extra",
 		Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9)).rangeOf(YOffset.fixed(32), YOffset.fixed(79)).spreadHorizontally().repeat(20)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_GOLD = register(
-		"ore_gold", Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9, 0.5F)).averageDepth(YOffset.fixed(-16), 48).spreadHorizontally().repeat(6)
+		"ore_gold", Feature.ORE.configure(new OreFeatureConfig(GOLD_ORE_TARGETS, 9, 0.5F)).averageDepth(YOffset.fixed(-16), 48).spreadHorizontally().repeat(4)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_REDSTONE = register(
-		"ore_redstone", Feature.ORE.configure(REDSTONE_CONFIG).rangeOf(YOffset.getBottom(), YOffset.fixed(15)).spreadHorizontally().repeat(6)
+		"ore_redstone", Feature.ORE.configure(REDSTONE_CONFIG).rangeOf(YOffset.getBottom(), YOffset.fixed(15)).spreadHorizontally().repeat(4)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_REDSTONE_LOWER = register(
-		"ore_redstone_lower", Feature.ORE.configure(REDSTONE_CONFIG).averageDepth(YOffset.getBottom(), 32).spreadHorizontally().repeat(12)
+		"ore_redstone_lower", Feature.ORE.configure(REDSTONE_CONFIG).averageDepth(YOffset.getBottom(), 32).spreadHorizontally().repeat(8)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_DIAMOND = register(
-		"ore_diamond", Feature.ORE.configure(new OreFeatureConfig(DIAMOND_ORE_TARGETS, 8, 0.5F)).averageDepth(YOffset.getBottom(), 80).spreadHorizontally().repeat(4)
+		"ore_diamond", Feature.ORE.configure(new OreFeatureConfig(DIAMOND_ORE_TARGETS, 4, 0.5F)).averageDepth(YOffset.getBottom(), 80).spreadHorizontally().repeat(5)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_LAPIS = register(
-		"ore_lapis", Feature.ORE.configure(new OreFeatureConfig(LAPIS_ORE_TARGETS, 7)).averageDepth(YOffset.fixed(0), 32).spreadHorizontally()
+		"ore_lapis", Feature.ORE.configure(new OreFeatureConfig(LAPIS_ORE_TARGETS, 7)).averageDepth(YOffset.fixed(0), 32).spreadHorizontally().repeat(2)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_LAPIS_BURIED = register(
 		"ore_lapis_buried",
@@ -887,15 +950,11 @@ public class ConfiguredFeatures {
 			.configure(new OreFeatureConfig(LAPIS_ORE_TARGETS, 7, 1.0F))
 			.rangeOf(YOffset.getBottom(), YOffset.fixed(64))
 			.spreadHorizontally()
-			.repeat(2)
+			.repeat(4)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_INFESTED = register(
 		"ore_infested",
-		Feature.ORE
-			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.INFESTED_STONE, 9))
-			.rangeOf(YOffset.getBottom(), YOffset.fixed(63))
-			.spreadHorizontally()
-			.repeat(14)
+		Feature.ORE.configure(new OreFeatureConfig(INFESTED_TARGETS, 9)).rangeOf(YOffset.getBottom(), YOffset.fixed(63)).spreadHorizontally().repeat(14)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_EMERALD = register(
 		"ore_emerald",
@@ -903,7 +962,7 @@ public class ConfiguredFeatures {
 			.configure(new EmeraldOreFeatureConfig(ConfiguredFeatures.States.STONE, ConfiguredFeatures.States.EMERALD_ORE))
 			.averageDepth(YOffset.fixed(256), 224)
 			.spreadHorizontally()
-			.repeat(UniformIntDistribution.of(6, 16))
+			.repeat(50)
 	);
 	public static final ConfiguredFeature<?, ?> ORE_DEBRIS_LARGE = register(
 		"ore_debris_large",
@@ -925,7 +984,15 @@ public class ConfiguredFeatures {
 			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.COPPER_ORE, 10))
 			.averageDepth(YOffset.fixed(48), 48)
 			.spreadHorizontally()
-			.repeat(10)
+			.repeat(6)
+	);
+	public static final ConfiguredFeature<?, ?> ORE_CLAY = register(
+		"ore_clay",
+		Feature.ORE
+			.configure(new OreFeatureConfig(OreFeatureConfig.Rules.BASE_STONE_OVERWORLD, ConfiguredFeatures.States.CLAY, 33))
+			.range(ConfiguredFeatures.Decorators.field_29532)
+			.spreadHorizontally()
+			.repeat(15)
 	);
 	public static final ConfiguredFeature<?, ?> DRIPSTONE_CLUSTER = register(
 		"dripstone_cluster",
@@ -1049,9 +1116,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
+						new StraightTrunkPlacer(4, 2, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LEAVES),
 						new BlobFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(0), 3),
-						new StraightTrunkPlacer(4, 2, 0),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
 					.ignoreVines()
@@ -1064,13 +1131,11 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.DARK_OAK_LOG),
+						new DarkOakTrunkPlacer(6, 2, 1),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.DARK_OAK_LEAVES),
 						new DarkOakFoliagePlacer(UniformIntDistribution.of(0), UniformIntDistribution.of(0)),
-						new DarkOakTrunkPlacer(6, 2, 1),
 						new ThreeLayersFeatureSize(1, 1, 0, 1, 2, OptionalInt.empty())
 					)
-					.maxWaterDepth(Integer.MAX_VALUE)
-					.heightmap(Heightmap.Type.MOTION_BLOCKING)
 					.ignoreVines()
 					.build()
 			)
@@ -1081,9 +1146,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LOG),
+						new StraightTrunkPlacer(5, 2, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LEAVES),
 						new BlobFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(0), 3),
-						new StraightTrunkPlacer(5, 2, 0),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
 					.ignoreVines()
@@ -1096,9 +1161,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.ACACIA_LOG),
+						new ForkingTrunkPlacer(5, 2, 2),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.ACACIA_LEAVES),
 						new AcaciaFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(0)),
-						new ForkingTrunkPlacer(5, 2, 2),
 						new TwoLayersFeatureSize(1, 0, 2)
 					)
 					.ignoreVines()
@@ -1111,9 +1176,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
+						new StraightTrunkPlacer(5, 2, 1),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LEAVES),
 						new SpruceFoliagePlacer(UniformIntDistribution.of(2, 1), UniformIntDistribution.of(0, 2), UniformIntDistribution.of(1, 1)),
-						new StraightTrunkPlacer(5, 2, 1),
 						new TwoLayersFeatureSize(2, 0, 2)
 					)
 					.ignoreVines()
@@ -1126,9 +1191,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
+						new StraightTrunkPlacer(6, 4, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LEAVES),
 						new PineFoliagePlacer(UniformIntDistribution.of(1), UniformIntDistribution.of(1), UniformIntDistribution.of(3, 1)),
-						new StraightTrunkPlacer(6, 4, 0),
 						new TwoLayersFeatureSize(2, 0, 2)
 					)
 					.ignoreVines()
@@ -1141,9 +1206,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
+						new StraightTrunkPlacer(4, 8, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LEAVES),
 						new BlobFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(0), 3),
-						new StraightTrunkPlacer(4, 8, 0),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
 					.decorators(ImmutableList.of(new CocoaBeansTreeDecorator(0.2F), TrunkVineTreeDecorator.INSTANCE, LeavesVineTreeDecorator.INSTANCE))
@@ -1157,13 +1222,12 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
+						new LargeOakTrunkPlacer(3, 11, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LEAVES),
 						new LargeOakFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(4), 4),
-						new LargeOakTrunkPlacer(3, 11, 0),
 						new TwoLayersFeatureSize(0, 0, 0, OptionalInt.of(4))
 					)
 					.ignoreVines()
-					.heightmap(Heightmap.Type.MOTION_BLOCKING)
 					.build()
 			)
 	);
@@ -1173,9 +1237,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
+						new StraightTrunkPlacer(4, 8, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LEAVES),
 						new BlobFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(0), 3),
-						new StraightTrunkPlacer(4, 8, 0),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
 					.ignoreVines()
@@ -1188,9 +1252,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
+						new MegaJungleTrunkPlacer(10, 2, 19),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LEAVES),
 						new JungleFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(0), 2),
-						new MegaJungleTrunkPlacer(10, 2, 19),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
 					.decorators(ImmutableList.of(TrunkVineTreeDecorator.INSTANCE, LeavesVineTreeDecorator.INSTANCE))
@@ -1203,9 +1267,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
+						new GiantTrunkPlacer(13, 2, 14),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LEAVES),
 						new MegaPineFoliagePlacer(UniformIntDistribution.of(0), UniformIntDistribution.of(0), UniformIntDistribution.of(13, 4)),
-						new GiantTrunkPlacer(13, 2, 14),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
 					.decorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(ConfiguredFeatures.States.PODZOL))))
@@ -1218,9 +1282,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LOG),
+						new GiantTrunkPlacer(13, 2, 14),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.SPRUCE_LEAVES),
 						new MegaPineFoliagePlacer(UniformIntDistribution.of(0), UniformIntDistribution.of(0), UniformIntDistribution.of(3, 4)),
-						new GiantTrunkPlacer(13, 2, 14),
 						new TwoLayersFeatureSize(1, 1, 2)
 					)
 					.decorators(ImmutableList.of(new AlterGroundTreeDecorator(new SimpleBlockStateProvider(ConfiguredFeatures.States.PODZOL))))
@@ -1233,9 +1297,9 @@ public class ConfiguredFeatures {
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LOG),
+						new StraightTrunkPlacer(5, 2, 6),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.BIRCH_LEAVES),
 						new BlobFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(0), 3),
-						new StraightTrunkPlacer(5, 2, 6),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
 					.ignoreVines()
@@ -1243,36 +1307,48 @@ public class ConfiguredFeatures {
 					.build()
 			)
 	);
-	public static final ConfiguredFeature<?, ?> SWAMP_TREE = register(
-		"swamp_tree",
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> SWAMP_OAK = register(
+		"swamp_oak",
 		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
+						new StraightTrunkPlacer(5, 3, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LEAVES),
 						new BlobFoliagePlacer(UniformIntDistribution.of(3), UniformIntDistribution.of(0), 3),
-						new StraightTrunkPlacer(5, 3, 0),
 						new TwoLayersFeatureSize(1, 0, 1)
 					)
-					.maxWaterDepth(1)
 					.decorators(ImmutableList.of(LeavesVineTreeDecorator.INSTANCE))
 					.build()
 			)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
 	);
-	public static final ConfiguredFeature<?, ?> JUNGLE_BUSH = register(
+	public static final ConfiguredFeature<TreeFeatureConfig, ?> JUNGLE_BUSH = register(
 		"jungle_bush",
 		Feature.TREE
 			.configure(
 				new TreeFeatureConfig.Builder(
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.JUNGLE_LOG),
+						new StraightTrunkPlacer(1, 0, 0),
 						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LEAVES),
 						new BushFoliagePlacer(UniformIntDistribution.of(2), UniformIntDistribution.of(1), 2),
-						new StraightTrunkPlacer(1, 0, 0),
 						new TwoLayersFeatureSize(0, 0, 0)
 					)
-					.heightmap(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES)
+					.build()
+			)
+	);
+	public static final ConfiguredFeature<?, ?> AZALEA_TREE = register(
+		"azalea_tree",
+		Feature.TREE
+			.configure(
+				new TreeFeatureConfig.Builder(
+						new SimpleBlockStateProvider(ConfiguredFeatures.States.OAK_LOG),
+						new BendingTrunkPlacer(4, 2, 0, 3, UniformIntDistribution.of(1, 1)),
+						new WeightedBlockStateProvider().addState(Blocks.AZALEA_LEAVES.getDefaultState(), 3).addState(Blocks.AZALEA_LEAVES_FLOWERS.getDefaultState(), 1),
+						new RandomSpreadFoliagePlacer(UniformIntDistribution.of(3), UniformIntDistribution.of(0), UniformIntDistribution.of(2), 50),
+						new TwoLayersFeatureSize(1, 0, 1)
+					)
+					.dirtProvider(new SimpleBlockStateProvider(Blocks.ROOTED_DIRT.getDefaultState()))
+					.forceDirt()
 					.build()
 			)
 	);
@@ -1303,14 +1379,6 @@ public class ConfiguredFeatures {
 	);
 	public static final ConfiguredFeature<TreeFeatureConfig, ?> FANCY_OAK_BEES_005 = register(
 		"fancy_oak_bees_005", Feature.TREE.configure(FANCY_OAK.getConfig().setTreeDecorators(ImmutableList.of(ConfiguredFeatures.Decorators.MORE_BEEHIVES_TREES)))
-	);
-	public static final ConfiguredFeature<?, ?> OAK_BADLANDS = register(
-		"oak_badlands",
-		OAK.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(5, 0.1F, 1)))
-	);
-	public static final ConfiguredFeature<?, ?> SPRUCE_SNOWY = register(
-		"spruce_snowy",
-		SPRUCE.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> FLOWER_WARM = register(
 		"flower_warm",
@@ -1457,89 +1525,103 @@ public class ConfiguredFeatures {
 		"forest_flower_trees",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(BIRCH_BEES_002.withChance(0.2F), FANCY_OAK_BEES_002.withChance(0.1F)), OAK_BEES_002))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(6, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TAIGA_VEGETATION = register(
 		"taiga_vegetation",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(PINE.withChance(0.33333334F)), SPRUCE))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
+	);
+	public static final ConfiguredFeature<?, ?> TREES_BADLANDS = register(
+		"trees_badlands",
+		OAK.decorate(ConfiguredFeatures.Decorators.field_29534).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(5, 0.1F, 1)))
+	);
+	public static final ConfiguredFeature<?, ?> TREES_SNOWY = register(
+		"trees_snowy",
+		SPRUCE.decorate(ConfiguredFeatures.Decorators.field_29534).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
+	);
+	public static final ConfiguredFeature<?, ?> TREES_SWAMP = register(
+		"trees_swamp",
+		SWAMP_OAK.decorate(ConfiguredFeatures.Decorators.field_29531)
+			.decorate(Decorator.HEIGHTMAP_WITH_WATER_THRESHOLD.configure(new WaterThresholdDecoratorConfig(1)))
+			.spreadHorizontally()
+			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_SHATTERED_SAVANNA = register(
 		"trees_shattered_savanna",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(ACACIA.withChance(0.8F)), OAK))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_SAVANNA = register(
 		"trees_savanna",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(ACACIA.withChance(0.8F)), OAK))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(1, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> BIRCH_TALL = register(
 		"birch_tall",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(SUPER_BIRCH_BEES_0002.withChance(0.5F)), BIRCH_BEES_0002))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_BIRCH = register(
 		"trees_birch",
-		BIRCH_BEES_0002.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
-			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
+		BIRCH_BEES_0002.decorate(ConfiguredFeatures.Decorators.field_29534).decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_MOUNTAIN_EDGE = register(
 		"trees_mountain_edge",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(SPRUCE.withChance(0.666F), FANCY_OAK.withChance(0.1F)), OAK))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(3, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_MOUNTAIN = register(
 		"trees_mountain",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(SPRUCE.withChance(0.666F), FANCY_OAK.withChance(0.1F)), OAK))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_WATER = register(
 		"trees_water",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK.withChance(0.1F)), OAK))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> BIRCH_OTHER = register(
 		"birch_other",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(BIRCH_BEES_0002.withChance(0.2F), FANCY_OAK_BEES_0002.withChance(0.1F)), OAK_BEES_0002))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> PLAIN_VEGETATION = register(
 		"plain_vegetation",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK_BEES_005.withChance(0.33333334F)), OAK_BEES_005))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(0, 0.05F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_JUNGLE_EDGE = register(
 		"trees_jungle_edge",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(FANCY_OAK.withChance(0.1F), JUNGLE_BUSH.withChance(0.5F)), JUNGLE_TREE))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(2, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_GIANT_SPRUCE = register(
 		"trees_giant_spruce",
 		Feature.RANDOM_SELECTOR
 			.configure(new RandomFeatureConfig(ImmutableList.of(MEGA_SPRUCE.withChance(0.33333334F), PINE.withChance(0.33333334F)), SPRUCE))
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_GIANT = register(
@@ -1548,7 +1630,7 @@ public class ConfiguredFeatures {
 			.configure(
 				new RandomFeatureConfig(ImmutableList.of(MEGA_SPRUCE.withChance(0.025641026F), MEGA_PINE.withChance(0.30769232F), PINE.withChance(0.33333334F)), SPRUCE)
 			)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(10, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> TREES_JUNGLE = register(
@@ -1557,7 +1639,7 @@ public class ConfiguredFeatures {
 			.configure(
 				new RandomFeatureConfig(ImmutableList.of(FANCY_OAK.withChance(0.1F), JUNGLE_BUSH.withChance(0.5F), MEGA_JUNGLE_TREE.withChance(0.33333334F)), JUNGLE_TREE)
 			)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(50, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> BAMBOO_VEGETATION = register(
@@ -1569,7 +1651,7 @@ public class ConfiguredFeatures {
 					Feature.RANDOM_PATCH.configure(ConfiguredFeatures.Configs.LUSH_GRASS_CONFIG)
 				)
 			)
-			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+			.decorate(ConfiguredFeatures.Decorators.field_29534)
 			.decorate(Decorator.COUNT_EXTRA.configure(new CountExtraDecoratorConfig(30, 0.1F, 1)))
 	);
 	public static final ConfiguredFeature<?, ?> MUSHROOM_FIELD_VEGETATION = register(
@@ -1577,6 +1659,232 @@ public class ConfiguredFeatures {
 		Feature.RANDOM_BOOLEAN_SELECTOR
 			.configure(new RandomBooleanFeatureConfig(() -> HUGE_RED_MUSHROOM, () -> HUGE_BROWN_MUSHROOM))
 			.decorate(ConfiguredFeatures.Decorators.SQUARE_HEIGHTMAP)
+	);
+	public static final ConfiguredFeature<?, ?> ROOTED_AZALEA_TREES = register(
+		"rooted_azalea_trees",
+		Feature.ROOT_SYSTEM
+			.configure(
+				new RootSystemFeatureConfig(
+					() -> AZALEA_TREE,
+					3,
+					3,
+					BlockTags.LUSH_GROUND_REPLACEABLE.getId(),
+					new SimpleBlockStateProvider(Blocks.ROOTED_DIRT.getDefaultState()),
+					20,
+					100,
+					3,
+					2,
+					new SimpleBlockStateProvider(Blocks.HANGING_ROOTS.getDefaultState()),
+					20
+				)
+			)
+			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
+			.range(ConfiguredFeatures.Decorators.field_29532)
+			.spreadHorizontally()
+			.applyChance(2)
+	);
+	private static final WeightedBlockStateProvider RANDOM_BERRIES_CAVE_VINES_BODY_PROVIDER = new WeightedBlockStateProvider()
+		.addState(Blocks.CAVE_VINES_BODY.getDefaultState(), 4)
+		.addState(Blocks.CAVE_VINES_BODY.getDefaultState().with(CaveVinesBodyBlock.BERRIES, Boolean.valueOf(true)), 1);
+	private static final RandomizedIntBlockStateProvider RANDOM_AGE_CAVE_VINES_HEAD_PROVIDER = new RandomizedIntBlockStateProvider(
+		new WeightedBlockStateProvider()
+			.addState(Blocks.CAVE_VINES_HEAD.getDefaultState(), 4)
+			.addState(Blocks.CAVE_VINES_HEAD.getDefaultState().with(CaveVinesBodyBlock.BERRIES, Boolean.valueOf(true)), 1),
+		CaveVinesHeadBlock.AGE,
+		UniformIntDistribution.of(17, 8)
+	);
+	public static final ConfiguredFeature<GrowingPlantFeatureConfig, ?> CAVE_VINE = register(
+		"cave_vine",
+		Feature.GROWING_PLANT
+			.configure(
+				new GrowingPlantFeatureConfig(
+					new WeightedList<UniformIntDistribution>()
+						.add(UniformIntDistribution.of(1, 19), 2)
+						.add(UniformIntDistribution.of(1, 2), 3)
+						.add(UniformIntDistribution.of(1, 6), 10),
+					Direction.DOWN,
+					RANDOM_BERRIES_CAVE_VINES_BODY_PROVIDER,
+					RANDOM_AGE_CAVE_VINES_HEAD_PROVIDER,
+					false
+				)
+			)
+	);
+	public static final ConfiguredFeature<GrowingPlantFeatureConfig, ?> CAVE_VINE_IN_MOSS = register(
+		"cave_vine_in_moss",
+		Feature.GROWING_PLANT
+			.configure(
+				new GrowingPlantFeatureConfig(
+					new WeightedList<UniformIntDistribution>().add(UniformIntDistribution.of(1, 3), 5).add(UniformIntDistribution.of(2, 6), 1),
+					Direction.DOWN,
+					RANDOM_BERRIES_CAVE_VINES_BODY_PROVIDER,
+					RANDOM_AGE_CAVE_VINES_HEAD_PROVIDER,
+					false
+				)
+			)
+	);
+	public static final ConfiguredFeature<?, ?> CAVE_VINES = register(
+		"cave_vines",
+		CAVE_VINE.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
+			.range(ConfiguredFeatures.Decorators.field_29532)
+			.spreadHorizontally()
+			.repeat(60)
+	);
+	public static final ConfiguredFeature<SimpleBlockFeatureConfig, ?> MOSS_VEGETATION = register(
+		"moss_vegetation",
+		Feature.SIMPLE_BLOCK
+			.configure(
+				new SimpleBlockFeatureConfig(
+					new WeightedBlockStateProvider()
+						.addState(Blocks.FLOWERING_AZALEA.getDefaultState(), 4)
+						.addState(Blocks.AZALEA.getDefaultState(), 7)
+						.addState(Blocks.MOSS_CARPET.getDefaultState(), 25)
+						.addState(Blocks.GRASS.getDefaultState(), 50)
+						.addState(Blocks.TALL_GRASS.getDefaultState(), 10)
+				)
+			)
+	);
+	public static final ConfiguredFeature<VegetationPatchFeatureConfig, ?> MOSS_PATCH = register(
+		"moss_patch",
+		Feature.VEGETATION_PATCH
+			.configure(
+				new VegetationPatchFeatureConfig(
+					BlockTags.LUSH_PLANTS_REPLACEABLE.getId(),
+					new SimpleBlockStateProvider(Blocks.MOSS_BLOCK.getDefaultState()),
+					() -> MOSS_VEGETATION,
+					VerticalSurfaceType.FLOOR,
+					UniformIntDistribution.of(1),
+					0.0F,
+					5,
+					0.8F,
+					UniformIntDistribution.of(4, 3),
+					0.3F
+				)
+			)
+	);
+	public static final ConfiguredFeature<VegetationPatchFeatureConfig, ?> MOSS_PATCH_BONEMEAL = register(
+		"moss_patch_bonemeal",
+		Feature.VEGETATION_PATCH
+			.configure(
+				new VegetationPatchFeatureConfig(
+					BlockTags.LUSH_PLANTS_REPLACEABLE.getId(),
+					new SimpleBlockStateProvider(Blocks.MOSS_BLOCK.getDefaultState()),
+					() -> MOSS_VEGETATION,
+					VerticalSurfaceType.FLOOR,
+					UniformIntDistribution.of(1),
+					0.0F,
+					5,
+					0.8F,
+					UniformIntDistribution.of(1, 2),
+					0.0F
+				)
+			)
+	);
+	public static final ConfiguredFeature<?, ?> LUSH_CAVES_VEGETATION = register(
+		"lush_caves_vegetation",
+		MOSS_PATCH.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.FLOOR, 12)))
+			.range(ConfiguredFeatures.Decorators.field_29532)
+			.spreadHorizontally()
+			.repeat(40)
+	);
+	public static final ConfiguredFeature<RandomFeatureConfig, ?> DRIPLEAF = register(
+		"dripleaf",
+		Feature.RANDOM_SELECTOR
+			.configure(
+				new RandomFeatureConfig(
+					ImmutableList.of(
+						new RandomFeatureEntry(
+							Feature.SIMPLE_BLOCK.configure(new SimpleBlockFeatureConfig(new SimpleBlockStateProvider(Blocks.SMALL_DRIPLEAF.getDefaultState()))), 0.5F
+						),
+						new RandomFeatureEntry(method_34666(Direction.EAST), 0.25F),
+						new RandomFeatureEntry(method_34666(Direction.SOUTH), 0.33333334F),
+						new RandomFeatureEntry(method_34666(Direction.WEST), 0.5F)
+					),
+					method_34666(Direction.NORTH)
+				)
+			)
+	);
+	public static final ConfiguredFeature<?, ?> CLAY_WITH_DRIPLEAVES = register(
+		"clay_with_dripleaves",
+		Feature.VEGETATION_PATCH
+			.configure(
+				new VegetationPatchFeatureConfig(
+					BlockTags.LUSH_GROUND_REPLACEABLE.getId(),
+					new SimpleBlockStateProvider(Blocks.CLAY.getDefaultState()),
+					() -> DRIPLEAF,
+					VerticalSurfaceType.FLOOR,
+					UniformIntDistribution.of(3),
+					0.8F,
+					2,
+					0.05F,
+					UniformIntDistribution.of(4, 3),
+					0.7F
+				)
+			)
+	);
+	public static final ConfiguredFeature<?, ?> CLAY_POOL_WITH_DRIPLEAVES = register(
+		"clay_pool_with_dripleaves",
+		Feature.WATERLOGGED_VEGETATION_PATCH
+			.configure(
+				new VegetationPatchFeatureConfig(
+					BlockTags.LUSH_GROUND_REPLACEABLE.getId(),
+					new SimpleBlockStateProvider(Blocks.CLAY.getDefaultState()),
+					() -> DRIPLEAF,
+					VerticalSurfaceType.FLOOR,
+					UniformIntDistribution.of(3),
+					0.8F,
+					5,
+					0.1F,
+					UniformIntDistribution.of(4, 3),
+					0.7F
+				)
+			)
+	);
+	public static final ConfiguredFeature<?, ?> LUSH_CAVES_CLAY = register(
+		"lush_caves_clay",
+		Feature.RANDOM_BOOLEAN_SELECTOR
+			.configure(new RandomBooleanFeatureConfig(() -> CLAY_WITH_DRIPLEAVES, () -> CLAY_POOL_WITH_DRIPLEAVES))
+			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.FLOOR, 12)))
+			.range(ConfiguredFeatures.Decorators.field_29532)
+			.spreadHorizontally()
+			.repeat(20)
+	);
+	public static final ConfiguredFeature<VegetationPatchFeatureConfig, ?> MOSS_PATCH_CEILING = register(
+		"moss_patch_ceiling",
+		Feature.VEGETATION_PATCH
+			.configure(
+				new VegetationPatchFeatureConfig(
+					BlockTags.LUSH_PLANTS_REPLACEABLE.getId(),
+					new SimpleBlockStateProvider(Blocks.MOSS_BLOCK.getDefaultState()),
+					() -> CAVE_VINE_IN_MOSS,
+					VerticalSurfaceType.CEILING,
+					UniformIntDistribution.of(1, 1),
+					0.0F,
+					5,
+					0.08F,
+					UniformIntDistribution.of(4, 3),
+					0.3F
+				)
+			)
+	);
+	public static final ConfiguredFeature<?, ?> LUSH_CAVES_CEILING_VEGETATION = register(
+		"lush_caves_ceiling_vegetation",
+		MOSS_PATCH_CEILING.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
+			.range(ConfiguredFeatures.Decorators.field_29532)
+			.spreadHorizontally()
+			.repeat(40)
+	);
+	public static final ConfiguredFeature<?, ?> SPORE_BLOSSOM = register(
+		"spore_blossom",
+		Feature.SIMPLE_BLOCK
+			.configure(new SimpleBlockFeatureConfig(new SimpleBlockStateProvider(ConfiguredFeatures.States.SPORE_BLOSSOM)))
+			.decorate(Decorator.CAVE_SURFACE.configure(new CaveSurfaceDecoratorConfig(VerticalSurfaceType.CEILING, 12)))
+			.range(ConfiguredFeatures.Decorators.field_29532)
+			.spreadHorizontally()
+			.repeat(8)
+	);
+	public static final ConfiguredFeature<?, ?> CLASSIC_VINES_CAVE_FEATURE = register(
+		"classic_vines_cave_feature",
+		Feature.VINES.configure(FeatureConfig.DEFAULT).range(ConfiguredFeatures.Decorators.field_29532).spreadHorizontally().repeat(127)
 	);
 	public static final ConfiguredFeature<?, ?> AMETHYST_GEODE = register(
 		"amethyst_geode",
@@ -1617,6 +1925,19 @@ public class ConfiguredFeatures {
 			.spreadHorizontally()
 			.applyChance(30)
 	);
+
+	private static final ConfiguredFeature<GrowingPlantFeatureConfig, ?> method_34666(Direction direction) {
+		return Feature.GROWING_PLANT
+			.configure(
+				new GrowingPlantFeatureConfig(
+					new WeightedList<UniformIntDistribution>().add(UniformIntDistribution.of(1, 4), 2).add(UniformIntDistribution.of(1), 1),
+					Direction.UP,
+					new SimpleBlockStateProvider(Blocks.BIG_DRIPLEAF_STEM.getDefaultState().with(Properties.HORIZONTAL_FACING, direction)),
+					new SimpleBlockStateProvider(Blocks.BIG_DRIPLEAF.getDefaultState().with(Properties.HORIZONTAL_FACING, direction)),
+					true
+				)
+			);
+	}
 
 	private static <FC extends FeatureConfig> ConfiguredFeature<FC, ?> register(String id, ConfiguredFeature<FC, ?> configuredFeature) {
 		return Registry.register(BuiltinRegistries.CONFIGURED_FEATURE, id, configuredFeature);
@@ -1704,20 +2025,31 @@ public class ConfiguredFeatures {
 		public static final BeehiveTreeDecorator VERY_RARE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.002F);
 		public static final BeehiveTreeDecorator REGULAR_BEEHIVES_TREES = new BeehiveTreeDecorator(0.02F);
 		public static final BeehiveTreeDecorator MORE_BEEHIVES_TREES = new BeehiveTreeDecorator(0.05F);
-		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP = Decorator.HEIGHTMAP.configure(DecoratorConfig.DEFAULT);
-		public static final ConfiguredDecorator<NopeDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.TOP_SOLID_HEIGHTMAP.configure(DecoratorConfig.DEFAULT);
-		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP_WORLD_SURFACE = Decorator.HEIGHTMAP_WORLD_SURFACE.configure(DecoratorConfig.DEFAULT);
-		public static final ConfiguredDecorator<NopeDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = Decorator.HEIGHTMAP_SPREAD_DOUBLE.configure(DecoratorConfig.DEFAULT);
+		public static final ConfiguredDecorator<HeightmapDecoratorConfig> HEIGHTMAP = Decorator.HEIGHTMAP
+			.configure(new HeightmapDecoratorConfig(Heightmap.Type.MOTION_BLOCKING));
+		public static final ConfiguredDecorator<HeightmapDecoratorConfig> TOP_SOLID_HEIGHTMAP = Decorator.HEIGHTMAP
+			.configure(new HeightmapDecoratorConfig(Heightmap.Type.OCEAN_FLOOR_WG));
+		public static final ConfiguredDecorator<HeightmapDecoratorConfig> HEIGHTMAP_WORLD_SURFACE = Decorator.HEIGHTMAP
+			.configure(new HeightmapDecoratorConfig(Heightmap.Type.WORLD_SURFACE_WG));
+		public static final ConfiguredDecorator<HeightmapDecoratorConfig> field_29531 = Decorator.HEIGHTMAP
+			.configure(new HeightmapDecoratorConfig(Heightmap.Type.OCEAN_FLOOR));
+		public static final ConfiguredDecorator<HeightmapDecoratorConfig> HEIGHTMAP_SPREAD_DOUBLE = Decorator.HEIGHTMAP_SPREAD_DOUBLE
+			.configure(new HeightmapDecoratorConfig(Heightmap.Type.MOTION_BLOCKING));
 		public static final RangeDecoratorConfig BOTTOM_TO_TOP = new RangeDecoratorConfig(YOffset.getBottom(), YOffset.getTop());
 		public static final RangeDecoratorConfig BOTTOM_TO_TOP_OFFSET_10 = new RangeDecoratorConfig(YOffset.aboveBottom(10), YOffset.belowTop(10));
 		public static final RangeDecoratorConfig BOTTOM_TO_TOP_OFFSET_8 = new RangeDecoratorConfig(YOffset.aboveBottom(8), YOffset.belowTop(8));
 		public static final RangeDecoratorConfig BOTTOM_TO_TOP_OFFSET_4 = new RangeDecoratorConfig(YOffset.aboveBottom(4), YOffset.belowTop(4));
+		public static final RangeDecoratorConfig field_29532 = new RangeDecoratorConfig(YOffset.getBottom(), YOffset.fixed(60));
 		public static final ConfiguredDecorator<?> FIRE = Decorator.RANGE.configure(BOTTOM_TO_TOP_OFFSET_4).spreadHorizontally().repeatRandomly(5);
 		public static final ConfiguredDecorator<?> SPREAD_32_ABOVE = Decorator.SPREAD_32_ABOVE.configure(NopeDecoratorConfig.INSTANCE);
+		public static final ConfiguredDecorator<?> field_29533 = field_29531.decorate(
+			Decorator.HEIGHTMAP_WITH_WATER_THRESHOLD.configure(new WaterThresholdDecoratorConfig(0))
+		);
+		public static final ConfiguredDecorator<?> field_29534 = field_29533.spreadHorizontally();
 		public static final ConfiguredDecorator<?> SQUARE_HEIGHTMAP = HEIGHTMAP.spreadHorizontally();
 		public static final ConfiguredDecorator<?> SQUARE_HEIGHTMAP_SPREAD_DOUBLE = HEIGHTMAP_SPREAD_DOUBLE.spreadHorizontally();
 		public static final ConfiguredDecorator<?> SQUARE_TOP_SOLID_HEIGHTMAP = TOP_SOLID_HEIGHTMAP.spreadHorizontally();
-		public static final ConfiguredDecorator<?> DARK_OAK_TREE_HEIGHTMAP = HEIGHTMAP.decorate(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT));
+		public static final ConfiguredDecorator<?> DARK_OAK_TREE_HEIGHTMAP = field_29533.decorate(Decorator.DARK_OAK_TREE.configure(DecoratorConfig.DEFAULT));
 	}
 
 	public static final class States {
@@ -1798,10 +2130,11 @@ public class ConfiguredFeatures {
 		protected static final BlockState DIAMOND_ORE = Blocks.DIAMOND_ORE.getDefaultState();
 		protected static final BlockState DEEPSLATE_DIAMOND_ORE = Blocks.DEEPSLATE_DIAMOND_ORE.getDefaultState();
 		protected static final BlockState LAPIS_ORE = Blocks.LAPIS_ORE.getDefaultState();
-		protected static final BlockState DEEPSLATE_LAPIS_ORE = Blocks.LAPIS_ORE.getDefaultState();
+		protected static final BlockState DEEPSLATE_LAPIS_ORE = Blocks.DEEPSLATE_LAPIS_ORE.getDefaultState();
 		protected static final BlockState STONE = Blocks.STONE.getDefaultState();
 		protected static final BlockState EMERALD_ORE = Blocks.EMERALD_ORE.getDefaultState();
 		protected static final BlockState INFESTED_STONE = Blocks.INFESTED_STONE.getDefaultState();
+		protected static final BlockState INFESTED_DEEPSLATE = Blocks.INFESTED_DEEPSLATE.getDefaultState();
 		protected static final BlockState SAND = Blocks.SAND.getDefaultState();
 		protected static final BlockState CLAY = Blocks.CLAY.getDefaultState();
 		protected static final BlockState MOSSY_COBBLESTONE = Blocks.MOSSY_COBBLESTONE.getDefaultState();
@@ -1823,5 +2156,6 @@ public class ConfiguredFeatures {
 		protected static final BlockState CALCITE = Blocks.CALCITE.getDefaultState();
 		protected static final BlockState SMOOTH_BASALT = Blocks.SMOOTH_BASALT.getDefaultState();
 		protected static final BlockState TUFF = Blocks.TUFF.getDefaultState();
+		protected static final BlockState SPORE_BLOSSOM = Blocks.SPORE_BLOSSOM.getDefaultState();
 	}
 }

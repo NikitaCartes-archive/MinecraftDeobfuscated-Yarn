@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
@@ -33,17 +34,21 @@ public class RecipeToast implements Toast {
 		if (this.recipes.isEmpty()) {
 			return Toast.Visibility.HIDE;
 		} else {
-			manager.getGame().getTextureManager().bindTexture(TEXTURE);
-			RenderSystem.color3f(1.0F, 1.0F, 1.0F);
+			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShaderTexture(0, TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F);
 			manager.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
 			manager.getGame().textRenderer.draw(matrices, TITLE, 30.0F, 7.0F, -11534256);
 			manager.getGame().textRenderer.draw(matrices, DESCRIPTION, 30.0F, 18.0F, -16777216);
 			Recipe<?> recipe = (Recipe<?>)this.recipes.get((int)(startTime / Math.max(1L, 5000L / (long)this.recipes.size()) % (long)this.recipes.size()));
 			ItemStack itemStack = recipe.getRecipeKindIcon();
-			RenderSystem.pushMatrix();
-			RenderSystem.scalef(0.6F, 0.6F, 1.0F);
+			MatrixStack matrixStack = RenderSystem.getModelViewStack();
+			matrixStack.push();
+			matrixStack.scale(0.6F, 0.6F, 1.0F);
+			RenderSystem.applyModelViewMatrix();
 			manager.getGame().getItemRenderer().renderInGui(itemStack, 3, 3);
-			RenderSystem.popMatrix();
+			matrixStack.pop();
+			RenderSystem.applyModelViewMatrix();
 			manager.getGame().getItemRenderer().renderInGui(recipe.getOutput(), 8, 8);
 			return startTime - this.startTime >= 5000L ? Toast.Visibility.HIDE : Toast.Visibility.SHOW;
 		}

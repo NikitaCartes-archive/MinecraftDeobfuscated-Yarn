@@ -334,7 +334,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private void beginTradeWith(PlayerEntity customer) {
-		this.prepareRecipesFor(customer);
+		this.prepareOffersFor(customer);
 		this.setCurrentCustomer(customer);
 		this.sendOffers(customer, this.getDisplayName(), this.getVillagerData().getLevel());
 	}
@@ -351,10 +351,13 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	@Override
 	protected void resetCustomer() {
 		super.resetCustomer();
-		this.clearCurrentBonus();
+		this.clearSpecialPrices();
 	}
 
-	private void clearCurrentBonus() {
+	/**
+	 * Resets the special price of all the trade offers of this villager.
+	 */
+	private void clearSpecialPrices() {
 		for (TradeOffer tradeOffer : this.getOffers()) {
 			tradeOffer.clearSpecialPrice();
 		}
@@ -366,7 +369,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	public void restock() {
-		this.updatePricesOnDemand();
+		this.updateDemandBonus();
 
 		for (TradeOffer tradeOffer : this.getOffers()) {
 			tradeOffer.resetUses();
@@ -376,9 +379,14 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		this.restocksToday++;
 	}
 
-	private boolean needRestock() {
+	/**
+	 * Returns whether this villager needs restock.
+	 * 
+	 * <p>Checks if at least one of its trade offers has been used.
+	 */
+	private boolean needsRestock() {
 		for (TradeOffer tradeOffer : this.getOffers()) {
-			if (tradeOffer.hasAvailableUses()) {
+			if (tradeOffer.hasBeenUsed()) {
 				return true;
 			}
 		}
@@ -407,10 +415,10 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 			this.clearDailyRestockCount();
 		}
 
-		return this.canRestock() && this.needRestock();
+		return this.canRestock() && this.needsRestock();
 	}
 
-	private void restockAndUpdatePricesOnDemand() {
+	private void restockAndUpdateDemandBonus() {
 		int i = 2 - this.restocksToday;
 		if (i > 0) {
 			for (TradeOffer tradeOffer : this.getOffers()) {
@@ -419,17 +427,20 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		}
 
 		for (int j = 0; j < i; j++) {
-			this.updatePricesOnDemand();
+			this.updateDemandBonus();
 		}
 	}
 
-	private void updatePricesOnDemand() {
+	/**
+	 * Updates the demand bonus of all the trade offers of this villager.
+	 */
+	private void updateDemandBonus() {
 		for (TradeOffer tradeOffer : this.getOffers()) {
-			tradeOffer.updatePriceOnDemand();
+			tradeOffer.updateDemandBonus();
 		}
 	}
 
-	private void prepareRecipesFor(PlayerEntity player) {
+	private void prepareOffersFor(PlayerEntity player) {
 		int i = this.getReputation(player);
 		if (i != 0) {
 			for (TradeOffer tradeOffer : this.getOffers()) {
@@ -848,10 +859,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		if (this.canSummonGolem(time)) {
 			Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
 			List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
-			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream()
-				.filter(villagerEntity -> villagerEntity.canSummonGolem(time))
-				.limit(5L)
-				.collect(Collectors.toList());
+			List<VillagerEntity> list2 = (List<VillagerEntity>)list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
 			if (list2.size() >= i) {
 				IronGolemEntity ironGolemEntity = this.spawnIronGolem(world);
 				if (ironGolemEntity != null) {
@@ -862,7 +870,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	public boolean canSummonGolem(long time) {
-		return !this.hasRecentlyWorkedAndSlept(this.world.getTime()) ? false : !this.brain.hasMemoryModule(MemoryModuleType.GOLEM_DETECTED_RECENTLY);
+		return !this.hasRecentlySlept(this.world.getTime()) ? false : !this.brain.hasMemoryModule(MemoryModuleType.GOLEM_DETECTED_RECENTLY);
 	}
 
 	@Nullable
@@ -932,7 +940,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 	}
 
 	private void clearDailyRestockCount() {
-		this.restockAndUpdatePricesOnDemand();
+		this.restockAndUpdateDemandBonus();
 		this.restocksToday = 0;
 	}
 
@@ -964,7 +972,7 @@ public class VillagerEntity extends MerchantEntity implements InteractionObserve
 		this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
 	}
 
-	private boolean hasRecentlyWorkedAndSlept(long worldTime) {
+	private boolean hasRecentlySlept(long worldTime) {
 		Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
 		return optional.isPresent() ? worldTime - (Long)optional.get() < 24000L : false;
 	}

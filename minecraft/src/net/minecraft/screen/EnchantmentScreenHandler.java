@@ -2,7 +2,6 @@ package net.minecraft.screen;
 
 import java.util.List;
 import java.util.Random;
-import java.util.function.BiConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.advancement.criterion.Criteria;
@@ -22,9 +21,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 
 public class EnchantmentScreenHandler extends ScreenHandler {
 	private final Inventory inventory = new SimpleInventory(2) {
@@ -93,7 +90,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 		if (inventory == this.inventory) {
 			ItemStack itemStack = inventory.getStack(0);
 			if (!itemStack.isEmpty() && itemStack.isEnchantable()) {
-				this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+				this.context.run((world, blockPos) -> {
 					int ix = 0;
 
 					for (int j = -1; j <= 1; j++) {
@@ -151,7 +148,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					}
 
 					this.sendContentUpdates();
-				}));
+				});
 			} else {
 				for (int i = 0; i < 3; i++) {
 					this.enchantmentPower[i] = 0;
@@ -174,7 +171,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 			|| (player.experienceLevel < i || player.experienceLevel < this.enchantmentPower[id]) && !player.getAbilities().creativeMode) {
 			return false;
 		} else {
-			this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> {
+			this.context.run((world, blockPos) -> {
 				ItemStack itemStack3 = itemStack;
 				List<EnchantmentLevelEntry> list = this.generateEnchantments(itemStack, id, this.enchantmentPower[id]);
 				if (!list.isEmpty()) {
@@ -216,7 +213,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 					this.onContentChanged(this.inventory);
 					world.playSound(null, blockPos, SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.BLOCKS, 1.0F, world.random.nextFloat() * 0.1F + 0.9F);
 				}
-			}));
+			});
 			return true;
 		}
 	}
@@ -245,7 +242,7 @@ public class EnchantmentScreenHandler extends ScreenHandler {
 	@Override
 	public void close(PlayerEntity player) {
 		super.close(player);
-		this.context.run((BiConsumer<World, BlockPos>)((world, blockPos) -> this.dropInventory(player, this.inventory)));
+		this.context.run((world, blockPos) -> this.dropInventory(player, this.inventory));
 	}
 
 	@Override

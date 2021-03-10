@@ -14,7 +14,9 @@ import net.minecraft.world.gen.feature.TreeFeatureConfig;
 import net.minecraft.world.gen.foliage.FoliagePlacer;
 
 public class ForkingTrunkPlacer extends TrunkPlacer {
-	public static final Codec<ForkingTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> method_28904(instance).apply(instance, ForkingTrunkPlacer::new));
+	public static final Codec<ForkingTrunkPlacer> CODEC = RecordCodecBuilder.create(
+		instance -> fillTrunkPlacerFields(instance).apply(instance, ForkingTrunkPlacer::new)
+	);
 
 	public ForkingTrunkPlacer(int i, int j, int k) {
 		super(i, j, k);
@@ -29,7 +31,7 @@ public class ForkingTrunkPlacer extends TrunkPlacer {
 	public List<FoliagePlacer.TreeNode> generate(
 		ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config
 	) {
-		setToDirt(world, pos.down());
+		setToDirt(world, random, pos.down(), config);
 		List<FoliagePlacer.TreeNode> list = Lists.<FoliagePlacer.TreeNode>newArrayList();
 		Direction direction = Direction.Type.HORIZONTAL.random(random);
 		int i = trunkHeight - random.nextInt(4) - 1;

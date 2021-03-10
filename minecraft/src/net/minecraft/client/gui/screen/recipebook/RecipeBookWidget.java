@@ -19,6 +19,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.SearchManager;
@@ -232,10 +233,11 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 	@Override
 	public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
 		if (this.isOpen()) {
-			RenderSystem.pushMatrix();
-			RenderSystem.translatef(0.0F, 0.0F, 100.0F);
-			this.client.getTextureManager().bindTexture(TEXTURE);
-			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+			matrices.push();
+			matrices.translate(0.0, 0.0, 100.0);
+			RenderSystem.setShader(GameRenderer::method_34542);
+			RenderSystem.setShaderTexture(0, TEXTURE);
+			RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 			int i = (this.parentWidth - 147) / 2 - this.leftOffset;
 			int j = (this.parentHeight - 166) / 2;
 			this.drawTexture(matrices, i, j, 1, 1, 147, 166);
@@ -251,7 +253,7 @@ public class RecipeBookWidget extends DrawableHelper implements Drawable, Elemen
 
 			this.toggleCraftableButton.render(matrices, mouseX, mouseY, delta);
 			this.recipesArea.draw(matrices, i, j, mouseX, mouseY, delta);
-			RenderSystem.popMatrix();
+			matrices.pop();
 		}
 	}
 

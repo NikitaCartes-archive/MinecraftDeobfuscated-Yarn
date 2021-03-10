@@ -42,7 +42,7 @@ public class BushFoliagePlacer extends BlobFoliagePlacer {
 	}
 
 	@Override
-	protected boolean isInvalidForLeaves(Random random, int baseHeight, int dx, int y, int dz, boolean giantTrunk) {
-		return baseHeight == dz && y == dz && random.nextInt(2) == 0;
+	protected boolean isInvalidForLeaves(Random random, int dx, int y, int dz, int radius, boolean giantTrunk) {
+		return dx == radius && dz == radius && random.nextInt(2) == 0;
 	}
 }

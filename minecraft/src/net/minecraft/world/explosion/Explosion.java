@@ -285,7 +285,7 @@ public class Explosion {
 							builder.parameter(LootContextParameters.EXPLOSION_RADIUS, this.power);
 						}
 
-						blockState.getDroppedStacks(builder).forEach(itemStack -> method_24023(objectArrayList, itemStack, blockPos2));
+						blockState.getDroppedStacks(builder).forEach(stack -> tryMergeStack(objectArrayList, stack, blockPos2));
 					}
 
 					this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
@@ -310,22 +310,22 @@ public class Explosion {
 		}
 	}
 
-	private static void method_24023(ObjectArrayList<Pair<ItemStack, BlockPos>> objectArrayList, ItemStack itemStack, BlockPos blockPos) {
-		int i = objectArrayList.size();
+	private static void tryMergeStack(ObjectArrayList<Pair<ItemStack, BlockPos>> stacks, ItemStack stack, BlockPos pos) {
+		int i = stacks.size();
 
 		for (int j = 0; j < i; j++) {
-			Pair<ItemStack, BlockPos> pair = objectArrayList.get(j);
-			ItemStack itemStack2 = pair.getFirst();
-			if (ItemEntity.canMerge(itemStack2, itemStack)) {
-				ItemStack itemStack3 = ItemEntity.merge(itemStack2, itemStack, 16);
-				objectArrayList.set(j, Pair.of(itemStack3, pair.getSecond()));
-				if (itemStack.isEmpty()) {
+			Pair<ItemStack, BlockPos> pair = stacks.get(j);
+			ItemStack itemStack = pair.getFirst();
+			if (ItemEntity.canMerge(itemStack, stack)) {
+				ItemStack itemStack2 = ItemEntity.merge(itemStack, stack, 16);
+				stacks.set(j, Pair.of(itemStack2, pair.getSecond()));
+				if (stack.isEmpty()) {
 					return;
 				}
 			}
 		}
 
-		objectArrayList.add(Pair.of(itemStack, blockPos));
+		stacks.add(Pair.of(stack, pos));
 	}
 
 	public DamageSource getDamageSource() {

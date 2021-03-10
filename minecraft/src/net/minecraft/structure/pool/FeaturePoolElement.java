@@ -17,6 +17,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -47,8 +48,8 @@ public class FeaturePoolElement extends StructurePoolElement {
 		return compoundTag;
 	}
 
-	public BlockPos getStart(StructureManager structureManager, BlockRotation rotation) {
-		return BlockPos.ORIGIN;
+	public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {
+		return Vec3i.ZERO;
 	}
 
 	@Override
@@ -64,8 +65,8 @@ public class FeaturePoolElement extends StructurePoolElement {
 
 	@Override
 	public BlockBox getBoundingBox(StructureManager structureManager, BlockPos pos, BlockRotation rotation) {
-		BlockPos blockPos = this.getStart(structureManager, rotation);
-		return new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + blockPos.getX(), pos.getY() + blockPos.getY(), pos.getZ() + blockPos.getZ());
+		Vec3i vec3i = this.getStart(structureManager, rotation);
+		return new BlockBox(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + vec3i.getX(), pos.getY() + vec3i.getY(), pos.getZ() + vec3i.getZ());
 	}
 
 	@Override

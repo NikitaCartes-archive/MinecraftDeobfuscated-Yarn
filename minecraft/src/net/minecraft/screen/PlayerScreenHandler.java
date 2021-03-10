@@ -113,7 +113,7 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 
 	@Override
 	public void onContentChanged(Inventory inventory) {
-		CraftingScreenHandler.updateResult(this.syncId, this.owner.world, this.owner, this.craftingInput, this.craftingResult);
+		CraftingScreenHandler.updateResult(this, this.owner.world, this.owner, this.craftingInput, this.craftingResult);
 	}
 
 	@Override
@@ -183,9 +183,9 @@ public class PlayerScreenHandler extends AbstractRecipeScreenHandler<CraftingInv
 				return ItemStack.EMPTY;
 			}
 
-			ItemStack itemStack3 = slot.onTakeItem(player, itemStack2);
+			slot.onTakeItem(player, itemStack2);
 			if (index == 0) {
-				player.dropItem(itemStack3, false);
+				player.dropItem(itemStack2, false);
 			}
 		}
 

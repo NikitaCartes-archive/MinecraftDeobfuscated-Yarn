@@ -171,6 +171,7 @@ public class ShaderEffect implements AutoCloseable {
 								IOUtils.closeQuietly(resource);
 							}
 
+							RenderSystem.setShaderTexture(0, identifier);
 							textureManager.bindTexture(identifier);
 							AbstractTexture abstractTexture = textureManager.getTexture(identifier);
 							int j = JsonHelper.getInt(jsonObject2, "width");
@@ -292,7 +293,7 @@ public class ShaderEffect implements AutoCloseable {
 	}
 
 	private void setupProjectionMatrix() {
-		this.projectionMatrix = Matrix4f.projectionMatrix((float)this.mainTarget.textureWidth, (float)this.mainTarget.textureHeight, 0.1F, 1000.0F);
+		this.projectionMatrix = Matrix4f.method_34239(0.0F, (float)this.mainTarget.textureWidth, (float)this.mainTarget.textureHeight, 0.0F, 0.1F, 1000.0F);
 	}
 
 	public void setupDimensions(int targetsWidth, int targetsHeight) {

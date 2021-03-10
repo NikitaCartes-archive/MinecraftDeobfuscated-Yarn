@@ -36,8 +36,7 @@ public class GlProgramManager {
 
 	public static void linkProgram(GlProgram glProgram) {
 		RenderSystem.assertThread(RenderSystem::isOnRenderThread);
-		glProgram.getFragmentShader().attachTo(glProgram);
-		glProgram.getVertexShader().attachTo(glProgram);
+		glProgram.method_34418();
 		GlStateManager.linkProgram(glProgram.getProgramRef());
 		int i = GlStateManager.getProgram(glProgram.getProgramRef(), 35714);
 		if (i == 0) {

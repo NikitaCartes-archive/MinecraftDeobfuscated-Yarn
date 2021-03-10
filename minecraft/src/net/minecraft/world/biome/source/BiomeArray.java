@@ -22,19 +22,19 @@ public class BiomeArray implements BiomeAccess.Storage {
 	private final int field_28126;
 	private final int field_28127;
 
-	protected BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView heightLimitView, Biome[] biomes) {
+	protected BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView world, Biome[] data) {
 		this.field_25831 = indexedIterable;
-		this.data = biomes;
-		this.field_28126 = BiomeCoords.fromBlock(heightLimitView.getBottomY());
-		this.field_28127 = BiomeCoords.fromBlock(heightLimitView.getHeight()) - 1;
+		this.data = data;
+		this.field_28126 = BiomeCoords.fromBlock(world.getBottomY());
+		this.field_28127 = BiomeCoords.fromBlock(world.getHeight()) - 1;
 	}
 
 	@Environment(EnvType.CLIENT)
-	public BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView heightLimitView, int[] is) {
-		this(indexedIterable, heightLimitView, new Biome[is.length]);
+	public BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView world, int[] ids) {
+		this(indexedIterable, world, new Biome[ids.length]);
 
 		for (int i = 0; i < this.data.length; i++) {
-			int j = is[i];
+			int j = ids[i];
 			Biome biome = indexedIterable.get(j);
 			if (biome == null) {
 				LOGGER.warn("Received invalid biome id: {}", j);
@@ -45,18 +45,18 @@ public class BiomeArray implements BiomeAccess.Storage {
 		}
 	}
 
-	public BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView heightLimitView, ChunkPos chunkPos, BiomeSource biomeSource) {
-		this(indexedIterable, heightLimitView, chunkPos, biomeSource, null);
+	public BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView world, ChunkPos chunkPos, BiomeSource biomeSource) {
+		this(indexedIterable, world, chunkPos, biomeSource, null);
 	}
 
-	public BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView heightLimitView, ChunkPos chunkPos, BiomeSource biomeSource, @Nullable int[] is) {
-		this(indexedIterable, heightLimitView, new Biome[(1 << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT) * method_32915(heightLimitView.getHeight(), 4)]);
+	public BiomeArray(IndexedIterable<Biome> indexedIterable, HeightLimitView world, ChunkPos chunkPos, BiomeSource biomeSource, @Nullable int[] ids) {
+		this(indexedIterable, world, new Biome[(1 << HORIZONTAL_SECTION_COUNT + HORIZONTAL_SECTION_COUNT) * method_32915(world.getHeight(), 4)]);
 		int i = BiomeCoords.fromBlock(chunkPos.getStartX());
 		int j = this.field_28126;
 		int k = BiomeCoords.fromBlock(chunkPos.getStartZ());
-		if (is != null) {
-			for (int l = 0; l < is.length; l++) {
-				this.data[l] = indexedIterable.get(is[l]);
+		if (ids != null) {
+			for (int l = 0; l < ids.length; l++) {
+				this.data[l] = indexedIterable.get(ids[l]);
 				if (this.data[l] == null) {
 					this.data[l] = method_32916(biomeSource, i, j, k, l);
 				}

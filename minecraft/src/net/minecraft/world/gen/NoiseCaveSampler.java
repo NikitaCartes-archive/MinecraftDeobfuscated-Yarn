@@ -20,6 +20,7 @@ public class NoiseCaveSampler {
 	private final DoublePerlinNoiseSampler offsetNoise;
 	private final DoublePerlinNoiseSampler offsetScaleNoise;
 	private final DoublePerlinNoiseSampler field_28842;
+	private final DoublePerlinNoiseSampler field_29226;
 
 	public NoiseCaveSampler(WorldGenRandom random, int minY) {
 		this.minY = minY;
@@ -38,14 +39,17 @@ public class NoiseCaveSampler {
 		this.offsetScaleNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0);
 		this.field_28842 = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0, 1.0, 1.0);
 		this.terrainAdditionNoise = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -8, 1.0);
+		this.field_29226 = DoublePerlinNoiseSampler.create(new SimpleRandom(random.nextLong()), -6, 1.0, 1.0, 0.0, 1.0, 0.0, 1.0, 1.0);
 	}
 
-	public double sample(int x, int y, int z, double noise, double offset) {
-		boolean bl = offset >= 375.0;
+	public double sample(int x, int y, int z, double noise) {
+		boolean bl = noise < 375.0;
 		double d = this.getTunnelOffsetNoise(x, y, z);
 		double e = this.getTunnelNoise(x, y, z);
 		if (bl) {
-			double f = noise / 128.0;
+			return Math.min(noise, (e + d) * 128.0 * 64.0);
+		} else {
+			double f = this.field_29226.sample((double)x, (double)((float)y / 2.0F), (double)z);
 			double g = MathHelper.clamp(f + 0.25, -1.0, 1.0);
 			double h = this.getTerrainAdditionNoise(x, y, z);
 			double i = this.getCaveNoise(x, y, z);
@@ -53,8 +57,6 @@ public class NoiseCaveSampler {
 			double k = Math.min(j, Math.min(e, i) + d);
 			double l = Math.max(k, this.getPillarNoise(x, y, z));
 			return 128.0 * MathHelper.clamp(l, -1.0, 1.0);
-		} else {
-			return Math.min(offset, (e + d) * 128.0);
 		}
 	}
 
