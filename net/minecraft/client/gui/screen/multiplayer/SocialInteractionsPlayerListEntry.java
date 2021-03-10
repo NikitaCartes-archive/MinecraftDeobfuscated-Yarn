@@ -119,7 +119,7 @@ extends ElementListWidget.Entry<SocialInteractionsPlayerListEntry> {
             l = y + (entryHeight - (this.client.textRenderer.fontHeight + this.client.textRenderer.fontHeight)) / 2;
             this.client.textRenderer.draw(matrices, text, (float)k, (float)(l + 12), LIGHT_GRAY_COLOR);
         }
-        this.client.getTextureManager().bindTexture(this.skinTexture.get());
+        RenderSystem.setShaderTexture(0, this.skinTexture.get());
         DrawableHelper.drawTexture(matrices, i, j, 24, 24, 8.0f, 8.0f, 8, 8, 64, 64);
         RenderSystem.enableBlend();
         DrawableHelper.drawTexture(matrices, i, j, 24, 24, 40.0f, 8.0f, 8, 8, 64, 64);

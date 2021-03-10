@@ -34,7 +34,6 @@ public class ClearCommand {
             i += serverPlayerEntity.getInventory().remove(item, maxCount, serverPlayerEntity.playerScreenHandler.method_29281());
             serverPlayerEntity.currentScreenHandler.sendContentUpdates();
             serverPlayerEntity.playerScreenHandler.onContentChanged(serverPlayerEntity.getInventory());
-            serverPlayerEntity.updateCursorStack();
         }
         if (i == 0) {
             if (targets.size() == 1) {

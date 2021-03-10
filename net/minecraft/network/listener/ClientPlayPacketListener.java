@@ -18,7 +18,6 @@ import net.minecraft.network.packet.s2c.play.ClearTitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandTreeS2CPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.CooldownUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CraftFailedResponseS2CPacket;
 import net.minecraft.network.packet.s2c.play.CustomPayloadS2CPacket;
@@ -149,8 +148,6 @@ extends PacketListener {
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket var1);
 
     public void onMapUpdate(MapUpdateS2CPacket var1);
-
-    public void onConfirmScreenAction(ConfirmScreenActionS2CPacket var1);
 
     public void onCloseScreen(CloseScreenS2CPacket var1);
 

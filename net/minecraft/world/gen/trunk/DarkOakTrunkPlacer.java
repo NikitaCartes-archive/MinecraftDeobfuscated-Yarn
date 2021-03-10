@@ -22,7 +22,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public class DarkOakTrunkPlacer
 extends TrunkPlacer {
-    public static final Codec<DarkOakTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> DarkOakTrunkPlacer.method_28904(instance).apply(instance, DarkOakTrunkPlacer::new));
+    public static final Codec<DarkOakTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> DarkOakTrunkPlacer.fillTrunkPlacerFields(instance).apply(instance, DarkOakTrunkPlacer::new));
 
     public DarkOakTrunkPlacer(int i, int j, int k) {
         super(i, j, k);
@@ -39,10 +39,10 @@ extends TrunkPlacer {
         int q;
         ArrayList<FoliagePlacer.TreeNode> list = Lists.newArrayList();
         BlockPos blockPos = pos.down();
-        DarkOakTrunkPlacer.setToDirt(world, blockPos);
-        DarkOakTrunkPlacer.setToDirt(world, blockPos.east());
-        DarkOakTrunkPlacer.setToDirt(world, blockPos.south());
-        DarkOakTrunkPlacer.setToDirt(world, blockPos.south().east());
+        DarkOakTrunkPlacer.setToDirt(world, random, blockPos, config);
+        DarkOakTrunkPlacer.setToDirt(world, random, blockPos.east(), config);
+        DarkOakTrunkPlacer.setToDirt(world, random, blockPos.south(), config);
+        DarkOakTrunkPlacer.setToDirt(world, random, blockPos.south().east(), config);
         Direction direction = Direction.Type.HORIZONTAL.random(random);
         int i = trunkHeight - random.nextInt(4);
         int j = 2 - random.nextInt(3);

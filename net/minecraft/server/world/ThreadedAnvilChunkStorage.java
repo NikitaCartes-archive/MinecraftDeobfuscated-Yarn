@@ -473,7 +473,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
     }
 
     private byte method_27053(ChunkPos chunkPos, ChunkStatus.ChunkType chunkType) {
-        return this.chunkToType.put(chunkPos.toLong(), chunkType == ChunkStatus.ChunkType.field_12808 ? (byte)-1 : 1);
+        return this.chunkToType.put(chunkPos.toLong(), chunkType == ChunkStatus.ChunkType.PROTOCHUNK ? (byte)-1 : 1);
     }
 
     private CompletableFuture<Either<Chunk, ChunkHolder.Unloaded>> upgradeChunk(ChunkHolder holder, ChunkStatus requiredStatus) {
@@ -537,7 +537,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
                 worldChunk2.loadToWorld();
                 if (this.loadedChunks.add(chunkPos.toLong())) {
                     worldChunk2.setLoadedToWorld(true);
-                    worldChunk2.updateAllBlockEntityTickers();
+                    worldChunk2.updateAllBlockEntities();
                 }
                 return worldChunk2;
             });
@@ -581,7 +581,7 @@ implements ChunkHolder.PlayersWatchingChunkProvider {
         ChunkPos chunkPos = chunk.getPos();
         try {
             ChunkStatus chunkStatus = chunk.getStatus();
-            if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.field_12807) {
+            if (chunkStatus.getChunkType() != ChunkStatus.ChunkType.LEVELCHUNK) {
                 if (this.method_27055(chunkPos)) {
                     return false;
                 }

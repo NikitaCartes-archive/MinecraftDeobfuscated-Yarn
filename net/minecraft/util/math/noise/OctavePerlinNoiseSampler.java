@@ -11,6 +11,7 @@ import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntRBTreeSet;
 import it.unimi.dsi.fastutil.ints.IntSortedSet;
 import java.util.List;
+import java.util.function.LongFunction;
 import java.util.stream.IntStream;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.noise.NoiseSampler;
@@ -58,14 +59,22 @@ implements NoiseSampler {
     }
 
     private OctavePerlinNoiseSampler(WorldGenRandom random, IntSortedSet octaves) {
-        this(random, OctavePerlinNoiseSampler.calculateAmplitudes(octaves));
+        this(random, octaves, ChunkRandom::new);
     }
 
-    private OctavePerlinNoiseSampler(WorldGenRandom random, Pair<Integer, DoubleList> offsetAndAmplitudes) {
+    private OctavePerlinNoiseSampler(WorldGenRandom worldGenRandom, IntSortedSet intSortedSet, LongFunction<WorldGenRandom> longFunction) {
+        this(worldGenRandom, OctavePerlinNoiseSampler.calculateAmplitudes(intSortedSet), longFunction);
+    }
+
+    protected OctavePerlinNoiseSampler(WorldGenRandom random, Pair<Integer, DoubleList> offsetAndAmplitudes) {
+        this(random, offsetAndAmplitudes, ChunkRandom::new);
+    }
+
+    protected OctavePerlinNoiseSampler(WorldGenRandom worldGenRandom, Pair<Integer, DoubleList> pair, LongFunction<WorldGenRandom> longFunction) {
         double d;
-        int i = offsetAndAmplitudes.getFirst();
-        this.amplitudes = offsetAndAmplitudes.getSecond();
-        PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(random);
+        int i = pair.getFirst();
+        this.amplitudes = pair.getSecond();
+        PerlinNoiseSampler perlinNoiseSampler = new PerlinNoiseSampler(worldGenRandom);
         int j = this.amplitudes.size();
         int k = -i;
         this.octaveSamplers = new PerlinNoiseSampler[j];
@@ -76,32 +85,23 @@ implements NoiseSampler {
             if (l < j) {
                 double e = this.amplitudes.getDouble(l);
                 if (e != 0.0) {
-                    this.octaveSamplers[l] = new PerlinNoiseSampler(random);
+                    this.octaveSamplers[l] = new PerlinNoiseSampler(worldGenRandom);
                     continue;
                 }
-                random.skip(262);
+                OctavePerlinNoiseSampler.method_34401(worldGenRandom);
                 continue;
             }
-            random.skip(262);
+            OctavePerlinNoiseSampler.method_34401(worldGenRandom);
         }
         if (k < j - 1) {
-            long m = (long)(perlinNoiseSampler.sample(0.0, 0.0, 0.0) * 9.223372036854776E18);
-            ChunkRandom worldGenRandom = new ChunkRandom(m);
-            for (int n = k + 1; n < j; ++n) {
-                if (n >= 0) {
-                    double f = this.amplitudes.getDouble(n);
-                    if (f != 0.0) {
-                        this.octaveSamplers[n] = new PerlinNoiseSampler(worldGenRandom);
-                        continue;
-                    }
-                    worldGenRandom.skip(262);
-                    continue;
-                }
-                worldGenRandom.skip(262);
-            }
+            throw new IllegalArgumentException("Positive octaves are temporarily disabled");
         }
         this.lacunarity = Math.pow(2.0, -k);
         this.persistence = Math.pow(2.0, j - 1) / (Math.pow(2.0, j) - 1.0);
+    }
+
+    private static void method_34401(WorldGenRandom worldGenRandom) {
+        worldGenRandom.skip(262);
     }
 
     public double sample(double x, double y, double z) {
@@ -116,7 +116,8 @@ implements NoiseSampler {
         for (int i = 0; i < this.octaveSamplers.length; ++i) {
             PerlinNoiseSampler perlinNoiseSampler = this.octaveSamplers[i];
             if (perlinNoiseSampler != null) {
-                d += this.amplitudes.getDouble(i) * perlinNoiseSampler.sample(OctavePerlinNoiseSampler.maintainPrecision(x * e), useOrigin ? -perlinNoiseSampler.originY : OctavePerlinNoiseSampler.maintainPrecision(y * e), OctavePerlinNoiseSampler.maintainPrecision(z * e), yScale * e, yMax * e) * f;
+                double g = perlinNoiseSampler.sample(OctavePerlinNoiseSampler.maintainPrecision(x * e), useOrigin ? -perlinNoiseSampler.originY : OctavePerlinNoiseSampler.maintainPrecision(y * e), OctavePerlinNoiseSampler.maintainPrecision(z * e), yScale * e, yMax * e);
+                d += this.amplitudes.getDouble(i) * g * f;
             }
             e *= 2.0;
             f /= 2.0;

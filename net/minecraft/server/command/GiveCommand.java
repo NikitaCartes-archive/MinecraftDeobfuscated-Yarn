@@ -28,13 +28,20 @@ public class GiveCommand {
     }
 
     private static int execute(ServerCommandSource source, ItemStackArgument item, Collection<ServerPlayerEntity> targets, int count) throws CommandSyntaxException {
+        int i = item.getItem().getMaxCount();
+        int j = i * 100;
+        if (count > j) {
+            String string = item.getItem().getTranslationKey();
+            source.sendError(new TranslatableText("commands.give.failed.toomanyitems", j, string));
+            return 0;
+        }
         for (ServerPlayerEntity serverPlayerEntity : targets) {
-            int i = count;
-            while (i > 0) {
+            int k = count;
+            while (k > 0) {
                 ItemEntity itemEntity;
-                int j = Math.min(item.getItem().getMaxCount(), i);
-                i -= j;
-                ItemStack itemStack = item.createStack(j, false);
+                int l = Math.min(i, k);
+                k -= l;
+                ItemStack itemStack = item.createStack(l, false);
                 boolean bl = serverPlayerEntity.getInventory().insertStack(itemStack);
                 if (!bl || !itemStack.isEmpty()) {
                     itemEntity = serverPlayerEntity.dropItem(itemStack, false);
@@ -49,7 +56,7 @@ public class GiveCommand {
                     itemEntity.setDespawnImmediately();
                 }
                 serverPlayerEntity.world.playSound(null, serverPlayerEntity.getX(), serverPlayerEntity.getY(), serverPlayerEntity.getZ(), SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.PLAYERS, 0.2f, ((serverPlayerEntity.getRandom().nextFloat() - serverPlayerEntity.getRandom().nextFloat()) * 0.7f + 1.0f) * 2.0f);
-                serverPlayerEntity.playerScreenHandler.sendContentUpdates();
+                serverPlayerEntity.currentScreenHandler.sendContentUpdates();
             }
         }
         if (targets.size() == 1) {

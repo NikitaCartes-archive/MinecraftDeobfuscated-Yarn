@@ -119,11 +119,12 @@ extends Vec3i {
         return new BlockPos((double)this.getX() + x, (double)this.getY() + y, (double)this.getZ() + z);
     }
 
-    public BlockPos add(int x, int y, int z) {
-        if (x == 0 && y == 0 && z == 0) {
+    @Override
+    public BlockPos add(int i, int j, int k) {
+        if (i == 0 && j == 0 && k == 0) {
             return this;
         }
-        return new BlockPos(this.getX() + x, this.getY() + y, this.getZ() + z);
+        return new BlockPos(this.getX() + i, this.getY() + j, this.getZ() + k);
     }
 
     public BlockPos add(Vec3i pos) {
@@ -516,6 +517,11 @@ extends Vec3i {
         return this.up();
     }
 
+    @Override
+    public /* synthetic */ Vec3i add(int x, int y, int z) {
+        return this.add(x, y, z);
+    }
+
     static {
         SIZE_BITS_Z = SIZE_BITS_X = 1 + MathHelper.log2(MathHelper.smallestEncompassingPowerOfTwo(30000000));
         SIZE_BITS_Y = 64 - SIZE_BITS_X - SIZE_BITS_Z;
@@ -546,8 +552,8 @@ extends Vec3i {
         }
 
         @Override
-        public BlockPos add(int x, int y, int z) {
-            return super.add(x, y, z).toImmutable();
+        public BlockPos add(int i, int j, int k) {
+            return super.add(i, j, k).toImmutable();
         }
 
         @Override
@@ -678,6 +684,11 @@ extends Vec3i {
         @Override
         public /* synthetic */ Vec3i up() {
             return super.up();
+        }
+
+        @Override
+        public /* synthetic */ Vec3i add(int x, int y, int z) {
+            return this.add(x, y, z);
         }
 
         @Override

@@ -210,12 +210,12 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.listWidget.render(matrices, mouseX, mouseY, delta);
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(0.0f, 0.0f, 400.0f);
+        matrices.push();
+        matrices.translate(0.0, 0.0, 400.0);
         PresetsScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2, 8, 0xFFFFFF);
         PresetsScreen.drawTextWithShadow(matrices, this.textRenderer, this.shareText, 50, 30, 0xA0A0A0);
         PresetsScreen.drawTextWithShadow(matrices, this.textRenderer, this.listText, 50, 70, 0xA0A0A0);
-        RenderSystem.popMatrix();
+        matrices.pop();
         this.customPresetField.render(matrices, mouseX, mouseY, delta);
         super.render(matrices, mouseX, mouseY, delta);
     }
@@ -346,14 +346,12 @@ extends Screen {
 
             private void renderIcon(MatrixStack matrices, int x, int y, Item iconItem) {
                 this.drawIconBackground(matrices, x + 1, y + 1);
-                RenderSystem.enableRescaleNormal();
                 PresetsScreen.this.itemRenderer.renderGuiItemIcon(new ItemStack(iconItem), x + 2, y + 2);
-                RenderSystem.disableRescaleNormal();
             }
 
             private void drawIconBackground(MatrixStack matrices, int x, int y) {
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                SuperflatPresetsListWidget.this.client.getTextureManager().bindTexture(DrawableHelper.STATS_ICON_TEXTURE);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderTexture(0, DrawableHelper.STATS_ICON_TEXTURE);
                 DrawableHelper.drawTexture(matrices, x, y, PresetsScreen.this.getZOffset(), 0.0f, 0.0f, 18, 18, 128, 128);
             }
         }

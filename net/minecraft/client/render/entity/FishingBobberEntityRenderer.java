@@ -95,12 +95,11 @@ extends EntityRenderer<FishingBobberEntity> {
         float v = (float)(o - s);
         float w = (float)(p - t) + r;
         float x = (float)(q - u);
-        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.getLines());
-        Matrix4f matrix4f2 = matrixStack.peek().getModel();
+        VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(RenderLayer.method_34572());
+        MatrixStack.Entry entry2 = matrixStack.peek();
         int y = 16;
-        for (int z = 0; z < 16; ++z) {
-            FishingBobberEntityRenderer.method_23172(v, w, x, vertexConsumer2, matrix4f2, FishingBobberEntityRenderer.method_23954(z, 16));
-            FishingBobberEntityRenderer.method_23172(v, w, x, vertexConsumer2, matrix4f2, FishingBobberEntityRenderer.method_23954(z + 1, 16));
+        for (int z = 0; z <= 16; ++z) {
+            FishingBobberEntityRenderer.method_23172(v, w, x, vertexConsumer2, entry2, FishingBobberEntityRenderer.method_23954(z, 16), FishingBobberEntityRenderer.method_23954(z + 1, 17));
         }
         matrixStack.pop();
         super.render(fishingBobberEntity, f, g, matrixStack, vertexConsumerProvider, i);
@@ -114,8 +113,15 @@ extends EntityRenderer<FishingBobberEntity> {
         vertexConsumer.vertex(matrix4f, f - 0.5f, (float)j - 0.5f, 0.0f).color(255, 255, 255, 255).texture(k, l).overlay(OverlayTexture.DEFAULT_UV).light(i).normal(matrix3f, 0.0f, 1.0f, 0.0f).next();
     }
 
-    private static void method_23172(float f, float g, float h, VertexConsumer vertexConsumer, Matrix4f matrix4f, float i) {
-        vertexConsumer.vertex(matrix4f, f * i, g * (i * i + i) * 0.5f + 0.25f, h * i).color(0, 0, 0, 255).next();
+    private static void method_23172(float f, float g, float h, VertexConsumer vertexConsumer, MatrixStack.Entry entry, float i, float j) {
+        float k = f * i;
+        float l = g * (i * i + i) * 0.5f + 0.25f;
+        float m = h * i;
+        float n = f * j - k;
+        float o = g * (j * j + j) * 0.5f + 0.25f - l;
+        float p = h * j - m;
+        float q = MathHelper.sqrt(n * n + o * o + p * p);
+        vertexConsumer.vertex(entry.getModel(), k, l, m).color(0, 0, 0, 255).normal(entry.getNormal(), n /= q, o /= q, p /= q).next();
     }
 
     @Override

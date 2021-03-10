@@ -4,6 +4,7 @@
 package net.minecraft.screen.slot;
 
 import com.mojang.datafixers.util.Pair;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerEntity;
@@ -42,9 +43,8 @@ public class Slot {
     protected void onCrafted(ItemStack stack) {
     }
 
-    public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+    public void onTakeItem(PlayerEntity player, ItemStack stack) {
         this.markDirty();
-        return stack;
     }
 
     public boolean canInsert(ItemStack stack) {
@@ -95,47 +95,56 @@ public class Slot {
         return true;
     }
 
-    public ItemStack method_32753(int i, int j, PlayerEntity playerEntity) {
-        if (!this.canTakeItems(playerEntity)) {
-            return ItemStack.EMPTY;
+    public Optional<ItemStack> tryTakeStackRange(int min, int max, PlayerEntity player) {
+        if (!this.canTakeItems(player)) {
+            return Optional.empty();
         }
-        if (!this.method_32754(playerEntity) && j < this.getStack().getCount()) {
-            return ItemStack.EMPTY;
+        if (!this.canTakePartial(player) && max < this.getStack().getCount()) {
+            return Optional.empty();
         }
-        if (!this.method_32754(playerEntity)) {
-            i = this.getStack().getCount();
+        if (!this.canTakePartial(player)) {
+            min = this.getStack().getCount();
         }
-        i = Math.min(i, j);
-        ItemStack itemStack = this.takeStack(i);
+        min = Math.min(min, max);
+        ItemStack itemStack = this.takeStack(min);
         if (this.getStack().isEmpty()) {
             this.setStack(ItemStack.EMPTY);
         }
-        this.onTakeItem(playerEntity, itemStack);
-        return itemStack;
+        return Optional.of(itemStack);
     }
 
-    public ItemStack method_32756(ItemStack itemStack) {
-        return this.method_32755(itemStack, itemStack.getCount());
+    public ItemStack takeStackRange(int min, int max, PlayerEntity player) {
+        Optional<ItemStack> optional = this.tryTakeStackRange(min, max, player);
+        optional.ifPresent(stack -> this.onTakeItem(player, (ItemStack)stack));
+        return optional.orElse(ItemStack.EMPTY);
     }
 
-    public ItemStack method_32755(ItemStack itemStack, int i) {
-        if (itemStack.isEmpty() || !this.canInsert(itemStack)) {
-            return itemStack;
+    public ItemStack insertStack(ItemStack stack) {
+        return this.insertStack(stack, stack.getCount());
+    }
+
+    public ItemStack insertStack(ItemStack stack, int count) {
+        if (stack.isEmpty() || !this.canInsert(stack)) {
+            return stack;
         }
-        ItemStack itemStack2 = this.getStack();
-        int j = Math.min(Math.min(i, itemStack.getCount()), this.getMaxItemCount(itemStack) - itemStack2.getCount());
-        if (itemStack2.isEmpty()) {
-            this.setStack(itemStack.split(j));
-        } else if (ItemStack.canCombine(itemStack2, itemStack)) {
-            itemStack.decrement(j);
-            itemStack2.increment(j);
-            this.setStack(itemStack2);
+        ItemStack itemStack = this.getStack();
+        int i = Math.min(Math.min(count, stack.getCount()), this.getMaxItemCount(stack) - itemStack.getCount());
+        if (itemStack.isEmpty()) {
+            this.setStack(stack.split(i));
+        } else if (ItemStack.canCombine(itemStack, stack)) {
+            stack.decrement(i);
+            itemStack.increment(i);
+            this.setStack(itemStack);
         }
-        return itemStack;
+        return stack;
     }
 
-    public boolean method_32754(PlayerEntity playerEntity) {
-        return this.canTakeItems(playerEntity) && this.canInsert(this.getStack());
+    public boolean canTakePartial(PlayerEntity player) {
+        return this.canTakeItems(player) && this.canInsert(this.getStack());
+    }
+
+    public int getIndex() {
+        return this.index;
     }
 }
 

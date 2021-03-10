@@ -86,6 +86,7 @@ import net.minecraft.client.particle.WaterSuspendParticle;
 import net.minecraft.client.particle.WhiteAshParticle;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.Camera;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -382,16 +383,16 @@ implements ResourceReloadListener {
 
     public void renderParticles(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f) {
         lightmapTextureManager.enable();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.defaultAlphaFunc();
         RenderSystem.enableDepthTest();
-        RenderSystem.enableFog();
-        RenderSystem.pushMatrix();
-        RenderSystem.multMatrix(matrixStack.peek().getModel());
+        MatrixStack matrixStack2 = RenderSystem.getModelViewStack();
+        matrixStack2.push();
+        matrixStack2.method_34425(matrixStack.peek().getModel());
+        RenderSystem.applyModelViewMatrix();
         for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
             Iterable iterable = this.particles.get(particleTextureSheet);
             if (iterable == null) continue;
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShader(GameRenderer::method_34546);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
             particleTextureSheet.begin(bufferBuilder, this.textureManager);
@@ -408,13 +409,11 @@ implements ResourceReloadListener {
             }
             particleTextureSheet.draw(tessellator);
         }
-        RenderSystem.popMatrix();
+        matrixStack2.pop();
+        RenderSystem.applyModelViewMatrix();
         RenderSystem.depthMask(true);
-        RenderSystem.depthFunc(515);
         RenderSystem.disableBlend();
-        RenderSystem.defaultAlphaFunc();
         lightmapTextureManager.disable();
-        RenderSystem.disableFog();
     }
 
     public void setWorld(@Nullable ClientWorld world) {

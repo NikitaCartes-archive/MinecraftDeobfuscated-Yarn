@@ -3,7 +3,11 @@
  */
 package net.minecraft.client.render;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -15,13 +19,18 @@ import net.minecraft.client.render.VertexFormatElement;
 @Environment(value=EnvType.CLIENT)
 public class VertexFormat {
     private final ImmutableList<VertexFormatElement> elements;
+    private final ImmutableMap<String, VertexFormatElement> field_29340;
     private final IntList offsets = new IntArrayList();
     private final int size;
+    private int field_29341;
+    private int field_29342;
+    private int field_29343;
 
-    public VertexFormat(ImmutableList<VertexFormatElement> immutableList) {
-        this.elements = immutableList;
+    public VertexFormat(ImmutableMap<String, VertexFormatElement> immutableMap) {
+        this.field_29340 = immutableMap;
+        this.elements = ((ImmutableCollection)immutableMap.values()).asList();
         int i = 0;
-        for (VertexFormatElement vertexFormatElement : immutableList) {
+        for (VertexFormatElement vertexFormatElement : immutableMap.values()) {
             this.offsets.add(i);
             i += vertexFormatElement.getSize();
         }
@@ -29,7 +38,7 @@ public class VertexFormat {
     }
 
     public String toString() {
-        return "format: " + this.elements.size() + " elements: " + this.elements.stream().map(Object::toString).collect(Collectors.joining(" "));
+        return "format: " + this.field_29340.size() + " elements: " + this.field_29340.entrySet().stream().map(Object::toString).collect(Collectors.joining(" "));
     }
 
     public int getVertexSizeInteger() {
@@ -44,6 +53,10 @@ public class VertexFormat {
         return this.elements;
     }
 
+    public ImmutableList<String> method_34445() {
+        return ((ImmutableSet)this.field_29340.keySet()).asList();
+    }
+
     public boolean equals(Object o) {
         if (this == o) {
             return true;
@@ -55,39 +68,72 @@ public class VertexFormat {
         if (this.size != vertexFormat.size) {
             return false;
         }
-        return this.elements.equals(vertexFormat.elements);
+        return this.field_29340.equals(vertexFormat.field_29340);
     }
 
     public int hashCode() {
-        return this.elements.hashCode();
+        return this.field_29340.hashCode();
     }
 
-    public void startDrawing(long pointer) {
+    public void startDrawing() {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(() -> this.startDrawing(pointer));
+            RenderSystem.recordRenderCall(this::method_34449);
             return;
         }
+        this.method_34449();
+    }
+
+    private void method_34449() {
         int i = this.getVertexSize();
         ImmutableList<VertexFormatElement> list = this.getElements();
         for (int j = 0; j < list.size(); ++j) {
-            ((VertexFormatElement)list.get(j)).startDrawing(pointer + (long)this.offsets.getInt(j), i);
+            ((VertexFormatElement)list.get(j)).startDrawing(j, this.offsets.getInt(j), i);
         }
     }
 
     public void endDrawing() {
         if (!RenderSystem.isOnRenderThread()) {
-            RenderSystem.recordRenderCall(this::endDrawing);
+            RenderSystem.recordRenderCall(this::method_34450);
             return;
         }
-        for (VertexFormatElement vertexFormatElement : this.getElements()) {
-            vertexFormatElement.endDrawing();
+        this.method_34450();
+    }
+
+    private void method_34450() {
+        ImmutableList<VertexFormatElement> immutableList = this.getElements();
+        for (int i = 0; i < immutableList.size(); ++i) {
+            VertexFormatElement vertexFormatElement = (VertexFormatElement)immutableList.get(i);
+            vertexFormatElement.endDrawing(i);
         }
+    }
+
+    public int method_34446() {
+        if (this.field_29341 == 0) {
+            this.field_29341 = GlStateManager.genVertexArray();
+        }
+        return this.field_29341;
+    }
+
+    public int method_34447() {
+        if (this.field_29342 == 0) {
+            this.field_29342 = GlStateManager.genBuffer();
+        }
+        return this.field_29342;
+    }
+
+    public int method_34448() {
+        if (this.field_29343 == 0) {
+            this.field_29343 = GlStateManager.genBuffer();
+        }
+        return this.field_29343;
     }
 
     @Environment(value=EnvType.CLIENT)
     public static enum DrawMode {
-        LINES(1, 2, 2),
-        LINE_STRIP(3, 2, 1),
+        LINES(4, 2, 2),
+        LINE_STRIP(5, 2, 1),
+        DEBUG_LINES(1, 2, 2),
+        DEBUG_LINE_STRIP(3, 2, 1),
         TRIANGLES(4, 3, 3),
         TRIANGLE_STRIP(5, 3, 1),
         TRIANGLE_FAN(6, 3, 1),
@@ -106,14 +152,16 @@ public class VertexFormat {
         public int getSize(int vertexCount) {
             int i;
             switch (this) {
-                case LINES: 
                 case LINE_STRIP: 
+                case DEBUG_LINES: 
+                case DEBUG_LINE_STRIP: 
                 case TRIANGLES: 
                 case TRIANGLE_STRIP: 
                 case TRIANGLE_FAN: {
                     i = vertexCount;
                     break;
                 }
+                case LINES: 
                 case QUADS: {
                     i = vertexCount / 4 * 6;
                     break;

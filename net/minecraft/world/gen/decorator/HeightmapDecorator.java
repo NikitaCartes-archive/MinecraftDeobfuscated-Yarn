@@ -7,22 +7,22 @@ import com.mojang.serialization.Codec;
 import java.util.Random;
 import java.util.stream.Stream;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.gen.decorator.AbstractHeightmapDecorator;
-import net.minecraft.world.gen.decorator.DecoratorConfig;
+import net.minecraft.world.gen.decorator.Decorator;
 import net.minecraft.world.gen.decorator.DecoratorContext;
+import net.minecraft.world.gen.decorator.HeightmapDecoratorConfig;
 
-public abstract class HeightmapDecorator<DC extends DecoratorConfig>
-extends AbstractHeightmapDecorator<DC> {
-    public HeightmapDecorator(Codec<DC> codec) {
+public class HeightmapDecorator
+extends Decorator<HeightmapDecoratorConfig> {
+    public HeightmapDecorator(Codec<HeightmapDecoratorConfig> codec) {
         super(codec);
     }
 
     @Override
-    public Stream<BlockPos> getPositions(DecoratorContext context, Random random, DC config, BlockPos pos) {
-        int i = pos.getX();
-        int j = pos.getZ();
-        int k = context.getTopY(this.getHeightmapType(config), i, j);
-        if (k > context.method_33868()) {
+    public Stream<BlockPos> getPositions(DecoratorContext decoratorContext, Random random, HeightmapDecoratorConfig heightmapDecoratorConfig, BlockPos blockPos) {
+        int j;
+        int i = blockPos.getX();
+        int k = decoratorContext.getTopY(heightmapDecoratorConfig.heightmap, i, j = blockPos.getZ());
+        if (k > decoratorContext.getBottomY()) {
             return Stream.of(new BlockPos(i, k, j));
         }
         return Stream.of(new BlockPos[0]);

@@ -6,6 +6,7 @@ package net.minecraft.client.gl;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class Uniform {
@@ -28,6 +29,9 @@ public class Uniform {
     }
 
     public void set(float[] values) {
+    }
+
+    public void method_34413(Vec3f vec3f) {
     }
 
     public void set(Matrix4f values) {

@@ -223,30 +223,30 @@ extends RealmsScreen {
 
     private void drawSlotFrame(MatrixStack matrices, int y, int xm, int ym, int i, boolean bl, String string, int j, long l, @Nullable String string2, boolean bl2) {
         if (bl2) {
-            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.EMPTY_FRAME);
+            RenderSystem.setShaderTexture(0, RealmsWorldSlotButton.EMPTY_FRAME);
         } else if (string2 != null && l != -1L) {
             RealmsTextureManager.bindWorldTemplate(String.valueOf(l), string2);
         } else if (j == 1) {
-            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.PANORAMA_0);
+            RenderSystem.setShaderTexture(0, RealmsWorldSlotButton.PANORAMA_0);
         } else if (j == 2) {
-            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.PANORAMA_2);
+            RenderSystem.setShaderTexture(0, RealmsWorldSlotButton.PANORAMA_2);
         } else if (j == 3) {
-            this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.PANORAMA_3);
+            RenderSystem.setShaderTexture(0, RealmsWorldSlotButton.PANORAMA_3);
         } else {
             RealmsTextureManager.bindWorldTemplate(String.valueOf(this.field_20492.minigameId), this.field_20492.minigameImage);
         }
         if (!bl) {
-            RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
+            RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
         } else if (bl) {
             float f = 0.9f + 0.1f * MathHelper.cos((float)this.animTick * 0.2f);
-            RenderSystem.color4f(f, f, f, 1.0f);
+            RenderSystem.setShaderColor(f, f, f, 1.0f);
         }
         DrawableHelper.drawTexture(matrices, y + 3, xm + 3, 0.0f, 0.0f, 74, 74, 74, 74);
-        this.client.getTextureManager().bindTexture(RealmsWorldSlotButton.SLOT_FRAME);
+        RenderSystem.setShaderTexture(0, RealmsWorldSlotButton.SLOT_FRAME);
         if (bl) {
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         } else {
-            RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
+            RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
         }
         DrawableHelper.drawTexture(matrices, y, xm, 0.0f, 0.0f, 80, 80, 80, 80);
         RealmsBrokenWorldScreen.drawCenteredString(matrices, this.textRenderer, string, y + 40, xm + 66, 0xFFFFFF);

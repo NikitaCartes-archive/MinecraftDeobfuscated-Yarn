@@ -40,7 +40,6 @@ Nameable {
     private final List<DefaultedList<ItemStack>> combinedInventory = ImmutableList.of(this.main, this.armor, this.offHand);
     public int selectedSlot;
     public final PlayerEntity player;
-    private ItemStack cursorStack = ItemStack.EMPTY;
     private int changeCount;
 
     public PlayerInventory(PlayerEntity player) {
@@ -156,9 +155,10 @@ Nameable {
         boolean bl = maxCount == 0;
         i += Inventories.remove(this, shouldRemove, maxCount - i, bl);
         i += Inventories.remove(craftingInventory, shouldRemove, maxCount - i, bl);
-        i += Inventories.remove(this.cursorStack, shouldRemove, maxCount - i, bl);
-        if (this.cursorStack.isEmpty()) {
-            this.cursorStack = ItemStack.EMPTY;
+        ItemStack itemStack = this.player.currentScreenHandler.getCursorStack();
+        i += Inventories.remove(itemStack, shouldRemove, maxCount - i, bl);
+        if (itemStack.isEmpty()) {
+            this.player.currentScreenHandler.setCursorStack(ItemStack.EMPTY);
         }
         return i;
     }
@@ -483,14 +483,6 @@ Nameable {
     @Environment(value=EnvType.CLIENT)
     public int getChangeCount() {
         return this.changeCount;
-    }
-
-    public void setCursorStack(ItemStack stack) {
-        this.cursorStack = stack;
-    }
-
-    public ItemStack getCursorStack() {
-        return this.cursorStack;
     }
 
     @Override

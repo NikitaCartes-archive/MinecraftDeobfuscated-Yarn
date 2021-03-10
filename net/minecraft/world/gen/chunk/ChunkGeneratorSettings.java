@@ -48,7 +48,7 @@ public final class ChunkGeneratorSettings {
     public static final RegistryKey<ChunkGeneratorSettings> FLOATING_ISLANDS = RegistryKey.of(Registry.NOISE_SETTINGS_WORLDGEN, new Identifier("floating_islands"));
     private static final ChunkGeneratorSettings INSTANCE = ChunkGeneratorSettings.register(OVERWORLD, ChunkGeneratorSettings.createSurfaceSettings(new StructuresConfig(true), false));
 
-    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, BlockState defaultBlock, BlockState defaultFluid, int bedrockCeilingY, int bedrockFloorY, int seaLevel, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean bl) {
+    private ChunkGeneratorSettings(StructuresConfig structuresConfig, GenerationShapeConfig generationShapeConfig, BlockState defaultBlock, BlockState defaultFluid, int bedrockCeilingY, int bedrockFloorY, int seaLevel, boolean mobGenerationDisabled, boolean aquifers, boolean noiseCaves, boolean deepslate) {
         this.structuresConfig = structuresConfig;
         this.generationShapeConfig = generationShapeConfig;
         this.defaultBlock = defaultBlock;
@@ -59,7 +59,7 @@ public final class ChunkGeneratorSettings {
         this.mobGenerationDisabled = mobGenerationDisabled;
         this.aquifers = aquifers;
         this.noiseCaves = noiseCaves;
-        this.deepslate = bl;
+        this.deepslate = deepslate;
     }
 
     public StructuresConfig getStructuresConfig() {

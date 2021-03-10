@@ -148,7 +148,9 @@ public class Items {
     public static final Item IRON_ORE = Items.register(Blocks.IRON_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item DEEPSLATE_IRON_ORE = Items.register(Blocks.DEEPSLATE_IRON_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item COPPER_ORE = Items.register(Blocks.COPPER_ORE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item DEEPSLATE_COPPER_ORE = Items.register(Blocks.DEEPSLATE_COPPER_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item COAL_ORE = Items.register(Blocks.COAL_ORE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item DEEPSLATE_COAL_ORE = Items.register(Blocks.DEEPSLATE_COAL_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item NETHER_GOLD_ORE = Items.register(Blocks.NETHER_GOLD_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item OAK_LOG = Items.register(Blocks.OAK_LOG, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPRUCE_LOG = Items.register(Blocks.SPRUCE_LOG, ItemGroup.BUILDING_BLOCKS);
@@ -344,11 +346,14 @@ public class Items {
     public static final Item INFESTED_MOSSY_STONE_BRICKS = Items.register(Blocks.INFESTED_MOSSY_STONE_BRICKS, ItemGroup.DECORATIONS);
     public static final Item INFESTED_CRACKED_STONE_BRICKS = Items.register(Blocks.INFESTED_CRACKED_STONE_BRICKS, ItemGroup.DECORATIONS);
     public static final Item INFESTED_CHISELED_STONE_BRICKS = Items.register(Blocks.INFESTED_CHISELED_STONE_BRICKS, ItemGroup.DECORATIONS);
+    public static final Item INFESTED_DEEPSLATE = Items.register(Blocks.INFESTED_DEEPSLATE, ItemGroup.DECORATIONS);
     public static final Item STONE_BRICKS = Items.register(Blocks.STONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item MOSSY_STONE_BRICKS = Items.register(Blocks.MOSSY_STONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item CRACKED_STONE_BRICKS = Items.register(Blocks.CRACKED_STONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item CHISELED_STONE_BRICKS = Items.register(Blocks.CHISELED_STONE_BRICKS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item CRACKED_DEEPSLATE_BRICKS = Items.register(Blocks.CRACKED_DEEPSLATE_BRICKS, ItemGroup.BUILDING_BLOCKS);
     public static final Item DEEPSLATE_BRICKS = Items.register(Blocks.DEEPSLATE_BRICKS, ItemGroup.BUILDING_BLOCKS);
+    public static final Item CRACKED_DEEPSLATE_TILES = Items.register(Blocks.CRACKED_DEEPSLATE_TILES, ItemGroup.BUILDING_BLOCKS);
     public static final Item DEEPSLATE_TILES = Items.register(Blocks.DEEPSLATE_TILES, ItemGroup.BUILDING_BLOCKS);
     public static final Item CHISELED_DEEPSLATE = Items.register(Blocks.CHISELED_DEEPSLATE, ItemGroup.BUILDING_BLOCKS);
     public static final Item BROWN_MUSHROOM_BLOCK = Items.register(Blocks.BROWN_MUSHROOM_BLOCK, ItemGroup.DECORATIONS);
@@ -376,6 +381,7 @@ public class Items {
     public static final Item DRAGON_EGG = Items.register(new BlockItem(Blocks.DRAGON_EGG, new Item.Settings().rarity(Rarity.EPIC)));
     public static final Item SANDSTONE_STAIRS = Items.register(Blocks.SANDSTONE_STAIRS, ItemGroup.BUILDING_BLOCKS);
     public static final Item EMERALD_ORE = Items.register(Blocks.EMERALD_ORE, ItemGroup.BUILDING_BLOCKS);
+    public static final Item DEEPSLATE_EMERALD_ORE = Items.register(Blocks.DEEPSLATE_EMERALD_ORE, ItemGroup.BUILDING_BLOCKS);
     public static final Item ENDER_CHEST = Items.register(Blocks.ENDER_CHEST, ItemGroup.DECORATIONS);
     public static final Item EMERALD_BLOCK = Items.register(Blocks.EMERALD_BLOCK, ItemGroup.BUILDING_BLOCKS);
     public static final Item SPRUCE_STAIRS = Items.register(Blocks.SPRUCE_STAIRS, ItemGroup.BUILDING_BLOCKS);
@@ -404,8 +410,8 @@ public class Items {
     public static final Item POLISHED_BLACKSTONE_BRICK_WALL = Items.register(Blocks.POLISHED_BLACKSTONE_BRICK_WALL, ItemGroup.DECORATIONS);
     public static final Item DEEPSLATE_WALL = Items.register(Blocks.COBBLED_DEEPSLATE_WALL, ItemGroup.DECORATIONS);
     public static final Item POLISHED_DEEPSLATE_WALL = Items.register(Blocks.POLISHED_DEEPSLATE_WALL, ItemGroup.DECORATIONS);
-    public static final Item DEEPSLATE_TILE_WALL = Items.register(Blocks.DEEPSLATE_TILE_WALL, ItemGroup.DECORATIONS);
     public static final Item DEEPSLATE_BRICK_WALL = Items.register(Blocks.DEEPSLATE_BRICK_WALL, ItemGroup.DECORATIONS);
+    public static final Item DEEPSLATE_TILE_WALL = Items.register(Blocks.DEEPSLATE_TILE_WALL, ItemGroup.DECORATIONS);
     public static final Item ANVIL = Items.register(Blocks.ANVIL, ItemGroup.DECORATIONS);
     public static final Item CHIPPED_ANVIL = Items.register(Blocks.CHIPPED_ANVIL, ItemGroup.DECORATIONS);
     public static final Item DAMAGED_ANVIL = Items.register(Blocks.DAMAGED_ANVIL, ItemGroup.DECORATIONS);
@@ -633,7 +639,6 @@ public class Items {
     public static final Item SMOOTH_RED_SANDSTONE_SLAB = Items.register(Blocks.SMOOTH_RED_SANDSTONE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item MOSSY_STONE_BRICK_SLAB = Items.register(Blocks.MOSSY_STONE_BRICK_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item POLISHED_DIORITE_SLAB = Items.register(Blocks.POLISHED_DIORITE_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item POLISHED_DEEPSLATE_SLAB = Items.register(Blocks.POLISHED_DEEPSLATE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item MOSSY_COBBLESTONE_SLAB = Items.register(Blocks.MOSSY_COBBLESTONE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item END_STONE_BRICK_SLAB = Items.register(Blocks.END_STONE_BRICK_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item SMOOTH_SANDSTONE_SLAB = Items.register(Blocks.SMOOTH_SANDSTONE_SLAB, ItemGroup.BUILDING_BLOCKS);
@@ -644,8 +649,9 @@ public class Items {
     public static final Item POLISHED_ANDESITE_SLAB = Items.register(Blocks.POLISHED_ANDESITE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item DIORITE_SLAB = Items.register(Blocks.DIORITE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item COBBLED_DEEPSLATE_SLAB = Items.register(Blocks.COBBLED_DEEPSLATE_SLAB, ItemGroup.BUILDING_BLOCKS);
-    public static final Item DEEPSLATE_TILE_SLAB = Items.register(Blocks.DEEPSLATE_TILE_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item POLISHED_DEEPSLATE_SLAB = Items.register(Blocks.POLISHED_DEEPSLATE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item DEEPSLATE_BRICK_SLAB = Items.register(Blocks.DEEPSLATE_BRICK_SLAB, ItemGroup.BUILDING_BLOCKS);
+    public static final Item DEEPSLATE_TILE_SLAB = Items.register(Blocks.DEEPSLATE_TILE_SLAB, ItemGroup.BUILDING_BLOCKS);
     public static final Item SCAFFOLDING = Items.register(new ScaffoldingItem(Blocks.SCAFFOLDING, new Item.Settings().group(ItemGroup.DECORATIONS)));
     public static final Item REDSTONE = Items.register("redstone", (Item)new AliasedBlockItem(Blocks.REDSTONE_WIRE, new Item.Settings().group(ItemGroup.REDSTONE)));
     public static final Item REDSTONE_TORCH = Items.register(new WallStandingBlockItem(Blocks.REDSTONE_TORCH, Blocks.REDSTONE_WALL_TORCH, new Item.Settings().group(ItemGroup.REDSTONE)));
@@ -847,6 +853,7 @@ public class Items {
     public static final Item COOKED_COD = Items.register("cooked_cod", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COOKED_COD)));
     public static final Item COOKED_SALMON = Items.register("cooked_salmon", new Item(new Item.Settings().group(ItemGroup.FOOD).food(FoodComponents.COOKED_SALMON)));
     public static final Item INK_SAC = Items.register("ink_sac", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
+    public static final Item GLOW_INK_SAC = Items.register("glow_ink_sac", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item COCOA_BEANS = Items.register("cocoa_beans", (Item)new AliasedBlockItem(Blocks.COCOA, new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item LAPIS_LAZULI = Items.register("lapis_lazuli", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
     public static final Item WHITE_DYE = Items.register("white_dye", (Item)new DyeItem(DyeColor.WHITE, new Item.Settings().group(ItemGroup.MATERIALS)));
@@ -1186,7 +1193,6 @@ public class Items {
     public static final Item POWDER_SNOW_BUCKET = Items.register("powder_snow_bucket", (Item)new PowderSnowBucketItem(Blocks.POWDER_SNOW, SoundEvents.ITEM_BUCKET_EMPTY_POWDER_SNOW, new Item.Settings().maxCount(1).group(ItemGroup.MISC)));
     public static final Item POINTED_DRIPSTONE = Items.register(Blocks.POINTED_DRIPSTONE, ItemGroup.DECORATIONS);
     public static final Item DRIPSTONE_BLOCK = Items.register(Blocks.DRIPSTONE_BLOCK, ItemGroup.BUILDING_BLOCKS);
-    public static final Item GLOW_INK_SAC = Items.register("glow_ink_sac", new Item(new Item.Settings().group(ItemGroup.MATERIALS)));
 
     private static Item register(Block block) {
         return Items.register(new BlockItem(block, new Item.Settings()));

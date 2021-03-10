@@ -273,13 +273,13 @@ extends RealmsScreen {
 
         private void drawRestore(MatrixStack matrices, int i, int j, int k, int l) {
             boolean bl = k >= i && k <= i + 12 && l >= j && l <= j + 14 && l < RealmsBackupScreen.this.height - 15 && l > 32;
-            RealmsBackupScreen.this.client.getTextureManager().bindTexture(RESTORE_ICON);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
+            RenderSystem.setShaderTexture(0, RESTORE_ICON);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            matrices.push();
+            matrices.scale(0.5f, 0.5f, 0.5f);
             float f = bl ? 28.0f : 0.0f;
             DrawableHelper.drawTexture(matrices, i * 2, j * 2, 0.0f, f, 23, 28, 23, 56);
-            RenderSystem.popMatrix();
+            matrices.pop();
             if (bl) {
                 RealmsBackupScreen.this.toolTip = RESTORE_TEXT;
             }
@@ -287,13 +287,13 @@ extends RealmsScreen {
 
         private void drawInfo(MatrixStack matrices, int i, int j, int k, int l) {
             boolean bl = k >= i && k <= i + 8 && l >= j && l <= j + 8 && l < RealmsBackupScreen.this.height - 15 && l > 32;
-            RealmsBackupScreen.this.client.getTextureManager().bindTexture(PLUS_ICON);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5f, 0.5f, 0.5f);
+            RenderSystem.setShaderTexture(0, PLUS_ICON);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            matrices.push();
+            matrices.scale(0.5f, 0.5f, 0.5f);
             float f = bl ? 15.0f : 0.0f;
             DrawableHelper.drawTexture(matrices, i * 2, j * 2, 0.0f, f, 15, 15, 15, 30);
-            RenderSystem.popMatrix();
+            matrices.pop();
             if (bl) {
                 RealmsBackupScreen.this.toolTip = CHANGES_TOOLTIP;
             }

@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.render;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -164,8 +163,7 @@ public class BackgroundRenderer {
     }
 
     public static void method_23792() {
-        RenderSystem.fogDensity(0.0f);
-        RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
+        RenderSystem.setShaderFogStart(Float.MAX_VALUE);
     }
 
     public static void applyFog(Camera camera, FogType fogType, float viewDistance, boolean thickFog) {
@@ -182,8 +180,6 @@ public class BackgroundRenderer {
                     f += 0.005f;
                 }
             }
-            RenderSystem.fogDensity(f);
-            RenderSystem.fogMode(GlStateManager.FogMode.EXP2);
         } else {
             float g;
             float f;
@@ -218,15 +214,13 @@ public class BackgroundRenderer {
                 f = viewDistance * 0.75f;
                 g = viewDistance;
             }
-            RenderSystem.fogStart(f);
-            RenderSystem.fogEnd(g);
-            RenderSystem.fogMode(GlStateManager.FogMode.LINEAR);
-            RenderSystem.setupNvFogDistance();
+            RenderSystem.setShaderFogStart(f);
+            RenderSystem.setShaderFogEnd(g);
         }
     }
 
     public static void setFogBlack() {
-        RenderSystem.fog(2918, red, green, blue, 1.0f);
+        RenderSystem.setShaderFogColor(red, green, blue);
     }
 
     static {

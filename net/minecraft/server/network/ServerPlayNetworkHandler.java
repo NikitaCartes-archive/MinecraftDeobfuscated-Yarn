@@ -11,8 +11,8 @@ import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.suggestion.Suggestions;
 import io.netty.util.concurrent.Future;
 import io.netty.util.concurrent.GenericFutureListener;
-import it.unimi.dsi.fastutil.ints.Int2ShortMap;
-import it.unimi.dsi.fastutil.ints.Int2ShortOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,7 +72,6 @@ import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
-import net.minecraft.network.packet.c2s.play.ConfirmScreenActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -109,7 +108,6 @@ import net.minecraft.network.packet.c2s.play.UpdateStructureBlockC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CommandSuggestionsS2CPacket;
-import net.minecraft.network.packet.s2c.play.ConfirmScreenActionS2CPacket;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.network.packet.s2c.play.GameMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.KeepAliveS2CPacket;
@@ -140,7 +138,6 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -175,7 +172,6 @@ ServerPlayPacketListener {
     private long keepAliveId;
     private int messageCooldown;
     private int creativeItemDropThreshold;
-    private final Int2ShortMap transactions = new Int2ShortOpenHashMap();
     private double lastTickX;
     private double lastTickY;
     private double lastTickZ;
@@ -1196,9 +1192,9 @@ ServerPlayPacketListener {
             if (this.player.squaredDistanceTo(entity) < 36.0) {
                 packet.handle(new PlayerInteractEntityC2SPacket.Handler(){
 
-                    private void processInteract(Hand hand, class_5860 arg) {
+                    private void processInteract(Hand hand, Interaction action) {
                         ItemStack itemStack = ServerPlayNetworkHandler.this.player.getStackInHand(hand).copy();
-                        ActionResult actionResult = arg.run(ServerPlayNetworkHandler.this.player, entity, hand);
+                        ActionResult actionResult = action.run(ServerPlayNetworkHandler.this.player, entity, hand);
                         if (actionResult.isAccepted()) {
                             Criteria.PLAYER_INTERACTED_WITH_ENTITY.test(ServerPlayNetworkHandler.this.player, itemStack, entity);
                             if (actionResult.shouldSwingHand()) {
@@ -1269,32 +1265,18 @@ ServerPlayPacketListener {
     public void onClickSlot(ClickSlotC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         this.player.updateLastActionTime();
-        if (this.player.currentScreenHandler.syncId == packet.getSyncId() && this.player.currentScreenHandler.isNotRestricted(this.player)) {
+        if (this.player.currentScreenHandler.syncId == packet.getSyncId()) {
             if (this.player.isSpectator()) {
-                DefaultedList<ItemStack> defaultedList = DefaultedList.of();
-                for (int i = 0; i < this.player.currentScreenHandler.slots.size(); ++i) {
-                    defaultedList.add(this.player.currentScreenHandler.slots.get(i).getStack());
-                }
-                this.player.onHandlerRegistered(this.player.currentScreenHandler, defaultedList);
+                this.player.currentScreenHandler.syncState();
             } else {
-                ItemStack itemStack = this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getClickData(), packet.getActionType(), this.player);
-                if (ItemStack.areEqual(packet.getStack(), itemStack)) {
-                    this.player.networkHandler.sendPacket(new ConfirmScreenActionS2CPacket(packet.getSyncId(), packet.getActionId(), true));
-                    this.player.skipPacketSlotUpdates = true;
-                    this.player.currentScreenHandler.sendContentUpdates();
-                    this.player.updateCursorStack();
-                    this.player.skipPacketSlotUpdates = false;
-                } else {
-                    this.transactions.put(this.player.currentScreenHandler.syncId, packet.getActionId());
-                    this.player.networkHandler.sendPacket(new ConfirmScreenActionS2CPacket(packet.getSyncId(), packet.getActionId(), false));
-                    this.player.currentScreenHandler.setPlayerRestriction(this.player, false);
-                    DefaultedList<ItemStack> defaultedList2 = DefaultedList.of();
-                    for (int j = 0; j < this.player.currentScreenHandler.slots.size(); ++j) {
-                        ItemStack itemStack2 = this.player.currentScreenHandler.slots.get(j).getStack();
-                        defaultedList2.add(itemStack2.isEmpty() ? ItemStack.EMPTY : itemStack2);
-                    }
-                    this.player.onHandlerRegistered(this.player.currentScreenHandler, defaultedList2);
+                this.player.currentScreenHandler.disableSyncing();
+                this.player.currentScreenHandler.onSlotClick(packet.getSlot(), packet.getClickData(), packet.getActionType(), this.player);
+                for (Int2ObjectMap.Entry entry : Int2ObjectMaps.fastIterable(packet.getModifiedStacks())) {
+                    this.player.currentScreenHandler.setPreviousTrackedSlot(entry.getIntKey(), (ItemStack)entry.getValue());
                 }
+                this.player.currentScreenHandler.setPreviousCursorStack(packet.getStack());
+                this.player.currentScreenHandler.enableSyncing();
+                this.player.currentScreenHandler.sendContentUpdates();
             }
         }
     }
@@ -1303,7 +1285,7 @@ ServerPlayPacketListener {
     public void onCraftRequest(CraftRequestC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         this.player.updateLastActionTime();
-        if (this.player.isSpectator() || this.player.currentScreenHandler.syncId != packet.getSyncId() || !this.player.currentScreenHandler.isNotRestricted(this.player) || !(this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler)) {
+        if (this.player.isSpectator() || this.player.currentScreenHandler.syncId != packet.getSyncId() || !(this.player.currentScreenHandler instanceof AbstractRecipeScreenHandler)) {
             return;
         }
         this.server.getRecipeManager().get(packet.getRecipe()).ifPresent(recipe -> ((AbstractRecipeScreenHandler)this.player.currentScreenHandler).fillInputSlots(packet.shouldCraftAll(), (Recipe<?>)recipe, this.player));
@@ -1313,7 +1295,7 @@ ServerPlayPacketListener {
     public void onButtonClick(ButtonClickC2SPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
         this.player.updateLastActionTime();
-        if (this.player.currentScreenHandler.syncId == packet.getSyncId() && this.player.currentScreenHandler.isNotRestricted(this.player) && !this.player.isSpectator()) {
+        if (this.player.currentScreenHandler.syncId == packet.getSyncId() && !this.player.isSpectator()) {
             this.player.currentScreenHandler.onButtonClick(this.player, packet.getButtonId());
             this.player.currentScreenHandler.sendContentUpdates();
         }
@@ -1344,21 +1326,11 @@ ServerPlayPacketListener {
                 } else {
                     this.player.playerScreenHandler.setStackInSlot(packet.getSlot(), itemStack);
                 }
-                this.player.playerScreenHandler.setPlayerRestriction(this.player, true);
                 this.player.playerScreenHandler.sendContentUpdates();
             } else if (bl && bl3 && this.creativeItemDropThreshold < 200) {
                 this.creativeItemDropThreshold += 20;
                 this.player.dropItem(itemStack, true);
             }
-        }
-    }
-
-    @Override
-    public void onConfirmScreenAction(ConfirmScreenActionC2SPacket packet) {
-        NetworkThreadUtils.forceMainThread(packet, this, this.player.getServerWorld());
-        int i = this.player.currentScreenHandler.syncId;
-        if (i == packet.getSyncId() && this.transactions.getOrDefault(i, (short)(packet.getActionId() + 1)) == packet.getActionId() && !this.player.currentScreenHandler.isNotRestricted(this.player) && !this.player.isSpectator()) {
-            this.player.currentScreenHandler.setPlayerRestriction(this.player, true);
         }
     }
 
@@ -1447,7 +1419,7 @@ ServerPlayPacketListener {
     }
 
     @FunctionalInterface
-    static interface class_5860 {
+    static interface Interaction {
         public ActionResult run(ServerPlayerEntity var1, Entity var2, Hand var3);
     }
 }

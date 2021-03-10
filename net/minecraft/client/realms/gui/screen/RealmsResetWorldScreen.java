@@ -166,18 +166,18 @@ extends RealmsScreen {
     }
 
     private void drawFrame(MatrixStack matrices, int x, int y, Text text, Identifier texture, boolean hovered, boolean mouseOver) {
-        this.client.getTextureManager().bindTexture(texture);
+        RenderSystem.setShaderTexture(0, texture);
         if (hovered) {
-            RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
+            RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
         } else {
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
         DrawableHelper.drawTexture(matrices, x + 2, y + 14, 0.0f, 0.0f, 56, 56, 56, 56);
-        this.client.getTextureManager().bindTexture(SLOT_FRAME_TEXTURE);
+        RenderSystem.setShaderTexture(0, SLOT_FRAME_TEXTURE);
         if (hovered) {
-            RenderSystem.color4f(0.56f, 0.56f, 0.56f, 1.0f);
+            RenderSystem.setShaderColor(0.56f, 0.56f, 0.56f, 1.0f);
         } else {
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         }
         DrawableHelper.drawTexture(matrices, x, y + 12, 0.0f, 0.0f, 60, 60, 60, 60);
         int i = hovered ? 0xA0A0A0 : 0xFFFFFF;

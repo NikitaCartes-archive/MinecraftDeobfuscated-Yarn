@@ -14,14 +14,16 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InvalidClassException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.function.IntSupplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5936;
+import net.minecraft.class_5937;
 import net.minecraft.client.gl.GlBlendState;
-import net.minecraft.client.gl.GlProgram;
 import net.minecraft.client.gl.GlProgramManager;
 import net.minecraft.client.gl.GlShader;
 import net.minecraft.client.gl.GlUniform;
@@ -38,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class JsonGlProgram
-implements GlProgram,
+implements class_5936,
 AutoCloseable {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Uniform dummyUniform = new Uniform();
@@ -56,8 +58,8 @@ AutoCloseable {
     private final GlBlendState blendState;
     private final List<Integer> attribLocs;
     private final List<String> attribNames;
-    private final GlShader vertexShader;
-    private final GlShader fragmentShader;
+    private final class_5937 vertexShader;
+    private final class_5937 fragmentShader;
 
     public JsonGlProgram(ResourceManager resource, String name) throws IOException {
         Identifier identifier = new Identifier("shaders/program/" + name + ".json");
@@ -141,18 +143,24 @@ AutoCloseable {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
-    public static GlShader getShader(ResourceManager resourceManager, GlShader.Type type, String name) throws IOException {
+    public static class_5937 getShader(ResourceManager resourceManager, GlShader.Type type, String name) throws IOException {
+        class_5937 lv;
         GlShader glShader = type.getLoadedShaders().get(name);
+        if (glShader != null && !(glShader instanceof class_5937)) {
+            throw new InvalidClassException("Program is not of type EffectProgram");
+        }
         if (glShader == null) {
             Identifier identifier = new Identifier("shaders/program/" + name + type.getFileExtension());
             Resource resource = resourceManager.getResource(identifier);
             try {
-                glShader = GlShader.createFromResource(type, name, resource.getInputStream(), resource.getResourcePackName());
+                lv = class_5937.method_34415(type, name, resource.getInputStream(), resource.getResourcePackName());
             } finally {
                 IOUtils.closeQuietly((Closeable)resource);
             }
+        } else {
+            lv = (class_5937)glShader;
         }
-        return glShader;
+        return lv;
     }
 
     public static GlBlendState deserializeBlendState(JsonObject json) {
@@ -358,6 +366,12 @@ AutoCloseable {
     @Override
     public GlShader getFragmentShader() {
         return this.fragmentShader;
+    }
+
+    @Override
+    public void method_34418() {
+        this.fragmentShader.method_34414(this);
+        this.vertexShader.method_34414(this);
     }
 
     @Override

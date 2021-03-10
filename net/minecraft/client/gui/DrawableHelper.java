@@ -11,6 +11,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -82,6 +83,7 @@ public abstract class DrawableHelper {
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::method_34540);
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(matrix, x1, y2, 0.0f).color(g, h, j, f).next();
         bufferBuilder.vertex(matrix, x2, y2, 0.0f).color(g, h, j, f).next();
@@ -100,17 +102,14 @@ public abstract class DrawableHelper {
     protected static void method_33284(MatrixStack matrixStack, int i, int j, int k, int l, int m, int n, int o) {
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
-        RenderSystem.disableAlphaTest();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.shadeModel(7425);
+        RenderSystem.setShader(GameRenderer::method_34540);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         DrawableHelper.fillGradient(matrixStack.peek().getModel(), bufferBuilder, i, j, k, l, o, m, n);
         tessellator.draw();
-        RenderSystem.shadeModel(7424);
         RenderSystem.disableBlend();
-        RenderSystem.enableAlphaTest();
         RenderSystem.enableTexture();
     }
 
@@ -245,6 +244,7 @@ public abstract class DrawableHelper {
     }
 
     private static void drawTexturedQuad(Matrix4f matrices, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
+        RenderSystem.setShader(GameRenderer::method_34542);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
         bufferBuilder.vertex(matrices, x0, y1, z).texture(u0, v1).next();
@@ -252,7 +252,6 @@ public abstract class DrawableHelper {
         bufferBuilder.vertex(matrices, x1, y0, z).texture(u1, v0).next();
         bufferBuilder.vertex(matrices, x0, y0, z).texture(u0, v0).next();
         bufferBuilder.end();
-        RenderSystem.enableAlphaTest();
         BufferRenderer.draw(bufferBuilder);
     }
 

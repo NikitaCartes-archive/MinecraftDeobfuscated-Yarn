@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.PlayerSkinTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -88,14 +89,13 @@ extends PlayerEntity {
         return playerListEntry == null ? null : playerListEntry.getElytraTexture();
     }
 
-    public static PlayerSkinTexture loadSkin(Identifier id, String playerName) {
+    public static void loadSkin(Identifier id, String playerName) {
         TextureManager textureManager = MinecraftClient.getInstance().getTextureManager();
-        AbstractTexture abstractTexture = textureManager.getTexture(id);
-        if (abstractTexture == null) {
+        AbstractTexture abstractTexture = textureManager.method_34590(id, MissingSprite.getMissingSpriteTexture());
+        if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
             abstractTexture = new PlayerSkinTexture(null, String.format("http://skins.minecraft.net/MinecraftSkins/%s.png", ChatUtil.stripTextFormat(playerName)), DefaultSkinHelper.getTexture(AbstractClientPlayerEntity.getOfflinePlayerUuid(playerName)), true, null);
             textureManager.registerTexture(id, abstractTexture);
         }
-        return (PlayerSkinTexture)abstractTexture;
     }
 
     public static Identifier getSkinId(String playerName) {

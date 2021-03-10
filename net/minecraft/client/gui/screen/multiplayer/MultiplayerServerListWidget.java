@@ -25,6 +25,9 @@ import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.network.LanServerInfo;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.ServerList;
+import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.NarratorManager;
@@ -131,6 +134,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         private final ServerInfo server;
         private final Identifier iconTextureId;
         private String iconUri;
+        @Nullable
         private NativeImageBackedTexture icon;
         private long time;
 
@@ -139,7 +143,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             this.server = server;
             this.client = MinecraftClient.getInstance();
             this.iconTextureId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(server.address) + "/icon");
-            this.icon = (NativeImageBackedTexture)this.client.getTextureManager().getTexture(this.iconTextureId);
+            AbstractTexture abstractTexture = this.client.getTextureManager().method_34590(this.iconTextureId, MissingSprite.getMissingSpriteTexture());
+            if (abstractTexture != MissingSprite.getMissingSpriteTexture() && abstractTexture instanceof NativeImageBackedTexture) {
+                this.icon = (NativeImageBackedTexture)abstractTexture;
+            }
         }
 
         @Override
@@ -196,8 +203,9 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 text2 = PINGING_TEXT;
                 list2 = Collections.emptyList();
             }
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            this.client.getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
+            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
             DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, k * 10, 176 + l * 8, 10, 8, 256, 256);
             String string = this.server.getIcon();
             if (!Objects.equals(string, this.iconUri)) {
@@ -208,10 +216,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                     this.saveFile();
                 }
             }
-            if (this.icon != null) {
-                this.draw(matrices, x, y, this.iconTextureId);
-            } else {
+            if (this.icon == null) {
                 this.draw(matrices, x, y, UNKNOWN_SERVER_TEXTURE);
+            } else {
+                this.draw(matrices, x, y, this.iconTextureId);
             }
             int m = mouseX - x;
             int n = mouseY - y;
@@ -221,9 +229,10 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 this.screen.setTooltip(list2);
             }
             if (this.client.options.touchscreen || hovered) {
-                this.client.getTextureManager().bindTexture(SERVER_SELECTION_TEXTURE);
+                RenderSystem.setShaderTexture(0, SERVER_SELECTION_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.setShader(GameRenderer::method_34542);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 int o = mouseX - x;
                 int p = mouseY - y;
                 if (this.method_20136()) {
@@ -255,7 +264,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
         }
 
         protected void draw(MatrixStack matrices, int x, int y, Identifier textureId) {
-            this.client.getTextureManager().bindTexture(textureId);
+            RenderSystem.setShaderTexture(0, textureId);
             RenderSystem.enableBlend();
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             RenderSystem.disableBlend();

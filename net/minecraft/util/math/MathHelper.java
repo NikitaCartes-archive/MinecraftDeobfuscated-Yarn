@@ -515,13 +515,13 @@ public class MathHelper {
      * 
      * @param deltaX The x-coordinate on the unit square
      * @param deltaY The y-coordinate on the unit square
-     * @param val00 The output if {@code deltaX} is 0 and {@code deltaY} is 0
-     * @param val10 The output if {@code deltaX} is 1 and {@code deltaY} is 0
-     * @param val01 The output if {@code deltaX} is 0 and {@code deltaY} is 1
-     * @param val11 The output if {@code deltaX} is 1 and {@code deltaY} is 1
+     * @param x0y0 The output if {@code deltaX} is 0 and {@code deltaY} is 0
+     * @param x1y0 The output if {@code deltaX} is 1 and {@code deltaY} is 0
+     * @param x0y1 The output if {@code deltaX} is 0 and {@code deltaY} is 1
+     * @param x1y1 The output if {@code deltaX} is 1 and {@code deltaY} is 1
      */
-    public static double lerp2(double deltaX, double deltaY, double val00, double val10, double val01, double val11) {
-        return MathHelper.lerp(deltaY, MathHelper.lerp(deltaX, val00, val10), MathHelper.lerp(deltaX, val01, val11));
+    public static double lerp2(double deltaX, double deltaY, double x0y0, double x1y0, double x0y1, double x1y1) {
+        return MathHelper.lerp(deltaY, MathHelper.lerp(deltaX, x0y0, x1y0), MathHelper.lerp(deltaX, x0y1, x1y1));
     }
 
     /**
@@ -530,17 +530,17 @@ public class MathHelper {
      * @param deltaX The x-coordinate on the unit cube
      * @param deltaY The y-coordinate on the unit cube
      * @param deltaZ The z-coordinate on the unit cube
-     * @param val000 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
-     * @param val100 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
-     * @param val010 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
-     * @param val110 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
-     * @param val001 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
-     * @param val101 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
-     * @param val011 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
-     * @param val111 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
+     * @param x0y0z0 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 0
+     * @param x1y0z0 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 0
+     * @param x0y1z0 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 0
+     * @param x1y1z0 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 0
+     * @param x0y0z1 The output if {@code deltaX} is 0, {@code deltaY} is 0 and {@code deltaZ} is 1
+     * @param x1y0z1 The output if {@code deltaX} is 1, {@code deltaY} is 0 and {@code deltaZ} is 1
+     * @param x0y1z1 The output if {@code deltaX} is 0, {@code deltaY} is 1 and {@code deltaZ} is 1
+     * @param x1y1z1 The output if {@code deltaX} is 1, {@code deltaY} is 1 and {@code deltaZ} is 1
      */
-    public static double lerp3(double deltaX, double deltaY, double deltaZ, double val000, double val100, double val010, double val110, double val001, double val101, double val011, double val111) {
-        return MathHelper.lerp(deltaZ, MathHelper.lerp2(deltaX, deltaY, val000, val100, val010, val110), MathHelper.lerp2(deltaX, deltaY, val001, val101, val011, val111));
+    public static double lerp3(double deltaX, double deltaY, double deltaZ, double x0y0z0, double x1y0z0, double x0y1z0, double x1y1z0, double x0y0z1, double x1y0z1, double x0y1z1, double x1y1z1) {
+        return MathHelper.lerp(deltaZ, MathHelper.lerp2(deltaX, deltaY, x0y0z0, x1y0z0, x0y1z0, x1y1z0), MathHelper.lerp2(deltaX, deltaY, x0y0z1, x1y0z1, x0y1z1, x1y1z1));
     }
 
     public static double perlinFade(double value) {

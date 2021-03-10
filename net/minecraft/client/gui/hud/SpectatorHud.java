@@ -65,11 +65,10 @@ implements SpectatorMenuCloseCallback {
     }
 
     protected void renderSpectatorMenu(MatrixStack matrices, float f, int i, int j, SpectatorMenuState spectatorMenuState) {
-        RenderSystem.enableRescaleNormal();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, f);
-        this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, f);
+        RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
         this.drawTexture(matrices, i - 91, j, 0, 0, 182, 22);
         if (spectatorMenuState.getSelectedSlot() >= 0) {
             this.drawTexture(matrices, i - 91 - 1 + spectatorMenuState.getSelectedSlot() * 20, j - 1, 0, 22, 24, 22);
@@ -77,20 +76,19 @@ implements SpectatorMenuCloseCallback {
         for (int k = 0; k < 9; ++k) {
             this.renderSpectatorCommand(matrices, k, this.client.getWindow().getScaledWidth() / 2 - 90 + k * 20 + 2, j + 3, f, spectatorMenuState.getCommand(k));
         }
-        RenderSystem.disableRescaleNormal();
         RenderSystem.disableBlend();
     }
 
     private void renderSpectatorCommand(MatrixStack matrices, int i, int j, float f, float g, SpectatorMenuCommand spectatorMenuCommand) {
-        this.client.getTextureManager().bindTexture(SPECTATOR_TEXTURE);
+        RenderSystem.setShaderTexture(0, SPECTATOR_TEXTURE);
         if (spectatorMenuCommand != SpectatorMenu.BLANK_COMMAND) {
             int k = (int)(g * 255.0f);
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(j, f, 0.0f);
+            matrices.push();
+            matrices.translate(j, f, 0.0);
             float h = spectatorMenuCommand.isEnabled() ? 1.0f : 0.25f;
-            RenderSystem.color4f(h, h, h, g);
+            RenderSystem.setShaderColor(h, h, h, g);
             spectatorMenuCommand.renderIcon(matrices, h, k);
-            RenderSystem.popMatrix();
+            matrices.pop();
             if (k > 3 && spectatorMenuCommand.isEnabled()) {
                 Text text = this.client.options.keysHotbar[i].getBoundKeyLocalizedText();
                 this.client.textRenderer.drawWithShadow(matrices, text, (float)(j + 19 - 2 - this.client.textRenderer.getWidth(text)), f + 6.0f + 3.0f, 0xFFFFFF + (k << 24));
@@ -107,12 +105,10 @@ implements SpectatorMenuCloseCallback {
             if (text != null) {
                 int j = (this.client.getWindow().getScaledWidth() - this.client.textRenderer.getWidth(text)) / 2;
                 int k = this.client.getWindow().getScaledHeight() - 35;
-                RenderSystem.pushMatrix();
                 RenderSystem.enableBlend();
                 RenderSystem.defaultBlendFunc();
                 this.client.textRenderer.drawWithShadow(matrices, text, (float)j, (float)k, 0xFFFFFF + (i << 24));
                 RenderSystem.disableBlend();
-                RenderSystem.popMatrix();
             }
         }
     }

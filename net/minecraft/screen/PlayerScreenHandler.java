@@ -116,7 +116,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
 
     @Override
     public void onContentChanged(Inventory inventory) {
-        CraftingScreenHandler.updateResult(this.syncId, this.owner.world, this.owner, this.craftingInput, this.craftingResult);
+        CraftingScreenHandler.updateResult(this, this.owner.world, this.owner, this.craftingInput, this.craftingResult);
     }
 
     @Override
@@ -159,9 +159,9 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            ItemStack itemStack3 = slot.onTakeItem(player, itemStack2);
+            slot.onTakeItem(player, itemStack2);
             if (index == 0) {
-                player.dropItem(itemStack3, false);
+                player.dropItem(itemStack2, false);
             }
         }
         return itemStack;

@@ -36,7 +36,6 @@ implements DebugRenderer.Renderer {
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         ClientWorld worldAccess = this.client.world;
-        RenderSystem.pushMatrix();
         RenderSystem.disableBlend();
         RenderSystem.disableTexture();
         RenderSystem.enableDepthTest();
@@ -64,7 +63,6 @@ implements DebugRenderer.Renderer {
         }
         tessellator.draw();
         RenderSystem.enableTexture();
-        RenderSystem.popMatrix();
     }
 
     private Vec3f method_27037(Heightmap.Type type) {

@@ -169,13 +169,13 @@ public final class Biome {
         return false;
     }
 
-    public boolean method_33599(BlockPos blockPos) {
-        return this.getTemperature(blockPos) < 0.15f;
+    public boolean isCold(BlockPos pos) {
+        return this.getTemperature(pos) < 0.15f;
     }
 
     public boolean canSetSnow(WorldView world, BlockPos blockPos) {
         BlockState blockState;
-        if (!this.method_33599(blockPos)) {
+        if (!this.isCold(blockPos)) {
             return false;
         }
         return blockPos.getY() >= world.getBottomY() && blockPos.getY() < world.getTopY() && world.getLightLevel(LightType.BLOCK, blockPos) < 10 && (blockState = world.getBlockState(blockPos)).isAir() && Blocks.SNOW.getDefaultState().canPlaceAt(world, blockPos);
@@ -200,7 +200,8 @@ public final class Biome {
                     int o = ChunkSectionPos.getBlockCoord(m);
                     try {
                         int p = region.getBottomY() + 1;
-                        structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, region.getTopY() - 1, o + 15), new ChunkPos(l, m)));
+                        int q = region.getTopY() - 1;
+                        structureAccessor.getStructuresWithChildren(ChunkSectionPos.from(origin), structureFeature).forEach(structureStart -> structureStart.generateStructure(region, structureAccessor, chunkGenerator, random, new BlockBox(n, p, o, n + 15, q, o + 15), new ChunkPos(l, m)));
                     } catch (Exception exception) {
                         CrashReport crashReport = CrashReport.create(exception, "Feature placement");
                         crashReport.addElement("Feature").add("Id", Registry.STRUCTURE_FEATURE.getId(structureFeature)).add("Description", () -> structureFeature.toString());
@@ -581,7 +582,8 @@ public final class Biome {
         RIVER("river"),
         SWAMP("swamp"),
         MUSHROOM("mushroom"),
-        NETHER("nether");
+        NETHER("nether"),
+        UNDERGROUND("underground");
 
         public static final Codec<Category> CODEC;
         private static final Map<String, Category> BY_NAME;

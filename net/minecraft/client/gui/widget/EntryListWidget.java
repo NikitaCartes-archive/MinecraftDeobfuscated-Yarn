@@ -19,10 +19,12 @@ import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 public abstract class EntryListWidget<E extends Entry<E>>
 extends AbstractParentElement
 implements Drawable {
+    public static final Identifier field_29346 = new Identifier("textures/misc/white.png");
     protected final MinecraftClient client;
     protected final int itemHeight;
     private final List<E> children = new Entries();
@@ -183,8 +186,9 @@ implements Drawable {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
         if (this.field_26846) {
-            this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShader(GameRenderer::method_34543);
+            RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             float f = 32.0f;
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(this.left, this.bottom, 0.0).texture((float)this.left / 32.0f, (float)(this.bottom + (int)this.getScrollAmount()) / 32.0f).color(32, 32, 32, 255).next();
@@ -200,7 +204,8 @@ implements Drawable {
         }
         this.renderList(matrices, k, l, mouseX, mouseY, delta);
         if (this.field_26847) {
-            this.client.getTextureManager().bindTexture(DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
+            RenderSystem.setShader(GameRenderer::method_34543);
+            RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.enableDepthTest();
             RenderSystem.depthFunc(519);
             float g = 32.0f;
@@ -219,9 +224,9 @@ implements Drawable {
             RenderSystem.disableDepthTest();
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
-            RenderSystem.disableAlphaTest();
-            RenderSystem.shadeModel(7425);
             RenderSystem.disableTexture();
+            RenderSystem.setShader(GameRenderer::method_34543);
+            RenderSystem.setShaderTexture(0, field_29346);
             n = 4;
             bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
             bufferBuilder.vertex(this.left, this.top + 4, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 0).next();
@@ -259,8 +264,6 @@ implements Drawable {
         }
         this.renderDecorations(matrices, mouseX, mouseY);
         RenderSystem.enableTexture();
-        RenderSystem.shadeModel(7424);
-        RenderSystem.enableAlphaTest();
         RenderSystem.disableBlend();
     }
 
@@ -433,15 +436,16 @@ implements Drawable {
                 p = this.left + this.width / 2 - o / 2;
                 int q = this.left + this.width / 2 + o / 2;
                 RenderSystem.disableTexture();
+                RenderSystem.setShader(GameRenderer::method_34539);
                 float f = this.isFocused() ? 1.0f : 0.5f;
-                RenderSystem.color4f(f, f, f, 1.0f);
+                RenderSystem.setShaderColor(f, f, f, 1.0f);
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
                 bufferBuilder.vertex(p, m + n + 2, 0.0).next();
                 bufferBuilder.vertex(q, m + n + 2, 0.0).next();
                 bufferBuilder.vertex(q, m - 2, 0.0).next();
                 bufferBuilder.vertex(p, m - 2, 0.0).next();
                 tessellator.draw();
-                RenderSystem.color4f(0.0f, 0.0f, 0.0f, 1.0f);
+                RenderSystem.setShaderColor(0.0f, 0.0f, 0.0f, 1.0f);
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
                 bufferBuilder.vertex(p + 1, m + n + 1, 0.0).next();
                 bufferBuilder.vertex(q - 1, m + n + 1, 0.0).next();

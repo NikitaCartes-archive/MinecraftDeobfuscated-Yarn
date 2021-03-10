@@ -71,48 +71,48 @@ implements Spawner {
         if (this.random.nextInt(100) > i) {
             return 0;
         }
-        if (this.method_18018(world)) {
+        if (this.trySpawn(world)) {
             this.spawnChance = 25;
             return 1;
         }
         return 0;
     }
 
-    private boolean method_18018(ServerWorld serverWorld) {
-        ServerPlayerEntity playerEntity = serverWorld.getRandomAlivePlayer();
+    private boolean trySpawn(ServerWorld world) {
+        ServerPlayerEntity playerEntity = world.getRandomAlivePlayer();
         if (playerEntity == null) {
             return true;
         }
         if (this.random.nextInt(10) != 0) {
             return false;
         }
-        BlockPos blockPos2 = playerEntity.getBlockPos();
+        BlockPos blockPos = playerEntity.getBlockPos();
         int i = 48;
-        PointOfInterestStorage pointOfInterestStorage = serverWorld.getPointOfInterestStorage();
-        Optional<BlockPos> optional = pointOfInterestStorage.getPosition(PointOfInterestType.MEETING.getCompletionCondition(), blockPos -> true, blockPos2, 48, PointOfInterestStorage.OccupationStatus.ANY);
-        BlockPos blockPos22 = optional.orElse(blockPos2);
-        BlockPos blockPos3 = this.getNearbySpawnPos(serverWorld, blockPos22, 48);
-        if (blockPos3 != null && this.doesNotSuffocateAt(serverWorld, blockPos3)) {
-            if (serverWorld.getBiomeKey(blockPos3).equals(Optional.of(BiomeKeys.THE_VOID))) {
+        PointOfInterestStorage pointOfInterestStorage = world.getPointOfInterestStorage();
+        Optional<BlockPos> optional = pointOfInterestStorage.getPosition(PointOfInterestType.MEETING.getCompletionCondition(), pos -> true, blockPos, 48, PointOfInterestStorage.OccupationStatus.ANY);
+        BlockPos blockPos2 = optional.orElse(blockPos);
+        BlockPos blockPos3 = this.getNearbySpawnPos(world, blockPos2, 48);
+        if (blockPos3 != null && this.doesNotSuffocateAt(world, blockPos3)) {
+            if (world.getBiomeKey(blockPos3).equals(Optional.of(BiomeKeys.THE_VOID))) {
                 return false;
             }
-            WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(serverWorld, null, null, null, blockPos3, SpawnReason.EVENT, false, false);
+            WanderingTraderEntity wanderingTraderEntity = EntityType.WANDERING_TRADER.spawn(world, null, null, null, blockPos3, SpawnReason.EVENT, false, false);
             if (wanderingTraderEntity != null) {
                 for (int j = 0; j < 2; ++j) {
-                    this.spawnLlama(serverWorld, wanderingTraderEntity, 4);
+                    this.spawnLlama(world, wanderingTraderEntity, 4);
                 }
                 this.properties.setWanderingTraderId(wanderingTraderEntity.getUuid());
                 wanderingTraderEntity.setDespawnDelay(48000);
-                wanderingTraderEntity.setWanderTarget(blockPos22);
-                wanderingTraderEntity.setPositionTarget(blockPos22, 16);
+                wanderingTraderEntity.setWanderTarget(blockPos2);
+                wanderingTraderEntity.setPositionTarget(blockPos2, 16);
                 return true;
             }
         }
         return false;
     }
 
-    private void spawnLlama(ServerWorld world, WanderingTraderEntity wanderingTrader, int i) {
-        BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.getBlockPos(), i);
+    private void spawnLlama(ServerWorld world, WanderingTraderEntity wanderingTrader, int range) {
+        BlockPos blockPos = this.getNearbySpawnPos(world, wanderingTrader.getBlockPos(), range);
         if (blockPos == null) {
             return;
         }
@@ -124,13 +124,13 @@ implements Spawner {
     }
 
     @Nullable
-    private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int i) {
+    private BlockPos getNearbySpawnPos(WorldView world, BlockPos pos, int range) {
         BlockPos blockPos = null;
-        for (int j = 0; j < 10; ++j) {
+        for (int i = 0; i < 10; ++i) {
+            int k;
             int l;
-            int m;
-            int k = pos.getX() + this.random.nextInt(i * 2) - i;
-            BlockPos blockPos2 = new BlockPos(k, m = world.getTopY(Heightmap.Type.WORLD_SURFACE, k, l = pos.getZ() + this.random.nextInt(i * 2) - i), l);
+            int j = pos.getX() + this.random.nextInt(range * 2) - range;
+            BlockPos blockPos2 = new BlockPos(j, l = world.getTopY(Heightmap.Type.WORLD_SURFACE, j, k = pos.getZ() + this.random.nextInt(range * 2) - range), k);
             if (!SpawnHelper.canSpawn(SpawnRestriction.Location.ON_GROUND, world, blockPos2, EntityType.WANDERING_TRADER)) continue;
             blockPos = blockPos2;
             break;

@@ -6,6 +6,7 @@ package net.minecraft.client.gui.hud.spectator;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.Collection;
 import java.util.List;
 import net.fabricmc.api.EnvType;
@@ -65,7 +66,7 @@ SpectatorMenuCommand {
 
     @Override
     public void renderIcon(MatrixStack matrices, float f, int i) {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
+        RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
         DrawableHelper.drawTexture(matrices, 0, 0, 0.0f, 0.0f, 16, 16, 256, 256);
     }
 

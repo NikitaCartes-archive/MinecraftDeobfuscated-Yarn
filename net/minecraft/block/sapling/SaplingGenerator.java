@@ -25,7 +25,6 @@ public abstract class SaplingGenerator {
             return false;
         }
         world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
-        ((TreeFeatureConfig)configuredFeature.config).ignoreFluidCheck();
         if (configuredFeature.generate(world, chunkGenerator, random, pos)) {
             return true;
         }

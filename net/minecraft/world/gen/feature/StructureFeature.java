@@ -15,6 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -130,7 +131,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         }
         ChunkPos chunkPos = new ChunkPos(tag.getInt("ChunkX"), tag.getInt("ChunkZ"));
         int i = tag.getInt("references");
-        BlockBox blockBox = tag.contains("BB") ? new BlockBox(tag.getIntArray("BB")) : BlockBox.empty();
+        BlockBox blockBox = tag.contains("BB") ? BlockBox.CODEC.parse(NbtOps.INSTANCE, tag.get("BB")).resultOrPartial(LOGGER::error).orElse(new BlockBox(BlockPos.ORIGIN)) : BlockBox.empty();
         ListTag listTag = tag.getList("Children", 10);
         try {
             StructureStart<?> structureStart = super.createStart(chunkPos, blockBox, i, worldSeed);
@@ -197,7 +198,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     int o = j + i * m;
                     int p = k + i * n;
                     ChunkPos chunkPos = this.getStartChunk(config, worldSeed, chunkRandom, o, p);
-                    boolean bl32 = world.getBiomeAccess().method_31608(chunkPos).getGenerationSettings().hasStructureFeature(this);
+                    boolean bl32 = world.getBiomeAccess().getBiomeForNoiseGen(chunkPos).getGenerationSettings().hasStructureFeature(this);
                     if (bl32 && (structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS)), this, chunk)) != null && structureStart.hasChildren()) {
                         if (skipExistingChunks && structureStart.isInExistingChunk()) {
                             structureStart.incrementReferences();

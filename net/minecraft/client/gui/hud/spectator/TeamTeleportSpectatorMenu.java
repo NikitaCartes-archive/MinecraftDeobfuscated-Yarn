@@ -63,7 +63,7 @@ SpectatorMenuCommand {
 
     @Override
     public void renderIcon(MatrixStack matrices, float f, int i) {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(SpectatorHud.SPECTATOR_TEXTURE);
+        RenderSystem.setShaderTexture(0, SpectatorHud.SPECTATOR_TEXTURE);
         DrawableHelper.drawTexture(matrices, 0, 0, 16.0f, 0.0f, 16, 16, 256, 256);
     }
 
@@ -119,8 +119,8 @@ SpectatorMenuCommand {
                 float j = (float)(integer & 0xFF) / 255.0f;
                 DrawableHelper.fill(matrices, 1, 1, 15, 15, MathHelper.packRgb(g * f, h * f, j * f) | i << 24);
             }
-            MinecraftClient.getInstance().getTextureManager().bindTexture(this.skinId);
-            RenderSystem.color4f(f, f, f, (float)i / 255.0f);
+            RenderSystem.setShaderTexture(0, this.skinId);
+            RenderSystem.setShaderColor(f, f, f, (float)i / 255.0f);
             DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 8.0f, 8.0f, 8, 8, 64, 64);
             DrawableHelper.drawTexture(matrices, 2, 2, 12, 12, 40.0f, 8.0f, 8, 8, 64, 64);
         }

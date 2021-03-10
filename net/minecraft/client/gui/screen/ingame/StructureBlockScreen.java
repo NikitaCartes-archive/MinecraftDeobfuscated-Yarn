@@ -27,6 +27,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 
 @Environment(value=EnvType.CLIENT)
 public class StructureBlockScreen
@@ -187,18 +188,18 @@ extends Screen {
         this.inputPosZ.setMaxLength(15);
         this.inputPosZ.setText(Integer.toString(blockPos.getZ()));
         this.children.add(this.inputPosZ);
-        BlockPos blockPos2 = this.structureBlock.getSize();
+        Vec3i vec3i = this.structureBlock.getSize();
         this.inputSizeX = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 80, 20, new TranslatableText("structure_block.size.x"));
         this.inputSizeX.setMaxLength(15);
-        this.inputSizeX.setText(Integer.toString(blockPos2.getX()));
+        this.inputSizeX.setText(Integer.toString(vec3i.getX()));
         this.children.add(this.inputSizeX);
         this.inputSizeY = new TextFieldWidget(this.textRenderer, this.width / 2 - 72, 120, 80, 20, new TranslatableText("structure_block.size.y"));
         this.inputSizeY.setMaxLength(15);
-        this.inputSizeY.setText(Integer.toString(blockPos2.getY()));
+        this.inputSizeY.setText(Integer.toString(vec3i.getY()));
         this.children.add(this.inputSizeY);
         this.inputSizeZ = new TextFieldWidget(this.textRenderer, this.width / 2 + 8, 120, 80, 20, new TranslatableText("structure_block.size.z"));
         this.inputSizeZ.setMaxLength(15);
-        this.inputSizeZ.setText(Integer.toString(blockPos2.getZ()));
+        this.inputSizeZ.setText(Integer.toString(vec3i.getZ()));
         this.children.add(this.inputSizeZ);
         this.inputIntegrity = new TextFieldWidget(this.textRenderer, this.width / 2 - 152, 120, 80, 20, new TranslatableText("structure_block.integrity.integrity"));
         this.inputIntegrity.setMaxLength(15);
@@ -338,10 +339,10 @@ extends Screen {
 
     private boolean updateStructureBlock(StructureBlockBlockEntity.Action action) {
         BlockPos blockPos = new BlockPos(this.parseInt(this.inputPosX.getText()), this.parseInt(this.inputPosY.getText()), this.parseInt(this.inputPosZ.getText()));
-        BlockPos blockPos2 = new BlockPos(this.parseInt(this.inputSizeX.getText()), this.parseInt(this.inputSizeY.getText()), this.parseInt(this.inputSizeZ.getText()));
+        Vec3i vec3i = new Vec3i(this.parseInt(this.inputSizeX.getText()), this.parseInt(this.inputSizeY.getText()), this.parseInt(this.inputSizeZ.getText()));
         float f = this.parseFloat(this.inputIntegrity.getText());
         long l = this.parseLong(this.inputSeed.getText());
-        this.client.getNetworkHandler().sendPacket(new UpdateStructureBlockC2SPacket(this.structureBlock.getPos(), action, this.structureBlock.getMode(), this.inputName.getText(), blockPos, blockPos2, this.structureBlock.getMirror(), this.structureBlock.getRotation(), this.inputMetadata.getText(), this.structureBlock.shouldIgnoreEntities(), this.structureBlock.shouldShowAir(), this.structureBlock.shouldShowBoundingBox(), f, l));
+        this.client.getNetworkHandler().sendPacket(new UpdateStructureBlockC2SPacket(this.structureBlock.getPos(), action, this.structureBlock.getMode(), this.inputName.getText(), blockPos, vec3i, this.structureBlock.getMirror(), this.structureBlock.getRotation(), this.inputMetadata.getText(), this.structureBlock.shouldIgnoreEntities(), this.structureBlock.shouldShowAir(), this.structureBlock.shouldShowBoundingBox(), f, l));
         return true;
     }
 

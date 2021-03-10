@@ -268,7 +268,7 @@ VillagerDataContainer {
     }
 
     private void beginTradeWith(PlayerEntity customer) {
-        this.prepareRecipesFor(customer);
+        this.prepareOffersFor(customer);
         this.setCurrentCustomer(customer);
         this.sendOffers(customer, this.getDisplayName(), this.getVillagerData().getLevel());
     }
@@ -285,10 +285,13 @@ VillagerDataContainer {
     @Override
     protected void resetCustomer() {
         super.resetCustomer();
-        this.clearCurrentBonus();
+        this.clearSpecialPrices();
     }
 
-    private void clearCurrentBonus() {
+    /**
+     * Resets the special price of all the trade offers of this villager.
+     */
+    private void clearSpecialPrices() {
         for (TradeOffer tradeOffer : this.getOffers()) {
             tradeOffer.clearSpecialPrice();
         }
@@ -300,7 +303,7 @@ VillagerDataContainer {
     }
 
     public void restock() {
-        this.updatePricesOnDemand();
+        this.updateDemandBonus();
         for (TradeOffer tradeOffer : this.getOffers()) {
             tradeOffer.resetUses();
         }
@@ -308,9 +311,14 @@ VillagerDataContainer {
         ++this.restocksToday;
     }
 
-    private boolean needRestock() {
+    /**
+     * Returns whether this villager needs restock.
+     * 
+     * <p>Checks if at least one of its trade offers has been used.
+     */
+    private boolean needsRestock() {
         for (TradeOffer tradeOffer : this.getOffers()) {
-            if (!tradeOffer.hasAvailableUses()) continue;
+            if (!tradeOffer.hasBeenUsed()) continue;
             return true;
         }
         return false;
@@ -335,10 +343,10 @@ VillagerDataContainer {
             this.lastRestockTime = m;
             this.clearDailyRestockCount();
         }
-        return this.canRestock() && this.needRestock();
+        return this.canRestock() && this.needsRestock();
     }
 
-    private void restockAndUpdatePricesOnDemand() {
+    private void restockAndUpdateDemandBonus() {
         int i = 2 - this.restocksToday;
         if (i > 0) {
             for (TradeOffer tradeOffer : this.getOffers()) {
@@ -346,17 +354,20 @@ VillagerDataContainer {
             }
         }
         for (int j = 0; j < i; ++j) {
-            this.updatePricesOnDemand();
+            this.updateDemandBonus();
         }
     }
 
-    private void updatePricesOnDemand() {
+    /**
+     * Updates the demand bonus of all the trade offers of this villager.
+     */
+    private void updateDemandBonus() {
         for (TradeOffer tradeOffer : this.getOffers()) {
-            tradeOffer.updatePriceOnDemand();
+            tradeOffer.updateDemandBonus();
         }
     }
 
-    private void prepareRecipesFor(PlayerEntity player) {
+    private void prepareOffersFor(PlayerEntity player) {
         int i = this.getReputation(player);
         if (i != 0) {
             for (TradeOffer tradeOffer : this.getOffers()) {
@@ -755,7 +766,7 @@ VillagerDataContainer {
         }
         Box box = this.getBoundingBox().expand(10.0, 10.0, 10.0);
         List<VillagerEntity> list = world.getNonSpectatingEntities(VillagerEntity.class, box);
-        List list2 = list.stream().filter(villagerEntity -> villagerEntity.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
+        List list2 = list.stream().filter(villager -> villager.canSummonGolem(time)).limit(5L).collect(Collectors.toList());
         if (list2.size() < i) {
             return;
         }
@@ -767,7 +778,7 @@ VillagerDataContainer {
     }
 
     public boolean canSummonGolem(long time) {
-        if (!this.hasRecentlyWorkedAndSlept(this.world.getTime())) {
+        if (!this.hasRecentlySlept(this.world.getTime())) {
             return false;
         }
         return !this.brain.hasMemoryModule(MemoryModuleType.GOLEM_DETECTED_RECENTLY);
@@ -831,7 +842,7 @@ VillagerDataContainer {
     }
 
     private void clearDailyRestockCount() {
-        this.restockAndUpdatePricesOnDemand();
+        this.restockAndUpdateDemandBonus();
         this.restocksToday = 0;
     }
 
@@ -863,7 +874,7 @@ VillagerDataContainer {
         this.brain.remember(MemoryModuleType.LAST_WOKEN, this.world.getTime());
     }
 
-    private boolean hasRecentlyWorkedAndSlept(long worldTime) {
+    private boolean hasRecentlySlept(long worldTime) {
         Optional<Long> optional = this.brain.getOptionalMemory(MemoryModuleType.LAST_SLEPT);
         if (optional.isPresent()) {
             return worldTime - optional.get() < 24000L;

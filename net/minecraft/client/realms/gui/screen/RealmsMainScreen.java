@@ -49,6 +49,7 @@ import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.realms.task.RealmsGetServerDetailsTask;
 import net.minecraft.client.realms.util.RealmsPersistence;
 import net.minecraft.client.realms.util.RealmsTextureManager;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
@@ -60,6 +61,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
@@ -662,8 +664,8 @@ extends RealmsScreen {
             this.renderMousehoverTooltip(matrices, this.toolTip, mouseX, mouseY);
         }
         if (this.trialsAvailable && !this.createdTrial && this.shouldShowPopup()) {
-            this.client.getTextureManager().bindTexture(TRIAL_ICON);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, TRIAL_ICON);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             int i = 8;
             int j = 8;
             int k = 0;
@@ -675,12 +677,13 @@ extends RealmsScreen {
     }
 
     private void drawRealmsLogo(MatrixStack matrices, int x, int y) {
-        this.client.getTextureManager().bindTexture(REALMS);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(0.5f, 0.5f, 0.5f);
+        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShaderTexture(0, REALMS);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        matrices.push();
+        matrices.scale(0.5f, 0.5f, 0.5f);
         DrawableHelper.drawTexture(matrices, x * 2, y * 2 - 5, 0.0f, 0.0f, 200, 50, 200, 50);
-        RenderSystem.popMatrix();
+        matrices.pop();
     }
 
     @Override
@@ -716,19 +719,19 @@ extends RealmsScreen {
         if (this.hasFetchedServers) {
             this.showingPopup = true;
         }
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 0.7f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.7f);
         RenderSystem.enableBlend();
-        this.client.getTextureManager().bindTexture(DARKEN);
+        RenderSystem.setShaderTexture(0, DARKEN);
         boolean k = false;
         int l = 32;
         DrawableHelper.drawTexture(matrices, 0, 32, 0.0f, 0.0f, this.width, this.height - 40 - 32, 310, 166);
         RenderSystem.disableBlend();
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(POPUP);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, POPUP);
         DrawableHelper.drawTexture(matrices, i, j, 0.0f, 0.0f, 310, 166, 310, 166);
         if (!IMAGES.isEmpty()) {
-            this.client.getTextureManager().bindTexture(IMAGES.get(this.carouselIndex));
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, IMAGES.get(this.carouselIndex));
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, i + 7, j + 7, 0.0f, 0.0f, 195, 152, 195, 152);
             if (this.carouselTick % 95 < 5) {
                 if (!this.hasSwitchedCarouselImage) {
@@ -769,8 +772,8 @@ extends RealmsScreen {
             this.fillGradient(matrixStack, k + 17, l - 2, k + 18, l + 18, n, n);
             this.fillGradient(matrixStack, k - 2, l + 17, k + 18, l + 18, n, n);
         }
-        this.client.getTextureManager().bindTexture(INVITE_ICON);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, INVITE_ICON);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         boolean bl52 = bl2 && bl;
         float g = bl52 ? 16.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, k, l - 6, g, 0.0f, 15, 25, 31, 25);
@@ -778,8 +781,8 @@ extends RealmsScreen {
         if (bl6) {
             o = (Math.min(m, 6) - 1) * 8;
             p = (int)(Math.max(0.0f, Math.max(MathHelper.sin((float)(10 + this.animTick) * 0.57f), MathHelper.cos((float)this.animTick * 0.35f))) * -6.0f);
-            this.client.getTextureManager().bindTexture(INVITATION_ICON);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, INVITATION_ICON);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             float h = bl3 ? 8.0f : 0.0f;
             DrawableHelper.drawTexture(matrixStack, k + 4, l + 4 + p, o, h, 8, 8, 48, 16);
         }
@@ -834,8 +837,8 @@ extends RealmsScreen {
     }
 
     private void drawExpired(MatrixStack matrixStack, int i, int j, int k, int l) {
-        this.client.getTextureManager().bindTexture(EXPIRED_ICON);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, EXPIRED_ICON);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, 0.0f, 10, 28, 10, 28);
         if (k >= i && k <= i + 9 && l >= j && l <= j + 27 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
             this.method_27452(EXPIRED_TEXT);
@@ -843,8 +846,8 @@ extends RealmsScreen {
     }
 
     private void method_24987(MatrixStack matrixStack, int i, int j, int k, int l, int m) {
-        this.client.getTextureManager().bindTexture(EXPIRES_SOON_ICON);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, EXPIRES_SOON_ICON);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         if (this.animTick % 20 < 10) {
             DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, 0.0f, 10, 28, 20, 28);
         } else {
@@ -862,8 +865,8 @@ extends RealmsScreen {
     }
 
     private void drawOpen(MatrixStack matrixStack, int i, int j, int k, int l) {
-        this.client.getTextureManager().bindTexture(ON_ICON);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, ON_ICON);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, 0.0f, 10, 28, 10, 28);
         if (k >= i && k <= i + 9 && l >= j && l <= j + 27 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
             this.method_27452(OPEN_TEXT);
@@ -871,8 +874,8 @@ extends RealmsScreen {
     }
 
     private void drawClose(MatrixStack matrixStack, int i, int j, int k, int l) {
-        this.client.getTextureManager().bindTexture(OFF_ICON);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, OFF_ICON);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         DrawableHelper.drawTexture(matrixStack, i, j, 0.0f, 0.0f, 10, 28, 10, 28);
         if (k >= i && k <= i + 9 && l >= j && l <= j + 27 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
             this.method_27452(CLOSED_TEXT);
@@ -884,8 +887,8 @@ extends RealmsScreen {
         if (k >= i && k <= i + 28 && l >= j && l <= j + 28 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
             bl = true;
         }
-        this.client.getTextureManager().bindTexture(LEAVE_ICON);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, LEAVE_ICON);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 28.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, i, j, f, 0.0f, 28, 28, 56, 28);
         if (bl) {
@@ -899,8 +902,8 @@ extends RealmsScreen {
         if (k >= i && k <= i + 28 && l >= j && l <= j + 28 && l < this.height - 40 && l > 32 && !this.shouldShowPopup()) {
             bl = true;
         }
-        this.client.getTextureManager().bindTexture(CONFIGURE_ICON);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, CONFIGURE_ICON);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 28.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, i, j, f, 0.0f, 28, 28, 56, 28);
         if (bl) {
@@ -938,8 +941,8 @@ extends RealmsScreen {
         if (i >= k && i <= k + 20 && j >= l && j <= l + 20) {
             bl2 = true;
         }
-        this.client.getTextureManager().bindTexture(QUESTIONMARK);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, QUESTIONMARK);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         float f = bl ? 20.0f : 0.0f;
         DrawableHelper.drawTexture(matrixStack, k, l, f, 0.0f, 20, 20, 40, 20);
         if (bl2) {
@@ -952,11 +955,11 @@ extends RealmsScreen {
         if (i >= k && i <= k + 20 && j >= l && j <= l + 20) {
             bl4 = true;
         }
-        this.client.getTextureManager().bindTexture(NEWS_ICON);
+        RenderSystem.setShaderTexture(0, NEWS_ICON);
         if (bl3) {
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         } else {
-            RenderSystem.color4f(0.5f, 0.5f, 0.5f, 1.0f);
+            RenderSystem.setShaderColor(0.5f, 0.5f, 0.5f, 1.0f);
         }
         boolean bl5 = bl3 && bl2;
         float f = bl5 ? 20.0f : 0.0f;
@@ -966,32 +969,32 @@ extends RealmsScreen {
         }
         if (bl && bl3) {
             int m = bl4 ? 0 : (int)(Math.max(0.0f, Math.max(MathHelper.sin((float)(10 + this.animTick) * 0.57f), MathHelper.cos((float)this.animTick * 0.35f))) * -6.0f);
-            this.client.getTextureManager().bindTexture(INVITATION_ICON);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, INVITATION_ICON);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrixStack, k + 10, l + 2 + m, 40.0f, 0.0f, 8, 8, 48, 16);
         }
     }
 
     private void renderLocal(MatrixStack matrixStack) {
         String string = "LOCAL!";
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(this.width / 2 - 25, 20.0f, 0.0f);
-        RenderSystem.rotatef(-20.0f, 0.0f, 0.0f, 1.0f);
-        RenderSystem.scalef(1.5f, 1.5f, 1.5f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        matrixStack.push();
+        matrixStack.translate(this.width / 2 - 25, 20.0, 0.0);
+        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-20.0f));
+        matrixStack.scale(1.5f, 1.5f, 1.5f);
         this.textRenderer.draw(matrixStack, "LOCAL!", 0.0f, 0.0f, 0x7FFF7F);
-        RenderSystem.popMatrix();
+        matrixStack.pop();
     }
 
     private void renderStage(MatrixStack matrixStack) {
         String string = "STAGE!";
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(this.width / 2 - 25, 20.0f, 0.0f);
-        RenderSystem.rotatef(-20.0f, 0.0f, 0.0f, 1.0f);
-        RenderSystem.scalef(1.5f, 1.5f, 1.5f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        matrixStack.push();
+        matrixStack.translate(this.width / 2 - 25, 20.0, 0.0);
+        matrixStack.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-20.0f));
+        matrixStack.scale(1.5f, 1.5f, 1.5f);
         this.textRenderer.draw(matrixStack, "STAGE!", 0.0f, 0.0f, -256);
-        RenderSystem.popMatrix();
+        matrixStack.pop();
     }
 
     public RealmsMainScreen newScreen() {
@@ -1026,8 +1029,8 @@ extends RealmsScreen {
 
         @Override
         public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-            RealmsMainScreen.this.client.getTextureManager().bindTexture(CROSS_ICON);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, CROSS_ICON);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             float f = this.isHovered() ? 12.0f : 0.0f;
             CloseButton.drawTexture(matrices, this.x, this.y, 0.0f, f, 12, 12, 12, 24);
             if (this.isMouseOver(mouseX, mouseY)) {
@@ -1123,9 +1126,8 @@ extends RealmsScreen {
 
         private void renderMcoServerItem(RealmsServer serverData, MatrixStack matrixStack, int i, int j, int k, int l) {
             if (serverData.state == RealmsServer.State.UNINITIALIZED) {
-                RealmsMainScreen.this.client.getTextureManager().bindTexture(WORLD_ICON);
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                RenderSystem.enableAlphaTest();
+                RenderSystem.setShaderTexture(0, WORLD_ICON);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 DrawableHelper.drawTexture(matrixStack, i + 10, j + 6, 0.0f, 0.0f, 40, 20, 40, 20);
                 float f = 0.5f + (1.0f + MathHelper.sin((float)RealmsMainScreen.this.animTick * 0.25f)) * 0.25f;
                 int m = 0xFF000000 | (int)(127.0f * f) << 16 | (int)(255.0f * f) << 8 | (int)(127.0f * f);
@@ -1158,9 +1160,9 @@ extends RealmsScreen {
             if (RealmsMainScreen.this.isSelfOwnedServer(serverData) && serverData.expired) {
                 Text text2;
                 Text text;
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 RenderSystem.enableBlend();
-                RealmsMainScreen.this.client.getTextureManager().bindTexture(WIDGETS);
+                RenderSystem.setShaderTexture(0, WIDGETS);
                 RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
                 if (serverData.expiredTrial) {
                     text = EXPIRED_TRIAL_TEXT;
@@ -1203,7 +1205,7 @@ extends RealmsScreen {
             }
             RealmsMainScreen.this.textRenderer.draw(matrixStack, serverData.getName(), (float)(i + 2), (float)(j + 1), 0xFFFFFF);
             RealmsTextureManager.withBoundFace(serverData.ownerUUID, () -> {
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 DrawableHelper.drawTexture(matrixStack, i - 36, j, 32, 32, 8.0f, 8.0f, 8, 8, 64, 64);
                 DrawableHelper.drawTexture(matrixStack, i - 36, j, 32, 32, 40.0f, 8.0f, 8, 8, 64, 64);
             });

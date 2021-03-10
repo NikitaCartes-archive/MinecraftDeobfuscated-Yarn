@@ -70,8 +70,8 @@ public final class SpawnHelper {
             if (entity instanceof MobEntity && ((mobEntity = (MobEntity)entity).isPersistent() || mobEntity.cannotDespawn()) || (spawnGroup = entity.getType().getSpawnGroup()) == SpawnGroup.MISC) continue;
             BlockPos blockPos = entity.getBlockPos();
             long l = ChunkPos.toLong(ChunkSectionPos.getSectionCoord(blockPos.getX()), ChunkSectionPos.getSectionCoord(blockPos.getZ()));
-            chunkSource.query(l, worldChunk -> {
-                SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, worldChunk).getSpawnSettings().getSpawnDensity(entity.getType());
+            chunkSource.query(l, chunk -> {
+                SpawnSettings.SpawnDensity spawnDensity = SpawnHelper.getBiomeDirectly(blockPos, chunk).getSpawnSettings().getSpawnDensity(entity.getType());
                 if (spawnDensity != null) {
                     gravityField.addPoint(entity.getBlockPos(), spawnDensity.getMass());
                 }
@@ -89,7 +89,7 @@ public final class SpawnHelper {
         world.getProfiler().push("spawner");
         for (SpawnGroup spawnGroup : SPAWNABLE_GROUPS) {
             if (!spawnAnimals && spawnGroup.isPeaceful() || !spawnMonsters && !spawnGroup.isPeaceful() || !rareSpawn && spawnGroup.isRare() || !info.isBelowCap(spawnGroup)) continue;
-            SpawnHelper.spawnEntitiesInChunk(spawnGroup, world, chunk2, (entityType, blockPos, chunk) -> info.test(entityType, blockPos, chunk), (mobEntity, chunk) -> info.run(mobEntity, chunk));
+            SpawnHelper.spawnEntitiesInChunk(spawnGroup, world, chunk2, (entityType, pos, chunk) -> info.test(entityType, pos, chunk), (entity, chunk) -> info.run(entity, chunk));
         }
         world.getProfiler().pop();
     }
@@ -212,7 +212,7 @@ public final class SpawnHelper {
         if (spawnGroup == SpawnGroup.WATER_AMBIENT && biome.getCategory() == Biome.Category.RIVER && random.nextFloat() < 0.98f) {
             return Optional.empty();
         }
-        List<SpawnSettings.SpawnEntry> list = SpawnHelper.method_29950(world, structureAccessor, chunkGenerator, spawnGroup, pos, biome);
+        List<SpawnSettings.SpawnEntry> list = SpawnHelper.getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, biome);
         if (list.isEmpty()) {
             return Optional.empty();
         }
@@ -220,14 +220,14 @@ public final class SpawnHelper {
     }
 
     private static boolean containsSpawnEntry(ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, SpawnSettings.SpawnEntry spawnEntry, BlockPos pos) {
-        return SpawnHelper.method_29950(world, structureAccessor, chunkGenerator, spawnGroup, pos, null).contains(spawnEntry);
+        return SpawnHelper.getSpawnEntries(world, structureAccessor, chunkGenerator, spawnGroup, pos, null).contains(spawnEntry);
     }
 
-    private static List<SpawnSettings.SpawnEntry> method_29950(ServerWorld serverWorld, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos blockPos, @Nullable Biome biome) {
-        if (spawnGroup == SpawnGroup.MONSTER && serverWorld.getBlockState(blockPos.down()).isOf(Blocks.NETHER_BRICKS) && structureAccessor.getStructureAt(blockPos, false, StructureFeature.FORTRESS).hasChildren()) {
+    private static List<SpawnSettings.SpawnEntry> getSpawnEntries(ServerWorld world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator, SpawnGroup spawnGroup, BlockPos pos, @Nullable Biome biome) {
+        if (spawnGroup == SpawnGroup.MONSTER && world.getBlockState(pos.down()).isOf(Blocks.NETHER_BRICKS) && structureAccessor.getStructureAt(pos, false, StructureFeature.FORTRESS).hasChildren()) {
             return StructureFeature.FORTRESS.getMonsterSpawns();
         }
-        return chunkGenerator.getEntitySpawnList(biome != null ? biome : serverWorld.getBiome(blockPos), structureAccessor, spawnGroup, blockPos);
+        return chunkGenerator.getEntitySpawnList(biome != null ? biome : world.getBiome(pos), structureAccessor, spawnGroup, pos);
     }
 
     private static BlockPos getSpawnPos(World world, WorldChunk chunk) {

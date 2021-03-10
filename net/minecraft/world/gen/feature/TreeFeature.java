@@ -25,7 +25,6 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.util.shape.BitSetVoxelSet;
 import net.minecraft.util.shape.VoxelSet;
-import net.minecraft.world.Heightmap;
 import net.minecraft.world.ModifiableWorld;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.TestableWorld;
@@ -77,36 +76,23 @@ extends Feature<TreeFeatureConfig> {
     }
 
     private boolean generate(StructureWorldAccess world, Random random, BlockPos pos, Set<BlockPos> logPositions, Set<BlockPos> leavesPositions, BlockBox box, TreeFeatureConfig config) {
-        BlockPos blockPos;
-        int n;
         int i = config.trunkPlacer.getHeight(random);
         int j = config.foliagePlacer.getRandomHeight(random, i, config);
         int k = i - j;
         int l = config.foliagePlacer.getRandomRadius(random, k);
-        if (!config.skipFluidCheck) {
-            int m = world.getTopPosition(Heightmap.Type.OCEAN_FLOOR, pos).getY();
-            n = world.getTopPosition(Heightmap.Type.WORLD_SURFACE, pos).getY();
-            if (n - m > config.maxWaterDepth) {
-                return false;
-            }
-            int o = config.heightmap == Heightmap.Type.OCEAN_FLOOR ? m : (config.heightmap == Heightmap.Type.WORLD_SURFACE ? n : world.getTopPosition(config.heightmap, pos).getY());
-            blockPos = new BlockPos(pos.getX(), o, pos.getZ());
-        } else {
-            blockPos = pos;
-        }
-        if (blockPos.getY() < world.getBottomY() + 1 || blockPos.getY() + i + 1 > world.getTopY()) {
+        if (pos.getY() < world.getBottomY() + 1 || pos.getY() + i + 1 > world.getTopY()) {
             return false;
         }
-        if (!TreeFeature.canPlaceTreeOn(world, blockPos.down())) {
+        if (!TreeFeature.canPlaceTreeOn(world, pos.down())) {
             return false;
         }
         OptionalInt optionalInt = config.minimumSize.getMinClippedHeight();
-        n = this.getTopPosition(world, i, blockPos, config);
-        if (!(n >= i || optionalInt.isPresent() && n >= optionalInt.getAsInt())) {
+        int m = this.getTopPosition(world, i, pos, config);
+        if (!(m >= i || optionalInt.isPresent() && m >= optionalInt.getAsInt())) {
             return false;
         }
-        List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, n, blockPos, logPositions, box, config);
-        list.forEach(node -> treeFeatureConfig.foliagePlacer.generate(world, random, config, n, (FoliagePlacer.TreeNode)node, j, l, leavesPositions, box));
+        List<FoliagePlacer.TreeNode> list = config.trunkPlacer.generate(world, random, m, pos, logPositions, box, config);
+        list.forEach(node -> treeFeatureConfig.foliagePlacer.generate(world, random, config, m, (FoliagePlacer.TreeNode)node, j, l, leavesPositions, box));
         return true;
     }
 

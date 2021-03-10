@@ -29,7 +29,7 @@ extends AbstractSignBlock {
 
     public SignBlock(AbstractBlock.Settings settings, SignType signType) {
         super(settings, signType);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0)).with(WATERLOGGED, false)).with(LIT, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(ROTATION, 0)).with(WATERLOGGED, false));
     }
 
     @Override
@@ -63,7 +63,7 @@ extends AbstractSignBlock {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(ROTATION, WATERLOGGED, LIT);
+        builder.add(ROTATION, WATERLOGGED);
     }
 }
 

@@ -92,7 +92,7 @@ extends ScreenHandler {
             }
 
             @Override
-            public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+            public void onTakeItem(PlayerEntity player, ItemStack stack) {
                 LoomScreenHandler.this.bannerSlot.takeStack(1);
                 LoomScreenHandler.this.dyeSlot.takeStack(1);
                 if (!LoomScreenHandler.this.bannerSlot.hasStack() || !LoomScreenHandler.this.dyeSlot.hasStack()) {
@@ -105,7 +105,7 @@ extends ScreenHandler {
                         LoomScreenHandler.this.lastTakeResultTime = l;
                     }
                 });
-                return super.onTakeItem(player, stack);
+                super.onTakeItem(player, stack);
             }
         });
         for (i = 0; i < 3; ++i) {

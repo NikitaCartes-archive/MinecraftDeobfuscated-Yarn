@@ -33,7 +33,7 @@ extends ScreenHandler {
 
     protected abstract boolean canTakeOutput(PlayerEntity var1, boolean var2);
 
-    protected abstract ItemStack onTakeOutput(PlayerEntity var1, ItemStack var2);
+    protected abstract void onTakeOutput(PlayerEntity var1, ItemStack var2);
 
     protected abstract boolean canUse(BlockState var1);
 
@@ -57,8 +57,8 @@ extends ScreenHandler {
             }
 
             @Override
-            public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
-                return ForgingScreenHandler.this.onTakeOutput(player, stack);
+            public void onTakeItem(PlayerEntity player, ItemStack stack) {
+                ForgingScreenHandler.this.onTakeOutput(player, stack);
             }
         });
         for (i = 0; i < 3; ++i) {
@@ -89,7 +89,7 @@ extends ScreenHandler {
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.context.run((world, blockPos) -> {
+        return this.context.get((world, blockPos) -> {
             if (!this.canUse(world.getBlockState((BlockPos)blockPos))) {
                 return false;
             }

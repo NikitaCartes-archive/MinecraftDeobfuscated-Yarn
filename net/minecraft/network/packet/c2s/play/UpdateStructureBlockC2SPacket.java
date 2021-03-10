@@ -14,6 +14,7 @@ import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3i;
 
 public class UpdateStructureBlockC2SPacket
 implements Packet<ServerPlayPacketListener> {
@@ -22,7 +23,7 @@ implements Packet<ServerPlayPacketListener> {
     private final StructureBlockMode mode;
     private final String structureName;
     private final BlockPos offset;
-    private final BlockPos size;
+    private final Vec3i size;
     private final BlockMirror mirror;
     private final BlockRotation rotation;
     private final String metadata;
@@ -33,13 +34,13 @@ implements Packet<ServerPlayPacketListener> {
     private final long seed;
 
     @Environment(value=EnvType.CLIENT)
-    public UpdateStructureBlockC2SPacket(BlockPos pos, StructureBlockBlockEntity.Action action, StructureBlockMode mode, String structureName, BlockPos offset, BlockPos size, BlockMirror mirror, BlockRotation rotation, String metadata, boolean ignoreEntities, boolean showAir, boolean showBoundingBox, float integrity, long seed) {
+    public UpdateStructureBlockC2SPacket(BlockPos pos, StructureBlockBlockEntity.Action action, StructureBlockMode mode, String structureName, BlockPos offset, Vec3i vec3i, BlockMirror mirror, BlockRotation rotation, String metadata, boolean ignoreEntities, boolean showAir, boolean showBoundingBox, float integrity, long seed) {
         this.pos = pos;
         this.action = action;
         this.mode = mode;
         this.structureName = structureName;
         this.offset = offset;
-        this.size = size;
+        this.size = vec3i;
         this.mirror = mirror;
         this.rotation = rotation;
         this.metadata = metadata;
@@ -58,7 +59,7 @@ implements Packet<ServerPlayPacketListener> {
         int i = 48;
         this.offset = new BlockPos(MathHelper.clamp(buf.readByte(), -48, 48), MathHelper.clamp(buf.readByte(), -48, 48), MathHelper.clamp(buf.readByte(), -48, 48));
         int j = 48;
-        this.size = new BlockPos(MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48));
+        this.size = new Vec3i(MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48), MathHelper.clamp(buf.readByte(), 0, 48));
         this.mirror = buf.readEnumConstant(BlockMirror.class);
         this.rotation = buf.readEnumConstant(BlockRotation.class);
         this.metadata = buf.readString(12);
@@ -125,7 +126,7 @@ implements Packet<ServerPlayPacketListener> {
         return this.offset;
     }
 
-    public BlockPos getSize() {
+    public Vec3i getSize() {
         return this.size;
     }
 

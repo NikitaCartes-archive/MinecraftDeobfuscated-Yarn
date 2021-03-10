@@ -14,6 +14,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.network.ClientPlayerInteractionManager;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.InputUtil;
@@ -68,9 +69,10 @@ extends Screen {
         if (this.checkForClose()) {
             return;
         }
+        RenderSystem.setShader(GameRenderer::method_34542);
         matrices.push();
         RenderSystem.enableBlend();
-        this.client.getTextureManager().bindTexture(TEXTURE);
+        RenderSystem.setShaderTexture(0, TEXTURE);
         int i = this.width / 2 - 62;
         int j = this.height / 2 - 31 - 27;
         GameModeSelectionScreen.drawTexture(matrices, i, j, 0.0f, 0.0f, 125, 75, 128, 128);
@@ -163,7 +165,8 @@ extends Screen {
         }
 
         private void drawBackground(MatrixStack matrices, TextureManager textureManager) {
-            textureManager.bindTexture(TEXTURE);
+            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(this.x, this.y, 0.0);
             ButtonWidget.drawTexture(matrices, 0, 0, 0.0f, 75.0f, 26, 26, 128, 128);
@@ -171,7 +174,8 @@ extends Screen {
         }
 
         private void drawSelectionBox(MatrixStack matrices, TextureManager textureManager) {
-            textureManager.bindTexture(TEXTURE);
+            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(this.x, this.y, 0.0);
             ButtonWidget.drawTexture(matrices, 0, 0, 26.0f, 75.0f, 26, 26, 128, 128);

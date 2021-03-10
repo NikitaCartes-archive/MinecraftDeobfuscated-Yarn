@@ -133,8 +133,7 @@ extends DrawableHelper {
             int x = q + t * p + t * 5;
             int y = r + w * 9;
             PlayerListHud.fill(matrices, x, y, x + p, y + 8, n2);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.enableAlphaTest();
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             if (v >= list.size()) continue;
@@ -143,7 +142,7 @@ extends DrawableHelper {
             if (bl) {
                 PlayerEntity playerEntity = this.client.world.getPlayerByUuid(gameProfile.getId());
                 boolean bl22 = playerEntity != null && playerEntity.isPartVisible(PlayerModelPart.CAPE) && ("Dinnerbone".equals(gameProfile.getName()) || "Grumm".equals(gameProfile.getName()));
-                this.client.getTextureManager().bindTexture(playerListEntry2.getSkinTexture());
+                RenderSystem.setShaderTexture(0, playerListEntry2.getSkinTexture());
                 int z = 8 + (bl22 ? 8 : 0);
                 int aa = 8 * (bl22 ? -1 : 1);
                 DrawableHelper.drawTexture(matrices, x, y, 8, 8, 8.0f, z, 8, aa, 64, 64);
@@ -171,8 +170,8 @@ extends DrawableHelper {
     }
 
     protected void renderLatencyIcon(MatrixStack matrices, int i, int j, int k, PlayerListEntry entry) {
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
         boolean l = false;
         int m = entry.getLatency() < 0 ? 5 : (entry.getLatency() < 150 ? 0 : (entry.getLatency() < 300 ? 1 : (entry.getLatency() < 600 ? 2 : (entry.getLatency() < 1000 ? 3 : 4))));
         this.setZOffset(this.getZOffset() + 100);
@@ -184,7 +183,7 @@ extends DrawableHelper {
         int l = objective.getScoreboard().getPlayerScore(string, objective).getScore();
         if (objective.getRenderType() == ScoreboardCriterion.RenderType.HEARTS) {
             boolean bl;
-            this.client.getTextureManager().bindTexture(GUI_ICONS_TEXTURE);
+            RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
             long m = Util.getMeasuringTimeMs();
             if (this.showTime == entry.method_2976()) {
                 if (l < entry.method_2973()) {

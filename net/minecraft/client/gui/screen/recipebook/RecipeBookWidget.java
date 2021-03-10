@@ -26,6 +26,7 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.ToggleButtonWidget;
 import net.minecraft.client.recipebook.ClientRecipeBook;
 import net.minecraft.client.recipebook.RecipeBookGroup;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.language.LanguageDefinition;
 import net.minecraft.client.resource.language.LanguageManager;
 import net.minecraft.client.search.SearchManager;
@@ -223,10 +224,11 @@ RecipeGridAligner<Ingredient> {
         if (!this.isOpen()) {
             return;
         }
-        RenderSystem.pushMatrix();
-        RenderSystem.translatef(0.0f, 0.0f, 100.0f);
-        this.client.getTextureManager().bindTexture(TEXTURE);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        matrices.push();
+        matrices.translate(0.0, 0.0, 100.0);
+        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShaderTexture(0, TEXTURE);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int i = (this.parentWidth - 147) / 2 - this.leftOffset;
         int j = (this.parentHeight - 166) / 2;
         this.drawTexture(matrices, i, j, 1, 1, 147, 166);
@@ -240,7 +242,7 @@ RecipeGridAligner<Ingredient> {
         }
         this.toggleCraftableButton.render(matrices, mouseX, mouseY, delta);
         this.recipesArea.draw(matrices, i, j, mouseX, mouseY, delta);
-        RenderSystem.popMatrix();
+        matrices.pop();
     }
 
     public void drawTooltip(MatrixStack matrices, int i, int j, int k, int l) {

@@ -19,7 +19,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public class GiantTrunkPlacer
 extends TrunkPlacer {
-    public static final Codec<GiantTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> GiantTrunkPlacer.method_28904(instance).apply(instance, GiantTrunkPlacer::new));
+    public static final Codec<GiantTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> GiantTrunkPlacer.fillTrunkPlacerFields(instance).apply(instance, GiantTrunkPlacer::new));
 
     public GiantTrunkPlacer(int i, int j, int k) {
         super(i, j, k);
@@ -33,10 +33,10 @@ extends TrunkPlacer {
     @Override
     public List<FoliagePlacer.TreeNode> generate(ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config) {
         BlockPos blockPos = pos.down();
-        GiantTrunkPlacer.setToDirt(world, blockPos);
-        GiantTrunkPlacer.setToDirt(world, blockPos.east());
-        GiantTrunkPlacer.setToDirt(world, blockPos.south());
-        GiantTrunkPlacer.setToDirt(world, blockPos.south().east());
+        GiantTrunkPlacer.setToDirt(world, random, blockPos, config);
+        GiantTrunkPlacer.setToDirt(world, random, blockPos.east(), config);
+        GiantTrunkPlacer.setToDirt(world, random, blockPos.south(), config);
+        GiantTrunkPlacer.setToDirt(world, random, blockPos.south().east(), config);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         for (int i = 0; i < trunkHeight; ++i) {
             GiantTrunkPlacer.setLog(world, random, mutable, placedStates, box, config, pos, 0, i, 0);

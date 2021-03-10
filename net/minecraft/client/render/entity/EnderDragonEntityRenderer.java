@@ -64,8 +64,8 @@ extends EntityRenderer<EnderDragonEntity> {
         this.model.animateModel(enderDragonEntity, 0.0f, 0.0f, g);
         if (enderDragonEntity.ticksSinceDeath > 0) {
             float k = (float)enderDragonEntity.ticksSinceDeath / 200.0f;
-            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEXTURE, k));
-            this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, 1.0f);
+            VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityAlpha(EXPLOSION_TEXTURE));
+            this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1.0f, 1.0f, 1.0f, k);
             VertexConsumer vertexConsumer2 = vertexConsumerProvider.getBuffer(DRAGON_DECAL);
             this.model.render(matrixStack, vertexConsumer2, i, OverlayTexture.getUv(0.0f, bl), 1.0f, 1.0f, 1.0f, 1.0f);
         } else {
@@ -288,7 +288,7 @@ extends EntityRenderer<EnderDragonEntity> {
                 i = (float)((double)i + Math.sin(this.neck.pitch) * 10.0);
                 j = (float)((double)j - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
                 h = (float)((double)h - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                this.neck.render(matrices, vertices, light, overlay);
+                this.neck.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
             }
             this.head.pivotY = i;
             this.head.pivotZ = j;
@@ -297,13 +297,13 @@ extends EntityRenderer<EnderDragonEntity> {
             this.head.yaw = MathHelper.fwrapDegrees(fs[0] - ds[0]) * ((float)Math.PI / 180);
             this.head.pitch = MathHelper.fwrapDegrees(this.dragon.method_6823(6, ds, fs)) * ((float)Math.PI / 180) * 1.5f * 5.0f;
             this.head.roll = -MathHelper.fwrapDegrees(fs[0] - (double)m) * ((float)Math.PI / 180);
-            this.head.render(matrices, vertices, light, overlay);
+            this.head.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
             matrices.push();
             matrices.translate(0.0, 1.0, 0.0);
             matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(-l * 1.5f));
             matrices.translate(0.0, -1.0, 0.0);
             this.body.roll = 0.0f;
-            this.body.render(matrices, vertices, light, overlay);
+            this.body.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
             float q = f * ((float)Math.PI * 2);
             this.leftWing.pitch = 0.125f - (float)Math.cos(q) * 0.2f;
             this.leftWing.yaw = -0.25f;
@@ -313,8 +313,8 @@ extends EntityRenderer<EnderDragonEntity> {
             this.rightWing.yaw = -this.leftWing.yaw;
             this.rightWing.roll = -this.leftWing.roll;
             this.rightWingTip.roll = -this.leftWingTip.roll;
-            this.setLimbRotation(matrices, vertices, light, overlay, g, this.leftWing, this.leftFrontLeg, this.leftFrontLegTip, this.leftFrontFoot, this.leftHindLeg, this.leftHindLegTip, this.leftHindFoot);
-            this.setLimbRotation(matrices, vertices, light, overlay, g, this.rightWing, this.rightFrontLeg, this.rightFrontLegTip, this.rightFrontFoot, this.rightHindLeg, this.rightHindLegTip, this.rightHindFoot);
+            this.setLimbRotation(matrices, vertices, light, overlay, g, this.leftWing, this.leftFrontLeg, this.leftFrontLegTip, this.leftFrontFoot, this.leftHindLeg, this.leftHindLegTip, this.leftHindFoot, alpha);
+            this.setLimbRotation(matrices, vertices, light, overlay, g, this.rightWing, this.rightFrontLeg, this.rightFrontLegTip, this.rightFrontFoot, this.rightHindLeg, this.rightHindLegTip, this.rightHindFoot, alpha);
             matrices.pop();
             p = -((float)Math.sin(f * ((float)Math.PI * 2))) * 0.0f;
             n = f * ((float)Math.PI * 2);
@@ -334,21 +334,21 @@ extends EntityRenderer<EnderDragonEntity> {
                 i = (float)((double)i + Math.sin(this.neck.pitch) * 10.0);
                 j = (float)((double)j - Math.cos(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
                 h = (float)((double)h - Math.sin(this.neck.yaw) * Math.cos(this.neck.pitch) * 10.0);
-                this.neck.render(matrices, vertices, light, overlay);
+                this.neck.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, alpha);
             }
             matrices.pop();
         }
 
-        private void setLimbRotation(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offset, ModelPart wing, ModelPart frontLeg, ModelPart frontLegTip, ModelPart frontFoot, ModelPart hindLeg, ModelPart hindLegTip, ModelPart hindFoot) {
+        private void setLimbRotation(MatrixStack matrices, VertexConsumer vertices, int light, int overlay, float offset, ModelPart wing, ModelPart frontLeg, ModelPart frontLegTip, ModelPart frontFoot, ModelPart hindLeg, ModelPart hindLegTip, ModelPart hindFoot, float f) {
             hindLeg.pitch = 1.0f + offset * 0.1f;
             hindLegTip.pitch = 0.5f + offset * 0.1f;
             hindFoot.pitch = 0.75f + offset * 0.1f;
             frontLeg.pitch = 1.3f + offset * 0.1f;
             frontLegTip.pitch = -0.5f - offset * 0.1f;
             frontFoot.pitch = 0.75f + offset * 0.1f;
-            wing.render(matrices, vertices, light, overlay);
-            frontLeg.render(matrices, vertices, light, overlay);
-            hindLeg.render(matrices, vertices, light, overlay);
+            wing.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, f);
+            frontLeg.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, f);
+            hindLeg.render(matrices, vertices, light, overlay, 1.0f, 1.0f, 1.0f, f);
         }
     }
 }

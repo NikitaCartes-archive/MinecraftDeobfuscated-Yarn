@@ -53,7 +53,7 @@ extends ForgingScreenHandler {
     }
 
     @Override
-    protected ItemStack onTakeOutput(PlayerEntity player, ItemStack stack) {
+    protected void onTakeOutput(PlayerEntity player, ItemStack stack) {
         if (!player.getAbilities().creativeMode) {
             player.addExperienceLevels(-this.levelCost.get());
         }
@@ -85,7 +85,6 @@ extends ForgingScreenHandler {
                 world.syncWorldEvent(1030, (BlockPos)blockPos, 0);
             }
         });
-        return stack;
     }
 
     @Override

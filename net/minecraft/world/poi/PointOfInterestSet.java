@@ -38,7 +38,7 @@ public class PointOfInterestSet {
     private boolean valid;
 
     public static Codec<PointOfInterestSet> createCodec(Runnable updateListener) {
-        return RecordCodecBuilder.create(instance -> instance.group(RecordCodecBuilder.point(updateListener), Codec.BOOL.optionalFieldOf("Valid", false).forGetter(pointOfInterestSet -> pointOfInterestSet.valid), ((MapCodec)PointOfInterest.createCodec(updateListener).listOf().fieldOf("Records")).forGetter(pointOfInterestSet -> ImmutableList.copyOf(pointOfInterestSet.pointsOfInterestByPos.values()))).apply((Applicative<PointOfInterestSet, ?>)instance, PointOfInterestSet::new)).orElseGet(Util.addPrefix("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(updateListener, false, ImmutableList.of()));
+        return RecordCodecBuilder.create(instance -> instance.group(RecordCodecBuilder.point(updateListener), Codec.BOOL.optionalFieldOf("Valid", false).forGetter(poiSet -> poiSet.valid), ((MapCodec)PointOfInterest.createCodec(updateListener).listOf().fieldOf("Records")).forGetter(poiSet -> ImmutableList.copyOf(poiSet.pointsOfInterestByPos.values()))).apply((Applicative<PointOfInterestSet, ?>)instance, PointOfInterestSet::new)).orElseGet(Util.addPrefix("Failed to read POI section: ", LOGGER::error), () -> new PointOfInterestSet(updateListener, false, ImmutableList.of()));
     }
 
     public PointOfInterestSet(Runnable updateListener) {
@@ -64,17 +64,17 @@ public class PointOfInterestSet {
 
     private boolean add(PointOfInterest poi) {
         BlockPos blockPos = poi.getPos();
-        PointOfInterestType pointOfInterestType2 = poi.getType();
+        PointOfInterestType pointOfInterestType = poi.getType();
         short s = ChunkSectionPos.packLocal(blockPos);
         PointOfInterest pointOfInterest = (PointOfInterest)this.pointsOfInterestByPos.get(s);
         if (pointOfInterest != null) {
-            if (pointOfInterestType2.equals(pointOfInterest.getType())) {
+            if (pointOfInterestType.equals(pointOfInterest.getType())) {
                 return false;
             }
             Util.error("POI data mismatch: already registered at " + blockPos);
         }
         this.pointsOfInterestByPos.put(s, poi);
-        this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType2, pointOfInterestType -> Sets.newHashSet()).add(poi);
+        this.pointsOfInterestByType.computeIfAbsent(pointOfInterestType, poiType -> Sets.newHashSet()).add(poi);
         return true;
     }
 
@@ -102,25 +102,25 @@ public class PointOfInterestSet {
         return bl;
     }
 
-    public boolean test(BlockPos blockPos, Predicate<PointOfInterestType> predicate) {
-        return this.getType(blockPos).filter(predicate).isPresent();
+    public boolean test(BlockPos pos, Predicate<PointOfInterestType> predicate) {
+        return this.getType(pos).filter(predicate).isPresent();
     }
 
-    public Optional<PointOfInterestType> getType(BlockPos blockPos) {
-        return this.method_33584(blockPos).map(PointOfInterest::getType);
+    public Optional<PointOfInterestType> getType(BlockPos pos) {
+        return this.get(pos).map(PointOfInterest::getType);
     }
 
-    private Optional<PointOfInterest> method_33584(BlockPos blockPos) {
-        return Optional.ofNullable(this.pointsOfInterestByPos.get(ChunkSectionPos.packLocal(blockPos)));
+    private Optional<PointOfInterest> get(BlockPos pos) {
+        return Optional.ofNullable(this.pointsOfInterestByPos.get(ChunkSectionPos.packLocal(pos)));
     }
 
     public void updatePointsOfInterest(Consumer<BiConsumer<BlockPos, PointOfInterestType>> consumer) {
         if (!this.valid) {
             Short2ObjectOpenHashMap<PointOfInterest> short2ObjectMap = new Short2ObjectOpenHashMap<PointOfInterest>(this.pointsOfInterestByPos);
             this.clear();
-            consumer.accept((blockPos, pointOfInterestType) -> {
-                short s = ChunkSectionPos.packLocal(blockPos);
-                PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(s, i -> new PointOfInterest((BlockPos)blockPos, (PointOfInterestType)pointOfInterestType, this.updateListener));
+            consumer.accept((pos, poiType) -> {
+                short s = ChunkSectionPos.packLocal(pos);
+                PointOfInterest pointOfInterest = short2ObjectMap.computeIfAbsent(s, i -> new PointOfInterest((BlockPos)pos, (PointOfInterestType)poiType, this.updateListener));
                 this.add(pointOfInterest);
             });
             this.valid = true;

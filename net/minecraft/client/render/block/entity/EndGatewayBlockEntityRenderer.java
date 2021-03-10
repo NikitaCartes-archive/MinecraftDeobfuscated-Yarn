@@ -6,6 +6,7 @@ package net.minecraft.client.render.block.entity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.entity.EndGatewayBlockEntity;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BeaconBlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
@@ -39,13 +40,13 @@ extends EndPortalBlockEntityRenderer<EndGatewayBlockEntity> {
     }
 
     @Override
-    protected int getDetailLevel(double distance) {
-        return super.getDetailLevel(distance) + 1;
+    protected float getTopYOffset() {
+        return 1.0f;
     }
 
     @Override
-    protected float getTopYOffset() {
-        return 1.0f;
+    protected RenderLayer method_34589() {
+        return RenderLayer.method_34571();
     }
 
     @Override

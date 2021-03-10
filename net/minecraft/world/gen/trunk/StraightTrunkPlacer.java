@@ -19,7 +19,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public class StraightTrunkPlacer
 extends TrunkPlacer {
-    public static final Codec<StraightTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> StraightTrunkPlacer.method_28904(instance).apply(instance, StraightTrunkPlacer::new));
+    public static final Codec<StraightTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> StraightTrunkPlacer.fillTrunkPlacerFields(instance).apply(instance, StraightTrunkPlacer::new));
 
     public StraightTrunkPlacer(int i, int j, int k) {
         super(i, j, k);
@@ -32,7 +32,7 @@ extends TrunkPlacer {
 
     @Override
     public List<FoliagePlacer.TreeNode> generate(ModifiableTestableWorld world, Random random, int trunkHeight, BlockPos pos, Set<BlockPos> placedStates, BlockBox box, TreeFeatureConfig config) {
-        StraightTrunkPlacer.setToDirt(world, pos.down());
+        StraightTrunkPlacer.setToDirt(world, random, pos.down(), config);
         for (int i = 0; i < trunkHeight; ++i) {
             StraightTrunkPlacer.getAndSetState(world, random, pos.up(i), placedStates, box, config);
         }

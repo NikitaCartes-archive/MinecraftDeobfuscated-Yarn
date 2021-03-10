@@ -306,7 +306,6 @@ extends AbstractClientPlayerEntity {
     }
 
     public void closeScreen() {
-        this.getInventory().setCursorStack(ItemStack.EMPTY);
         super.closeHandledScreen();
         this.client.openScreen(null);
     }
@@ -617,7 +616,7 @@ extends AbstractClientPlayerEntity {
         return this.client.getCameraEntity() == this;
     }
 
-    public void method_33689() {
+    public void init() {
         this.setPose(EntityPose.STANDING);
         if (this.world != null) {
             for (double d = this.getY(); d > (double)this.world.getBottomY() && d < (double)this.world.getTopY(); d += 1.0) {

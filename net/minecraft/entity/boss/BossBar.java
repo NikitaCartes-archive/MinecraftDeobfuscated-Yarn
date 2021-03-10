@@ -53,11 +53,11 @@ public abstract class BossBar {
         this.color = color;
     }
 
-    public Style getOverlay() {
+    public Style getStyle() {
         return this.style;
     }
 
-    public void setOverlay(Style style) {
+    public void setStyle(Style style) {
         this.style = style;
     }
 

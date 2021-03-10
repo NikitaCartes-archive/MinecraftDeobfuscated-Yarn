@@ -15,7 +15,6 @@ import net.minecraft.nbt.AbstractListTag;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.DoubleTag;
 import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.NbtTagSizeTracker;
 import net.minecraft.nbt.ShortTag;
@@ -147,14 +146,6 @@ extends AbstractListTag<Tag> {
             return ((IntTag)tag).getInt();
         }
         return 0;
-    }
-
-    public int[] getIntArray(int index) {
-        Tag tag;
-        if (index >= 0 && index < this.value.size() && (tag = this.value.get(index)).getType() == 11) {
-            return ((IntArrayTag)tag).getIntArray();
-        }
-        return new int[0];
     }
 
     public double getDouble(int index) {

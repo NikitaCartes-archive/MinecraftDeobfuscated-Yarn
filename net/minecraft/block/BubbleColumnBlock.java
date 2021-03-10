@@ -65,7 +65,7 @@ implements FluidDrainable {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        BubbleColumnBlock.update(world, pos.up(), BubbleColumnBlock.calculateDrag(world, pos));
+        BubbleColumnBlock.method_34267(world, pos, state, world.getBlockState(pos.down()));
     }
 
     @Override
@@ -73,25 +73,40 @@ implements FluidDrainable {
         return Fluids.WATER.getStill(false);
     }
 
-    public static void update(WorldAccess world, BlockPos pos, boolean drag) {
-        BlockPos.Mutable mutable = pos.mutableCopy();
-        while (BubbleColumnBlock.isStillWater(world, mutable)) {
-            world.setBlockState(mutable, (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, drag), 2);
+    public static void method_34268(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState) {
+        BubbleColumnBlock.method_34267(worldAccess, blockPos, worldAccess.getBlockState(blockPos), blockState);
+    }
+
+    public static void method_34267(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
+        if (!BubbleColumnBlock.isStillWater(blockState)) {
+            return;
+        }
+        BlockState blockState3 = BubbleColumnBlock.method_34269(blockState2);
+        worldAccess.setBlockState(blockPos, blockState3, 2);
+        BlockPos.Mutable mutable = blockPos.mutableCopy().move(Direction.UP);
+        while (BubbleColumnBlock.isStillWater(worldAccess.getBlockState(mutable))) {
+            if (!worldAccess.setBlockState(mutable, blockState3, 2)) {
+                return;
+            }
             mutable.move(Direction.UP);
         }
     }
 
-    public static boolean isStillWater(WorldAccess world, BlockPos pos) {
-        FluidState fluidState = world.getFluidState(pos);
-        return world.getBlockState(pos).isOf(Blocks.WATER) && fluidState.getLevel() >= 8 && fluidState.isStill();
+    private static boolean isStillWater(BlockState blockState) {
+        return blockState.isOf(Blocks.BUBBLE_COLUMN) || blockState.isOf(Blocks.WATER) && blockState.getFluidState().getLevel() >= 8 && blockState.getFluidState().isStill();
     }
 
-    private static boolean calculateDrag(BlockView world, BlockPos pos) {
-        BlockState blockState = world.getBlockState(pos);
+    private static BlockState method_34269(BlockState blockState) {
         if (blockState.isOf(Blocks.BUBBLE_COLUMN)) {
-            return blockState.get(DRAG);
+            return blockState;
         }
-        return !blockState.isOf(Blocks.SOUL_SAND);
+        if (blockState.isOf(Blocks.SOUL_SAND)) {
+            return (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, false);
+        }
+        if (blockState.isOf(Blocks.MAGMA_BLOCK)) {
+            return (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, true);
+        }
+        return Blocks.WATER.getDefaultState();
     }
 
     @Override
@@ -116,15 +131,10 @@ implements FluidDrainable {
 
     @Override
     public BlockState getStateForNeighborUpdate(BlockState state, Direction direction, BlockState neighborState, WorldAccess world, BlockPos pos, BlockPos neighborPos) {
-        if (!state.canPlaceAt(world, pos)) {
-            return Blocks.WATER.getDefaultState();
-        }
-        if (direction == Direction.DOWN) {
-            world.setBlockState(pos, (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, BubbleColumnBlock.calculateDrag(world, neighborPos)), 2);
-        } else if (direction == Direction.UP && !neighborState.isOf(Blocks.BUBBLE_COLUMN) && BubbleColumnBlock.isStillWater(world, neighborPos)) {
+        world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
+        if (!state.canPlaceAt(world, pos) || direction == Direction.DOWN || direction == Direction.UP && !neighborState.isOf(Blocks.BUBBLE_COLUMN) && BubbleColumnBlock.isStillWater(neighborState)) {
             world.getBlockTickScheduler().schedule(pos, this, 5);
         }
-        world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
 

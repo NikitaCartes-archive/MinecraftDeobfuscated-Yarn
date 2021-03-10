@@ -61,7 +61,6 @@ implements DebugRenderer.Renderer {
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
-        RenderSystem.pushMatrix();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableTexture();
@@ -70,7 +69,6 @@ implements DebugRenderer.Renderer {
         this.render();
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
         if (!this.client.player.isSpectator()) {
             this.updateTargetedEntity();
         }

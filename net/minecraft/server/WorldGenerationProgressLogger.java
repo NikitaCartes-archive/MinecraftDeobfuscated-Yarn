@@ -3,6 +3,8 @@
  */
 package net.minecraft.server;
 
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.server.WorldGenerationProgressListener;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Util;
@@ -41,6 +43,11 @@ implements WorldGenerationProgressListener {
             this.nextMessageTime += 500L;
             LOGGER.info(new TranslatableText("menu.preparingSpawn", MathHelper.clamp(i, 0, 100)).getString());
         }
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public void start() {
     }
 
     @Override

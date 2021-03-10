@@ -253,6 +253,16 @@ implements BufferVertexConsumer {
         }
         ++this.vertexCount;
         this.grow();
+        if (this.drawMode == VertexFormat.DrawMode.LINES || this.drawMode == VertexFormat.DrawMode.LINE_STRIP) {
+            int i = this.format.getVertexSize();
+            this.buffer.position(this.elementOffset);
+            ByteBuffer byteBuffer = this.buffer.duplicate();
+            byteBuffer.position(this.elementOffset - i).limit(this.elementOffset);
+            this.buffer.put(byteBuffer);
+            this.elementOffset += i;
+            ++this.vertexCount;
+            this.grow();
+        }
     }
 
     @Override

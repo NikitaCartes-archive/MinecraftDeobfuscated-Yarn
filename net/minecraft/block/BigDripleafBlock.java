@@ -39,6 +39,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
+import net.minecraft.world.HeightLimitView;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
@@ -79,29 +80,29 @@ Waterloggable {
         return SHAPES_FOR_TILT.get(state.get(TILT));
     }
 
-    protected static void grow(World world, Random random, BlockPos pos) {
+    public static void grow(WorldAccess worldAccess, Random random, BlockPos pos) {
         int j;
         int i = 1 + random.nextInt(5);
         Direction direction = Direction.Type.HORIZONTAL.random(random);
         BlockPos.Mutable mutable = pos.mutableCopy();
-        for (j = 0; j < i && BigDripleafBlock.canGrowInto(world, mutable, world.getBlockState(mutable)); ++j) {
+        for (j = 0; j < i && BigDripleafBlock.canGrowInto(worldAccess, mutable, worldAccess.getBlockState(mutable)); ++j) {
             mutable.move(Direction.UP);
         }
         int k = pos.getY() + j - 1;
         mutable.setY(pos.getY());
         while (mutable.getY() < k) {
-            BigDripleafStemBlock.placeStemAt(world, mutable, world.getFluidState(mutable), direction);
+            BigDripleafStemBlock.placeStemAt(worldAccess, mutable, worldAccess.getFluidState(mutable), direction);
             mutable.move(Direction.UP);
         }
-        BigDripleafBlock.placeDripleafAt(world, mutable, world.getFluidState(mutable), direction);
+        BigDripleafBlock.placeDripleafAt(worldAccess, mutable, worldAccess.getFluidState(mutable), direction);
     }
 
     private static boolean canGrowInto(BlockState state) {
         return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.SMALL_DRIPLEAF);
     }
 
-    private static boolean canGrowInto(World world, BlockPos pos, BlockState state) {
-        return world.isInBuildLimit(pos) && BigDripleafBlock.canGrowInto(state);
+    private static boolean canGrowInto(HeightLimitView heightLimitView, BlockPos pos, BlockState state) {
+        return !heightLimitView.isOutOfHeightLimit(pos) && BigDripleafBlock.canGrowInto(state);
     }
 
     protected static boolean placeDripleafAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {

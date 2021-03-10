@@ -13,6 +13,7 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.pack.ResourcePackOrganizer;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourcePackCompatibility;
@@ -98,18 +99,20 @@ extends AlwaysSelectedEntryListWidget<ResourcePackEntry> {
         public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             ResourcePackCompatibility resourcePackCompatibility = this.pack.getCompatibility();
             if (!resourcePackCompatibility.isCompatible()) {
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 DrawableHelper.fill(matrices, x - 1, y - 1, x + entryWidth - 9, y + entryHeight + 1, -8978432);
             }
-            this.client.getTextureManager().bindTexture(this.pack.method_30286());
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShaderTexture(0, this.pack.method_30286());
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, x, y, 0.0f, 0.0f, 32, 32, 32, 32);
             OrderedText orderedText = this.displayName;
             MultilineText multilineText = this.description;
             if (this.isSelectable() && (this.client.options.touchscreen || hovered)) {
-                this.client.getTextureManager().bindTexture(RESOURCE_PACKS_TEXTURE);
+                RenderSystem.setShaderTexture(0, RESOURCE_PACKS_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+                RenderSystem.setShader(GameRenderer::method_34542);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 int i = mouseX - x;
                 int j = mouseY - y;
                 if (!this.pack.getCompatibility().isCompatible()) {

@@ -14,7 +14,6 @@ import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.c2s.play.ClientStatusC2SPacket;
 import net.minecraft.network.packet.c2s.play.CloseHandledScreenC2SPacket;
-import net.minecraft.network.packet.c2s.play.ConfirmScreenActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CraftRequestC2SPacket;
 import net.minecraft.network.packet.c2s.play.CreativeInventoryActionC2SPacket;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -62,8 +61,6 @@ extends PacketListener {
     public void onClientStatus(ClientStatusC2SPacket var1);
 
     public void onClientSettings(ClientSettingsC2SPacket var1);
-
-    public void onConfirmScreenAction(ConfirmScreenActionC2SPacket var1);
 
     public void onButtonClick(ButtonClickC2SPacket var1);
 

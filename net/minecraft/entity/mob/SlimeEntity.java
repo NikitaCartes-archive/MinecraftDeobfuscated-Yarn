@@ -80,16 +80,17 @@ implements Monster {
     }
 
     protected void setSize(int size, boolean heal) {
-        this.dataTracker.set(SLIME_SIZE, size);
+        int i = MathHelper.clamp(size, 1, 127);
+        this.dataTracker.set(SLIME_SIZE, i);
         this.refreshPosition();
         this.calculateDimensions();
-        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(size * size);
-        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)size);
-        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(size);
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(i * i);
+        this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.2f + 0.1f * (float)i);
+        this.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(i);
         if (heal) {
             this.setHealth(this.getMaxHealth());
         }
-        this.experiencePoints = size;
+        this.experiencePoints = i;
     }
 
     public int getSize() {
@@ -105,11 +106,7 @@ implements Monster {
 
     @Override
     public void readCustomDataFromNbt(CompoundTag tag) {
-        int i = tag.getInt("Size");
-        if (i < 0) {
-            i = 0;
-        }
-        this.setSize(i + 1, false);
+        this.setSize(tag.getInt("Size") + 1, false);
         super.readCustomDataFromNbt(tag);
         this.onGroundLastTick = tag.getBoolean("wasOnGround");
     }

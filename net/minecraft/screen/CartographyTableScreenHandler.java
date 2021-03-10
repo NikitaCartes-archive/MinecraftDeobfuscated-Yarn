@@ -72,7 +72,7 @@ extends ScreenHandler {
             }
 
             @Override
-            public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+            public void onTakeItem(PlayerEntity player, ItemStack stack) {
                 ((Slot)CartographyTableScreenHandler.this.slots.get(0)).takeStack(1);
                 ((Slot)CartographyTableScreenHandler.this.slots.get(1)).takeStack(1);
                 stack.getItem().onCraft(stack, player.world, player);
@@ -83,7 +83,7 @@ extends ScreenHandler {
                         CartographyTableScreenHandler.this.lastTakeResultTime = l;
                     }
                 });
-                return super.onTakeItem(player, stack);
+                super.onTakeItem(player, stack);
             }
         });
         for (i = 0; i < 3; ++i) {

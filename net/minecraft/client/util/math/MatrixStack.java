@@ -67,6 +67,16 @@ public class MatrixStack {
         return this.stack.size() == 1;
     }
 
+    public void loadIdentity() {
+        Entry entry = this.stack.getLast();
+        entry.modelMatrix.loadIdentity();
+        entry.normalMatrix.loadIdentity();
+    }
+
+    public void method_34425(Matrix4f matrix4f) {
+        this.stack.getLast().modelMatrix.multiply(matrix4f);
+    }
+
     @Environment(value=EnvType.CLIENT)
     public static final class Entry {
         private final Matrix4f modelMatrix;

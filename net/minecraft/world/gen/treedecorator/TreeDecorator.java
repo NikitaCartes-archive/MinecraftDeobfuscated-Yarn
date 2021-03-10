@@ -34,7 +34,7 @@ public abstract class TreeDecorator {
     protected void setBlockStateAndEncompassPosition(ModifiableWorld world, BlockPos pos, BlockState state, Set<BlockPos> placedStates, BlockBox box) {
         world.setBlockState(pos, state, 19);
         placedStates.add(pos);
-        box.encompass(new BlockBox(pos, pos));
+        box.encompass(new BlockBox(pos));
     }
 }
 

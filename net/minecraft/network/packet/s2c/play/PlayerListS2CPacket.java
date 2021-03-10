@@ -43,13 +43,13 @@ implements Packet<ClientPlayPacketListener> {
 
     public PlayerListS2CPacket(PacketByteBuf buf) {
         this.action = buf.readEnumConstant(Action.class);
-        this.entries = buf.readList(this.action::method_34150);
+        this.entries = buf.readList(this.action::read);
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeEnumConstant(this.action);
-        buf.writeCollection(this.entries, this.action::method_34151);
+        buf.writeCollection(this.entries, this.action::write);
     }
 
     @Override
@@ -68,11 +68,11 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Nullable
-    private static Text method_34149(PacketByteBuf buf) {
+    private static Text readOptionalText(PacketByteBuf buf) {
         return buf.readBoolean() ? buf.readText() : null;
     }
 
-    private static void method_34148(PacketByteBuf buf, @Nullable Text text) {
+    private static void writeOptionalText(PacketByteBuf buf, @Nullable Text text) {
         if (text == null) {
             buf.writeBoolean(false);
         } else {
@@ -125,7 +125,7 @@ implements Packet<ClientPlayPacketListener> {
         ADD_PLAYER{
 
             @Override
-            protected Entry method_34150(PacketByteBuf buf2) {
+            protected Entry read(PacketByteBuf buf2) {
                 GameProfile gameProfile = new GameProfile(buf2.readUuid(), buf2.readString(16));
                 PropertyMap propertyMap = gameProfile.getProperties();
                 buf2.forEachInCollection(buf -> {
@@ -140,12 +140,12 @@ implements Packet<ClientPlayPacketListener> {
                 });
                 GameMode gameMode = GameMode.byId(buf2.readVarInt());
                 int i = buf2.readVarInt();
-                Text text = PlayerListS2CPacket.method_34149(buf2);
+                Text text = PlayerListS2CPacket.readOptionalText(buf2);
                 return new Entry(gameProfile, i, gameMode, text);
             }
 
             @Override
-            protected void method_34151(PacketByteBuf buf2, Entry entry) {
+            protected void write(PacketByteBuf buf2, Entry entry) {
                 buf2.writeUuid(entry.getProfile().getId());
                 buf2.writeString(entry.getProfile().getName());
                 buf2.writeCollection(entry.getProfile().getProperties().values(), (buf, property) -> {
@@ -160,21 +160,21 @@ implements Packet<ClientPlayPacketListener> {
                 });
                 buf2.writeVarInt(entry.getGameMode().getId());
                 buf2.writeVarInt(entry.getLatency());
-                PlayerListS2CPacket.method_34148(buf2, entry.getDisplayName());
+                PlayerListS2CPacket.writeOptionalText(buf2, entry.getDisplayName());
             }
         }
         ,
         UPDATE_GAME_MODE{
 
             @Override
-            protected Entry method_34150(PacketByteBuf buf) {
+            protected Entry read(PacketByteBuf buf) {
                 GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
                 GameMode gameMode = GameMode.byId(buf.readVarInt());
                 return new Entry(gameProfile, 0, gameMode, null);
             }
 
             @Override
-            protected void method_34151(PacketByteBuf buf, Entry entry) {
+            protected void write(PacketByteBuf buf, Entry entry) {
                 buf.writeUuid(entry.getProfile().getId());
                 buf.writeVarInt(entry.getGameMode().getId());
             }
@@ -183,14 +183,14 @@ implements Packet<ClientPlayPacketListener> {
         UPDATE_LATENCY{
 
             @Override
-            protected Entry method_34150(PacketByteBuf buf) {
+            protected Entry read(PacketByteBuf buf) {
                 GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
                 int i = buf.readVarInt();
                 return new Entry(gameProfile, i, null, null);
             }
 
             @Override
-            protected void method_34151(PacketByteBuf buf, Entry entry) {
+            protected void write(PacketByteBuf buf, Entry entry) {
                 buf.writeUuid(entry.getProfile().getId());
                 buf.writeVarInt(entry.getLatency());
             }
@@ -199,37 +199,37 @@ implements Packet<ClientPlayPacketListener> {
         UPDATE_DISPLAY_NAME{
 
             @Override
-            protected Entry method_34150(PacketByteBuf buf) {
+            protected Entry read(PacketByteBuf buf) {
                 GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
-                Text text = PlayerListS2CPacket.method_34149(buf);
+                Text text = PlayerListS2CPacket.readOptionalText(buf);
                 return new Entry(gameProfile, 0, null, text);
             }
 
             @Override
-            protected void method_34151(PacketByteBuf buf, Entry entry) {
+            protected void write(PacketByteBuf buf, Entry entry) {
                 buf.writeUuid(entry.getProfile().getId());
-                PlayerListS2CPacket.method_34148(buf, entry.getDisplayName());
+                PlayerListS2CPacket.writeOptionalText(buf, entry.getDisplayName());
             }
         }
         ,
         REMOVE_PLAYER{
 
             @Override
-            protected Entry method_34150(PacketByteBuf buf) {
+            protected Entry read(PacketByteBuf buf) {
                 GameProfile gameProfile = new GameProfile(buf.readUuid(), null);
                 return new Entry(gameProfile, 0, null, null);
             }
 
             @Override
-            protected void method_34151(PacketByteBuf buf, Entry entry) {
+            protected void write(PacketByteBuf buf, Entry entry) {
                 buf.writeUuid(entry.getProfile().getId());
             }
         };
 
 
-        protected abstract Entry method_34150(PacketByteBuf var1);
+        protected abstract Entry read(PacketByteBuf var1);
 
-        protected abstract void method_34151(PacketByteBuf var1, Entry var2);
+        protected abstract void write(PacketByteBuf var1, Entry var2);
     }
 }
 

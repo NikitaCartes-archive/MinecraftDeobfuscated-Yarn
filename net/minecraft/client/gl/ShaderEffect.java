@@ -182,6 +182,7 @@ implements AutoCloseable {
                                 }
                             }
                             IOUtils.closeQuietly((Closeable)resource);
+                            RenderSystem.setShaderTexture(0, identifier);
                             textureManager.bindTexture(identifier);
                             AbstractTexture abstractTexture = textureManager.getTexture(identifier);
                             int j = JsonHelper.getInt(jsonObject2, "width");
@@ -299,7 +300,7 @@ implements AutoCloseable {
     }
 
     private void setupProjectionMatrix() {
-        this.projectionMatrix = Matrix4f.projectionMatrix(this.mainTarget.textureWidth, this.mainTarget.textureHeight, 0.1f, 1000.0f);
+        this.projectionMatrix = Matrix4f.method_34239(0.0f, this.mainTarget.textureWidth, this.mainTarget.textureHeight, 0.0f, 0.1f, 1000.0f);
     }
 
     public void setupDimensions(int targetsWidth, int targetsHeight) {

@@ -20,7 +20,7 @@ import net.minecraft.world.WorldAccess;
 import net.minecraft.world.WorldView;
 import net.minecraft.world.gen.feature.DripstoneClusterFeatureConfig;
 import net.minecraft.world.gen.feature.Feature;
-import net.minecraft.world.gen.feature.util.DripstoneColumn;
+import net.minecraft.world.gen.feature.util.CaveSurface;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -62,9 +62,9 @@ extends Feature<DripstoneClusterFeatureConfig> {
         int l;
         int j;
         boolean bl2;
-        DripstoneColumn dripstoneColumn;
+        CaveSurface caveSurface;
         boolean bl;
-        Optional<DripstoneColumn> optional = DripstoneColumn.create(world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava);
+        Optional<CaveSurface> optional = CaveSurface.create(world, pos, config.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava);
         if (!optional.isPresent()) {
             return;
         }
@@ -76,12 +76,12 @@ extends Feature<DripstoneClusterFeatureConfig> {
         boolean bl5 = bl = random.nextFloat() < wetness;
         if (bl && optionalInt2.isPresent() && this.canWaterSpawn(world, pos.withY(optionalInt2.getAsInt()))) {
             int i = optionalInt2.getAsInt();
-            dripstoneColumn = optional.get().withFloor(OptionalInt.of(i - 1));
+            caveSurface = optional.get().withFloor(OptionalInt.of(i - 1));
             world.setBlockState(pos.withY(i), Blocks.WATER.getDefaultState(), 2);
         } else {
-            dripstoneColumn = optional.get();
+            caveSurface = optional.get();
         }
-        OptionalInt optionalInt3 = dripstoneColumn.getFloorHeight();
+        OptionalInt optionalInt3 = caveSurface.getFloorHeight();
         boolean bl6 = bl2 = random.nextDouble() < dripstoneChance;
         if (optionalInt.isPresent() && bl2 && !this.isLava(world, pos.withY(optionalInt.getAsInt()))) {
             j = config.dripstoneBlockLayerThickness.getValue(random);
@@ -112,7 +112,7 @@ extends Feature<DripstoneClusterFeatureConfig> {
             m = l;
             t = j;
         }
-        boolean bl8 = bl4 = random.nextBoolean() && m > 0 && t > 0 && dripstoneColumn.getOptionalHeight().isPresent() && m + t == dripstoneColumn.getOptionalHeight().getAsInt();
+        boolean bl8 = bl4 = random.nextBoolean() && m > 0 && t > 0 && caveSurface.getOptionalHeight().isPresent() && m + t == caveSurface.getOptionalHeight().getAsInt();
         if (optionalInt.isPresent()) {
             DripstoneHelper.generatePointedDripstone(world, pos.withY(optionalInt.getAsInt() - 1), Direction.DOWN, m, bl4);
         }

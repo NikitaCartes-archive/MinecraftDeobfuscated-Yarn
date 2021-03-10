@@ -11,34 +11,34 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.TestableWorld;
 
-public abstract class DripstoneColumn {
+public abstract class CaveSurface {
     public static Bounded createBounded(int floor, int ceiling) {
         return new Bounded(floor, ceiling);
     }
 
-    public static DripstoneColumn createHalfWithCeiling(int ceiling) {
+    public static CaveSurface createHalfWithCeiling(int ceiling) {
         return new Half(ceiling, false);
     }
 
-    public static DripstoneColumn createHalfWithFloor(int floor) {
+    public static CaveSurface createHalfWithFloor(int floor) {
         return new Half(floor, true);
     }
 
-    public static DripstoneColumn createEmpty() {
+    public static CaveSurface createEmpty() {
         return Empty.INSTANCE;
     }
 
-    public static DripstoneColumn create(OptionalInt ceilingHeight, OptionalInt floorHeight) {
+    public static CaveSurface create(OptionalInt ceilingHeight, OptionalInt floorHeight) {
         if (ceilingHeight.isPresent() && floorHeight.isPresent()) {
-            return DripstoneColumn.createBounded(ceilingHeight.getAsInt(), floorHeight.getAsInt());
+            return CaveSurface.createBounded(ceilingHeight.getAsInt(), floorHeight.getAsInt());
         }
         if (ceilingHeight.isPresent()) {
-            return DripstoneColumn.createHalfWithFloor(ceilingHeight.getAsInt());
+            return CaveSurface.createHalfWithFloor(ceilingHeight.getAsInt());
         }
         if (floorHeight.isPresent()) {
-            return DripstoneColumn.createHalfWithCeiling(floorHeight.getAsInt());
+            return CaveSurface.createHalfWithCeiling(floorHeight.getAsInt());
         }
-        return DripstoneColumn.createEmpty();
+        return CaveSurface.createEmpty();
     }
 
     public abstract OptionalInt getCeilingHeight();
@@ -47,31 +47,31 @@ public abstract class DripstoneColumn {
 
     public abstract OptionalInt getOptionalHeight();
 
-    public DripstoneColumn withFloor(OptionalInt floor) {
-        return DripstoneColumn.create(floor, this.getCeilingHeight());
+    public CaveSurface withFloor(OptionalInt floor) {
+        return CaveSurface.create(floor, this.getCeilingHeight());
     }
 
-    public static Optional<DripstoneColumn> create(TestableWorld world, BlockPos pos, int height, Predicate<BlockState> canGenerate, Predicate<BlockState> canReplace) {
+    public static Optional<CaveSurface> create(TestableWorld world, BlockPos pos, int height, Predicate<BlockState> canGenerate, Predicate<BlockState> canReplace) {
         BlockPos.Mutable mutable = pos.mutableCopy();
         if (!world.testBlockState(pos, canGenerate)) {
             return Optional.empty();
         }
         int i = pos.getY();
-        mutable.setY(i);
-        for (int j = 1; j < height && world.testBlockState(mutable, canGenerate); ++j) {
-            mutable.move(Direction.UP);
+        OptionalInt optionalInt = CaveSurface.getCaveSurface(world, height, canGenerate, canReplace, mutable, i, Direction.UP);
+        OptionalInt optionalInt2 = CaveSurface.getCaveSurface(world, height, canGenerate, canReplace, mutable, i, Direction.DOWN);
+        return Optional.of(CaveSurface.create(optionalInt2, optionalInt));
+    }
+
+    private static OptionalInt getCaveSurface(TestableWorld world, int height, Predicate<BlockState> canGenerate, Predicate<BlockState> canReplace, BlockPos.Mutable mutablePos, int y, Direction direction) {
+        mutablePos.setY(y);
+        for (int i = 1; i < height && world.testBlockState(mutablePos, canGenerate); ++i) {
+            mutablePos.move(direction);
         }
-        OptionalInt optionalInt = world.testBlockState(mutable, canReplace) ? OptionalInt.of(mutable.getY()) : OptionalInt.empty();
-        mutable.setY(i);
-        for (int k = 1; k < height && world.testBlockState(mutable, canGenerate); ++k) {
-            mutable.move(Direction.DOWN);
-        }
-        OptionalInt optionalInt2 = world.testBlockState(mutable, canReplace) ? OptionalInt.of(mutable.getY()) : OptionalInt.empty();
-        return Optional.of(DripstoneColumn.create(optionalInt2, optionalInt));
+        return world.testBlockState(mutablePos, canReplace) ? OptionalInt.of(mutablePos.getY()) : OptionalInt.empty();
     }
 
     public static final class Half
-    extends DripstoneColumn {
+    extends CaveSurface {
         private final int height;
         private final boolean floor;
 
@@ -101,7 +101,7 @@ public abstract class DripstoneColumn {
     }
 
     public static final class Empty
-    extends DripstoneColumn {
+    extends CaveSurface {
         private static final Empty INSTANCE = new Empty();
 
         private Empty() {
@@ -128,7 +128,7 @@ public abstract class DripstoneColumn {
     }
 
     public static final class Bounded
-    extends DripstoneColumn {
+    extends CaveSurface {
         private final int floor;
         private final int ceiling;
 

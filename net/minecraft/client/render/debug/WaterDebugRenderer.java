@@ -32,7 +32,7 @@ implements DebugRenderer.Renderer {
         World worldView = this.client.player.world;
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.color4f(0.0f, 1.0f, 0.0f, 0.75f);
+        RenderSystem.setShaderColor(0.0f, 1.0f, 0.0f, 0.75f);
         RenderSystem.disableTexture();
         RenderSystem.lineWidth(6.0f);
         for (BlockPos blockPos2 : BlockPos.iterate(blockPos.add(-10, -10, -10), blockPos.add(10, 10, 10))) {

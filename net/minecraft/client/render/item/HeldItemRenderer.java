@@ -5,6 +5,7 @@ package net.minecraft.client.render.item;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.MoreObjects;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -67,7 +68,7 @@ public class HeldItemRenderer {
     }
 
     private void renderArm(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, Arm arm) {
-        this.client.getTextureManager().bindTexture(this.client.player.getSkinTexture());
+        RenderSystem.setShaderTexture(0, this.client.player.getSkinTexture());
         PlayerEntityRenderer playerEntityRenderer = (PlayerEntityRenderer)this.renderManager.getRenderer(this.client.player);
         matrices.push();
         float f = arm == Arm.RIGHT ? 1.0f : -1.0f;
@@ -160,7 +161,7 @@ public class HeldItemRenderer {
         matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(f * l * 70.0f));
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * k * -20.0f));
         ClientPlayerEntity abstractClientPlayerEntity = this.client.player;
-        this.client.getTextureManager().bindTexture(abstractClientPlayerEntity.getSkinTexture());
+        RenderSystem.setShaderTexture(0, abstractClientPlayerEntity.getSkinTexture());
         matrices.translate(f * -1.0f, 3.6f, 3.5);
         matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(f * 120.0f));
         matrices.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(200.0f));

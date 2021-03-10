@@ -34,7 +34,6 @@ import net.minecraft.util.crash.CrashReportSection;
 import net.minecraft.util.profiler.Profiler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class TextureManager
@@ -111,9 +110,17 @@ AutoCloseable {
         }
     }
 
-    @Nullable
     public AbstractTexture getTexture(Identifier id) {
-        return this.textures.get(id);
+        AbstractTexture abstractTexture = this.textures.get(id);
+        if (abstractTexture == null) {
+            abstractTexture = new ResourceTexture(id);
+            this.registerTexture(id, abstractTexture);
+        }
+        return abstractTexture;
+    }
+
+    public AbstractTexture method_34590(Identifier identifier, AbstractTexture abstractTexture) {
+        return this.textures.getOrDefault(identifier, abstractTexture);
     }
 
     public Identifier registerDynamicTexture(String prefix, NativeImageBackedTexture texture) {
@@ -151,8 +158,8 @@ AutoCloseable {
     }
 
     public void destroyTexture(Identifier id) {
-        AbstractTexture abstractTexture = this.getTexture(id);
-        if (abstractTexture != null) {
+        AbstractTexture abstractTexture = this.method_34590(id, MissingSprite.getMissingSpriteTexture());
+        if (abstractTexture != MissingSprite.getMissingSpriteTexture()) {
             TextureUtil.deleteId(abstractTexture.getGlId());
         }
     }

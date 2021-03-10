@@ -108,7 +108,7 @@ public class ChunkSerializer {
         }
         long l = compoundTag.getLong("InhabitedTime");
         ChunkStatus.ChunkType chunkType = ChunkSerializer.getChunkType(tag);
-        if (chunkType == ChunkStatus.ChunkType.field_12807) {
+        if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
             TickScheduler<Block> tickScheduler = compoundTag.contains("TileTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag.getList("TileTicks", 10), Registry.BLOCK::getId, Registry.BLOCK::get) : chunkTickScheduler;
             TickScheduler<Fluid> tickScheduler2 = compoundTag.contains("LiquidTicks", 9) ? SimpleTickScheduler.fromNbt(compoundTag.getList("LiquidTicks", 10), Registry.FLUID::getId, Registry.FLUID::get) : chunkTickScheduler2;
             chunk = new WorldChunk(world.toServerWorld(), pos, biomeArray, upgradeData, tickScheduler, tickScheduler2, l, chunkSections, worldChunk -> ChunkSerializer.loadEntities(world, compoundTag, worldChunk));
@@ -153,7 +153,7 @@ public class ChunkSerializer {
                 chunk.markBlockForPostProcessing(listTag3.getShort(n), m);
             }
         }
-        if (chunkType == ChunkStatus.ChunkType.field_12807) {
+        if (chunkType == ChunkStatus.ChunkType.LEVELCHUNK) {
             return new ReadOnlyChunk((WorldChunk)chunk);
         }
         ProtoChunk protoChunk2 = (ProtoChunk)chunk;
@@ -236,7 +236,7 @@ public class ChunkSerializer {
             listTag2.add(compoundTag4);
         }
         compoundTag2.put("TileEntities", listTag2);
-        if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.field_12808) {
+        if (chunk.getStatus().getChunkType() == ChunkStatus.ChunkType.PROTOCHUNK) {
             ProtoChunk protoChunk = (ProtoChunk)chunk;
             ListTag listTag3 = new ListTag();
             listTag3.addAll(protoChunk.getEntities());
@@ -281,7 +281,7 @@ public class ChunkSerializer {
         if (tag != null && (chunkStatus = ChunkStatus.byId(tag.getCompound("Level").getString("Status"))) != null) {
             return chunkStatus.getChunkType();
         }
-        return ChunkStatus.ChunkType.field_12808;
+        return ChunkStatus.ChunkType.PROTOCHUNK;
     }
 
     private static void loadEntities(ServerWorld world, CompoundTag tag, WorldChunk chunk) {

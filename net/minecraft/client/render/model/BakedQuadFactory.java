@@ -138,17 +138,17 @@ public class BakedQuadFactory {
         }
         switch (rotation.axis) {
             case X: {
-                vec3f = new Vec3f(1.0f, 0.0f, 0.0f);
+                vec3f = Vec3f.POSITIVE_X;
                 vec3f2 = new Vec3f(0.0f, 1.0f, 1.0f);
                 break;
             }
             case Y: {
-                vec3f = new Vec3f(0.0f, 1.0f, 0.0f);
+                vec3f = Vec3f.POSITIVE_Y;
                 vec3f2 = new Vec3f(1.0f, 0.0f, 1.0f);
                 break;
             }
             case Z: {
-                vec3f = new Vec3f(0.0f, 0.0f, 1.0f);
+                vec3f = Vec3f.POSITIVE_Z;
                 vec3f2 = new Vec3f(1.0f, 1.0f, 0.0f);
                 break;
             }
@@ -156,7 +156,7 @@ public class BakedQuadFactory {
                 throw new IllegalArgumentException("There are only 3 axes");
             }
         }
-        Quaternion quaternion = new Quaternion(vec3f, rotation.angle, true);
+        Quaternion quaternion = vec3f.getDegreesQuaternion(rotation.angle);
         if (rotation.rescale) {
             if (Math.abs(rotation.angle) == 22.5f) {
                 vec3f2.scale(MIN_SCALE);

@@ -36,14 +36,14 @@ implements Comparable<Vec3i> {
         this(MathHelper.floor(x), MathHelper.floor(y), MathHelper.floor(z));
     }
 
-    public boolean equals(Object object) {
-        if (this == object) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (!(object instanceof Vec3i)) {
+        if (!(o instanceof Vec3i)) {
             return false;
         }
-        Vec3i vec3i = (Vec3i)object;
+        Vec3i vec3i = (Vec3i)o;
         if (this.getX() != vec3i.getX()) {
             return false;
         }
@@ -93,6 +93,19 @@ implements Comparable<Vec3i> {
     protected Vec3i setZ(int z) {
         this.z = z;
         return this;
+    }
+
+    /**
+     * Returns another Vec3i whose coordinates have the parameter x, y, and z
+     * added to the coordinates of this vector.
+     * 
+     * <p>This method always returns an immutable object.
+     */
+    public Vec3i add(int x, int y, int z) {
+        if (x == 0 && y == 0 && z == 0) {
+            return this;
+        }
+        return new Vec3i(this.getX() + x, this.getY() + y, this.getZ() + z);
     }
 
     public Vec3i up() {

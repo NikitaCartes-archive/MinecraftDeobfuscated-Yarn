@@ -18,6 +18,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class TeamS2CPacket
 implements Packet<ClientPlayPacketListener> {
+    /**
+     * <ul><li>0 - Create/Update team with players</li>
+     * <li>1 - Remove player/team</li>
+     * <li>2 - Update team</li>
+     * <li>3 - Change player team</li></ul>
+     */
     private final int packetType;
     private final String teamName;
     private final Collection<String> playerNames;
@@ -45,33 +51,33 @@ implements Packet<ClientPlayPacketListener> {
     public TeamS2CPacket(PacketByteBuf buf) {
         this.teamName = buf.readString(16);
         this.packetType = buf.readByte();
-        this.team = TeamS2CPacket.method_34175(this.packetType) ? Optional.of(new SerializableTeam(buf)) : Optional.empty();
-        this.playerNames = TeamS2CPacket.method_34169(this.packetType) ? buf.readList(PacketByteBuf::readString) : ImmutableList.of();
+        this.team = TeamS2CPacket.containsTeamInfo(this.packetType) ? Optional.of(new SerializableTeam(buf)) : Optional.empty();
+        this.playerNames = TeamS2CPacket.containsPlayers(this.packetType) ? buf.readList(PacketByteBuf::readString) : ImmutableList.of();
     }
 
     @Override
     public void write(PacketByteBuf buf) {
         buf.writeString(this.teamName);
         buf.writeByte(this.packetType);
-        if (TeamS2CPacket.method_34175(this.packetType)) {
+        if (TeamS2CPacket.containsTeamInfo(this.packetType)) {
             this.team.orElseThrow(() -> new IllegalStateException("Parameters not present, but method is" + this.packetType)).write(buf);
         }
-        if (TeamS2CPacket.method_34169(this.packetType)) {
+        if (TeamS2CPacket.containsPlayers(this.packetType)) {
             buf.writeCollection(this.playerNames, PacketByteBuf::writeString);
         }
     }
 
-    private static boolean method_34169(int i) {
-        return i == 0 || i == 3 || i == 4;
+    private static boolean containsPlayers(int packetType) {
+        return packetType == 0 || packetType == 3 || packetType == 4;
     }
 
-    private static boolean method_34175(int i) {
-        return i == 0 || i == 2;
+    private static boolean containsTeamInfo(int packetType) {
+        return packetType == 0 || packetType == 2;
     }
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public Operation method_34174() {
+    public Operation getPlayerListOperation() {
         switch (this.packetType) {
             case 0: 
             case 3: {
@@ -86,7 +92,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Nullable
     @Environment(value=EnvType.CLIENT)
-    public Operation method_34176() {
+    public Operation getTeamOperation() {
         switch (this.packetType) {
             case 0: {
                 return Operation.ADD;

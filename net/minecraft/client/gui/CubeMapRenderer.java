@@ -10,12 +10,15 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.texture.TextureManager;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Matrix4f;
+import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
 public class CubeMapRenderer {
@@ -30,31 +33,32 @@ public class CubeMapRenderer {
     public void draw(MinecraftClient client, float x, float y, float alpha) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.matrixMode(5889);
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
-        RenderSystem.multMatrix(Matrix4f.viewboxMatrix(85.0, (float)client.getWindow().getFramebufferWidth() / (float)client.getWindow().getFramebufferHeight(), 0.05f, 10.0f));
-        RenderSystem.matrixMode(5888);
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.rotatef(180.0f, 1.0f, 0.0f, 0.0f);
+        Matrix4f matrix4f = Matrix4f.viewboxMatrix(85.0, (float)client.getWindow().getFramebufferWidth() / (float)client.getWindow().getFramebufferHeight(), 0.05f, 10.0f);
+        RenderSystem.backupProjectionMatrix();
+        RenderSystem.setProjectionMatrix(matrix4f);
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
+        matrixStack.loadIdentity();
+        matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f));
+        RenderSystem.applyModelViewMatrix();
+        RenderSystem.setShader(GameRenderer::method_34543);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
-        RenderSystem.disableAlphaTest();
         RenderSystem.disableCull();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
         int i = 2;
         for (int j = 0; j < 4; ++j) {
-            RenderSystem.pushMatrix();
+            matrixStack.push();
             float f = ((float)(j % 2) / 2.0f - 0.5f) / 256.0f;
             float g = ((float)(j / 2) / 2.0f - 0.5f) / 256.0f;
             float h = 0.0f;
-            RenderSystem.translatef(f, g, 0.0f);
-            RenderSystem.rotatef(x, 1.0f, 0.0f, 0.0f);
-            RenderSystem.rotatef(y, 0.0f, 1.0f, 0.0f);
+            matrixStack.translate(f, g, 0.0);
+            matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(x));
+            matrixStack.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(y));
+            RenderSystem.applyModelViewMatrix();
             for (int k = 0; k < 6; ++k) {
-                client.getTextureManager().bindTexture(this.faces[k]);
+                RenderSystem.setShaderTexture(0, this.faces[k]);
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
                 int l = Math.round(255.0f * alpha) / (j + 1);
                 if (k == 0) {
@@ -95,14 +99,14 @@ public class CubeMapRenderer {
                 }
                 tessellator.draw();
             }
-            RenderSystem.popMatrix();
+            matrixStack.pop();
+            RenderSystem.applyModelViewMatrix();
             RenderSystem.colorMask(true, true, true, false);
         }
         RenderSystem.colorMask(true, true, true, true);
-        RenderSystem.matrixMode(5889);
-        RenderSystem.popMatrix();
-        RenderSystem.matrixMode(5888);
-        RenderSystem.popMatrix();
+        RenderSystem.restoreProjectionMatrix();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
         RenderSystem.depthMask(true);
         RenderSystem.enableCull();
         RenderSystem.enableDepthTest();

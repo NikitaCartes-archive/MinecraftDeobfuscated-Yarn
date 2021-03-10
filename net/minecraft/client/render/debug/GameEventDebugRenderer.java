@@ -58,7 +58,6 @@ implements DebugRenderer.Renderer {
         BlockPos blockPos2 = new BlockPos(cameraX, 0.0, cameraZ);
         this.entries.removeIf(Entry::hasExpired);
         this.listeners.removeIf(listener -> listener.isTooFar(world, blockPos2));
-        RenderSystem.pushMatrix();
         RenderSystem.disableTexture();
         RenderSystem.enableDepthTest();
         RenderSystem.enableBlend();
@@ -111,7 +110,6 @@ implements DebugRenderer.Renderer {
         RenderSystem.depthMask(true);
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
-        RenderSystem.popMatrix();
     }
 
     private static void method_33089(Box box, float f, float g, float h, float i) {

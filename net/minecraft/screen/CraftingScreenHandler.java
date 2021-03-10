@@ -20,6 +20,7 @@ import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.recipe.RecipeType;
 import net.minecraft.recipe.book.RecipeBookCategory;
 import net.minecraft.screen.AbstractRecipeScreenHandler;
+import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.screen.slot.CraftingResultSlot;
@@ -60,7 +61,7 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
         }
     }
 
-    protected static void updateResult(int syncId, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory) {
+    protected static void updateResult(ScreenHandler screenHandler, World world, PlayerEntity player, CraftingInventory craftingInventory, CraftingResultInventory resultInventory) {
         CraftingRecipe craftingRecipe;
         if (world.isClient) {
             return;
@@ -72,12 +73,13 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
             itemStack = craftingRecipe.craft(craftingInventory);
         }
         resultInventory.setStack(0, itemStack);
-        serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(syncId, 0, itemStack));
+        screenHandler.setPreviousTrackedSlot(0, itemStack);
+        serverPlayerEntity.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(screenHandler.syncId, 0, itemStack));
     }
 
     @Override
     public void onContentChanged(Inventory inventory) {
-        this.context.run((world, blockPos) -> CraftingScreenHandler.updateResult(this.syncId, world, this.player, this.input, this.result));
+        this.context.run((world, blockPos) -> CraftingScreenHandler.updateResult(this, world, this.player, this.input, this.result));
     }
 
     @Override
@@ -131,9 +133,9 @@ extends AbstractRecipeScreenHandler<CraftingInventory> {
             if (itemStack2.getCount() == itemStack.getCount()) {
                 return ItemStack.EMPTY;
             }
-            ItemStack itemStack3 = slot.onTakeItem(player, itemStack2);
+            slot.onTakeItem(player, itemStack2);
             if (index == 0) {
-                player.dropItem(itemStack3, false);
+                player.dropItem(itemStack2, false);
             }
         }
         return itemStack;

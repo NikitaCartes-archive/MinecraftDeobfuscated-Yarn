@@ -45,31 +45,27 @@ public class RealmsTextureManager {
 
     public static void bindWorldTemplate(String id, @Nullable String image) {
         if (image == null) {
-            MinecraftClient.getInstance().getTextureManager().bindTexture(ISLES);
+            RenderSystem.setShaderTexture(0, ISLES);
             return;
         }
         int i = RealmsTextureManager.getTextureId(id, image);
-        RenderSystem.bindTexture(i);
+        RenderSystem.setShaderTexture(0, i);
     }
 
     public static void withBoundFace(String uuid, Runnable r) {
-        RenderSystem.pushTextureAttributes();
-        try {
-            RealmsTextureManager.bindFace(uuid);
-            r.run();
-        } finally {
-            RenderSystem.popAttributes();
-        }
+        RealmsTextureManager.bindFace(uuid);
+        r.run();
     }
 
     private static void bindDefaultFace(UUID uuid) {
-        MinecraftClient.getInstance().getTextureManager().bindTexture(DefaultSkinHelper.getTexture(uuid));
+        RenderSystem.setShaderTexture(0, DefaultSkinHelper.getTexture(uuid));
     }
 
     private static void bindFace(final String uuid) {
         UUID uUID = UUIDTypeAdapter.fromString(uuid);
         if (textures.containsKey(uuid)) {
-            RenderSystem.bindTexture(textures.get(uuid).textureId);
+            int i = textures.get(uuid).textureId;
+            RenderSystem.setShaderTexture(0, i);
             return;
         }
         if (skinFetchStatus.containsKey(uuid)) {
@@ -77,7 +73,7 @@ public class RealmsTextureManager {
                 RealmsTextureManager.bindDefaultFace(uUID);
             } else if (fetchedSkins.containsKey(uuid)) {
                 int i = RealmsTextureManager.getTextureId(uuid, fetchedSkins.get(uuid));
-                RenderSystem.bindTexture(i);
+                RenderSystem.setShaderTexture(0, i);
             } else {
                 RealmsTextureManager.bindDefaultFace(uUID);
             }
@@ -182,7 +178,7 @@ public class RealmsTextureManager {
             iOException.printStackTrace();
         }
         RenderSystem.activeTexture(33984);
-        RenderSystem.bindTexture(i);
+        RenderSystem.bindTextureForSetup(i);
         TextureUtil.uploadImage(intBuffer, j, k);
         textures.put(id, new RealmsTexture(image, i));
         return i;

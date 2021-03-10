@@ -13,6 +13,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.BackgroundHelper;
 import net.minecraft.client.gui.screen.Overlay;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.resource.metadata.TextureResourceMetadata;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.ResourceTexture;
@@ -87,16 +88,15 @@ extends Overlay {
         int n = (int)(d * 0.5);
         double e = d * 4.0;
         int o = (int)(e * 0.5);
-        this.client.getTextureManager().bindTexture(LOGO);
+        RenderSystem.setShaderTexture(0, LOGO);
         RenderSystem.enableBlend();
         RenderSystem.blendEquation(32774);
         RenderSystem.blendFunc(770, 1);
-        RenderSystem.alphaFunc(516, 0.0f);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, h);
+        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, h);
         SplashScreen.drawTexture(matrices, k - o, m - n, o, (int)d, -0.0625f, 0.0f, 120, 60, 120, 120);
         SplashScreen.drawTexture(matrices, k, m - n, o, (int)d, 0.0625f, 60.0f, 120, 60, 120, 120);
         RenderSystem.defaultBlendFunc();
-        RenderSystem.defaultAlphaFunc();
         RenderSystem.disableBlend();
         int p = (int)((double)this.client.getWindow().getScaledHeight() * 0.8325);
         float q = this.reloadMonitor.getProgress();
@@ -152,7 +152,7 @@ extends Overlay {
         @Override
         protected ResourceTexture.TextureData loadTextureData(ResourceManager resourceManager) {
             MinecraftClient minecraftClient = MinecraftClient.getInstance();
-            DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackDownloader().getPack();
+            DefaultResourcePack defaultResourcePack = minecraftClient.getResourcePackProvider().getPack();
             try (InputStream inputStream = defaultResourcePack.open(ResourceType.CLIENT_RESOURCES, LOGO);){
                 ResourceTexture.TextureData textureData = new ResourceTexture.TextureData(new TextureResourceMetadata(true, true), NativeImage.read(inputStream));
                 return textureData;

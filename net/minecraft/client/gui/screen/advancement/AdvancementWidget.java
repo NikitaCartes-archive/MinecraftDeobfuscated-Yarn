@@ -16,6 +16,7 @@ import net.minecraft.client.font.TextHandler;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.screen.advancement.AdvancementObtainedStatus;
 import net.minecraft.client.gui.screen.advancement.AdvancementTab;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
@@ -128,7 +129,8 @@ extends DrawableHelper {
         if (!this.display.isHidden() || this.progress != null && this.progress.isDone()) {
             float f = this.progress == null ? 0.0f : this.progress.getProgressBarPercentage();
             AdvancementObtainedStatus advancementObtainedStatus = f >= 1.0f ? AdvancementObtainedStatus.OBTAINED : AdvancementObtainedStatus.UNOBTAINED;
-            this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
+            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
             this.drawTexture(matrices, x + this.xPos + 3, y + this.yPos, this.display.getFrame().getTextureV(), 128 + advancementObtainedStatus.getSpriteIndex() * 26, 26, 26);
             this.client.getItemRenderer().renderInGui(this.display.getIcon(), x + this.xPos + 8, y + this.yPos + 5);
         }
@@ -176,8 +178,9 @@ extends DrawableHelper {
             advancementObtainedStatus3 = AdvancementObtainedStatus.UNOBTAINED;
         }
         int m = this.width - l;
-        this.client.getTextureManager().bindTexture(WIDGETS_TEXTURE);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         int n = y + this.yPos;
         int o = bl ? x + this.xPos - this.width + 26 + 6 : x + this.xPos;

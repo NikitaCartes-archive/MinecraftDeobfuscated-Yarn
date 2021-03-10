@@ -25,7 +25,7 @@ import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.FoodComponent;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemGroup;
@@ -205,11 +205,11 @@ implements ItemConvertible {
         return MathHelper.hsvToRgb(f / 3.0f, 1.0f, 1.0f);
     }
 
-    public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
         return false;
     }
 
-    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, CommandItemSlot cursorSlot) {
         return false;
     }
 
@@ -459,7 +459,10 @@ implements ItemConvertible {
         return null;
     }
 
-    public boolean hasStoredInventory() {
+    /**
+     * @return true if the item can be placed inside of shulker boxes or bundles.
+     */
+    public boolean canBeNested() {
         return true;
     }
 

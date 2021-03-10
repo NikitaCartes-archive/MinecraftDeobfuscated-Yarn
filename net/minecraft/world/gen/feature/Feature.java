@@ -55,12 +55,15 @@ import net.minecraft.world.gen.feature.FillLayerFeatureConfig;
 import net.minecraft.world.gen.feature.FlowerFeature;
 import net.minecraft.world.gen.feature.ForestRockFeature;
 import net.minecraft.world.gen.feature.FossilFeature;
+import net.minecraft.world.gen.feature.FossilFeatureConfig;
 import net.minecraft.world.gen.feature.FreezeTopLayerFeature;
 import net.minecraft.world.gen.feature.GeodeFeature;
 import net.minecraft.world.gen.feature.GeodeFeatureConfig;
 import net.minecraft.world.gen.feature.GlowLichenFeature;
 import net.minecraft.world.gen.feature.GlowLichenFeatureConfig;
 import net.minecraft.world.gen.feature.GlowstoneBlobFeature;
+import net.minecraft.world.gen.feature.GrowingPlantFeature;
+import net.minecraft.world.gen.feature.GrowingPlantFeatureConfig;
 import net.minecraft.world.gen.feature.HugeBrownMushroomFeature;
 import net.minecraft.world.gen.feature.HugeFungusFeature;
 import net.minecraft.world.gen.feature.HugeFungusFeatureConfig;
@@ -85,6 +88,8 @@ import net.minecraft.world.gen.feature.RandomFeature;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.RandomPatchFeature;
 import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
+import net.minecraft.world.gen.feature.RootSystemFeature;
+import net.minecraft.world.gen.feature.RootSystemFeatureConfig;
 import net.minecraft.world.gen.feature.ScatteredOreFeature;
 import net.minecraft.world.gen.feature.SeaPickleFeature;
 import net.minecraft.world.gen.feature.SeagrassFeature;
@@ -103,8 +108,11 @@ import net.minecraft.world.gen.feature.TwistingVinesFeature;
 import net.minecraft.world.gen.feature.UnderwaterDiskFeature;
 import net.minecraft.world.gen.feature.UnderwaterMagmaFeature;
 import net.minecraft.world.gen.feature.UnderwaterMagmaFeatureConfig;
+import net.minecraft.world.gen.feature.VegetationPatchFeature;
+import net.minecraft.world.gen.feature.VegetationPatchFeatureConfig;
 import net.minecraft.world.gen.feature.VinesFeature;
 import net.minecraft.world.gen.feature.VoidStartPlatformFeature;
+import net.minecraft.world.gen.feature.WaterloggedVegetationPatchFeature;
 import net.minecraft.world.gen.feature.WeepingVinesFeature;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 
@@ -120,13 +128,17 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<EmeraldOreFeatureConfig> EMERALD_ORE = Feature.register("emerald_ore", new EmeraldOreFeature(EmeraldOreFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> VOID_START_PLATFORM = Feature.register("void_start_platform", new VoidStartPlatformFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> DESERT_WELL = Feature.register("desert_well", new DesertWellFeature(DefaultFeatureConfig.CODEC));
-    public static final Feature<DefaultFeatureConfig> FOSSIL = Feature.register("fossil", new FossilFeature(DefaultFeatureConfig.CODEC));
+    public static final Feature<FossilFeatureConfig> FOSSIL = Feature.register("fossil", new FossilFeature(FossilFeatureConfig.CODEC));
     public static final Feature<HugeMushroomFeatureConfig> HUGE_RED_MUSHROOM = Feature.register("huge_red_mushroom", new HugeRedMushroomFeature(HugeMushroomFeatureConfig.CODEC));
     public static final Feature<HugeMushroomFeatureConfig> HUGE_BROWN_MUSHROOM = Feature.register("huge_brown_mushroom", new HugeBrownMushroomFeature(HugeMushroomFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> ICE_SPIKE = Feature.register("ice_spike", new IceSpikeFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> GLOWSTONE_BLOB = Feature.register("glowstone_blob", new GlowstoneBlobFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> FREEZE_TOP_LAYER = Feature.register("freeze_top_layer", new FreezeTopLayerFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> VINES = Feature.register("vines", new VinesFeature(DefaultFeatureConfig.CODEC));
+    public static final Feature<GrowingPlantFeatureConfig> GROWING_PLANT = Feature.register("growing_plant", new GrowingPlantFeature(GrowingPlantFeatureConfig.CODEC));
+    public static final Feature<VegetationPatchFeatureConfig> VEGETATION_PATCH = Feature.register("vegetation_patch", new VegetationPatchFeature(VegetationPatchFeatureConfig.CODEC));
+    public static final Feature<VegetationPatchFeatureConfig> WATERLOGGED_VEGETATION_PATCH = Feature.register("waterlogged_vegetation_patch", new WaterloggedVegetationPatchFeature(VegetationPatchFeatureConfig.CODEC));
+    public static final Feature<RootSystemFeatureConfig> ROOT_SYSTEM = Feature.register("root_system", new RootSystemFeature(RootSystemFeatureConfig.CODEC));
     public static final Feature<GlowLichenFeatureConfig> GLOW_LICHEN = Feature.register("glow_lichen", new GlowLichenFeature(GlowLichenFeatureConfig.CODEC));
     public static final Feature<UnderwaterMagmaFeatureConfig> UNDERWATER_MAGMA = Feature.register("underwater_magma", new UnderwaterMagmaFeature(UnderwaterMagmaFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> MONSTER_ROOM = Feature.register("monster_room", new DungeonFeature(DefaultFeatureConfig.CODEC));
@@ -196,7 +208,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     }
 
     public static boolean isSoil(BlockState state) {
-        return state.isOf(Blocks.DIRT) || state.isOf(Blocks.GRASS_BLOCK) || state.isOf(Blocks.PODZOL) || state.isOf(Blocks.COARSE_DIRT) || state.isOf(Blocks.MYCELIUM);
+        return state.isOf(Blocks.DIRT) || state.isOf(Blocks.GRASS_BLOCK) || state.isOf(Blocks.PODZOL) || state.isOf(Blocks.COARSE_DIRT) || state.isOf(Blocks.MYCELIUM) || state.isOf(Blocks.ROOTED_DIRT);
     }
 
     public static boolean isSoil(TestableWorld world, BlockPos pos) {

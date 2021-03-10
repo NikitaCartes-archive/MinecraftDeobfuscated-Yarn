@@ -669,6 +669,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.WEATHERED_COPPER);
         this.addDrop(Blocks.OXIDIZED_COPPER);
         this.addDrop(Blocks.COPPER_ORE);
+        this.addDrop(Blocks.DEEPSLATE_COPPER_ORE);
         this.addDrop(Blocks.CUT_COPPER);
         this.addDrop(Blocks.EXPOSED_CUT_COPPER);
         this.addDrop(Blocks.WEATHERED_CUT_COPPER);
@@ -709,6 +710,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.DEEPSLATE_BRICK_STAIRS);
         this.addDrop(Blocks.DEEPSLATE_BRICK_WALL);
         this.addDrop(Blocks.CHISELED_DEEPSLATE);
+        this.addDrop(Blocks.CRACKED_DEEPSLATE_BRICKS);
+        this.addDrop(Blocks.CRACKED_DEEPSLATE_TILES);
         this.addDrop(Blocks.FARMLAND, Blocks.DIRT);
         this.addDrop(Blocks.TRIPWIRE, Items.STRING);
         this.addDrop(Blocks.DIRT_PATH, Blocks.DIRT);
@@ -943,7 +946,9 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.BROWN_MUSHROOM_BLOCK, (Block block) -> BlockLootTableGenerator.mushroomBlockDrops(block, Blocks.BROWN_MUSHROOM));
         this.addDrop(Blocks.RED_MUSHROOM_BLOCK, (Block block) -> BlockLootTableGenerator.mushroomBlockDrops(block, Blocks.RED_MUSHROOM));
         this.addDrop(Blocks.COAL_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.COAL));
+        this.addDrop(Blocks.DEEPSLATE_COAL_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.COAL));
         this.addDrop(Blocks.EMERALD_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.EMERALD));
+        this.addDrop(Blocks.DEEPSLATE_EMERALD_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.EMERALD));
         this.addDrop(Blocks.NETHER_QUARTZ_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.QUARTZ));
         this.addDrop(Blocks.DIAMOND_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.DIAMOND));
         this.addDrop(Blocks.DEEPSLATE_DIAMOND_ORE, (Block block) -> BlockLootTableGenerator.oreDrops(block, Items.DIAMOND));
@@ -1048,6 +1053,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDropWithSilkTouch(Blocks.INFESTED_MOSSY_STONE_BRICKS, Blocks.MOSSY_STONE_BRICKS);
         this.addDropWithSilkTouch(Blocks.INFESTED_CRACKED_STONE_BRICKS, Blocks.CRACKED_STONE_BRICKS);
         this.addDropWithSilkTouch(Blocks.INFESTED_CHISELED_STONE_BRICKS, Blocks.CHISELED_STONE_BRICKS);
+        this.addDropWithSilkTouch(Blocks.INFESTED_DEEPSLATE, Blocks.DEEPSLATE);
         this.addVinePlantDrop(Blocks.WEEPING_VINES, Blocks.WEEPING_VINES_PLANT);
         this.addVinePlantDrop(Blocks.TWISTING_VINES, Blocks.TWISTING_VINES_PLANT);
         this.addDrop(Blocks.CAKE, BlockLootTableGenerator.dropsNothing());

@@ -4,6 +4,8 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.TallPlantBlock;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
@@ -16,16 +18,26 @@ extends Feature<SimpleBlockFeatureConfig> {
         super(codec);
     }
 
+    /*
+     * Enabled force condition propagation
+     * Lifted jumps to return sites
+     */
     @Override
     public boolean generate(FeatureContext<SimpleBlockFeatureConfig> context) {
-        BlockPos blockPos;
+        BlockState blockState;
         SimpleBlockFeatureConfig simpleBlockFeatureConfig = context.getConfig();
         StructureWorldAccess structureWorldAccess = context.getWorld();
-        if (simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState((blockPos = context.getOrigin()).down())) && simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) && simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up()))) {
-            structureWorldAccess.setBlockState(blockPos, simpleBlockFeatureConfig.toPlace, 2);
+        BlockPos blockPos = context.getOrigin();
+        if (!simpleBlockFeatureConfig.placeOn.isEmpty() && !simpleBlockFeatureConfig.placeOn.contains(structureWorldAccess.getBlockState(blockPos.down())) || !simpleBlockFeatureConfig.placeIn.isEmpty() && !simpleBlockFeatureConfig.placeIn.contains(structureWorldAccess.getBlockState(blockPos)) || !simpleBlockFeatureConfig.placeUnder.isEmpty() && !simpleBlockFeatureConfig.placeUnder.contains(structureWorldAccess.getBlockState(blockPos.up())) || !(blockState = simpleBlockFeatureConfig.toPlace.getBlockState(context.getRandom(), blockPos)).canPlaceAt(structureWorldAccess, blockPos)) return false;
+        if (blockState.getBlock() instanceof TallPlantBlock) {
+            if (!structureWorldAccess.isAir(blockPos.up())) return false;
+            TallPlantBlock tallPlantBlock = (TallPlantBlock)blockState.getBlock();
+            tallPlantBlock.placeAt(structureWorldAccess, blockPos, 2);
             return true;
+        } else {
+            structureWorldAccess.setBlockState(blockPos, blockState, 2);
         }
-        return false;
+        return true;
     }
 }
 

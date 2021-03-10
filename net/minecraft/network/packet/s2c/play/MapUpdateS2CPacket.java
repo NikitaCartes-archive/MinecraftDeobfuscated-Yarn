@@ -37,9 +37,9 @@ implements Packet<ClientPlayPacketListener> {
         this.id = buf.readVarInt();
         this.scale = buf.readByte();
         this.locked = buf.readBoolean();
-        this.icons = buf.readBoolean() ? buf.readList(packetByteBuf -> {
-            MapIcon.Type type = packetByteBuf.readEnumConstant(MapIcon.Type.class);
-            return new MapIcon(type, packetByteBuf.readByte(), packetByteBuf.readByte(), (byte)(packetByteBuf.readByte() & 0xF), packetByteBuf.readBoolean() ? packetByteBuf.readText() : null);
+        this.icons = buf.readBoolean() ? buf.readList(b -> {
+            MapIcon.Type type = b.readEnumConstant(MapIcon.Type.class);
+            return new MapIcon(type, b.readByte(), b.readByte(), (byte)(b.readByte() & 0xF), b.readBoolean() ? b.readText() : null);
         }) : null;
         short i = buf.readUnsignedByte();
         if (i > 0) {
@@ -60,16 +60,16 @@ implements Packet<ClientPlayPacketListener> {
         buf.writeBoolean(this.locked);
         if (this.icons != null) {
             buf.writeBoolean(true);
-            buf.writeCollection(this.icons, (packetByteBuf, mapIcon) -> {
-                packetByteBuf.writeEnumConstant(mapIcon.getType());
-                packetByteBuf.writeByte(mapIcon.getX());
-                packetByteBuf.writeByte(mapIcon.getZ());
-                packetByteBuf.writeByte(mapIcon.getRotation() & 0xF);
-                if (mapIcon.getText() != null) {
-                    packetByteBuf.writeBoolean(true);
-                    packetByteBuf.writeText(mapIcon.getText());
+            buf.writeCollection(this.icons, (b, icon) -> {
+                b.writeEnumConstant(icon.getType());
+                b.writeByte(icon.getX());
+                b.writeByte(icon.getZ());
+                b.writeByte(icon.getRotation() & 0xF);
+                if (icon.getText() != null) {
+                    b.writeBoolean(true);
+                    b.writeText(icon.getText());
                 } else {
-                    packetByteBuf.writeBoolean(false);
+                    b.writeBoolean(false);
                 }
             });
         } else {

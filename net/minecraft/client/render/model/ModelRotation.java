@@ -47,8 +47,8 @@ public enum ModelRotation implements ModelBakeSettings
     private ModelRotation(int x, int y) {
         int j;
         this.index = ModelRotation.getIndex(x, y);
-        Quaternion quaternion = new Quaternion(new Vec3f(0.0f, 1.0f, 0.0f), -y, true);
-        quaternion.hamiltonProduct(new Quaternion(new Vec3f(1.0f, 0.0f, 0.0f), -x, true));
+        Quaternion quaternion = Vec3f.POSITIVE_Y.getDegreesQuaternion(-y);
+        quaternion.hamiltonProduct(Vec3f.POSITIVE_X.getDegreesQuaternion(-x));
         DirectionTransformation directionTransformation = DirectionTransformation.IDENTITY;
         for (j = 0; j < y; j += 90) {
             directionTransformation = directionTransformation.prepend(DirectionTransformation.ROT_90_Y_NEG);

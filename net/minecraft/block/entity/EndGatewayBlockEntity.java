@@ -159,7 +159,7 @@ extends EndPortalBlockEntity {
         ServerWorld serverWorld = (ServerWorld)world;
         blockEntity.teleportCooldown = 100;
         if (blockEntity.exitPortalPos == null && world.getRegistryKey() == World.END) {
-            blockPos = EndGatewayBlockEntity.method_31699(serverWorld, pos);
+            blockPos = EndGatewayBlockEntity.setupExitPortalLocation(serverWorld, pos);
             blockPos = blockPos.up(10);
             LOGGER.debug("Creating portal at {}", (Object)blockPos);
             EndGatewayBlockEntity.createPortal(serverWorld, blockPos, EndGatewayFeatureConfig.createConfig(pos, false));
@@ -194,8 +194,15 @@ extends EndPortalBlockEntity {
         return blockPos.up();
     }
 
-    private static BlockPos method_31699(ServerWorld world, BlockPos pos) {
-        Vec3d vec3d = EndGatewayBlockEntity.method_31701(world, pos);
+    /**
+     * Finds teleport location and creates an island to teleport to (if there is none).
+     * 
+     * <p>This does not create an exit portal.
+     * 
+     * @return the position of the exit portal
+     */
+    private static BlockPos setupExitPortalLocation(ServerWorld world, BlockPos pos) {
+        Vec3d vec3d = EndGatewayBlockEntity.findTeleportLocation(world, pos);
         WorldChunk worldChunk = EndGatewayBlockEntity.getChunk(world, vec3d);
         BlockPos blockPos = EndGatewayBlockEntity.findPortalPosition(worldChunk);
         if (blockPos == null) {
@@ -209,17 +216,17 @@ extends EndPortalBlockEntity {
         return blockPos;
     }
 
-    private static Vec3d method_31701(ServerWorld world, BlockPos pos) {
+    private static Vec3d findTeleportLocation(ServerWorld world, BlockPos pos) {
         Vec3d vec3d = new Vec3d(pos.getX(), 0.0, pos.getZ()).normalize();
         int i = 1024;
         Vec3d vec3d2 = vec3d.multiply(1024.0);
         int j = 16;
-        while (!EndGatewayBlockEntity.method_31698(world, vec3d2) && j-- > 0) {
+        while (!EndGatewayBlockEntity.isChunkEmpty(world, vec3d2) && j-- > 0) {
             LOGGER.debug("Skipping backwards past nonempty chunk at {}", (Object)vec3d2);
             vec3d2 = vec3d2.add(vec3d.multiply(-16.0));
         }
         j = 16;
-        while (EndGatewayBlockEntity.method_31698(world, vec3d2) && j-- > 0) {
+        while (EndGatewayBlockEntity.isChunkEmpty(world, vec3d2) && j-- > 0) {
             LOGGER.debug("Skipping forward past empty chunk at {}", (Object)vec3d2);
             vec3d2 = vec3d2.add(vec3d.multiply(16.0));
         }
@@ -227,19 +234,19 @@ extends EndPortalBlockEntity {
         return vec3d2;
     }
 
-    private static boolean method_31698(ServerWorld world, Vec3d vec3d) {
-        return EndGatewayBlockEntity.getChunk(world, vec3d).getHighestNonEmptySectionYOffset() <= world.getBottomY();
+    private static boolean isChunkEmpty(ServerWorld world, Vec3d pos) {
+        return EndGatewayBlockEntity.getChunk(world, pos).getHighestNonEmptySectionYOffset() <= world.getBottomY();
     }
 
-    private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean bl) {
+    private static BlockPos findExitPortalPos(BlockView world, BlockPos pos, int searchRadius, boolean force) {
         Vec3i blockPos = null;
         for (int i = -searchRadius; i <= searchRadius; ++i) {
             block1: for (int j = -searchRadius; j <= searchRadius; ++j) {
-                if (i == 0 && j == 0 && !bl) continue;
+                if (i == 0 && j == 0 && !force) continue;
                 for (int k = world.getTopY() - 1; k > (blockPos == null ? world.getBottomY() : blockPos.getY()); --k) {
                     BlockPos blockPos2 = new BlockPos(pos.getX() + i, k, pos.getZ() + j);
                     BlockState blockState = world.getBlockState(blockPos2);
-                    if (!blockState.isFullCube(world, blockPos2) || !bl && blockState.isOf(Blocks.BEDROCK)) continue;
+                    if (!blockState.isFullCube(world, blockPos2) || !force && blockState.isOf(Blocks.BEDROCK)) continue;
                     blockPos = blockPos2;
                     continue block1;
                 }

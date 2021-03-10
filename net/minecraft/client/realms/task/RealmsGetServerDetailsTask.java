@@ -109,7 +109,7 @@ extends LongRunningTask {
                     return;
                 }
                 ((CompletableFuture)this.method_32515(realmsServerAddress).thenRun(() -> RealmsGetServerDetailsTask.setScreen((Screen)function.apply(realmsServerAddress)))).exceptionally(throwable -> {
-                    MinecraftClient.getInstance().getResourcePackDownloader().clear();
+                    MinecraftClient.getInstance().getResourcePackProvider().clear();
                     LOGGER.error(throwable);
                     RealmsGetServerDetailsTask.setScreen(new RealmsGenericErrorScreen(new LiteralText("Failed to download resource pack!"), this.lastScreen));
                     return null;
@@ -125,7 +125,7 @@ extends LongRunningTask {
 
     private CompletableFuture<?> method_32515(RealmsServerAddress realmsServerAddress) {
         try {
-            return MinecraftClient.getInstance().getResourcePackDownloader().download(realmsServerAddress.resourcePackUrl, realmsServerAddress.resourcePackHash);
+            return MinecraftClient.getInstance().getResourcePackProvider().download(realmsServerAddress.resourcePackUrl, realmsServerAddress.resourcePackHash);
         } catch (Exception exception) {
             CompletableFuture completableFuture = new CompletableFuture();
             completableFuture.completeExceptionally(exception);

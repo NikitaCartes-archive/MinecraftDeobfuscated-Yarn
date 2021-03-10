@@ -15,7 +15,7 @@ extends Slot {
 
     @Override
     public boolean canInsert(ItemStack stack) {
-        return stack.getItem().hasStoredInventory();
+        return stack.getItem().canBeNested();
     }
 }
 

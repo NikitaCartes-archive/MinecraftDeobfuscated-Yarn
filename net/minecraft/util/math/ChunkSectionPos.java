@@ -277,6 +277,14 @@ extends Vec3i {
         return ChunkSectionPos.asLong(this.getSectionX(), this.getSectionY(), this.getSectionZ());
     }
 
+    @Override
+    public ChunkSectionPos add(int i, int j, int k) {
+        if (i == 0 && j == 0 && k == 0) {
+            return this;
+        }
+        return new ChunkSectionPos(this.getSectionX() + i, this.getSectionY() + j, this.getSectionZ() + k);
+    }
+
     public Stream<BlockPos> streamBlocks() {
         return BlockPos.stream(this.getMinX(), this.getMinY(), this.getMinZ(), this.getMaxX(), this.getMaxY(), this.getMaxZ());
     }
@@ -311,6 +319,11 @@ extends Vec3i {
                 return false;
             }
         }, false);
+    }
+
+    @Override
+    public /* synthetic */ Vec3i add(int x, int y, int z) {
+        return this.add(x, y, z);
     }
 }
 

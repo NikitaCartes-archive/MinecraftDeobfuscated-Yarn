@@ -119,17 +119,6 @@ implements AutoCloseable {
         }
     }
 
-    private static void setTextureClamp(boolean clamp) {
-        RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
-        if (clamp) {
-            GlStateManager.texParameter(3553, 10242, 10496);
-            GlStateManager.texParameter(3553, 10243, 10496);
-        } else {
-            GlStateManager.texParameter(3553, 10242, 10497);
-            GlStateManager.texParameter(3553, 10243, 10497);
-        }
-    }
-
     private static void setTextureFilter(boolean blur, boolean mipmap) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         if (blur) {
@@ -259,7 +248,6 @@ implements AutoCloseable {
         RenderSystem.assertThread(RenderSystem::isOnRenderThreadOrInit);
         this.checkAllocated();
         NativeImage.setTextureFilter(blur, mipmap);
-        NativeImage.setTextureClamp(clamp);
         if (width == this.getWidth()) {
             GlStateManager.pixelStore(3314, 0);
         } else {

@@ -3,7 +3,6 @@
  */
 package net.minecraft.client.gui.screen;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -85,10 +84,10 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.fillGradient(matrices, 0, 0, this.width, this.height, 0x60500000, -1602211792);
-        RenderSystem.pushMatrix();
-        RenderSystem.scalef(2.0f, 2.0f, 2.0f);
+        matrices.push();
+        matrices.scale(2.0f, 2.0f, 2.0f);
         DeathScreen.drawCenteredText(matrices, this.textRenderer, this.title, this.width / 2 / 2, 30, 0xFFFFFF);
-        RenderSystem.popMatrix();
+        matrices.pop();
         if (this.message != null) {
             DeathScreen.drawCenteredText(matrices, this.textRenderer, this.message, this.width / 2, 85, 0xFFFFFF);
         }

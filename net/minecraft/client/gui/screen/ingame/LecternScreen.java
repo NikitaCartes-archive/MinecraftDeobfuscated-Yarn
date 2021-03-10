@@ -16,7 +16,6 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
-import net.minecraft.util.collection.DefaultedList;
 
 @Environment(value=EnvType.CLIENT)
 public class LecternScreen
@@ -24,11 +23,6 @@ extends BookScreen
 implements ScreenHandlerProvider<LecternScreenHandler> {
     private final LecternScreenHandler handler;
     private final ScreenHandlerListener listener = new ScreenHandlerListener(){
-
-        @Override
-        public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
-            LecternScreen.this.updatePageProvider();
-        }
 
         @Override
         public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
@@ -115,6 +109,11 @@ implements ScreenHandlerProvider<LecternScreenHandler> {
 
     private void updatePage() {
         this.setPage(this.handler.getPage());
+    }
+
+    @Override
+    protected void method_34494() {
+        this.client.player.closeHandledScreen();
     }
 
     @Override

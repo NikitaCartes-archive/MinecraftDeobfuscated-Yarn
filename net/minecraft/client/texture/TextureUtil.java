@@ -20,6 +20,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.client.texture.NativeImage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
@@ -101,6 +102,7 @@ public class TextureUtil {
     /*
      * WARNING - Removed try catching itself - possible behaviour change.
      */
+    @Nullable
     public static String readAllToString(InputStream inputStream) {
         RenderSystem.assertThread(RenderSystem::isOnRenderThread);
         ByteBuffer byteBuffer = null;
@@ -132,8 +134,6 @@ public class TextureUtil {
         GL11.glPixelStorei(3316, 0);
         GL11.glPixelStorei(3317, 4);
         GL11.glTexImage2D(3553, 0, 6408, width, height, 0, 32993, 33639, imageData);
-        GL11.glTexParameteri(3553, 10242, 10497);
-        GL11.glTexParameteri(3553, 10243, 10497);
         GL11.glTexParameteri(3553, 10240, 9728);
         GL11.glTexParameteri(3553, 10241, 9729);
     }

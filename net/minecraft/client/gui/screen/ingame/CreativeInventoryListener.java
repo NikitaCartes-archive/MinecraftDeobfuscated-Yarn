@@ -9,7 +9,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
-import net.minecraft.util.collection.DefaultedList;
 
 @Environment(value=EnvType.CLIENT)
 public class CreativeInventoryListener
@@ -18,10 +17,6 @@ implements ScreenHandlerListener {
 
     public CreativeInventoryListener(MinecraftClient client) {
         this.client = client;
-    }
-
-    @Override
-    public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
     }
 
     @Override

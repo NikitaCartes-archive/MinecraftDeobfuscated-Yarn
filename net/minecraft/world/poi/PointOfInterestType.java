@@ -26,9 +26,9 @@ import net.minecraft.village.VillagerProfession;
 
 public class PointOfInterestType {
     private static final Supplier<Set<PointOfInterestType>> VILLAGER_WORKSTATIONS = Suppliers.memoize(() -> Registry.VILLAGER_PROFESSION.stream().map(VillagerProfession::getWorkStation).collect(Collectors.toSet()));
-    public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = pointOfInterestType -> VILLAGER_WORKSTATIONS.get().contains(pointOfInterestType);
-    public static final Predicate<PointOfInterestType> ALWAYS_TRUE = pointOfInterestType -> true;
-    private static final Set<BlockState> BED_STATES = ImmutableList.of(Blocks.RED_BED, Blocks.BLACK_BED, Blocks.BLUE_BED, Blocks.BROWN_BED, Blocks.CYAN_BED, Blocks.GRAY_BED, Blocks.GREEN_BED, Blocks.LIGHT_BLUE_BED, Blocks.LIGHT_GRAY_BED, Blocks.LIME_BED, Blocks.MAGENTA_BED, Blocks.ORANGE_BED, new Block[]{Blocks.PINK_BED, Blocks.PURPLE_BED, Blocks.WHITE_BED, Blocks.YELLOW_BED}).stream().flatMap(block -> block.getStateManager().getStates().stream()).filter(blockState -> blockState.get(BedBlock.PART) == BedPart.HEAD).collect(ImmutableSet.toImmutableSet());
+    public static final Predicate<PointOfInterestType> IS_USED_BY_PROFESSION = poiType -> VILLAGER_WORKSTATIONS.get().contains(poiType);
+    public static final Predicate<PointOfInterestType> ALWAYS_TRUE = poiType -> true;
+    private static final Set<BlockState> BED_STATES = ImmutableList.of(Blocks.RED_BED, Blocks.BLACK_BED, Blocks.BLUE_BED, Blocks.BROWN_BED, Blocks.CYAN_BED, Blocks.GRAY_BED, Blocks.GREEN_BED, Blocks.LIGHT_BLUE_BED, Blocks.LIGHT_GRAY_BED, Blocks.LIME_BED, Blocks.MAGENTA_BED, Blocks.ORANGE_BED, new Block[]{Blocks.PINK_BED, Blocks.PURPLE_BED, Blocks.WHITE_BED, Blocks.YELLOW_BED}).stream().flatMap(block -> block.getStateManager().getStates().stream()).filter(state -> state.get(BedBlock.PART) == BedPart.HEAD).collect(ImmutableSet.toImmutableSet());
     private static final Map<BlockState, PointOfInterestType> BLOCK_STATE_TO_POINT_OF_INTEREST_TYPE = Maps.newHashMap();
     public static final PointOfInterestType UNEMPLOYED = PointOfInterestType.register("unemployed", ImmutableSet.of(), 1, IS_USED_BY_PROFESSION, 1);
     public static final PointOfInterestType ARMORER = PointOfInterestType.register("armorer", PointOfInterestType.getAllStatesOf(Blocks.BLAST_FURNACE), 1, 1);
@@ -75,7 +75,7 @@ public class PointOfInterestType {
         this.id = id;
         this.blockStates = ImmutableSet.copyOf(blockStates);
         this.ticketCount = ticketCount;
-        this.completionCondition = pointOfInterestType -> pointOfInterestType == this;
+        this.completionCondition = poiType -> poiType == this;
         this.searchDistance = searchDistance;
     }
 

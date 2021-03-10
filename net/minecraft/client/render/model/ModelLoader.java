@@ -174,6 +174,7 @@ public class ModelLoader {
         }
         profiler.swap("special");
         this.addModel(new ModelIdentifier("minecraft:trident_in_hand#inventory"));
+        this.addModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory"));
         profiler.swap("textures");
         LinkedHashSet set = Sets.newLinkedHashSet();
         Set set2 = this.modelsToBake.values().stream().flatMap(unbakedModel -> unbakedModel.getTextureDependencies(this::getOrLoadModel, set).stream()).collect(Collectors.toSet());

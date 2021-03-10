@@ -51,7 +51,7 @@ extends Slot {
     }
 
     @Override
-    public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+    public void onTakeItem(PlayerEntity player, ItemStack stack) {
         this.onCrafted(stack);
         TradeOffer tradeOffer = this.merchantInventory.getTradeOffer();
         if (tradeOffer != null) {
@@ -65,7 +65,6 @@ extends Slot {
             }
             this.merchant.setExperienceFromServer(this.merchant.getExperience() + tradeOffer.getMerchantExperience());
         }
-        return stack;
     }
 }
 

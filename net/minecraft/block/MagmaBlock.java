@@ -39,7 +39,7 @@ extends Block {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        BubbleColumnBlock.update(world, pos.up(), true);
+        BubbleColumnBlock.method_34268(world, pos.up(), state);
     }
 
     @Override

@@ -67,8 +67,8 @@ public abstract class YOffset {
         }
 
         @Override
-        public int getY(HeightContext heightContext) {
-            return heightContext.getMaxY() - 1 + heightContext.getMinY() - this.getOffset();
+        public int getY(HeightContext context) {
+            return context.getMaxY() - 1 + context.getMinY() - this.getOffset();
         }
     }
 
@@ -81,8 +81,8 @@ public abstract class YOffset {
         }
 
         @Override
-        public int getY(HeightContext heightContext) {
-            return heightContext.getMinY() + this.getOffset();
+        public int getY(HeightContext context) {
+            return context.getMinY() + this.getOffset();
         }
     }
 
@@ -95,7 +95,7 @@ public abstract class YOffset {
         }
 
         @Override
-        public int getY(HeightContext heightContext) {
+        public int getY(HeightContext context) {
             return this.getOffset();
         }
     }

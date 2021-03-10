@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import com.ibm.icu.text.ArabicShaping;
 import com.ibm.icu.text.ArabicShapingException;
 import com.ibm.icu.text.Bidi;
-import com.mojang.blaze3d.systems.RenderSystem;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
@@ -71,7 +70,6 @@ public class TextRenderer {
      * @param color the text color in the 0xAARRGGBB format
      */
     public int drawWithShadow(MatrixStack matrices, String text, float x, float y, int color, boolean rightToLeft) {
-        RenderSystem.enableAlphaTest();
         return this.draw(text, x, y, color, matrices.peek().getModel(), true, rightToLeft);
     }
 
@@ -79,7 +77,6 @@ public class TextRenderer {
      * @param color the text color in the 0xAARRGGBB format
      */
     public int draw(MatrixStack matrices, String text, float x, float y, int color) {
-        RenderSystem.enableAlphaTest();
         return this.draw(text, x, y, color, matrices.peek().getModel(), false, this.isRightToLeft());
     }
 
@@ -87,7 +84,6 @@ public class TextRenderer {
      * @param color the text color in the 0xAARRGGBB format
      */
     public int drawWithShadow(MatrixStack matrices, OrderedText text, float x, float y, int color) {
-        RenderSystem.enableAlphaTest();
         return this.draw(text, x, y, color, matrices.peek().getModel(), true);
     }
 
@@ -95,7 +91,6 @@ public class TextRenderer {
      * @param color the text color in the 0xAARRGGBB format
      */
     public int drawWithShadow(MatrixStack matrices, Text text, float x, float y, int color) {
-        RenderSystem.enableAlphaTest();
         return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getModel(), true);
     }
 
@@ -103,7 +98,6 @@ public class TextRenderer {
      * @param color the text color in the 0xAARRGGBB format
      */
     public int draw(MatrixStack matrices, OrderedText text, float x, float y, int color) {
-        RenderSystem.enableAlphaTest();
         return this.draw(text, x, y, color, matrices.peek().getModel(), false);
     }
 
@@ -111,7 +105,6 @@ public class TextRenderer {
      * @param color the text color in the 0xAARRGGBB format
      */
     public int draw(MatrixStack matrices, Text text, float x, float y, int color) {
-        RenderSystem.enableAlphaTest();
         return this.draw(text.asOrderedText(), x, y, color, matrices.peek().getModel(), false);
     }
 

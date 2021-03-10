@@ -7,6 +7,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
@@ -41,8 +42,9 @@ extends HandledScreen<CartographyTableScreenHandler> {
         MapState mapState;
         Integer integer;
         this.renderBackground(matrices);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        this.client.getTextureManager().bindTexture(TEXTURE);
+        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, TEXTURE);
         int i = this.x;
         int j = this.y;
         this.drawTexture(matrices, i, j, 0, 0, this.backgroundWidth, this.backgroundHeight);
@@ -79,39 +81,39 @@ extends HandledScreen<CartographyTableScreenHandler> {
         int j = this.y;
         if (bl2 && !bl4) {
             this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 66, 66, 66);
-            this.drawMap(integer, mapState, i + 85, j + 31, 0.226f);
+            this.drawMap(matrices, integer, mapState, i + 85, j + 31, 0.226f);
         } else if (bl) {
             this.drawTexture(matrices, i + 67 + 16, j + 13, this.backgroundWidth, 132, 50, 66);
-            this.drawMap(integer, mapState, i + 86, j + 16, 0.34f);
-            this.client.getTextureManager().bindTexture(TEXTURE);
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(0.0f, 0.0f, 1.0f);
+            this.drawMap(matrices, integer, mapState, i + 86, j + 16, 0.34f);
+            RenderSystem.setShaderTexture(0, TEXTURE);
+            matrices.push();
+            matrices.translate(0.0, 0.0, 1.0);
             this.drawTexture(matrices, i + 67, j + 13 + 16, this.backgroundWidth, 132, 50, 66);
-            this.drawMap(integer, mapState, i + 70, j + 32, 0.34f);
-            RenderSystem.popMatrix();
+            this.drawMap(matrices, integer, mapState, i + 70, j + 32, 0.34f);
+            matrices.pop();
         } else if (bl3) {
             this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
-            this.drawMap(integer, mapState, i + 71, j + 17, 0.45f);
-            this.client.getTextureManager().bindTexture(TEXTURE);
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(0.0f, 0.0f, 1.0f);
+            this.drawMap(matrices, integer, mapState, i + 71, j + 17, 0.45f);
+            RenderSystem.setShaderTexture(0, TEXTURE);
+            matrices.push();
+            matrices.translate(0.0, 0.0, 1.0);
             this.drawTexture(matrices, i + 66, j + 12, 0, this.backgroundHeight, 66, 66);
-            RenderSystem.popMatrix();
+            matrices.pop();
         } else {
             this.drawTexture(matrices, i + 67, j + 13, this.backgroundWidth, 0, 66, 66);
-            this.drawMap(integer, mapState, i + 71, j + 17, 0.45f);
+            this.drawMap(matrices, integer, mapState, i + 71, j + 17, 0.45f);
         }
     }
 
-    private void drawMap(@Nullable Integer integer, @Nullable MapState mapState, int i, int j, float f) {
+    private void drawMap(MatrixStack matrixStack, @Nullable Integer integer, @Nullable MapState mapState, int i, int j, float f) {
         if (integer != null && mapState != null) {
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(i, j, 1.0f);
-            RenderSystem.scalef(f, f, 1.0f);
+            matrixStack.push();
+            matrixStack.translate(i, j, 1.0);
+            matrixStack.scale(f, f, 1.0f);
             VertexConsumerProvider.Immediate immediate = VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer());
-            this.client.gameRenderer.getMapRenderer().draw(new MatrixStack(), immediate, integer, mapState, true, 0xF000F0);
+            this.client.gameRenderer.getMapRenderer().draw(matrixStack, immediate, integer, mapState, true, 0xF000F0);
             immediate.draw();
-            RenderSystem.popMatrix();
+            matrixStack.pop();
         }
     }
 }

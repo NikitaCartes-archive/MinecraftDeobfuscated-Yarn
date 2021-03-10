@@ -12,7 +12,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.AffineTransformation;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Matrix4f;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,11 +21,11 @@ public class AffineTransformations {
     private static final Logger LOGGER = LogManager.getLogger();
     public static final Map<Direction, AffineTransformation> DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
         enumMap.put(Direction.SOUTH, AffineTransformation.identity());
-        enumMap.put(Direction.EAST, new AffineTransformation(null, new Quaternion(new Vec3f(0.0f, 1.0f, 0.0f), 90.0f, true), null, null));
-        enumMap.put(Direction.WEST, new AffineTransformation(null, new Quaternion(new Vec3f(0.0f, 1.0f, 0.0f), -90.0f, true), null, null));
-        enumMap.put(Direction.NORTH, new AffineTransformation(null, new Quaternion(new Vec3f(0.0f, 1.0f, 0.0f), 180.0f, true), null, null));
-        enumMap.put(Direction.UP, new AffineTransformation(null, new Quaternion(new Vec3f(1.0f, 0.0f, 0.0f), -90.0f, true), null, null));
-        enumMap.put(Direction.DOWN, new AffineTransformation(null, new Quaternion(new Vec3f(1.0f, 0.0f, 0.0f), 90.0f, true), null, null));
+        enumMap.put(Direction.EAST, new AffineTransformation(null, Vec3f.POSITIVE_Y.getDegreesQuaternion(90.0f), null, null));
+        enumMap.put(Direction.WEST, new AffineTransformation(null, Vec3f.POSITIVE_Y.getDegreesQuaternion(-90.0f), null, null));
+        enumMap.put(Direction.NORTH, new AffineTransformation(null, Vec3f.POSITIVE_Y.getDegreesQuaternion(180.0f), null, null));
+        enumMap.put(Direction.UP, new AffineTransformation(null, Vec3f.POSITIVE_X.getDegreesQuaternion(-90.0f), null, null));
+        enumMap.put(Direction.DOWN, new AffineTransformation(null, Vec3f.POSITIVE_X.getDegreesQuaternion(90.0f), null, null));
     });
     public static final Map<Direction, AffineTransformation> INVERTED_DIRECTION_ROTATIONS = Util.make(Maps.newEnumMap(Direction.class), enumMap -> {
         for (Direction direction : Direction.values()) {

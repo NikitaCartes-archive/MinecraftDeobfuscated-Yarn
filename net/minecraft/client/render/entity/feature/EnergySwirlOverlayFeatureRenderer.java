@@ -33,7 +33,7 @@ extends FeatureRenderer<T, M> {
         EntityModel<T> entityModel = this.getEnergySwirlModel();
         entityModel.animateModel(entity, limbAngle, limbDistance, tickDelta);
         ((EntityModel)this.getContextModel()).copyStateTo(entityModel);
-        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(f), f * 0.01f));
+        VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEnergySwirl(this.getEnergySwirlTexture(), this.getEnergySwirlX(f) % 1.0f, f * 0.01f % 1.0f));
         entityModel.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         entityModel.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, 0.5f, 0.5f, 0.5f, 1.0f);
     }

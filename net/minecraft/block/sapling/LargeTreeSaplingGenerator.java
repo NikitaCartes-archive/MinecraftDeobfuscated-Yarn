@@ -37,7 +37,6 @@ extends SaplingGenerator {
         if (configuredFeature == null) {
             return false;
         }
-        ((TreeFeatureConfig)configuredFeature.config).ignoreFluidCheck();
         BlockState blockState = Blocks.AIR.getDefaultState();
         world.setBlockState(pos.add(i, 0, j), blockState, 4);
         world.setBlockState(pos.add(i + 1, 0, j), blockState, 4);

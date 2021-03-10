@@ -22,12 +22,14 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class BlockPosArgumentType
 implements ArgumentType<PosArgument> {
     private static final Collection<String> EXAMPLES = Arrays.asList("0 0 0", "~ ~ ~", "^ ^ ^", "^1 ^ ^-5", "~0.5 ~1 ~-5");
     public static final SimpleCommandExceptionType UNLOADED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.unloaded"));
     public static final SimpleCommandExceptionType OUT_OF_WORLD_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("argument.pos.outofworld"));
+    public static final SimpleCommandExceptionType field_29499 = new SimpleCommandExceptionType(new TranslatableText("argument.pos.outofbounds"));
 
     public static BlockPosArgumentType blockPos() {
         return new BlockPosArgumentType();
@@ -44,8 +46,12 @@ implements ArgumentType<PosArgument> {
         return blockPos;
     }
 
-    public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) {
-        return context.getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
+    public static BlockPos getBlockPos(CommandContext<ServerCommandSource> context, String name) throws CommandSyntaxException {
+        BlockPos blockPos = context.getArgument(name, PosArgument.class).toAbsoluteBlockPos(context.getSource());
+        if (!World.isValid(blockPos)) {
+            throw field_29499.create();
+        }
+        return blockPos;
     }
 
     @Override

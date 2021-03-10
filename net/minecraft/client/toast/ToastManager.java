@@ -103,10 +103,13 @@ extends DrawableHelper {
             if (this.visibility == Toast.Visibility.SHOW && l - this.field_2243 <= 600L) {
                 this.field_2242 = l;
             }
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), y * this.instance.getHeight(), 800 + y);
+            MatrixStack matrixStack = RenderSystem.getModelViewStack();
+            matrixStack.push();
+            matrixStack.translate((float)x - (float)this.instance.getWidth() * this.getDisappearProgress(l), y * this.instance.getHeight(), 800 + y);
+            RenderSystem.applyModelViewMatrix();
             Toast.Visibility visibility = this.instance.draw(matrices, this.field_2245, l - this.field_2242);
-            RenderSystem.popMatrix();
+            matrixStack.pop();
+            RenderSystem.applyModelViewMatrix();
             if (visibility != this.visibility) {
                 this.field_2243 = l - (long)((int)((1.0f - this.getDisappearProgress(l)) * 600.0f));
                 this.visibility = visibility;

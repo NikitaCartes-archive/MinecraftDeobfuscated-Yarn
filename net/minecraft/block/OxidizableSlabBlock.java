@@ -16,18 +16,18 @@ public class OxidizableSlabBlock
 extends SlabBlock
 implements Oxidizable {
     private final Oxidizable.OxidizationLevel oxidizationLevel;
-    private final Block waxed;
+    private final Block degraded;
 
     public OxidizableSlabBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.oxidizationLevel = Oxidizable.OxidizationLevel.values()[Oxidizable.OxidizationLevel.values().length - 1];
-        this.waxed = this;
+        this.degraded = this;
     }
 
-    public OxidizableSlabBlock(AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block waxed) {
+    public OxidizableSlabBlock(AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block degraded) {
         super(settings);
         this.oxidizationLevel = oxidizationLevel;
-        this.waxed = waxed;
+        this.degraded = degraded;
     }
 
     @Override
@@ -37,7 +37,7 @@ implements Oxidizable {
 
     @Override
     public boolean hasRandomTicks(BlockState state) {
-        return this.waxed != this;
+        return this.degraded != this;
     }
 
     @Override
@@ -47,7 +47,7 @@ implements Oxidizable {
 
     @Override
     public BlockState getDegradationResult(BlockState state) {
-        return (BlockState)((BlockState)this.waxed.getDefaultState().with(TYPE, state.get(TYPE))).with(WATERLOGGED, state.get(WATERLOGGED));
+        return (BlockState)((BlockState)this.degraded.getDefaultState().with(TYPE, state.get(TYPE))).with(WATERLOGGED, state.get(WATERLOGGED));
     }
 
     @Override

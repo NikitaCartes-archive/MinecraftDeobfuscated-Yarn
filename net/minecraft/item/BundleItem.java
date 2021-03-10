@@ -13,7 +13,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
@@ -47,27 +47,27 @@ extends Item {
     }
 
     @Override
-    public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
+    public boolean onStackClicked(ItemStack stack, Slot slot, ClickType clickType, PlayerEntity player) {
         if (clickType != ClickType.RIGHT) {
             return false;
         }
         ItemStack itemStack = slot.getStack();
         if (itemStack.isEmpty()) {
-            BundleItem.removeFirstStack(stack).ifPresent(itemStack2 -> BundleItem.addToBundle(stack, slot.method_32756((ItemStack)itemStack2)));
-        } else if (itemStack.getItem().hasStoredInventory()) {
+            BundleItem.removeFirstStack(stack).ifPresent(itemStack2 -> BundleItem.addToBundle(stack, slot.insertStack((ItemStack)itemStack2)));
+        } else if (itemStack.getItem().canBeNested()) {
             int i = (64 - BundleItem.getBundleOccupancy(stack)) / BundleItem.getItemOccupancy(itemStack);
-            BundleItem.addToBundle(stack, slot.method_32753(itemStack.getCount(), i, playerInventory.player));
+            BundleItem.addToBundle(stack, slot.takeStackRange(itemStack.getCount(), i, player));
         }
         return true;
     }
 
     @Override
-    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerInventory playerInventory) {
-        if (clickType != ClickType.RIGHT || !slot.method_32754(playerInventory.player)) {
+    public boolean onClicked(ItemStack stack, ItemStack otherStack, Slot slot, ClickType clickType, PlayerEntity player, CommandItemSlot cursorSlot) {
+        if (clickType != ClickType.RIGHT || !slot.canTakePartial(player)) {
             return false;
         }
         if (otherStack.isEmpty()) {
-            BundleItem.removeFirstStack(stack).ifPresent(playerInventory::setCursorStack);
+            BundleItem.removeFirstStack(stack).ifPresent(cursorSlot::set);
         } else {
             otherStack.decrement(BundleItem.addToBundle(stack, otherStack));
         }
@@ -103,7 +103,7 @@ extends Item {
     }
 
     private static int addToBundle(ItemStack bundle, ItemStack stack) {
-        if (stack.isEmpty() || !stack.getItem().hasStoredInventory()) {
+        if (stack.isEmpty() || !stack.getItem().canBeNested()) {
             return 0;
         }
         CompoundTag compoundTag = bundle.getOrCreateTag();

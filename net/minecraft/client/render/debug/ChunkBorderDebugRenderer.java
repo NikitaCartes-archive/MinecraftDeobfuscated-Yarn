@@ -30,9 +30,6 @@ implements DebugRenderer.Renderer {
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, double cameraX, double cameraY, double cameraZ) {
         int i;
         RenderSystem.enableDepthTest();
-        RenderSystem.shadeModel(7425);
-        RenderSystem.enableAlphaTest();
-        RenderSystem.defaultAlphaFunc();
         Entity entity = this.client.gameRenderer.getCamera().getFocusedEntity();
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -44,7 +41,7 @@ implements DebugRenderer.Renderer {
         double f = (double)chunkPos.getStartX() - cameraX;
         double g = (double)chunkPos.getStartZ() - cameraZ;
         RenderSystem.lineWidth(1.0f);
-        bufferBuilder.begin(VertexFormat.DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
         for (i = -16; i <= 32; i += 16) {
             for (int j = -16; j <= 32; j += 16) {
                 bufferBuilder.vertex(f + (double)i, d, g + (double)j).color(1.0f, 0.0f, 0.0f, 0.0f).next();
@@ -85,7 +82,7 @@ implements DebugRenderer.Renderer {
         }
         tessellator.draw();
         RenderSystem.lineWidth(2.0f);
-        bufferBuilder.begin(VertexFormat.DrawMode.LINE_STRIP, VertexFormats.POSITION_COLOR);
+        bufferBuilder.begin(VertexFormat.DrawMode.DEBUG_LINE_STRIP, VertexFormats.POSITION_COLOR);
         for (i = 0; i <= 16; i += 16) {
             for (int j = 0; j <= 16; j += 16) {
                 bufferBuilder.vertex(f + (double)i, d, g + (double)j).color(0.25f, 0.25f, 1.0f, 0.0f).next();
@@ -108,7 +105,6 @@ implements DebugRenderer.Renderer {
         RenderSystem.lineWidth(1.0f);
         RenderSystem.enableBlend();
         RenderSystem.enableTexture();
-        RenderSystem.shadeModel(7424);
     }
 }
 

@@ -19,7 +19,9 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.BufferBuilder;
+import net.minecraft.client.render.BufferRenderer;
 import net.minecraft.client.render.DiffuseLighting;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.OverlayVertexConsumer;
 import net.minecraft.client.render.RenderLayer;
@@ -103,8 +105,12 @@ implements SynchronousResourceReloadListener {
         }
         matrices.push();
         boolean bl2 = bl = renderMode == ModelTransformation.Mode.GUI || renderMode == ModelTransformation.Mode.GROUND || renderMode == ModelTransformation.Mode.FIXED;
-        if (stack.isOf(Items.TRIDENT) && bl) {
-            model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
+        if (bl) {
+            if (stack.isOf(Items.TRIDENT)) {
+                model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident#inventory"));
+            } else if (stack.isOf(Items.SPYGLASS)) {
+                model = this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass#inventory"));
+            }
         }
         model.getTransformation().getTransformation(renderMode).apply(leftHanded, matrices);
         matrices.translate(-0.5, -0.5, -0.5);
@@ -180,10 +186,10 @@ implements SynchronousResourceReloadListener {
         }
     }
 
-    public BakedModel getHeldItemModel(ItemStack stack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
-        BakedModel bakedModel = stack.isOf(Items.TRIDENT) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : this.models.getModel(stack);
+    public BakedModel getHeldItemModel(ItemStack itemStack, @Nullable World world, @Nullable LivingEntity entity, int seed) {
+        BakedModel bakedModel = itemStack.isOf(Items.TRIDENT) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:trident_in_hand#inventory")) : (itemStack.isOf(Items.SPYGLASS) ? this.models.getModelManager().getModel(new ModelIdentifier("minecraft:spyglass_in_hand#inventory")) : this.models.getModel(itemStack));
         ClientWorld clientWorld = world instanceof ClientWorld ? (ClientWorld)world : null;
-        BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, stack, clientWorld, entity, seed);
+        BakedModel bakedModel2 = bakedModel.getOverrides().apply(bakedModel, itemStack, clientWorld, entity, seed);
         return bakedModel2 == null ? this.models.getModelManager().getMissingModel() : bakedModel2;
     }
 
@@ -205,34 +211,32 @@ implements SynchronousResourceReloadListener {
 
     protected void renderGuiItemModel(ItemStack stack, int x, int y, BakedModel model) {
         boolean bl;
-        RenderSystem.pushMatrix();
-        this.textureManager.bindTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         this.textureManager.getTexture(SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE).setFilter(false, false);
-        RenderSystem.enableRescaleNormal();
-        RenderSystem.enableAlphaTest();
-        RenderSystem.defaultAlphaFunc();
+        RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.translatef(x, y, 100.0f + this.zOffset);
-        RenderSystem.translatef(8.0f, 8.0f, 0.0f);
-        RenderSystem.scalef(1.0f, -1.0f, 1.0f);
-        RenderSystem.scalef(16.0f, 16.0f, 16.0f);
-        MatrixStack matrixStack = new MatrixStack();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
+        matrixStack.translate(x, y, 100.0f + this.zOffset);
+        matrixStack.translate(8.0, 8.0, 0.0);
+        matrixStack.scale(1.0f, -1.0f, 1.0f);
+        matrixStack.scale(16.0f, 16.0f, 16.0f);
+        RenderSystem.applyModelViewMatrix();
+        MatrixStack matrixStack2 = new MatrixStack();
         VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders().getEntityVertexConsumers();
         boolean bl2 = bl = !model.isSideLit();
         if (bl) {
             DiffuseLighting.disableGuiDepthLighting();
         }
-        this.renderItem(stack, ModelTransformation.Mode.GUI, false, matrixStack, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, model);
+        this.renderItem(stack, ModelTransformation.Mode.GUI, false, matrixStack2, immediate, 0xF000F0, OverlayTexture.DEFAULT_UV, model);
         immediate.draw();
         RenderSystem.enableDepthTest();
         if (bl) {
             DiffuseLighting.enableGuiDepthLighting();
         }
-        RenderSystem.disableAlphaTest();
-        RenderSystem.disableRescaleNormal();
-        RenderSystem.popMatrix();
+        matrixStack.pop();
+        RenderSystem.applyModelViewMatrix();
     }
 
     /**
@@ -311,7 +315,6 @@ implements SynchronousResourceReloadListener {
         if (stack.isItemBarVisible()) {
             RenderSystem.disableDepthTest();
             RenderSystem.disableTexture();
-            RenderSystem.disableAlphaTest();
             RenderSystem.disableBlend();
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -320,7 +323,6 @@ implements SynchronousResourceReloadListener {
             this.renderGuiQuad(bufferBuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
             this.renderGuiQuad(bufferBuilder, x + 2, y + 13, i, 1, j >> 16 & 0xFF, j >> 8 & 0xFF, j & 0xFF, 255);
             RenderSystem.enableBlend();
-            RenderSystem.enableAlphaTest();
             RenderSystem.enableTexture();
             RenderSystem.enableDepthTest();
         }
@@ -339,12 +341,14 @@ implements SynchronousResourceReloadListener {
     }
 
     private void renderGuiQuad(BufferBuilder buffer, int x, int y, int width, int height, int red, int green, int blue, int alpha) {
+        RenderSystem.setShader(GameRenderer::method_34540);
         buffer.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         buffer.vertex(x + 0, y + 0, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + 0, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + height, 0.0).color(red, green, blue, alpha).next();
         buffer.vertex(x + width, y + 0, 0.0).color(red, green, blue, alpha).next();
-        Tessellator.getInstance().draw();
+        buffer.end();
+        BufferRenderer.draw(buffer);
     }
 
     @Override

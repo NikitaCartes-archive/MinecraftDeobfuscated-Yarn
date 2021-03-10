@@ -107,23 +107,23 @@ extends RealmsScreen {
         int m = k + 48 + 2;
         int n = 0;
         if (hasUnreadNews) {
-            this.client.getTextureManager().bindTexture(NEWS_NOTIFICATION);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.4f, 0.4f, 0.4f);
+            RenderSystem.setShaderTexture(0, NEWS_NOTIFICATION);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+            matrices.push();
+            matrices.scale(0.4f, 0.4f, 0.4f);
             DrawableHelper.drawTexture(matrices, (int)((double)(l + 2 - n) * 2.5), (int)((double)m * 2.5), 0.0f, 0.0f, 40, 40, 40, 40);
-            RenderSystem.popMatrix();
+            matrices.pop();
             n += 14;
         }
         if (i != 0) {
-            this.client.getTextureManager().bindTexture(INVITE_ICON);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, INVITE_ICON);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, l - n, m - 6, 0.0f, 0.0f, 15, 25, 31, 25);
             n += 16;
         }
         if (trialAvailable) {
-            this.client.getTextureManager().bindTexture(TRIAL_ICON);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, TRIAL_ICON);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             int o = 0;
             if ((Util.getMeasuringTimeMs() / 800L & 1L) == 1L) {
                 o = 8;

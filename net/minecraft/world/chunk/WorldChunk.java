@@ -351,7 +351,7 @@ implements Chunk {
     public void addBlockEntity(BlockEntity blockEntity) {
         this.setBlockEntity(blockEntity);
         if (this.canTickBlockEntities()) {
-            this.method_32919(blockEntity);
+            this.updateGameEventListener(blockEntity);
             this.updateTicker(blockEntity);
         }
     }
@@ -657,14 +657,14 @@ implements Chunk {
 
     public void disableTickSchedulers() {
         if (this.blockTickScheduler instanceof ChunkTickScheduler) {
-            ((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), blockPos -> this.getBlockState((BlockPos)blockPos).getBlock());
+            ((ChunkTickScheduler)this.blockTickScheduler).tick(this.world.getBlockTickScheduler(), pos -> this.getBlockState((BlockPos)pos).getBlock());
             this.blockTickScheduler = DummyClientTickScheduler.get();
         } else if (this.blockTickScheduler instanceof SimpleTickScheduler) {
             ((SimpleTickScheduler)this.blockTickScheduler).scheduleTo(this.world.getBlockTickScheduler());
             this.blockTickScheduler = DummyClientTickScheduler.get();
         }
         if (this.fluidTickScheduler instanceof ChunkTickScheduler) {
-            ((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), blockPos -> this.getFluidState((BlockPos)blockPos).getFluid());
+            ((ChunkTickScheduler)this.fluidTickScheduler).tick(this.world.getFluidTickScheduler(), pos -> this.getFluidState((BlockPos)pos).getFluid());
             this.fluidTickScheduler = DummyClientTickScheduler.get();
         } else if (this.fluidTickScheduler instanceof SimpleTickScheduler) {
             ((SimpleTickScheduler)this.fluidTickScheduler).scheduleTo(this.world.getFluidTickScheduler());
@@ -724,14 +724,14 @@ implements Chunk {
         this.blockEntities.values().forEach(this::removeBlockEntity);
     }
 
-    public void updateAllBlockEntityTickers() {
+    public void updateAllBlockEntities() {
         this.blockEntities.values().forEach(blockEntity -> {
-            this.method_32919(blockEntity);
+            this.updateGameEventListener(blockEntity);
             this.updateTicker(blockEntity);
         });
     }
 
-    private <T extends BlockEntity> void method_32919(T blockEntity) {
+    private <T extends BlockEntity> void updateGameEventListener(T blockEntity) {
         GameEventListener gameEventListener;
         if (this.world.isClient) {
             return;
@@ -749,7 +749,7 @@ implements Chunk {
         if (blockEntityTicker == null) {
             this.removeBlockEntityTicker(blockEntity.getPos());
         } else {
-            this.blockEntityTickers.compute(blockEntity.getPos(), (blockPos, wrappedBlockEntityTickInvoker) -> {
+            this.blockEntityTickers.compute(blockEntity.getPos(), (pos, wrappedBlockEntityTickInvoker) -> {
                 BlockEntityTickInvoker blockEntityTickInvoker = this.wrapTicker(blockEntity, blockEntityTicker);
                 if (wrappedBlockEntityTickInvoker != null) {
                     ((WrappedBlockEntityTickInvoker)wrappedBlockEntityTickInvoker).setWrapped(blockEntityTickInvoker);

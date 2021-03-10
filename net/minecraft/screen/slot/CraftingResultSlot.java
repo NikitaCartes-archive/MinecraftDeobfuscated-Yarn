@@ -60,7 +60,7 @@ extends Slot {
     }
 
     @Override
-    public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+    public void onTakeItem(PlayerEntity player, ItemStack stack) {
         this.onCrafted(stack);
         DefaultedList<ItemStack> defaultedList = player.world.getRecipeManager().getRemainingStacks(RecipeType.CRAFTING, this.input, player.world);
         for (int i = 0; i < defaultedList.size(); ++i) {
@@ -83,7 +83,6 @@ extends Slot {
             if (this.player.getInventory().insertStack(itemStack2)) continue;
             this.player.dropItem(itemStack2, false);
         }
-        return stack;
     }
 }
 

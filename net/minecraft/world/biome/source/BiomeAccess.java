@@ -59,14 +59,14 @@ public class BiomeAccess {
         return this.storage.getBiomeForNoiseGen(biomeX, biomeY, biomeZ);
     }
 
-    public Biome method_31608(ChunkPos chunkPos) {
-        return this.storage.method_31609(chunkPos);
+    public Biome getBiomeForNoiseGen(ChunkPos chunkPos) {
+        return this.storage.getBiomeForNoiseGen(chunkPos);
     }
 
     public static interface Storage {
         public Biome getBiomeForNoiseGen(int var1, int var2, int var3);
 
-        default public Biome method_31609(ChunkPos chunkPos) {
+        default public Biome getBiomeForNoiseGen(ChunkPos chunkPos) {
             return this.getBiomeForNoiseGen(BiomeCoords.fromChunk(chunkPos.x) + CHUNK_CENTER_OFFSET, 0, BiomeCoords.fromChunk(chunkPos.z) + CHUNK_CENTER_OFFSET);
         }
     }

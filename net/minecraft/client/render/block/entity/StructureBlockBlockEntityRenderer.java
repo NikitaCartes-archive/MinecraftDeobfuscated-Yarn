@@ -18,6 +18,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRenderer;
 import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 
 @Environment(value=EnvType.CLIENT)
@@ -38,8 +39,8 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
             return;
         }
         BlockPos blockPos = structureBlockBlockEntity.getOffset();
-        BlockPos blockPos2 = structureBlockBlockEntity.getSize();
-        if (blockPos2.getX() < 1 || blockPos2.getY() < 1 || blockPos2.getZ() < 1) {
+        Vec3i vec3i = structureBlockBlockEntity.getSize();
+        if (vec3i.getX() < 1 || vec3i.getY() < 1 || vec3i.getZ() < 1) {
             return;
         }
         if (structureBlockBlockEntity.getMode() != StructureBlockMode.SAVE && structureBlockBlockEntity.getMode() != StructureBlockMode.LOAD) {
@@ -48,21 +49,21 @@ implements BlockEntityRenderer<StructureBlockBlockEntity> {
         double d = blockPos.getX();
         double e = blockPos.getZ();
         double g = blockPos.getY();
-        double h = g + (double)blockPos2.getY();
+        double h = g + (double)vec3i.getY();
         switch (structureBlockBlockEntity.getMirror()) {
             case LEFT_RIGHT: {
-                k = blockPos2.getX();
-                l = -blockPos2.getZ();
+                k = vec3i.getX();
+                l = -vec3i.getZ();
                 break;
             }
             case FRONT_BACK: {
-                k = -blockPos2.getX();
-                l = blockPos2.getZ();
+                k = -vec3i.getX();
+                l = vec3i.getZ();
                 break;
             }
             default: {
-                k = blockPos2.getX();
-                l = blockPos2.getZ();
+                k = vec3i.getX();
+                l = vec3i.getZ();
             }
         }
         switch (structureBlockBlockEntity.getRotation()) {

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -31,8 +32,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.resource.AbstractFileResourcePack;
 import net.minecraft.resource.DirectoryResourcePack;
+import net.minecraft.resource.Resource;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.metadata.PackResourceMetadata;
@@ -44,7 +49,8 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class DefaultResourcePack
-implements ResourcePack {
+implements ResourcePack,
+ResourceFactory {
     public static Path resourcePath;
     private static final Logger LOGGER;
     public static Class<?> resourceClass;
@@ -128,10 +134,10 @@ implements ResourcePack {
         return set;
     }
 
-    private static void getIdentifiers(Collection<Identifier> collection, int maxDepth, String namespace, Path path3, String searchLocation, Predicate<String> predicate) throws IOException {
-        Path path22 = path3.resolve(namespace);
-        try (Stream<Path> stream = Files.walk(path22.resolve(searchLocation), maxDepth, new FileVisitOption[0]);){
-            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0]) && predicate.test(path.getFileName().toString())).map(path2 -> new Identifier(namespace, path22.relativize((Path)path2).toString().replaceAll("\\\\", "/"))).forEach(collection::add);
+    private static void getIdentifiers(Collection<Identifier> results, int maxDepth, String namespace, Path root, String prefix, Predicate<String> pathFilter) throws IOException {
+        Path path2 = root.resolve(namespace);
+        try (Stream<Path> stream = Files.walk(path2.resolve(prefix), maxDepth, new FileVisitOption[0]);){
+            stream.filter(path -> !path.endsWith(".mcmeta") && Files.isRegularFile(path, new LinkOption[0]) && pathFilter.test(path.getFileName().toString())).map(path -> new Identifier(namespace, path2.relativize((Path)path).toString().replaceAll("\\\\", "/"))).forEach(results::add);
         }
     }
 
@@ -220,9 +226,52 @@ implements ResourcePack {
     public void close() {
     }
 
+    @Override
+    public Resource getResource(final Identifier id) throws IOException {
+        return new Resource(){
+            @Nullable
+            InputStream stream;
+
+            @Override
+            public void close() throws IOException {
+                if (this.stream != null) {
+                    this.stream.close();
+                }
+            }
+
+            @Override
+            @Environment(value=EnvType.CLIENT)
+            public Identifier getId() {
+                return id;
+            }
+
+            @Override
+            public InputStream getInputStream() {
+                try {
+                    this.stream = DefaultResourcePack.this.open(ResourceType.CLIENT_RESOURCES, id);
+                } catch (IOException iOException) {
+                    throw new UncheckedIOException("Could not get client resource from vanilla pack", iOException);
+                }
+                return this.stream;
+            }
+
+            @Override
+            @Nullable
+            @Environment(value=EnvType.CLIENT)
+            public <T> T getMetadata(ResourceMetadataReader<T> metaReader) {
+                return null;
+            }
+
+            @Override
+            public String getResourcePackName() {
+                return id.toString();
+            }
+        };
+    }
+
     static {
         LOGGER = LogManager.getLogger();
-        typeToFileSystem = Util.make(Maps.newHashMap(), hashMap -> {
+        typeToFileSystem = Util.make(Maps.newHashMap(), map -> {
             Class<DefaultResourcePack> clazz = DefaultResourcePack.class;
             synchronized (DefaultResourcePack.class) {
                 for (ResourceType resourceType : ResourceType.values()) {
@@ -236,7 +285,7 @@ implements ResourcePack {
                         } catch (FileSystemNotFoundException fileSystemNotFoundException) {
                             fileSystem = FileSystems.newFileSystem(uRI, Collections.emptyMap());
                         }
-                        hashMap.put(resourceType, fileSystem);
+                        map.put(resourceType, fileSystem);
                     } catch (IOException | URISyntaxException exception) {
                         LOGGER.error("Couldn't get a list of all vanilla resources", (Throwable)exception);
                     }

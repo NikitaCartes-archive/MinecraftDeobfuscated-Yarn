@@ -218,7 +218,7 @@ public abstract class PlayerManager {
                 }
             }
         }
-        player.onSpawn();
+        player.method_34225();
     }
 
     protected void sendScoreboard(ServerScoreboard scoreboard, ServerPlayerEntity player) {
@@ -420,7 +420,7 @@ public abstract class PlayerManager {
         serverWorld2.onPlayerRespawned(serverPlayerEntity);
         this.players.add(serverPlayerEntity);
         this.playerMap.put(serverPlayerEntity.getUuid(), serverPlayerEntity);
-        serverPlayerEntity.onSpawn();
+        serverPlayerEntity.method_34225();
         serverPlayerEntity.setHealth(serverPlayerEntity.getHealth());
         if (bl2) {
             serverPlayerEntity.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.BLOCK_RESPAWN_ANCHOR_DEPLETE, SoundCategory.BLOCKS, blockPos.getX(), blockPos.getY(), blockPos.getZ(), 1.0f, 1.0f));
@@ -586,7 +586,7 @@ public abstract class PlayerManager {
     }
 
     public void sendPlayerStatus(ServerPlayerEntity player) {
-        player.refreshScreenHandler(player.playerScreenHandler);
+        player.playerScreenHandler.syncState();
         player.markHealthDirty();
         player.networkHandler.sendPacket(new UpdateSelectedSlotS2CPacket(player.getInventory().selectedSlot));
     }

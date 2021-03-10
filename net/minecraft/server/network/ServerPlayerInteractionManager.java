@@ -272,7 +272,7 @@ public class ServerPlayerInteractionManager {
             player.setStackInHand(hand, ItemStack.EMPTY);
         }
         if (!player.isUsingItem()) {
-            player.refreshScreenHandler(player.playerScreenHandler);
+            player.playerScreenHandler.syncState();
         }
         return typedActionResult.getResult();
     }

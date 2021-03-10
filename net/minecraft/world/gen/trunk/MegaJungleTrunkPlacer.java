@@ -21,7 +21,7 @@ import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public class MegaJungleTrunkPlacer
 extends GiantTrunkPlacer {
-    public static final Codec<MegaJungleTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> MegaJungleTrunkPlacer.method_28904(instance).apply(instance, MegaJungleTrunkPlacer::new));
+    public static final Codec<MegaJungleTrunkPlacer> CODEC = RecordCodecBuilder.create(instance -> MegaJungleTrunkPlacer.fillTrunkPlacerFields(instance).apply(instance, MegaJungleTrunkPlacer::new));
 
     public MegaJungleTrunkPlacer(int i, int j, int k) {
         super(i, j, k);

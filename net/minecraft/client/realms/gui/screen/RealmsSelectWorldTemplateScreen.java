@@ -331,10 +331,10 @@ extends RealmsScreen {
 
         private void drawImage(MatrixStack matrices, int y, int xm, int ym, int i, WorldTemplate worldTemplate) {
             RealmsTextureManager.bindWorldTemplate(worldTemplate.id, worldTemplate.image);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, y + 1, xm + 1, 0.0f, 0.0f, 38, 38, 38, 38);
-            RealmsSelectWorldTemplateScreen.this.client.getTextureManager().bindTexture(SLOT_FRAME);
-            RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
+            RenderSystem.setShaderTexture(0, SLOT_FRAME);
+            RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             DrawableHelper.drawTexture(matrices, y, xm, 0.0f, 0.0f, 40, 40, 40, 40);
         }
 
@@ -358,23 +358,17 @@ extends RealmsScreen {
                 }
             }
             if (!bl3) {
-                RealmsSelectWorldTemplateScreen.this.client.getTextureManager().bindTexture(LINK_ICONS);
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                RenderSystem.pushMatrix();
-                RenderSystem.scalef(1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderTexture(0, LINK_ICONS);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 float f = bl ? 15.0f : 0.0f;
                 DrawableHelper.drawTexture(matrices, i + m, j, f, 0.0f, 15, 15, 30, 15);
-                RenderSystem.popMatrix();
             }
             if (!"".equals(string2)) {
-                RealmsSelectWorldTemplateScreen.this.client.getTextureManager().bindTexture(TRAILER_ICONS);
-                RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-                RenderSystem.pushMatrix();
-                RenderSystem.scalef(1.0f, 1.0f, 1.0f);
+                RenderSystem.setShaderTexture(0, TRAILER_ICONS);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 int n = i + m + (bl3 ? 0 : 17);
                 float g = bl2 ? 15.0f : 0.0f;
                 DrawableHelper.drawTexture(matrices, n, j, g, 0.0f, 15, 15, 30, 15);
-                RenderSystem.popMatrix();
             }
             if (bl) {
                 RealmsSelectWorldTemplateScreen.this.toolTip = INFO_TOOLTIP;

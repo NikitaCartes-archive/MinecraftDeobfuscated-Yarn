@@ -26,7 +26,6 @@ import net.minecraft.client.util.SpriteIdentifier;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3f;
 
 @Environment(value=EnvType.CLIENT)
@@ -100,7 +99,7 @@ implements BlockEntityRenderer<ConduitBlockEntity> {
         matrixStack.translate(0.5, 0.3f + k * 0.2f, 0.5);
         Vec3f vec3f = new Vec3f(0.5f, 1.0f, 0.5f);
         vec3f.normalize();
-        matrixStack.multiply(new Quaternion(vec3f, h, true));
+        matrixStack.multiply(vec3f.getDegreesQuaternion(h));
         this.conduit.render(matrixStack, CAGE_TEXTURE.getVertexConsumer(vertexConsumerProvider, RenderLayer::getEntityCutoutNoCull), i, j);
         matrixStack.pop();
         int l = conduitBlockEntity.ticks / 66 % 3;

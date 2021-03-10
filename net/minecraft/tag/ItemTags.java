@@ -60,6 +60,9 @@ public final class ItemTags {
     public static final Tag.Identified<Item> DIAMOND_ORES = ItemTags.register("diamond_ores");
     public static final Tag.Identified<Item> REDSTONE_ORES = ItemTags.register("redstone_ores");
     public static final Tag.Identified<Item> LAPIS_ORES = ItemTags.register("lapis_ores");
+    public static final Tag.Identified<Item> COAL_ORES = ItemTags.register("coal_ores");
+    public static final Tag.Identified<Item> EMERALD_ORES = ItemTags.register("emerald_ores");
+    public static final Tag.Identified<Item> COPPER_ORES = ItemTags.register("copper_ores");
     public static final Tag.Identified<Item> NON_FLAMMABLE_WOOD = ItemTags.register("non_flammable_wood");
     public static final Tag.Identified<Item> SOUL_FIRE_BASE_BLOCKS = ItemTags.register("soul_fire_base_blocks");
     public static final Tag.Identified<Item> CANDLES = ItemTags.register("candles");

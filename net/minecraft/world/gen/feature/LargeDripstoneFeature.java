@@ -17,7 +17,7 @@ import net.minecraft.util.math.floatprovider.FloatProvider;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.LargeDripstoneFeatureConfig;
-import net.minecraft.world.gen.feature.util.DripstoneColumn;
+import net.minecraft.world.gen.feature.util.CaveSurface;
 import net.minecraft.world.gen.feature.util.DripstoneHelper;
 import net.minecraft.world.gen.feature.util.FeatureContext;
 import org.jetbrains.annotations.Nullable;
@@ -37,11 +37,11 @@ extends Feature<LargeDripstoneFeatureConfig> {
         if (!DripstoneHelper.canGenerate(structureWorldAccess, blockPos)) {
             return false;
         }
-        Optional<DripstoneColumn> optional = DripstoneColumn.create(structureWorldAccess, blockPos, largeDripstoneFeatureConfig.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava);
-        if (!optional.isPresent() || !(optional.get() instanceof DripstoneColumn.Bounded)) {
+        Optional<CaveSurface> optional = CaveSurface.create(structureWorldAccess, blockPos, largeDripstoneFeatureConfig.floorToCeilingSearchRange, DripstoneHelper::canGenerate, DripstoneHelper::canReplaceOrLava);
+        if (!optional.isPresent() || !(optional.get() instanceof CaveSurface.Bounded)) {
             return false;
         }
-        DripstoneColumn.Bounded bounded = (DripstoneColumn.Bounded)optional.get();
+        CaveSurface.Bounded bounded = (CaveSurface.Bounded)optional.get();
         if (bounded.getHeight() < 4) {
             return false;
         }

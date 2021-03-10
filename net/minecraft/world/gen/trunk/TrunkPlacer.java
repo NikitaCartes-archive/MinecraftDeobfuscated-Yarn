@@ -25,12 +25,12 @@ import net.minecraft.world.gen.foliage.FoliagePlacer;
 import net.minecraft.world.gen.trunk.TrunkPlacerType;
 
 public abstract class TrunkPlacer {
-    public static final Codec<TrunkPlacer> CODEC = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::getType, TrunkPlacerType::getCodec);
+    public static final Codec<TrunkPlacer> TYPE_CODEC = Registry.TRUNK_PLACER_TYPE.dispatch(TrunkPlacer::getType, TrunkPlacerType::getCodec);
     protected final int baseHeight;
     protected final int firstRandomHeight;
     protected final int secondRandomHeight;
 
-    protected static <P extends TrunkPlacer> Products.P3<RecordCodecBuilder.Mu<P>, Integer, Integer, Integer> method_28904(RecordCodecBuilder.Instance<P> instance) {
+    protected static <P extends TrunkPlacer> Products.P3<RecordCodecBuilder.Mu<P>, Integer, Integer, Integer> fillTrunkPlacerFields(RecordCodecBuilder.Instance<P> instance) {
         return instance.group(((MapCodec)Codec.intRange(0, 32).fieldOf("base_height")).forGetter(trunkPlacer -> trunkPlacer.baseHeight), ((MapCodec)Codec.intRange(0, 24).fieldOf("height_rand_a")).forGetter(trunkPlacer -> trunkPlacer.firstRandomHeight), ((MapCodec)Codec.intRange(0, 24).fieldOf("height_rand_b")).forGetter(trunkPlacer -> trunkPlacer.secondRandomHeight));
     }
 
@@ -53,16 +53,16 @@ public abstract class TrunkPlacer {
 
     protected static void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state, BlockBox box) {
         TreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, state);
-        box.encompass(new BlockBox(pos, pos));
+        box.encompass(new BlockBox(pos));
     }
 
     private static boolean canGenerate(TestableWorld world, BlockPos pos) {
         return world.testBlockState(pos, state -> Feature.isSoil(state) && !state.isOf(Blocks.GRASS_BLOCK) && !state.isOf(Blocks.MYCELIUM));
     }
 
-    protected static void setToDirt(ModifiableTestableWorld world, BlockPos pos) {
-        if (!TrunkPlacer.canGenerate(world, pos)) {
-            TreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, Blocks.DIRT.getDefaultState());
+    protected static void setToDirt(ModifiableTestableWorld world, Random random, BlockPos pos, TreeFeatureConfig config) {
+        if (config.forceDirt || !TrunkPlacer.canGenerate(world, pos)) {
+            TreeFeature.setBlockStateWithoutUpdatingNeighbors(world, pos, config.dirtProvider.getBlockState(random, pos));
         }
     }
 

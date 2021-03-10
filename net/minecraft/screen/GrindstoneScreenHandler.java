@@ -70,7 +70,7 @@ extends ScreenHandler {
             }
 
             @Override
-            public ItemStack onTakeItem(PlayerEntity player, ItemStack stack) {
+            public void onTakeItem(PlayerEntity player, ItemStack stack) {
                 context.run((world, blockPos) -> {
                     if (world instanceof ServerWorld) {
                         ExperienceOrbEntity.spawn((ServerWorld)world, Vec3d.ofCenter(blockPos), this.getExperience((World)world));
@@ -79,7 +79,6 @@ extends ScreenHandler {
                 });
                 GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
                 GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);
-                return stack;
             }
 
             private int getExperience(World world) {

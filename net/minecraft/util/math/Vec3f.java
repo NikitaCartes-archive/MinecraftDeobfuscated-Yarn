@@ -14,6 +14,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix3f;
 import net.minecraft.util.math.Quaternion;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.Vector4f;
 
 /**
  * A mutable vector composed of 3 floats.
@@ -26,6 +27,7 @@ public final class Vec3f {
     public static Vec3f POSITIVE_Y = new Vec3f(0.0f, 1.0f, 0.0f);
     public static Vec3f NEGATIVE_Z = new Vec3f(0.0f, 0.0f, -1.0f);
     public static Vec3f POSITIVE_Z = new Vec3f(0.0f, 0.0f, 1.0f);
+    public static Vec3f field_29501 = new Vec3f(0.0f, 0.0f, 0.0f);
     private float x;
     private float y;
     private float z;
@@ -37,6 +39,11 @@ public final class Vec3f {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public Vec3f(Vector4f vector4f) {
+        this(vector4f.getX(), vector4f.getY(), vector4f.getZ());
     }
 
     public Vec3f(Vec3d other) {

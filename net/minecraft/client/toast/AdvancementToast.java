@@ -10,6 +10,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementDisplay;
 import net.minecraft.advancement.AdvancementFrame;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.toast.Toast;
 import net.minecraft.client.toast.ToastManager;
@@ -30,8 +31,9 @@ implements Toast {
 
     @Override
     public Toast.Visibility draw(MatrixStack matrices, ToastManager manager, long startTime) {
-        manager.getGame().getTextureManager().bindTexture(TEXTURE);
-        RenderSystem.color3f(1.0f, 1.0f, 1.0f);
+        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShaderTexture(0, TEXTURE);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f);
         AdvancementDisplay advancementDisplay = this.advancement.getDisplay();
         manager.drawTexture(matrices, 0, 0, 0, 0, this.getWidth(), this.getHeight());
         if (advancementDisplay != null) {

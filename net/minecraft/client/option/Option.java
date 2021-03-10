@@ -4,7 +4,6 @@
 package net.minecraft.client.option;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.platform.GlStateManager;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -217,7 +216,7 @@ public abstract class Option {
     private static final Text FAST_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fast.tooltip");
     private static final Text FABULOUS_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fabulous.tooltip", new TranslatableText("options.graphics.fabulous").formatted(Formatting.ITALIC));
     private static final Text FANCY_GRAPHICS_TOOLTIP = new TranslatableText("options.graphics.fancy.tooltip");
-    public static final CyclingOption<GraphicsMode> GRAPHICS = CyclingOption.create("options.graphics", Arrays.asList(GraphicsMode.values()), Stream.of(GraphicsMode.values()).filter(graphicsMode -> graphicsMode != GraphicsMode.FABULOUS).collect(Collectors.toList()), () -> !GlStateManager.supportsGl30() || MinecraftClient.getInstance().getVideoWarningManager().hasCancelledAfterWarning(), graphicsMode -> {
+    public static final CyclingOption<GraphicsMode> GRAPHICS = CyclingOption.create("options.graphics", Arrays.asList(GraphicsMode.values()), Stream.of(GraphicsMode.values()).filter(graphicsMode -> graphicsMode != GraphicsMode.FABULOUS).collect(Collectors.toList()), () -> MinecraftClient.getInstance().getVideoWarningManager().hasCancelledAfterWarning(), graphicsMode -> {
         TranslatableText mutableText = new TranslatableText(graphicsMode.getTranslationKey());
         if (graphicsMode == GraphicsMode.FABULOUS) {
             return mutableText.formatted(Formatting.ITALIC);

@@ -15,18 +15,18 @@ public class OxidizableBlock
 extends Block
 implements Oxidizable {
     private final Oxidizable.OxidizationLevel oxidizationLevel;
-    private final Block waxed;
+    private final Block degraded;
 
     public OxidizableBlock(AbstractBlock.Settings settings) {
         super(settings);
         this.oxidizationLevel = Oxidizable.OxidizationLevel.values()[Oxidizable.OxidizationLevel.values().length - 1];
-        this.waxed = this;
+        this.degraded = this;
     }
 
-    public OxidizableBlock(AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block waxed) {
+    public OxidizableBlock(AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block degraded) {
         super(settings);
         this.oxidizationLevel = oxidizationLevel;
-        this.waxed = waxed;
+        this.degraded = degraded;
     }
 
     @Override
@@ -36,7 +36,7 @@ implements Oxidizable {
 
     @Override
     public boolean hasRandomTicks(BlockState state) {
-        return this.waxed != this;
+        return this.degraded != this;
     }
 
     @Override
@@ -46,7 +46,7 @@ implements Oxidizable {
 
     @Override
     public BlockState getDegradationResult(BlockState state) {
-        return this.waxed.getDefaultState();
+        return this.degraded.getDefaultState();
     }
 
     @Override

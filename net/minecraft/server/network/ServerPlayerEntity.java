@@ -52,6 +52,7 @@ import net.minecraft.network.MessageType;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.c2s.play.ClientSettingsC2SPacket;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
+import net.minecraft.network.packet.s2c.play.BlockUpdateS2CPacket;
 import net.minecraft.network.packet.s2c.play.CloseScreenS2CPacket;
 import net.minecraft.network.packet.s2c.play.DeathMessageS2CPacket;
 import net.minecraft.network.packet.s2c.play.DifficultyS2CPacket;
@@ -93,6 +94,7 @@ import net.minecraft.screen.HorseScreenHandler;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.screen.ScreenHandlerSyncHandler;
 import net.minecraft.screen.slot.CraftingResultSlot;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerManager;
@@ -144,8 +146,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class ServerPlayerEntity
-extends PlayerEntity
-implements ScreenHandlerListener {
+extends PlayerEntity {
     private static final Logger LOGGER = LogManager.getLogger();
     public ServerPlayNetworkHandler networkHandler;
     public final MinecraftServer server;
@@ -184,8 +185,57 @@ implements ScreenHandlerListener {
     private float spawnAngle;
     private final TextStream textStream;
     private boolean filterText = true;
+    private final ScreenHandlerSyncHandler screenHandlerSyncHandler = new ScreenHandlerSyncHandler(){
+
+        @Override
+        public void updateState(ScreenHandler handler, DefaultedList<ItemStack> stacks, ItemStack cursorStack, int[] properties) {
+            ServerPlayerEntity.this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, stacks));
+            this.sendCursorStackUpdate(cursorStack);
+            for (int i = 0; i < properties.length; ++i) {
+                this.sendPropertyUpdate(handler, i, properties[i]);
+            }
+        }
+
+        @Override
+        public void updateSlot(ScreenHandler handler, int slot, ItemStack stack) {
+            ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slot, stack));
+        }
+
+        @Override
+        public void updateCursorStack(ScreenHandler handler, ItemStack stack) {
+            this.sendCursorStackUpdate(stack);
+        }
+
+        @Override
+        public void updateProperty(ScreenHandler handler, int property, int value) {
+            this.sendPropertyUpdate(handler, property, value);
+        }
+
+        private void sendPropertyUpdate(ScreenHandler handler, int property, int value) {
+            ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
+        }
+
+        private void sendCursorStackUpdate(ItemStack stack) {
+            ServerPlayerEntity.this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, stack));
+        }
+    };
+    private final ScreenHandlerListener screenHandlerListener = new ScreenHandlerListener(){
+
+        @Override
+        public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+            if (handler.getSlot(slotId) instanceof CraftingResultSlot) {
+                return;
+            }
+            if (handler == ServerPlayerEntity.this.playerScreenHandler) {
+                Criteria.INVENTORY_CHANGED.trigger(ServerPlayerEntity.this, ServerPlayerEntity.this.getInventory(), stack);
+            }
+        }
+
+        @Override
+        public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
+        }
+    };
     private int screenHandlerSyncId;
-    public boolean skipPacketSlotUpdates;
     public int pingMilliseconds;
     public boolean notInAnyWorld;
 
@@ -322,8 +372,13 @@ implements ScreenHandlerListener {
         this.syncedExperience = -1;
     }
 
-    public void onSpawn() {
-        this.currentScreenHandler.addListener(this);
+    private void onSpawn(ScreenHandler screenHandler) {
+        screenHandler.addListener(this.screenHandlerListener);
+        screenHandler.updateSyncHandler(this.screenHandlerSyncHandler);
+    }
+
+    public void method_34225() {
+        this.onSpawn(this.playerScreenHandler);
     }
 
     @Override
@@ -815,6 +870,7 @@ implements ScreenHandlerListener {
     @Override
     public void openEditSignScreen(SignBlockEntity sign) {
         sign.setEditor(this);
+        this.networkHandler.sendPacket(new BlockUpdateS2CPacket(this.world, sign.getPos()));
         this.networkHandler.sendPacket(new SignEditorOpenS2CPacket(sign.getPos()));
     }
 
@@ -839,7 +895,7 @@ implements ScreenHandlerListener {
             return OptionalInt.empty();
         }
         this.networkHandler.sendPacket(new OpenScreenS2CPacket(screenHandler.syncId, screenHandler.getType(), factory.getDisplayName()));
-        screenHandler.addListener(this);
+        this.onSpawn(screenHandler);
         this.currentScreenHandler = screenHandler;
         return OptionalInt.of(this.screenHandlerSyncId);
     }
@@ -857,7 +913,7 @@ implements ScreenHandlerListener {
         this.incrementScreenHandlerSyncId();
         this.networkHandler.sendPacket(new OpenHorseScreenS2CPacket(this.screenHandlerSyncId, inventory.size(), horse.getId()));
         this.currentScreenHandler = new HorseScreenHandler(this.screenHandlerSyncId, this.getInventory(), inventory, horse);
-        this.currentScreenHandler.addListener(this);
+        this.onSpawn(this.currentScreenHandler);
     }
 
     @Override
@@ -877,48 +933,9 @@ implements ScreenHandlerListener {
     }
 
     @Override
-    public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
-        if (handler.getSlot(slotId) instanceof CraftingResultSlot) {
-            return;
-        }
-        if (handler == this.playerScreenHandler) {
-            Criteria.INVENTORY_CHANGED.trigger(this, this.getInventory(), stack);
-        }
-        if (this.skipPacketSlotUpdates) {
-            return;
-        }
-        this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(handler.syncId, slotId, stack));
-    }
-
-    /**
-     * Sends packets to the client that refresh the current screen handler's items.
-     */
-    public void refreshScreenHandler(ScreenHandler handler) {
-        this.onHandlerRegistered(handler, handler.getStacks());
-    }
-
-    @Override
-    public void onHandlerRegistered(ScreenHandler handler, DefaultedList<ItemStack> stacks) {
-        this.networkHandler.sendPacket(new InventoryS2CPacket(handler.syncId, stacks));
-        this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.getInventory().getCursorStack()));
-    }
-
-    @Override
-    public void onPropertyUpdate(ScreenHandler handler, int property, int value) {
-        this.networkHandler.sendPacket(new ScreenHandlerPropertyUpdateS2CPacket(handler.syncId, property, value));
-    }
-
-    @Override
     public void closeHandledScreen() {
         this.networkHandler.sendPacket(new CloseScreenS2CPacket(this.currentScreenHandler.syncId));
         this.closeScreenHandler();
-    }
-
-    public void updateCursorStack() {
-        if (this.skipPacketSlotUpdates) {
-            return;
-        }
-        this.networkHandler.sendPacket(new ScreenHandlerSlotUpdateS2CPacket(-1, -1, this.getInventory().getCursorStack()));
     }
 
     /**
@@ -927,6 +944,7 @@ implements ScreenHandlerListener {
      */
     public void closeScreenHandler() {
         this.currentScreenHandler.close(this);
+        this.playerScreenHandler.copySharedSlots(this.currentScreenHandler);
         this.currentScreenHandler = this.playerScreenHandler;
     }
 

@@ -87,8 +87,8 @@ implements TooltipComponent {
     }
 
     private void draw(MatrixStack matrices, int x, int y, int z, TextureManager textureManager, Sprite sprite) {
-        RenderSystem.color4f(1.0f, 1.0f, 1.0f, 1.0f);
-        textureManager.bindTexture(TEXTURE);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderTexture(0, TEXTURE);
         DrawableHelper.drawTexture(matrices, x, y, z, sprite.u, sprite.v, sprite.width, sprite.height, 128, 128);
     }
 

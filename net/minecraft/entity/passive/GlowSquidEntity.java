@@ -63,6 +63,7 @@ extends SquidEntity {
 
     @Override
     public void readCustomDataFromNbt(CompoundTag tag) {
+        super.readCustomDataFromNbt(tag);
         this.setDarkTicksRemaining(tag.getInt("DarkTicksRemaining"));
     }
 
@@ -82,7 +83,7 @@ extends SquidEntity {
         if (bl) {
             this.setDarkTicksRemaining(100);
         }
-        return false;
+        return bl;
     }
 
     private void setDarkTicksRemaining(int ticks) {

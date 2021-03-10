@@ -63,7 +63,7 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     public static BossBarS2CPacket updateStyle(BossBar bar) {
-        return new BossBarS2CPacket(bar.getUuid(), new UpdateStyleAction(bar.getColor(), bar.getOverlay()));
+        return new BossBarS2CPacket(bar.getUuid(), new UpdateStyleAction(bar.getColor(), bar.getStyle()));
     }
 
     public static BossBarS2CPacket updateProperties(BossBar bar) {
@@ -97,8 +97,8 @@ implements Packet<ClientPlayPacketListener> {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void accept(Consumer visitor) {
-        this.action.accept(this.uuid, visitor);
+    public void accept(Consumer consumer) {
+        this.action.accept(this.uuid, consumer);
     }
 
     static class UpdatePropertiesAction
@@ -140,16 +140,16 @@ implements Packet<ClientPlayPacketListener> {
     static class UpdateStyleAction
     implements Action {
         private final BossBar.Color color;
-        private final BossBar.Style overlay;
+        private final BossBar.Style style;
 
         private UpdateStyleAction(BossBar.Color color, BossBar.Style style) {
             this.color = color;
-            this.overlay = style;
+            this.style = style;
         }
 
         private UpdateStyleAction(PacketByteBuf buf) {
             this.color = buf.readEnumConstant(BossBar.Color.class);
-            this.overlay = buf.readEnumConstant(BossBar.Style.class);
+            this.style = buf.readEnumConstant(BossBar.Style.class);
         }
 
         @Override
@@ -160,13 +160,13 @@ implements Packet<ClientPlayPacketListener> {
         @Override
         @Environment(value=EnvType.CLIENT)
         public void accept(UUID uuid, Consumer consumer) {
-            consumer.updateStyle(uuid, this.color, this.overlay);
+            consumer.updateStyle(uuid, this.color, this.style);
         }
 
         @Override
         public void toPacket(PacketByteBuf buf) {
             buf.writeEnumConstant(this.color);
-            buf.writeEnumConstant(this.overlay);
+            buf.writeEnumConstant(this.style);
         }
     }
 
@@ -233,7 +233,7 @@ implements Packet<ClientPlayPacketListener> {
         private final Text name;
         private final float percent;
         private final BossBar.Color color;
-        private final BossBar.Style overlay;
+        private final BossBar.Style style;
         private final boolean darkenSky;
         private final boolean dragonMusic;
         private final boolean thickenFog;
@@ -242,7 +242,7 @@ implements Packet<ClientPlayPacketListener> {
             this.name = bar.getName();
             this.percent = bar.getPercent();
             this.color = bar.getColor();
-            this.overlay = bar.getOverlay();
+            this.style = bar.getStyle();
             this.darkenSky = bar.shouldDarkenSky();
             this.dragonMusic = bar.hasDragonMusic();
             this.thickenFog = bar.shouldThickenFog();
@@ -252,7 +252,7 @@ implements Packet<ClientPlayPacketListener> {
             this.name = buf.readText();
             this.percent = buf.readFloat();
             this.color = buf.readEnumConstant(BossBar.Color.class);
-            this.overlay = buf.readEnumConstant(BossBar.Style.class);
+            this.style = buf.readEnumConstant(BossBar.Style.class);
             short i = buf.readUnsignedByte();
             this.darkenSky = (i & 1) > 0;
             this.dragonMusic = (i & 2) > 0;
@@ -267,7 +267,7 @@ implements Packet<ClientPlayPacketListener> {
         @Override
         @Environment(value=EnvType.CLIENT)
         public void accept(UUID uuid, Consumer consumer) {
-            consumer.add(uuid, this.name, this.percent, this.color, this.overlay, this.darkenSky, this.dragonMusic, this.thickenFog);
+            consumer.add(uuid, this.name, this.percent, this.color, this.style, this.darkenSky, this.dragonMusic, this.thickenFog);
         }
 
         @Override
@@ -275,7 +275,7 @@ implements Packet<ClientPlayPacketListener> {
             buf.writeText(this.name);
             buf.writeFloat(this.percent);
             buf.writeEnumConstant(this.color);
-            buf.writeEnumConstant(this.overlay);
+            buf.writeEnumConstant(this.style);
             buf.writeByte(BossBarS2CPacket.maskProperties(this.darkenSky, this.dragonMusic, this.thickenFog));
         }
     }
@@ -291,7 +291,7 @@ implements Packet<ClientPlayPacketListener> {
 
     @Environment(value=EnvType.CLIENT)
     public static interface Consumer {
-        default public void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style overlay, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
+        default public void add(UUID uuid, Text name, float percent, BossBar.Color color, BossBar.Style style, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {
         }
 
         default public void remove(UUID uuid) {
@@ -303,7 +303,7 @@ implements Packet<ClientPlayPacketListener> {
         default public void updateName(UUID uuid, Text name) {
         }
 
-        default public void updateStyle(UUID id, BossBar.Color color, BossBar.Style overlay) {
+        default public void updateStyle(UUID id, BossBar.Color color, BossBar.Style style) {
         }
 
         default public void updateProperties(UUID uuid, boolean darkenSky, boolean dragonMusic, boolean thickenFog) {

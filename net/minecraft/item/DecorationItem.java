@@ -6,6 +6,7 @@ package net.minecraft.item;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
+import net.minecraft.entity.decoration.GlowItemFrameEntity;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.entity.decoration.painting.PaintingEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -45,7 +46,7 @@ extends Item {
         } else if (this.entityType == EntityType.ITEM_FRAME) {
             abstractDecorationEntity = new ItemFrameEntity(world, blockPos2, direction);
         } else if (this.entityType == EntityType.GLOW_ITEM_FRAME) {
-            abstractDecorationEntity = new ItemFrameEntity(EntityType.GLOW_ITEM_FRAME, world, blockPos2, direction);
+            abstractDecorationEntity = new GlowItemFrameEntity(world, blockPos2, direction);
         } else {
             return ActionResult.success(world.isClient);
         }

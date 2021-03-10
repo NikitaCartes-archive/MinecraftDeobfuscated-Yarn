@@ -25,6 +25,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.texture.MissingSprite;
 import net.minecraft.client.texture.PlayerSkinTexture;
 import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -70,12 +71,8 @@ public class PlayerSkinProvider {
     private Identifier loadSkin(MinecraftProfileTexture profileTexture, MinecraftProfileTexture.Type type, @Nullable SkinTextureAvailableCallback callback) {
         String string = Hashing.sha1().hashUnencodedChars(profileTexture.getHash()).toString();
         Identifier identifier = new Identifier("skins/" + string);
-        AbstractTexture abstractTexture = this.textureManager.getTexture(identifier);
-        if (abstractTexture != null) {
-            if (callback != null) {
-                callback.onSkinTextureAvailable(type, identifier, profileTexture);
-            }
-        } else {
+        AbstractTexture abstractTexture = this.textureManager.method_34590(identifier, MissingSprite.getMissingSpriteTexture());
+        if (abstractTexture == MissingSprite.getMissingSpriteTexture()) {
             File file = new File(this.skinCacheDir, string.length() > 2 ? string.substring(0, 2) : "xx");
             File file2 = new File(file, string);
             PlayerSkinTexture playerSkinTexture = new PlayerSkinTexture(file2, profileTexture.getUrl(), DefaultSkinHelper.getTexture(), type == MinecraftProfileTexture.Type.SKIN, () -> {
@@ -84,6 +81,8 @@ public class PlayerSkinProvider {
                 }
             });
             this.textureManager.registerTexture(identifier, playerSkinTexture);
+        } else if (callback != null) {
+            callback.onSkinTextureAvailable(type, identifier, profileTexture);
         }
         return identifier;
     }

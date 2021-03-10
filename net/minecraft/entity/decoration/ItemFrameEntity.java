@@ -27,6 +27,7 @@ import net.minecraft.item.map.MapState;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -173,11 +174,15 @@ extends AbstractDecorationEntity {
         if (!source.isExplosive() && !this.getHeldItemStack().isEmpty()) {
             if (!this.world.isClient) {
                 this.dropHeldStack(source.getAttacker(), false);
-                this.playSound(SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM, 1.0f, 1.0f);
+                this.playSound(this.getRemoveItemSound(), 1.0f, 1.0f);
             }
             return true;
         }
         return super.damage(source, amount);
+    }
+
+    public SoundEvent getRemoveItemSound() {
+        return SoundEvents.ENTITY_ITEM_FRAME_REMOVE_ITEM;
     }
 
     @Override
@@ -199,13 +204,21 @@ extends AbstractDecorationEntity {
 
     @Override
     public void onBreak(@Nullable Entity entity) {
-        this.playSound(SoundEvents.ENTITY_ITEM_FRAME_BREAK, 1.0f, 1.0f);
+        this.playSound(this.getBreakSound(), 1.0f, 1.0f);
         this.dropHeldStack(entity, true);
+    }
+
+    public SoundEvent getBreakSound() {
+        return SoundEvents.ENTITY_ITEM_FRAME_BREAK;
     }
 
     @Override
     public void onPlace() {
-        this.playSound(SoundEvents.ENTITY_ITEM_FRAME_PLACE, 1.0f, 1.0f);
+        this.playSound(this.getPlaceSound(), 1.0f, 1.0f);
+    }
+
+    public SoundEvent getPlaceSound() {
+        return SoundEvents.ENTITY_ITEM_FRAME_PLACE;
     }
 
     private void dropHeldStack(@Nullable Entity entity, boolean alwaysDrop) {
@@ -264,11 +277,15 @@ extends AbstractDecorationEntity {
         }
         this.getDataTracker().set(ITEM_STACK, value);
         if (!value.isEmpty()) {
-            this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM, 1.0f, 1.0f);
+            this.playSound(this.getAddItemSound(), 1.0f, 1.0f);
         }
         if (update && this.attachmentPos != null) {
             this.world.updateComparators(this.attachmentPos, Blocks.AIR);
         }
+    }
+
+    public SoundEvent getAddItemSound() {
+        return SoundEvents.ENTITY_ITEM_FRAME_ADD_ITEM;
     }
 
     @Override
@@ -371,10 +388,14 @@ extends AbstractDecorationEntity {
                 }
             }
         } else {
-            this.playSound(SoundEvents.ENTITY_ITEM_FRAME_ROTATE_ITEM, 1.0f, 1.0f);
+            this.playSound(this.getRotateItemSound(), 1.0f, 1.0f);
             this.setRotation(this.getRotation() + 1);
         }
         return ActionResult.CONSUME;
+    }
+
+    public SoundEvent getRotateItemSound() {
+        return SoundEvents.ENTITY_ITEM_FRAME_ROTATE_ITEM;
     }
 
     public int getComparatorPower() {
@@ -406,12 +427,8 @@ extends AbstractDecorationEntity {
         return itemStack.copy();
     }
 
-    private ItemStack getAsItemStack() {
-        return this.isGlowItemFrame() ? new ItemStack(Items.GLOW_ITEM_FRAME) : new ItemStack(Items.ITEM_FRAME);
-    }
-
-    public boolean isGlowItemFrame() {
-        return this.getType() == EntityType.GLOW_ITEM_FRAME;
+    protected ItemStack getAsItemStack() {
+        return new ItemStack(Items.ITEM_FRAME);
     }
 }
 

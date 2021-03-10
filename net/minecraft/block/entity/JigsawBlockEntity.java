@@ -29,6 +29,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -131,9 +132,9 @@ extends BlockEntity {
         BlockPos blockPos = this.getPos();
         ArrayList<PoolStructurePiece> list = Lists.newArrayList();
         Structure structure = new Structure();
-        structure.saveFromWorld(world, blockPos, new BlockPos(1, 1, 1), false, null);
+        structure.saveFromWorld(world, blockPos, new Vec3i(1, 1, 1), false, null);
         SinglePoolElement structurePoolElement = new SinglePoolElement(structure);
-        PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos, blockPos));
+        PoolStructurePiece poolStructurePiece = new PoolStructurePiece(structureManager, structurePoolElement, blockPos, 1, BlockRotation.NONE, new BlockBox(blockPos));
         StructurePoolBasedGenerator.method_27230(world.getRegistryManager(), poolStructurePiece, maxDepth, PoolStructurePiece::new, chunkGenerator, structureManager, list, random, world);
         for (PoolStructurePiece poolStructurePiece2 : list) {
             poolStructurePiece2.generate((StructureWorldAccess)world, structureAccessor, chunkGenerator, random, BlockBox.infinite(), blockPos, keepJigsaws);

@@ -14,6 +14,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookResults;
 import net.minecraft.client.gui.screen.recipebook.RecipeResultCollection;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Recipe;
@@ -65,12 +66,12 @@ extends AbstractButtonWidget {
 
     @Override
     public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        boolean bl;
         if (!Screen.hasControlDown()) {
             this.time += delta;
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        minecraftClient.getTextureManager().bindTexture(BACKGROUND_TEXTURE);
+        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShaderTexture(0, BACKGROUND_TEXTURE);
         int i = 29;
         if (!this.results.hasCraftableRecipes()) {
             i += 25;
@@ -79,13 +80,15 @@ extends AbstractButtonWidget {
         if (this.results.getResults(this.recipeBook.isFilteringCraftable(this.craftingScreenHandler)).size() > 1) {
             j += 25;
         }
-        boolean bl2 = bl = this.bounce > 0.0f;
+        boolean bl = this.bounce > 0.0f;
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
         if (bl) {
             float f = 1.0f + 0.1f * (float)Math.sin(this.bounce / 15.0f * (float)Math.PI);
-            RenderSystem.pushMatrix();
-            RenderSystem.translatef(this.x + 8, this.y + 12, 0.0f);
-            RenderSystem.scalef(f, f, 1.0f);
-            RenderSystem.translatef(-(this.x + 8), -(this.y + 12), 0.0f);
+            matrixStack.push();
+            matrixStack.translate(this.x + 8, this.y + 12, 0.0);
+            matrixStack.scale(f, f, 1.0f);
+            matrixStack.translate(-(this.x + 8), -(this.y + 12), 0.0);
+            RenderSystem.applyModelViewMatrix();
             this.bounce -= delta;
         }
         this.drawTexture(matrices, this.x, this.y, i, j, this.width, this.height);
@@ -99,7 +102,8 @@ extends AbstractButtonWidget {
         }
         minecraftClient.getItemRenderer().renderInGui(itemStack, this.x + k, this.y + k);
         if (bl) {
-            RenderSystem.popMatrix();
+            matrixStack.pop();
+            RenderSystem.applyModelViewMatrix();
         }
     }
 

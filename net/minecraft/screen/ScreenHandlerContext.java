@@ -20,7 +20,7 @@ public interface ScreenHandlerContext {
     public static final ScreenHandlerContext EMPTY = new ScreenHandlerContext(){
 
         @Override
-        public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
+        public <T> Optional<T> get(BiFunction<World, BlockPos, T> getter) {
             return Optional.empty();
         }
     };
@@ -32,20 +32,43 @@ public interface ScreenHandlerContext {
         return new ScreenHandlerContext(){
 
             @Override
-            public <T> Optional<T> run(BiFunction<World, BlockPos, T> function) {
-                return Optional.of(function.apply(world, pos));
+            public <T> Optional<T> get(BiFunction<World, BlockPos, T> getter) {
+                return Optional.of(getter.apply(world, pos));
             }
         };
     }
 
-    public <T> Optional<T> run(BiFunction<World, BlockPos, T> var1);
+    /**
+     * Gets an optional value from this context's world and position
+     * with a {@link BiFunction} getter.
+     * 
+     * @return a present {@link Optional} with the getter's return value,
+     *         or {@link Optional#empty()} if this context is empty
+     * 
+     * @param getter a function that gets a non-null value from this context's world and position
+     */
+    public <T> Optional<T> get(BiFunction<World, BlockPos, T> var1);
 
-    default public <T> T run(BiFunction<World, BlockPos, T> function, T defaultValue) {
-        return this.run(function).orElse(defaultValue);
+    /**
+     * Gets a value from this context's world and position
+     * with a {@link BiFunction} getter.
+     * 
+     * @return the getter's return value if this context is active,
+     *         the default value otherwise
+     * 
+     * @param getter a function that gets a non-null value from this context's world and position
+     * @param defaultValue a fallback default value, used if this context is empty
+     */
+    default public <T> T get(BiFunction<World, BlockPos, T> getter, T defaultValue) {
+        return this.get(getter).orElse(defaultValue);
     }
 
+    /**
+     * Runs a {@link BiConsumer} with this context's world and position
+     * if this context is active.
+     */
     default public void run(BiConsumer<World, BlockPos> function) {
-        this.run((World world, BlockPos blockPos) -> {
+        this.get((world, blockPos) -> {
             function.accept((World)world, (BlockPos)blockPos);
             return Optional.empty();
         });

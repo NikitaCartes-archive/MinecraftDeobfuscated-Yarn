@@ -206,7 +206,7 @@ extends Item {
     }
 
     @Override
-    public boolean hasStoredInventory() {
+    public boolean canBeNested() {
         return !(this.block instanceof ShulkerBoxBlock);
     }
 
