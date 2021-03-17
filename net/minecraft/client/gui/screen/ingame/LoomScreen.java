@@ -8,6 +8,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.client.MinecraftClient;
@@ -26,8 +27,8 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.BannerItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.LoomScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvents;
@@ -76,7 +77,7 @@ extends HandledScreen<LoomScreenHandler> {
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
         this.renderBackground(matrices);
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = this.x;
         int j = this.y;
@@ -144,9 +145,9 @@ extends HandledScreen<LoomScreenHandler> {
 
     private void method_22692(int i, int j, int k) {
         ItemStack itemStack = new ItemStack(Items.GRAY_BANNER);
-        CompoundTag compoundTag = itemStack.getOrCreateSubTag("BlockEntityTag");
-        ListTag listTag = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[i], DyeColor.WHITE).toNbt();
-        compoundTag.put("Patterns", listTag);
+        NbtCompound nbtCompound = itemStack.getOrCreateSubTag("BlockEntityTag");
+        NbtList nbtList = new BannerPattern.Patterns().add(BannerPattern.BASE, DyeColor.GRAY).add(BannerPattern.values()[i], DyeColor.WHITE).toNbt();
+        nbtCompound.put("Patterns", nbtList);
         MatrixStack matrixStack = new MatrixStack();
         matrixStack.push();
         matrixStack.translate((float)j + 0.5f, k + 16, 0.0);
@@ -229,8 +230,8 @@ extends HandledScreen<LoomScreenHandler> {
         ItemStack itemStack2 = ((LoomScreenHandler)this.handler).getBannerSlot().getStack();
         ItemStack itemStack3 = ((LoomScreenHandler)this.handler).getDyeSlot().getStack();
         ItemStack itemStack4 = ((LoomScreenHandler)this.handler).getPatternSlot().getStack();
-        CompoundTag compoundTag = itemStack2.getOrCreateSubTag("BlockEntityTag");
-        boolean bl = this.hasTooManyPatterns = compoundTag.contains("Patterns", 9) && !itemStack2.isEmpty() && compoundTag.getList("Patterns", 10).size() >= 6;
+        NbtCompound nbtCompound = itemStack2.getOrCreateSubTag("BlockEntityTag");
+        boolean bl = this.hasTooManyPatterns = nbtCompound.contains("Patterns", NbtTypeIds.LIST) && !itemStack2.isEmpty() && nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND).size() >= 6;
         if (this.hasTooManyPatterns) {
             this.bannerPatterns = null;
         }

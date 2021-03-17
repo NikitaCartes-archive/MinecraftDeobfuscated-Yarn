@@ -3,6 +3,8 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -16,7 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.MusicDiscItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.Properties;
@@ -39,11 +41,11 @@ extends BlockWithEntity {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
-        CompoundTag compoundTag2;
+        NbtCompound nbtCompound2;
         super.onPlaced(world, pos, state, placer, itemStack);
-        CompoundTag compoundTag = itemStack.getOrCreateTag();
-        if (compoundTag.contains("BlockEntityTag") && (compoundTag2 = compoundTag.getCompound("BlockEntityTag")).contains("RecordItem")) {
-            world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), 2);
+        NbtCompound nbtCompound = itemStack.getOrCreateTag();
+        if (nbtCompound.contains("BlockEntityTag") && (nbtCompound2 = nbtCompound.getCompound("BlockEntityTag")).contains("RecordItem")) {
+            world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 
@@ -52,7 +54,7 @@ extends BlockWithEntity {
         if (state.get(HAS_RECORD).booleanValue()) {
             this.removeRecord(world, pos);
             state = (BlockState)state.with(HAS_RECORD, false);
-            world.setBlockState(pos, state, 2);
+            world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
             return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
@@ -64,7 +66,7 @@ extends BlockWithEntity {
             return;
         }
         ((JukeboxBlockEntity)blockEntity).setRecord(stack.copy());
-        world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), 2);
+        world.setBlockState(pos, (BlockState)state.with(HAS_RECORD, true), SetBlockStateFlags.NOTIFY_LISTENERS);
     }
 
     private void removeRecord(World world, BlockPos pos) {
@@ -80,7 +82,7 @@ extends BlockWithEntity {
         if (itemStack.isEmpty()) {
             return;
         }
-        world.syncWorldEvent(1010, pos, 0);
+        world.syncWorldEvent(WorldEvents.MUSIC_DISC_PLAYED, pos, 0);
         jukeboxBlockEntity.clear();
         float f = 0.7f;
         double d = (double)(world.random.nextFloat() * 0.7f) + (double)0.15f;

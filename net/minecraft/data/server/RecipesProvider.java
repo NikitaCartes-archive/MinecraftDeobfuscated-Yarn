@@ -39,6 +39,7 @@ import net.minecraft.data.server.recipe.ShapedRecipeJsonFactory;
 import net.minecraft.data.server.recipe.ShapelessRecipeJsonFactory;
 import net.minecraft.data.server.recipe.SingleItemRecipeJsonFactory;
 import net.minecraft.data.server.recipe.SmithingRecipeJsonFactory;
+import net.minecraft.item.HoneycombItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.Items;
@@ -388,23 +389,13 @@ implements DataProvider {
         RecipesProvider.createChiseledBlockRecipe(Blocks.CHISELED_RED_SANDSTONE, Ingredient.ofItems(Blocks.RED_SANDSTONE_SLAB)).criterion("has_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.RED_SANDSTONE)).criterion("has_chiseled_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CHISELED_RED_SANDSTONE)).criterion("has_cut_red_sandstone", RecipesProvider.conditionsFromItem(Blocks.CUT_RED_SANDSTONE)).offerTo(exporter);
         RecipesProvider.offerChiseledBlockRecipe(exporter, Blocks.CHISELED_SANDSTONE, Blocks.SANDSTONE_SLAB);
         ShapedRecipeJsonFactory.create(Blocks.COPPER_BLOCK).input(Character.valueOf('#'), Items.COPPER_INGOT).pattern("##").pattern("##").criterion("has_copper_ingot", RecipesProvider.conditionsFromItem(Items.COPPER_INGOT)).offerTo(exporter);
-        ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 4).input(Blocks.COPPER_BLOCK).group("copper_ingot").criterion("has_copper_block", RecipesProvider.conditionsFromItem(Blocks.COPPER_BLOCK)).offerTo(exporter, "copper_ingot_from_copper_block");
+        ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 4).input(Blocks.COPPER_BLOCK).group(RecipesProvider.method_33716(Items.COPPER_INGOT)).criterion(RecipesProvider.hasItem(Blocks.COPPER_BLOCK), RecipesProvider.conditionsFromItem(Blocks.COPPER_BLOCK)).offerTo(exporter, RecipesProvider.method_33714(Items.COPPER_INGOT, Blocks.COPPER_BLOCK));
+        ShapelessRecipeJsonFactory.create(Items.COPPER_INGOT, 4).input(Blocks.WAXED_COPPER_BLOCK).group(RecipesProvider.method_33716(Items.COPPER_INGOT)).criterion(RecipesProvider.hasItem(Blocks.WAXED_COPPER_BLOCK), RecipesProvider.conditionsFromItem(Blocks.WAXED_COPPER_BLOCK)).offerTo(exporter, RecipesProvider.method_33714(Items.COPPER_INGOT, Blocks.WAXED_COPPER_BLOCK));
         RecipesProvider.offerCutCopperRecipe(exporter, Blocks.CUT_COPPER, Blocks.COPPER_BLOCK);
         RecipesProvider.offerCutCopperRecipe(exporter, Blocks.EXPOSED_CUT_COPPER, Blocks.EXPOSED_COPPER);
         RecipesProvider.offerCutCopperRecipe(exporter, Blocks.WEATHERED_CUT_COPPER, Blocks.WEATHERED_COPPER);
         RecipesProvider.offerCutCopperRecipe(exporter, Blocks.OXIDIZED_CUT_COPPER, Blocks.OXIDIZED_COPPER);
-        ShapelessRecipeJsonFactory.create(Items.WAXED_COPPER).input(Items.COPPER_BLOCK).input(Items.HONEYCOMB).criterion("has_copper_block", RecipesProvider.conditionsFromItem(Items.COPPER_BLOCK)).offerTo(exporter);
-        ShapelessRecipeJsonFactory.create(Items.WAXED_SEMI_WEATHERED_COPPER).input(Items.SEMI_WEATHERED_COPPER_BLOCK).input(Items.HONEYCOMB).criterion("has_weathered_copper_block", RecipesProvider.conditionsFromItem(Items.SEMI_WEATHERED_COPPER_BLOCK)).offerTo(exporter);
-        ShapelessRecipeJsonFactory.create(Items.WAXED_LIGHTLY_WEATHERED_COPPER).input(Items.LIGHTLY_WEATHERED_COPPER_BLOCK).input(Items.HONEYCOMB).criterion("has_exposed_copper_block", RecipesProvider.conditionsFromItem(Items.LIGHTLY_WEATHERED_COPPER_BLOCK)).offerTo(exporter);
-        ShapelessRecipeJsonFactory.create(Items.WAXED_CUT_COPPER).input(Items.CUT_COPPER).input(Items.HONEYCOMB).criterion("has_cut_copper", RecipesProvider.conditionsFromItem(Items.CUT_COPPER)).offerTo(exporter, "waxed_cut_copper_from_honeycomb");
-        ShapelessRecipeJsonFactory.create(Items.WAXED_SEMI_WEATHERED_CUT_COPPER).input(Items.SEMI_WEATHERED_CUT_COPPER).input(Items.HONEYCOMB).criterion("has_weathered_cut_copper", RecipesProvider.conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER)).offerTo(exporter, "waxed_weathered_cut_copper_from_honeycomb");
-        ShapelessRecipeJsonFactory.create(Items.WAXED_LIGHTLY_WEATHERED_CUT_COPPER).input(Items.LIGHTLY_WEATHERED_CUT_COPPER).input(Items.HONEYCOMB).criterion("has_exposed_cut_copper", RecipesProvider.conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER)).offerTo(exporter, "waxed_exposed_cut_copper_from_honeycomb");
-        ShapelessRecipeJsonFactory.create(Items.WAXED_CUT_COPPER_STAIRS).input(Items.CUT_COPPER_STAIRS).input(Items.HONEYCOMB).criterion("has_copper_cut_stairs", RecipesProvider.conditionsFromItem(Items.CUT_COPPER_STAIRS)).offerTo(exporter, "waxed_copper_cut_stairs_from_honeycomb");
-        ShapelessRecipeJsonFactory.create(Items.WAXED_SEMI_WEATHERED_CUT_COPPER_STAIRS).input(Items.SEMI_WEATHERED_CUT_COPPER_STAIRS).input(Items.HONEYCOMB).criterion("has_weathered_cut_copper_stairs", RecipesProvider.conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER_STAIRS)).offerTo(exporter, "waxed_weathered_cut_copper_stairs_from_honeycomb");
-        ShapelessRecipeJsonFactory.create(Items.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_STAIRS).input(Items.LIGHTLY_WEATHERED_CUT_COPPER_STAIRS).input(Items.HONEYCOMB).criterion("has_exposed_cut_copper_stairs", RecipesProvider.conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER_STAIRS)).offerTo(exporter, "waxed_exposed_cut_copper_stairs_from_honeycomb");
-        ShapelessRecipeJsonFactory.create(Items.WAXED_CUT_COPPER_SLAB).input(Items.CUT_COPPER_SLAB).input(Items.HONEYCOMB).criterion("has_copper_cut_slab", RecipesProvider.conditionsFromItem(Items.CUT_COPPER_SLAB)).offerTo(exporter, "waxed_copper_cut_slab_from_honeycomb");
-        ShapelessRecipeJsonFactory.create(Items.WAXED_SEMI_WEATHERED_CUT_COPPER_SLAB).input(Items.SEMI_WEATHERED_CUT_COPPER_SLAB).input(Items.HONEYCOMB).criterion("has_weathered_cut_copper_slab", RecipesProvider.conditionsFromItem(Items.SEMI_WEATHERED_CUT_COPPER_SLAB)).offerTo(exporter, "waxed_weathered_cut_copper_slab_from_honeycomb");
-        ShapelessRecipeJsonFactory.create(Items.WAXED_LIGHTLY_WEATHERED_CUT_COPPER_SLAB).input(Items.LIGHTLY_WEATHERED_CUT_COPPER_SLAB).input(Items.HONEYCOMB).criterion("has_exposed_cut_copper_slab", RecipesProvider.conditionsFromItem(Items.LIGHTLY_WEATHERED_CUT_COPPER_SLAB)).offerTo(exporter, "waxed_exposed_cut_copper_slab_from_honeycomb");
+        RecipesProvider.method_34854(exporter);
         RecipesProvider.offerCutCopperRecipe(exporter, Blocks.WAXED_CUT_COPPER, Blocks.WAXED_COPPER_BLOCK);
         RecipesProvider.offerCutCopperRecipe(exporter, Blocks.WAXED_EXPOSED_CUT_COPPER, Blocks.WAXED_EXPOSED_COPPER);
         RecipesProvider.offerCutCopperRecipe(exporter, Blocks.WAXED_WEATHERED_CUT_COPPER, Blocks.WAXED_WEATHERED_COPPER);
@@ -526,8 +517,10 @@ implements DataProvider {
         ShapedRecipeJsonFactory.create(Blocks.MELON).input(Character.valueOf('M'), Items.MELON_SLICE).pattern("MMM").pattern("MMM").pattern("MMM").criterion("has_melon", RecipesProvider.conditionsFromItem(Items.MELON_SLICE)).offerTo(exporter);
         ShapelessRecipeJsonFactory.create(Items.MELON_SEEDS).input(Items.MELON_SLICE).criterion("has_melon", RecipesProvider.conditionsFromItem(Items.MELON_SLICE)).offerTo(exporter);
         ShapedRecipeJsonFactory.create(Items.MINECART).input(Character.valueOf('#'), Items.IRON_INGOT).pattern("# #").pattern("###").criterion("has_iron_ingot", RecipesProvider.conditionsFromItem(Items.IRON_INGOT)).offerTo(exporter);
-        ShapelessRecipeJsonFactory.create(Blocks.MOSSY_COBBLESTONE).input(Blocks.COBBLESTONE).input(Blocks.VINE).criterion("has_vine", RecipesProvider.conditionsFromItem(Blocks.VINE)).offerTo(exporter);
-        ShapelessRecipeJsonFactory.create(Blocks.MOSSY_STONE_BRICKS).input(Blocks.STONE_BRICKS).input(Blocks.VINE).criterion("has_mossy_cobblestone", RecipesProvider.conditionsFromItem(Blocks.MOSSY_COBBLESTONE)).offerTo(exporter);
+        ShapelessRecipeJsonFactory.create(Blocks.MOSSY_COBBLESTONE).input(Blocks.COBBLESTONE).input(Blocks.VINE).criterion("has_vine", RecipesProvider.conditionsFromItem(Blocks.VINE)).offerTo(exporter, RecipesProvider.method_33714(Blocks.MOSSY_COBBLESTONE, Blocks.VINE));
+        ShapelessRecipeJsonFactory.create(Blocks.MOSSY_STONE_BRICKS).input(Blocks.STONE_BRICKS).input(Blocks.VINE).criterion("has_mossy_cobblestone", RecipesProvider.conditionsFromItem(Blocks.MOSSY_COBBLESTONE)).offerTo(exporter, RecipesProvider.method_33714(Blocks.MOSSY_STONE_BRICKS, Blocks.VINE));
+        ShapelessRecipeJsonFactory.create(Blocks.MOSSY_COBBLESTONE).input(Blocks.COBBLESTONE).input(Blocks.MOSS_BLOCK).criterion("has_moss_block", RecipesProvider.conditionsFromItem(Blocks.MOSS_BLOCK)).offerTo(exporter, RecipesProvider.method_33714(Blocks.MOSSY_COBBLESTONE, Blocks.MOSS_BLOCK));
+        ShapelessRecipeJsonFactory.create(Blocks.MOSSY_STONE_BRICKS).input(Blocks.STONE_BRICKS).input(Blocks.MOSS_BLOCK).criterion("has_mossy_cobblestone", RecipesProvider.conditionsFromItem(Blocks.MOSSY_COBBLESTONE)).offerTo(exporter, RecipesProvider.method_33714(Blocks.MOSSY_STONE_BRICKS, Blocks.MOSS_BLOCK));
         ShapelessRecipeJsonFactory.create(Items.MUSHROOM_STEW).input(Blocks.BROWN_MUSHROOM).input(Blocks.RED_MUSHROOM).input(Items.BOWL).criterion("has_mushroom_stew", RecipesProvider.conditionsFromItem(Items.MUSHROOM_STEW)).criterion("has_bowl", RecipesProvider.conditionsFromItem(Items.BOWL)).criterion("has_brown_mushroom", RecipesProvider.conditionsFromItem(Blocks.BROWN_MUSHROOM)).criterion("has_red_mushroom", RecipesProvider.conditionsFromItem(Blocks.RED_MUSHROOM)).offerTo(exporter);
         ShapedRecipeJsonFactory.create(Blocks.NETHER_BRICKS).input(Character.valueOf('N'), Items.NETHER_BRICK).pattern("NN").pattern("NN").criterion("has_netherbrick", RecipesProvider.conditionsFromItem(Items.NETHER_BRICK)).offerTo(exporter);
         ShapedRecipeJsonFactory.create(Blocks.NETHER_WART_BLOCK).input(Character.valueOf('#'), Items.NETHER_WART).pattern("###").pattern("###").pattern("###").criterion("has_nether_wart", RecipesProvider.conditionsFromItem(Items.NETHER_WART)).offerTo(exporter);
@@ -1106,6 +1099,10 @@ implements DataProvider {
         CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.PORKCHOP), Items.COOKED_PORKCHOP, 0.35f, cookingTime, serializer).criterion("has_porkchop", RecipesProvider.conditionsFromItem(Items.PORKCHOP)).offerTo(exporter, "cooked_porkchop_from_" + cooker);
         CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.POTATO), Items.BAKED_POTATO, 0.35f, cookingTime, serializer).criterion("has_potato", RecipesProvider.conditionsFromItem(Items.POTATO)).offerTo(exporter, "baked_potato_from_" + cooker);
         CookingRecipeJsonFactory.create(Ingredient.ofItems(Items.RABBIT), Items.COOKED_RABBIT, 0.35f, cookingTime, serializer).criterion("has_rabbit", RecipesProvider.conditionsFromItem(Items.RABBIT)).offerTo(exporter, "cooked_rabbit_from_" + cooker);
+    }
+
+    private static void method_34854(Consumer<RecipeJsonProvider> consumer) {
+        HoneycombItem.UNWAXED_TO_WAXED_BLOCKS.get().forEach((block, block2) -> ShapelessRecipeJsonFactory.create(block2).input((ItemConvertible)block).input(Items.HONEYCOMB).criterion(RecipesProvider.hasItem(block), RecipesProvider.conditionsFromItem(block)).offerTo(consumer, RecipesProvider.method_33714(block2, Items.HONEYCOMB)));
     }
 
     private static void generateFamily(Consumer<RecipeJsonProvider> exporter, BlockFamily family) {

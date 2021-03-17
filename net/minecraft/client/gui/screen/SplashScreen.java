@@ -20,7 +20,7 @@ import net.minecraft.client.texture.ResourceTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.DefaultResourcePack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadMonitor;
+import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
@@ -33,16 +33,16 @@ extends Overlay {
     private static final int BRAND_ARGB = BackgroundHelper.ColorMixer.getArgb(255, 239, 50, 61);
     private static final int BRAND_RGB = BRAND_ARGB & 0xFFFFFF;
     private final MinecraftClient client;
-    private final ResourceReloadMonitor reloadMonitor;
+    private final ResourceReload reload;
     private final Consumer<Optional<Throwable>> exceptionHandler;
     private final boolean reloading;
     private float progress;
-    private long applyCompleteTime = -1L;
-    private long prepareCompleteTime = -1L;
+    private long reloadCompleteTime = -1L;
+    private long reloadStartTime = -1L;
 
-    public SplashScreen(MinecraftClient client, ResourceReloadMonitor monitor, Consumer<Optional<Throwable>> exceptionHandler, boolean reloading) {
+    public SplashScreen(MinecraftClient client, ResourceReload monitor, Consumer<Optional<Throwable>> exceptionHandler, boolean reloading) {
         this.client = client;
-        this.reloadMonitor = monitor;
+        this.reload = monitor;
         this.exceptionHandler = exceptionHandler;
         this.reloading = reloading;
     }
@@ -59,11 +59,11 @@ extends Overlay {
         int i = this.client.getWindow().getScaledWidth();
         int j = this.client.getWindow().getScaledHeight();
         long l = Util.getMeasuringTimeMs();
-        if (this.reloading && (this.reloadMonitor.isPrepareStageComplete() || this.client.currentScreen != null) && this.prepareCompleteTime == -1L) {
-            this.prepareCompleteTime = l;
+        if (this.reloading && this.reloadStartTime == -1L) {
+            this.reloadStartTime = l;
         }
-        float f = this.applyCompleteTime > -1L ? (float)(l - this.applyCompleteTime) / 1000.0f : -1.0f;
-        float f2 = g = this.prepareCompleteTime > -1L ? (float)(l - this.prepareCompleteTime) / 500.0f : -1.0f;
+        float f = this.reloadCompleteTime > -1L ? (float)(l - this.reloadCompleteTime) / 1000.0f : -1.0f;
+        float f2 = g = this.reloadStartTime > -1L ? (float)(l - this.reloadStartTime) / 500.0f : -1.0f;
         if (f >= 1.0f) {
             if (this.client.currentScreen != null) {
                 this.client.currentScreen.render(matrices, 0, 0, delta);
@@ -92,14 +92,14 @@ extends Overlay {
         RenderSystem.enableBlend();
         RenderSystem.blendEquation(32774);
         RenderSystem.blendFunc(770, 1);
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, h);
         SplashScreen.drawTexture(matrices, k - o, m - n, o, (int)d, -0.0625f, 0.0f, 120, 60, 120, 120);
         SplashScreen.drawTexture(matrices, k, m - n, o, (int)d, 0.0625f, 60.0f, 120, 60, 120, 120);
         RenderSystem.defaultBlendFunc();
         RenderSystem.disableBlend();
         int p = (int)((double)this.client.getWindow().getScaledHeight() * 0.8325);
-        float q = this.reloadMonitor.getProgress();
+        float q = this.reload.getProgress();
         this.progress = MathHelper.clamp(this.progress * 0.95f + q * 0.050000012f, 0.0f, 1.0f);
         if (f < 1.0f) {
             this.renderProgressBar(matrices, i / 2 - o, p - 5, i / 2 + o, p + 5, 1.0f - MathHelper.clamp(f, 0.0f, 1.0f));
@@ -107,14 +107,14 @@ extends Overlay {
         if (f >= 2.0f) {
             this.client.setOverlay(null);
         }
-        if (this.applyCompleteTime == -1L && this.reloadMonitor.isApplyStageComplete() && (!this.reloading || g >= 2.0f)) {
+        if (this.reloadCompleteTime == -1L && this.reload.isComplete() && (!this.reloading || g >= 2.0f)) {
             try {
-                this.reloadMonitor.throwExceptions();
+                this.reload.throwException();
                 this.exceptionHandler.accept(Optional.empty());
             } catch (Throwable throwable) {
                 this.exceptionHandler.accept(Optional.of(throwable));
             }
-            this.applyCompleteTime = Util.getMeasuringTimeMs();
+            this.reloadCompleteTime = Util.getMeasuringTimeMs();
             if (this.client.currentScreen != null) {
                 this.client.currentScreen.init(this.client, this.client.getWindow().getScaledWidth(), this.client.getWindow().getScaledHeight());
             }

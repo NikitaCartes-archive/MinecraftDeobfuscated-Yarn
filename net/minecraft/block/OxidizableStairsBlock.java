@@ -5,7 +5,6 @@ package net.minecraft.block;
 
 import java.util.Random;
 import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Oxidizable;
 import net.minecraft.block.StairsBlock;
@@ -16,18 +15,10 @@ public class OxidizableStairsBlock
 extends StairsBlock
 implements Oxidizable {
     private final Oxidizable.OxidizationLevel oxidizationLevel;
-    private final Block degraded;
 
-    public OxidizableStairsBlock(BlockState blockState, AbstractBlock.Settings settings) {
-        super(blockState, settings);
-        this.oxidizationLevel = Oxidizable.OxidizationLevel.values()[Oxidizable.OxidizationLevel.values().length - 1];
-        this.degraded = this;
-    }
-
-    public OxidizableStairsBlock(BlockState baseBlockState, AbstractBlock.Settings settings, Oxidizable.OxidizationLevel oxidizationLevel, Block degraded) {
+    public OxidizableStairsBlock(Oxidizable.OxidizationLevel oxidizationLevel, BlockState baseBlockState, AbstractBlock.Settings settings) {
         super(baseBlockState, settings);
         this.oxidizationLevel = oxidizationLevel;
-        this.degraded = degraded;
     }
 
     @Override
@@ -37,17 +28,12 @@ implements Oxidizable {
 
     @Override
     public boolean hasRandomTicks(BlockState state) {
-        return this.degraded != this;
+        return Oxidizable.getIncreasedOxidationBlock(state.getBlock()).isPresent();
     }
 
     @Override
     public Oxidizable.OxidizationLevel getDegradationLevel() {
         return this.oxidizationLevel;
-    }
-
-    @Override
-    public BlockState getDegradationResult(BlockState state) {
-        return (BlockState)((BlockState)((BlockState)((BlockState)this.degraded.getDefaultState().with(FACING, state.get(FACING))).with(HALF, state.get(HALF))).with(SHAPE, state.get(SHAPE))).with(WATERLOGGED, state.get(WATERLOGGED));
     }
 
     @Override

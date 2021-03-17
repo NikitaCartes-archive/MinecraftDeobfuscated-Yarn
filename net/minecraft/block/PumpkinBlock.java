@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AttachedStemBlock;
 import net.minecraft.block.BlockState;
@@ -32,23 +33,23 @@ extends GourdBlock {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        ItemStack itemStack = player.getStackInHand(hand);
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player2, Hand hand, BlockHitResult hit) {
+        ItemStack itemStack = player2.getStackInHand(hand);
         if (itemStack.isOf(Items.SHEARS)) {
             if (!world.isClient) {
                 Direction direction = hit.getSide();
-                Direction direction2 = direction.getAxis() == Direction.Axis.Y ? player.getHorizontalFacing().getOpposite() : direction;
+                Direction direction2 = direction.getAxis() == Direction.Axis.Y ? player2.getHorizontalFacing().getOpposite() : direction;
                 world.playSound(null, pos, SoundEvents.BLOCK_PUMPKIN_CARVE, SoundCategory.BLOCKS, 1.0f, 1.0f);
-                world.setBlockState(pos, (BlockState)Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), 11);
+                world.setBlockState(pos, (BlockState)Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, direction2), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
                 ItemEntity itemEntity = new ItemEntity(world, (double)pos.getX() + 0.5 + (double)direction2.getOffsetX() * 0.65, (double)pos.getY() + 0.1, (double)pos.getZ() + 0.5 + (double)direction2.getOffsetZ() * 0.65, new ItemStack(Items.PUMPKIN_SEEDS, 4));
                 itemEntity.setVelocity(0.05 * (double)direction2.getOffsetX() + world.random.nextDouble() * 0.02, 0.05, 0.05 * (double)direction2.getOffsetZ() + world.random.nextDouble() * 0.02);
                 world.spawnEntity(itemEntity);
-                itemStack.damage(1, player, playerEntity -> playerEntity.sendToolBreakStatus(hand));
-                world.emitGameEvent((Entity)player, GameEvent.SHEAR, pos);
+                itemStack.damage(1, player2, player -> player.sendToolBreakStatus(hand));
+                world.emitGameEvent((Entity)player2, GameEvent.SHEAR, pos);
             }
             return ActionResult.success(world.isClient);
         }
-        return super.onUse(state, world, pos, player, hand, hit);
+        return super.onUse(state, world, pos, player2, hand, hit);
     }
 
     @Override

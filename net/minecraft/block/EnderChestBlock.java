@@ -87,8 +87,8 @@ implements Waterloggable {
     }
 
     @Override
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        EnderChestInventory enderChestInventory = player.getEnderChestInventory();
+    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player2, Hand hand, BlockHitResult hit) {
+        EnderChestInventory enderChestInventory = player2.getEnderChestInventory();
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (enderChestInventory == null || !(blockEntity instanceof EnderChestBlockEntity)) {
             return ActionResult.success(world.isClient);
@@ -102,9 +102,9 @@ implements Waterloggable {
         }
         EnderChestBlockEntity enderChestBlockEntity = (EnderChestBlockEntity)blockEntity;
         enderChestInventory.setActiveBlockEntity(enderChestBlockEntity);
-        player.openHandledScreen(new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> GenericContainerScreenHandler.createGeneric9x3(i, playerInventory, enderChestInventory), CONTAINER_NAME));
-        player.incrementStat(Stats.OPEN_ENDERCHEST);
-        PiglinBrain.onGuardedBlockInteracted(player, true);
+        player2.openHandledScreen(new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> GenericContainerScreenHandler.createGeneric9x3(syncId, inventory, enderChestInventory), CONTAINER_NAME));
+        player2.incrementStat(Stats.OPEN_ENDERCHEST);
+        PiglinBrain.onGuardedBlockInteracted(player2, true);
         return ActionResult.CONSUME;
     }
 

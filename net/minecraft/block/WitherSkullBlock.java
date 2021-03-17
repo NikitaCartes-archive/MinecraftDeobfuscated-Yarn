@@ -3,6 +3,8 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -68,8 +70,8 @@ extends SkullBlock {
         for (int i = 0; i < blockPattern.getWidth(); ++i) {
             for (int j = 0; j < blockPattern.getHeight(); ++j) {
                 CachedBlockPosition cachedBlockPosition = result.translate(i, j, 0);
-                world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-                world.syncWorldEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+                world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
             }
         }
         WitherEntity witherEntity = EntityType.WITHER.create(world);

@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -110,7 +111,7 @@ extends Block {
 
     private void explode(BlockState state, World world, final BlockPos explodedPos) {
         world.removeBlock(explodedPos, false);
-        boolean bl = Direction.Type.HORIZONTAL.stream().map(explodedPos::offset).anyMatch(blockPos -> RespawnAnchorBlock.hasStillWater(blockPos, world));
+        boolean bl = Direction.Type.HORIZONTAL.stream().map(explodedPos::offset).anyMatch(pos -> RespawnAnchorBlock.hasStillWater(pos, world));
         final boolean bl2 = bl || world.getFluidState(explodedPos.up()).isIn(FluidTags.WATER);
         ExplosionBehavior explosionBehavior = new ExplosionBehavior(){
 
@@ -130,7 +131,7 @@ extends Block {
     }
 
     public static void charge(World world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, (BlockState)state.with(CHARGES, state.get(CHARGES) + 1), 3);
+        world.setBlockState(pos, (BlockState)state.with(CHARGES, state.get(CHARGES) + 1), SetBlockStateFlags.DEFAULT);
         world.playSound(null, (double)pos.getX() + 0.5, (double)pos.getY() + 0.5, (double)pos.getZ() + 0.5, SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.BLOCKS, 1.0f, 1.0f);
     }
 

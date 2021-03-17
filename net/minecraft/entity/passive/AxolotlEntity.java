@@ -51,7 +51,7 @@ import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
@@ -97,21 +97,21 @@ implements Bucketable {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putInt("Variant", this.getVariant().getId());
         tag.putBoolean("FromBucket", this.isFromBucket());
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.setVariant(Variant.VARIANTS[tag.getInt("Variant")]);
         this.setFromBucket(tag.getBoolean("FromBucket"));
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         boolean bl = false;
         if (entityData instanceof AxolotlData) {
             if (((AxolotlData)entityData).getSpawnedCount() >= 2) {
@@ -176,7 +176,7 @@ implements Bucketable {
     }
 
     @Override
-    public boolean canFly() {
+    public boolean isPushedByFluids() {
         return false;
     }
 

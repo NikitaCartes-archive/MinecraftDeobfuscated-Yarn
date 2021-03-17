@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.util.math.BlockPos;
@@ -32,10 +33,10 @@ extends Feature<SimpleBlockFeatureConfig> {
         if (blockState.getBlock() instanceof TallPlantBlock) {
             if (!structureWorldAccess.isAir(blockPos.up())) return false;
             TallPlantBlock tallPlantBlock = (TallPlantBlock)blockState.getBlock();
-            tallPlantBlock.placeAt(structureWorldAccess, blockPos, 2);
+            tallPlantBlock.placeAt(structureWorldAccess, blockState, blockPos, 2);
             return true;
         } else {
-            structureWorldAccess.setBlockState(blockPos, blockState, 2);
+            structureWorldAccess.setBlockState(blockPos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
         }
         return true;
     }

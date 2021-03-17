@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -190,7 +191,7 @@ implements Waterloggable {
                 }
                 CampfireBlock.extinguish(null, world, pos, state);
             }
-            world.setBlockState(pos, (BlockState)((BlockState)state.with(WATERLOGGED, true)).with(LIT, false), 3);
+            world.setBlockState(pos, (BlockState)((BlockState)state.with(WATERLOGGED, true)).with(LIT, false), SetBlockStateFlags.DEFAULT);
             world.getFluidTickScheduler().schedule(pos, fluidState.getFluid(), fluidState.getFluid().getTickRate(world));
             return true;
         }
@@ -205,7 +206,7 @@ implements Waterloggable {
             boolean bl2 = bl = entity == null || entity instanceof PlayerEntity || world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING);
             if (bl && !state.get(LIT).booleanValue() && !state.get(WATERLOGGED).booleanValue()) {
                 BlockPos blockPos = hit.getBlockPos();
-                world.setBlockState(blockPos, (BlockState)state.with(Properties.LIT, true), 11);
+                world.setBlockState(blockPos, (BlockState)state.with(Properties.LIT, true), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
             }
         }
     }
@@ -287,8 +288,8 @@ implements Waterloggable {
         return false;
     }
 
-    public static boolean canBeLit(BlockState state) {
-        return state.isIn(BlockTags.CAMPFIRES, abstractBlockState -> abstractBlockState.contains(WATERLOGGED) && abstractBlockState.contains(LIT)) && state.get(WATERLOGGED) == false && state.get(LIT) == false;
+    public static boolean canBeLit(BlockState state2) {
+        return state2.isIn(BlockTags.CAMPFIRES, state -> state.contains(WATERLOGGED) && state.contains(LIT)) && state2.get(WATERLOGGED) == false && state2.get(LIT) == false;
     }
 }
 

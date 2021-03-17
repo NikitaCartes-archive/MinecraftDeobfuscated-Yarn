@@ -26,12 +26,12 @@ public interface Phase {
 
     public float getMaxYAcceleration();
 
-    public float method_6847();
+    public float getYawAcceleration();
 
     public PhaseType<? extends Phase> getType();
 
     @Nullable
-    public Vec3d getTarget();
+    public Vec3d getPathTarget();
 
     public float modifyDamageTaken(DamageSource var1, float var2);
 }

@@ -13,6 +13,7 @@ import net.minecraft.client.realms.gui.screen.RealmsScreen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class RealmsLongConfirmationScreen
@@ -44,7 +45,7 @@ extends RealmsScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             this.field_22697.accept(false);
             return true;
         }

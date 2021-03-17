@@ -6,6 +6,8 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,10 +21,10 @@ import net.minecraft.block.enums.RailShape;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.ChestMinecartEntity;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.Identifier;
@@ -88,7 +90,7 @@ public class MineshaftGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public MineshaftStairs(StructureManager structureManager, CompoundTag nbt) {
+        public MineshaftStairs(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.MINESHAFT_STAIRS, nbt);
         }
 
@@ -165,17 +167,17 @@ public class MineshaftGenerator {
         private final Direction direction;
         private final boolean twoFloors;
 
-        public MineshaftCrossing(StructureManager structureManager, CompoundTag nbt) {
+        public MineshaftCrossing(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.MINESHAFT_CROSSING, nbt);
             this.twoFloors = nbt.getBoolean("tf");
             this.direction = Direction.fromHorizontal(nbt.getInt("D"));
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putBoolean("tf", this.twoFloors);
-            tag.putInt("D", this.direction.getHorizontal());
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("tf", this.twoFloors);
+            nbt.putInt("D", this.direction.getHorizontal());
         }
 
         public MineshaftCrossing(int chainLength, BlockBox boundingBox, @Nullable Direction orientation, MineshaftFeature.Type type) {
@@ -308,7 +310,7 @@ public class MineshaftGenerator {
         private boolean hasSpawner;
         private final int length;
 
-        public MineshaftCorridor(StructureManager structureManager, CompoundTag nbt) {
+        public MineshaftCorridor(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.MINESHAFT_CORRIDOR, nbt);
             this.hasRails = nbt.getBoolean("hr");
             this.hasCobwebs = nbt.getBoolean("sc");
@@ -317,12 +319,12 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putBoolean("hr", this.hasRails);
-            tag.putBoolean("sc", this.hasCobwebs);
-            tag.putBoolean("hps", this.hasSpawner);
-            tag.putInt("Num", this.length);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("hr", this.hasRails);
+            nbt.putBoolean("sc", this.hasCobwebs);
+            nbt.putBoolean("hps", this.hasSpawner);
+            nbt.putInt("Num", this.length);
         }
 
         public MineshaftCorridor(int chainLength, Random random, BlockBox boundingBox, Direction orientation, MineshaftFeature.Type type) {
@@ -510,7 +512,7 @@ public class MineshaftGenerator {
                 BlockPos blockPos = new BlockPos(r, p, s = this.applyZTransform(1, q));
                 if (!boundingBox.contains(blockPos) || !this.isUnderSeaLevel(world, 1, 0, q, boundingBox)) continue;
                 this.hasSpawner = true;
-                world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
+                world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                 BlockEntity blockEntity = world.getBlockEntity(blockPos);
                 if (!(blockEntity instanceof MobSpawnerBlockEntity)) continue;
                 ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.CAVE_SPIDER);
@@ -558,7 +560,7 @@ public class MineshaftGenerator {
             if (!box.contains(mutable)) {
                 return;
             }
-            while (this.method_33881(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
+            while (this.canReplace(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
                 mutable.move(Direction.DOWN);
             }
             if (!this.isNotRailOrLava(world.getBlockState(mutable))) {
@@ -566,7 +568,7 @@ public class MineshaftGenerator {
             }
             while (mutable.getY() < j) {
                 mutable.move(Direction.UP);
-                world.setBlockState(mutable, state, 2);
+                world.setBlockState(mutable, state, SetBlockStateFlags.NOTIFY_LISTENERS);
             }
         }
 
@@ -587,7 +589,7 @@ public class MineshaftGenerator {
                 if (bl) {
                     mutable.setY(m - o);
                     blockState2 = structureWorldAccess.getBlockState(mutable);
-                    bl3 = this.method_33881(blockState2);
+                    bl3 = this.canReplace(blockState2);
                     if (!bl3 && this.isNotRailOrLava(blockState2)) {
                         MineshaftCorridor.method_33878(structureWorldAccess, blockState, mutable, m - o + 1, m);
                         return;
@@ -597,9 +599,9 @@ public class MineshaftGenerator {
                 if (bl2) {
                     mutable.setY(m + o);
                     blockState2 = structureWorldAccess.getBlockState(mutable);
-                    bl3 = this.method_33881(blockState2);
+                    bl3 = this.canReplace(blockState2);
                     if (!bl3 && this.method_33877(structureWorldAccess, mutable, blockState2)) {
-                        structureWorldAccess.setBlockState(mutable.setY(m + 1), this.mineshaftType.getFence(), 2);
+                        structureWorldAccess.setBlockState(mutable.setY(m + 1), this.mineshaftType.getFence(), SetBlockStateFlags.NOTIFY_LISTENERS);
                         MineshaftCorridor.method_33878(structureWorldAccess, Blocks.CHAIN.getDefaultState(), mutable, m + 2, m + o);
                         return;
                     }
@@ -611,7 +613,7 @@ public class MineshaftGenerator {
 
         private static void method_33878(StructureWorldAccess structureWorldAccess, BlockState blockState, BlockPos.Mutable mutable, int i, int j) {
             for (int k = i; k < j; ++k) {
-                structureWorldAccess.setBlockState(mutable.setY(k), blockState, 2);
+                structureWorldAccess.setBlockState(mutable.setY(k), blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
             }
         }
 
@@ -658,9 +660,9 @@ public class MineshaftGenerator {
             this.boundingBox = new BlockBox(x, 50, z, x + 7 + random.nextInt(6), 54 + random.nextInt(6), z + 7 + random.nextInt(6));
         }
 
-        public MineshaftRoom(StructureManager structureManager, CompoundTag nbt) {
+        public MineshaftRoom(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.MINESHAFT_ROOM, nbt);
-            BlockBox.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.getList("Entrances", 11)).resultOrPartial(field_29326::error).ifPresent(this.entrances::addAll);
+            BlockBox.CODEC.listOf().parse(NbtOps.INSTANCE, nbt.getList("Entrances", NbtTypeIds.INT_ARRAY)).resultOrPartial(field_29326::error).ifPresent(this.entrances::addAll);
         }
 
         @Override
@@ -722,9 +724,9 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag2) {
-            super.writeNbt(tag2);
-            BlockBox.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.entrances).resultOrPartial(field_29326::error).ifPresent(tag -> tag2.put("Entrances", (Tag)tag));
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            BlockBox.CODEC.listOf().encodeStart(NbtOps.INSTANCE, this.entrances).resultOrPartial(field_29326::error).ifPresent(nbtElement -> nbt.put("Entrances", (NbtElement)nbtElement));
         }
     }
 
@@ -737,9 +739,9 @@ public class MineshaftGenerator {
             this.mineshaftType = type;
         }
 
-        public MineshaftPart(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-            super(structurePieceType, compoundTag);
-            this.mineshaftType = MineshaftFeature.Type.byIndex(compoundTag.getInt("MST"));
+        public MineshaftPart(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+            super(structurePieceType, nbtCompound);
+            this.mineshaftType = MineshaftFeature.Type.byIndex(nbtCompound.getInt("MST"));
         }
 
         @Override
@@ -749,8 +751,8 @@ public class MineshaftGenerator {
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            tag.putInt("MST", this.mineshaftType.ordinal());
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            nbt.putInt("MST", this.mineshaftType.ordinal());
         }
 
         protected boolean isSolidCeiling(BlockView world, BlockBox boundingBox, int minX, int maxX, int y, int z) {
@@ -805,10 +807,10 @@ public class MineshaftGenerator {
             if (!this.isUnderSeaLevel(structureWorldAccess, i, j, k, blockBox)) {
                 return;
             }
-            BlockPos blockPos = this.method_33781(i, j, k);
+            BlockPos blockPos = this.offsetPos(i, j, k);
             BlockState blockState2 = structureWorldAccess.getBlockState(blockPos);
             if (blockState2.isAir() || blockState2.isOf(Blocks.CHAIN)) {
-                structureWorldAccess.setBlockState(blockPos, blockState, 2);
+                structureWorldAccess.setBlockState(blockPos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
             }
         }
     }

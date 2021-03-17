@@ -10,6 +10,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.c2s.play.ClientCommandC2SPacket;
 import net.minecraft.text.TranslatableText;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class SleepingChatScreen
@@ -31,9 +32,9 @@ extends ChatScreen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 256) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             this.stopSleeping();
-        } else if (keyCode == 257 || keyCode == 335) {
+        } else if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             String string = this.chatField.getText().trim();
             if (!string.isEmpty()) {
                 this.sendMessage(string);

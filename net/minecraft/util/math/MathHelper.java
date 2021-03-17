@@ -14,9 +14,9 @@ import org.apache.commons.lang3.math.NumberUtils;
 
 public class MathHelper {
     public static final float SQUARE_ROOT_OF_TWO = MathHelper.sqrt(2.0f);
-    private static final float[] SINE_TABLE = Util.make(new float[65536], fs -> {
-        for (int i = 0; i < ((float[])fs).length; ++i) {
-            fs[i] = (float)Math.sin((double)i * Math.PI * 2.0 / 65536.0);
+    private static final float[] SINE_TABLE = Util.make(new float[65536], sineTable -> {
+        for (int i = 0; i < ((float[])sineTable).length; ++i) {
+            sineTable[i] = (float)Math.sin((double)i * Math.PI * 2.0 / 65536.0);
         }
     });
     private static final Random RANDOM = new Random();
@@ -130,18 +130,18 @@ public class MathHelper {
         return MathHelper.lerp(delta, start, end);
     }
 
-    public static double absMax(double d, double e) {
-        if (d < 0.0) {
-            d = -d;
+    public static double absMax(double a, double b) {
+        if (a < 0.0) {
+            a = -a;
         }
-        if (e < 0.0) {
-            e = -e;
+        if (b < 0.0) {
+            b = -b;
         }
-        return d > e ? d : e;
+        return a > b ? a : b;
     }
 
-    public static int floorDiv(int i, int j) {
-        return Math.floorDiv(i, j);
+    public static int floorDiv(int dividend, int divisor) {
+        return Math.floorDiv(dividend, divisor);
     }
 
     public static int nextInt(Random random, int min, int max) {
@@ -182,52 +182,52 @@ public class MathHelper {
         return Math.abs(b - a) < (double)1.0E-5f;
     }
 
-    public static int floorMod(int i, int j) {
-        return Math.floorMod(i, j);
+    public static int floorMod(int dividend, int divisor) {
+        return Math.floorMod(dividend, divisor);
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static float floorMod(float f, float g) {
-        return (f % g + g) % g;
+    public static float floorMod(float dividend, float divisor) {
+        return (dividend % divisor + divisor) % divisor;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static double floorMod(double d, double e) {
-        return (d % e + e) % e;
+    public static double floorMod(double dividend, double divisor) {
+        return (dividend % divisor + divisor) % divisor;
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static int wrapDegrees(int i) {
-        int j = i % 360;
-        if (j >= 180) {
-            j -= 360;
+    public static int wrapDegrees(int degrees) {
+        int i = degrees % 360;
+        if (i >= 180) {
+            i -= 360;
         }
-        if (j < -180) {
-            j += 360;
+        if (i < -180) {
+            i += 360;
         }
-        return j;
+        return i;
     }
 
-    public static float wrapDegrees(float f) {
-        float g = f % 360.0f;
-        if (g >= 180.0f) {
-            g -= 360.0f;
+    public static float wrapDegrees(float degrees) {
+        float f = degrees % 360.0f;
+        if (f >= 180.0f) {
+            f -= 360.0f;
         }
-        if (g < -180.0f) {
-            g += 360.0f;
+        if (f < -180.0f) {
+            f += 360.0f;
         }
-        return g;
+        return f;
     }
 
-    public static double wrapDegrees(double d) {
-        double e = d % 360.0;
-        if (e >= 180.0) {
-            e -= 360.0;
+    public static double wrapDegrees(double degrees) {
+        double d = degrees % 360.0;
+        if (d >= 180.0) {
+            d -= 360.0;
         }
-        if (e < -180.0) {
-            e += 360.0;
+        if (d < -180.0) {
+            d += 360.0;
         }
-        return e;
+        return d;
     }
 
     public static float subtractAngles(float start, float end) {
@@ -478,13 +478,13 @@ public class MathHelper {
         return n << 16 | o << 8 | p;
     }
 
-    public static int idealHash(int i) {
-        i ^= i >>> 16;
-        i *= -2048144789;
-        i ^= i >>> 13;
-        i *= -1028477387;
-        i ^= i >>> 16;
-        return i;
+    public static int idealHash(int value) {
+        value ^= value >>> 16;
+        value *= -2048144789;
+        value ^= value >>> 13;
+        value *= -1028477387;
+        value ^= value >>> 16;
+        return value;
     }
 
     public static int binarySearch(int start, int end, IntPredicate leftPredicate) {

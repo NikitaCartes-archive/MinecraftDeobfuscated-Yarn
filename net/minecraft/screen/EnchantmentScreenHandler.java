@@ -18,7 +18,7 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.Property;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerContext;
@@ -170,9 +170,9 @@ extends ScreenHandler {
                     boolean bl = itemStack3.isOf(Items.BOOK);
                     if (bl) {
                         itemStack3 = new ItemStack(Items.ENCHANTED_BOOK);
-                        CompoundTag compoundTag = itemStack.getTag();
-                        if (compoundTag != null) {
-                            itemStack3.setTag(compoundTag.copy());
+                        NbtCompound nbtCompound = itemStack.getTag();
+                        if (nbtCompound != null) {
+                            itemStack3.setTag(nbtCompound.copy());
                         }
                         this.inventory.setStack(0, itemStack3);
                     }

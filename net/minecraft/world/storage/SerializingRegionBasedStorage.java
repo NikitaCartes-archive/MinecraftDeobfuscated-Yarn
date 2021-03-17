@@ -22,9 +22,9 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.ChunkSectionPos;
@@ -106,7 +106,7 @@ implements AutoCloseable {
     }
 
     @Nullable
-    private CompoundTag loadNbt(ChunkPos pos) {
+    private NbtCompound loadNbt(ChunkPos pos) {
         try {
             return this.worker.getNbt(pos);
         } catch (IOException iOException) {
@@ -142,12 +142,12 @@ implements AutoCloseable {
     }
 
     private void save(ChunkPos chunkPos) {
-        Dynamic<Tag> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
-        Tag tag = dynamic.getValue();
-        if (tag instanceof CompoundTag) {
-            this.worker.setResult(chunkPos, (CompoundTag)tag);
+        Dynamic<NbtElement> dynamic = this.method_20367(chunkPos, NbtOps.INSTANCE);
+        NbtElement nbtElement = dynamic.getValue();
+        if (nbtElement instanceof NbtCompound) {
+            this.worker.setResult(chunkPos, (NbtCompound)nbtElement);
         } else {
-            LOGGER.error("Expected compound tag, got {}", (Object)tag);
+            LOGGER.error("Expected compound tag, got {}", (Object)nbtElement);
         }
     }
 

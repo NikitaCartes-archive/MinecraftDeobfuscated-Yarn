@@ -21,35 +21,35 @@ import org.apache.logging.log4j.Logger;
 public class ReloadCommand {
     private static final Logger LOGGER = LogManager.getLogger();
 
-    public static void method_29480(Collection<String> collection, ServerCommandSource serverCommandSource) {
-        serverCommandSource.getMinecraftServer().reloadResources(collection).exceptionally(throwable -> {
+    public static void tryReloadDataPacks(Collection<String> dataPacks, ServerCommandSource source) {
+        source.getMinecraftServer().reloadResources(dataPacks).exceptionally(throwable -> {
             LOGGER.warn("Failed to execute reload", (Throwable)throwable);
-            serverCommandSource.sendError(new TranslatableText("commands.reload.failure"));
+            source.sendError(new TranslatableText("commands.reload.failure"));
             return null;
         });
     }
 
-    private static Collection<String> method_29478(ResourcePackManager resourcePackManager, SaveProperties saveProperties, Collection<String> collection) {
-        resourcePackManager.scanPacks();
-        ArrayList<String> collection2 = Lists.newArrayList(collection);
-        List<String> collection3 = saveProperties.getDataPackSettings().getDisabled();
-        for (String string : resourcePackManager.getNames()) {
-            if (collection3.contains(string) || collection2.contains(string)) continue;
-            collection2.add(string);
+    private static Collection<String> findNewDataPacks(ResourcePackManager dataPackManager, SaveProperties saveProperties, Collection<String> enabledDataPacks) {
+        dataPackManager.scanPacks();
+        ArrayList<String> collection = Lists.newArrayList(enabledDataPacks);
+        List<String> collection2 = saveProperties.getDataPackSettings().getDisabled();
+        for (String string : dataPackManager.getNames()) {
+            if (collection2.contains(string) || collection.contains(string)) continue;
+            collection.add(string);
         }
-        return collection2;
+        return collection;
     }
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("reload").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> {
-            ServerCommandSource serverCommandSource = (ServerCommandSource)commandContext.getSource();
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("reload").requires(source -> source.hasPermissionLevel(2))).executes(context -> {
+            ServerCommandSource serverCommandSource = (ServerCommandSource)context.getSource();
             MinecraftServer minecraftServer = serverCommandSource.getMinecraftServer();
             ResourcePackManager resourcePackManager = minecraftServer.getDataPackManager();
             SaveProperties saveProperties = minecraftServer.getSaveProperties();
             Collection<String> collection = resourcePackManager.getEnabledNames();
-            Collection<String> collection2 = ReloadCommand.method_29478(resourcePackManager, saveProperties, collection);
+            Collection<String> collection2 = ReloadCommand.findNewDataPacks(resourcePackManager, saveProperties, collection);
             serverCommandSource.sendFeedback(new TranslatableText("commands.reload.success"), true);
-            ReloadCommand.method_29480(collection2, serverCommandSource);
+            ReloadCommand.tryReloadDataPacks(collection2, serverCommandSource);
             return 0;
         }));
     }

@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BigDripleafBlock;
 import net.minecraft.block.Block;
@@ -22,7 +23,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
+import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.state.property.Properties;
+import net.minecraft.util.BlockMirror;
+import net.minecraft.util.BlockRotation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
@@ -37,11 +41,12 @@ extends TallPlantBlock
 implements Fertilizable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
+    public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     protected static final VoxelShape SHAPE = Block.createCuboidShape(2.0, 0.0, 2.0, 14.0, 13.0, 14.0);
 
     public SmallDripleafBlock(AbstractBlock.Settings settings) {
         super(settings);
-        this.setDefaultState((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HALF, DoubleBlockHalf.LOWER)).with(WATERLOGGED, false));
+        this.setDefaultState((BlockState)((BlockState)((BlockState)((BlockState)this.stateManager.getDefaultState()).with(HALF, DoubleBlockHalf.LOWER)).with(WATERLOGGED, false)).with(FACING, Direction.NORTH));
     }
 
     @Override
@@ -60,14 +65,15 @@ Waterloggable {
         BlockState blockState = super.getPlacementState(ctx);
         if (blockState != null) {
             FluidState fluidState = ctx.getWorld().getFluidState(ctx.getBlockPos());
-            return (BlockState)blockState.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER);
+            return (BlockState)((BlockState)blockState.with(WATERLOGGED, fluidState.getFluid() == Fluids.WATER)).with(FACING, ctx.getPlayerFacing().getOpposite());
         }
         return null;
     }
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        world.setBlockState(pos.up(), (BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(WATERLOGGED, world.isWater(pos.up())), 3);
+        Direction direction = state.get(FACING);
+        world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER)).with(WATERLOGGED, world.isWater(pos.up()))).with(FACING, direction), SetBlockStateFlags.DEFAULT);
     }
 
     @Override
@@ -98,7 +104,7 @@ Waterloggable {
 
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
-        builder.add(HALF, WATERLOGGED);
+        builder.add(HALF, WATERLOGGED, FACING);
     }
 
     @Override
@@ -114,11 +120,21 @@ Waterloggable {
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         if (state.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
-            BigDripleafBlock.grow(world, random, pos);
+            BigDripleafBlock.grow(world, random, pos, state.get(FACING));
         } else {
             BlockPos blockPos = pos.down();
             this.grow(world, random, blockPos, world.getBlockState(blockPos));
         }
+    }
+
+    @Override
+    public BlockState rotate(BlockState state, BlockRotation rotation) {
+        return (BlockState)state.with(FACING, rotation.rotate(state.get(FACING)));
+    }
+
+    @Override
+    public BlockState mirror(BlockState state, BlockMirror mirror) {
+        return state.rotate(mirror.getRotation(state.get(FACING)));
     }
 }
 

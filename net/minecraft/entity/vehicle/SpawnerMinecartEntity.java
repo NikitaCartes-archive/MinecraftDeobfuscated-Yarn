@@ -9,7 +9,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.vehicle.AbstractMinecartEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.MobSpawnerLogic;
@@ -51,13 +51,13 @@ extends AbstractMinecartEntity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(CompoundTag tag) {
+    protected void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.logic.readNbt(this.world, this.getBlockPos(), tag);
     }
 
     @Override
-    protected void writeCustomDataToNbt(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         this.logic.writeNbt(this.world, this.getBlockPos(), tag);
     }

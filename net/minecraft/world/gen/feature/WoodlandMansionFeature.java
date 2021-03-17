@@ -8,6 +8,7 @@ import com.mojang.serialization.Codec;
 import java.util.LinkedList;
 import java.util.Random;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -108,7 +109,7 @@ extends StructureFeature<DefaultFeatureConfig> {
                     }
                     if (!bl) continue;
                     for (int l = i - 1; l > 1 && (world.isAir(blockPos2 = new BlockPos(j, l, k)) || world.getBlockState(blockPos2).getMaterial().isLiquid()); --l) {
-                        world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+                        world.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                     }
                 }
             }

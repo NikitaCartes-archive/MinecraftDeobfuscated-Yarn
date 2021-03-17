@@ -28,8 +28,14 @@ implements BlockInterpolator {
         if (!settings.hasDeepslate()) {
             return this.defaultBlock;
         }
+        if (y < -8) {
+            return this.deepslateState;
+        }
+        if (y > 0) {
+            return this.defaultBlock;
+        }
+        double d = MathHelper.lerpFromProgress(y, -8.0, 0.0, 1.0, 0.0);
         this.random.setGrimstoneSeed(this.seed, x, y, z);
-        double d = MathHelper.clampedLerpFromProgress(y, -8.0, 0.0, 1.0, 0.0);
         return (double)this.random.nextFloat() < d ? this.deepslateState : this.defaultBlock;
     }
 }

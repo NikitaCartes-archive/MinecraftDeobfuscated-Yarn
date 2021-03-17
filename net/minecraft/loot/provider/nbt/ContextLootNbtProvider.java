@@ -18,8 +18,8 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.provider.nbt.LootNbtProvider;
 import net.minecraft.loot.provider.nbt.LootNbtProviderType;
 import net.minecraft.loot.provider.nbt.LootNbtProviderTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.predicate.NbtPredicate;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
@@ -31,9 +31,9 @@ implements LootNbtProvider {
     private static final Target BLOCK_ENTITY_TARGET = new Target(){
 
         @Override
-        public Tag getNbt(LootContext context) {
+        public NbtElement getNbt(LootContext context) {
             BlockEntity blockEntity = context.get(LootContextParameters.BLOCK_ENTITY);
-            return blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : null;
+            return blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
         }
 
         @Override
@@ -54,7 +54,7 @@ implements LootNbtProvider {
 
             @Override
             @Nullable
-            public Tag getNbt(LootContext context) {
+            public NbtElement getNbt(LootContext context) {
                 Entity entity = context.get(entityTarget.getParameter());
                 return entity != null ? NbtPredicate.entityToNbt(entity) : null;
             }
@@ -82,7 +82,7 @@ implements LootNbtProvider {
 
     @Override
     @Nullable
-    public Tag getNbtTag(LootContext context) {
+    public NbtElement getNbtTag(LootContext context) {
         return this.target.getNbt(context);
     }
 
@@ -139,7 +139,7 @@ implements LootNbtProvider {
 
     static interface Target {
         @Nullable
-        public Tag getNbt(LootContext var1);
+        public NbtElement getNbt(LootContext var1);
 
         public String getName();
 

@@ -6,9 +6,13 @@ package net.minecraft.world;
 import com.google.common.annotations.VisibleForTesting;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import java.util.Optional;
 import java.util.function.Predicate;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.BlockView;
 
 public class PortalUtil {
     /**
@@ -121,6 +125,18 @@ public class PortalUtil {
             intStack.push(l);
         }
         return new Pair<IntBounds, Integer>(new IntBounds(i, j - 1), k);
+    }
+
+    public static Optional<BlockPos> method_34851(BlockView blockView, BlockPos blockPos, Block block, Direction direction, Block block2) {
+        BlockState blockState;
+        BlockPos.Mutable mutable = blockPos.mutableCopy();
+        do {
+            mutable.move(direction);
+        } while ((blockState = blockView.getBlockState(mutable)).isOf(block));
+        if (blockState.isOf(block2)) {
+            return Optional.of(mutable);
+        }
+        return Optional.empty();
     }
 
     public static class Rectangle {

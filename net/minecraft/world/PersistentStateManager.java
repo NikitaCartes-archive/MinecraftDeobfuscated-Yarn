@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +33,7 @@ public class PersistentStateManager {
         return new File(this.directory, id + ".dat");
     }
 
-    public <T extends PersistentState> T getOrCreate(Function<CompoundTag, T> function, Supplier<T> supplier, String string) {
+    public <T extends PersistentState> T getOrCreate(Function<NbtCompound, T> function, Supplier<T> supplier, String string) {
         T persistentState = this.get(function, string);
         if (persistentState != null) {
             return persistentState;
@@ -44,7 +44,7 @@ public class PersistentStateManager {
     }
 
     @Nullable
-    public <T extends PersistentState> T get(Function<CompoundTag, T> function, String id) {
+    public <T extends PersistentState> T get(Function<NbtCompound, T> function, String id) {
         PersistentState persistentState = this.loadedStates.get(id);
         if (persistentState == null && !this.loadedStates.containsKey(id)) {
             persistentState = this.readFromFile(function, id);
@@ -54,12 +54,12 @@ public class PersistentStateManager {
     }
 
     @Nullable
-    private <T extends PersistentState> T readFromFile(Function<CompoundTag, T> function, String id) {
+    private <T extends PersistentState> T readFromFile(Function<NbtCompound, T> function, String id) {
         try {
             File file = this.getFile(id);
             if (file.exists()) {
-                CompoundTag compoundTag = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
-                return (T)((PersistentState)function.apply(compoundTag.getCompound("data")));
+                NbtCompound nbtCompound = this.readNbt(id, SharedConstants.getGameVersion().getWorldVersion());
+                return (T)((PersistentState)function.apply(nbtCompound.getCompound("data")));
             }
         } catch (Exception exception) {
             LOGGER.error("Error loading saved data: {}", (Object)id, (Object)exception);
@@ -74,7 +74,7 @@ public class PersistentStateManager {
     /*
      * Exception decompiling
      */
-    public CompoundTag readNbt(String id, int dataVersion) throws IOException {
+    public NbtCompound readNbt(String id, int dataVersion) throws IOException {
         /*
          * This method has failed to decompile.  When submitting a bug report, please provide this stack trace, and (if you hold appropriate legal rights) the relevant class file.
          * 

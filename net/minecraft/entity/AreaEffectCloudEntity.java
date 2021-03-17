@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.piston.PistonBehavior;
 import net.minecraft.command.argument.ParticleEffectArgumentType;
 import net.minecraft.entity.Entity;
@@ -22,8 +23,8 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
@@ -82,7 +83,7 @@ extends Entity {
 
     public void setRadius(float radius) {
         if (!this.world.isClient) {
-            this.getDataTracker().set(RADIUS, Float.valueOf(radius));
+            this.getDataTracker().set(RADIUS, Float.valueOf(MathHelper.clamp(radius, 0.0f, 32.0f)));
         }
     }
 
@@ -296,7 +297,7 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(CompoundTag tag) {
+    protected void readCustomDataFromNbt(NbtCompound tag) {
         this.age = tag.getInt("Age");
         this.duration = tag.getInt("Duration");
         this.waitTime = tag.getInt("WaitTime");
@@ -308,24 +309,24 @@ extends Entity {
         if (tag.containsUuid("Owner")) {
             this.ownerUuid = tag.getUuid("Owner");
         }
-        if (tag.contains("Particle", 8)) {
+        if (tag.contains("Particle", NbtTypeIds.STRING)) {
             try {
                 this.setParticleType(ParticleEffectArgumentType.readParameters(new StringReader(tag.getString("Particle"))));
             } catch (CommandSyntaxException commandSyntaxException) {
                 LOGGER.warn("Couldn't load custom particle {}", (Object)tag.getString("Particle"), (Object)commandSyntaxException);
             }
         }
-        if (tag.contains("Color", 99)) {
+        if (tag.contains("Color", NbtTypeIds.NUMBER)) {
             this.setColor(tag.getInt("Color"));
         }
-        if (tag.contains("Potion", 8)) {
+        if (tag.contains("Potion", NbtTypeIds.STRING)) {
             this.setPotion(PotionUtil.getPotion(tag));
         }
-        if (tag.contains("Effects", 9)) {
-            ListTag listTag = tag.getList("Effects", 10);
+        if (tag.contains("Effects", NbtTypeIds.LIST)) {
+            NbtList nbtList = tag.getList("Effects", NbtTypeIds.COMPOUND);
             this.effects.clear();
-            for (int i = 0; i < listTag.size(); ++i) {
-                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(listTag.getCompound(i));
+            for (int i = 0; i < nbtList.size(); ++i) {
+                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtList.getCompound(i));
                 if (statusEffectInstance == null) continue;
                 this.addEffect(statusEffectInstance);
             }
@@ -333,7 +334,7 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound tag) {
         tag.putInt("Age", this.age);
         tag.putInt("Duration", this.duration);
         tag.putInt("WaitTime", this.waitTime);
@@ -353,11 +354,11 @@ extends Entity {
             tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
         }
         if (!this.effects.isEmpty()) {
-            ListTag listTag = new ListTag();
+            NbtList nbtList = new NbtList();
             for (StatusEffectInstance statusEffectInstance : this.effects) {
-                listTag.add(statusEffectInstance.writeNbt(new CompoundTag()));
+                nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
             }
-            tag.put("Effects", listTag);
+            tag.put("Effects", nbtList);
         }
     }
 

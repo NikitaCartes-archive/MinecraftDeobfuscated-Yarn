@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -30,7 +31,7 @@ extends FallingBlock {
     @Override
     public void onLanding(World world, BlockPos pos, BlockState fallingBlockState, BlockState currentStateInPos, FallingBlockEntity fallingBlockEntity) {
         if (ConcretePowderBlock.shouldHarden(world, pos, currentStateInPos)) {
-            world.setBlockState(pos, this.hardenedState, 3);
+            world.setBlockState(pos, this.hardenedState, SetBlockStateFlags.DEFAULT);
         }
     }
 

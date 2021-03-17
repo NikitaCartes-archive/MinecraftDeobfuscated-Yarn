@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -53,18 +54,18 @@ implements Fertilizable {
             if (random.nextInt(8) == 0) {
                 List<ConfiguredFeature<?, ?>> list = world.getBiome(blockPos2).getGenerationSettings().getFlowerFeatures();
                 if (list.isEmpty()) continue;
-                blockState3 = GrassBlock.method_31647(random, blockPos2, list.get(0));
+                blockState3 = GrassBlock.getFlowerState(random, blockPos2, list.get(0));
             } else {
                 blockState3 = blockState;
             }
             if (!blockState3.canPlaceAt(world, blockPos2)) continue;
-            world.setBlockState(blockPos2, blockState3, 3);
+            world.setBlockState(blockPos2, blockState3, SetBlockStateFlags.DEFAULT);
         }
     }
 
-    private static <U extends FeatureConfig> BlockState method_31647(Random random, BlockPos blockPos, ConfiguredFeature<U, ?> configuredFeature) {
-        FlowerFeature flowerFeature = (FlowerFeature)configuredFeature.feature;
-        return flowerFeature.getFlowerState(random, blockPos, configuredFeature.getConfig());
+    private static <U extends FeatureConfig> BlockState getFlowerState(Random random, BlockPos pos, ConfiguredFeature<U, ?> flowerFeature) {
+        FlowerFeature flowerFeature2 = (FlowerFeature)flowerFeature.feature;
+        return flowerFeature2.getFlowerState(random, pos, flowerFeature.getConfig());
     }
 }
 

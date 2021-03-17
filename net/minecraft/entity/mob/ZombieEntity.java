@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -54,7 +56,7 @@ import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
@@ -163,11 +165,11 @@ extends HostileEntity {
     }
 
     @Override
-    protected int getCurrentExperience(PlayerEntity player) {
+    protected int getXpToDrop(PlayerEntity player) {
         if (this.isBaby()) {
             this.experiencePoints = (int)((float)this.experiencePoints * 2.5f);
         }
-        return super.getCurrentExperience(player);
+        return super.getXpToDrop(player);
     }
 
     @Override
@@ -249,7 +251,7 @@ extends HostileEntity {
     protected void convertInWater() {
         this.convertTo(EntityType.DROWNED);
         if (!this.isSilent()) {
-            this.world.syncWorldEvent(null, 1040, this.getBlockPos(), 0);
+            this.world.syncWorldEvent(null, WorldEvents.ZOMBIE_CONVERTS_TO_DROWNED, this.getBlockPos(), 0);
         }
     }
 
@@ -361,7 +363,7 @@ extends HostileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putBoolean("IsBaby", this.isBaby());
         tag.putBoolean("CanBreakDoors", this.canBreakDoors());
@@ -370,12 +372,12 @@ extends HostileEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.setBaby(tag.getBoolean("IsBaby"));
         this.setCanBreakDoors(tag.getBoolean("CanBreakDoors"));
         this.inWaterTime = tag.getInt("InWaterTime");
-        if (tag.contains("DrownedConversionTime", 99) && tag.getInt("DrownedConversionTime") > -1) {
+        if (tag.contains("DrownedConversionTime", NbtTypeIds.NUMBER) && tag.getInt("DrownedConversionTime") > -1) {
             this.setTicksUntilWaterConversion(tag.getInt("DrownedConversionTime"));
         }
     }
@@ -395,7 +397,7 @@ extends HostileEntity {
             zombieVillagerEntity.setOfferData(villagerEntity.getOffers().toNbt());
             zombieVillagerEntity.setXp(villagerEntity.getExperience());
             if (!this.isSilent()) {
-                world.syncWorldEvent(null, 1026, this.getBlockPos(), 0);
+                world.syncWorldEvent(null, WorldEvents.ZOMBIE_INFECTS_VILLAGER, this.getBlockPos(), 0);
             }
         }
     }
@@ -415,7 +417,7 @@ extends HostileEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         float f = difficulty.getClampedLocalDifficulty();
         this.setCanPickUpLoot(this.random.nextFloat() < 0.55f * f);

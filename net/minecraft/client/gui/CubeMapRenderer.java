@@ -41,7 +41,7 @@ public class CubeMapRenderer {
         matrixStack.loadIdentity();
         matrixStack.multiply(Vec3f.POSITIVE_X.getDegreesQuaternion(180.0f));
         RenderSystem.applyModelViewMatrix();
-        RenderSystem.setShader(GameRenderer::method_34543);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
         RenderSystem.disableCull();

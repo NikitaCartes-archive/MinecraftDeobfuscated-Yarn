@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.RailShape;
@@ -202,7 +203,7 @@ public class RailPlacementHelper {
             railShape = RailShape.NORTH_SOUTH;
         }
         this.state = (BlockState)this.state.with(this.block.getShapeProperty(), railShape);
-        this.world.setBlockState(this.pos, this.state, 3);
+        this.world.setBlockState(this.pos, this.state, SetBlockStateFlags.DEFAULT);
     }
 
     private boolean canConnect(BlockPos pos) {
@@ -312,7 +313,7 @@ public class RailPlacementHelper {
         this.computeNeighbors(railShape2);
         this.state = (BlockState)this.state.with(this.block.getShapeProperty(), railShape2);
         if (forceUpdate || this.world.getBlockState(this.pos) != this.state) {
-            this.world.setBlockState(this.pos, this.state, 3);
+            this.world.setBlockState(this.pos, this.state, SetBlockStateFlags.DEFAULT);
             for (int i = 0; i < this.neighbors.size(); ++i) {
                 RailPlacementHelper railPlacementHelper = this.getNeighboringRail(this.neighbors.get(i));
                 if (railPlacementHelper == null) continue;

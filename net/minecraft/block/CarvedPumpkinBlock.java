@@ -4,6 +4,8 @@
 package net.minecraft.block;
 
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -69,8 +71,8 @@ implements Wearable {
                 if (result == null) break block8;
                 for (int i = 0; i < this.getSnowGolemPattern().getHeight(); ++i) {
                     CachedBlockPosition cachedBlockPosition = result.translate(0, i, 0);
-                    world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-                    world.syncWorldEvent(2001, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
+                    world.setBlockState(cachedBlockPosition.getBlockPos(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition.getBlockState()));
                 }
                 SnowGolemEntity snowGolemEntity = EntityType.SNOW_GOLEM.create(world);
                 BlockPos blockPos = result.translate(0, 2, 0).getBlockPos();
@@ -90,8 +92,8 @@ implements Wearable {
             for (int i = 0; i < this.getIronGolemPattern().getWidth(); ++i) {
                 for (int k = 0; k < this.getIronGolemPattern().getHeight(); ++k) {
                     CachedBlockPosition cachedBlockPosition3 = result.translate(i, k, 0);
-                    world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), 2);
-                    world.syncWorldEvent(2001, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
+                    world.setBlockState(cachedBlockPosition3.getBlockPos(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, cachedBlockPosition3.getBlockPos(), Block.getRawIdFromState(cachedBlockPosition3.getBlockState()));
                 }
             }
             BlockPos blockPos2 = result.translate(1, 2, 0).getBlockPos();

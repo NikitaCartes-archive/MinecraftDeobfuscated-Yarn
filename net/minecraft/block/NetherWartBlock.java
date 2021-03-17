@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -52,7 +53,7 @@ extends PlantBlock {
         int i = state.get(AGE);
         if (i < 3 && random.nextInt(10) == 0) {
             state = (BlockState)state.with(AGE, i + 1);
-            world.setBlockState(pos, state, 2);
+            world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 

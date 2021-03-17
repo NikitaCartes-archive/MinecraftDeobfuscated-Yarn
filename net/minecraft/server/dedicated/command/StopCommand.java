@@ -11,9 +11,9 @@ import net.minecraft.text.TranslatableText;
 
 public class StopCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("stop").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(4))).executes(commandContext -> {
-            ((ServerCommandSource)commandContext.getSource()).sendFeedback(new TranslatableText("commands.stop.stopping"), true);
-            ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().stop(false);
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("stop").requires(source -> source.hasPermissionLevel(4))).executes(context -> {
+            ((ServerCommandSource)context.getSource()).sendFeedback(new TranslatableText("commands.stop.stopping"), true);
+            ((ServerCommandSource)context.getSource()).getMinecraftServer().stop(false);
             return 1;
         }));
     }

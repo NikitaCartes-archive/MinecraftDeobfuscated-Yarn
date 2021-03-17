@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -45,7 +46,7 @@ extends Feature<DiskFeatureConfig> {
                     if (q > k) {
                         for (BlockState blockState2 : diskFeatureConfig.targets) {
                             if (!blockState2.isOf(block)) continue;
-                            structureWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, 2);
+                            structureWorldAccess.setBlockState(blockPos2, diskFeatureConfig.state, SetBlockStateFlags.NOTIFY_LISTENERS);
                             bl = true;
                             bl4 = true;
                             break;
@@ -53,7 +54,7 @@ extends Feature<DiskFeatureConfig> {
                     }
                     if (bl2 && bl3 && blockState.isAir()) {
                         BlockState blockState3 = diskFeatureConfig.state.isOf(Blocks.RED_SAND) ? Blocks.RED_SANDSTONE.getDefaultState() : Blocks.SANDSTONE.getDefaultState();
-                        structureWorldAccess.setBlockState(new BlockPos(m, q + 1, n), blockState3, 2);
+                        structureWorldAccess.setBlockState(new BlockPos(m, q + 1, n), blockState3, SetBlockStateFlags.NOTIFY_LISTENERS);
                     }
                     bl3 = bl4;
                 }

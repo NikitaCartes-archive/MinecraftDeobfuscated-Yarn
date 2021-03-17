@@ -11,7 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.stream.Collectors;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.tag.RequiredTagList;
 import net.minecraft.tag.RequiredTagListRegistry;
 import net.minecraft.tag.ServerTagManagerHolder;
@@ -28,7 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
 
 public class TagManagerLoader
-implements ResourceReloadListener {
+implements ResourceReloader {
     private static final Logger LOGGER = LogManager.getLogger();
     private final DynamicRegistryManager registryManager;
     private TagManager tagManager = TagManager.EMPTY;
@@ -42,7 +42,7 @@ implements ResourceReloadListener {
     }
 
     @Override
-    public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
+    public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         ArrayList list = Lists.newArrayList();
         RequiredTagListRegistry.forEach(requiredTagList -> {
             RequiredGroup requiredGroup = this.buildRequiredGroup(manager, prepareExecutor, (RequiredTagList)requiredTagList);

@@ -7,9 +7,10 @@ import com.mojang.datafixers.DataFixer;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Supplier;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.registry.RegistryKey;
@@ -31,7 +32,7 @@ implements AutoCloseable {
         this.worker = new StorageIoWorker(directory, dsync, "chunk");
     }
 
-    public CompoundTag updateChunkNbt(RegistryKey<World> worldKey, Supplier<PersistentStateManager> persistentStateManagerFactory, CompoundTag tag) {
+    public NbtCompound updateChunkNbt(RegistryKey<World> worldKey, Supplier<PersistentStateManager> persistentStateManagerFactory, NbtCompound tag) {
         int i = VersionedChunkStorage.getDataVersion(tag);
         int j = 1493;
         if (i < 1493 && (tag = NbtHelper.update(this.dataFixer, DataFixTypes.CHUNK, tag, i, 1493)).getCompound("Level").getBoolean("hasLegacyStructureData")) {
@@ -47,16 +48,16 @@ implements AutoCloseable {
         return tag;
     }
 
-    public static int getDataVersion(CompoundTag tag) {
-        return tag.contains("DataVersion", 99) ? tag.getInt("DataVersion") : -1;
+    public static int getDataVersion(NbtCompound tag) {
+        return tag.contains("DataVersion", NbtTypeIds.NUMBER) ? tag.getInt("DataVersion") : -1;
     }
 
     @Nullable
-    public CompoundTag getNbt(ChunkPos chunkPos) throws IOException {
+    public NbtCompound getNbt(ChunkPos chunkPos) throws IOException {
         return this.worker.getNbt(chunkPos);
     }
 
-    public void setTagAt(ChunkPos chunkPos, CompoundTag tag) {
+    public void setTagAt(ChunkPos chunkPos, NbtCompound tag) {
         this.worker.setResult(chunkPos, tag);
         if (this.featureUpdater != null) {
             this.featureUpdater.markResolved(chunkPos.toLong());

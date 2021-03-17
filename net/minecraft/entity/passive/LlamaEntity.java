@@ -5,6 +5,7 @@ package net.minecraft.entity.passive;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,7 +43,7 @@ import net.minecraft.entity.projectile.LlamaSpitEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -95,21 +96,21 @@ implements RangedAttackMob {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putInt("Variant", this.getVariant());
         tag.putInt("Strength", this.getStrength());
         if (!this.items.getStack(1).isEmpty()) {
-            tag.put("DecorItem", this.items.getStack(1).writeNbt(new CompoundTag()));
+            tag.put("DecorItem", this.items.getStack(1).writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         this.setStrength(tag.getInt("Strength"));
         super.readCustomDataFromNbt(tag);
         this.setVariant(tag.getInt("Variant"));
-        if (tag.contains("DecorItem", 10)) {
+        if (tag.contains("DecorItem", NbtTypeIds.COMPOUND)) {
             this.items.setStack(1, ItemStack.fromNbt(tag.getCompound("DecorItem")));
         }
         this.updateSaddle();
@@ -238,7 +239,7 @@ implements RangedAttackMob {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         int i;
         this.initializeStrength();
         if (entityData instanceof LlamaData) {

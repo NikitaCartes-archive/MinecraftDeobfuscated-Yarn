@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -82,7 +83,7 @@ implements Fertilizable {
         float f;
         int i;
         if (world.getBaseLightLevel(pos, 0) >= 9 && (i = this.getAge(state)) < this.getMaxAge() && random.nextInt((int)(25.0f / (f = CropBlock.getAvailableMoisture(this, world, pos))) + 1) == 0) {
-            world.setBlockState(pos, this.withAge(i + 1), 2);
+            world.setBlockState(pos, this.withAge(i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 
@@ -92,7 +93,7 @@ implements Fertilizable {
         if (i > (j = this.getMaxAge())) {
             i = j;
         }
-        world.setBlockState(pos, this.withAge(i), 2);
+        world.setBlockState(pos, this.withAge(i), SetBlockStateFlags.NOTIFY_LISTENERS);
     }
 
     protected int getGrowthAmount(World world) {

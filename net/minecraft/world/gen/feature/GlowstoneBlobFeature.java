@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -32,7 +33,7 @@ extends Feature<DefaultFeatureConfig> {
         if (!(blockState.isOf(Blocks.NETHERRACK) || blockState.isOf(Blocks.BASALT) || blockState.isOf(Blocks.BLACKSTONE))) {
             return false;
         }
-        structureWorldAccess.setBlockState(blockPos, Blocks.GLOWSTONE.getDefaultState(), 2);
+        structureWorldAccess.setBlockState(blockPos, Blocks.GLOWSTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
         for (int i = 0; i < 1500; ++i) {
             BlockPos blockPos2 = blockPos.add(random.nextInt(8) - random.nextInt(8), -random.nextInt(12), random.nextInt(8) - random.nextInt(8));
             if (!structureWorldAccess.getBlockState(blockPos2).isAir()) continue;
@@ -44,7 +45,7 @@ extends Feature<DefaultFeatureConfig> {
                 if (j > 1) break;
             }
             if (j != true) continue;
-            structureWorldAccess.setBlockState(blockPos2, Blocks.GLOWSTONE.getDefaultState(), 2);
+            structureWorldAccess.setBlockState(blockPos2, Blocks.GLOWSTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
         return true;
     }

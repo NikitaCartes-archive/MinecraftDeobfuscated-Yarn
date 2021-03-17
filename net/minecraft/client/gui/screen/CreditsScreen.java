@@ -149,7 +149,7 @@ extends Screen {
     }
 
     private void renderBackground(int mouseX, int mouseY, float tickDelta) {
-        RenderSystem.setShader(GameRenderer::method_34543);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
         int i = this.width;
         float f = -this.time * 0.5f * this.speed;
@@ -215,7 +215,7 @@ extends Screen {
             l += 12;
         }
         matrices.pop();
-        RenderSystem.setShader(GameRenderer::method_34543);
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR);

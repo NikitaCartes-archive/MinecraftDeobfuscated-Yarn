@@ -8,6 +8,8 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import java.util.Map;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -52,14 +54,14 @@ extends MiningToolItem {
                 blockState3 = blockState2;
             } else if (blockState.getBlock() instanceof CampfireBlock && blockState.get(CampfireBlock.LIT).booleanValue()) {
                 if (!world.isClient()) {
-                    world.syncWorldEvent(null, 1009, blockPos, 0);
+                    world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, blockPos, 0);
                 }
                 CampfireBlock.extinguish(context.getPlayer(), world, blockPos, blockState);
                 blockState3 = (BlockState)blockState.with(CampfireBlock.LIT, false);
             }
             if (blockState3 != null) {
                 if (!world.isClient) {
-                    world.setBlockState(blockPos, blockState3, 11);
+                    world.setBlockState(blockPos, blockState3, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
                     if (playerEntity != null) {
                         context.getStack().damage(1, playerEntity, p -> p.sendToolBreakStatus(context.getHand()));
                     }

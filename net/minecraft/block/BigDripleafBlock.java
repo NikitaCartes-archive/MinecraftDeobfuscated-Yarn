@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import java.util.Map;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BigDripleafStemBlock;
 import net.minecraft.block.Block;
@@ -52,11 +53,11 @@ implements Fertilizable,
 Waterloggable {
     private static final BooleanProperty WATERLOGGED = Properties.WATERLOGGED;
     private static final EnumProperty<Tilt> TILT = Properties.TILT;
-    private static final Object2IntMap<Tilt> NEXT_TILT_DELAYS = Util.make(new Object2IntArrayMap(), object2IntArrayMap -> {
-        object2IntArrayMap.defaultReturnValue(-1);
-        object2IntArrayMap.put(Tilt.UNSTABLE, 10);
-        object2IntArrayMap.put(Tilt.PARTIAL, 10);
-        object2IntArrayMap.put(Tilt.FULL, 100);
+    private static final Object2IntMap<Tilt> NEXT_TILT_DELAYS = Util.make(new Object2IntArrayMap(), delays -> {
+        delays.defaultReturnValue(-1);
+        delays.put(Tilt.UNSTABLE, 10);
+        delays.put(Tilt.PARTIAL, 10);
+        delays.put(Tilt.FULL, 100);
     });
     private static final Map<Tilt, VoxelShape> SHAPES_FOR_TILT = ImmutableMap.of(Tilt.NONE, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0), Tilt.UNSTABLE, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 15.0, 16.0), Tilt.PARTIAL, Block.createCuboidShape(0.0, 11.0, 0.0, 16.0, 13.0, 16.0), Tilt.FULL, VoxelShapes.empty());
     private static final Map<Direction, VoxelShape> SHAPES_FOR_DIRECTION = ImmutableMap.of(Direction.NORTH, Block.createCuboidShape(5.0, 0.0, 8.0, 11.0, 11.0, 14.0), Direction.SOUTH, Block.createCuboidShape(5.0, 0.0, 2.0, 11.0, 11.0, 8.0), Direction.EAST, Block.createCuboidShape(2.0, 0.0, 5.0, 8.0, 11.0, 11.0), Direction.WEST, Block.createCuboidShape(8.0, 0.0, 5.0, 14.0, 11.0, 11.0));
@@ -80,34 +81,33 @@ Waterloggable {
         return SHAPES_FOR_TILT.get(state.get(TILT));
     }
 
-    public static void grow(WorldAccess worldAccess, Random random, BlockPos pos) {
+    public static void grow(WorldAccess world, Random random, BlockPos pos, Direction direction) {
         int j;
         int i = 1 + random.nextInt(5);
-        Direction direction = Direction.Type.HORIZONTAL.random(random);
         BlockPos.Mutable mutable = pos.mutableCopy();
-        for (j = 0; j < i && BigDripleafBlock.canGrowInto(worldAccess, mutable, worldAccess.getBlockState(mutable)); ++j) {
+        for (j = 0; j < i && BigDripleafBlock.canGrowInto(world, mutable, world.getBlockState(mutable)); ++j) {
             mutable.move(Direction.UP);
         }
         int k = pos.getY() + j - 1;
         mutable.setY(pos.getY());
         while (mutable.getY() < k) {
-            BigDripleafStemBlock.placeStemAt(worldAccess, mutable, worldAccess.getFluidState(mutable), direction);
+            BigDripleafStemBlock.placeStemAt(world, mutable, world.getFluidState(mutable), direction);
             mutable.move(Direction.UP);
         }
-        BigDripleafBlock.placeDripleafAt(worldAccess, mutable, worldAccess.getFluidState(mutable), direction);
+        BigDripleafBlock.placeDripleafAt(world, mutable, world.getFluidState(mutable), direction);
     }
 
     private static boolean canGrowInto(BlockState state) {
         return state.isAir() || state.isOf(Blocks.WATER) || state.isOf(Blocks.SMALL_DRIPLEAF);
     }
 
-    private static boolean canGrowInto(HeightLimitView heightLimitView, BlockPos pos, BlockState state) {
-        return !heightLimitView.isOutOfHeightLimit(pos) && BigDripleafBlock.canGrowInto(state);
+    protected static boolean canGrowInto(HeightLimitView world, BlockPos pos, BlockState state) {
+        return !world.isOutOfHeightLimit(pos) && BigDripleafBlock.canGrowInto(state);
     }
 
     protected static boolean placeDripleafAt(WorldAccess world, BlockPos pos, FluidState fluidState, Direction direction) {
         BlockState blockState = (BlockState)((BlockState)Blocks.BIG_DRIPLEAF.getDefaultState().with(WATERLOGGED, fluidState.isEqualAndStill(Fluids.WATER))).with(FACING, direction);
-        return world.setBlockState(pos, blockState, 2);
+        return world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
     }
 
     @Override
@@ -222,7 +222,7 @@ Waterloggable {
     }
 
     private static void changeTilt(BlockState state, World world, BlockPos pos, Tilt tilt) {
-        world.setBlockState(pos, (BlockState)state.with(TILT, tilt), 2);
+        world.setBlockState(pos, (BlockState)state.with(TILT, tilt), SetBlockStateFlags.NOTIFY_LISTENERS);
         if (tilt.isStable()) {
             world.emitGameEvent(GameEvent.BLOCK_CHANGE, pos);
         }

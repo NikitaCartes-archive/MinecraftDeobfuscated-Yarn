@@ -5,6 +5,7 @@ package net.minecraft.world;
 
 import java.util.Comparator;
 import java.util.Optional;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.NetherPortalBlock;
@@ -103,14 +104,14 @@ public class PortalForcer {
             for (int o = -1; o < 4; ++o) {
                 if (p != -1 && p != 2 && o != -1 && o != 3) continue;
                 mutable.set(blockPos2, p * direction.getOffsetX(), o, p * direction.getOffsetZ());
-                this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), 3);
+                this.world.setBlockState(mutable, Blocks.OBSIDIAN.getDefaultState(), SetBlockStateFlags.DEFAULT);
             }
         }
         BlockState blockState2 = (BlockState)Blocks.NETHER_PORTAL.getDefaultState().with(NetherPortalBlock.AXIS, axis);
         for (int o = 0; o < 2; ++o) {
             for (j = 0; j < 3; ++j) {
                 mutable.set(blockPos2, o * direction.getOffsetX(), j, o * direction.getOffsetZ());
-                this.world.setBlockState(mutable, blockState2, 18);
+                this.world.setBlockState(mutable, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
             }
         }
         return Optional.of(new PortalUtil.Rectangle(blockPos2.toImmutable(), 2, 3));

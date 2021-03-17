@@ -11,6 +11,7 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.datafixers.util.Pair;
 import java.util.List;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.entity.BannerPattern;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.condition.LootCondition;
@@ -18,8 +19,8 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.JsonHelper;
 
@@ -36,18 +37,18 @@ extends ConditionalLootFunction {
 
     @Override
     protected ItemStack process(ItemStack stack, LootContext context) {
-        ListTag listTag2;
-        CompoundTag compoundTag = stack.getOrCreateSubTag("BlockEntityTag");
+        NbtList nbtList2;
+        NbtCompound nbtCompound = stack.getOrCreateSubTag("BlockEntityTag");
         BannerPattern.Patterns patterns = new BannerPattern.Patterns();
         this.patterns.forEach(patterns::add);
-        ListTag listTag = patterns.toNbt();
+        NbtList nbtList = patterns.toNbt();
         if (this.append) {
-            listTag2 = compoundTag.getList("Patterns", 10).copy();
-            listTag2.addAll(listTag);
+            nbtList2 = nbtCompound.getList("Patterns", NbtTypeIds.COMPOUND).copy();
+            nbtList2.addAll(nbtList);
         } else {
-            listTag2 = listTag;
+            nbtList2 = nbtList;
         }
-        compoundTag.put("Patterns", listTag2);
+        nbtCompound.put("Patterns", nbtList2);
         return stack;
     }
 

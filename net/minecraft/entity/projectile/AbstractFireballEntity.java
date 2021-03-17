@@ -16,7 +16,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.projectile.ExplosiveProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
 import net.minecraft.world.World;
 
@@ -61,16 +61,16 @@ implements FlyingItemEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         ItemStack itemStack = this.getItem();
         if (!itemStack.isEmpty()) {
-            tag.put("Item", itemStack.writeNbt(new CompoundTag()));
+            tag.put("Item", itemStack.writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         ItemStack itemStack = ItemStack.fromNbt(tag.getCompound("Item"));
         this.setItem(itemStack);

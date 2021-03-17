@@ -67,7 +67,7 @@ extends Block {
     }
 
     @Override
-    public VoxelShape getVisualShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+    public VoxelShape getCameraCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
         return LAYERS_TO_SHAPE[state.get(LAYERS)];
     }
 

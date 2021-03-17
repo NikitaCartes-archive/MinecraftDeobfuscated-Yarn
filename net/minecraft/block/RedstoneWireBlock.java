@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -221,7 +222,7 @@ extends Block {
         int i = this.getReceivedRedstonePower(world, pos);
         if (state.get(POWER) != i) {
             if (world.getBlockState(pos) == state) {
-                world.setBlockState(pos, (BlockState)state.with(POWER, i), 2);
+                world.setBlockState(pos, (BlockState)state.with(POWER, i), SetBlockStateFlags.NOTIFY_LISTENERS);
             }
             HashSet<BlockPos> set = Sets.newHashSet();
             set.add(pos);
@@ -456,7 +457,7 @@ extends Block {
             BlockState blockState = RedstoneWireBlock.isFullyConnected(state) ? this.getDefaultState() : this.dotState;
             blockState = (BlockState)blockState.with(POWER, state.get(POWER));
             if ((blockState = this.getPlacementState(world, blockState, pos)) != state) {
-                world.setBlockState(pos, blockState, 3);
+                world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
                 this.updateForNewState(world, pos, state, blockState);
                 return ActionResult.SUCCESS;
             }

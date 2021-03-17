@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.ShapeContext;
-import net.minecraft.class_5878;
+import net.minecraft.client.particle.ParticleGroup;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.VertexConsumer;
@@ -83,6 +83,12 @@ public abstract class Particle {
         this.velocityY = (this.velocityY - (double)0.1f) * (double)speed + (double)0.1f;
         this.velocityZ *= (double)speed;
         return this;
+    }
+
+    public void setVelocity(double velocityX, double velocityY, double velocityZ) {
+        this.velocityX = velocityX;
+        this.velocityY = velocityY;
+        this.velocityZ = velocityZ;
     }
 
     public Particle scale(float scale) {
@@ -219,7 +225,14 @@ public abstract class Particle {
         this.boundingBox = boundingBox;
     }
 
-    public Optional<class_5878> method_34019() {
+    /**
+     * Returns the optional group that this particle belongs to.
+     * 
+     * <p>A particle group restricts the number of particles from the group that
+     * can be rendered in a client world. If the particle does not have a group,
+     * it is not restricted.
+     */
+    public Optional<ParticleGroup> getGroup() {
         return Optional.empty();
     }
 }

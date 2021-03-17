@@ -6,6 +6,7 @@ package net.minecraft.entity.boss.dragon;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Random;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.boss.dragon.EnderDragonFight;
 import net.minecraft.entity.decoration.EndCrystalEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -34,7 +35,7 @@ public enum EnderDragonSpawnState {
         public void run(ServerWorld world, EnderDragonFight fight, List<EndCrystalEntity> crystals, int i, BlockPos pos) {
             if (i < 100) {
                 if (i == 0 || i == 50 || i == 51 || i == 52 || i >= 95) {
-                    world.syncWorldEvent(3001, new BlockPos(0, 128, 0), 0);
+                    world.syncWorldEvent(WorldEvents.ENDER_DRAGON_RESURRECTED, new BlockPos(0, 128, 0), 0);
                 }
             } else {
                 fight.setSpawnState(SUMMONING_PILLARS);
@@ -88,13 +89,13 @@ public enum EnderDragonSpawnState {
                     endCrystalEntity.discard();
                 }
             } else if (i >= 80) {
-                world.syncWorldEvent(3001, new BlockPos(0, 128, 0), 0);
+                world.syncWorldEvent(WorldEvents.ENDER_DRAGON_RESURRECTED, new BlockPos(0, 128, 0), 0);
             } else if (i == 0) {
                 for (EndCrystalEntity endCrystalEntity : crystals) {
                     endCrystalEntity.setBeamTarget(new BlockPos(0, 128, 0));
                 }
             } else if (i < 5) {
-                world.syncWorldEvent(3001, new BlockPos(0, 128, 0), 0);
+                world.syncWorldEvent(WorldEvents.ENDER_DRAGON_RESURRECTED, new BlockPos(0, 128, 0), 0);
             }
         }
     }

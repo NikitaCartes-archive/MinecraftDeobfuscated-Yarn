@@ -8,6 +8,8 @@ import com.google.common.base.Suppliers;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -48,6 +50,7 @@ public abstract class ScreenHandler {
     private final List<Property> properties = Lists.newArrayList();
     private ItemStack cursorStack = ItemStack.EMPTY;
     private final DefaultedList<ItemStack> previousTrackedStacks = DefaultedList.of();
+    private final IntList field_29559 = new IntArrayList();
     private ItemStack previousCursorStack = ItemStack.EMPTY;
     @Nullable
     private final ScreenHandlerType<?> type;
@@ -115,6 +118,7 @@ public abstract class ScreenHandler {
 
     protected Property addProperty(Property property) {
         this.properties.add(property);
+        this.field_29559.add(0);
         return property;
     }
 
@@ -138,14 +142,18 @@ public abstract class ScreenHandler {
     }
 
     public void syncState() {
+        int i;
         int j = this.slots.size();
-        for (int i = 0; i < j; ++i) {
+        for (i = 0; i < j; ++i) {
             this.previousTrackedStacks.set(i, this.slots.get(i).getStack().copy());
         }
         this.previousCursorStack = this.getCursorStack().copy();
+        j = this.properties.size();
+        for (i = 0; i < j; ++i) {
+            this.field_29559.set(i, this.properties.get(i).get());
+        }
         if (this.syncHandler != null) {
-            int[] is = this.properties.stream().mapToInt(Property::get).toArray();
-            this.syncHandler.updateState(this, this.previousTrackedStacks, this.previousCursorStack, is);
+            this.syncHandler.updateState(this, this.previousTrackedStacks, this.previousCursorStack, this.field_29559.toIntArray());
         }
     }
 
@@ -177,13 +185,13 @@ public abstract class ScreenHandler {
         this.updateCursorStack();
         for (i = 0; i < this.properties.size(); ++i) {
             Property property = this.properties.get(i);
-            if (!property.hasChanged()) continue;
             int j = property.get();
-            for (ScreenHandlerListener screenHandlerListener : this.listeners) {
-                screenHandlerListener.onPropertyUpdate(this, i, j);
+            if (property.hasChanged()) {
+                for (ScreenHandlerListener screenHandlerListener : this.listeners) {
+                    screenHandlerListener.onPropertyUpdate(this, i, j);
+                }
             }
-            if (this.disableSync || this.syncHandler == null) continue;
-            this.syncHandler.updateProperty(this, i, j);
+            this.method_34715(i, j);
         }
     }
 
@@ -208,6 +216,19 @@ public abstract class ScreenHandler {
             this.previousTrackedStacks.set(slot, itemStack2);
             if (this.syncHandler != null) {
                 this.syncHandler.updateSlot(this, slot, itemStack2);
+            }
+        }
+    }
+
+    private void method_34715(int i, int j) {
+        if (this.disableSync) {
+            return;
+        }
+        int k = this.field_29559.getInt(i);
+        if (k != j) {
+            this.field_29559.set(i, j);
+            if (this.syncHandler != null) {
+                this.syncHandler.updateProperty(this, i, j);
             }
         }
     }

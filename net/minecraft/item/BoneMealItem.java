@@ -8,6 +8,8 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,7 +44,7 @@ extends Item {
         BlockPos blockPos2 = blockPos.offset(context.getSide());
         if (BoneMealItem.useOnFertilizable(context.getStack(), world, blockPos)) {
             if (!world.isClient) {
-                world.syncWorldEvent(2005, blockPos, 0);
+                world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos, 0);
             }
             return ActionResult.success(world.isClient);
         }
@@ -50,7 +52,7 @@ extends Item {
         boolean bl = blockState.isSideSolidFullSquare(world, blockPos, context.getSide());
         if (bl && BoneMealItem.useOnGround(context.getStack(), world, blockPos2, context.getSide())) {
             if (!world.isClient) {
-                world.syncWorldEvent(2005, blockPos2, 0);
+                world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos2, 0);
             }
             return ActionResult.success(world.isClient);
         }
@@ -102,7 +104,7 @@ extends Item {
             if (!blockState.canPlaceAt(world, blockPos2)) continue;
             BlockState blockState2 = world.getBlockState(blockPos2);
             if (blockState2.isOf(Blocks.WATER) && world.getFluidState(blockPos2).getLevel() == 8) {
-                world.setBlockState(blockPos2, blockState, 3);
+                world.setBlockState(blockPos2, blockState, SetBlockStateFlags.DEFAULT);
                 continue;
             }
             if (!blockState2.isOf(Blocks.SEAGRASS) || random.nextInt(10) != 0) continue;

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.stream.IntStream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShulkerBoxBlock;
@@ -21,7 +23,7 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ShulkerBoxScreenHandler;
 import net.minecraft.sound.SoundCategory;
@@ -164,7 +166,7 @@ implements SidedInventory {
     }
 
     private static void updateNeighborStates(World world, BlockPos pos, BlockState state) {
-        state.updateNeighbors(world, pos, 3);
+        state.updateNeighbors(world, pos, SetBlockStateFlags.DEFAULT);
     }
 
     @Override
@@ -200,25 +202,25 @@ implements SidedInventory {
     }
 
     @Override
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         this.deserializeInventory(tag);
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         return this.serializeInventory(tag);
     }
 
-    public void deserializeInventory(CompoundTag tag) {
+    public void deserializeInventory(NbtCompound tag) {
         this.inventory = DefaultedList.ofSize(this.size(), ItemStack.EMPTY);
-        if (!this.deserializeLootTable(tag) && tag.contains("Items", 9)) {
+        if (!this.deserializeLootTable(tag) && tag.contains("Items", NbtTypeIds.LIST)) {
             Inventories.readNbt(tag, this.inventory);
         }
     }
 
-    public CompoundTag serializeInventory(CompoundTag tag) {
+    public NbtCompound serializeInventory(NbtCompound tag) {
         if (!this.serializeLootTable(tag)) {
             Inventories.writeNbt(tag, this.inventory, false);
         }

@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.state.property.Properties;
@@ -34,13 +35,13 @@ extends VegetationPatchFeature {
             set2.add(blockPos);
         }
         for (BlockPos blockPos : set2) {
-            world.setBlockState(blockPos, Blocks.WATER.getDefaultState(), 2);
+            world.setBlockState(blockPos, Blocks.WATER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
         return set2;
     }
 
     private static boolean isSolidBlockAroundPos(StructureWorldAccess world, Set<BlockPos> positions, BlockPos pos, BlockPos.Mutable mutablePos) {
-        return WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.NORTH) || WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.EAST) || WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.SOUTH) || WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.WEST);
+        return WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.NORTH) || WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.EAST) || WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.SOUTH) || WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.WEST) || WaterloggedVegetationPatchFeature.isSolidBlockSide(world, pos, mutablePos, Direction.DOWN);
     }
 
     private static boolean isSolidBlockSide(StructureWorldAccess world, BlockPos pos, BlockPos.Mutable mutablePos, Direction direction) {
@@ -53,7 +54,7 @@ extends VegetationPatchFeature {
         if (super.generateVegetationFeature(world, config, generator, random, pos.down())) {
             BlockState blockState = world.getBlockState(pos);
             if (blockState.contains(Properties.WATERLOGGED) && !blockState.get(Properties.WATERLOGGED).booleanValue()) {
-                world.setBlockState(pos, (BlockState)blockState.with(Properties.WATERLOGGED, true), 2);
+                world.setBlockState(pos, (BlockState)blockState.with(Properties.WATERLOGGED, true), SetBlockStateFlags.NOTIFY_LISTENERS);
             }
             return true;
         }

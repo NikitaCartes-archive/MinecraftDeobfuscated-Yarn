@@ -37,7 +37,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -164,7 +164,7 @@ Hoglin {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         if (world.getRandom().nextFloat() < 0.2f) {
             this.setBaby(true);
         }
@@ -219,12 +219,12 @@ Hoglin {
     }
 
     @Override
-    protected boolean canDropLootAndXp() {
+    protected boolean shouldDropXp() {
         return true;
     }
 
     @Override
-    protected int getCurrentExperience(PlayerEntity player) {
+    protected int getXpToDrop(PlayerEntity player) {
         return this.experiencePoints;
     }
 
@@ -251,7 +251,7 @@ Hoglin {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         if (this.isImmuneToZombification()) {
             tag.putBoolean("IsImmuneToZombification", true);
@@ -263,7 +263,7 @@ Hoglin {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
         this.timeInOverworld = tag.getInt("TimeInOverworld");

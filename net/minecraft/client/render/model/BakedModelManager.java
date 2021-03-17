@@ -18,14 +18,14 @@ import net.minecraft.client.texture.TextureManager;
 import net.minecraft.client.util.ModelIdentifier;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SinglePreparationResourceReloadListener;
+import net.minecraft.resource.SinglePreparationResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.profiler.Profiler;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BakedModelManager
-extends SinglePreparationResourceReloadListener<ModelLoader>
+extends SinglePreparationResourceReloader<ModelLoader>
 implements AutoCloseable {
     private Map<Identifier, BakedModel> models;
     @Nullable

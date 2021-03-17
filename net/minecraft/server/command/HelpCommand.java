@@ -19,20 +19,20 @@ public class HelpCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.help.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("help").executes(commandContext -> {
-            Map map = dispatcher.getSmartUsage(dispatcher.getRoot(), (ServerCommandSource)commandContext.getSource());
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("help").executes(context -> {
+            Map map = dispatcher.getSmartUsage(dispatcher.getRoot(), (ServerCommandSource)context.getSource());
             for (String string : map.values()) {
-                ((ServerCommandSource)commandContext.getSource()).sendFeedback(new LiteralText("/" + string), false);
+                ((ServerCommandSource)context.getSource()).sendFeedback(new LiteralText("/" + string), false);
             }
             return map.size();
-        })).then(CommandManager.argument("command", StringArgumentType.greedyString()).executes(commandContext -> {
-            ParseResults parseResults = dispatcher.parse(StringArgumentType.getString(commandContext, "command"), (ServerCommandSource)commandContext.getSource());
+        })).then(CommandManager.argument("command", StringArgumentType.greedyString()).executes(context -> {
+            ParseResults parseResults = dispatcher.parse(StringArgumentType.getString(context, "command"), (ServerCommandSource)context.getSource());
             if (parseResults.getContext().getNodes().isEmpty()) {
                 throw FAILED_EXCEPTION.create();
             }
-            Map map = dispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), (ServerCommandSource)commandContext.getSource());
+            Map map = dispatcher.getSmartUsage(Iterables.getLast(parseResults.getContext().getNodes()).getNode(), (ServerCommandSource)context.getSource());
             for (String string : map.values()) {
-                ((ServerCommandSource)commandContext.getSource()).sendFeedback(new LiteralText("/" + parseResults.getReader().getString() + " " + string), false);
+                ((ServerCommandSource)context.getSource()).sendFeedback(new LiteralText("/" + parseResults.getReader().getString() + " " + string), false);
             }
             return map.size();
         })));

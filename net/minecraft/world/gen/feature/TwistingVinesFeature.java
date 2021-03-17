@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -67,10 +68,10 @@ extends Feature<DefaultFeatureConfig> {
         for (int i = 1; i <= maxLength; ++i) {
             if (world.isAir(pos)) {
                 if (i == maxLength || !world.isAir((BlockPos)pos.up())) {
-                    world.setBlockState(pos, (BlockState)Blocks.TWISTING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, MathHelper.nextInt(random, minAge, maxAge)), 2);
+                    world.setBlockState(pos, (BlockState)Blocks.TWISTING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, MathHelper.nextInt(random, minAge, maxAge)), SetBlockStateFlags.NOTIFY_LISTENERS);
                     break;
                 }
-                world.setBlockState(pos, Blocks.TWISTING_VINES_PLANT.getDefaultState(), 2);
+                world.setBlockState(pos, Blocks.TWISTING_VINES_PLANT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
             }
             pos.move(Direction.UP);
         }

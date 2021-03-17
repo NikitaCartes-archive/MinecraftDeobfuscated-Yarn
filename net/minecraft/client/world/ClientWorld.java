@@ -13,6 +13,7 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -35,7 +36,7 @@ import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -246,7 +247,7 @@ extends World {
     }
 
     public void setBlockStateWithoutNeighborUpdates(BlockPos pos, BlockState state) {
-        this.setBlockState(pos, state, 19);
+        this.setBlockState(pos, state, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE);
     }
 
     @Override
@@ -374,7 +375,7 @@ extends World {
     }
 
     @Override
-    public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable CompoundTag tag) {
+    public void addFireworkParticle(double x, double y, double z, double velocityX, double velocityY, double velocityZ, @Nullable NbtCompound tag) {
         this.client.particleManager.addParticle(new FireworksSparkParticle.FireworkParticle(this, x, y, z, velocityX, velocityY, velocityZ, this.client.particleManager, tag));
     }
 
@@ -912,9 +913,9 @@ extends World {
             this.difficultyLocked = difficultyLocked;
         }
 
-        public double getSkyDarknessHeight() {
+        public double getSkyDarknessHeight(HeightLimitView heightLimitView) {
             if (this.flatWorld) {
-                return 0.0;
+                return heightLimitView.getBottomY();
             }
             return 63.0;
         }

@@ -30,7 +30,7 @@ extends CraftingTableBlock {
 
     @Override
     public NamedScreenHandlerFactory createScreenHandlerFactory(BlockState state, World world, BlockPos pos) {
-        return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new SmithingScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), SCREEN_TITLE);
+        return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new SmithingScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), SCREEN_TITLE);
     }
 
     @Override

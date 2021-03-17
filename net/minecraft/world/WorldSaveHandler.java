@@ -5,9 +5,10 @@ package net.minecraft.world;
 
 import com.mojang.datafixers.DataFixer;
 import java.io.File;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Util;
@@ -30,9 +31,9 @@ public class WorldSaveHandler {
 
     public void savePlayerData(PlayerEntity player) {
         try {
-            CompoundTag compoundTag = player.writeNbt(new CompoundTag());
+            NbtCompound nbtCompound = player.writeNbt(new NbtCompound());
             File file = File.createTempFile(player.getUuidAsString() + "-", ".dat", this.playerDataDir);
-            NbtIo.writeCompressed(compoundTag, file);
+            NbtIo.writeCompressed(nbtCompound, file);
             File file2 = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
             File file3 = new File(this.playerDataDir, player.getUuidAsString() + ".dat_old");
             Util.backupAndReplace(file2, file, file3);
@@ -42,21 +43,21 @@ public class WorldSaveHandler {
     }
 
     @Nullable
-    public CompoundTag loadPlayerData(PlayerEntity player) {
-        CompoundTag compoundTag = null;
+    public NbtCompound loadPlayerData(PlayerEntity player) {
+        NbtCompound nbtCompound = null;
         try {
             File file = new File(this.playerDataDir, player.getUuidAsString() + ".dat");
             if (file.exists() && file.isFile()) {
-                compoundTag = NbtIo.readCompressed(file);
+                nbtCompound = NbtIo.readCompressed(file);
             }
         } catch (Exception exception) {
             LOGGER.warn("Failed to load player data for {}", (Object)player.getName().getString());
         }
-        if (compoundTag != null) {
-            int i = compoundTag.contains("DataVersion", 3) ? compoundTag.getInt("DataVersion") : -1;
-            player.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, compoundTag, i));
+        if (nbtCompound != null) {
+            int i = nbtCompound.contains("DataVersion", NbtTypeIds.INT) ? nbtCompound.getInt("DataVersion") : -1;
+            player.readNbt(NbtHelper.update(this.dataFixer, DataFixTypes.PLAYER, nbtCompound, i));
         }
-        return compoundTag;
+        return nbtCompound;
     }
 
     public String[] getSavedPlayerIds() {

@@ -24,9 +24,9 @@ public class LocateCommand {
     private static final SimpleCommandExceptionType FAILED_EXCEPTION = new SimpleCommandExceptionType(new TranslatableText("commands.locate.failed"));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("locate").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
+        LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("locate").requires(source -> source.hasPermissionLevel(2));
         for (Map.Entry entry : StructureFeature.STRUCTURES.entrySet()) {
-            literalArgumentBuilder = (LiteralArgumentBuilder)literalArgumentBuilder.then(CommandManager.literal((String)entry.getKey()).executes(commandContext -> LocateCommand.execute((ServerCommandSource)commandContext.getSource(), (StructureFeature)entry.getValue())));
+            literalArgumentBuilder = (LiteralArgumentBuilder)literalArgumentBuilder.then(CommandManager.literal((String)entry.getKey()).executes(context -> LocateCommand.execute((ServerCommandSource)context.getSource(), (StructureFeature)entry.getValue())));
         }
         dispatcher.register(literalArgumentBuilder);
     }

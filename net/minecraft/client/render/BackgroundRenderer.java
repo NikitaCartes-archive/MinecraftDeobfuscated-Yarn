@@ -170,21 +170,25 @@ public class BackgroundRenderer {
         CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
         Entity entity = camera.getFocusedEntity();
         if (cameraSubmersionType == CameraSubmersionType.WATER) {
-            float f = 1.0f;
-            f = 0.05f;
+            float f = viewDistance;
+            ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
             if (entity instanceof ClientPlayerEntity) {
-                ClientPlayerEntity clientPlayerEntity = (ClientPlayerEntity)entity;
-                f -= clientPlayerEntity.getUnderwaterVisibility() * clientPlayerEntity.getUnderwaterVisibility() * 0.03f;
+                f *= Math.max(0.25f, clientPlayerEntity.getUnderwaterVisibility());
                 Biome biome = clientPlayerEntity.world.getBiome(clientPlayerEntity.getBlockPos());
                 if (biome.getCategory() == Biome.Category.SWAMP) {
-                    f += 0.005f;
+                    f *= 0.85f;
                 }
             }
+            RenderSystem.setShaderFogStart(-8.0f);
+            RenderSystem.setShaderFogEnd(f * 0.5f);
         } else {
             float g;
             float f;
             if (cameraSubmersionType == CameraSubmersionType.LAVA) {
-                if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
+                if (entity.isSpectator()) {
+                    f = -8.0f;
+                    g = viewDistance * 0.5f;
+                } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasStatusEffect(StatusEffects.FIRE_RESISTANCE)) {
                     f = 0.0f;
                     g = 3.0f;
                 } else {
@@ -202,8 +206,13 @@ public class BackgroundRenderer {
                     g = h;
                 }
             } else if (cameraSubmersionType == CameraSubmersionType.POWDER_SNOW) {
-                f = 0.0f;
-                g = 2.0f;
+                if (entity.isSpectator()) {
+                    f = -8.0f;
+                    g = viewDistance * 0.5f;
+                } else {
+                    f = 0.0f;
+                    g = 2.0f;
+                }
             } else if (thickFog) {
                 f = viewDistance * 0.05f;
                 g = Math.min(viewDistance, 192.0f) * 0.5f;

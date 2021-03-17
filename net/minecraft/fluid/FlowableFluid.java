@@ -12,6 +12,7 @@ import it.unimi.dsi.fastutil.shorts.Short2ObjectMap;
 import it.unimi.dsi.fastutil.shorts.Short2ObjectOpenHashMap;
 import java.util.EnumMap;
 import java.util.Map;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -232,7 +233,7 @@ extends Fluid {
             if (!state.isAir()) {
                 this.beforeBreakingBlock(world, pos, state);
             }
-            world.setBlockState(pos, fluidState.getBlockState(), 3);
+            world.setBlockState(pos, fluidState.getBlockState(), SetBlockStateFlags.DEFAULT);
         }
     }
 
@@ -367,11 +368,11 @@ extends Fluid {
             int i = this.getNextTickDelay(world, pos, state, fluidState);
             if (fluidState.isEmpty()) {
                 state = fluidState;
-                world.setBlockState(pos, Blocks.AIR.getDefaultState(), 3);
+                world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
             } else if (!fluidState.equals(state)) {
                 state = fluidState;
                 BlockState blockState = state.getBlockState();
-                world.setBlockState(pos, blockState, 2);
+                world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
                 world.getFluidTickScheduler().schedule(pos, state.getFluid(), i);
                 world.updateNeighborsAlways(pos, blockState.getBlock());
             }

@@ -3,6 +3,7 @@
  */
 package net.minecraft.block.dispenser;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.entity.ItemEntity;
@@ -42,11 +43,11 @@ implements DispenserBehavior {
     }
 
     protected void playSound(BlockPointer pointer) {
-        pointer.getWorld().syncWorldEvent(1000, pointer.getBlockPos(), 0);
+        pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_DISPENSES, pointer.getBlockPos(), 0);
     }
 
     protected void spawnParticles(BlockPointer pointer, Direction side) {
-        pointer.getWorld().syncWorldEvent(2000, pointer.getBlockPos(), side.getId());
+        pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_ACTIVATED, pointer.getBlockPos(), side.getId());
     }
 }
 

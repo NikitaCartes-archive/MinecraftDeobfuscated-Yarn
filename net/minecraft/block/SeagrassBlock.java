@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -88,8 +89,8 @@ FluidFillable {
         BlockState blockState2 = (BlockState)blockState.with(TallSeagrassBlock.HALF, DoubleBlockHalf.UPPER);
         BlockPos blockPos = pos.up();
         if (world.getBlockState(blockPos).isOf(Blocks.WATER)) {
-            world.setBlockState(pos, blockState, 2);
-            world.setBlockState(blockPos, blockState2, 2);
+            world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 

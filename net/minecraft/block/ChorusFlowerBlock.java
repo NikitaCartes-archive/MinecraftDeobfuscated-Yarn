@@ -4,6 +4,8 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -81,7 +83,7 @@ extends Block {
             bl = true;
         }
         if (bl && ChorusFlowerBlock.isSurroundedByAir(world, blockPos, null) && world.isAir(pos.up(2))) {
-            world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), 2);
+            world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), SetBlockStateFlags.NOTIFY_LISTENERS);
             this.grow(world, blockPos, i);
         } else if (i < 4) {
             j = random.nextInt(4);
@@ -97,7 +99,7 @@ extends Block {
                 bl3 = true;
             }
             if (bl3) {
-                world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), 2);
+                world.setBlockState(pos, this.plantBlock.withConnectionProperties(world, pos), SetBlockStateFlags.NOTIFY_LISTENERS);
             } else {
                 this.die(world, pos);
             }
@@ -107,13 +109,13 @@ extends Block {
     }
 
     private void grow(World world, BlockPos pos, int age) {
-        world.setBlockState(pos, (BlockState)this.getDefaultState().with(AGE, age), 2);
-        world.syncWorldEvent(1033, pos, 0);
+        world.setBlockState(pos, (BlockState)this.getDefaultState().with(AGE, age), SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.syncWorldEvent(WorldEvents.CHORUS_FLOWER_GROWS, pos, 0);
     }
 
     private void die(World world, BlockPos pos) {
-        world.setBlockState(pos, (BlockState)this.getDefaultState().with(AGE, 5), 2);
-        world.syncWorldEvent(1034, pos, 0);
+        world.setBlockState(pos, (BlockState)this.getDefaultState().with(AGE, 5), SetBlockStateFlags.NOTIFY_LISTENERS);
+        world.syncWorldEvent(WorldEvents.CHORUS_FLOWER_DIES, pos, 0);
     }
 
     private static boolean isSurroundedByAir(WorldView world, BlockPos pos, @Nullable Direction exceptDirection) {
@@ -163,7 +165,7 @@ extends Block {
     }
 
     public static void generate(WorldAccess world, BlockPos pos, Random random, int size) {
-        world.setBlockState(pos, ((ChorusPlantBlock)Blocks.CHORUS_PLANT).withConnectionProperties(world, pos), 2);
+        world.setBlockState(pos, ((ChorusPlantBlock)Blocks.CHORUS_PLANT).withConnectionProperties(world, pos), SetBlockStateFlags.NOTIFY_LISTENERS);
         ChorusFlowerBlock.generate(world, pos, random, pos, size, 0);
     }
 
@@ -178,8 +180,8 @@ extends Block {
             if (!ChorusFlowerBlock.isSurroundedByAir(world, blockPos, null)) {
                 return;
             }
-            world.setBlockState(blockPos, chorusPlantBlock.withConnectionProperties(world, blockPos), 2);
-            world.setBlockState(blockPos.down(), chorusPlantBlock.withConnectionProperties(world, blockPos.down()), 2);
+            world.setBlockState(blockPos, chorusPlantBlock.withConnectionProperties(world, blockPos), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.setBlockState(blockPos.down(), chorusPlantBlock.withConnectionProperties(world, blockPos.down()), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
         boolean bl = false;
         if (layer < 4) {
@@ -192,13 +194,13 @@ extends Block {
                 BlockPos blockPos2 = pos.up(i).offset(direction);
                 if (Math.abs(blockPos2.getX() - rootPos.getX()) >= size || Math.abs(blockPos2.getZ() - rootPos.getZ()) >= size || !world.isAir(blockPos2) || !world.isAir(blockPos2.down()) || !ChorusFlowerBlock.isSurroundedByAir(world, blockPos2, direction.getOpposite())) continue;
                 bl = true;
-                world.setBlockState(blockPos2, chorusPlantBlock.withConnectionProperties(world, blockPos2), 2);
-                world.setBlockState(blockPos2.offset(direction.getOpposite()), chorusPlantBlock.withConnectionProperties(world, blockPos2.offset(direction.getOpposite())), 2);
+                world.setBlockState(blockPos2, chorusPlantBlock.withConnectionProperties(world, blockPos2), SetBlockStateFlags.NOTIFY_LISTENERS);
+                world.setBlockState(blockPos2.offset(direction.getOpposite()), chorusPlantBlock.withConnectionProperties(world, blockPos2.offset(direction.getOpposite())), SetBlockStateFlags.NOTIFY_LISTENERS);
                 ChorusFlowerBlock.generate(world, blockPos2, random, rootPos, size, layer + 1);
             }
         }
         if (!bl) {
-            world.setBlockState(pos.up(i), (BlockState)Blocks.CHORUS_FLOWER.getDefaultState().with(AGE, 5), 2);
+            world.setBlockState(pos.up(i), (BlockState)Blocks.CHORUS_FLOWER.getDefaultState().with(AGE, 5), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 

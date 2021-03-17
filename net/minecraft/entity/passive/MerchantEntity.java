@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import java.util.HashSet;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -25,7 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -60,7 +61,7 @@ Merchant {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(false);
         }
@@ -166,7 +167,7 @@ Merchant {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         TradeOfferList tradeOfferList = this.getOffers();
         if (!tradeOfferList.isEmpty()) {
@@ -176,12 +177,12 @@ Merchant {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
-        if (tag.contains("Offers", 10)) {
+        if (tag.contains("Offers", NbtTypeIds.COMPOUND)) {
             this.offers = new TradeOfferList(tag.getCompound("Offers"));
         }
-        this.inventory.readTags(tag.getList("Inventory", 10));
+        this.inventory.readTags(tag.getList("Inventory", NbtTypeIds.COMPOUND));
     }
 
     @Override

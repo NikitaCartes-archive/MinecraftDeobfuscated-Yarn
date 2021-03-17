@@ -6,6 +6,8 @@ package net.minecraft.entity;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -24,9 +26,9 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.AutomaticItemPlacementContext;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -53,7 +55,7 @@ extends Entity {
     private boolean hurtEntities;
     private int fallHurtMax = 40;
     private float fallHurtAmount;
-    public CompoundTag blockEntityData;
+    public NbtCompound blockEntityData;
     protected static final TrackedData<BlockPos> BLOCK_POS = DataTracker.registerData(FallingBlockEntity.class, TrackedDataHandlerRegistry.BLOCK_POS);
 
     public FallingBlockEntity(EntityType<? extends FallingBlockEntity> entityType, World world) {
@@ -146,19 +148,19 @@ extends Entity {
                             if (this.block.contains(Properties.WATERLOGGED) && this.world.getFluidState(blockPos).getFluid() == Fluids.WATER) {
                                 this.block = (BlockState)this.block.with(Properties.WATERLOGGED, true);
                             }
-                            if (this.world.setBlockState(blockPos, this.block, 3)) {
+                            if (this.world.setBlockState(blockPos, this.block, SetBlockStateFlags.DEFAULT)) {
                                 BlockEntity blockEntity;
                                 if (block instanceof LandingBlock) {
                                     ((LandingBlock)((Object)block)).onLanding(this.world, blockPos, this.block, blockState, this);
                                 }
                                 if (this.blockEntityData != null && this.block.hasBlockEntity() && (blockEntity = this.world.getBlockEntity(blockPos)) != null) {
-                                    CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
+                                    NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
                                     for (String string : this.blockEntityData.getKeys()) {
-                                        Tag tag = this.blockEntityData.get(string);
+                                        NbtElement nbtElement = this.blockEntityData.get(string);
                                         if ("x".equals(string) || "y".equals(string) || "z".equals(string)) continue;
-                                        compoundTag.put(string, tag.copy());
+                                        nbtCompound.put(string, nbtElement.copy());
                                     }
-                                    blockEntity.readNbt(compoundTag);
+                                    blockEntity.readNbt(nbtCompound);
                                     blockEntity.markDirty();
                                 }
                             } else if (this.dropItem && this.world.getGameRules().getBoolean(GameRules.DO_ENTITY_DROPS)) {
@@ -223,7 +225,7 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound tag) {
         tag.put("BlockState", NbtHelper.fromBlockState(this.block));
         tag.putInt("Time", this.timeFalling);
         tag.putBoolean("DropItem", this.dropItem);
@@ -236,20 +238,20 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(CompoundTag tag) {
+    protected void readCustomDataFromNbt(NbtCompound tag) {
         this.block = NbtHelper.toBlockState(tag.getCompound("BlockState"));
         this.timeFalling = tag.getInt("Time");
-        if (tag.contains("HurtEntities", 99)) {
+        if (tag.contains("HurtEntities", NbtTypeIds.NUMBER)) {
             this.hurtEntities = tag.getBoolean("HurtEntities");
             this.fallHurtAmount = tag.getFloat("FallHurtAmount");
             this.fallHurtMax = tag.getInt("FallHurtMax");
         } else if (this.block.isIn(BlockTags.ANVIL)) {
             this.hurtEntities = true;
         }
-        if (tag.contains("DropItem", 99)) {
+        if (tag.contains("DropItem", NbtTypeIds.NUMBER)) {
             this.dropItem = tag.getBoolean("DropItem");
         }
-        if (tag.contains("TileEntityData", 10)) {
+        if (tag.contains("TileEntityData", NbtTypeIds.COMPOUND)) {
             this.blockEntityData = tag.getCompound("TileEntityData");
         }
         if (this.block.isAir()) {

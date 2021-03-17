@@ -12,11 +12,11 @@ import net.minecraft.client.model.TexturedModelData;
 import net.minecraft.client.render.entity.model.EntityModelLayer;
 import net.minecraft.client.render.entity.model.EntityModels;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 
 @Environment(value=EnvType.CLIENT)
 public class EntityModelLoader
-implements SynchronousResourceReloadListener {
+implements SynchronousResourceReloader {
     private Map<EntityModelLayer, TexturedModelData> modelParts = ImmutableMap.of();
 
     public ModelPart getModelPart(EntityModelLayer layer) {
@@ -28,7 +28,7 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager manager) {
+    public void reload(ResourceManager manager) {
         this.modelParts = ImmutableMap.copyOf(EntityModels.getModels());
     }
 }

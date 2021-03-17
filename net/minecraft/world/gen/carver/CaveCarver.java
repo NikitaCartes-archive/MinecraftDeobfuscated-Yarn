@@ -37,8 +37,8 @@ extends Carver<CarverConfig> {
             double d = pos.getOffsetX(random.nextInt(16));
             double e = this.getCaveY(context2, random);
             double f = pos.getOffsetZ(random.nextInt(16));
-            double g = MathHelper.nextBetween(random, 0.3f, 1.7f);
-            double h = MathHelper.nextBetween(random, 0.3f, 1.7f);
+            double g = MathHelper.nextBetween(random, 0.3f, 1.8f);
+            double h = MathHelper.nextBetween(random, 0.3f, 1.8f);
             double l = MathHelper.nextBetween(random, -1.0f, 0.0f);
             Carver.SkipPredicate skipPredicate = (context, scaledRelativeX, scaledRelativeY, scaledRelativeZ, y) -> CaveCarver.isPositionExcluded(scaledRelativeX, scaledRelativeY, scaledRelativeZ, l);
             int m = 1;

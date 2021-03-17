@@ -135,7 +135,7 @@ implements ClientAdvancementManager.Listener {
     public void drawWidgets(MatrixStack matrices, int i, int j) {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, WINDOW_TEXTURE);
         this.drawTexture(matrices, i, j, 0, 0, 252, 140);
         if (this.tabs.size() > 1) {

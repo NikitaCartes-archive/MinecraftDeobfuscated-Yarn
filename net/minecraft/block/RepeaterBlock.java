@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRedstoneGateBlock;
 import net.minecraft.block.Block;
@@ -41,7 +42,7 @@ extends AbstractRedstoneGateBlock {
         if (!player.getAbilities().allowModifyWorld) {
             return ActionResult.PASS;
         }
-        world.setBlockState(pos, (BlockState)state.cycle(DELAY), 3);
+        world.setBlockState(pos, (BlockState)state.cycle(DELAY), SetBlockStateFlags.DEFAULT);
         return ActionResult.success(world.isClient);
     }
 

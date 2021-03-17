@@ -35,7 +35,9 @@ public class BuiltChunkStorage {
             for (int k = 0; k < this.sizeY; ++k) {
                 for (int l = 0; l < this.sizeZ; ++l) {
                     int m = this.getChunkIndex(j, k, l);
-                    this.chunks[m] = new ChunkBuilder.BuiltChunk(chunkBuilder);
+                    ChunkBuilder chunkBuilder2 = chunkBuilder;
+                    chunkBuilder2.getClass();
+                    this.chunks[m] = new ChunkBuilder.BuiltChunk(chunkBuilder2, m);
                     this.chunks[m].setOrigin(j * 16, k * 16, l * 16);
                 }
             }

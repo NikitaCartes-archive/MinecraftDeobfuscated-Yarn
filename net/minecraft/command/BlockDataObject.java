@@ -9,14 +9,15 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 import java.util.Locale;
 import java.util.function.Function;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
@@ -57,19 +58,19 @@ implements DataCommandObject {
     }
 
     @Override
-    public void setTag(CompoundTag tag) {
+    public void setTag(NbtCompound tag) {
         tag.putInt("x", this.pos.getX());
         tag.putInt("y", this.pos.getY());
         tag.putInt("z", this.pos.getZ());
         BlockState blockState = this.blockEntity.getWorld().getBlockState(this.pos);
         this.blockEntity.readNbt(tag);
         this.blockEntity.markDirty();
-        this.blockEntity.getWorld().updateListeners(this.pos, blockState, blockState, 3);
+        this.blockEntity.getWorld().updateListeners(this.pos, blockState, blockState, SetBlockStateFlags.DEFAULT);
     }
 
     @Override
-    public CompoundTag getTag() {
-        return this.blockEntity.writeNbt(new CompoundTag());
+    public NbtCompound getTag() {
+        return this.blockEntity.writeNbt(new NbtCompound());
     }
 
     @Override
@@ -78,7 +79,7 @@ implements DataCommandObject {
     }
 
     @Override
-    public Text feedbackQuery(Tag tag) {
+    public Text feedbackQuery(NbtElement tag) {
         return new TranslatableText("commands.data.block.query", this.pos.getX(), this.pos.getY(), this.pos.getZ(), NbtHelper.toPrettyPrintedText(tag));
     }
 

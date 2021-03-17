@@ -6,6 +6,7 @@ package net.minecraft.world.gen.feature;
 import com.mojang.serialization.Codec;
 import java.util.Optional;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.tag.BlockTags;
@@ -155,7 +156,7 @@ extends Feature<LargeDripstoneFeatureConfig> {
                         if (DripstoneHelper.canGenerateOrLava(world, blockPos)) {
                             bl = true;
                             Block block = Blocks.DRIPSTONE_BLOCK;
-                            world.setBlockState(blockPos, block.getDefaultState(), 2);
+                            world.setBlockState(blockPos, block.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                         } else if (bl && world.getBlockState(blockPos).isIn(BlockTags.BASE_STONE_OVERWORLD)) continue block1;
                         mutable.move(this.isStalagmite ? Direction.UP : Direction.DOWN);
                     }

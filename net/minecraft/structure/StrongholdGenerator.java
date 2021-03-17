@@ -6,6 +6,7 @@ package net.minecraft.structure;
 import com.google.common.collect.Lists;
 import java.util.List;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractButtonBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -23,8 +24,8 @@ import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.math.BlockBox;
@@ -181,15 +182,15 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public PortalRoom(StructureManager structureManager, CompoundTag nbt) {
+        public PortalRoom(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_PORTAL_ROOM, nbt);
             this.spawnerPlaced = nbt.getBoolean("Mob");
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putBoolean("Mob", this.spawnerPlaced);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("Mob", this.spawnerPlaced);
         }
 
         @Override
@@ -280,7 +281,7 @@ public class StrongholdGenerator {
                 BlockPos blockPos = new BlockPos(this.applyXTransform(5, 6), i, this.applyZTransform(5, 6));
                 if (boundingBox.contains(blockPos)) {
                     this.spawnerPlaced = true;
-                    world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
+                    world.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                     BlockEntity blockEntity = world.getBlockEntity(blockPos);
                     if (blockEntity instanceof MobSpawnerBlockEntity) {
                         ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(EntityType.SILVERFISH);
@@ -309,7 +310,7 @@ public class StrongholdGenerator {
             this.upperRightExists = random.nextInt(3) > 0;
         }
 
-        public FiveWayCrossing(StructureManager structureManager, CompoundTag nbt) {
+        public FiveWayCrossing(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_FIVE_WAY_CROSSING, nbt);
             this.lowerLeftExists = nbt.getBoolean("leftLow");
             this.upperLeftExists = nbt.getBoolean("leftHigh");
@@ -318,12 +319,12 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putBoolean("leftLow", this.lowerLeftExists);
-            tag.putBoolean("leftHigh", this.upperLeftExists);
-            tag.putBoolean("rightLow", this.lowerRightExists);
-            tag.putBoolean("rightHigh", this.upperRightExists);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("leftLow", this.lowerLeftExists);
+            nbt.putBoolean("leftHigh", this.upperLeftExists);
+            nbt.putBoolean("rightLow", this.lowerRightExists);
+            nbt.putBoolean("rightHigh", this.upperRightExists);
         }
 
         @Override
@@ -405,15 +406,15 @@ public class StrongholdGenerator {
             this.tall = boundingBox.getBlockCountY() > 6;
         }
 
-        public Library(StructureManager structureManager, CompoundTag nbt) {
+        public Library(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_LIBRARY, nbt);
             this.tall = nbt.getBoolean("Tall");
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putBoolean("Tall", this.tall);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("Tall", this.tall);
         }
 
         public static Library create(List<StructurePiece> pieces, Random random, int x, int y, int z, Direction orientation, int chainLength) {
@@ -531,7 +532,7 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public PrisonHall(StructureManager structureManager, CompoundTag nbt) {
+        public PrisonHall(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_PRISON_HALL, nbt);
         }
 
@@ -589,15 +590,15 @@ public class StrongholdGenerator {
             this.roomType = random.nextInt(5);
         }
 
-        public SquareRoom(StructureManager structureManager, CompoundTag nbt) {
+        public SquareRoom(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_SQUARE_ROOM, nbt);
             this.roomType = nbt.getInt("Type");
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putInt("Type", this.roomType);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putInt("Type", this.roomType);
         }
 
         @Override
@@ -713,7 +714,7 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public RightTurn(StructureManager structureManager, CompoundTag nbt) {
+        public RightTurn(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_RIGHT_TURN, nbt);
         }
 
@@ -758,7 +759,7 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public LeftTurn(StructureManager structureManager, CompoundTag nbt) {
+        public LeftTurn(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_LEFT_TURN, nbt);
         }
 
@@ -800,8 +801,8 @@ public class StrongholdGenerator {
             super(structurePieceType, i);
         }
 
-        public Turn(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-            super(structurePieceType, compoundTag);
+        public Turn(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+            super(structurePieceType, nbtCompound);
         }
     }
 
@@ -814,7 +815,7 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public Stairs(StructureManager structureManager, CompoundTag nbt) {
+        public Stairs(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_STAIRS, nbt);
         }
 
@@ -861,15 +862,15 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public ChestCorridor(StructureManager structureManager, CompoundTag nbt) {
+        public ChestCorridor(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_CHEST_CORRIDOR, nbt);
             this.chestGenerated = nbt.getBoolean("Chest");
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putBoolean("Chest", this.chestGenerated);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("Chest", this.chestGenerated);
         }
 
         @Override
@@ -920,17 +921,17 @@ public class StrongholdGenerator {
             this.rightExitExists = random.nextInt(2) == 0;
         }
 
-        public Corridor(StructureManager structureManager, CompoundTag nbt) {
+        public Corridor(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_CORRIDOR, nbt);
             this.leftExitExists = nbt.getBoolean("Left");
             this.rightExitExists = nbt.getBoolean("Right");
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putBoolean("Left", this.leftExitExists);
-            tag.putBoolean("Right", this.rightExitExists);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("Left", this.leftExitExists);
+            nbt.putBoolean("Right", this.rightExitExists);
         }
 
         @Override
@@ -984,8 +985,8 @@ public class StrongholdGenerator {
             super(StructurePieceType.STRONGHOLD_START, 0, random, i, j);
         }
 
-        public Start(StructureManager structureManager, CompoundTag compoundTag) {
-            super(StructurePieceType.STRONGHOLD_START, compoundTag);
+        public Start(ServerWorld serverWorld, NbtCompound nbtCompound) {
+            super(StructurePieceType.STRONGHOLD_START, nbtCompound);
         }
     }
 
@@ -1009,19 +1010,19 @@ public class StrongholdGenerator {
             this.boundingBox = boundingBox;
         }
 
-        public SpiralStaircase(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-            super(structurePieceType, compoundTag);
-            this.isStructureStart = compoundTag.getBoolean("Source");
+        public SpiralStaircase(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+            super(structurePieceType, nbtCompound);
+            this.isStructureStart = nbtCompound.getBoolean("Source");
         }
 
-        public SpiralStaircase(StructureManager structureManager, CompoundTag nbt) {
+        public SpiralStaircase(ServerWorld serverWorld, NbtCompound nbt) {
             this(StructurePieceType.STRONGHOLD_SPIRAL_STAIRCASE, nbt);
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putBoolean("Source", this.isStructureStart);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putBoolean("Source", this.isStructureStart);
         }
 
         @Override
@@ -1077,15 +1078,15 @@ public class StrongholdGenerator {
             this.length = orientation == Direction.NORTH || orientation == Direction.SOUTH ? boundingBox.getBlockCountZ() : boundingBox.getBlockCountX();
         }
 
-        public SmallCorridor(StructureManager structureManager, CompoundTag nbt) {
+        public SmallCorridor(ServerWorld serverWorld, NbtCompound nbt) {
             super(StructurePieceType.STRONGHOLD_SMALL_CORRIDOR, nbt);
             this.length = nbt.getInt("Steps");
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putInt("Steps", this.length);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putInt("Steps", this.length);
         }
 
         public static BlockBox create(List<StructurePiece> pieces, Random random, int x, int y, int z, Direction orientation) {
@@ -1138,9 +1139,9 @@ public class StrongholdGenerator {
             super(structurePieceType, i);
         }
 
-        public Piece(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-            super(structurePieceType, compoundTag);
-            this.entryDoor = EntranceType.valueOf(compoundTag.getString("EntryDoor"));
+        public Piece(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+            super(structurePieceType, nbtCompound);
+            this.entryDoor = EntranceType.valueOf(nbtCompound.getString("EntryDoor"));
         }
 
         @Override
@@ -1149,8 +1150,8 @@ public class StrongholdGenerator {
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            tag.putString("EntryDoor", this.entryDoor.name());
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            nbt.putString("EntryDoor", this.entryDoor.name());
         }
 
         protected void generateEntrance(StructureWorldAccess world, Random random, BlockBox boundingBox, EntranceType type, int x, int y, int z) {

@@ -14,18 +14,19 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.stream.Collectors;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.VineBlock;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePlacementData;
 import net.minecraft.structure.processor.BlackstoneReplacementStructureProcessor;
@@ -73,25 +74,25 @@ extends SimpleStructurePiece {
         this.processProperties(structure, center);
     }
 
-    public RuinedPortalStructurePiece(StructureManager manager, CompoundTag tag) {
+    public RuinedPortalStructurePiece(ServerWorld serverWorld, NbtCompound tag) {
         super(StructurePieceType.RUINED_PORTAL, tag);
         this.template = new Identifier(tag.getString("Template"));
         this.rotation = BlockRotation.valueOf(tag.getString("Rotation"));
         this.mirror = BlockMirror.valueOf(tag.getString("Mirror"));
         this.verticalPlacement = VerticalPlacement.getFromId(tag.getString("VerticalPlacement"));
-        this.properties = (Properties)Properties.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("Properties"))).getOrThrow(true, field_24992::error);
-        Structure structure = manager.getStructureOrBlank(this.template);
+        this.properties = (Properties)Properties.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag.get("Properties"))).getOrThrow(true, field_24992::error);
+        Structure structure = serverWorld.getStructureManager().getStructureOrBlank(this.template);
         this.processProperties(structure, new BlockPos(structure.getSize().getX() / 2, 0, structure.getSize().getZ() / 2));
     }
 
     @Override
-    protected void writeNbt(CompoundTag tag2) {
-        super.writeNbt(tag2);
-        tag2.putString("Template", this.template.toString());
-        tag2.putString("Rotation", this.rotation.name());
-        tag2.putString("Mirror", this.mirror.name());
-        tag2.putString("VerticalPlacement", this.verticalPlacement.getId());
-        Properties.CODEC.encodeStart(NbtOps.INSTANCE, this.properties).resultOrPartial(field_24992::error).ifPresent(tag -> tag2.put("Properties", (Tag)tag));
+    protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+        super.writeNbt(world, nbt);
+        nbt.putString("Template", this.template.toString());
+        nbt.putString("Rotation", this.rotation.name());
+        nbt.putString("Mirror", this.mirror.name());
+        nbt.putString("VerticalPlacement", this.verticalPlacement.getId());
+        Properties.CODEC.encodeStart(NbtOps.INSTANCE, this.properties).resultOrPartial(field_24992::error).ifPresent(nbtElement -> nbt.put("Properties", (NbtElement)nbtElement));
     }
 
     private void processProperties(Structure structure, BlockPos center) {
@@ -160,12 +161,12 @@ extends SimpleStructurePiece {
             return;
         }
         BooleanProperty booleanProperty = VineBlock.getFacingProperty(direction.getOpposite());
-        world.setBlockState(blockPos, (BlockState)Blocks.VINE.getDefaultState().with(booleanProperty, true), 3);
+        world.setBlockState(blockPos, (BlockState)Blocks.VINE.getDefaultState().with(booleanProperty, true), SetBlockStateFlags.DEFAULT);
     }
 
     private void generateOvergrownLeaves(Random random, WorldAccess world, BlockPos pos) {
         if (random.nextFloat() < 0.5f && world.getBlockState(pos).isOf(Blocks.NETHERRACK) && world.getBlockState(pos.up()).isAir()) {
-            world.setBlockState(pos.up(), (BlockState)Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true), 3);
+            world.setBlockState(pos.up(), (BlockState)Blocks.JUNGLE_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true), SetBlockStateFlags.DEFAULT);
         }
     }
 
@@ -226,9 +227,9 @@ extends SimpleStructurePiece {
 
     private void placeNetherrackBottom(Random random, WorldAccess world, BlockPos pos) {
         if (!this.properties.cold && random.nextFloat() < 0.07f) {
-            world.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), 3);
+            world.setBlockState(pos, Blocks.MAGMA_BLOCK.getDefaultState(), SetBlockStateFlags.DEFAULT);
         } else {
-            world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState(), 3);
+            world.setBlockState(pos, Blocks.NETHERRACK.getDefaultState(), SetBlockStateFlags.DEFAULT);
         }
     }
 

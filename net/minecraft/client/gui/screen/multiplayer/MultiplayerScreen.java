@@ -25,6 +25,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class MultiplayerScreen
@@ -175,12 +176,12 @@ extends Screen {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (keyCode == 294) {
+        if (keyCode == GLFW.GLFW_KEY_F5) {
             this.refresh();
             return true;
         }
         if (this.serverListWidget.getSelected() != null) {
-            if (keyCode == 257 || keyCode == 335) {
+            if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
                 this.connect();
                 return true;
             }

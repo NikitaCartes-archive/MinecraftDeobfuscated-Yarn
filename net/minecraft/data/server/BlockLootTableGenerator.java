@@ -84,6 +84,7 @@ import net.minecraft.predicate.entity.LocationPredicate;
 import net.minecraft.predicate.item.EnchantmentPredicate;
 import net.minecraft.predicate.item.ItemPredicate;
 import net.minecraft.state.property.Property;
+import net.minecraft.tag.ItemTags;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.StringIdentifiable;
 import net.minecraft.util.math.BlockPos;
@@ -720,6 +721,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.WATER_CAULDRON, Blocks.CAULDRON);
         this.addDrop(Blocks.LAVA_CAULDRON, Blocks.CAULDRON);
         this.addDrop(Blocks.POWDER_SNOW_CAULDRON, Blocks.CAULDRON);
+        this.addDrop(Blocks.BIG_DRIPLEAF_STEM, Blocks.BIG_DRIPLEAF);
         this.addDrop(Blocks.STONE, (Block block) -> BlockLootTableGenerator.drops(block, Blocks.COBBLESTONE));
         this.addDrop(Blocks.DEEPSLATE, (Block block) -> BlockLootTableGenerator.drops(block, Blocks.COBBLED_DEEPSLATE));
         this.addDrop(Blocks.GRASS_BLOCK, (Block block) -> BlockLootTableGenerator.drops(block, Blocks.DIRT));
@@ -850,8 +852,8 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.COCOA, (Block block) -> LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ItemEntry.builder(Items.COCOA_BEANS).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0f)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(CocoaBlock.AGE, 2))))))));
         this.addDrop(Blocks.SEA_PICKLE, (Block block) -> LootTable.builder().pool(LootPool.builder().rolls(ConstantLootNumberProvider.create(1.0f)).with((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(Blocks.SEA_PICKLE, ((LeafEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(block).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0f)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 2))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(3.0f)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 3))))).apply((LootFunction.Builder)SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(SeaPickleBlock.PICKLES, 4))))))));
         this.addDrop(Blocks.COMPOSTER, (Block block) -> LootTable.builder().pool(LootPool.builder().with((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ItemEntry.builder(Items.COMPOSTER)))).pool(LootPool.builder().with(ItemEntry.builder(Items.BONE_MEAL)).conditionally(BlockStatePropertyLootCondition.builder(block).properties(StatePredicate.Builder.create().exactMatch(ComposterBlock.LEVEL, 8)))));
-        this.addDrop(Blocks.CAVE_VINES_HEAD, BlockLootTableGenerator::method_33709);
-        this.addDrop(Blocks.CAVE_VINES_BODY, BlockLootTableGenerator::method_33709);
+        this.addDrop(Blocks.CAVE_VINES, BlockLootTableGenerator::method_33709);
+        this.addDrop(Blocks.CAVE_VINES_PLANT, BlockLootTableGenerator::method_33709);
         this.addDrop(Blocks.CANDLE, BlockLootTableGenerator::candleDrops);
         this.addDrop(Blocks.WHITE_CANDLE, BlockLootTableGenerator::candleDrops);
         this.addDrop(Blocks.ORANGE_CANDLE, BlockLootTableGenerator::candleDrops);
@@ -984,7 +986,7 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.CAMPFIRE, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouch(block, (LootPoolEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionCondition(block, ItemEntry.builder(Items.CHARCOAL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0f))))));
         this.addDrop(Blocks.GILDED_BLACKSTONE, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouch(block, BlockLootTableGenerator.addSurvivesExplosionCondition(block, ((LeafEntry.Builder)((LootPoolEntry.Builder)ItemEntry.builder(Items.GOLD_NUGGET).apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(2.0f, 5.0f)))).conditionally(TableBonusLootCondition.builder(Enchantments.FORTUNE, 0.1f, 0.14285715f, 0.25f, 1.0f))).alternatively(ItemEntry.builder(block)))));
         this.addDrop(Blocks.SOUL_CAMPFIRE, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouch(block, (LootPoolEntry.Builder)BlockLootTableGenerator.addSurvivesExplosionCondition(block, ItemEntry.builder(Items.SOUL_SOIL).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(1.0f))))));
-        this.addDrop(Blocks.AMETHYST_CLUSTER, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouch(block, (LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ((LeafEntry.Builder)ItemEntry.builder(Items.AMETHYST_SHARD).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE)))));
+        this.addDrop(Blocks.AMETHYST_CLUSTER, (Block block) -> BlockLootTableGenerator.dropsWithSilkTouch(block, ((LeafEntry.Builder)((LootPoolEntry.Builder)((LeafEntry.Builder)ItemEntry.builder(Items.AMETHYST_SHARD).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(4.0f)))).apply(ApplyBonusLootFunction.oreDrops(Enchantments.FORTUNE))).conditionally(MatchToolLootCondition.builder(ItemPredicate.Builder.create().tag(ItemTags.CLUSTER_MAX_HARVESTABLES)))).alternatively((LootPoolEntry.Builder)BlockLootTableGenerator.applyExplosionDecay(block, ItemEntry.builder(Items.AMETHYST_SHARD).apply(SetCountLootFunction.builder(ConstantLootNumberProvider.create(2.0f)))))));
         this.addDropWithSilkTouch(Blocks.SMALL_AMETHYST_BUD);
         this.addDropWithSilkTouch(Blocks.MEDIUM_AMETHYST_BUD);
         this.addDropWithSilkTouch(Blocks.LARGE_AMETHYST_BUD);
@@ -1081,7 +1083,6 @@ implements Consumer<BiConsumer<Identifier, LootTable.Builder>> {
         this.addDrop(Blocks.NETHER_PORTAL, BlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.BUDDING_AMETHYST, BlockLootTableGenerator.dropsNothing());
         this.addDrop(Blocks.POWDER_SNOW, BlockLootTableGenerator.dropsNothing());
-        this.addDrop(Blocks.BIG_DRIPLEAF_STEM, BlockLootTableGenerator.dropsNothing());
         HashSet<Identifier> set = Sets.newHashSet();
         for (Block block2 : Registry.BLOCK) {
             Identifier identifier = block2.getLootTableId();

@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -155,7 +157,7 @@ implements FluidDrainable {
     }
 
     private void playExtinguishSound(WorldAccess world, BlockPos pos) {
-        world.syncWorldEvent(1501, pos, 0);
+        world.syncWorldEvent(WorldEvents.LAVA_EXTINGUISHED, pos, 0);
     }
 
     @Override
@@ -166,7 +168,7 @@ implements FluidDrainable {
     @Override
     public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
         if (state.get(LEVEL) == 0) {
-            world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
+            world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
             return new ItemStack(this.fluid.getBucketItem());
         }
         return ItemStack.EMPTY;

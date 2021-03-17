@@ -45,7 +45,7 @@ public class StructurePoolBasedGenerator {
     private static final Logger LOGGER = LogManager.getLogger();
 
     public static void method_30419(DynamicRegistryManager dynamicRegistryManager, StructurePoolFeatureConfig structurePoolFeatureConfig, PieceFactory pieceFactory, ChunkGenerator chunkGenerator, StructureManager structureManager, BlockPos blockPos, List<? super PoolStructurePiece> list, Random random, boolean bl, boolean bl2, HeightLimitView heightLimitView) {
-        StructureFeature.method_28664();
+        StructureFeature.init();
         Registry<StructurePool> registry = dynamicRegistryManager.get(Registry.TEMPLATE_POOL_WORLDGEN);
         BlockRotation blockRotation = BlockRotation.random(random);
         StructurePool structurePool = structurePoolFeatureConfig.getStartPool().get();

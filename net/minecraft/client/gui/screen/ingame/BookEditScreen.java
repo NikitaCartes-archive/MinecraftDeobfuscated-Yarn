@@ -33,9 +33,9 @@ import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.packet.c2s.play.BookUpdateC2SPacket;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.OrderedText;
@@ -88,9 +88,9 @@ extends Screen {
         this.player = player;
         this.itemStack = itemStack;
         this.hand = hand;
-        CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null) {
-            BookScreen.method_33888(compoundTag, this.pages::add);
+        NbtCompound nbtCompound = itemStack.getTag();
+        if (nbtCompound != null) {
+            BookScreen.method_33888(nbtCompound, this.pages::add);
         }
         if (this.pages.isEmpty()) {
             this.pages.add("");
@@ -154,7 +154,7 @@ extends Screen {
             --this.currentPage;
         }
         this.updateButtons();
-        this.method_27872();
+        this.changePage();
     }
 
     private void openNextPage() {
@@ -167,7 +167,7 @@ extends Screen {
             }
         }
         this.updateButtons();
-        this.method_27872();
+        this.changePage();
     }
 
     @Override
@@ -197,14 +197,14 @@ extends Screen {
             return;
         }
         this.removeEmptyPages();
-        ListTag listTag = new ListTag();
-        this.pages.stream().map(StringTag::of).forEach(listTag::add);
+        NbtList nbtList = new NbtList();
+        this.pages.stream().map(NbtString::of).forEach(nbtList::add);
         if (!this.pages.isEmpty()) {
-            this.itemStack.putSubTag("pages", listTag);
+            this.itemStack.putSubTag("pages", nbtList);
         }
         if (signBook) {
-            this.itemStack.putSubTag("author", StringTag.of(this.player.getGameProfile().getName()));
-            this.itemStack.putSubTag("title", StringTag.of(this.title.trim()));
+            this.itemStack.putSubTag("author", NbtString.of(this.player.getGameProfile().getName()));
+            this.itemStack.putSubTag("title", NbtString.of(this.title.trim()));
         }
         int i = this.hand == Hand.MAIN_HAND ? this.player.getInventory().selectedSlot : 40;
         this.client.getNetworkHandler().sendPacket(new BookUpdateC2SPacket(this.itemStack, signBook, i));
@@ -226,7 +226,7 @@ extends Screen {
         if (this.signing) {
             return this.keyPressedSignMode(keyCode, scanCode, modifiers);
         }
-        boolean bl = this.method_27592(keyCode, scanCode, modifiers);
+        boolean bl = this.keyPressedEditMode(keyCode, scanCode, modifiers);
         if (bl) {
             this.invalidatePageContent();
             return true;
@@ -256,24 +256,24 @@ extends Screen {
         return false;
     }
 
-    private boolean method_27592(int i, int j, int k) {
-        if (Screen.isSelectAll(i)) {
+    private boolean keyPressedEditMode(int keyCode, int scanCode, int modifiers) {
+        if (Screen.isSelectAll(keyCode)) {
             this.currentPageSelectionManager.selectAll();
             return true;
         }
-        if (Screen.isCopy(i)) {
+        if (Screen.isCopy(keyCode)) {
             this.currentPageSelectionManager.copy();
             return true;
         }
-        if (Screen.isPaste(i)) {
+        if (Screen.isPaste(keyCode)) {
             this.currentPageSelectionManager.paste();
             return true;
         }
-        if (Screen.isCut(i)) {
+        if (Screen.isCut(keyCode)) {
             this.currentPageSelectionManager.cut();
             return true;
         }
-        switch (i) {
+        switch (keyCode) {
             case 259: {
                 this.currentPageSelectionManager.delete(-1);
                 return true;
@@ -296,11 +296,11 @@ extends Screen {
                 return true;
             }
             case 265: {
-                this.method_27597();
+                this.moveUpLine();
                 return true;
             }
             case 264: {
-                this.method_27598();
+                this.moveDownLine();
                 return true;
             }
             case 266: {
@@ -312,42 +312,42 @@ extends Screen {
                 return true;
             }
             case 268: {
-                this.moveCursorToTop();
+                this.moveToLineStart();
                 return true;
             }
             case 269: {
-                this.moveCursorToBottom();
+                this.moveToLineEnd();
                 return true;
             }
         }
         return false;
     }
 
-    private void method_27597() {
-        this.method_27580(-1);
+    private void moveUpLine() {
+        this.moveVertically(-1);
     }
 
-    private void method_27598() {
-        this.method_27580(1);
+    private void moveDownLine() {
+        this.moveVertically(1);
     }
 
-    private void method_27580(int i) {
-        int j = this.currentPageSelectionManager.getSelectionStart();
-        int k = this.getPageContent().method_27601(j, i);
-        this.currentPageSelectionManager.method_27560(k, Screen.hasShiftDown());
-    }
-
-    private void moveCursorToTop() {
+    private void moveVertically(int lines) {
         int i = this.currentPageSelectionManager.getSelectionStart();
-        int j = this.getPageContent().method_27600(i);
-        this.currentPageSelectionManager.method_27560(j, Screen.hasShiftDown());
+        int j = this.getPageContent().getVerticalOffset(i, lines);
+        this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
     }
 
-    private void moveCursorToBottom() {
+    private void moveToLineStart() {
+        int i = this.currentPageSelectionManager.getSelectionStart();
+        int j = this.getPageContent().getLineStart(i);
+        this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
+    }
+
+    private void moveToLineEnd() {
         PageContent pageContent = this.getPageContent();
         int i = this.currentPageSelectionManager.getSelectionStart();
-        int j = pageContent.method_27604(i);
-        this.currentPageSelectionManager.method_27560(j, Screen.hasShiftDown());
+        int j = pageContent.getLineEnd(i);
+        this.currentPageSelectionManager.moveCursorTo(j, Screen.hasShiftDown());
     }
 
     private boolean keyPressedSignMode(int keyCode, int scanCode, int modifiers) {
@@ -389,7 +389,7 @@ extends Screen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
         this.setFocused(null);
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BookScreen.BOOK_TEXTURE);
         int i = (this.width - 192) / 2;
@@ -412,16 +412,16 @@ extends Screen {
             for (Line line : pageContent.lines) {
                 this.textRenderer.draw(matrices, line.text, (float)line.x, (float)line.y, -16777216);
             }
-            this.method_27588(pageContent.field_24277);
-            this.method_27581(matrices, pageContent.position, pageContent.field_24274);
+            this.drawSelection(pageContent.selectionRectangles);
+            this.drawCursor(matrices, pageContent.position, pageContent.atEnd);
         }
         super.render(matrices, mouseX, mouseY, delta);
     }
 
-    private void method_27581(MatrixStack matrices, Position position, boolean bl) {
+    private void drawCursor(MatrixStack matrices, Position position, boolean atEnd) {
         if (this.tickCounter / 6 % 2 == 0) {
-            position = this.method_27590(position);
-            if (!bl) {
+            position = this.absolutePositionToScreenPosition(position);
+            if (!atEnd) {
                 DrawableHelper.fill(matrices, position.x, position.y - 1, position.x + 1, position.y + this.textRenderer.fontHeight, -16777216);
             } else {
                 this.textRenderer.draw(matrices, "_", (float)position.x, (float)position.y, 0);
@@ -429,15 +429,16 @@ extends Screen {
         }
     }
 
-    private void method_27588(Rect2i[] rect2is) {
+    private void drawSelection(Rect2i[] selectionRectangles) {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
+        RenderSystem.setShader(GameRenderer::getPositionShader);
         RenderSystem.setShaderColor(0.0f, 0.0f, 255.0f, 255.0f);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);
-        for (Rect2i rect2i : rect2is) {
+        for (Rect2i rect2i : selectionRectangles) {
             int i = rect2i.getX();
             int j = rect2i.getY();
             int k = i + rect2i.getWidth();
@@ -452,11 +453,11 @@ extends Screen {
         RenderSystem.enableTexture();
     }
 
-    private Position method_27582(Position position) {
+    private Position screenPositionToAbsolutePosition(Position position) {
         return new Position(position.x - (this.width - 192) / 2 - 36, position.y - 32);
     }
 
-    private Position method_27590(Position position) {
+    private Position absolutePositionToScreenPosition(Position position) {
         return new Position(position.x + (this.width - 192) / 2 + 36, position.y + 32);
     }
 
@@ -468,16 +469,16 @@ extends Screen {
         if (button == 0) {
             long l = Util.getMeasuringTimeMs();
             PageContent pageContent = this.getPageContent();
-            int i = pageContent.method_27602(this.textRenderer, this.method_27582(new Position((int)mouseX, (int)mouseY)));
+            int i = pageContent.getCursorPosition(this.textRenderer, this.screenPositionToAbsolutePosition(new Position((int)mouseX, (int)mouseY)));
             if (i >= 0) {
                 if (i == this.lastClickIndex && l - this.lastClickTime < 250L) {
-                    if (!this.currentPageSelectionManager.method_27568()) {
-                        this.method_27589(i);
+                    if (!this.currentPageSelectionManager.isSelecting()) {
+                        this.selectCurrentWord(i);
                     } else {
                         this.currentPageSelectionManager.selectAll();
                     }
                 } else {
-                    this.currentPageSelectionManager.method_27560(i, Screen.hasShiftDown());
+                    this.currentPageSelectionManager.moveCursorTo(i, Screen.hasShiftDown());
                 }
                 this.invalidatePageContent();
             }
@@ -487,9 +488,9 @@ extends Screen {
         return true;
     }
 
-    private void method_27589(int i) {
+    private void selectCurrentWord(int cursor) {
         String string = this.getCurrentPageContent();
-        this.currentPageSelectionManager.method_27548(TextHandler.moveCursorByWords(string, -1, i, false), TextHandler.moveCursorByWords(string, 1, i, false));
+        this.currentPageSelectionManager.setSelection(TextHandler.moveCursorByWords(string, -1, cursor, false), TextHandler.moveCursorByWords(string, 1, cursor, false));
     }
 
     @Override
@@ -499,8 +500,8 @@ extends Screen {
         }
         if (button == 0) {
             PageContent pageContent = this.getPageContent();
-            int i = pageContent.method_27602(this.textRenderer, this.method_27582(new Position((int)mouseX, (int)mouseY)));
-            this.currentPageSelectionManager.method_27560(i, true);
+            int i = pageContent.getCursorPosition(this.textRenderer, this.screenPositionToAbsolutePosition(new Position((int)mouseX, (int)mouseY)));
+            this.currentPageSelectionManager.moveCursorTo(i, true);
             this.invalidatePageContent();
         }
         return true;
@@ -518,8 +519,8 @@ extends Screen {
         this.pageContent = null;
     }
 
-    private void method_27872() {
-        this.currentPageSelectionManager.moveCaretToEnd();
+    private void changePage() {
+        this.currentPageSelectionManager.putCursorAtEnd();
         this.invalidatePageContent();
     }
 
@@ -544,7 +545,7 @@ extends Screen {
             mutableBoolean.setValue(string2.endsWith("\n"));
             String string3 = StringUtils.stripEnd(string2, " \n");
             int l = k * this.textRenderer.fontHeight;
-            Position position = this.method_27590(new Position(0, l));
+            Position position = this.absolutePositionToScreenPosition(new Position(0, l));
             intList.add(i);
             list.add(new Line(style, string3, position.x, position.y));
         });
@@ -553,7 +554,7 @@ extends Screen {
         if (bl && mutableBoolean.isTrue()) {
             position = new Position(0, list.size() * this.textRenderer.fontHeight);
         } else {
-            int k = BookEditScreen.method_27591(is, i2);
+            int k = BookEditScreen.getLineFromOffset(is, i2);
             l = this.textRenderer.getWidth(string.substring(is[k], i2));
             position = new Position(l, k * this.textRenderer.fontHeight);
         }
@@ -562,49 +563,49 @@ extends Screen {
             int o;
             l = Math.min(i2, j2);
             int m = Math.max(i2, j2);
-            int n = BookEditScreen.method_27591(is, l);
-            if (n == (o = BookEditScreen.method_27591(is, m))) {
+            int n = BookEditScreen.getLineFromOffset(is, l);
+            if (n == (o = BookEditScreen.getLineFromOffset(is, m))) {
                 int p = n * this.textRenderer.fontHeight;
                 int q = is[n];
-                list2.add(this.method_27585(string, textHandler, l, m, p, q));
+                list2.add(this.getLineSelectionRectangle(string, textHandler, l, m, p, q));
             } else {
                 int p = n + 1 > is.length ? string.length() : is[n + 1];
-                list2.add(this.method_27585(string, textHandler, l, p, n * this.textRenderer.fontHeight, is[n]));
+                list2.add(this.getLineSelectionRectangle(string, textHandler, l, p, n * this.textRenderer.fontHeight, is[n]));
                 for (int q = n + 1; q < o; ++q) {
                     int r = q * this.textRenderer.fontHeight;
                     String string2 = string.substring(is[q], is[q + 1]);
                     int s = (int)textHandler.getWidth(string2);
-                    list2.add(this.method_27583(new Position(0, r), new Position(s, r + this.textRenderer.fontHeight)));
+                    list2.add(this.getRectFromCorners(new Position(0, r), new Position(s, r + this.textRenderer.fontHeight)));
                 }
-                list2.add(this.method_27585(string, textHandler, is[o], m, o * this.textRenderer.fontHeight, is[o]));
+                list2.add(this.getLineSelectionRectangle(string, textHandler, is[o], m, o * this.textRenderer.fontHeight, is[o]));
             }
         }
         return new PageContent(string, position, bl, is, list.toArray(new Line[0]), list2.toArray(new Rect2i[0]));
     }
 
-    private static int method_27591(int[] is, int i) {
-        int j = Arrays.binarySearch(is, i);
-        if (j < 0) {
-            return -(j + 2);
+    private static int getLineFromOffset(int[] lineStarts, int position) {
+        int i = Arrays.binarySearch(lineStarts, position);
+        if (i < 0) {
+            return -(i + 2);
         }
-        return j;
+        return i;
     }
 
-    private Rect2i method_27585(String string, TextHandler textHandler, int i, int j, int k, int l) {
-        String string2 = string.substring(l, i);
-        String string3 = string.substring(l, j);
-        Position position = new Position((int)textHandler.getWidth(string2), k);
-        Position position2 = new Position((int)textHandler.getWidth(string3), k + this.textRenderer.fontHeight);
-        return this.method_27583(position, position2);
+    private Rect2i getLineSelectionRectangle(String string, TextHandler handler, int selectionStart, int selectionEnd, int lineY, int lineStart) {
+        String string2 = string.substring(lineStart, selectionStart);
+        String string3 = string.substring(lineStart, selectionEnd);
+        Position position = new Position((int)handler.getWidth(string2), lineY);
+        Position position2 = new Position((int)handler.getWidth(string3), lineY + this.textRenderer.fontHeight);
+        return this.getRectFromCorners(position, position2);
     }
 
-    private Rect2i method_27583(Position position, Position position2) {
-        Position position3 = this.method_27590(position);
-        Position position4 = this.method_27590(position2);
-        int i = Math.min(position3.x, position4.x);
-        int j = Math.max(position3.x, position4.x);
-        int k = Math.min(position3.y, position4.y);
-        int l = Math.max(position3.y, position4.y);
+    private Rect2i getRectFromCorners(Position start, Position end) {
+        Position position = this.absolutePositionToScreenPosition(start);
+        Position position2 = this.absolutePositionToScreenPosition(end);
+        int i = Math.min(position.x, position2.x);
+        int j = Math.max(position.x, position2.x);
+        int k = Math.min(position.y, position2.y);
+        int l = Math.max(position.y, position2.y);
         return new Rect2i(i, k, j - i, l - k);
     }
 
@@ -613,22 +614,22 @@ extends Screen {
         private static final PageContent EMPTY = new PageContent("", new Position(0, 0), true, new int[]{0}, new Line[]{new Line(Style.EMPTY, "", 0, 0)}, new Rect2i[0]);
         private final String pageContent;
         private final Position position;
-        private final boolean field_24274;
-        private final int[] field_24275;
+        private final boolean atEnd;
+        private final int[] lineStarts;
         private final Line[] lines;
-        private final Rect2i[] field_24277;
+        private final Rect2i[] selectionRectangles;
 
-        public PageContent(String pageContent, Position position, boolean bl, int[] is, Line[] lines, Rect2i[] rect2is) {
+        public PageContent(String pageContent, Position position, boolean atEnd, int[] lineStarts, Line[] lines, Rect2i[] selectionRectangles) {
             this.pageContent = pageContent;
             this.position = position;
-            this.field_24274 = bl;
-            this.field_24275 = is;
+            this.atEnd = atEnd;
+            this.lineStarts = lineStarts;
             this.lines = lines;
-            this.field_24277 = rect2is;
+            this.selectionRectangles = selectionRectangles;
         }
 
-        public int method_27602(TextRenderer textRenderer, Position position) {
-            int i = position.y / textRenderer.fontHeight;
+        public int getCursorPosition(TextRenderer renderer, Position position) {
+            int i = position.y / renderer.fontHeight;
             if (i < 0) {
                 return 0;
             }
@@ -636,31 +637,31 @@ extends Screen {
                 return this.pageContent.length();
             }
             Line line = this.lines[i];
-            return this.field_24275[i] + textRenderer.getTextHandler().getTrimmedLength(line.content, position.x, line.style);
+            return this.lineStarts[i] + renderer.getTextHandler().getTrimmedLength(line.content, position.x, line.style);
         }
 
-        public int method_27601(int i, int j) {
-            int o;
-            int k = BookEditScreen.method_27591(this.field_24275, i);
-            int l = k + j;
-            if (0 <= l && l < this.field_24275.length) {
-                int m = i - this.field_24275[k];
-                int n = this.lines[l].content.length();
-                o = this.field_24275[l] + Math.min(m, n);
+        public int getVerticalOffset(int position, int lines) {
+            int m;
+            int i = BookEditScreen.getLineFromOffset(this.lineStarts, position);
+            int j = i + lines;
+            if (0 <= j && j < this.lineStarts.length) {
+                int k = position - this.lineStarts[i];
+                int l = this.lines[j].content.length();
+                m = this.lineStarts[j] + Math.min(k, l);
             } else {
-                o = i;
+                m = position;
             }
-            return o;
+            return m;
         }
 
-        public int method_27600(int i) {
-            int j = BookEditScreen.method_27591(this.field_24275, i);
-            return this.field_24275[j];
+        public int getLineStart(int position) {
+            int i = BookEditScreen.getLineFromOffset(this.lineStarts, position);
+            return this.lineStarts[i];
         }
 
-        public int method_27604(int i) {
-            int j = BookEditScreen.method_27591(this.field_24275, i);
-            return this.field_24275[j] + this.lines[j].content.length();
+        public int getLineEnd(int position) {
+            int i = BookEditScreen.getLineFromOffset(this.lineStarts, position);
+            return this.lineStarts[i] + this.lines[i].content.length();
         }
     }
 

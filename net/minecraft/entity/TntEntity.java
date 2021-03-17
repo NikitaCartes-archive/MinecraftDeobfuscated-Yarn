@@ -12,7 +12,7 @@ import net.minecraft.entity.MovementType;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
@@ -89,12 +89,12 @@ extends Entity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound tag) {
         tag.putShort("Fuse", (short)this.getFuse());
     }
 
     @Override
-    protected void readCustomDataFromNbt(CompoundTag tag) {
+    protected void readCustomDataFromNbt(NbtCompound tag) {
         this.setFuse(tag.getShort("Fuse"));
     }
 

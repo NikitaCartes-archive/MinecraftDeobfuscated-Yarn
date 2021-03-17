@@ -195,11 +195,11 @@ extends DrawableHelper {
         }
         if (!this.client.options.hudHidden) {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, GUI_ICONS_TEXTURE);
             RenderSystem.enableBlend();
             this.renderCrosshair(matrices);
-            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.defaultBlendFunc();
             this.client.getProfiler().push("bossHealth");
             this.bossBarHud.render(matrices);
@@ -453,6 +453,7 @@ extends DrawableHelper {
             });
         }
         list.forEach(Runnable::run);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     private void renderHotbar(float tickDelta, MatrixStack matrices) {
@@ -465,7 +466,7 @@ extends DrawableHelper {
             return;
         }
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, WIDGETS_TEXTURE);
         ItemStack itemStack = playerEntity.getOffHandStack();
         Arm arm = playerEntity.getMainArm().getOpposite();
@@ -869,6 +870,7 @@ extends DrawableHelper {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, opacity);
         RenderSystem.setShaderTexture(0, texture);
         Tessellator tessellator = Tessellator.getInstance();
@@ -889,6 +891,7 @@ extends DrawableHelper {
         RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
         RenderSystem.defaultBlendFunc();
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, SPYGLASS_SCOPE);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -906,7 +909,7 @@ extends DrawableHelper {
         bufferBuilder.vertex(m, l, -90.0).texture(1.0f, 0.0f).next();
         bufferBuilder.vertex(k, l, -90.0).texture(0.0f, 0.0f).next();
         tessellator.draw();
-        RenderSystem.setShader(GameRenderer::method_34540);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         RenderSystem.disableTexture();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
         bufferBuilder.vertex(0.0, this.scaledHeight, -90.0).color(0, 0, 0, 255).next();
@@ -950,11 +953,14 @@ extends DrawableHelper {
         RenderSystem.depthMask(false);
         RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
         if (f > 0.0f) {
+            f = MathHelper.clamp(f, 0.0f, 1.0f);
             RenderSystem.setShaderColor(0.0f, f, f, 1.0f);
         } else {
-            RenderSystem.setShaderColor(this.vignetteDarkness, this.vignetteDarkness, this.vignetteDarkness, 1.0f);
+            float g = this.vignetteDarkness;
+            g = MathHelper.clamp(g, 0.0f, 1.0f);
+            RenderSystem.setShaderColor(g, g, g, 1.0f);
         }
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, VIGNETTE_TEXTURE);
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -981,6 +987,7 @@ extends DrawableHelper {
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, nauseaStrength);
         RenderSystem.setShaderTexture(0, SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         Sprite sprite = this.client.getBlockRenderManager().getModels().getSprite(Blocks.NETHER_PORTAL.getDefaultState());
         float f = sprite.getMinU();
         float g = sprite.getMinV();
@@ -1014,7 +1021,7 @@ extends DrawableHelper {
             RenderSystem.applyModelViewMatrix();
         }
         this.itemRenderer.renderInGuiWithOverrides(player, stack, x, y, i);
-        RenderSystem.setShader(GameRenderer::method_34540);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
         if (f > 0.0f) {
             matrixStack.pop();
             RenderSystem.applyModelViewMatrix();

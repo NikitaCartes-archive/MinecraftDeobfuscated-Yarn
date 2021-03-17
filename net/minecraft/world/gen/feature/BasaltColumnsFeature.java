@@ -33,7 +33,7 @@ extends Feature<BasaltColumnsFeatureConfig> {
         StructureWorldAccess structureWorldAccess = context.getWorld();
         Random random = context.getRandom();
         BasaltColumnsFeatureConfig basaltColumnsFeatureConfig = context.getConfig();
-        if (!BasaltColumnsFeature.method_30379(structureWorldAccess, i, blockPos.mutableCopy())) {
+        if (!BasaltColumnsFeature.canPlaceAt(structureWorldAccess, i, blockPos.mutableCopy())) {
             return false;
         }
         int j = basaltColumnsFeatureConfig.getHeight().getValue(random);
@@ -44,27 +44,27 @@ extends Feature<BasaltColumnsFeatureConfig> {
         for (BlockPos blockPos2 : BlockPos.iterateRandomly(random, l, blockPos.getX() - k, blockPos.getY(), blockPos.getZ() - k, blockPos.getX() + k, blockPos.getY(), blockPos.getZ() + k)) {
             int m = j - blockPos2.getManhattanDistance(blockPos);
             if (m < 0) continue;
-            bl2 |= this.method_27096(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().getValue(random));
+            bl2 |= this.placeBasaltColumn(structureWorldAccess, i, blockPos2, m, basaltColumnsFeatureConfig.getReach().getValue(random));
         }
         return bl2;
     }
 
-    private boolean method_27096(WorldAccess worldAccess, int i, BlockPos blockPos, int j, int k) {
+    private boolean placeBasaltColumn(WorldAccess world, int seaLevel, BlockPos pos, int height, int reach) {
         boolean bl = false;
-        block0: for (BlockPos blockPos2 : BlockPos.iterate(blockPos.getX() - k, blockPos.getY(), blockPos.getZ() - k, blockPos.getX() + k, blockPos.getY(), blockPos.getZ() + k)) {
-            BlockPos blockPos3;
-            int l = blockPos2.getManhattanDistance(blockPos);
-            BlockPos blockPos4 = blockPos3 = BasaltColumnsFeature.method_27095(worldAccess, i, blockPos2) ? BasaltColumnsFeature.method_27094(worldAccess, i, blockPos2.mutableCopy(), l) : BasaltColumnsFeature.method_27098(worldAccess, blockPos2.mutableCopy(), l);
-            if (blockPos3 == null) continue;
-            BlockPos.Mutable mutable = blockPos3.mutableCopy();
-            for (int m = j - l / 2; m >= 0; --m) {
-                if (BasaltColumnsFeature.method_27095(worldAccess, i, mutable)) {
-                    this.setBlockState(worldAccess, mutable, Blocks.BASALT.getDefaultState());
+        block0: for (BlockPos blockPos : BlockPos.iterate(pos.getX() - reach, pos.getY(), pos.getZ() - reach, pos.getX() + reach, pos.getY(), pos.getZ() + reach)) {
+            BlockPos blockPos2;
+            int i = blockPos.getManhattanDistance(pos);
+            BlockPos blockPos3 = blockPos2 = BasaltColumnsFeature.isAirOrLavaOcean(world, seaLevel, blockPos) ? BasaltColumnsFeature.moveDownToGround(world, seaLevel, blockPos.mutableCopy(), i) : BasaltColumnsFeature.moveUpToAir(world, blockPos.mutableCopy(), i);
+            if (blockPos2 == null) continue;
+            BlockPos.Mutable mutable = blockPos2.mutableCopy();
+            for (int j = height - i / 2; j >= 0; --j) {
+                if (BasaltColumnsFeature.isAirOrLavaOcean(world, seaLevel, mutable)) {
+                    this.setBlockState(world, mutable, Blocks.BASALT.getDefaultState());
                     mutable.move(Direction.UP);
                     bl = true;
                     continue;
                 }
-                if (!worldAccess.getBlockState(mutable).isOf(Blocks.BASALT)) continue block0;
+                if (!world.getBlockState(mutable).isOf(Blocks.BASALT)) continue block0;
                 mutable.move(Direction.UP);
             }
         }
@@ -72,45 +72,45 @@ extends Feature<BasaltColumnsFeatureConfig> {
     }
 
     @Nullable
-    private static BlockPos method_27094(WorldAccess worldAccess, int i, BlockPos.Mutable mutable, int j) {
-        while (mutable.getY() > worldAccess.getBottomY() + 1 && j > 0) {
-            --j;
-            if (BasaltColumnsFeature.method_30379(worldAccess, i, mutable)) {
-                return mutable;
+    private static BlockPos moveDownToGround(WorldAccess world, int seaLevel, BlockPos.Mutable mutablePos, int distance) {
+        while (mutablePos.getY() > world.getBottomY() + 1 && distance > 0) {
+            --distance;
+            if (BasaltColumnsFeature.canPlaceAt(world, seaLevel, mutablePos)) {
+                return mutablePos;
             }
-            mutable.move(Direction.DOWN);
+            mutablePos.move(Direction.DOWN);
         }
         return null;
     }
 
-    private static boolean method_30379(WorldAccess worldAccess, int i, BlockPos.Mutable mutable) {
-        if (BasaltColumnsFeature.method_27095(worldAccess, i, mutable)) {
-            BlockState blockState = worldAccess.getBlockState(mutable.move(Direction.DOWN));
-            mutable.move(Direction.UP);
+    private static boolean canPlaceAt(WorldAccess world, int seaLevel, BlockPos.Mutable mutablePos) {
+        if (BasaltColumnsFeature.isAirOrLavaOcean(world, seaLevel, mutablePos)) {
+            BlockState blockState = world.getBlockState(mutablePos.move(Direction.DOWN));
+            mutablePos.move(Direction.UP);
             return !blockState.isAir() && !BLOCKS.contains(blockState.getBlock());
         }
         return false;
     }
 
     @Nullable
-    private static BlockPos method_27098(WorldAccess worldAccess, BlockPos.Mutable mutable, int i) {
-        while (mutable.getY() < worldAccess.getTopY() && i > 0) {
-            --i;
-            BlockState blockState = worldAccess.getBlockState(mutable);
+    private static BlockPos moveUpToAir(WorldAccess world, BlockPos.Mutable mutablePos, int distance) {
+        while (mutablePos.getY() < world.getTopY() && distance > 0) {
+            --distance;
+            BlockState blockState = world.getBlockState(mutablePos);
             if (BLOCKS.contains(blockState.getBlock())) {
                 return null;
             }
             if (blockState.isAir()) {
-                return mutable;
+                return mutablePos;
             }
-            mutable.move(Direction.UP);
+            mutablePos.move(Direction.UP);
         }
         return null;
     }
 
-    private static boolean method_27095(WorldAccess worldAccess, int i, BlockPos blockPos) {
-        BlockState blockState = worldAccess.getBlockState(blockPos);
-        return blockState.isAir() || blockState.isOf(Blocks.LAVA) && blockPos.getY() <= i;
+    private static boolean isAirOrLavaOcean(WorldAccess world, int seaLevel, BlockPos pos) {
+        BlockState blockState = world.getBlockState(pos);
+        return blockState.isAir() || blockState.isOf(Blocks.LAVA) && pos.getY() <= seaLevel;
     }
 }
 

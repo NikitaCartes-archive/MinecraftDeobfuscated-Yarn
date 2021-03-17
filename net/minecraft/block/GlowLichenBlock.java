@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import java.util.stream.Stream;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractLichenBlock;
 import net.minecraft.block.Block;
@@ -56,7 +57,7 @@ Waterloggable {
 
     @Override
     public boolean isFertilizable(BlockView world, BlockPos pos, BlockState state, boolean isClient) {
-        return true;
+        return Stream.of(DIRECTIONS).anyMatch(direction -> this.canSpread(state, world, pos, direction.getOpposite()));
     }
 
     @Override
@@ -66,7 +67,7 @@ Waterloggable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        this.canSpreadRandomly(state, world, pos, random);
+        this.trySpreadRandomly(state, world, pos, random);
     }
 
     @Override

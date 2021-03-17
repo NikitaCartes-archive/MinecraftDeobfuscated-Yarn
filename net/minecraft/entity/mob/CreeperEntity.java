@@ -8,6 +8,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.render.entity.feature.SkinOverlayOwner;
 import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
@@ -36,7 +37,7 @@ import net.minecraft.entity.passive.OcelotEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -110,7 +111,7 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         if (this.dataTracker.get(CHARGED).booleanValue()) {
             tag.putBoolean("powered", true);
@@ -121,13 +122,13 @@ implements SkinOverlayOwner {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.dataTracker.set(CHARGED, tag.getBoolean("powered"));
-        if (tag.contains("Fuse", 99)) {
+        if (tag.contains("Fuse", NbtTypeIds.NUMBER)) {
             this.fuseTime = tag.getShort("Fuse");
         }
-        if (tag.contains("ExplosionRadius", 99)) {
+        if (tag.contains("ExplosionRadius", NbtTypeIds.NUMBER)) {
             this.explosionRadius = tag.getByte("ExplosionRadius");
         }
         if (tag.getBoolean("ignited")) {

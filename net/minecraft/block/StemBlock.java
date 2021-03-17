@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -65,7 +66,7 @@ implements Fertilizable {
             int i = state.get(AGE);
             if (i < 7) {
                 state = (BlockState)state.with(AGE, i + 1);
-                world.setBlockState(pos, state, 2);
+                world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
             } else {
                 Direction direction = Direction.Type.HORIZONTAL.random(random);
                 BlockPos blockPos = pos.offset(direction);
@@ -98,7 +99,7 @@ implements Fertilizable {
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
         int i = Math.min(7, state.get(AGE) + MathHelper.nextInt(world.random, 2, 5));
         BlockState blockState = (BlockState)state.with(AGE, i);
-        world.setBlockState(pos, blockState, 2);
+        world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
         if (i == 7) {
             blockState.randomTick(world, pos, world.random);
         }

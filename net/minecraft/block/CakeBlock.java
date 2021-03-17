@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -84,7 +85,7 @@ extends Block {
         int i = state.get(BITES);
         world.emitGameEvent((Entity)player, GameEvent.EAT, pos);
         if (i < 6) {
-            world.setBlockState(pos, (BlockState)state.with(BITES, i + 1), 3);
+            world.setBlockState(pos, (BlockState)state.with(BITES, i + 1), SetBlockStateFlags.DEFAULT);
         } else {
             world.removeBlock(pos, false);
             world.emitGameEvent((Entity)player, GameEvent.BLOCK_DESTROY, pos);

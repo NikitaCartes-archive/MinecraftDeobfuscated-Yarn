@@ -23,7 +23,7 @@ import net.minecraft.item.FishingRodItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
@@ -155,7 +155,7 @@ public class ModelPredicateProviderRegistry {
                 } else if (entity instanceof ItemFrameEntity) {
                     e = this.getItemFrameAngleOffset((ItemFrameEntity)entity);
                 } else if (entity instanceof ItemEntity) {
-                    e = 180.0f - ((ItemEntity)entity).method_27314(0.5f) / ((float)Math.PI * 2) * 360.0f;
+                    e = 180.0f - ((ItemEntity)entity).getRotation(0.5f) / ((float)Math.PI * 2) * 360.0f;
                 } else if (livingEntity != null) {
                     e = livingEntity.bodyYaw;
                 }
@@ -182,7 +182,7 @@ public class ModelPredicateProviderRegistry {
             }
 
             @Nullable
-            private BlockPos getLodestonePos(World world, CompoundTag tag) {
+            private BlockPos getLodestonePos(World world, NbtCompound tag) {
                 Optional<RegistryKey<World>> optional;
                 boolean bl = tag.contains("LodestonePos");
                 boolean bl2 = tag.contains("LodestoneDimension");

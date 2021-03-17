@@ -10,7 +10,7 @@ import net.minecraft.world.gen.feature.DefaultFeatureConfig;
 public interface FeatureConfig {
     public static final DefaultFeatureConfig DEFAULT = DefaultFeatureConfig.INSTANCE;
 
-    default public Stream<ConfiguredFeature<?, ?>> method_30649() {
+    default public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
         return Stream.empty();
     }
 }

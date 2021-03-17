@@ -5,6 +5,8 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -61,7 +63,7 @@ extends PlantBlock {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        world.setBlockState(pos.up(), (BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), 3);
+        world.setBlockState(pos.up(), (BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), SetBlockStateFlags.DEFAULT);
     }
 
     @Override
@@ -73,9 +75,9 @@ extends PlantBlock {
         return super.canPlaceAt(state, world, pos);
     }
 
-    public void placeAt(WorldAccess world, BlockPos pos, int flags) {
-        world.setBlockState(pos, (BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.LOWER), flags);
-        world.setBlockState(pos.up(), (BlockState)this.getDefaultState().with(HALF, DoubleBlockHalf.UPPER), flags);
+    public void placeAt(WorldAccess world, BlockState state, BlockPos pos, int flags) {
+        world.setBlockState(pos, (BlockState)state.with(HALF, DoubleBlockHalf.LOWER), flags);
+        world.setBlockState(pos.up(), (BlockState)state.with(HALF, DoubleBlockHalf.UPPER), flags);
     }
 
     @Override
@@ -106,8 +108,8 @@ extends PlantBlock {
         BlockState blockState;
         DoubleBlockHalf doubleBlockHalf = state.get(HALF);
         if (doubleBlockHalf == DoubleBlockHalf.UPPER && (blockState = world.getBlockState(blockPos = pos.down())).isOf(state.getBlock()) && blockState.get(HALF) == DoubleBlockHalf.LOWER) {
-            world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 35);
-            world.syncWorldEvent(player, 2001, blockPos, Block.getRawIdFromState(blockState));
+            world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.SKIP_DROPS);
+            world.syncWorldEvent(player, WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
         }
     }
 

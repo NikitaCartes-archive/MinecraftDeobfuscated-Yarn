@@ -58,8 +58,8 @@ implements Decoratable<ConfiguredFeature<?, ?>> {
         return ((Feature)this.feature).generate(new FeatureContext<FC>(world, chunkGenerator, random, origin, this.config));
     }
 
-    public Stream<ConfiguredFeature<?, ?>> method_30648() {
-        return Stream.concat(Stream.of(this), this.config.method_30649());
+    public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
+        return Stream.concat(Stream.of(this), this.config.getDecoratedFeatures());
     }
 
     @Override

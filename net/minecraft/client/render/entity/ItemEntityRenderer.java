@@ -61,10 +61,10 @@ extends EntityRenderer<ItemEntity> {
         boolean bl = bakedModel.hasDepth();
         int k = this.getRenderedAmount(itemStack);
         float h = 0.25f;
-        float l = MathHelper.sin(((float)itemEntity.getAge() + g) / 10.0f + itemEntity.hoverHeight) * 0.1f + 0.1f;
+        float l = MathHelper.sin(((float)itemEntity.getItemAge() + g) / 10.0f + itemEntity.uniqueOffset) * 0.1f + 0.1f;
         float m = bakedModel.getTransformation().getTransformation((ModelTransformation.Mode)ModelTransformation.Mode.GROUND).scale.getY();
         matrixStack.translate(0.0, l + 0.25f * m, 0.0);
-        float n = itemEntity.method_27314(g);
+        float n = itemEntity.getRotation(g);
         matrixStack.multiply(Vec3f.POSITIVE_Y.getRadialQuaternion(n));
         float o = bakedModel.getTransformation().ground.scale.getX();
         float p = bakedModel.getTransformation().ground.scale.getY();

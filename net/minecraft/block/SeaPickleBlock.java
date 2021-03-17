@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -149,7 +150,7 @@ Waterloggable {
                         BlockState blockState;
                         BlockPos blockPos = new BlockPos(m + o, r, pos.getZ() - n + p);
                         if (blockPos == pos || random.nextInt(6) != 0 || !world.getBlockState(blockPos).isOf(Blocks.WATER) || !(blockState = world.getBlockState(blockPos.down())).isIn(BlockTags.CORAL_BLOCKS)) continue;
-                        world.setBlockState(blockPos, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, random.nextInt(4) + 1), 3);
+                        world.setBlockState(blockPos, (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(PICKLES, random.nextInt(4) + 1), SetBlockStateFlags.DEFAULT);
                     }
                 }
                 if (l < 2) {
@@ -161,7 +162,7 @@ Waterloggable {
                 }
                 ++l;
             }
-            world.setBlockState(pos, (BlockState)state.with(PICKLES, 4), 2);
+            world.setBlockState(pos, (BlockState)state.with(PICKLES, 4), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 

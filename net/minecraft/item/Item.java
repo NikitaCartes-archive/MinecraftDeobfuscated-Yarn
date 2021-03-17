@@ -32,7 +32,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -110,7 +110,7 @@ implements ItemConvertible {
     public void onItemEntityDestroyed(ItemEntity entity) {
     }
 
-    public boolean postProcessTag(CompoundTag tag) {
+    public boolean postProcessTag(NbtCompound tag) {
         return false;
     }
 

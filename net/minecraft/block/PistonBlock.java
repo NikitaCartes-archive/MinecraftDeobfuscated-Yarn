@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -161,7 +162,7 @@ extends FacingBlock {
         if (!world.isClient) {
             boolean bl = this.shouldExtend(world, pos, direction);
             if (bl && (type == 1 || type == 2)) {
-                world.setBlockState(pos, (BlockState)state.with(EXTENDED, true), 2);
+                world.setBlockState(pos, (BlockState)state.with(EXTENDED, true), SetBlockStateFlags.NOTIFY_LISTENERS);
                 return false;
             }
             if (!bl && type == 0) {
@@ -170,7 +171,7 @@ extends FacingBlock {
         }
         if (type == 0) {
             if (!this.move(world, pos, direction, true)) return false;
-            world.setBlockState(pos, (BlockState)state.with(EXTENDED, true), 67);
+            world.setBlockState(pos, (BlockState)state.with(EXTENDED, true), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.MOVED);
             world.playSound(null, pos, SoundEvents.BLOCK_PISTON_EXTEND, SoundCategory.BLOCKS, 0.5f, world.random.nextFloat() * 0.25f + 0.6f);
             world.emitGameEvent(GameEvent.PISTON_EXTEND, pos);
             return true;
@@ -181,10 +182,10 @@ extends FacingBlock {
                 ((PistonBlockEntity)blockEntity).finish();
             }
             BlockState blockState = (BlockState)((BlockState)Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, direction)).with(PistonExtensionBlock.TYPE, this.sticky ? PistonType.STICKY : PistonType.DEFAULT);
-            world.setBlockState(pos, blockState, 20);
+            world.setBlockState(pos, blockState, SetBlockStateFlags.NO_REDRAW | SetBlockStateFlags.FORCE_STATE);
             world.addBlockEntity(PistonExtensionBlock.createBlockEntityPiston(pos, blockState, (BlockState)this.getDefaultState().with(FACING, Direction.byId(data & 7)), direction, false, true));
             world.updateNeighbors(pos, blockState.getBlock());
-            blockState.updateNeighbors(world, pos, 2);
+            blockState.updateNeighbors(world, pos, SetBlockStateFlags.NOTIFY_LISTENERS);
             if (this.sticky) {
                 PistonBlockEntity pistonBlockEntity;
                 BlockEntity blockEntity2;
@@ -258,7 +259,7 @@ extends FacingBlock {
         PistonHandler pistonHandler;
         BlockPos blockPos = pos.offset(dir);
         if (!retract && world.getBlockState(blockPos).isOf(Blocks.PISTON_HEAD)) {
-            world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 20);
+            world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NO_REDRAW | SetBlockStateFlags.FORCE_STATE);
         }
         if (!(pistonHandler = new PistonHandler(world, pos, dir, retract)).calculatePush()) {
             return false;
@@ -281,7 +282,7 @@ extends FacingBlock {
             BlockState blockState = world.getBlockState(blockPos3);
             BlockEntity blockEntity = blockState.hasBlockEntity() ? world.getBlockEntity(blockPos3) : null;
             PistonBlock.dropStacks(blockState, world, blockPos3, blockEntity);
-            world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), 18);
+            world.setBlockState(blockPos3, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
             if (!blockState.isIn(BlockTags.FIRE)) {
                 world.addBlockBreakParticles(blockPos3, blockState);
             }
@@ -293,7 +294,7 @@ extends FacingBlock {
             blockPos3 = blockPos3.offset(direction);
             map.remove(blockPos3);
             BlockState blockState3 = (BlockState)Blocks.MOVING_PISTON.getDefaultState().with(FACING, dir);
-            world.setBlockState(blockPos3, blockState3, 68);
+            world.setBlockState(blockPos3, blockState3, SetBlockStateFlags.NO_REDRAW | SetBlockStateFlags.MOVED);
             world.addBlockEntity(PistonExtensionBlock.createBlockEntityPiston(blockPos3, blockState3, (BlockState)list2.get(k), dir, retract, false));
             blockStates[j++] = blockState;
         }
@@ -302,18 +303,18 @@ extends FacingBlock {
             BlockState blockState4 = (BlockState)((BlockState)Blocks.PISTON_HEAD.getDefaultState().with(PistonHeadBlock.FACING, dir)).with(PistonHeadBlock.TYPE, pistonType);
             BlockState blockState = (BlockState)((BlockState)Blocks.MOVING_PISTON.getDefaultState().with(PistonExtensionBlock.FACING, dir)).with(PistonExtensionBlock.TYPE, this.sticky ? PistonType.STICKY : PistonType.DEFAULT);
             map.remove(blockPos);
-            world.setBlockState(blockPos, blockState, 68);
+            world.setBlockState(blockPos, blockState, SetBlockStateFlags.NO_REDRAW | SetBlockStateFlags.MOVED);
             world.addBlockEntity(PistonExtensionBlock.createBlockEntityPiston(blockPos, blockState, blockState4, dir, true, true));
         }
         BlockState blockState5 = Blocks.AIR.getDefaultState();
         for (BlockPos blockPos2 : map.keySet()) {
-            world.setBlockState(blockPos2, blockState5, 82);
+            world.setBlockState(blockPos2, blockState5, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE | SetBlockStateFlags.MOVED);
         }
         for (Map.Entry entry : map.entrySet()) {
             blockPos5 = (BlockPos)entry.getKey();
             BlockState blockState6 = (BlockState)entry.getValue();
             blockState6.prepare(world, blockPos5, 2);
-            blockState5.updateNeighbors(world, blockPos5, 2);
+            blockState5.updateNeighbors(world, blockPos5, SetBlockStateFlags.NOTIFY_LISTENERS);
             blockState5.prepare(world, blockPos5, 2);
         }
         j = 0;

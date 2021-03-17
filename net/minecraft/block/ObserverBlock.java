@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -48,9 +49,9 @@ extends FacingBlock {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(POWERED).booleanValue()) {
-            world.setBlockState(pos, (BlockState)state.with(POWERED, false), 2);
+            world.setBlockState(pos, (BlockState)state.with(POWERED, false), SetBlockStateFlags.NOTIFY_LISTENERS);
         } else {
-            world.setBlockState(pos, (BlockState)state.with(POWERED, true), 2);
+            world.setBlockState(pos, (BlockState)state.with(POWERED, true), SetBlockStateFlags.NOTIFY_LISTENERS);
             world.getBlockTickScheduler().schedule(pos, this, 2);
         }
         this.updateNeighbors(world, pos, state);
@@ -102,7 +103,7 @@ extends FacingBlock {
         }
         if (!world.isClient() && state.get(POWERED).booleanValue() && !world.getBlockTickScheduler().isScheduled(pos, this)) {
             BlockState blockState = (BlockState)state.with(POWERED, false);
-            world.setBlockState(pos, blockState, 18);
+            world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
             this.updateNeighbors(world, pos, blockState);
         }
     }

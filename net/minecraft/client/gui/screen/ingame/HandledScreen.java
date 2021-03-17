@@ -27,6 +27,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class HandledScreen<T extends ScreenHandler>
@@ -108,7 +109,7 @@ implements ScreenHandlerProvider<T> {
         for (int k = 0; k < ((ScreenHandler)this.handler).slots.size(); ++k) {
             Slot slot = ((ScreenHandler)this.handler).slots.get(k);
             if (slot.doDrawHoveringEffect()) {
-                RenderSystem.setShader(GameRenderer::method_34542);
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 this.drawSlot(matrices, slot);
             }
             if (!this.isPointOverSlot(slot, mouseX, mouseY) || !slot.doDrawHoveringEffect()) continue;
@@ -278,7 +279,7 @@ implements ScreenHandlerProvider<T> {
         long l = Util.getMeasuringTimeMs();
         this.doubleClicking = this.lastClickedSlot == slot && l - this.lastButtonClickTime < 250L && this.lastClickedButton == button;
         this.cancelNextRelease = false;
-        if (button == 0 || button == 1 || bl) {
+        if (button == 0 || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT || bl) {
             int i = this.x;
             int j = this.y;
             boolean bl2 = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
@@ -298,7 +299,7 @@ implements ScreenHandlerProvider<T> {
                     if (slot != null && slot.hasStack()) {
                         this.touchDragSlotStart = slot;
                         this.touchDragStack = ItemStack.EMPTY;
-                        this.touchIsRightClickDrag = button == 1;
+                        this.touchIsRightClickDrag = button == GLFW.GLFW_MOUSE_BUTTON_RIGHT;
                     } else {
                         this.touchDragSlotStart = null;
                     }
@@ -307,7 +308,7 @@ implements ScreenHandlerProvider<T> {
                         if (this.client.options.keyPickItem.matchesMouse(button)) {
                             this.onMouseClick(slot, k, button, SlotActionType.CLONE);
                         } else {
-                            boolean bl3 = k != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344));
+                            boolean bl3 = k != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_SHIFT));
                             SlotActionType slotActionType = SlotActionType.PICKUP;
                             if (bl3) {
                                 this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
@@ -324,7 +325,7 @@ implements ScreenHandlerProvider<T> {
                         this.cursorDragSlots.clear();
                         if (button == 0) {
                             this.heldButtonType = 0;
-                        } else if (button == 1) {
+                        } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                             this.heldButtonType = 1;
                         } else if (this.client.options.keyPickItem.matchesMouse(button)) {
                             this.heldButtonType = 2;
@@ -397,7 +398,7 @@ implements ScreenHandlerProvider<T> {
         int i = this.x;
         int j = this.y;
         boolean bl = this.isClickOutsideBounds(mouseX, mouseY, i, j, button);
-        int k = -1;
+        int k = GLFW.GLFW_KEY_UNKNOWN;
         if (slot != null) {
             k = slot.id;
         }
@@ -429,12 +430,12 @@ implements ScreenHandlerProvider<T> {
                 return true;
             }
             if (this.touchDragSlotStart != null && this.client.options.touchscreen) {
-                if (button == 0 || button == 1) {
+                if (button == 0 || button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
                     if (this.touchDragStack.isEmpty() && slot != this.touchDragSlotStart) {
                         this.touchDragStack = this.touchDragSlotStart.getStack();
                     }
                     boolean bl2 = ScreenHandler.canInsertItemIntoSlot(slot, this.touchDragStack, false);
-                    if (k != -1 && !this.touchDragStack.isEmpty() && bl2) {
+                    if (k != GLFW.GLFW_KEY_UNKNOWN && !this.touchDragStack.isEmpty() && bl2) {
                         this.onMouseClick(this.touchDragSlotStart, this.touchDragSlotStart.id, button, SlotActionType.PICKUP);
                         this.onMouseClick(slot, k, 0, SlotActionType.PICKUP);
                         if (((ScreenHandler)this.handler).getCursorStack().isEmpty()) {
@@ -468,7 +469,7 @@ implements ScreenHandlerProvider<T> {
                     this.onMouseClick(slot, k, button, SlotActionType.CLONE);
                 } else {
                     boolean bl2;
-                    boolean bl3 = bl2 = k != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 340) || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 344));
+                    boolean bl3 = bl2 = k != -999 && (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_LEFT_SHIFT) || InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_RIGHT_SHIFT));
                     if (bl2) {
                         this.quickMovingStack = slot != null && slot.hasStack() ? slot.getStack().copy() : ItemStack.EMPTY;
                     }

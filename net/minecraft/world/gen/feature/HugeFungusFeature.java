@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -53,7 +54,7 @@ extends Feature<HugeFungusFeatureConfig> {
             }
         }
         boolean bl = !hugeFungusFeatureConfig.planted && random.nextFloat() < 0.06f;
-        structureWorldAccess.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 4);
+        structureWorldAccess.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NO_REDRAW);
         this.generateStem(structureWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
         this.generateHat(structureWorldAccess, random, hugeFungusFeatureConfig, blockPos2, i, bl);
         return true;
@@ -80,7 +81,7 @@ extends Feature<HugeFungusFeatureConfig> {
                         if (!world.getBlockState((BlockPos)mutable.down()).isAir()) {
                             world.breakBlock(mutable, true);
                         }
-                        world.setBlockState(mutable, blockState, 3);
+                        world.setBlockState(mutable, blockState, SetBlockStateFlags.DEFAULT);
                         continue;
                     }
                     if (bl) {

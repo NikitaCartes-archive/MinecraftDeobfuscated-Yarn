@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -139,7 +140,7 @@ implements Fertilizable {
             world.getBlockTickScheduler().schedule(pos, this, 1);
         }
         if (direction == Direction.UP && neighborState.isOf(Blocks.BAMBOO) && neighborState.get(AGE) > state.get(AGE)) {
-            world.setBlockState(pos, (BlockState)state.cycle(AGE), 2);
+            world.setBlockState(pos, (BlockState)state.cycle(AGE), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
         return super.getStateForNeighborUpdate(state, direction, neighborState, world, pos, neighborPos);
     }
@@ -193,14 +194,14 @@ implements Fertilizable {
             } else if (blockState.isOf(Blocks.BAMBOO) && blockState.get(LEAVES) != BambooLeaves.NONE) {
                 bambooLeaves = BambooLeaves.LARGE;
                 if (blockState2.isOf(Blocks.BAMBOO)) {
-                    world.setBlockState(pos.down(), (BlockState)blockState.with(LEAVES, BambooLeaves.SMALL), 3);
-                    world.setBlockState(blockPos, (BlockState)blockState2.with(LEAVES, BambooLeaves.NONE), 3);
+                    world.setBlockState(pos.down(), (BlockState)blockState.with(LEAVES, BambooLeaves.SMALL), SetBlockStateFlags.DEFAULT);
+                    world.setBlockState(blockPos, (BlockState)blockState2.with(LEAVES, BambooLeaves.NONE), SetBlockStateFlags.DEFAULT);
                 }
             }
         }
         int i = state.get(AGE) == 1 || blockState2.isOf(Blocks.BAMBOO) ? 1 : 0;
         int j = height >= 11 && random.nextFloat() < 0.25f || height == 15 ? 1 : 0;
-        world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(AGE, i)).with(LEAVES, bambooLeaves)).with(STAGE, j), 3);
+        world.setBlockState(pos.up(), (BlockState)((BlockState)((BlockState)this.getDefaultState().with(AGE, i)).with(LEAVES, bambooLeaves)).with(STAGE, j), SetBlockStateFlags.DEFAULT);
     }
 
     protected int countBambooAbove(BlockView world, BlockPos pos) {

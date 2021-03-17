@@ -143,6 +143,18 @@ public class ChunkBuilder {
         return String.format("pC: %03d, pU: %02d, aB: %02d", this.queuedTaskCount, this.uploadQueue.size(), this.bufferCount);
     }
 
+    public int method_34845() {
+        return this.queuedTaskCount;
+    }
+
+    public int method_34846() {
+        return this.uploadQueue.size();
+    }
+
+    public int method_34847() {
+        return this.bufferCount;
+    }
+
     public void setCameraPosition(Vec3d cameraPosition) {
         this.cameraPosition = cameraPosition;
     }
@@ -247,6 +259,7 @@ public class ChunkBuilder {
 
     @Environment(value=EnvType.CLIENT)
     public class BuiltChunk {
+        public final int field_29641;
         public final AtomicReference<ChunkData> data = new AtomicReference<ChunkData>(ChunkData.EMPTY);
         @Nullable
         private RebuildTask rebuildTask;
@@ -264,6 +277,10 @@ public class ChunkBuilder {
             }
         });
         private boolean needsImportantRebuild;
+
+        public BuiltChunk(int i) {
+            this.field_29641 = i;
+        }
 
         private boolean isChunkNonEmpty(BlockPos pos) {
             return ChunkBuilder.this.world.getChunk(ChunkSectionPos.getSectionCoord(pos.getX()), ChunkSectionPos.getSectionCoord(pos.getZ()), ChunkStatus.FULL, false) != null;

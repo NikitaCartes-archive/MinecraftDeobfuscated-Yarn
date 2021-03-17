@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -22,8 +23,8 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.WrittenBookItem;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -160,7 +161,7 @@ extends Screen {
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, BOOK_TEXTURE);
         int i = (this.width - 192) / 2;
@@ -243,25 +244,25 @@ extends Screen {
         return null;
     }
 
-    private static List<String> readPages(CompoundTag tag) {
+    private static List<String> readPages(NbtCompound tag) {
         ImmutableList.Builder builder = ImmutableList.builder();
         BookScreen.method_33888(tag, builder::add);
         return builder.build();
     }
 
-    public static void method_33888(CompoundTag compoundTag, Consumer<String> consumer) {
+    public static void method_33888(NbtCompound nbtCompound, Consumer<String> consumer) {
         IntFunction<String> intFunction;
-        ListTag listTag = compoundTag.getList("pages", 8).copy();
-        if (MinecraftClient.getInstance().shouldFilterText() && compoundTag.contains("filtered_pages", 10)) {
-            CompoundTag compoundTag2 = compoundTag.getCompound("filtered_pages");
+        NbtList nbtList = nbtCompound.getList("pages", NbtTypeIds.STRING).copy();
+        if (MinecraftClient.getInstance().shouldFilterText() && nbtCompound.contains("filtered_pages", NbtTypeIds.COMPOUND)) {
+            NbtCompound nbtCompound2 = nbtCompound.getCompound("filtered_pages");
             intFunction = i -> {
                 String string = String.valueOf(i);
-                return compoundTag2.contains(string) ? compoundTag2.getString(string) : listTag.getString(i);
+                return nbtCompound2.contains(string) ? nbtCompound2.getString(string) : nbtList.getString(i);
             };
         } else {
-            intFunction = listTag::getString;
+            intFunction = nbtList::getString;
         }
-        for (int i2 = 0; i2 < listTag.size(); ++i2) {
+        for (int i2 = 0; i2 < nbtList.size(); ++i2) {
             consumer.accept(intFunction.apply(i2));
         }
     }
@@ -276,8 +277,8 @@ extends Screen {
         }
 
         private static List<String> getPages(ItemStack stack) {
-            CompoundTag compoundTag = stack.getTag();
-            return compoundTag != null ? BookScreen.readPages(compoundTag) : ImmutableList.of();
+            NbtCompound nbtCompound = stack.getTag();
+            return nbtCompound != null ? BookScreen.readPages(nbtCompound) : ImmutableList.of();
         }
 
         @Override
@@ -301,9 +302,9 @@ extends Screen {
         }
 
         private static List<String> getPages(ItemStack stack) {
-            CompoundTag compoundTag = stack.getTag();
-            if (compoundTag != null && WrittenBookItem.isValid(compoundTag)) {
-                return BookScreen.readPages(compoundTag);
+            NbtCompound nbtCompound = stack.getTag();
+            if (nbtCompound != null && WrittenBookItem.isValid(nbtCompound)) {
+                return BookScreen.readPages(nbtCompound);
             }
             return ImmutableList.of(Text.Serializer.toJson(new TranslatableText("book.invalid.tag").formatted(Formatting.DARK_RED)));
         }

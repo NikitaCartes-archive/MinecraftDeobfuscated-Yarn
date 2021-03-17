@@ -4,6 +4,7 @@
 package net.minecraft.block.entity;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -17,7 +18,7 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -45,8 +46,8 @@ extends LockableContainerBlockEntity {
         }
     }
 
-    protected boolean deserializeLootTable(CompoundTag tag) {
-        if (tag.contains("LootTable", 8)) {
+    protected boolean deserializeLootTable(NbtCompound tag) {
+        if (tag.contains("LootTable", NbtTypeIds.STRING)) {
             this.lootTableId = new Identifier(tag.getString("LootTable"));
             this.lootTableSeed = tag.getLong("LootTableSeed");
             return true;
@@ -54,7 +55,7 @@ extends LockableContainerBlockEntity {
         return false;
     }
 
-    protected boolean serializeLootTable(CompoundTag tag) {
+    protected boolean serializeLootTable(NbtCompound tag) {
         if (this.lootTableId == null) {
             return false;
         }

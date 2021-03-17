@@ -7,6 +7,7 @@ import com.mojang.authlib.GameProfile;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.SkullBlockEntity;
@@ -30,7 +31,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.Vec3f;
 import org.apache.commons.lang3.StringUtils;
@@ -84,12 +85,12 @@ extends FeatureRenderer<T, M> {
             GameProfile gameProfile = null;
             if (itemStack.hasTag()) {
                 String string;
-                CompoundTag compoundTag = itemStack.getTag();
-                if (compoundTag.contains("SkullOwner", 10)) {
-                    gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
-                } else if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(string = compoundTag.getString("SkullOwner"))) {
+                NbtCompound nbtCompound = itemStack.getTag();
+                if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+                    gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+                } else if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING) && !StringUtils.isBlank(string = nbtCompound.getString("SkullOwner"))) {
                     gameProfile = SkullBlockEntity.loadProperties(new GameProfile(null, string));
-                    compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+                    nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
                 }
             }
             matrixStack.translate(-0.5, 0.0, -0.5);

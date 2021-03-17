@@ -83,7 +83,7 @@ extends HandledScreen<MerchantScreenHandler> {
 
     @Override
     protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = (this.width - this.backgroundWidth) / 2;
@@ -105,7 +105,7 @@ extends HandledScreen<MerchantScreenHandler> {
     }
 
     private void drawLevelInfo(MatrixStack matrices, int x, int y, TradeOffer tradeOffer) {
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
         int i = ((MerchantScreenHandler)this.handler).getLevelProgress();
         int j = ((MerchantScreenHandler)this.handler).getExperience();
@@ -155,7 +155,7 @@ extends HandledScreen<MerchantScreenHandler> {
             int j = (this.height - this.backgroundHeight) / 2;
             int k = j + 16 + 1;
             int l = i + 5 + 5;
-            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, TEXTURE);
             this.renderScrollbar(matrices, i, j, tradeOfferList);
             int m = 0;
@@ -203,7 +203,7 @@ extends HandledScreen<MerchantScreenHandler> {
 
     private void renderArrow(MatrixStack matrices, TradeOffer tradeOffer, int x, int y) {
         RenderSystem.enableBlend();
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
         if (tradeOffer.isDisabled()) {
             MerchantScreen.drawTexture(matrices, x + 5 + 35 + 20, y + 3, this.getZOffset(), 25.0f, 171.0f, 10, 9, 256, 512);
@@ -219,7 +219,7 @@ extends HandledScreen<MerchantScreenHandler> {
         } else {
             this.itemRenderer.renderGuiItemOverlay(this.textRenderer, originalFirstBuyItem, x, y, originalFirstBuyItem.getCount() == 1 ? "1" : null);
             this.itemRenderer.renderGuiItemOverlay(this.textRenderer, adjustedFirstBuyItem, x + 14, y, adjustedFirstBuyItem.getCount() == 1 ? "1" : null);
-            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, TEXTURE);
             this.setZOffset(this.getZOffset() + 300);
             MerchantScreen.drawTexture(matrices, x + 7, y + 12, this.getZOffset(), 0.0f, 176.0f, 9, 2, 256, 512);

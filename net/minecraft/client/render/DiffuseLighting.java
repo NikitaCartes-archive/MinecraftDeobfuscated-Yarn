@@ -16,6 +16,8 @@ public class DiffuseLighting {
     private static final Vec3f field_24427 = Util.make(new Vec3f(-0.2f, 1.0f, 0.7f), Vec3f::normalize);
     private static final Vec3f field_24428 = Util.make(new Vec3f(0.2f, 1.0f, -0.7f), Vec3f::normalize);
     private static final Vec3f field_24429 = Util.make(new Vec3f(-0.2f, -1.0f, 0.7f), Vec3f::normalize);
+    private static final Vec3f field_29567 = Util.make(new Vec3f(0.2f, -1.0f, -1.0f), Vec3f::normalize);
+    private static final Vec3f field_29568 = Util.make(new Vec3f(-0.2f, -1.0f, 0.0f), Vec3f::normalize);
 
     public static void enableForLevel(Matrix4f modelMatrix) {
         RenderSystem.setupLevelDiffuseLighting(field_24428, field_24429, modelMatrix);
@@ -31,6 +33,10 @@ public class DiffuseLighting {
 
     public static void enableGuiDepthLighting() {
         RenderSystem.setupGui3DDiffuseLighting(field_24426, field_24427);
+    }
+
+    public static void method_34742() {
+        RenderSystem.setShaderLights(field_29567, field_29568);
     }
 }
 

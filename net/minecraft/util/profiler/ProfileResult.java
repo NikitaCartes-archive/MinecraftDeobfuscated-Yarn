@@ -3,7 +3,7 @@
  */
 package net.minecraft.util.profiler;
 
-import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -13,7 +13,7 @@ public interface ProfileResult {
     @Environment(value=EnvType.CLIENT)
     public List<ProfilerTiming> getTimings(String var1);
 
-    public boolean save(File var1);
+    public boolean save(Path var1);
 
     public long getStartTime();
 

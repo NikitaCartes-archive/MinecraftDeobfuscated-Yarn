@@ -199,12 +199,11 @@ extends Screen {
             this.backgroundFadeStart = Util.getMeasuringTimeMs();
         }
         float f = this.doBackgroundFade ? (float)(Util.getMeasuringTimeMs() - this.backgroundFadeStart) / 1000.0f : 1.0f;
-        TitleScreen.fill(matrices, 0, 0, this.width, this.height, -1);
         this.backgroundRenderer.render(delta, MathHelper.clamp(f, 0.0f, 1.0f));
         int i = 274;
         int j = this.width / 2 - 137;
         int k = 30;
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, PANORAMA_OVERLAY);
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA);
@@ -215,7 +214,7 @@ extends Screen {
         if ((l & 0xFC000000) == 0) {
             return;
         }
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, MINECRAFT_TITLE_TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, g);
         if (this.isMinceraft) {

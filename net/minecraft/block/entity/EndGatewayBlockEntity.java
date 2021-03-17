@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -15,7 +16,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.block.entity.EndPortalBlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.thrown.EnderPearlEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -52,7 +53,7 @@ extends EndPortalBlockEntity {
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         tag.putLong("Age", this.age);
         if (this.exitPortalPos != null) {
@@ -65,10 +66,10 @@ extends EndPortalBlockEntity {
     }
 
     @Override
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         this.age = tag.getLong("Age");
-        if (tag.contains("ExitPortal", 10)) {
+        if (tag.contains("ExitPortal", NbtTypeIds.COMPOUND)) {
             this.exitPortalPos = NbtHelper.toBlockPos(tag.getCompound("ExitPortal"));
         }
         this.exactTeleport = tag.getBoolean("ExactTeleport");
@@ -130,8 +131,8 @@ extends EndPortalBlockEntity {
     }
 
     @Override
-    public CompoundTag toInitialChunkDataNbt() {
-        return this.writeNbt(new CompoundTag());
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.writeNbt(new NbtCompound());
     }
 
     private static void startTeleportCooldown(World world, BlockPos pos, BlockState state, EndGatewayBlockEntity blockEntity) {

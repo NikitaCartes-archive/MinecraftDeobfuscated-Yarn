@@ -4,6 +4,7 @@
 package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.feature.Feature;
@@ -26,10 +27,10 @@ extends Feature<FillLayerFeatureConfig> {
             for (int j = 0; j < 16; ++j) {
                 int k = blockPos.getX() + i;
                 int l = blockPos.getZ() + j;
-                int m = fillLayerFeatureConfig.height;
+                int m = structureWorldAccess.getBottomY() + fillLayerFeatureConfig.height;
                 mutable.set(k, m, l);
                 if (!structureWorldAccess.getBlockState(mutable).isAir()) continue;
-                structureWorldAccess.setBlockState(mutable, fillLayerFeatureConfig.state, 2);
+                structureWorldAccess.setBlockState(mutable, fillLayerFeatureConfig.state, SetBlockStateFlags.NOTIFY_LISTENERS);
             }
         }
         return true;

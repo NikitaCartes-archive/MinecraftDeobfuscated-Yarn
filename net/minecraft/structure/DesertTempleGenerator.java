@@ -8,8 +8,8 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.StructurePieceWithDimensions;
 import net.minecraft.util.math.BlockBox;
@@ -28,7 +28,7 @@ extends StructurePieceWithDimensions {
         super(StructurePieceType.DESERT_TEMPLE, random, x, 64, z, 21, 15, 21);
     }
 
-    public DesertTempleGenerator(StructureManager manager, CompoundTag tag) {
+    public DesertTempleGenerator(ServerWorld serverWorld, NbtCompound tag) {
         super(StructurePieceType.DESERT_TEMPLE, tag);
         this.hasPlacedChest[0] = tag.getBoolean("hasPlacedChest0");
         this.hasPlacedChest[1] = tag.getBoolean("hasPlacedChest1");
@@ -37,12 +37,12 @@ extends StructurePieceWithDimensions {
     }
 
     @Override
-    protected void writeNbt(CompoundTag tag) {
-        super.writeNbt(tag);
-        tag.putBoolean("hasPlacedChest0", this.hasPlacedChest[0]);
-        tag.putBoolean("hasPlacedChest1", this.hasPlacedChest[1]);
-        tag.putBoolean("hasPlacedChest2", this.hasPlacedChest[2]);
-        tag.putBoolean("hasPlacedChest3", this.hasPlacedChest[3]);
+    protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+        super.writeNbt(world, nbt);
+        nbt.putBoolean("hasPlacedChest0", this.hasPlacedChest[0]);
+        nbt.putBoolean("hasPlacedChest1", this.hasPlacedChest[1]);
+        nbt.putBoolean("hasPlacedChest2", this.hasPlacedChest[2]);
+        nbt.putBoolean("hasPlacedChest3", this.hasPlacedChest[3]);
     }
 
     @Override

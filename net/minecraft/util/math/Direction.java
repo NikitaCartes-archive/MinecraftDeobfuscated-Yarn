@@ -39,7 +39,7 @@ public enum Direction implements StringIdentifiable
     WEST(4, 5, 1, "west", AxisDirection.NEGATIVE, Axis.X, new Vec3i(-1, 0, 0)),
     EAST(5, 4, 3, "east", AxisDirection.POSITIVE, Axis.X, new Vec3i(1, 0, 0));
 
-    public static final Codec<Direction> field_29502;
+    public static final Codec<Direction> CODEC;
     private final int id;
     private final int idOpposite;
     private final int idHorizontal;
@@ -320,7 +320,7 @@ public enum Direction implements StringIdentifiable
     }
 
     static {
-        field_29502 = StringIdentifiable.createCodec(Direction::values, Direction::byName);
+        CODEC = StringIdentifiable.createCodec(Direction::values, Direction::byName);
         ALL = Direction.values();
         NAME_MAP = Arrays.stream(ALL).collect(Collectors.toMap(Direction::getName, direction -> direction));
         VALUES = (Direction[])Arrays.stream(ALL).sorted(Comparator.comparingInt(direction -> direction.id)).toArray(Direction[]::new);
@@ -454,7 +454,7 @@ public enum Direction implements StringIdentifiable
             }
         };
 
-        private static final Axis[] VALUES;
+        public static final Axis[] VALUES;
         public static final Codec<Axis> CODEC;
         private static final Map<String, Axis> BY_NAME;
         private final String name;

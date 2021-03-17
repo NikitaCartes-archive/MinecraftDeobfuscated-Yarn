@@ -3,7 +3,7 @@
  */
 package net.minecraft.world.timer;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.timer.Timer;
 
@@ -28,9 +28,9 @@ public interface TimerCallback<T> {
             return this.callbackClass;
         }
 
-        public abstract void serialize(CompoundTag var1, C var2);
+        public abstract void serialize(NbtCompound var1, C var2);
 
-        public abstract C deserialize(CompoundTag var1);
+        public abstract C deserialize(NbtCompound var1);
     }
 }
 

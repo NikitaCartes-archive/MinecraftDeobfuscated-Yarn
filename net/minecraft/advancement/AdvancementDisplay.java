@@ -13,7 +13,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.advancement.AdvancementFrame;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.MutableText;
@@ -123,8 +123,8 @@ public class AdvancementDisplay {
         ItemStack itemStack = new ItemStack(item);
         if (json.has("nbt")) {
             try {
-                CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.asString(json.get("nbt"), "nbt"));
-                itemStack.setTag(compoundTag);
+                NbtCompound nbtCompound = StringNbtReader.parse(JsonHelper.asString(json.get("nbt"), "nbt"));
+                itemStack.setTag(nbtCompound);
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new JsonSyntaxException("Invalid nbt tag: " + commandSyntaxException.getMessage());
             }

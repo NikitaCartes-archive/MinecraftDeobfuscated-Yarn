@@ -4,7 +4,8 @@
 package net.minecraft.structure;
 
 import java.util.Locale;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.BuriedTreasureGenerator;
 import net.minecraft.structure.DesertTempleGenerator;
 import net.minecraft.structure.EndCityGenerator;
@@ -19,7 +20,6 @@ import net.minecraft.structure.PoolStructurePiece;
 import net.minecraft.structure.RuinedPortalStructurePiece;
 import net.minecraft.structure.ShipwreckGenerator;
 import net.minecraft.structure.StrongholdGenerator;
-import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.SwampHutGenerator;
 import net.minecraft.structure.WoodlandMansionGenerator;
@@ -83,7 +83,7 @@ public interface StructurePieceType {
     public static final StructurePieceType NETHER_FOSSIL = StructurePieceType.register(NetherFossilGenerator.Piece::new, "NeFos");
     public static final StructurePieceType JIGSAW = StructurePieceType.register(PoolStructurePiece::new, "jigsaw");
 
-    public StructurePiece load(StructureManager var1, CompoundTag var2);
+    public StructurePiece load(ServerWorld var1, NbtCompound var2);
 
     public static StructurePieceType register(StructurePieceType pieceType, String id) {
         return Registry.register(Registry.STRUCTURE_PIECE, id.toLowerCase(Locale.ROOT), pieceType);

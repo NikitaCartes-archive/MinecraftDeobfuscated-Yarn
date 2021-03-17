@@ -39,7 +39,7 @@ import net.minecraft.network.SizePrepender;
 import net.minecraft.network.SplitterHandler;
 import net.minecraft.network.packet.s2c.play.DisconnectS2CPacket;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.IntegratedServerHandshakeNetworkHandler;
+import net.minecraft.server.network.LocalServerHandshakeNetworkHandler;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
 import net.minecraft.text.LiteralText;
 import net.minecraft.util.Lazy;
@@ -113,7 +113,7 @@ public class ServerNetworkIo {
                 @Override
                 protected void initChannel(Channel channel) {
                     ClientConnection clientConnection = new ClientConnection(NetworkSide.SERVERBOUND);
-                    clientConnection.setPacketListener(new IntegratedServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
+                    clientConnection.setPacketListener(new LocalServerHandshakeNetworkHandler(ServerNetworkIo.this.server, clientConnection));
                     ServerNetworkIo.this.connections.add(clientConnection);
                     channel.pipeline().addLast("packet_handler", (ChannelHandler)clientConnection);
                 }

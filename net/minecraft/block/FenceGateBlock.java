@@ -3,6 +3,8 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -118,17 +120,17 @@ extends HorizontalFacingBlock {
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
         if (state.get(OPEN).booleanValue()) {
             state = (BlockState)state.with(OPEN, false);
-            world.setBlockState(pos, state, 10);
+            world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
         } else {
             Direction direction = player.getHorizontalFacing();
             if (state.get(FACING) == direction.getOpposite()) {
                 state = (BlockState)state.with(FACING, direction);
             }
             state = (BlockState)state.with(OPEN, true);
-            world.setBlockState(pos, state, 10);
+            world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
         }
         boolean bl = state.get(OPEN);
-        world.syncWorldEvent(player, bl ? 1008 : 1014, pos, 0);
+        world.syncWorldEvent(player, bl ? WorldEvents.FENCE_GATE_OPENS : WorldEvents.FENCE_GATE_CLOSES, pos, 0);
         world.emitGameEvent((Entity)player, bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
         return ActionResult.success(world.isClient);
     }
@@ -140,9 +142,9 @@ extends HorizontalFacingBlock {
         }
         boolean bl = world.isReceivingRedstonePower(pos);
         if (state.get(POWERED) != bl) {
-            world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), 2);
+            world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), SetBlockStateFlags.NOTIFY_LISTENERS);
             if (state.get(OPEN) != bl) {
-                world.syncWorldEvent(null, bl ? 1008 : 1014, pos, 0);
+                world.syncWorldEvent(null, bl ? WorldEvents.FENCE_GATE_OPENS : WorldEvents.FENCE_GATE_CLOSES, pos, 0);
                 world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
             }
         }

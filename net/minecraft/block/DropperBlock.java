@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.DispenserBlock;
@@ -44,7 +45,7 @@ extends DispenserBlock {
         DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)blockPointerImpl.getBlockEntity();
         int i = dispenserBlockEntity.chooseNonEmptySlot();
         if (i < 0) {
-            world.syncWorldEvent(1001, pos, 0);
+            world.syncWorldEvent(WorldEvents.DISPENSER_FAILS, pos, 0);
             return;
         }
         ItemStack itemStack = dispenserBlockEntity.getStack(i);

@@ -8,7 +8,7 @@ import com.mojang.brigadier.exceptions.Dynamic2CommandExceptionType;
 import java.util.function.Predicate;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.registry.Registry;
@@ -19,9 +19,9 @@ implements Predicate<ItemStack> {
     private static final Dynamic2CommandExceptionType OVERSTACKED_EXCEPTION = new Dynamic2CommandExceptionType((object, object2) -> new TranslatableText("arguments.item.overstacked", object, object2));
     private final Item item;
     @Nullable
-    private final CompoundTag tag;
+    private final NbtCompound tag;
 
-    public ItemStackArgument(Item item, @Nullable CompoundTag tag) {
+    public ItemStackArgument(Item item, @Nullable NbtCompound tag) {
         this.item = item;
         this.tag = tag;
     }

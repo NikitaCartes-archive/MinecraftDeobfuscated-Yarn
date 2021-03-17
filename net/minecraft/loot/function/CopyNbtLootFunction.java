@@ -27,9 +27,9 @@ import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
 import net.minecraft.loot.provider.nbt.LootNbtProvider;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.JsonHelper;
 
 public class CopyNbtLootFunction
@@ -63,9 +63,9 @@ extends ConditionalLootFunction {
 
     @Override
     public ItemStack process(ItemStack stack, LootContext context) {
-        Tag tag = this.source.getNbtTag(context);
-        if (tag != null) {
-            this.operations.forEach(operation -> operation.execute(stack::getOrCreateTag, tag));
+        NbtElement nbtElement = this.source.getNbtTag(context);
+        if (nbtElement != null) {
+            this.operations.forEach(operation -> operation.execute(stack::getOrCreateTag, nbtElement));
         }
         return stack;
     }
@@ -107,7 +107,7 @@ extends ConditionalLootFunction {
         REPLACE("replace"){
 
             @Override
-            public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
+            public void merge(NbtElement itemTag, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceTags) throws CommandSyntaxException {
                 targetPath.put(itemTag, Iterables.getLast(sourceTags)::copy);
             }
         }
@@ -115,11 +115,11 @@ extends ConditionalLootFunction {
         APPEND("append"){
 
             @Override
-            public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
-                List<Tag> list = targetPath.getOrInit(itemTag, ListTag::new);
+            public void merge(NbtElement itemTag, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceTags) throws CommandSyntaxException {
+                List<NbtElement> list = targetPath.getOrInit(itemTag, NbtList::new);
                 list.forEach(foundTag -> {
-                    if (foundTag instanceof ListTag) {
-                        sourceTags.forEach(listTag -> ((ListTag)foundTag).add(listTag.copy()));
+                    if (foundTag instanceof NbtList) {
+                        sourceTags.forEach(listTag -> ((NbtList)foundTag).add(listTag.copy()));
                     }
                 });
             }
@@ -128,13 +128,13 @@ extends ConditionalLootFunction {
         MERGE("merge"){
 
             @Override
-            public void merge(Tag itemTag, NbtPathArgumentType.NbtPath targetPath, List<Tag> sourceTags) throws CommandSyntaxException {
-                List<Tag> list = targetPath.getOrInit(itemTag, CompoundTag::new);
+            public void merge(NbtElement itemTag, NbtPathArgumentType.NbtPath targetPath, List<NbtElement> sourceTags) throws CommandSyntaxException {
+                List<NbtElement> list = targetPath.getOrInit(itemTag, NbtCompound::new);
                 list.forEach(foundTag -> {
-                    if (foundTag instanceof CompoundTag) {
+                    if (foundTag instanceof NbtCompound) {
                         sourceTags.forEach(compoundTag -> {
-                            if (compoundTag instanceof CompoundTag) {
-                                ((CompoundTag)foundTag).copyFrom((CompoundTag)compoundTag);
+                            if (compoundTag instanceof NbtCompound) {
+                                ((NbtCompound)foundTag).copyFrom((NbtCompound)compoundTag);
                             }
                         });
                     }
@@ -144,7 +144,7 @@ extends ConditionalLootFunction {
 
         private final String name;
 
-        public abstract void merge(Tag var1, NbtPathArgumentType.NbtPath var2, List<Tag> var3) throws CommandSyntaxException;
+        public abstract void merge(NbtElement var1, NbtPathArgumentType.NbtPath var2, List<NbtElement> var3) throws CommandSyntaxException;
 
         private Operator(String name) {
             this.name = name;
@@ -208,9 +208,9 @@ extends ConditionalLootFunction {
             this.operator = operator;
         }
 
-        public void execute(Supplier<Tag> itemTagTagGetter, Tag sourceEntityTag) {
+        public void execute(Supplier<NbtElement> itemTagTagGetter, NbtElement sourceEntityTag) {
             try {
-                List<Tag> list = this.parsedSourcePath.get(sourceEntityTag);
+                List<NbtElement> list = this.parsedSourcePath.get(sourceEntityTag);
                 if (!list.isEmpty()) {
                     this.operator.merge(itemTagTagGetter.get(), this.parsedTargetPath, list);
                 }

@@ -14,15 +14,15 @@ import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.util.JsonHelper;
 
 public class SetNbtLootFunction
 extends ConditionalLootFunction {
-    private final CompoundTag tag;
+    private final NbtCompound tag;
 
-    private SetNbtLootFunction(LootCondition[] conditions, CompoundTag tag) {
+    private SetNbtLootFunction(LootCondition[] conditions, NbtCompound tag) {
         super(conditions);
         this.tag = tag;
     }
@@ -38,7 +38,7 @@ extends ConditionalLootFunction {
         return stack;
     }
 
-    public static ConditionalLootFunction.Builder<?> builder(CompoundTag tag) {
+    public static ConditionalLootFunction.Builder<?> builder(NbtCompound tag) {
         return SetNbtLootFunction.builder((LootCondition[] conditions) -> new SetNbtLootFunction((LootCondition[])conditions, tag));
     }
 
@@ -53,8 +53,8 @@ extends ConditionalLootFunction {
         @Override
         public SetNbtLootFunction fromJson(JsonObject jsonObject, JsonDeserializationContext jsonDeserializationContext, LootCondition[] lootConditions) {
             try {
-                CompoundTag compoundTag = StringNbtReader.parse(JsonHelper.getString(jsonObject, "tag"));
-                return new SetNbtLootFunction(lootConditions, compoundTag);
+                NbtCompound nbtCompound = StringNbtReader.parse(JsonHelper.getString(jsonObject, "tag"));
+                return new SetNbtLootFunction(lootConditions, nbtCompound);
             } catch (CommandSyntaxException commandSyntaxException) {
                 throw new JsonSyntaxException(commandSyntaxException.getMessage());
             }

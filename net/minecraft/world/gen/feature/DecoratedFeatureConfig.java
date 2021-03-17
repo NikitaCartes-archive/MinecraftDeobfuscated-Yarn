@@ -31,8 +31,8 @@ implements FeatureConfig {
     }
 
     @Override
-    public Stream<ConfiguredFeature<?, ?>> method_30649() {
-        return this.feature.get().method_30648();
+    public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
+        return this.feature.get().getDecoratedFeatures();
     }
 }
 

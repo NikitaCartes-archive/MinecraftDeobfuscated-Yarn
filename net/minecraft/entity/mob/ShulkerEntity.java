@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
@@ -38,7 +39,7 @@ import net.minecraft.entity.passive.GolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -140,17 +141,17 @@ implements Monster {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.dataTracker.set(ATTACHED_FACE, Direction.byId(tag.getByte("AttachFace")));
         this.dataTracker.set(PEEK_AMOUNT, tag.getByte("Peek"));
-        if (tag.contains("Color", 99)) {
+        if (tag.contains("Color", NbtTypeIds.NUMBER)) {
             this.dataTracker.set(COLOR, tag.getByte("Color"));
         }
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putByte("AttachFace", (byte)this.dataTracker.get(ATTACHED_FACE).getId());
         tag.putByte("Peek", this.dataTracker.get(PEEK_AMOUNT));
@@ -259,7 +260,7 @@ implements Monster {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         this.headYaw = this.yaw = 0.0f;
         this.resetPosition();
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
@@ -447,8 +448,8 @@ implements Monster {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
-        super.method_33579(mobSpawnS2CPacket);
+    public void readFromPacket(MobSpawnS2CPacket packet) {
+        super.readFromPacket(packet);
         this.bodyYaw = 0.0f;
     }
 

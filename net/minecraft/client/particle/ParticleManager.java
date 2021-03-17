@@ -31,7 +31,6 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
-import net.minecraft.class_5878;
 import net.minecraft.client.particle.AshParticle;
 import net.minecraft.client.particle.BarrierParticle;
 import net.minecraft.client.particle.BlockDustParticle;
@@ -64,6 +63,7 @@ import net.minecraft.client.particle.LavaEmberParticle;
 import net.minecraft.client.particle.NoteParticle;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleFactory;
+import net.minecraft.client.particle.ParticleGroup;
 import net.minecraft.client.particle.ParticleTextureData;
 import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.particle.PortalParticle;
@@ -102,7 +102,7 @@ import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.ResourceReloadListener;
+import net.minecraft.resource.ResourceReloader;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.crash.CrashException;
@@ -119,7 +119,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class ParticleManager
-implements ResourceReloadListener {
+implements ResourceReloader {
     private static final List<ParticleTextureSheet> PARTICLE_TEXTURE_SHEETS = ImmutableList.of(ParticleTextureSheet.TERRAIN_SHEET, ParticleTextureSheet.PARTICLE_SHEET_OPAQUE, ParticleTextureSheet.PARTICLE_SHEET_LIT, ParticleTextureSheet.PARTICLE_SHEET_TRANSLUCENT, ParticleTextureSheet.CUSTOM);
     protected ClientWorld world;
     private final Map<ParticleTextureSheet, Queue<Particle>> particles = Maps.newIdentityHashMap();
@@ -130,7 +130,7 @@ implements ResourceReloadListener {
     private final Queue<Particle> newParticles = Queues.newArrayDeque();
     private final Map<Identifier, SimpleSpriteProvider> spriteAwareFactories = Maps.newHashMap();
     private final SpriteAtlasTexture particleAtlasTexture;
-    private final Object2IntOpenHashMap<class_5878> field_29072 = new Object2IntOpenHashMap();
+    private final Object2IntOpenHashMap<ParticleGroup> groupCounts = new Object2IntOpenHashMap();
 
     public ParticleManager(ClientWorld world, TextureManager textureManager) {
         this.particleAtlasTexture = new SpriteAtlasTexture(SpriteAtlasTexture.PARTICLE_ATLAS_TEXTURE);
@@ -224,21 +224,25 @@ implements ResourceReloadListener {
         this.registerFactory(ParticleTypes.FALLING_DRIPSTONE_LAVA, BlockLeakParticle.LandingDripstoneLavaFactory::new);
         this.registerFactory(ParticleTypes.VIBRATION, VibrationParticle.Factory::new);
         this.registerFactory(ParticleTypes.GLOW_SQUID_INK, SquidInkParticle.GlowSquidInkFactory::new);
-        this.registerFactory(ParticleTypes.GLOW, GlowParticle.Factory::new);
+        this.registerFactory(ParticleTypes.GLOW, GlowParticle.GlowFactory::new);
+        this.registerFactory(ParticleTypes.WAX_ON, GlowParticle.WaxOnFactory::new);
+        this.registerFactory(ParticleTypes.WAX_OFF, GlowParticle.WaxOffFactory::new);
+        this.registerFactory(ParticleTypes.ELECTRIC_SPARK, GlowParticle.ElectricSparkFactory::new);
+        this.registerFactory(ParticleTypes.SCRAPE, GlowParticle.ScrapeFactory::new);
     }
 
     private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, ParticleFactory<T> factory) {
         this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), (ParticleFactory<?>)factory);
     }
 
-    private <T extends ParticleEffect> void registerFactory(ParticleType<T> particleType, SpriteAwareFactory<T> spriteAwareFactory) {
+    private <T extends ParticleEffect> void registerFactory(ParticleType<T> type, SpriteAwareFactory<T> factory) {
         SimpleSpriteProvider simpleSpriteProvider = new SimpleSpriteProvider();
-        this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(particleType), simpleSpriteProvider);
-        this.factories.put(Registry.PARTICLE_TYPE.getRawId(particleType), (ParticleFactory<?>)spriteAwareFactory.create(simpleSpriteProvider));
+        this.spriteAwareFactories.put(Registry.PARTICLE_TYPE.getId(type), simpleSpriteProvider);
+        this.factories.put(Registry.PARTICLE_TYPE.getRawId(type), (ParticleFactory<?>)factory.create(simpleSpriteProvider));
     }
 
     @Override
-    public CompletableFuture<Void> reload(ResourceReloadListener.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
+    public CompletableFuture<Void> reload(ResourceReloader.Synchronizer synchronizer, ResourceManager manager, Profiler prepareProfiler, Profiler applyProfiler, Executor prepareExecutor, Executor applyExecutor) {
         ConcurrentMap map = Maps.newConcurrentMap();
         CompletableFuture[] completableFutures = (CompletableFuture[])Registry.PARTICLE_TYPE.getIds().stream().map(identifier -> CompletableFuture.runAsync(() -> this.loadTextureList(manager, (Identifier)identifier, map), prepareExecutor)).toArray(CompletableFuture[]::new);
         return ((CompletableFuture)((CompletableFuture)CompletableFuture.allOf(completableFutures).thenApplyAsync(void_ -> {
@@ -318,11 +322,11 @@ implements ResourceReloadListener {
     }
 
     public void addParticle(Particle particle) {
-        Optional<class_5878> optional = particle.method_34019();
+        Optional<ParticleGroup> optional = particle.getGroup();
         if (optional.isPresent()) {
-            if (this.method_34021(optional.get())) {
+            if (this.canAdd(optional.get())) {
                 this.newParticles.add(particle);
-                this.method_34022(optional.get(), 1);
+                this.addTo(optional.get(), 1);
             }
         } else {
             this.newParticles.add(particle);
@@ -330,8 +334,8 @@ implements ResourceReloadListener {
     }
 
     public void tick() {
-        this.particles.forEach((particleTextureSheet, queue) -> {
-            this.world.getProfiler().push(particleTextureSheet.toString());
+        this.particles.forEach((sheet, queue) -> {
+            this.world.getProfiler().push(sheet.toString());
             this.tickParticles((Collection<Particle>)queue);
             this.world.getProfiler().pop();
         });
@@ -352,21 +356,26 @@ implements ResourceReloadListener {
         }
     }
 
-    private void tickParticles(Collection<Particle> collection) {
-        if (!collection.isEmpty()) {
-            Iterator<Particle> iterator = collection.iterator();
+    /**
+     * Ticks all particles belonging to the same texture sheet.
+     * 
+     * @param particles a collection of particles from the same sheet
+     */
+    private void tickParticles(Collection<Particle> particles) {
+        if (!particles.isEmpty()) {
+            Iterator<Particle> iterator = particles.iterator();
             while (iterator.hasNext()) {
                 Particle particle = iterator.next();
                 this.tickParticle(particle);
                 if (particle.isAlive()) continue;
-                particle.method_34019().ifPresent(arg -> this.method_34022((class_5878)arg, -1));
+                particle.getGroup().ifPresent(group -> this.addTo((ParticleGroup)group, -1));
                 iterator.remove();
             }
         }
     }
 
-    private void method_34022(class_5878 arg, int i) {
-        this.field_29072.addTo(arg, i);
+    private void addTo(ParticleGroup group, int count) {
+        this.groupCounts.addTo(group, count);
     }
 
     private void tickParticle(Particle particle) {
@@ -381,17 +390,17 @@ implements ResourceReloadListener {
         }
     }
 
-    public void renderParticles(MatrixStack matrixStack, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f) {
+    public void renderParticles(MatrixStack matrices, VertexConsumerProvider.Immediate immediate, LightmapTextureManager lightmapTextureManager, Camera camera, float f) {
         lightmapTextureManager.enable();
         RenderSystem.enableDepthTest();
-        MatrixStack matrixStack2 = RenderSystem.getModelViewStack();
-        matrixStack2.push();
-        matrixStack2.method_34425(matrixStack.peek().getModel());
+        MatrixStack matrixStack = RenderSystem.getModelViewStack();
+        matrixStack.push();
+        matrixStack.method_34425(matrices.peek().getModel());
         RenderSystem.applyModelViewMatrix();
         for (ParticleTextureSheet particleTextureSheet : PARTICLE_TEXTURE_SHEETS) {
             Iterable iterable = this.particles.get(particleTextureSheet);
             if (iterable == null) continue;
-            RenderSystem.setShader(GameRenderer::method_34546);
+            RenderSystem.setShader(GameRenderer::getParticleShader);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             Tessellator tessellator = Tessellator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuffer();
@@ -409,7 +418,7 @@ implements ResourceReloadListener {
             }
             particleTextureSheet.draw(tessellator);
         }
-        matrixStack2.pop();
+        matrixStack.pop();
         RenderSystem.applyModelViewMatrix();
         RenderSystem.depthMask(true);
         RenderSystem.disableBlend();
@@ -420,7 +429,7 @@ implements ResourceReloadListener {
         this.world = world;
         this.particles.clear();
         this.newEmitterParticles.clear();
-        this.field_29072.clear();
+        this.groupCounts.clear();
     }
 
     public void addBlockBreakParticles(BlockPos pos, BlockState state) {
@@ -490,8 +499,12 @@ implements ResourceReloadListener {
         return String.valueOf(this.particles.values().stream().mapToInt(Collection::size).sum());
     }
 
-    private boolean method_34021(class_5878 arg) {
-        return this.field_29072.getInt(arg) < arg.method_34045();
+    /**
+     * Returns if another particle from {@code group} can be rendered by this
+     * manager.
+     */
+    private boolean canAdd(ParticleGroup group) {
+        return this.groupCounts.getInt(group) < group.getMaxCount();
     }
 
     @Environment(value=EnvType.CLIENT)

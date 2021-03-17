@@ -7,74 +7,74 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.regex.Pattern;
-import net.minecraft.nbt.ByteArrayTag;
-import net.minecraft.nbt.ByteTag;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.EndTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.IntTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.LongArrayTag;
-import net.minecraft.nbt.LongTag;
-import net.minecraft.nbt.ShortTag;
-import net.minecraft.nbt.StringTag;
-import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.visitor.NbtTagVisitor;
+import net.minecraft.nbt.NbtByte;
+import net.minecraft.nbt.NbtByteArray;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtInt;
+import net.minecraft.nbt.NbtIntArray;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtLong;
+import net.minecraft.nbt.NbtLongArray;
+import net.minecraft.nbt.NbtNull;
+import net.minecraft.nbt.NbtShort;
+import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.visitor.NbtElementVisitor;
 
 /**
  * A simple converter to turn NBT into single-line SNBT. The output may be parsed back into binary NBT.
  */
 public class StringNbtWriter
-implements NbtTagVisitor {
+implements NbtElementVisitor {
     private static final Pattern SIMPLE_NAME = Pattern.compile("[A-Za-z0-9._+-]+");
     private final StringBuilder result = new StringBuilder();
 
-    public String apply(Tag tag) {
-        tag.accept(this);
+    public String apply(NbtElement element) {
+        element.accept(this);
         return this.result.toString();
     }
 
     @Override
-    public void visitStringTag(StringTag tag) {
-        this.result.append(StringTag.escape(tag.asString()));
+    public void visitString(NbtString element) {
+        this.result.append(NbtString.escape(element.asString()));
     }
 
     @Override
-    public void visitByteTag(ByteTag tag) {
-        this.result.append(tag.getNumber()).append('b');
+    public void visitByte(NbtByte element) {
+        this.result.append(element.numberValue()).append('b');
     }
 
     @Override
-    public void visitShortTag(ShortTag tag) {
-        this.result.append(tag.getNumber()).append('s');
+    public void visitShort(NbtShort element) {
+        this.result.append(element.numberValue()).append('s');
     }
 
     @Override
-    public void visitIntTag(IntTag tag) {
-        this.result.append(tag.getNumber());
+    public void visitInt(NbtInt element) {
+        this.result.append(element.numberValue());
     }
 
     @Override
-    public void visitLongTag(LongTag tag) {
-        this.result.append(tag.getNumber()).append('L');
+    public void visitLong(NbtLong element) {
+        this.result.append(element.numberValue()).append('L');
     }
 
     @Override
-    public void visitFloatTag(FloatTag tag) {
-        this.result.append(tag.getFloat()).append('f');
+    public void visitFloat(NbtFloat element) {
+        this.result.append(element.floatValue()).append('f');
     }
 
     @Override
-    public void visitDoubleTag(DoubleTag tag) {
-        this.result.append(tag.getDouble()).append('d');
+    public void visitDouble(NbtDouble element) {
+        this.result.append(element.doubleValue()).append('d');
     }
 
     @Override
-    public void visitByteArrayTag(ByteArrayTag tag) {
+    public void visitByteArray(NbtByteArray element) {
         this.result.append("[B;");
-        byte[] bs = tag.getByteArray();
+        byte[] bs = element.getByteArray();
         for (int i = 0; i < bs.length; ++i) {
             if (i != 0) {
                 this.result.append(',');
@@ -85,9 +85,9 @@ implements NbtTagVisitor {
     }
 
     @Override
-    public void visitIntArrayTag(IntArrayTag tag) {
+    public void visitIntArray(NbtIntArray element) {
         this.result.append("[I;");
-        int[] is = tag.getIntArray();
+        int[] is = element.getIntArray();
         for (int i = 0; i < is.length; ++i) {
             if (i != 0) {
                 this.result.append(',');
@@ -98,9 +98,9 @@ implements NbtTagVisitor {
     }
 
     @Override
-    public void visitLongArrayTag(LongArrayTag tag) {
+    public void visitLongArray(NbtLongArray element) {
         this.result.append("[L;");
-        long[] ls = tag.getLongArray();
+        long[] ls = element.getLongArray();
         for (int i = 0; i < ls.length; ++i) {
             if (i != 0) {
                 this.result.append(',');
@@ -111,27 +111,27 @@ implements NbtTagVisitor {
     }
 
     @Override
-    public void visitListTag(ListTag tag) {
+    public void visitList(NbtList element) {
         this.result.append('[');
-        for (int i = 0; i < tag.size(); ++i) {
+        for (int i = 0; i < element.size(); ++i) {
             if (i != 0) {
                 this.result.append(',');
             }
-            this.result.append(new StringNbtWriter().apply(tag.get(i)));
+            this.result.append(new StringNbtWriter().apply(element.get(i)));
         }
         this.result.append(']');
     }
 
     @Override
-    public void visitCompoundTag(CompoundTag tag) {
+    public void visitCompound(NbtCompound compound) {
         this.result.append('{');
-        ArrayList<String> list = Lists.newArrayList(tag.getKeys());
+        ArrayList<String> list = Lists.newArrayList(compound.getKeys());
         Collections.sort(list);
         for (String string : list) {
             if (this.result.length() != 1) {
                 this.result.append(',');
             }
-            this.result.append(StringNbtWriter.escapeName(string)).append(':').append(new StringNbtWriter().apply(tag.get(string)));
+            this.result.append(StringNbtWriter.escapeName(string)).append(':').append(new StringNbtWriter().apply(compound.get(string)));
         }
         this.result.append('}');
     }
@@ -140,11 +140,11 @@ implements NbtTagVisitor {
         if (SIMPLE_NAME.matcher(name).matches()) {
             return name;
         }
-        return StringTag.escape(name);
+        return NbtString.escape(name);
     }
 
     @Override
-    public void visitEndTag(EndTag tag) {
+    public void visitNull(NbtNull element) {
         this.result.append("END");
     }
 }

@@ -10,8 +10,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.collection.IdList;
 import net.minecraft.util.collection.PackedIntegerArray;
@@ -29,8 +29,8 @@ implements PaletteResizeListener<T> {
     private final Palette<T> fallbackPalette;
     private final PaletteResizeListener<T> noOpPaletteResizeHandler = (newSize, added) -> 0;
     private final IdList<T> idList;
-    private final Function<CompoundTag, T> elementDeserializer;
-    private final Function<T, CompoundTag> elementSerializer;
+    private final Function<NbtCompound, T> elementDeserializer;
+    private final Function<T, NbtCompound> elementSerializer;
     private final T defaultValue;
     protected PackedIntegerArray data;
     private Palette<T> palette;
@@ -51,7 +51,7 @@ implements PaletteResizeListener<T> {
         this.writeLock.release();
     }
 
-    public PalettedContainer(Palette<T> palette, IdList<T> idList, Function<CompoundTag, T> elementDeserializer, Function<T, CompoundTag> elementSerializer, T defaultElement) {
+    public PalettedContainer(Palette<T> palette, IdList<T> idList, Function<NbtCompound, T> elementDeserializer, Function<T, NbtCompound> elementSerializer, T defaultElement) {
         this.fallbackPalette = palette;
         this.idList = idList;
         this.elementDeserializer = elementDeserializer;
@@ -147,7 +147,7 @@ implements PaletteResizeListener<T> {
         this.unlock();
     }
 
-    public void read(ListTag paletteTag, long[] data) {
+    public void read(NbtList paletteTag, long[] data) {
         this.lock();
         int i = Math.max(4, MathHelper.log2DeBruijn(paletteTag.size()));
         if (i != this.paletteSize) {
@@ -173,7 +173,7 @@ implements PaletteResizeListener<T> {
         this.unlock();
     }
 
-    public void write(CompoundTag tag, String paletteKey, String dataKey) {
+    public void write(NbtCompound tag, String paletteKey, String dataKey) {
         this.lock();
         BiMapPalette<T> biMapPalette = new BiMapPalette<T>(this.idList, this.paletteSize, this.noOpPaletteResizeHandler, this.elementDeserializer, this.elementSerializer);
         T object = this.defaultValue;
@@ -187,10 +187,10 @@ implements PaletteResizeListener<T> {
             }
             is[j] = i;
         }
-        ListTag listTag = new ListTag();
-        biMapPalette.writeNbt(listTag);
-        tag.put(paletteKey, listTag);
-        int k = Math.max(4, MathHelper.log2DeBruijn(listTag.size()));
+        NbtList nbtList = new NbtList();
+        biMapPalette.writeNbt(nbtList);
+        tag.put(paletteKey, nbtList);
+        int k = Math.max(4, MathHelper.log2DeBruijn(nbtList.size()));
         PackedIntegerArray packedIntegerArray = new PackedIntegerArray(k, 4096);
         for (int l = 0; l < is.length; ++l) {
             packedIntegerArray.set(l, is[l]);

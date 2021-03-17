@@ -26,6 +26,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class GameModeSelectionScreen
@@ -69,7 +70,7 @@ extends Screen {
         if (this.checkForClose()) {
             return;
         }
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         matrices.push();
         RenderSystem.enableBlend();
         RenderSystem.setShaderTexture(0, TEXTURE);
@@ -110,7 +111,7 @@ extends Screen {
     }
 
     private boolean checkForClose() {
-        if (!InputUtil.isKeyPressed(this.client.getWindow().getHandle(), 292)) {
+        if (!InputUtil.isKeyPressed(this.client.getWindow().getHandle(), GLFW.GLFW_KEY_F3)) {
             this.apply();
             this.client.openScreen(null);
             return true;
@@ -120,7 +121,7 @@ extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == 293 && this.gameMode.isPresent()) {
+        if (keyCode == GLFW.GLFW_KEY_F4 && this.gameMode.isPresent()) {
             this.mouseUsedForSelection = false;
             this.gameMode = this.gameMode.get().next();
             return true;
@@ -165,7 +166,7 @@ extends Screen {
         }
 
         private void drawBackground(MatrixStack matrices, TextureManager textureManager) {
-            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(this.x, this.y, 0.0);
@@ -174,7 +175,7 @@ extends Screen {
         }
 
         private void drawSelectionBox(MatrixStack matrices, TextureManager textureManager) {
-            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, TEXTURE);
             matrices.push();
             matrices.translate(this.x, this.y, 0.0);

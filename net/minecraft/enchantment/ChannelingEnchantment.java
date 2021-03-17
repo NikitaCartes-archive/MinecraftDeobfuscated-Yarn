@@ -27,10 +27,5 @@ extends Enchantment {
     public int getMaxLevel() {
         return 1;
     }
-
-    @Override
-    public boolean canAccept(Enchantment other) {
-        return super.canAccept(other);
-    }
 }
 

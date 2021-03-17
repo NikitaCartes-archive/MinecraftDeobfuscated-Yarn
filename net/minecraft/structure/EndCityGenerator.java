@@ -14,7 +14,8 @@ import net.minecraft.entity.mob.ShulkerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -227,12 +228,12 @@ public class EndCityGenerator {
             this.initializeStructureData(manager);
         }
 
-        public Piece(StructureManager manager, CompoundTag tag) {
+        public Piece(ServerWorld serverWorld, NbtCompound tag) {
             super(StructurePieceType.END_CITY, tag);
             this.template = tag.getString("Template");
             this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
             this.ignoreAir = tag.getBoolean("OW");
-            this.initializeStructureData(manager);
+            this.initializeStructureData(serverWorld.getStructureManager());
         }
 
         private void initializeStructureData(StructureManager manager) {
@@ -242,11 +243,11 @@ public class EndCityGenerator {
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putString("Template", this.template);
-            tag.putString("Rot", this.rotation.name());
-            tag.putBoolean("OW", this.ignoreAir);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putString("Template", this.template);
+            nbt.putString("Rot", this.rotation.name());
+            nbt.putBoolean("OW", this.ignoreAir);
         }
 
         @Override

@@ -5,6 +5,7 @@ package net.minecraft.screen;
 
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Blocks;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -75,7 +76,7 @@ extends ScreenHandler {
                     if (world instanceof ServerWorld) {
                         ExperienceOrbEntity.spawn((ServerWorld)world, Vec3d.ofCenter(blockPos), this.getExperience((World)world));
                     }
-                    world.syncWorldEvent(1042, (BlockPos)blockPos, 0);
+                    world.syncWorldEvent(WorldEvents.GRINDSTONE_USED, (BlockPos)blockPos, 0);
                 });
                 GrindstoneScreenHandler.this.input.setStack(0, ItemStack.EMPTY);
                 GrindstoneScreenHandler.this.input.setStack(1, ItemStack.EMPTY);

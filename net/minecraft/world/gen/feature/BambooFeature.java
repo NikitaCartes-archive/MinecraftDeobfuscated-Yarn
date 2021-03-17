@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BambooBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -50,18 +51,18 @@ extends Feature<ProbabilityConfig> {
                             if (n * n + (o = m - blockPos.getZ()) * o > k * k) continue;
                             mutable2.set(l, structureWorldAccess.getTopY(Heightmap.Type.WORLD_SURFACE, l, m) - 1, m);
                             if (!BambooFeature.isSoil(structureWorldAccess.getBlockState(mutable2))) continue;
-                            structureWorldAccess.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), 2);
+                            structureWorldAccess.setBlockState(mutable2, Blocks.PODZOL.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                         }
                     }
                 }
                 for (k = 0; k < j && structureWorldAccess.isAir(mutable); ++k) {
-                    structureWorldAccess.setBlockState(mutable, BAMBOO, 2);
+                    structureWorldAccess.setBlockState(mutable, BAMBOO, SetBlockStateFlags.NOTIFY_LISTENERS);
                     mutable.move(Direction.UP, 1);
                 }
                 if (mutable.getY() - blockPos.getY() >= 3) {
-                    structureWorldAccess.setBlockState(mutable, BAMBOO_TOP_1, 2);
-                    structureWorldAccess.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_2, 2);
-                    structureWorldAccess.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_3, 2);
+                    structureWorldAccess.setBlockState(mutable, BAMBOO_TOP_1, SetBlockStateFlags.NOTIFY_LISTENERS);
+                    structureWorldAccess.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_2, SetBlockStateFlags.NOTIFY_LISTENERS);
+                    structureWorldAccess.setBlockState(mutable.move(Direction.DOWN, 1), BAMBOO_TOP_3, SetBlockStateFlags.NOTIFY_LISTENERS);
                 }
             }
             ++i;

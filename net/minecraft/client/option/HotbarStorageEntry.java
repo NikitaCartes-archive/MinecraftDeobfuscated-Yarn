@@ -10,8 +10,8 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.util.collection.DefaultedList;
 
 @Environment(value=EnvType.CLIENT)
@@ -24,15 +24,15 @@ extends ForwardingList<ItemStack> {
         return this.delegate;
     }
 
-    public ListTag toListTag() {
-        ListTag listTag = new ListTag();
+    public NbtList toListTag() {
+        NbtList nbtList = new NbtList();
         for (ItemStack itemStack : this.delegate()) {
-            listTag.add(itemStack.writeNbt(new CompoundTag()));
+            nbtList.add(itemStack.writeNbt(new NbtCompound()));
         }
-        return listTag;
+        return nbtList;
     }
 
-    public void fromListTag(ListTag tag) {
+    public void fromListTag(NbtList tag) {
         Collection list = this.delegate();
         for (int i = 0; i < list.size(); ++i) {
             list.set(i, ItemStack.fromNbt(tag.getCompound(i)));

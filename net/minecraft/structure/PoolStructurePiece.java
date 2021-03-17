@@ -5,12 +5,15 @@ package net.minecraft.structure;
 
 import com.google.common.collect.Lists;
 import com.mojang.serialization.Dynamic;
+import com.mojang.serialization.DynamicOps;
 import java.util.List;
 import java.util.Random;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.JigsawJunction;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
@@ -18,6 +21,8 @@ import net.minecraft.structure.StructurePieceType;
 import net.minecraft.structure.pool.EmptyPoolElement;
 import net.minecraft.structure.pool.StructurePoolElement;
 import net.minecraft.util.BlockRotation;
+import net.minecraft.util.dynamic.RegistryOps;
+import net.minecraft.util.dynamic.RegistryReadingOps;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -47,32 +52,34 @@ extends StructurePiece {
         this.boundingBox = boundingBox;
     }
 
-    public PoolStructurePiece(StructureManager manager, CompoundTag tag2) {
-        super(StructurePieceType.JIGSAW, tag2);
-        this.structureManager = manager;
-        this.pos = new BlockPos(tag2.getInt("PosX"), tag2.getInt("PosY"), tag2.getInt("PosZ"));
-        this.groundLevelDelta = tag2.getInt("ground_level_delta");
-        this.poolElement = StructurePoolElement.CODEC.parse(NbtOps.INSTANCE, tag2.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElse(EmptyPoolElement.INSTANCE);
-        this.rotation = BlockRotation.valueOf(tag2.getString("rotation"));
-        this.boundingBox = this.poolElement.getBoundingBox(manager, this.pos, this.rotation);
-        ListTag listTag = tag2.getList("junctions", 10);
+    public PoolStructurePiece(ServerWorld serverWorld, NbtCompound tag) {
+        super(StructurePieceType.JIGSAW, tag);
+        this.structureManager = serverWorld.getStructureManager();
+        this.pos = new BlockPos(tag.getInt("PosX"), tag.getInt("PosY"), tag.getInt("PosZ"));
+        this.groundLevelDelta = tag.getInt("ground_level_delta");
+        RegistryOps<NbtElement> registryOps = RegistryOps.of(NbtOps.INSTANCE, serverWorld.getServer().method_34864(), serverWorld.getServer().getRegistryManager());
+        this.poolElement = StructurePoolElement.CODEC.parse(registryOps, tag.getCompound("pool_element")).resultOrPartial(LOGGER::error).orElse(EmptyPoolElement.INSTANCE);
+        this.rotation = BlockRotation.valueOf(tag.getString("rotation"));
+        this.boundingBox = this.poolElement.getBoundingBox(this.structureManager, this.pos, this.rotation);
+        NbtList nbtList = tag.getList("junctions", NbtTypeIds.COMPOUND);
         this.junctions.clear();
-        listTag.forEach(tag -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<Tag>(NbtOps.INSTANCE, (Tag)tag))));
+        nbtList.forEach(nbtElement -> this.junctions.add(JigsawJunction.method_28873(new Dynamic<NbtElement>((DynamicOps<NbtElement>)registryOps, (NbtElement)nbtElement))));
     }
 
     @Override
-    protected void writeNbt(CompoundTag tag2) {
-        tag2.putInt("PosX", this.pos.getX());
-        tag2.putInt("PosY", this.pos.getY());
-        tag2.putInt("PosZ", this.pos.getZ());
-        tag2.putInt("ground_level_delta", this.groundLevelDelta);
-        StructurePoolElement.CODEC.encodeStart(NbtOps.INSTANCE, this.poolElement).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("pool_element", (Tag)tag));
-        tag2.putString("rotation", this.rotation.name());
-        ListTag listTag = new ListTag();
+    protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+        nbt.putInt("PosX", this.pos.getX());
+        nbt.putInt("PosY", this.pos.getY());
+        nbt.putInt("PosZ", this.pos.getZ());
+        nbt.putInt("ground_level_delta", this.groundLevelDelta);
+        RegistryReadingOps<NbtElement> registryReadingOps = RegistryReadingOps.of(NbtOps.INSTANCE, world.getServer().getRegistryManager());
+        StructurePoolElement.CODEC.encodeStart(registryReadingOps, this.poolElement).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> nbt.put("pool_element", (NbtElement)nbtElement));
+        nbt.putString("rotation", this.rotation.name());
+        NbtList nbtList = new NbtList();
         for (JigsawJunction jigsawJunction : this.junctions) {
-            listTag.add(jigsawJunction.serialize(NbtOps.INSTANCE).getValue());
+            nbtList.add(jigsawJunction.serialize(registryReadingOps).getValue());
         }
-        tag2.put("junctions", listTag);
+        nbt.put("junctions", nbtList);
     }
 
     @Override

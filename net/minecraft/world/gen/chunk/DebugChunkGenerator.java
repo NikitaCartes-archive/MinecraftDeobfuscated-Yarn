@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.dynamic.RegistryLookupCodec;
@@ -79,10 +80,10 @@ extends ChunkGenerator {
             for (int j = 0; j < 16; ++j) {
                 int k = ChunkSectionPos.getOffsetPos(chunkPos.x, i);
                 int l = ChunkSectionPos.getOffsetPos(chunkPos.z, j);
-                region.setBlockState(mutable.set(k, 60, l), BARRIER, 2);
+                region.setBlockState(mutable.set(k, 60, l), BARRIER, SetBlockStateFlags.NOTIFY_LISTENERS);
                 BlockState blockState = DebugChunkGenerator.getBlockState(k, l);
                 if (blockState == null) continue;
-                region.setBlockState(mutable.set(k, 70, l), blockState, 2);
+                region.setBlockState(mutable.set(k, 70, l), blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
             }
         }
     }

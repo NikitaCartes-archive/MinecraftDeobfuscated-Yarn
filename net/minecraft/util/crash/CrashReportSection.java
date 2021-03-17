@@ -93,17 +93,17 @@ public class CrashReportSection {
         return stringBuilder.toString();
     }
 
-    public CrashReportSection add(String string, CrashCallable<String> crashCallable) {
+    public CrashReportSection add(String name, CrashCallable<String> crashCallable) {
         try {
-            this.add(string, crashCallable.call());
+            this.add(name, crashCallable.call());
         } catch (Throwable throwable) {
-            this.add(string, throwable);
+            this.add(name, throwable);
         }
         return this;
     }
 
-    public CrashReportSection add(String name, Object object) {
-        this.elements.add(new Element(name, object));
+    public CrashReportSection add(String name, Object detail) {
+        this.elements.add(new Element(name, detail));
         return this;
     }
 
@@ -121,21 +121,21 @@ public class CrashReportSection {
         return this.stackTrace.length;
     }
 
-    public boolean method_584(StackTraceElement stackTraceElement, StackTraceElement stackTraceElement2) {
-        if (this.stackTrace.length == 0 || stackTraceElement == null) {
+    public boolean shouldGenerateStackTrace(StackTraceElement prev, StackTraceElement next) {
+        if (this.stackTrace.length == 0 || prev == null) {
             return false;
         }
-        StackTraceElement stackTraceElement3 = this.stackTrace[0];
-        if (!(stackTraceElement3.isNativeMethod() == stackTraceElement.isNativeMethod() && stackTraceElement3.getClassName().equals(stackTraceElement.getClassName()) && stackTraceElement3.getFileName().equals(stackTraceElement.getFileName()) && stackTraceElement3.getMethodName().equals(stackTraceElement.getMethodName()))) {
+        StackTraceElement stackTraceElement = this.stackTrace[0];
+        if (!(stackTraceElement.isNativeMethod() == prev.isNativeMethod() && stackTraceElement.getClassName().equals(prev.getClassName()) && stackTraceElement.getFileName().equals(prev.getFileName()) && stackTraceElement.getMethodName().equals(prev.getMethodName()))) {
             return false;
         }
-        if (stackTraceElement2 != null != this.stackTrace.length > 1) {
+        if (next != null != this.stackTrace.length > 1) {
             return false;
         }
-        if (stackTraceElement2 != null && !this.stackTrace[1].equals(stackTraceElement2)) {
+        if (next != null && !this.stackTrace[1].equals(next)) {
             return false;
         }
-        this.stackTrace[0] = stackTraceElement;
+        this.stackTrace[0] = prev;
         return true;
     }
 
@@ -145,20 +145,20 @@ public class CrashReportSection {
         this.stackTrace = stackTraceElements;
     }
 
-    public void addStackTrace(StringBuilder stringBuilder) {
-        stringBuilder.append("-- ").append(this.title).append(" --\n");
-        stringBuilder.append("Details:");
+    public void addStackTrace(StringBuilder crashReportBuilder) {
+        crashReportBuilder.append("-- ").append(this.title).append(" --\n");
+        crashReportBuilder.append("Details:");
         for (Element element : this.elements) {
-            stringBuilder.append("\n\t");
-            stringBuilder.append(element.getName());
-            stringBuilder.append(": ");
-            stringBuilder.append(element.getDetail());
+            crashReportBuilder.append("\n\t");
+            crashReportBuilder.append(element.getName());
+            crashReportBuilder.append(": ");
+            crashReportBuilder.append(element.getDetail());
         }
         if (this.stackTrace != null && this.stackTrace.length > 0) {
-            stringBuilder.append("\nStacktrace:");
+            crashReportBuilder.append("\nStacktrace:");
             for (StackTraceElement stackTraceElement : this.stackTrace) {
-                stringBuilder.append("\n\tat ");
-                stringBuilder.append(stackTraceElement);
+                crashReportBuilder.append("\n\tat ");
+                crashReportBuilder.append(stackTraceElement);
             }
         }
     }

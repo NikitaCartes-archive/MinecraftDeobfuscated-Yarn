@@ -432,8 +432,8 @@ Element {
         }
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::method_34539);
-        RenderSystem.setShaderColor(0.0f, 0.0f, 255.0f, 255.0f);
+        RenderSystem.setShader(GameRenderer::getPositionShader);
+        RenderSystem.setShaderColor(0.0f, 0.0f, 1.0f, 1.0f);
         RenderSystem.disableTexture();
         RenderSystem.enableColorLogicOp();
         RenderSystem.logicOp(GlStateManager.LogicOp.OR_REVERSE);
@@ -443,6 +443,7 @@ Element {
         bufferBuilder.vertex(x2, y1, 0.0).next();
         bufferBuilder.vertex(x1, y1, 0.0).next();
         tessellator.draw();
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.disableColorLogicOp();
         RenderSystem.enableTexture();
     }

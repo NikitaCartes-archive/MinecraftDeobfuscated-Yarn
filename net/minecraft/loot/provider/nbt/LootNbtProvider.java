@@ -7,12 +7,12 @@ import java.util.Set;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.nbt.LootNbtProviderType;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
 import org.jetbrains.annotations.Nullable;
 
 public interface LootNbtProvider {
     @Nullable
-    public Tag getNbtTag(LootContext var1);
+    public NbtElement getNbtTag(LootContext var1);
 
     public Set<LootContextParameter<?>> getRequiredParameters();
 

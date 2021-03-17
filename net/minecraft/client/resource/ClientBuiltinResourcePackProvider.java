@@ -117,7 +117,7 @@ implements ResourcePackProvider {
                 Map<String, String> map = ClientBuiltinResourcePackProvider.getDownloadHeaders();
                 MinecraftClient minecraftClient = MinecraftClient.getInstance();
                 minecraftClient.submitAndJoin(() -> minecraftClient.openScreen(progressScreen));
-                completableFuture = NetworkUtils.download(file, string, map, 0x6400000, progressScreen, minecraftClient.getNetworkProxy());
+                completableFuture = NetworkUtils.downloadResourcePack(file, string, map, 0x6400000, progressScreen, minecraftClient.getNetworkProxy());
             }
             CompletableFuture<?> completableFuture2 = this.downloadTask = ((CompletableFuture)completableFuture.thenCompose(object -> {
                 if (!this.verifyFile(string4, file)) {

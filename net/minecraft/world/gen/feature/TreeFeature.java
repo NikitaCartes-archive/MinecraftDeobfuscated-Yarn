@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.OptionalInt;
 import java.util.Random;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -68,7 +69,7 @@ extends Feature<TreeFeatureConfig> {
     }
 
     public static void setBlockStateWithoutUpdatingNeighbors(ModifiableWorld world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, state, 19);
+        world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE);
     }
 
     public static boolean canReplace(TestableWorld world, BlockPos pos) {
@@ -138,7 +139,7 @@ extends Feature<TreeFeatureConfig> {
             treeFeatureConfig.decorators.forEach(decorator -> decorator.generate(structureWorldAccess, random, list, list2, set3, blockBox));
         }
         VoxelSet voxelSet = this.placeLogsAndLeaves(structureWorldAccess, blockBox, set, set3);
-        Structure.updateCorner(structureWorldAccess, 3, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
+        Structure.updateCorner(structureWorldAccess, SetBlockStateFlags.DEFAULT, voxelSet, blockBox.minX, blockBox.minY, blockBox.minZ);
         return true;
     }
 

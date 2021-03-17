@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.Iterator;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -105,7 +106,7 @@ implements Waterloggable {
                 world.breakBlock(pos, true);
             }
         } else if (state != blockState) {
-            world.setBlockState(pos, blockState, 3);
+            world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
         }
     }
 

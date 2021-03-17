@@ -5,6 +5,8 @@ package net.minecraft.block;
 
 import com.google.common.collect.Lists;
 import java.util.LinkedList;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -42,8 +44,8 @@ extends Block {
 
     protected void update(World world, BlockPos pos) {
         if (this.absorbWater(world, pos)) {
-            world.setBlockState(pos, Blocks.WET_SPONGE.getDefaultState(), 2);
-            world.syncWorldEvent(2001, pos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
+            world.setBlockState(pos, Blocks.WET_SPONGE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(Blocks.WATER.getDefaultState()));
         }
     }
 
@@ -68,7 +70,7 @@ extends Block {
                     continue;
                 }
                 if (blockState.getBlock() instanceof FluidBlock) {
-                    world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 3);
+                    world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
                     ++i;
                     if (j >= 6) continue;
                     queue.add(new Pair<BlockPos, Integer>(blockPos2, j + 1));
@@ -77,7 +79,7 @@ extends Block {
                 if (material != Material.UNDERWATER_PLANT && material != Material.REPLACEABLE_UNDERWATER_PLANT) continue;
                 BlockEntity blockEntity = blockState.hasBlockEntity() ? world.getBlockEntity(blockPos2) : null;
                 SpongeBlock.dropStacks(blockState, world, blockPos2, blockEntity);
-                world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), 3);
+                world.setBlockState(blockPos2, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
                 ++i;
                 if (j >= 6) continue;
                 queue.add(new Pair<BlockPos, Integer>(blockPos2, j + 1));

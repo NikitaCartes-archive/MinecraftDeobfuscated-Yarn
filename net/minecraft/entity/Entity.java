@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -54,11 +55,11 @@ import net.minecraft.fluid.FluidState;
 import net.minecraft.inventory.CommandItemSlot;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.DoubleTag;
-import net.minecraft.nbt.FloatTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.StringTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtDouble;
+import net.minecraft.nbt.NbtFloat;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.BlockStateParticleEffect;
@@ -171,7 +172,6 @@ CommandOutput {
     public double lastRenderZ;
     public float stepHeight;
     public boolean noClip;
-    public float pushSpeedReduction;
     protected final Random random = new Random();
     public int age;
     private int fireTicks = -this.getBurningDuration();
@@ -348,6 +348,10 @@ CommandOutput {
         return this.dataTracker.get(POSE);
     }
 
+    /**
+     * Checks if the distance between this entity and the {@code other} entity is less
+     * than {@code radius}.
+     */
     public boolean isInRange(Entity other, double radius) {
         double d = other.pos.x - this.pos.x;
         double e = other.pos.y - this.pos.y;
@@ -1256,8 +1260,6 @@ CommandOutput {
             e *= g;
             d *= (double)0.05f;
             e *= (double)0.05f;
-            d *= (double)(1.0f - this.pushSpeedReduction);
-            e *= (double)(1.0f - this.pushSpeedReduction);
             if (!this.hasPassengers()) {
                 this.addVelocity(-d, 0.0, -e);
             }
@@ -1383,7 +1385,7 @@ CommandOutput {
         return distance < (d *= 64.0 * renderDistanceMultiplier) * d;
     }
 
-    public boolean saveSelfToTag(CompoundTag tag) {
+    public boolean saveSelfToTag(NbtCompound tag) {
         if (this.removalReason != null && !this.removalReason.shouldSave()) {
             return false;
         }
@@ -1396,16 +1398,16 @@ CommandOutput {
         return true;
     }
 
-    public boolean saveToTag(CompoundTag tag) {
+    public boolean saveToTag(NbtCompound tag) {
         if (this.hasVehicle()) {
             return false;
         }
         return this.saveSelfToTag(tag);
     }
 
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         try {
-            ListTag listTag;
+            NbtList nbtList;
             int i;
             if (this.vehicle != null) {
                 tag.put("Pos", this.toListTag(this.vehicle.getX(), this.getY(), this.vehicle.getZ()));
@@ -1442,22 +1444,22 @@ CommandOutput {
                 tag.putInt("TicksFrozen", this.getFrozenTicks());
             }
             if (!this.scoreboardTags.isEmpty()) {
-                listTag = new ListTag();
+                nbtList = new NbtList();
                 for (String string : this.scoreboardTags) {
-                    listTag.add(StringTag.of(string));
+                    nbtList.add(NbtString.of(string));
                 }
-                tag.put("Tags", listTag);
+                tag.put("Tags", nbtList);
             }
             this.writeCustomDataToNbt(tag);
             if (this.hasPassengers()) {
-                listTag = new ListTag();
+                nbtList = new NbtList();
                 for (Entity entity : this.getPassengerList()) {
-                    CompoundTag compoundTag;
-                    if (!entity.saveSelfToTag(compoundTag = new CompoundTag())) continue;
-                    listTag.add(compoundTag);
+                    NbtCompound nbtCompound;
+                    if (!entity.saveSelfToTag(nbtCompound = new NbtCompound())) continue;
+                    nbtList.add(nbtCompound);
                 }
-                if (!listTag.isEmpty()) {
-                    tag.put("Passengers", listTag);
+                if (!nbtList.isEmpty()) {
+                    tag.put("Passengers", nbtList);
                 }
             }
         } catch (Throwable throwable) {
@@ -1469,18 +1471,18 @@ CommandOutput {
         return tag;
     }
 
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         try {
-            ListTag listTag = tag.getList("Pos", 6);
-            ListTag listTag2 = tag.getList("Motion", 6);
-            ListTag listTag3 = tag.getList("Rotation", 5);
-            double d = listTag2.getDouble(0);
-            double e = listTag2.getDouble(1);
-            double f = listTag2.getDouble(2);
+            NbtList nbtList = tag.getList("Pos", NbtTypeIds.DOUBLE);
+            NbtList nbtList2 = tag.getList("Motion", NbtTypeIds.DOUBLE);
+            NbtList nbtList3 = tag.getList("Rotation", NbtTypeIds.FLOAT);
+            double d = nbtList2.getDouble(0);
+            double e = nbtList2.getDouble(1);
+            double f = nbtList2.getDouble(2);
             this.setVelocity(Math.abs(d) > 10.0 ? 0.0 : d, Math.abs(e) > 10.0 ? 0.0 : e, Math.abs(f) > 10.0 ? 0.0 : f);
-            this.setPos(listTag.getDouble(0), listTag.getDouble(1), listTag.getDouble(2));
-            this.yaw = listTag3.getFloat(0);
-            this.pitch = listTag3.getFloat(1);
+            this.setPos(nbtList.getDouble(0), nbtList.getDouble(1), nbtList.getDouble(2));
+            this.yaw = nbtList3.getFloat(0);
+            this.pitch = nbtList3.getFloat(1);
             this.resetPosition();
             this.setHeadYaw(this.yaw);
             this.setYaw(this.yaw);
@@ -1504,7 +1506,7 @@ CommandOutput {
             }
             this.refreshPosition();
             this.setRotation(this.yaw, this.pitch);
-            if (tag.contains("CustomName", 8)) {
+            if (tag.contains("CustomName", NbtTypeIds.STRING)) {
                 String string = tag.getString("CustomName");
                 try {
                     this.setCustomName(Text.Serializer.fromJson(string));
@@ -1517,12 +1519,12 @@ CommandOutput {
             this.setNoGravity(tag.getBoolean("NoGravity"));
             this.setGlowing(tag.getBoolean("Glowing"));
             this.setFrozenTicks(tag.getInt("TicksFrozen"));
-            if (tag.contains("Tags", 9)) {
+            if (tag.contains("Tags", NbtTypeIds.LIST)) {
                 this.scoreboardTags.clear();
-                ListTag listTag4 = tag.getList("Tags", 8);
-                int i = Math.min(listTag4.size(), 1024);
+                NbtList nbtList4 = tag.getList("Tags", NbtTypeIds.STRING);
+                int i = Math.min(nbtList4.size(), 1024);
                 for (int j = 0; j < i; ++j) {
-                    this.scoreboardTags.add(listTag4.getString(j));
+                    this.scoreboardTags.add(nbtList4.getString(j));
                 }
             }
             this.readCustomDataFromNbt(tag);
@@ -1548,24 +1550,24 @@ CommandOutput {
         return !entityType.isSaveable() || identifier == null ? null : identifier.toString();
     }
 
-    protected abstract void readCustomDataFromNbt(CompoundTag var1);
+    protected abstract void readCustomDataFromNbt(NbtCompound var1);
 
-    protected abstract void writeCustomDataToNbt(CompoundTag var1);
+    protected abstract void writeCustomDataToNbt(NbtCompound var1);
 
-    protected ListTag toListTag(double ... values) {
-        ListTag listTag = new ListTag();
+    protected NbtList toListTag(double ... values) {
+        NbtList nbtList = new NbtList();
         for (double d : values) {
-            listTag.add(DoubleTag.of(d));
+            nbtList.add(NbtDouble.of(d));
         }
-        return listTag;
+        return nbtList;
     }
 
-    protected ListTag toListTag(float ... values) {
-        ListTag listTag = new ListTag();
+    protected NbtList toListTag(float ... values) {
+        NbtList nbtList = new NbtList();
         for (float f : values) {
-            listTag.add(FloatTag.of(f));
+            nbtList.add(NbtFloat.of(f));
         }
-        return listTag;
+        return nbtList;
     }
 
     @Nullable
@@ -2165,9 +2167,9 @@ CommandOutput {
     }
 
     public void copyFrom(Entity original) {
-        CompoundTag compoundTag = original.writeNbt(new CompoundTag());
-        compoundTag.remove("Dimension");
-        this.readNbt(compoundTag);
+        NbtCompound nbtCompound = original.writeNbt(new NbtCompound());
+        nbtCompound.remove("Dimension");
+        this.readNbt(nbtCompound);
         this.netherPortalCooldown = original.netherPortalCooldown;
         this.lastNetherPortalPosition = original.lastNetherPortalPosition;
     }
@@ -2314,7 +2316,7 @@ CommandOutput {
         return this.uuidString;
     }
 
-    public boolean canFly() {
+    public boolean isPushedByFluids() {
         return true;
     }
 
@@ -2664,6 +2666,9 @@ CommandOutput {
         return 1;
     }
 
+    /**
+     * Creates a command source which represents this entity.
+     */
     public ServerCommandSource getCommandSource() {
         return new ServerCommandSource(this, this.getPos(), this.getRotationClient(), this.world instanceof ServerWorld ? (ServerWorld)this.world : null, this.getPermissionLevel(), this.getName().getString(), this.getDisplayName(), this.world.getServer(), this);
     }
@@ -2716,7 +2721,7 @@ CommandOutput {
         int m = MathHelper.floor(box.minZ);
         int n = MathHelper.ceil(box.maxZ);
         double e = 0.0;
-        boolean bl = this.canFly();
+        boolean bl = this.isPushedByFluids();
         boolean bl2 = false;
         Vec3d vec3d = Vec3d.ZERO;
         int o = 0;
@@ -2768,14 +2773,12 @@ CommandOutput {
      * axis-aligned integer box is fully loaded in the world.
      */
     public boolean isRegionUnloaded() {
-        int n;
+        int l;
         Box box = this.getBoundingBox().expand(1.0);
         int i = MathHelper.floor(box.minX);
         int j = MathHelper.ceil(box.maxX);
-        int k = MathHelper.floor(box.minY);
-        int l = MathHelper.ceil(box.maxY);
-        int m = MathHelper.floor(box.minZ);
-        return !this.world.isRegionLoaded(i, k, m, j, l, n = MathHelper.ceil(box.maxZ));
+        int k = MathHelper.floor(box.minZ);
+        return !this.world.isRegionLoaded(i, k, j, l = MathHelper.ceil(box.maxZ));
     }
 
     public double getFluidHeight(Tag<Fluid> fluid) {

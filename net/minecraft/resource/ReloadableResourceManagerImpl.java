@@ -23,15 +23,15 @@ import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.resource.NamespaceResourceManager;
-import net.minecraft.resource.ProfilingResourceReloader;
+import net.minecraft.resource.ProfiledResourceReload;
 import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourcePack;
-import net.minecraft.resource.ResourceReloadListener;
-import net.minecraft.resource.ResourceReloadMonitor;
+import net.minecraft.resource.ResourceReload;
 import net.minecraft.resource.ResourceReloader;
 import net.minecraft.resource.ResourceType;
+import net.minecraft.resource.SimpleResourceReload;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Unit;
 import org.apache.logging.log4j.LogManager;
@@ -41,7 +41,7 @@ public class ReloadableResourceManagerImpl
 implements ReloadableResourceManager {
     private static final Logger LOGGER = LogManager.getLogger();
     private final Map<String, NamespaceResourceManager> namespaceManagers = Maps.newHashMap();
-    private final List<ResourceReloadListener> listeners = Lists.newArrayList();
+    private final List<ResourceReloader> reloaders = Lists.newArrayList();
     private final Set<String> namespaces = Sets.newLinkedHashSet();
     private final List<ResourcePack> packs = Lists.newArrayList();
     private final ResourceType type;
@@ -121,12 +121,12 @@ implements ReloadableResourceManager {
     }
 
     @Override
-    public void registerListener(ResourceReloadListener listener) {
-        this.listeners.add(listener);
+    public void registerReloader(ResourceReloader reloader) {
+        this.reloaders.add(reloader);
     }
 
     @Override
-    public ResourceReloadMonitor beginMonitoredReload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs) {
+    public ResourceReload reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<ResourcePack> packs) {
         LOGGER.info("Reloading ResourceManager: {}", () -> packs.stream().map(ResourcePack::getName).collect(Collectors.joining(", ")));
         this.clear();
         for (ResourcePack resourcePack : packs) {
@@ -134,13 +134,13 @@ implements ReloadableResourceManager {
                 this.addPack(resourcePack);
             } catch (Exception exception) {
                 LOGGER.error("Failed to add resource pack {}", (Object)resourcePack.getName(), (Object)exception);
-                return new FailedResourceReloadMonitor(new PackAdditionFailedException(resourcePack, (Throwable)exception));
+                return new FailedReload(new PackAdditionFailedException(resourcePack, (Throwable)exception));
             }
         }
         if (LOGGER.isDebugEnabled()) {
-            return new ProfilingResourceReloader(this, Lists.newArrayList(this.listeners), prepareExecutor, applyExecutor, initialStage);
+            return new ProfiledResourceReload(this, Lists.newArrayList(this.reloaders), prepareExecutor, applyExecutor, initialStage);
         }
-        return ResourceReloader.create(this, Lists.newArrayList(this.listeners), prepareExecutor, applyExecutor, initialStage);
+        return SimpleResourceReload.create(this, Lists.newArrayList(this.reloaders), prepareExecutor, applyExecutor, initialStage);
     }
 
     @Override
@@ -149,12 +149,12 @@ implements ReloadableResourceManager {
         return this.packs.stream();
     }
 
-    static class FailedResourceReloadMonitor
-    implements ResourceReloadMonitor {
+    static class FailedReload
+    implements ResourceReload {
         private final PackAdditionFailedException exception;
         private final CompletableFuture<Unit> future;
 
-        public FailedResourceReloadMonitor(PackAdditionFailedException exception) {
+        public FailedReload(PackAdditionFailedException exception) {
             this.exception = exception;
             this.future = new CompletableFuture();
             this.future.completeExceptionally(exception);
@@ -173,19 +173,13 @@ implements ReloadableResourceManager {
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public boolean isPrepareStageComplete() {
-            return false;
-        }
-
-        @Override
-        @Environment(value=EnvType.CLIENT)
-        public boolean isApplyStageComplete() {
+        public boolean isComplete() {
             return true;
         }
 
         @Override
         @Environment(value=EnvType.CLIENT)
-        public void throwExceptions() {
+        public void throwException() {
             throw this.exception;
         }
     }

@@ -21,7 +21,7 @@ import net.minecraft.loot.function.ConditionalLootFunction;
 import net.minecraft.loot.function.LootFunction;
 import net.minecraft.loot.function.LootFunctionType;
 import net.minecraft.loot.function.LootFunctionTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.collection.DefaultedList;
 
@@ -46,10 +46,10 @@ extends ConditionalLootFunction {
         }
         DefaultedList<ItemStack> defaultedList = DefaultedList.of();
         this.entries.forEach(entry -> entry.expand(context, choice -> choice.generateLoot(LootTable.processStacks(defaultedList::add), context)));
-        CompoundTag compoundTag = new CompoundTag();
-        Inventories.writeNbt(compoundTag, defaultedList);
-        CompoundTag compoundTag2 = stack.getOrCreateTag();
-        compoundTag2.put("BlockEntityTag", compoundTag.copyFrom(compoundTag2.getCompound("BlockEntityTag")));
+        NbtCompound nbtCompound = new NbtCompound();
+        Inventories.writeNbt(nbtCompound, defaultedList);
+        NbtCompound nbtCompound2 = stack.getOrCreateTag();
+        nbtCompound2.put("BlockEntityTag", nbtCompound.copyFrom(nbtCompound2.getCompound("BlockEntityTag")));
         return stack;
     }
 

@@ -15,13 +15,12 @@ import net.minecraft.world.dimension.DimensionType;
 
 public class FlatChunkGeneratorLayer {
     public static final Codec<FlatChunkGeneratorLayer> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)Codec.intRange(0, DimensionType.MAX_HEIGHT).fieldOf("height")).forGetter(FlatChunkGeneratorLayer::getThickness), ((MapCodec)Registry.BLOCK.fieldOf("block")).orElse(Blocks.AIR).forGetter(flatChunkGeneratorLayer -> flatChunkGeneratorLayer.getBlockState().getBlock())).apply((Applicative<FlatChunkGeneratorLayer, ?>)instance, FlatChunkGeneratorLayer::new));
-    private final BlockState blockState;
+    private final Block field_29566;
     private final int thickness;
-    private int startY;
 
     public FlatChunkGeneratorLayer(int thickness, Block block) {
         this.thickness = thickness;
-        this.blockState = block.getDefaultState();
+        this.field_29566 = block;
     }
 
     public int getThickness() {
@@ -29,19 +28,11 @@ public class FlatChunkGeneratorLayer {
     }
 
     public BlockState getBlockState() {
-        return this.blockState;
-    }
-
-    public int getStartY() {
-        return this.startY;
-    }
-
-    public void setStartY(int startY) {
-        this.startY = startY;
+        return this.field_29566.getDefaultState();
     }
 
     public String toString() {
-        return (this.thickness != 1 ? this.thickness + "*" : "") + Registry.BLOCK.getId(this.blockState.getBlock());
+        return (this.thickness != 1 ? this.thickness + "*" : "") + Registry.BLOCK.getId(this.field_29566);
     }
 }
 

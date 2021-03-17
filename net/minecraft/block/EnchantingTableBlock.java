@@ -106,7 +106,7 @@ extends BlockWithEntity {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof EnchantingTableBlockEntity) {
             Text text = ((Nameable)((Object)blockEntity)).getDisplayName();
-            return new SimpleNamedScreenHandlerFactory((i, playerInventory, playerEntity) -> new EnchantmentScreenHandler(i, playerInventory, ScreenHandlerContext.create(world, pos)), text);
+            return new SimpleNamedScreenHandlerFactory((syncId, inventory, player) -> new EnchantmentScreenHandler(syncId, inventory, ScreenHandlerContext.create(world, pos)), text);
         }
         return null;
     }

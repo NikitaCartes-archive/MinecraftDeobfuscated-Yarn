@@ -8,6 +8,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class AbstractPressableButtonWidget
@@ -28,7 +29,7 @@ extends AbstractButtonWidget {
         if (!this.active || !this.visible) {
             return false;
         }
-        if (keyCode == 257 || keyCode == 32 || keyCode == 335) {
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_SPACE || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             this.playDownSound(MinecraftClient.getInstance().getSoundManager());
             this.onPress();
             return true;

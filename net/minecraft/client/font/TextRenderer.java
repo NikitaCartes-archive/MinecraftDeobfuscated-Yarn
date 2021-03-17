@@ -38,6 +38,11 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Manages the rendering of text.
+ * 
+ * <p>The current instance used by the client can be obtained by
+ * {@code MinecraftClient.getInstance().textRenderer}.
+ * 
+ * @see net.minecraft.client.MinecraftClient#textRenderer
  */
 @Environment(value=EnvType.CLIENT)
 public class TextRenderer {

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
@@ -17,8 +18,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
@@ -68,9 +69,9 @@ extends PersistentProjectileEntity {
     }
 
     public static int getCustomPotionColor(ItemStack stack) {
-        CompoundTag compoundTag = stack.getTag();
-        if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
-            return compoundTag.getInt("CustomPotionColor");
+        NbtCompound nbtCompound = stack.getTag();
+        if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtTypeIds.NUMBER)) {
+            return nbtCompound.getInt("CustomPotionColor");
         }
         return -1;
     }
@@ -137,7 +138,7 @@ extends PersistentProjectileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         if (this.potion != Potions.EMPTY && this.potion != null) {
             tag.putString("Potion", Registry.POTION.getId(this.potion).toString());
@@ -146,24 +147,24 @@ extends PersistentProjectileEntity {
             tag.putInt("Color", this.getColor());
         }
         if (!this.effects.isEmpty()) {
-            ListTag listTag = new ListTag();
+            NbtList nbtList = new NbtList();
             for (StatusEffectInstance statusEffectInstance : this.effects) {
-                listTag.add(statusEffectInstance.writeNbt(new CompoundTag()));
+                nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
             }
-            tag.put("CustomPotionEffects", listTag);
+            tag.put("CustomPotionEffects", nbtList);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
-        if (tag.contains("Potion", 8)) {
+        if (tag.contains("Potion", NbtTypeIds.STRING)) {
             this.potion = PotionUtil.getPotion(tag);
         }
         for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(tag)) {
             this.addEffect(statusEffectInstance);
         }
-        if (tag.contains("Color", 99)) {
+        if (tag.contains("Color", NbtTypeIds.NUMBER)) {
             this.setColor(tag.getInt("Color"));
         } else {
             this.initColor();

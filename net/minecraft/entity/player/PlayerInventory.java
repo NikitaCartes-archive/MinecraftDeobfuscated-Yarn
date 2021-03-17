@@ -17,8 +17,8 @@ import net.minecraft.inventory.Inventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.ScreenHandlerSlotUpdateS2CPacket;
 import net.minecraft.recipe.RecipeFinder;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -355,41 +355,41 @@ Nameable {
         return this.main.get(this.selectedSlot).getMiningSpeedMultiplier(block);
     }
 
-    public ListTag serialize(ListTag tag) {
-        CompoundTag compoundTag;
+    public NbtList serialize(NbtList tag) {
+        NbtCompound nbtCompound;
         int i;
         for (i = 0; i < this.main.size(); ++i) {
             if (this.main.get(i).isEmpty()) continue;
-            compoundTag = new CompoundTag();
-            compoundTag.putByte("Slot", (byte)i);
-            this.main.get(i).writeNbt(compoundTag);
-            tag.add(compoundTag);
+            nbtCompound = new NbtCompound();
+            nbtCompound.putByte("Slot", (byte)i);
+            this.main.get(i).writeNbt(nbtCompound);
+            tag.add(nbtCompound);
         }
         for (i = 0; i < this.armor.size(); ++i) {
             if (this.armor.get(i).isEmpty()) continue;
-            compoundTag = new CompoundTag();
-            compoundTag.putByte("Slot", (byte)(i + 100));
-            this.armor.get(i).writeNbt(compoundTag);
-            tag.add(compoundTag);
+            nbtCompound = new NbtCompound();
+            nbtCompound.putByte("Slot", (byte)(i + 100));
+            this.armor.get(i).writeNbt(nbtCompound);
+            tag.add(nbtCompound);
         }
         for (i = 0; i < this.offHand.size(); ++i) {
             if (this.offHand.get(i).isEmpty()) continue;
-            compoundTag = new CompoundTag();
-            compoundTag.putByte("Slot", (byte)(i + 150));
-            this.offHand.get(i).writeNbt(compoundTag);
-            tag.add(compoundTag);
+            nbtCompound = new NbtCompound();
+            nbtCompound.putByte("Slot", (byte)(i + 150));
+            this.offHand.get(i).writeNbt(nbtCompound);
+            tag.add(nbtCompound);
         }
         return tag;
     }
 
-    public void deserialize(ListTag tag) {
+    public void deserialize(NbtList tag) {
         this.main.clear();
         this.armor.clear();
         this.offHand.clear();
         for (int i = 0; i < tag.size(); ++i) {
-            CompoundTag compoundTag = tag.getCompound(i);
-            int j = compoundTag.getByte("Slot") & 0xFF;
-            ItemStack itemStack = ItemStack.fromNbt(compoundTag);
+            NbtCompound nbtCompound = tag.getCompound(i);
+            int j = nbtCompound.getByte("Slot") & 0xFF;
+            ItemStack itemStack = ItemStack.fromNbt(nbtCompound);
             if (itemStack.isEmpty()) continue;
             if (j >= 0 && j < this.main.size()) {
                 this.main.set(j, itemStack);

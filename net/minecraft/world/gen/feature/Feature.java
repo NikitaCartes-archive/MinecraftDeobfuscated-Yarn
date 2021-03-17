@@ -7,6 +7,7 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -77,8 +78,6 @@ import net.minecraft.world.gen.feature.LakeFeature;
 import net.minecraft.world.gen.feature.LargeDripstoneFeature;
 import net.minecraft.world.gen.feature.LargeDripstoneFeatureConfig;
 import net.minecraft.world.gen.feature.NetherForestVegetationFeature;
-import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeature;
-import net.minecraft.world.gen.feature.NetherrackReplaceBlobsFeatureConfig;
 import net.minecraft.world.gen.feature.NoOpFeature;
 import net.minecraft.world.gen.feature.OreFeature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
@@ -88,6 +87,8 @@ import net.minecraft.world.gen.feature.RandomFeature;
 import net.minecraft.world.gen.feature.RandomFeatureConfig;
 import net.minecraft.world.gen.feature.RandomPatchFeature;
 import net.minecraft.world.gen.feature.RandomPatchFeatureConfig;
+import net.minecraft.world.gen.feature.ReplaceBlobsFeature;
+import net.minecraft.world.gen.feature.ReplaceBlobsFeatureConfig;
 import net.minecraft.world.gen.feature.RootSystemFeature;
 import net.minecraft.world.gen.feature.RootSystemFeatureConfig;
 import net.minecraft.world.gen.feature.ScatteredOreFeature;
@@ -166,7 +167,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     public static final Feature<DefaultFeatureConfig> TWISTING_VINES = Feature.register("twisting_vines", new TwistingVinesFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<BasaltColumnsFeatureConfig> BASALT_COLUMNS = Feature.register("basalt_columns", new BasaltColumnsFeature(BasaltColumnsFeatureConfig.CODEC));
     public static final Feature<DeltaFeatureConfig> DELTA_FEATURE = Feature.register("delta_feature", new DeltaFeature(DeltaFeatureConfig.CODEC));
-    public static final Feature<NetherrackReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = Feature.register("netherrack_replace_blobs", new NetherrackReplaceBlobsFeature(NetherrackReplaceBlobsFeatureConfig.CODEC));
+    public static final Feature<ReplaceBlobsFeatureConfig> NETHERRACK_REPLACE_BLOBS = Feature.register("netherrack_replace_blobs", new ReplaceBlobsFeature(ReplaceBlobsFeatureConfig.CODEC));
     public static final Feature<FillLayerFeatureConfig> FILL_LAYER = Feature.register("fill_layer", new FillLayerFeature(FillLayerFeatureConfig.CODEC));
     public static final BonusChestFeature BONUS_CHEST = Feature.register("bonus_chest", new BonusChestFeature(DefaultFeatureConfig.CODEC));
     public static final Feature<DefaultFeatureConfig> BASALT_PILLAR = Feature.register("basalt_pillar", new BasaltPillarFeature(DefaultFeatureConfig.CODEC));
@@ -198,7 +199,7 @@ public abstract class Feature<FC extends FeatureConfig> {
     }
 
     protected void setBlockState(ModifiableWorld world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, state, 3);
+        world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
     }
 
     public abstract boolean generate(FeatureContext<FC> var1);

@@ -7,10 +7,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.class_5944;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.BufferBuilder;
 import net.minecraft.client.render.BufferRenderer;
+import net.minecraft.client.render.Shader;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormat;
 import net.minecraft.client.render.VertexFormats;
@@ -207,17 +207,17 @@ public class Framebuffer {
             GlStateManager.disableBlend();
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        class_5944 lv = minecraftClient.gameRenderer.field_29403;
-        lv.method_34583("DiffuseSampler", this.colorAttachment);
+        Shader shader = minecraftClient.gameRenderer.blitScreenShader;
+        shader.method_34583("DiffuseSampler", this.colorAttachment);
         Matrix4f matrix4f = Matrix4f.projectionMatrix(width, -height, 1000.0f, 3000.0f);
         RenderSystem.setProjectionMatrix(matrix4f);
-        if (lv.field_29470 != null) {
-            lv.field_29470.set(Matrix4f.translate(0.0f, 0.0f, -2000.0f));
+        if (shader.field_29470 != null) {
+            shader.field_29470.set(Matrix4f.translate(0.0f, 0.0f, -2000.0f));
         }
-        if (lv.field_29471 != null) {
-            lv.field_29471.set(matrix4f);
+        if (shader.field_29471 != null) {
+            shader.field_29471.set(matrix4f);
         }
-        lv.method_34586();
+        shader.method_34586();
         float f = width;
         float g = height;
         float h = (float)this.viewportWidth / (float)this.textureWidth;
@@ -231,7 +231,7 @@ public class Framebuffer {
         bufferBuilder.vertex(0.0, 0.0, 0.0).texture(0.0f, i).color(255, 255, 255, 255).next();
         bufferBuilder.end();
         BufferRenderer.method_34424(bufferBuilder);
-        lv.method_34585();
+        shader.method_34585();
         GlStateManager.depthMask(true);
         GlStateManager.colorMask(true, true, true, true);
     }

@@ -27,6 +27,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public abstract class EntryListWidget<E extends Entry<E>>
@@ -185,8 +186,8 @@ implements Drawable {
         int j = i + 6;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuffer();
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
         if (this.field_26846) {
-            RenderSystem.setShader(GameRenderer::method_34543);
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             float f = 32.0f;
@@ -204,7 +205,7 @@ implements Drawable {
         }
         this.renderList(matrices, k, l, mouseX, mouseY, delta);
         if (this.field_26847) {
-            RenderSystem.setShader(GameRenderer::method_34543);
+            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             RenderSystem.setShaderTexture(0, DrawableHelper.OPTIONS_BACKGROUND_TEXTURE);
             RenderSystem.enableDepthTest();
             RenderSystem.depthFunc(519);
@@ -225,41 +226,41 @@ implements Drawable {
             RenderSystem.enableBlend();
             RenderSystem.blendFuncSeparate(GlStateManager.SrcFactor.SRC_ALPHA, GlStateManager.DstFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SrcFactor.ZERO, GlStateManager.DstFactor.ONE);
             RenderSystem.disableTexture();
-            RenderSystem.setShader(GameRenderer::method_34543);
-            RenderSystem.setShaderTexture(0, field_29346);
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
             n = 4;
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-            bufferBuilder.vertex(this.left, this.top + 4, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 0).next();
-            bufferBuilder.vertex(this.right, this.top + 4, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 0).next();
-            bufferBuilder.vertex(this.right, this.top, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(this.left, this.top, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(this.left, this.bottom, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(this.right, this.bottom, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(this.right, this.bottom - 4, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 0).next();
-            bufferBuilder.vertex(this.left, this.bottom - 4, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 0).next();
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            bufferBuilder.vertex(this.left, this.top + 4, 0.0).color(0, 0, 0, 0).next();
+            bufferBuilder.vertex(this.right, this.top + 4, 0.0).color(0, 0, 0, 0).next();
+            bufferBuilder.vertex(this.right, this.top, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(this.left, this.top, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(this.left, this.bottom, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(this.right, this.bottom, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(this.right, this.bottom - 4, 0.0).color(0, 0, 0, 0).next();
+            bufferBuilder.vertex(this.left, this.bottom - 4, 0.0).color(0, 0, 0, 0).next();
             tessellator.draw();
         }
         if ((o = this.getMaxScroll()) > 0) {
             RenderSystem.disableTexture();
+            RenderSystem.setShader(GameRenderer::getPositionColorShader);
             m = (int)((float)((this.bottom - this.top) * (this.bottom - this.top)) / (float)this.getMaxPosition());
             m = MathHelper.clamp(m, 32, this.bottom - this.top - 8);
             n = (int)this.getScrollAmount() * (this.bottom - this.top - m) / o + this.top;
             if (n < this.top) {
                 n = this.top;
             }
-            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE_COLOR);
-            bufferBuilder.vertex(i, this.bottom, 0.0).texture(0.0f, 1.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(j, this.bottom, 0.0).texture(1.0f, 1.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(j, this.top, 0.0).texture(1.0f, 0.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(i, this.top, 0.0).texture(0.0f, 0.0f).color(0, 0, 0, 255).next();
-            bufferBuilder.vertex(i, n + m, 0.0).texture(0.0f, 1.0f).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(j, n + m, 0.0).texture(1.0f, 1.0f).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(j, n, 0.0).texture(1.0f, 0.0f).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(i, n, 0.0).texture(0.0f, 0.0f).color(128, 128, 128, 255).next();
-            bufferBuilder.vertex(i, n + m - 1, 0.0).texture(0.0f, 1.0f).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex(j - 1, n + m - 1, 0.0).texture(1.0f, 1.0f).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex(j - 1, n, 0.0).texture(1.0f, 0.0f).color(192, 192, 192, 255).next();
-            bufferBuilder.vertex(i, n, 0.0).texture(0.0f, 0.0f).color(192, 192, 192, 255).next();
+            bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR);
+            bufferBuilder.vertex(i, this.bottom, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(j, this.bottom, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(j, this.top, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(i, this.top, 0.0).color(0, 0, 0, 255).next();
+            bufferBuilder.vertex(i, n + m, 0.0).color(128, 128, 128, 255).next();
+            bufferBuilder.vertex(j, n + m, 0.0).color(128, 128, 128, 255).next();
+            bufferBuilder.vertex(j, n, 0.0).color(128, 128, 128, 255).next();
+            bufferBuilder.vertex(i, n, 0.0).color(128, 128, 128, 255).next();
+            bufferBuilder.vertex(i, n + m - 1, 0.0).color(192, 192, 192, 255).next();
+            bufferBuilder.vertex(j - 1, n + m - 1, 0.0).color(192, 192, 192, 255).next();
+            bufferBuilder.vertex(j - 1, n, 0.0).color(192, 192, 192, 255).next();
+            bufferBuilder.vertex(i, n, 0.0).color(192, 192, 192, 255).next();
             tessellator.draw();
         }
         this.renderDecorations(matrices, mouseX, mouseY);
@@ -368,11 +369,11 @@ implements Drawable {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (keyCode == 264) {
+        if (keyCode == GLFW.GLFW_KEY_DOWN) {
             this.moveSelection(MoveDirection.DOWN);
             return true;
         }
-        if (keyCode == 265) {
+        if (keyCode == GLFW.GLFW_KEY_UP) {
             this.moveSelection(MoveDirection.UP);
             return true;
         }
@@ -436,7 +437,7 @@ implements Drawable {
                 p = this.left + this.width / 2 - o / 2;
                 int q = this.left + this.width / 2 + o / 2;
                 RenderSystem.disableTexture();
-                RenderSystem.setShader(GameRenderer::method_34539);
+                RenderSystem.setShader(GameRenderer::getPositionShader);
                 float f = this.isFocused() ? 1.0f : 0.5f;
                 RenderSystem.setShaderColor(f, f, f, 1.0f);
                 bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION);

@@ -40,6 +40,7 @@ import net.minecraft.util.registry.Registry;
 import net.minecraft.util.registry.RegistryKey;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.dimension.DimensionType;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorConfig;
 import net.minecraft.world.gen.chunk.FlatChunkGeneratorLayer;
 import net.minecraft.world.gen.chunk.StructureConfig;
@@ -48,6 +49,7 @@ import net.minecraft.world.gen.feature.StructureFeature;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class PresetsScreen
@@ -86,7 +88,7 @@ extends Screen {
         } else {
             i = 1;
         }
-        int j = Math.min(layerStartHeight + i, 256);
+        int j = Math.min(layerStartHeight + i, DimensionType.MAX_HEIGHT);
         int k = j - layerStartHeight;
         String string = strings[strings.length - 1];
         try {
@@ -99,9 +101,7 @@ extends Screen {
             LOGGER.error("Error while parsing flat world string => Unknown block, {}", (Object)string);
             return null;
         }
-        FlatChunkGeneratorLayer flatChunkGeneratorLayer = new FlatChunkGeneratorLayer(k, block);
-        flatChunkGeneratorLayer.setStartY(layerStartHeight);
-        return flatChunkGeneratorLayer;
+        return new FlatChunkGeneratorLayer(k, block);
     }
 
     /**
@@ -132,7 +132,7 @@ extends Screen {
         if (list.isEmpty()) {
             return FlatChunkGeneratorConfig.getDefaultConfig(biomeRegistry);
         }
-        FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.method_29965(list, generatorConfig.getStructuresConfig());
+        FlatChunkGeneratorConfig flatChunkGeneratorConfig = generatorConfig.withLayers(list, generatorConfig.getStructuresConfig());
         RegistryKey<Biome> registryKey = BIOME_KEY;
         if (iterator.hasNext()) {
             try {
@@ -311,7 +311,7 @@ extends Screen {
             if (super.keyPressed(keyCode, scanCode, modifiers)) {
                 return true;
             }
-            if ((keyCode == 257 || keyCode == 335) && this.getSelected() != null) {
+            if ((keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) && this.getSelected() != null) {
                 ((SuperflatPresetEntry)this.getSelected()).setPreset();
             }
             return false;

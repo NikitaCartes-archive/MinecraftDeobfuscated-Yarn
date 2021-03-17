@@ -9,6 +9,7 @@ import com.google.common.collect.Multisets;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.MapColor;
@@ -22,7 +23,7 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.item.NetworkSyncedItem;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
@@ -66,8 +67,8 @@ extends NetworkSyncedItem {
 
     @Nullable
     public static Integer getMapId(ItemStack stack) {
-        CompoundTag compoundTag = stack.getTag();
-        return compoundTag != null && compoundTag.contains("map", 99) ? Integer.valueOf(compoundTag.getInt("map")) : null;
+        NbtCompound nbtCompound = stack.getTag();
+        return nbtCompound != null && nbtCompound.contains("map", NbtTypeIds.NUMBER) ? Integer.valueOf(nbtCompound.getInt("map")) : null;
     }
 
     private static int allocateMapId(World world, int x, int z, int scale, boolean showIcons, boolean unlimitedTracking, RegistryKey<World> dimension) {
@@ -313,13 +314,13 @@ extends NetworkSyncedItem {
 
     @Override
     public void onCraft(ItemStack stack, World world, PlayerEntity player) {
-        CompoundTag compoundTag = stack.getTag();
-        if (compoundTag != null && compoundTag.contains("map_scale_direction", 99)) {
-            FilledMapItem.scale(stack, world, compoundTag.getInt("map_scale_direction"));
-            compoundTag.remove("map_scale_direction");
-        } else if (compoundTag != null && compoundTag.contains("map_to_lock", 1) && compoundTag.getBoolean("map_to_lock")) {
+        NbtCompound nbtCompound = stack.getTag();
+        if (nbtCompound != null && nbtCompound.contains("map_scale_direction", NbtTypeIds.NUMBER)) {
+            FilledMapItem.scale(stack, world, nbtCompound.getInt("map_scale_direction"));
+            nbtCompound.remove("map_scale_direction");
+        } else if (nbtCompound != null && nbtCompound.contains("map_to_lock", NbtTypeIds.BYTE) && nbtCompound.getBoolean("map_to_lock")) {
             FilledMapItem.copyMap(world, stack);
-            compoundTag.remove("map_to_lock");
+            nbtCompound.remove("map_to_lock");
         }
     }
 
@@ -365,9 +366,9 @@ extends NetworkSyncedItem {
 
     @Environment(value=EnvType.CLIENT)
     public static int getMapColor(ItemStack stack) {
-        CompoundTag compoundTag = stack.getSubTag("display");
-        if (compoundTag != null && compoundTag.contains("MapColor", 99)) {
-            int i = compoundTag.getInt("MapColor");
+        NbtCompound nbtCompound = stack.getSubTag("display");
+        if (nbtCompound != null && nbtCompound.contains("MapColor", NbtTypeIds.NUMBER)) {
+            int i = nbtCompound.getInt("MapColor");
             return 0xFF000000 | i & 0xFFFFFF;
         }
         return -12173266;

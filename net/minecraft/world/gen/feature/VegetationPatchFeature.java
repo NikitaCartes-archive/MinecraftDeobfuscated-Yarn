@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -85,7 +86,7 @@ extends Feature<VegetationPatchFeatureConfig> {
     }
 
     protected boolean generateVegetationFeature(StructureWorldAccess world, VegetationPatchFeatureConfig config, ChunkGenerator generator, Random random, BlockPos pos) {
-        return config.vegetationFeature.get().generate(world, generator, random, pos.up());
+        return config.vegetationFeature.get().generate(world, generator, random, pos.offset(config.surface.getDirection().getOpposite()));
     }
 
     protected boolean placeGround(StructureWorldAccess world, VegetationPatchFeatureConfig config, Predicate<BlockState> replaceable, Random random, BlockPos.Mutable pos, int depth) {
@@ -93,7 +94,7 @@ extends Feature<VegetationPatchFeatureConfig> {
             if (!replaceable.test(world.getBlockState(pos))) {
                 return i != 0;
             }
-            world.setBlockState(pos, config.groundState.getBlockState(random, pos), 2);
+            world.setBlockState(pos, config.groundState.getBlockState(random, pos), SetBlockStateFlags.NOTIFY_LISTENERS);
             pos.move(config.surface.getDirection());
         }
         return true;
@@ -101,7 +102,7 @@ extends Feature<VegetationPatchFeatureConfig> {
 
     private static Predicate<BlockState> getReplaceablePredicate(VegetationPatchFeatureConfig config) {
         Tag<Block> tag = BlockTags.getTagGroup().getTag(config.replaceable);
-        return tag == null ? blockState -> true : blockState -> blockState.isIn(tag);
+        return tag == null ? state -> true : state -> state.isIn(tag);
     }
 }
 

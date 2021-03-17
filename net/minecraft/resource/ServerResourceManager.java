@@ -25,7 +25,7 @@ import net.minecraft.util.registry.DynamicRegistryManager;
 
 public class ServerResourceManager
 implements AutoCloseable {
-    private static final CompletableFuture<Unit> field_25334 = CompletableFuture.completedFuture(Unit.INSTANCE);
+    private static final CompletableFuture<Unit> COMPLETED_UNIT = CompletableFuture.completedFuture(Unit.INSTANCE);
     private final ReloadableResourceManager resourceManager = new ReloadableResourceManagerImpl(ResourceType.SERVER_DATA);
     private final CommandManager commandManager;
     private final RecipeManager recipeManager = new RecipeManager();
@@ -36,17 +36,17 @@ implements AutoCloseable {
     private final ServerAdvancementLoader serverAdvancementLoader = new ServerAdvancementLoader(this.lootConditionManager);
     private final FunctionLoader functionLoader;
 
-    public ServerResourceManager(DynamicRegistryManager registryManager, CommandManager.RegistrationEnvironment registrationEnvironment, int i) {
+    public ServerResourceManager(DynamicRegistryManager registryManager, CommandManager.RegistrationEnvironment commandEnvironment, int functionPermissionLevel) {
         this.registryTagManager = new TagManagerLoader(registryManager);
-        this.commandManager = new CommandManager(registrationEnvironment);
-        this.functionLoader = new FunctionLoader(i, this.commandManager.getDispatcher());
-        this.resourceManager.registerListener(this.registryTagManager);
-        this.resourceManager.registerListener(this.lootConditionManager);
-        this.resourceManager.registerListener(this.recipeManager);
-        this.resourceManager.registerListener(this.lootManager);
-        this.resourceManager.registerListener(this.lootFunctionManager);
-        this.resourceManager.registerListener(this.functionLoader);
-        this.resourceManager.registerListener(this.serverAdvancementLoader);
+        this.commandManager = new CommandManager(commandEnvironment);
+        this.functionLoader = new FunctionLoader(functionPermissionLevel, this.commandManager.getDispatcher());
+        this.resourceManager.registerReloader(this.registryTagManager);
+        this.resourceManager.registerReloader(this.lootConditionManager);
+        this.resourceManager.registerReloader(this.recipeManager);
+        this.resourceManager.registerReloader(this.lootManager);
+        this.resourceManager.registerReloader(this.lootFunctionManager);
+        this.resourceManager.registerReloader(this.functionLoader);
+        this.resourceManager.registerReloader(this.serverAdvancementLoader);
     }
 
     public FunctionLoader getFunctionLoader() {
@@ -85,9 +85,9 @@ implements AutoCloseable {
         return this.resourceManager;
     }
 
-    public static CompletableFuture<ServerResourceManager> reload(List<ResourcePack> packs, DynamicRegistryManager registryManager, CommandManager.RegistrationEnvironment registrationEnvironment, int i, Executor executor, Executor executor2) {
-        ServerResourceManager serverResourceManager = new ServerResourceManager(registryManager, registrationEnvironment, i);
-        CompletableFuture<Unit> completableFuture = serverResourceManager.resourceManager.beginReload(executor, executor2, packs, field_25334);
+    public static CompletableFuture<ServerResourceManager> reload(List<ResourcePack> packs, DynamicRegistryManager registryManager, CommandManager.RegistrationEnvironment commandEnvironment, int functionPermissionLevel, Executor prepareExecutor, Executor applyExecutor) {
+        ServerResourceManager serverResourceManager = new ServerResourceManager(registryManager, commandEnvironment, functionPermissionLevel);
+        CompletableFuture<Unit> completableFuture = serverResourceManager.resourceManager.reload(prepareExecutor, applyExecutor, packs, COMPLETED_UNIT);
         return ((CompletableFuture)completableFuture.whenComplete((unit, throwable) -> {
             if (throwable != null) {
                 serverResourceManager.close();

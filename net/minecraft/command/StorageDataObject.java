@@ -13,9 +13,9 @@ import net.minecraft.command.DataCommandObject;
 import net.minecraft.command.DataCommandStorage;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.command.argument.NbtPathArgumentType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.DataCommand;
 import net.minecraft.server.command.ServerCommandSource;
@@ -55,12 +55,12 @@ implements DataCommandObject {
     }
 
     @Override
-    public void setTag(CompoundTag tag) {
+    public void setTag(NbtCompound tag) {
         this.storage.set(this.id, tag);
     }
 
     @Override
-    public CompoundTag getTag() {
+    public NbtCompound getTag() {
         return this.storage.get(this.id);
     }
 
@@ -70,7 +70,7 @@ implements DataCommandObject {
     }
 
     @Override
-    public Text feedbackQuery(Tag tag) {
+    public Text feedbackQuery(NbtElement tag) {
         return new TranslatableText("commands.data.storage.query", this.id, NbtHelper.toPrettyPrintedText(tag));
     }
 

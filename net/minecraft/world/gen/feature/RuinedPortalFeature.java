@@ -51,35 +51,35 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
         return biome.getTemperature(pos) < 0.15f;
     }
 
-    private static int method_27211(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean bl, int i, int j, BlockBox blockBox, HeightLimitView heightLimitView) {
-        int m;
-        int l;
+    private static int getFloorHeight(Random random, ChunkGenerator chunkGenerator, RuinedPortalStructurePiece.VerticalPlacement verticalPlacement, boolean airPocket, int height, int blockCountY, BlockBox box, HeightLimitView world) {
         int k;
+        int j;
+        int i;
         if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_NETHER) {
-            k = bl ? MathHelper.nextBetween(random, 32, 100) : (random.nextFloat() < 0.5f ? MathHelper.nextBetween(random, 27, 29) : MathHelper.nextBetween(random, 29, 100));
+            i = airPocket ? MathHelper.nextBetween(random, 32, 100) : (random.nextFloat() < 0.5f ? MathHelper.nextBetween(random, 27, 29) : MathHelper.nextBetween(random, 29, 100));
         } else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.IN_MOUNTAIN) {
-            l = i - j;
-            k = RuinedPortalFeature.choosePlacementHeight(random, 70, l);
+            j = height - blockCountY;
+            i = RuinedPortalFeature.choosePlacementHeight(random, 70, j);
         } else if (verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.UNDERGROUND) {
-            l = i - j;
-            k = RuinedPortalFeature.choosePlacementHeight(random, 15, l);
+            j = height - blockCountY;
+            i = RuinedPortalFeature.choosePlacementHeight(random, 15, j);
         } else {
-            k = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED ? i - j + MathHelper.nextBetween(random, 2, 8) : i;
+            i = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.PARTLY_BURIED ? height - blockCountY + MathHelper.nextBetween(random, 2, 8) : height;
         }
-        ImmutableList<BlockPos> list = ImmutableList.of(new BlockPos(blockBox.minX, 0, blockBox.minZ), new BlockPos(blockBox.maxX, 0, blockBox.minZ), new BlockPos(blockBox.minX, 0, blockBox.maxZ), new BlockPos(blockBox.maxX, 0, blockBox.maxZ));
-        List list2 = list.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), heightLimitView)).collect(Collectors.toList());
+        ImmutableList<BlockPos> list = ImmutableList.of(new BlockPos(box.minX, 0, box.minZ), new BlockPos(box.maxX, 0, box.minZ), new BlockPos(box.minX, 0, box.maxZ), new BlockPos(box.maxX, 0, box.maxZ));
+        List list2 = list.stream().map(blockPos -> chunkGenerator.getColumnSample(blockPos.getX(), blockPos.getZ(), world)).collect(Collectors.toList());
         Heightmap.Type type = verticalPlacement == RuinedPortalStructurePiece.VerticalPlacement.ON_OCEAN_FLOOR ? Heightmap.Type.OCEAN_FLOOR_WG : Heightmap.Type.WORLD_SURFACE_WG;
         BlockPos.Mutable mutable = new BlockPos.Mutable();
-        block0: for (m = k; m > 15; --m) {
-            int n = 0;
-            mutable.set(0, m, 0);
+        block0: for (k = i; k > 15; --k) {
+            int l = 0;
+            mutable.set(0, k, 0);
             for (VerticalBlockSample verticalBlockSample : list2) {
                 BlockState blockState = verticalBlockSample.getState(mutable);
-                if (!type.getBlockPredicate().test(blockState) || ++n != 3) continue;
+                if (!type.getBlockPredicate().test(blockState) || ++l != 3) continue;
                 break block0;
             }
         }
-        return m;
+        return k;
     }
 
     private static int choosePlacementHeight(Random random, int min, int max) {
@@ -181,7 +181,7 @@ extends StructureFeature<RuinedPortalFeatureConfig> {
             int i = blockPos3.getX();
             int j = blockPos3.getZ();
             int k = chunkGenerator.getHeight(i, j, RuinedPortalStructurePiece.getHeightmapType(verticalPlacement), heightLimitView) - 1;
-            int l = RuinedPortalFeature.method_27211(this.random, chunkGenerator, verticalPlacement, properties.airPocket, k, blockBox.getBlockCountY(), blockBox, heightLimitView);
+            int l = RuinedPortalFeature.getFloorHeight(this.random, chunkGenerator, verticalPlacement, properties.airPocket, k, blockBox.getBlockCountY(), blockBox, heightLimitView);
             BlockPos blockPos4 = new BlockPos(blockPos2.getX(), l, blockPos2.getZ());
             if (ruinedPortalFeatureConfig.portalType == Type.MOUNTAIN || ruinedPortalFeatureConfig.portalType == Type.OCEAN || ruinedPortalFeatureConfig.portalType == Type.STANDARD) {
                 properties.cold = RuinedPortalFeature.isColdAt(blockPos4, biome);

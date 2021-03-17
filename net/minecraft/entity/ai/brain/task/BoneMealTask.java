@@ -5,6 +5,7 @@ package net.minecraft.entity.ai.brain.task;
 
 import com.google.common.collect.ImmutableMap;
 import java.util.Optional;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropBlock;
@@ -111,7 +112,7 @@ extends Task<VillagerEntity> {
             break;
         }
         if (!itemStack.isEmpty() && BoneMealItem.useOnFertilizable(itemStack, serverWorld, blockPos)) {
-            serverWorld.syncWorldEvent(2005, blockPos, 0);
+            serverWorld.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos, 0);
             this.pos = this.findBoneMealPos(serverWorld, villagerEntity);
             this.addLookWalkTargets(villagerEntity);
             this.startTime = l + 40L;

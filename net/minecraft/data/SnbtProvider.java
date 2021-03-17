@@ -22,7 +22,7 @@ import net.minecraft.data.DataCache;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.dev.NbtProvider;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Util;
@@ -48,12 +48,12 @@ implements DataProvider {
         return this;
     }
 
-    private CompoundTag write(String string, CompoundTag compoundTag) {
-        CompoundTag compoundTag2 = compoundTag;
+    private NbtCompound write(String string, NbtCompound nbtCompound) {
+        NbtCompound nbtCompound2 = nbtCompound;
         for (Tweaker tweaker : this.write) {
-            compoundTag2 = tweaker.write(string, compoundTag2);
+            nbtCompound2 = tweaker.write(string, nbtCompound2);
         }
-        return compoundTag2;
+        return nbtCompound2;
     }
 
     @Override
@@ -95,12 +95,12 @@ implements DataProvider {
     private CompressedData toCompressedNbt(Path path, String name) {
         try (BufferedReader bufferedReader = Files.newBufferedReader(path);){
             String string = IOUtils.toString(bufferedReader);
-            CompoundTag compoundTag = this.write(name, NbtHelper.method_32260(string));
+            NbtCompound nbtCompound = this.write(name, NbtHelper.method_32260(string));
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            NbtIo.writeCompressed(compoundTag, byteArrayOutputStream);
+            NbtIo.writeCompressed(nbtCompound, byteArrayOutputStream);
             byte[] bs = byteArrayOutputStream.toByteArray();
             String string2 = SHA1.hashBytes(bs).toString();
-            String string3 = field_24615 != null ? NbtHelper.toPrettyPrintedString(compoundTag) : null;
+            String string3 = field_24615 != null ? NbtHelper.toPrettyPrintedString(nbtCompound) : null;
             CompressedData compressedData = new CompressedData(name, bs, string3, string2);
             return compressedData;
         } catch (Throwable throwable) {
@@ -141,7 +141,7 @@ implements DataProvider {
 
     @FunctionalInterface
     public static interface Tweaker {
-        public CompoundTag write(String var1, CompoundTag var2);
+        public NbtCompound write(String var1, NbtCompound var2);
     }
 
     static class CompressedData {

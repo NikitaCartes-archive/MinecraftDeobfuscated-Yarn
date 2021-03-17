@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.PoolStructurePiece;
@@ -93,7 +93,7 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         tag.putString("name", this.name.toString());
         tag.putString("target", this.target.toString());
@@ -104,7 +104,7 @@ extends BlockEntity {
     }
 
     @Override
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         this.name = new Identifier(tag.getString("name"));
         this.target = new Identifier(tag.getString("target"));
@@ -120,8 +120,8 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toInitialChunkDataNbt() {
-        return this.writeNbt(new CompoundTag());
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.writeNbt(new NbtCompound());
     }
 
     public void generate(ServerWorld world, int maxDepth, boolean keepJigsaws) {

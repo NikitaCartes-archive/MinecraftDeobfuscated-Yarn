@@ -6,6 +6,7 @@ package net.minecraft.entity.ai.brain.task;
 import com.google.common.collect.ImmutableList;
 import java.util.List;
 import java.util.Optional;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ComposterBlock;
@@ -69,7 +70,7 @@ extends VillagerWorkTask {
     }
 
     private void syncComposterEvent(ServerWorld world, BlockState oldState, BlockPos pos, BlockState newState) {
-        world.syncWorldEvent(1500, pos, newState != oldState ? 1 : 0);
+        world.syncWorldEvent(WorldEvents.COMPOSTER_USED, pos, newState != oldState ? 1 : 0);
     }
 
     private void craftAndDropBread(VillagerEntity entity) {

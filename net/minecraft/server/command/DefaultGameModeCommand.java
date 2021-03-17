@@ -14,9 +14,9 @@ import net.minecraft.world.GameMode;
 
 public class DefaultGameModeCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("defaultgamemode").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2));
+        LiteralArgumentBuilder literalArgumentBuilder = (LiteralArgumentBuilder)CommandManager.literal("defaultgamemode").requires(source -> source.hasPermissionLevel(2));
         for (GameMode gameMode : GameMode.values()) {
-            literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(commandContext -> DefaultGameModeCommand.execute((ServerCommandSource)commandContext.getSource(), gameMode)));
+            literalArgumentBuilder.then(CommandManager.literal(gameMode.getName()).executes(context -> DefaultGameModeCommand.execute((ServerCommandSource)context.getSource(), gameMode)));
         }
         dispatcher.register(literalArgumentBuilder);
     }

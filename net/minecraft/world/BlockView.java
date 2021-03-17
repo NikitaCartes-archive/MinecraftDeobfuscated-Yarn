@@ -50,7 +50,7 @@ extends HeightLimitView {
         return BlockView.raycast(context2.getStart(), context2.getEnd(), context2, (context, pos) -> {
             BlockState blockState = this.getBlockState((BlockPos)pos);
             Vec3d vec3d = context.getStart().subtract(context.getEnd());
-            return context.getState().test(blockState) ? new BlockHitResult(context.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(context.getEnd()), false) : null;
+            return context.getStatePredicate().test(blockState) ? new BlockHitResult(context.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(context.getEnd()), false) : null;
         }, context -> {
             Vec3d vec3d = context.getStart().subtract(context.getEnd());
             return BlockHitResult.createMissed(context.getEnd(), Direction.getFacing(vec3d.x, vec3d.y, vec3d.z), new BlockPos(context.getEnd()));

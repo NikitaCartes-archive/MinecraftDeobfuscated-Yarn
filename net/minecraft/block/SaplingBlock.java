@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -47,7 +48,7 @@ implements Fertilizable {
 
     public void generate(ServerWorld world, BlockPos pos, BlockState state, Random random) {
         if (state.get(STAGE) == 0) {
-            world.setBlockState(pos, (BlockState)state.cycle(STAGE), 4);
+            world.setBlockState(pos, (BlockState)state.cycle(STAGE), SetBlockStateFlags.NO_REDRAW);
         } else {
             this.generator.generate(world, world.getChunkManager().getChunkGenerator(), pos, state, random);
         }

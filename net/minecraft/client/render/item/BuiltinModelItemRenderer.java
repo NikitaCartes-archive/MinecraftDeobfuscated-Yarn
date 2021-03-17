@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
@@ -50,17 +51,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.ShieldItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.StringUtils;
 
 @Environment(value=EnvType.CLIENT)
 public class BuiltinModelItemRenderer
-implements SynchronousResourceReloadListener {
+implements SynchronousResourceReloader {
     private static final ShulkerBoxBlockEntity[] RENDER_SHULKER_BOX_DYED = (ShulkerBoxBlockEntity[])Arrays.stream(DyeColor.values()).sorted(Comparator.comparingInt(DyeColor::getId)).map(dyeColor -> new ShulkerBoxBlockEntity((DyeColor)dyeColor, BlockPos.ORIGIN, Blocks.SHULKER_BOX.getDefaultState())).toArray(ShulkerBoxBlockEntity[]::new);
     private static final ShulkerBoxBlockEntity RENDER_SHULKER_BOX = new ShulkerBoxBlockEntity(BlockPos.ORIGIN, Blocks.SHULKER_BOX.getDefaultState());
     private final ChestBlockEntity renderChestNormal = new ChestBlockEntity(BlockPos.ORIGIN, Blocks.CHEST.getDefaultState());
@@ -81,7 +82,7 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager manager) {
+    public void reload(ResourceManager manager) {
         this.modelShield = new ShieldEntityModel(this.entityModelLoader.getModelPart(EntityModelLayers.SHIELD));
         this.modelTrident = new TridentEntityModel(this.entityModelLoader.getModelPart(EntityModelLayers.TRIDENT));
         this.skullModels = SkullBlockEntityRenderer.getModels(this.entityModelLoader);
@@ -95,14 +96,14 @@ implements SynchronousResourceReloadListener {
             if (block instanceof AbstractSkullBlock) {
                 GameProfile gameProfile = null;
                 if (stack.hasTag()) {
-                    CompoundTag compoundTag = stack.getTag();
-                    if (compoundTag.contains("SkullOwner", 10)) {
-                        gameProfile = NbtHelper.toGameProfile(compoundTag.getCompound("SkullOwner"));
-                    } else if (compoundTag.contains("SkullOwner", 8) && !StringUtils.isBlank(compoundTag.getString("SkullOwner"))) {
-                        gameProfile = new GameProfile(null, compoundTag.getString("SkullOwner"));
+                    NbtCompound nbtCompound = stack.getTag();
+                    if (nbtCompound.contains("SkullOwner", NbtTypeIds.COMPOUND)) {
+                        gameProfile = NbtHelper.toGameProfile(nbtCompound.getCompound("SkullOwner"));
+                    } else if (nbtCompound.contains("SkullOwner", NbtTypeIds.STRING) && !StringUtils.isBlank(nbtCompound.getString("SkullOwner"))) {
+                        gameProfile = new GameProfile(null, nbtCompound.getString("SkullOwner"));
                         gameProfile = SkullBlockEntity.loadProperties(gameProfile);
-                        compoundTag.remove("SkullOwner");
-                        compoundTag.put("SkullOwner", NbtHelper.fromGameProfile(new CompoundTag(), gameProfile));
+                        nbtCompound.remove("SkullOwner");
+                        nbtCompound.put("SkullOwner", NbtHelper.writeGameProfile(new NbtCompound(), gameProfile));
                     }
                 }
                 SkullBlock.SkullType skullType = ((AbstractSkullBlock)block).getSkullType();

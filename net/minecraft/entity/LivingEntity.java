@@ -24,6 +24,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractSkullBlock;
 import net.minecraft.block.BedBlock;
@@ -87,10 +89,10 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntityAnimationS2CPacket;
 import net.minecraft.network.packet.s2c.play.EntityEquipmentUpdateS2CPacket;
@@ -114,6 +116,7 @@ import net.minecraft.stat.Stats;
 import net.minecraft.tag.BlockTags;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.tag.ItemTags;
+import net.minecraft.tag.Tag;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
@@ -234,7 +237,7 @@ extends Entity {
         this.headYaw = this.yaw = (float)(Math.random() * 6.2831854820251465);
         this.stepHeight = 0.6f;
         NbtOps nbtOps = NbtOps.INSTANCE;
-        this.brain = this.deserializeBrain(new Dynamic<Tag>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), nbtOps.emptyMap()))));
+        this.brain = this.deserializeBrain(new Dynamic<NbtElement>(nbtOps, nbtOps.createMap(ImmutableMap.of(nbtOps.createString("memories"), nbtOps.emptyMap()))));
     }
 
     public Brain<?> getBrain() {
@@ -415,8 +418,8 @@ extends Entity {
         return super.getVelocityMultiplier();
     }
 
-    protected boolean method_29500(BlockState state) {
-        return !state.isAir() || this.isFallFlying();
+    protected boolean shouldRemoveSoulSpeedBoost(BlockState landingState) {
+        return !landingState.isAir() || this.isFallFlying();
     }
 
     protected void removeSoulSpeedBoost() {
@@ -471,7 +474,7 @@ extends Entity {
         if (i > 0) {
             FrostWalkerEnchantment.freezeWater(this, this.world, pos, i);
         }
-        if (this.method_29500(this.getLandingBlockState())) {
+        if (this.shouldRemoveSoulSpeedBoost(this.getLandingBlockState())) {
             this.removeSoulSpeedBoost();
         }
         this.addSoulSpeedBoostIfNeeded();
@@ -507,7 +510,19 @@ extends Entity {
         }
     }
 
-    protected boolean canDropLootAndXp() {
+    /**
+     * Returns if this entity should drop experience on death when the {@linkplain
+     * net.minecraft.world.GameRules#DO_MOB_LOOT doMobLoot} game rule is
+     * enabled and has been attacked by a player.
+     * 
+     * <p>If {@link #shouldAlwaysDropXp() shouldAlwaysDropXp()} returns {@code
+     * true}, this check is disregarded.
+     * 
+     * @see #dropXp()
+     * @see #shouldAlwaysDropXp()
+     * @see #getXpToDrop(PlayerEntity)
+     */
+    protected boolean shouldDropXp() {
         return !this.isBaby();
     }
 
@@ -527,10 +542,30 @@ extends Entity {
         return Math.min(air + 4, this.getMaxAir());
     }
 
-    protected int getCurrentExperience(PlayerEntity player) {
+    /**
+     * Called when this entity is killed and returns the amount of experience
+     * to drop.
+     * 
+     * <p>{@code player} may be {@code null} if {@linkplain #shouldAlwaysDropXp
+     * shouldAlwaysDropXp()} returns {@code true}.
+     * 
+     * @see #dropXp()
+     * @see #shouldAlwaysDropXp()
+     * @see #shouldDropXp()
+     * 
+     * @param player the attacking player
+     */
+    protected int getXpToDrop(PlayerEntity player) {
         return 0;
     }
 
+    /**
+     * Returns if this entity may always drop experience, skipping any
+     * other checks.
+     * 
+     * @see #dropXp()
+     * @see #getXpToDrop(PlayerEntity)
+     */
     protected boolean shouldAlwaysDropXp() {
         return false;
     }
@@ -590,52 +625,52 @@ extends Entity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag2) {
-        tag2.putFloat("Health", this.getHealth());
-        tag2.putShort("HurtTime", (short)this.hurtTime);
-        tag2.putInt("HurtByTimestamp", this.lastAttackedTime);
-        tag2.putShort("DeathTime", (short)this.deathTime);
-        tag2.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
-        tag2.put("Attributes", this.getAttributes().toNbt());
+    public void writeCustomDataToNbt(NbtCompound tag) {
+        tag.putFloat("Health", this.getHealth());
+        tag.putShort("HurtTime", (short)this.hurtTime);
+        tag.putInt("HurtByTimestamp", this.lastAttackedTime);
+        tag.putShort("DeathTime", (short)this.deathTime);
+        tag.putFloat("AbsorptionAmount", this.getAbsorptionAmount());
+        tag.put("Attributes", this.getAttributes().toNbt());
         if (!this.activeStatusEffects.isEmpty()) {
-            ListTag listTag = new ListTag();
+            NbtList nbtList = new NbtList();
             for (StatusEffectInstance statusEffectInstance : this.activeStatusEffects.values()) {
-                listTag.add(statusEffectInstance.writeNbt(new CompoundTag()));
+                nbtList.add(statusEffectInstance.writeNbt(new NbtCompound()));
             }
-            tag2.put("ActiveEffects", listTag);
+            tag.put("ActiveEffects", nbtList);
         }
-        tag2.putBoolean("FallFlying", this.isFallFlying());
+        tag.putBoolean("FallFlying", this.isFallFlying());
         this.getSleepingPosition().ifPresent(blockPos -> {
-            tag2.putInt("SleepingX", blockPos.getX());
-            tag2.putInt("SleepingY", blockPos.getY());
-            tag2.putInt("SleepingZ", blockPos.getZ());
+            tag.putInt("SleepingX", blockPos.getX());
+            tag.putInt("SleepingY", blockPos.getY());
+            tag.putInt("SleepingZ", blockPos.getZ());
         });
-        DataResult<Tag> dataResult = this.brain.encode(NbtOps.INSTANCE);
-        dataResult.resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("Brain", (Tag)tag));
+        DataResult<NbtElement> dataResult = this.brain.encode(NbtOps.INSTANCE);
+        dataResult.resultOrPartial(LOGGER::error).ifPresent(nbtElement -> tag.put("Brain", (NbtElement)nbtElement));
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         this.setAbsorptionAmount(tag.getFloat("AbsorptionAmount"));
-        if (tag.contains("Attributes", 9) && this.world != null && !this.world.isClient) {
-            this.getAttributes().readNbt(tag.getList("Attributes", 10));
+        if (tag.contains("Attributes", NbtTypeIds.LIST) && this.world != null && !this.world.isClient) {
+            this.getAttributes().readNbt(tag.getList("Attributes", NbtTypeIds.COMPOUND));
         }
-        if (tag.contains("ActiveEffects", 9)) {
-            ListTag listTag = tag.getList("ActiveEffects", 10);
-            for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag = listTag.getCompound(i);
-                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(compoundTag);
+        if (tag.contains("ActiveEffects", NbtTypeIds.LIST)) {
+            NbtList nbtList = tag.getList("ActiveEffects", NbtTypeIds.COMPOUND);
+            for (int i = 0; i < nbtList.size(); ++i) {
+                NbtCompound nbtCompound = nbtList.getCompound(i);
+                StatusEffectInstance statusEffectInstance = StatusEffectInstance.fromNbt(nbtCompound);
                 if (statusEffectInstance == null) continue;
                 this.activeStatusEffects.put(statusEffectInstance.getEffectType(), statusEffectInstance);
             }
         }
-        if (tag.contains("Health", 99)) {
+        if (tag.contains("Health", NbtTypeIds.NUMBER)) {
             this.setHealth(tag.getFloat("Health"));
         }
         this.hurtTime = tag.getShort("HurtTime");
         this.deathTime = tag.getShort("DeathTime");
         this.lastAttackedTime = tag.getInt("HurtByTimestamp");
-        if (tag.contains("Team", 8)) {
+        if (tag.contains("Team", NbtTypeIds.STRING)) {
             boolean bl;
             String string = tag.getString("Team");
             Team team = this.world.getScoreboard().getTeam(string);
@@ -647,7 +682,7 @@ extends Entity {
         if (tag.getBoolean("FallFlying")) {
             this.setFlag(7, true);
         }
-        if (tag.contains("SleepingX", 99) && tag.contains("SleepingY", 99) && tag.contains("SleepingZ", 99)) {
+        if (tag.contains("SleepingX", NbtTypeIds.NUMBER) && tag.contains("SleepingY", NbtTypeIds.NUMBER) && tag.contains("SleepingZ", NbtTypeIds.NUMBER)) {
             BlockPos blockPos = new BlockPos(tag.getInt("SleepingX"), tag.getInt("SleepingY"), tag.getInt("SleepingZ"));
             this.setSleepingPosition(blockPos);
             this.dataTracker.set(POSE, EntityPose.SLEEPING);
@@ -655,8 +690,8 @@ extends Entity {
                 this.setPositionInBed(blockPos);
             }
         }
-        if (tag.contains("Brain", 10)) {
-            this.brain = this.deserializeBrain(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("Brain")));
+        if (tag.contains("Brain", NbtTypeIds.COMPOUND)) {
+            this.brain = this.deserializeBrain(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag.get("Brain")));
         }
     }
 
@@ -880,6 +915,13 @@ extends Entity {
         }
     }
 
+    /**
+     * Heals this entity by the given {@code amount} of half-hearts.
+     * 
+     * <p>A dead entity cannot be healed.
+     * 
+     * @see #isDead()
+     */
     public void heal(float amount) {
         float f = this.getHealth();
         if (f > 0.0f) {
@@ -1141,7 +1183,7 @@ extends Entity {
                 BlockPos blockPos = this.getBlockPos();
                 BlockState blockState = Blocks.WITHER_ROSE.getDefaultState();
                 if (this.world.getBlockState(blockPos).isAir() && blockState.canPlaceAt(this.world, blockPos)) {
-                    this.world.setBlockState(blockPos, blockState, 3);
+                    this.world.setBlockState(blockPos, blockState, SetBlockStateFlags.DEFAULT);
                     bl = true;
                 }
             }
@@ -1168,9 +1210,16 @@ extends Entity {
     protected void dropInventory() {
     }
 
+    /**
+     * Drops experience when this entity is killed.
+     * 
+     * <p>To control the details of experience dropping, consider overriding
+     * {@link #shouldAlwaysDropXp()}, {@link #shouldDropXp()}, and
+     * {@link #getXpToDrop(PlayerEntity)}.
+     */
     protected void dropXp() {
-        if (this.world instanceof ServerWorld && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.canDropLootAndXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
-            ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), this.getCurrentExperience(this.attackingPlayer));
+        if (this.world instanceof ServerWorld && (this.shouldAlwaysDropXp() || this.playerHitTimer > 0 && this.shouldDropXp() && this.world.getGameRules().getBoolean(GameRules.DO_MOB_LOOT))) {
+            ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), this.getXpToDrop(this.attackingPlayer));
         }
     }
 
@@ -1732,7 +1781,7 @@ extends Entity {
         this.setVelocity(this.getVelocity().add(0.0, -0.04f, 0.0));
     }
 
-    protected void swimUpward(net.minecraft.tag.Tag<Fluid> fluid) {
+    protected void swimUpward(Tag<Fluid> fluid) {
         this.setVelocity(this.getVelocity().add(0.0, 0.04f, 0.0));
     }
 
@@ -2763,7 +2812,7 @@ extends Entity {
             this.stopRiding();
         }
         if ((blockState = this.world.getBlockState(pos)).getBlock() instanceof BedBlock) {
-            this.world.setBlockState(pos, (BlockState)blockState.with(BedBlock.OCCUPIED, true), 3);
+            this.world.setBlockState(pos, (BlockState)blockState.with(BedBlock.OCCUPIED, true), SetBlockStateFlags.DEFAULT);
         }
         this.setPose(EntityPose.SLEEPING);
         this.setPositionInBed(pos);
@@ -2784,7 +2833,7 @@ extends Entity {
         this.getSleepingPosition().filter(this.world::isChunkLoaded).ifPresent(blockPos -> {
             BlockState blockState = this.world.getBlockState((BlockPos)blockPos);
             if (blockState.getBlock() instanceof BedBlock) {
-                this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), 3);
+                this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState.with(BedBlock.OCCUPIED, false), SetBlockStateFlags.DEFAULT);
                 Vec3d vec3d = BedBlock.findWakeUpPosition(this.getType(), this.world, blockPos, this.yaw).orElseGet(() -> {
                     BlockPos blockPos2 = blockPos.up();
                     return new Vec3d((double)blockPos2.getX() + 0.5, (double)blockPos2.getY() + 0.1, (double)blockPos2.getZ() + 0.5);
@@ -2958,19 +3007,19 @@ extends Entity {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
-        double d = mobSpawnS2CPacket.getX();
-        double e = mobSpawnS2CPacket.getY();
-        double f = mobSpawnS2CPacket.getZ();
-        float g = (float)(mobSpawnS2CPacket.getYaw() * 360) / 256.0f;
-        float h = (float)(mobSpawnS2CPacket.getPitch() * 360) / 256.0f;
+    public void readFromPacket(MobSpawnS2CPacket packet) {
+        double d = packet.getX();
+        double e = packet.getY();
+        double f = packet.getZ();
+        float g = (float)(packet.getYaw() * 360) / 256.0f;
+        float h = (float)(packet.getPitch() * 360) / 256.0f;
         this.updateTrackedPosition(d, e, f);
-        this.bodyYaw = (float)(mobSpawnS2CPacket.getHeadYaw() * 360) / 256.0f;
-        this.headYaw = (float)(mobSpawnS2CPacket.getHeadYaw() * 360) / 256.0f;
-        this.setEntityId(mobSpawnS2CPacket.getId());
-        this.setUuid(mobSpawnS2CPacket.getUuid());
+        this.bodyYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
+        this.headYaw = (float)(packet.getHeadYaw() * 360) / 256.0f;
+        this.setEntityId(packet.getId());
+        this.setUuid(packet.getUuid());
         this.updatePositionAndAngles(d, e, f, g, h);
-        this.setVelocity((float)mobSpawnS2CPacket.getVelocityX() / 8000.0f, (float)mobSpawnS2CPacket.getVelocityY() / 8000.0f, (float)mobSpawnS2CPacket.getVelocityZ() / 8000.0f);
+        this.setVelocity((float)packet.getVelocityX() / 8000.0f, (float)packet.getVelocityY() / 8000.0f, (float)packet.getVelocityZ() / 8000.0f);
     }
 }
 

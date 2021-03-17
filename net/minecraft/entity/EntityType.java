@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -137,12 +138,13 @@ import net.minecraft.entity.vehicle.MinecartEntity;
 import net.minecraft.entity.vehicle.SpawnerMinecartEntity;
 import net.minecraft.entity.vehicle.TntMinecartEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.BlockTags;
+import net.minecraft.tag.Tag;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -323,7 +325,7 @@ implements TypeFilter<Entity, T> {
     }
 
     @Nullable
-    public T spawn(ServerWorld world, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+    public T spawn(ServerWorld world, @Nullable NbtCompound itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
         T entity = this.create(world, itemTag, name, player, pos, spawnReason, alignPosition, invertY);
         if (entity != null) {
             world.spawnEntityAndPassengers((Entity)entity);
@@ -332,7 +334,7 @@ implements TypeFilter<Entity, T> {
     }
 
     @Nullable
-    public T create(ServerWorld world, @Nullable CompoundTag itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
+    public T create(ServerWorld world, @Nullable NbtCompound itemTag, @Nullable Text name, @Nullable PlayerEntity player, BlockPos pos, SpawnReason spawnReason, boolean alignPosition, boolean invertY) {
         double d;
         T entity = this.create(world);
         if (entity == null) {
@@ -368,8 +370,8 @@ implements TypeFilter<Entity, T> {
         return 1.0 + VoxelShapes.calculateMaxOffset(Direction.Axis.Y, boundingBox, stream, invertY ? -2.0 : -1.0);
     }
 
-    public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable CompoundTag itemTag) {
-        if (itemTag == null || !itemTag.contains("EntityTag", 10)) {
+    public static void loadFromEntityNbt(World world, @Nullable PlayerEntity player, @Nullable Entity entity, @Nullable NbtCompound itemTag) {
+        if (itemTag == null || !itemTag.contains("EntityTag", NbtTypeIds.COMPOUND)) {
             return;
         }
         MinecraftServer minecraftServer = world.getServer();
@@ -379,11 +381,11 @@ implements TypeFilter<Entity, T> {
         if (!(world.isClient || !entity.entityDataRequiresOperator() || player != null && minecraftServer.getPlayerManager().isOperator(player.getGameProfile()))) {
             return;
         }
-        CompoundTag compoundTag = entity.writeNbt(new CompoundTag());
+        NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
         UUID uUID = entity.getUuid();
-        compoundTag.copyFrom(itemTag.getCompound("EntityTag"));
+        nbtCompound.copyFrom(itemTag.getCompound("EntityTag"));
         entity.setUuid(uUID);
-        entity.readNbt(compoundTag);
+        entity.readNbt(nbtCompound);
     }
 
     public boolean isSaveable() {
@@ -451,7 +453,7 @@ implements TypeFilter<Entity, T> {
         return EntityType.newInstance(world, Registry.ENTITY_TYPE.get(type));
     }
 
-    public static Optional<Entity> getEntityFromNbt(CompoundTag tag, World world) {
+    public static Optional<Entity> getEntityFromNbt(NbtCompound tag, World world) {
         return Util.ifPresentOrElse(EntityType.fromNbt(tag).map(entityType -> entityType.create(world)), entity -> entity.readNbt(tag), () -> LOGGER.warn("Skipping Entity with id {}", (Object)tag.getString("id")));
     }
 
@@ -488,17 +490,17 @@ implements TypeFilter<Entity, T> {
         return this.dimensions;
     }
 
-    public static Optional<EntityType<?>> fromNbt(CompoundTag compoundTag) {
+    public static Optional<EntityType<?>> fromNbt(NbtCompound compoundTag) {
         return Registry.ENTITY_TYPE.getOrEmpty(new Identifier(compoundTag.getString("id")));
     }
 
     @Nullable
-    public static Entity loadEntityWithPassengers(CompoundTag compoundTag, World world, Function<Entity, Entity> entityProcessor) {
+    public static Entity loadEntityWithPassengers(NbtCompound compoundTag, World world, Function<Entity, Entity> entityProcessor) {
         return EntityType.loadEntityFromNbt(compoundTag, world).map(entityProcessor).map(entity -> {
-            if (compoundTag.contains("Passengers", 9)) {
-                ListTag listTag = compoundTag.getList("Passengers", 10);
-                for (int i = 0; i < listTag.size(); ++i) {
-                    Entity entity2 = EntityType.loadEntityWithPassengers(listTag.getCompound(i), world, entityProcessor);
+            if (compoundTag.contains("Passengers", NbtTypeIds.LIST)) {
+                NbtList nbtList = compoundTag.getList("Passengers", NbtTypeIds.COMPOUND);
+                for (int i = 0; i < nbtList.size(); ++i) {
+                    Entity entity2 = EntityType.loadEntityWithPassengers(nbtList.getCompound(i), world, entityProcessor);
                     if (entity2 == null) continue;
                     entity2.startRiding((Entity)entity, true);
                 }
@@ -507,13 +509,13 @@ implements TypeFilter<Entity, T> {
         }).orElse(null);
     }
 
-    public static Stream<Entity> streamFromNbt(final List<? extends Tag> entityNbtList, final World world) {
-        final Spliterator<? extends Tag> spliterator = entityNbtList.spliterator();
+    public static Stream<Entity> streamFromNbt(final List<? extends NbtElement> entityNbtList, final World world) {
+        final Spliterator<? extends NbtElement> spliterator = entityNbtList.spliterator();
         return StreamSupport.stream(new Spliterator<Entity>(){
 
             @Override
             public boolean tryAdvance(Consumer<? super Entity> consumer) {
-                return spliterator.tryAdvance((? super T tag) -> EntityType.loadEntityWithPassengers((CompoundTag)tag, world, entity -> {
+                return spliterator.tryAdvance((? super T nbtElement) -> EntityType.loadEntityWithPassengers((NbtCompound)nbtElement, world, entity -> {
                     consumer.accept((Entity)entity);
                     return entity;
                 }));
@@ -536,7 +538,7 @@ implements TypeFilter<Entity, T> {
         }, false);
     }
 
-    private static Optional<Entity> loadEntityFromNbt(CompoundTag compoundTag, World world) {
+    private static Optional<Entity> loadEntityFromNbt(NbtCompound compoundTag, World world) {
         try {
             return EntityType.getEntityFromNbt(compoundTag, world);
         } catch (RuntimeException runtimeException) {
@@ -562,7 +564,7 @@ implements TypeFilter<Entity, T> {
         return this != PLAYER && this != LLAMA_SPIT && this != WITHER && this != BAT && this != ITEM_FRAME && this != GLOW_ITEM_FRAME && this != LEASH_KNOT && this != PAINTING && this != END_CRYSTAL && this != EVOKER_FANGS;
     }
 
-    public boolean isIn(net.minecraft.tag.Tag<EntityType<?>> tag) {
+    public boolean isIn(Tag<EntityType<?>> tag) {
         return tag.contains(this);
     }
 

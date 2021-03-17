@@ -15,16 +15,16 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.world.Difficulty;
 
 public class DifficultyCommand {
-    private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(object -> new TranslatableText("commands.difficulty.failure", object));
+    private static final DynamicCommandExceptionType FAILURE_EXCEPTION = new DynamicCommandExceptionType(difficulty -> new TranslatableText("commands.difficulty.failure", difficulty));
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
         LiteralArgumentBuilder<ServerCommandSource> literalArgumentBuilder = CommandManager.literal("difficulty");
         for (Difficulty difficulty : Difficulty.values()) {
-            literalArgumentBuilder.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal(difficulty.getName()).executes(commandContext -> DifficultyCommand.execute((ServerCommandSource)commandContext.getSource(), difficulty)));
+            literalArgumentBuilder.then((ArgumentBuilder<ServerCommandSource, ?>)CommandManager.literal(difficulty.getName()).executes(context -> DifficultyCommand.execute((ServerCommandSource)context.getSource(), difficulty)));
         }
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).executes(commandContext -> {
-            Difficulty difficulty = ((ServerCommandSource)commandContext.getSource()).getWorld().getDifficulty();
-            ((ServerCommandSource)commandContext.getSource()).sendFeedback(new TranslatableText("commands.difficulty.query", difficulty.getTranslatableName()), false);
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)literalArgumentBuilder.requires(source -> source.hasPermissionLevel(2))).executes(context -> {
+            Difficulty difficulty = ((ServerCommandSource)context.getSource()).getWorld().getDifficulty();
+            ((ServerCommandSource)context.getSource()).sendFeedback(new TranslatableText("commands.difficulty.query", difficulty.getTranslatableName()), false);
             return difficulty.getId();
         }));
     }

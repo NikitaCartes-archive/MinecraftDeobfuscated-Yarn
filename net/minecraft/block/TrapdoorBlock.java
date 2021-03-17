@@ -3,6 +3,8 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -94,7 +96,7 @@ implements Waterloggable {
             return ActionResult.PASS;
         }
         state = (BlockState)state.cycle(OPEN);
-        world.setBlockState(pos, state, 2);
+        world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS);
         if (state.get(WATERLOGGED).booleanValue()) {
             world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
         }
@@ -104,10 +106,10 @@ implements Waterloggable {
 
     protected void playToggleSound(@Nullable PlayerEntity player, World world, BlockPos pos, boolean open) {
         if (open) {
-            int i = this.material == Material.METAL ? 1037 : 1007;
+            int i = this.material == Material.METAL ? WorldEvents.IRON_TRAPDOOR_OPENS : WorldEvents.WOODEN_TRAPDOOR_OPENS;
             world.syncWorldEvent(player, i, pos, 0);
         } else {
-            int i = this.material == Material.METAL ? 1036 : 1013;
+            int i = this.material == Material.METAL ? WorldEvents.IRON_TRAPDOOR_CLOSES : WorldEvents.WOODEN_TRAPDOOR_CLOSES;
             world.syncWorldEvent(player, i, pos, 0);
         }
         world.emitGameEvent((Entity)player, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
@@ -124,7 +126,7 @@ implements Waterloggable {
                 state = (BlockState)state.with(OPEN, bl);
                 this.playToggleSound(null, world, pos, bl);
             }
-            world.setBlockState(pos, (BlockState)state.with(POWERED, bl), 2);
+            world.setBlockState(pos, (BlockState)state.with(POWERED, bl), SetBlockStateFlags.NOTIFY_LISTENERS);
             if (state.get(WATERLOGGED).booleanValue()) {
                 world.getFluidTickScheduler().schedule(pos, Fluids.WATER, Fluids.WATER.getTickRate(world));
             }

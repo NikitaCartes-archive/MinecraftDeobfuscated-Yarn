@@ -13,7 +13,7 @@ import net.minecraft.loot.context.LootContextParameter;
 import net.minecraft.loot.provider.nbt.LootNbtProvider;
 import net.minecraft.loot.provider.nbt.LootNbtProviderType;
 import net.minecraft.loot.provider.nbt.LootNbtProviderTypes;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
 import net.minecraft.util.JsonSerializer;
@@ -34,7 +34,7 @@ implements LootNbtProvider {
 
     @Override
     @Nullable
-    public Tag getNbtTag(LootContext context) {
+    public NbtElement getNbtTag(LootContext context) {
         return context.getWorld().getServer().getDataCommandStorage().get(this.source);
     }
 

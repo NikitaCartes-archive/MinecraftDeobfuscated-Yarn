@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.Map;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractCauldronBlock;
 import net.minecraft.block.Block;
@@ -87,7 +88,7 @@ extends AbstractCauldronBlock {
             return;
         }
         world.setBlockState(pos, (BlockState)state.with(LEVEL, state.get(LEVEL) + 1));
-        world.syncWorldEvent(1047, pos, 0);
+        world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS_WATER_INTO_CAULDRON, pos, 0);
     }
 }
 

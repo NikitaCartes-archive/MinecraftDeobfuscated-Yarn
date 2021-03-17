@@ -39,9 +39,9 @@ implements Toast {
         if (this.recipes.isEmpty()) {
             return Toast.Visibility.HIDE;
         }
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f);
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         manager.drawTexture(matrices, 0, 0, 0, 32, this.getWidth(), this.getHeight());
         manager.getGame().textRenderer.draw(matrices, TITLE, 30.0f, 7.0f, -11534256);
         manager.getGame().textRenderer.draw(matrices, DESCRIPTION, 30.0f, 18.0f, -16777216);

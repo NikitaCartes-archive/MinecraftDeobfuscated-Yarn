@@ -5,14 +5,15 @@ package net.minecraft.entity.projectile;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleEffect;
@@ -116,19 +117,19 @@ extends ProjectileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.put("power", this.toListTag(this.powerX, this.powerY, this.powerZ));
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
-        ListTag listTag;
+    public void readCustomDataFromNbt(NbtCompound tag) {
+        NbtList nbtList;
         super.readCustomDataFromNbt(tag);
-        if (tag.contains("power", 9) && (listTag = tag.getList("power", 6)).size() == 3) {
-            this.powerX = listTag.getDouble(0);
-            this.powerY = listTag.getDouble(1);
-            this.powerZ = listTag.getDouble(2);
+        if (tag.contains("power", NbtTypeIds.LIST) && (nbtList = tag.getList("power", NbtTypeIds.DOUBLE)).size() == 3) {
+            this.powerX = nbtList.getDouble(0);
+            this.powerY = nbtList.getDouble(1);
+            this.powerZ = nbtList.getDouble(2);
         }
     }
 

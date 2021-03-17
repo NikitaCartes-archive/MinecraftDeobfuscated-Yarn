@@ -17,7 +17,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.JigsawBlock;
 import net.minecraft.block.entity.JigsawBlockEntity;
 import net.minecraft.block.enums.JigsawOrientation;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.pool.StructurePool;
@@ -39,7 +39,7 @@ public class FeaturePoolElement
 extends StructurePoolElement {
     public static final Codec<FeaturePoolElement> CODEC = RecordCodecBuilder.create(instance -> instance.group(((MapCodec)ConfiguredFeature.REGISTRY_CODEC.fieldOf("feature")).forGetter(featurePoolElement -> featurePoolElement.feature), FeaturePoolElement.method_28883()).apply((Applicative<FeaturePoolElement, ?>)instance, FeaturePoolElement::new));
     private final Supplier<ConfiguredFeature<?, ?>> feature;
-    private final CompoundTag tag;
+    private final NbtCompound tag;
 
     protected FeaturePoolElement(Supplier<ConfiguredFeature<?, ?>> feature, StructurePool.Projection projection) {
         super(projection);
@@ -47,14 +47,14 @@ extends StructurePoolElement {
         this.tag = this.createDefaultJigsawNbt();
     }
 
-    private CompoundTag createDefaultJigsawNbt() {
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putString("name", "minecraft:bottom");
-        compoundTag.putString("final_state", "minecraft:air");
-        compoundTag.putString("pool", "minecraft:empty");
-        compoundTag.putString("target", "minecraft:empty");
-        compoundTag.putString("joint", JigsawBlockEntity.Joint.ROLLABLE.asString());
-        return compoundTag;
+    private NbtCompound createDefaultJigsawNbt() {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putString("name", "minecraft:bottom");
+        nbtCompound.putString("final_state", "minecraft:air");
+        nbtCompound.putString("pool", "minecraft:empty");
+        nbtCompound.putString("target", "minecraft:empty");
+        nbtCompound.putString("joint", JigsawBlockEntity.Joint.ROLLABLE.asString());
+        return nbtCompound;
     }
 
     public Vec3i getStart(StructureManager structureManager, BlockRotation rotation) {

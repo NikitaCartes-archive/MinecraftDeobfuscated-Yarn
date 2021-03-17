@@ -200,7 +200,7 @@ implements StructureWorldAccess {
         this.calculateAmbientDarkness();
         this.initWeatherGradients();
         this.getWorldBorder().setMaxRadius(server.getMaxWorldBorderRadius());
-        this.raidManager = this.getPersistentStateManager().getOrCreate(compoundTag -> RaidManager.fromNbt(this, compoundTag), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
+        this.raidManager = this.getPersistentStateManager().getOrCreate(nbtCompound -> RaidManager.fromNbt(this, nbtCompound), () -> new RaidManager(this), RaidManager.nameFor(this.getDimension()));
         if (!server.isSinglePlayer()) {
             properties.setGameMode(server.getDefaultGameMode());
         }
@@ -404,7 +404,7 @@ implements StructureWorldAccess {
         if (bl && this.isThundering() && this.random.nextInt(100000) == 0 && this.hasRain(blockPos = this.getSurface(this.getRandomPosInChunk(i, 0, j, 15)))) {
             boolean bl2;
             LocalDifficulty localDifficulty = this.getLocalDifficulty(blockPos);
-            boolean bl3 = bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01;
+            boolean bl3 = bl2 = this.getGameRules().getBoolean(GameRules.DO_MOB_SPAWNING) && this.random.nextDouble() < (double)localDifficulty.getLocalDifficulty() * 0.01 && !this.getBlockState(blockPos.down()).isOf(Blocks.LIGHTNING_ROD);
             if (bl2) {
                 SkeletonHorseEntity skeletonHorseEntity = EntityType.SKELETON_HORSE.create(this);
                 skeletonHorseEntity.setTrapped(true);
@@ -460,20 +460,9 @@ implements StructureWorldAccess {
         profiler.pop();
     }
 
-    private Optional<BlockPos> method_31418(BlockPos blockPos) {
-        Optional<BlockPos> optional = this.getPointOfInterestStorage().getNearestPosition(pointOfInterestType -> pointOfInterestType == PointOfInterestType.LIGHTNING_ROD, blockPos, 128, PointOfInterestStorage.OccupationStatus.ANY);
-        if (optional.isPresent()) {
-            BlockPos blockPos2 = optional.get();
-            int i = this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, blockPos2.getX(), blockPos2.getZ()) - 1;
-            if (blockPos2.getY() == i) {
-                return Optional.of(blockPos2.up(1));
-            }
-            BlockPos blockPos3 = new BlockPos(blockPos2.getX(), i, blockPos2.getZ());
-            if (this.toServerWorld().getBlockState(blockPos3).isOf(Blocks.LIGHTNING_ROD)) {
-                return Optional.of(blockPos3.up(1));
-            }
-        }
-        return Optional.empty();
+    private Optional<BlockPos> method_31418(BlockPos blockPos2) {
+        Optional<BlockPos> optional = this.getPointOfInterestStorage().method_34712(pointOfInterestType -> pointOfInterestType == PointOfInterestType.LIGHTNING_ROD, blockPos -> blockPos.getY() == this.toServerWorld().getTopY(Heightmap.Type.WORLD_SURFACE, blockPos.getX(), blockPos.getZ()) - 1, blockPos2, 128, PointOfInterestStorage.OccupationStatus.ANY);
+        return optional.map(blockPos -> blockPos.up(1));
     }
 
     protected BlockPos getSurface(BlockPos pos) {
@@ -595,11 +584,11 @@ implements StructureWorldAccess {
             return;
         }
         if (progressListener != null) {
-            progressListener.method_15412(new TranslatableText("menu.savingLevel"));
+            progressListener.setTitle(new TranslatableText("menu.savingLevel"));
         }
         this.saveLevel();
         if (progressListener != null) {
-            progressListener.method_15414(new TranslatableText("menu.savingChunks"));
+            progressListener.setTask(new TranslatableText("menu.savingChunks"));
         }
         serverChunkManager.save(flush);
         if (flush) {

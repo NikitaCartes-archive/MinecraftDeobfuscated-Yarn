@@ -8,6 +8,8 @@ import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.entity.AreaEffectCloudEntity;
@@ -22,7 +24,7 @@ import net.minecraft.entity.projectile.thrown.ThrownItemEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -106,7 +108,7 @@ implements FlyingItemEntity {
                 this.applySplashPotion(list, hitResult.getType() == HitResult.Type.ENTITY ? ((EntityHitResult)hitResult).getEntity() : null);
             }
         }
-        int i = potion.hasInstantEffect() ? 2007 : 2002;
+        int i = potion.hasInstantEffect() ? WorldEvents.INSTANT_SPLASH_POTION_SPLASHED : WorldEvents.SPLASH_POTION_SPLASHED;
         this.world.syncWorldEvent(i, this.getBlockPos(), PotionUtil.getColor(itemStack));
         this.discard();
     }
@@ -162,9 +164,9 @@ implements FlyingItemEntity {
         for (StatusEffectInstance statusEffectInstance : PotionUtil.getCustomPotionEffects(stack)) {
             areaEffectCloudEntity.addEffect(new StatusEffectInstance(statusEffectInstance));
         }
-        CompoundTag compoundTag = stack.getTag();
-        if (compoundTag != null && compoundTag.contains("CustomPotionColor", 99)) {
-            areaEffectCloudEntity.setColor(compoundTag.getInt("CustomPotionColor"));
+        NbtCompound nbtCompound = stack.getTag();
+        if (nbtCompound != null && nbtCompound.contains("CustomPotionColor", NbtTypeIds.NUMBER)) {
+            areaEffectCloudEntity.setColor(nbtCompound.getInt("CustomPotionColor"));
         }
         this.world.spawnEntity(areaEffectCloudEntity);
     }
@@ -178,7 +180,7 @@ implements FlyingItemEntity {
         if (blockState.isIn(BlockTags.FIRE)) {
             this.world.removeBlock(pos, false);
         } else if (CampfireBlock.isLitCampfire(blockState)) {
-            this.world.syncWorldEvent(null, 1009, pos, 0);
+            this.world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, pos, 0);
             CampfireBlock.extinguish(this.getOwner(), this.world, pos, blockState);
             this.world.setBlockState(pos, (BlockState)blockState.with(CampfireBlock.LIT, false));
         }

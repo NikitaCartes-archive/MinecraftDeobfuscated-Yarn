@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
@@ -80,19 +81,19 @@ extends Feature<DefaultFeatureConfig> {
                     BlockState blockState = structureWorldAccess.getBlockState(blockPos2);
                     if (s == k || t == -1 || u == p || s == l || t == 4 || u == q) {
                         if (blockPos2.getY() >= structureWorldAccess.getBottomY() && !structureWorldAccess.getBlockState(blockPos2.down()).getMaterial().isSolid()) {
-                            structureWorldAccess.setBlockState(blockPos2, AIR, 2);
+                            structureWorldAccess.setBlockState(blockPos2, AIR, SetBlockStateFlags.NOTIFY_LISTENERS);
                             continue;
                         }
                         if (!blockState.getMaterial().isSolid() || blockState.isOf(Blocks.CHEST)) continue;
                         if (t == -1 && random.nextInt(4) != 0) {
-                            structureWorldAccess.setBlockState(blockPos2, Blocks.MOSSY_COBBLESTONE.getDefaultState(), 2);
+                            structureWorldAccess.setBlockState(blockPos2, Blocks.MOSSY_COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                             continue;
                         }
-                        structureWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), 2);
+                        structureWorldAccess.setBlockState(blockPos2, Blocks.COBBLESTONE.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                         continue;
                     }
                     if (blockState.isOf(Blocks.CHEST) || blockState.isOf(Blocks.SPAWNER)) continue;
-                    structureWorldAccess.setBlockState(blockPos2, AIR, 2);
+                    structureWorldAccess.setBlockState(blockPos2, AIR, SetBlockStateFlags.NOTIFY_LISTENERS);
                 }
             }
         }
@@ -109,12 +110,12 @@ extends Feature<DefaultFeatureConfig> {
                     ++x;
                 }
                 if (x != 1) continue;
-                structureWorldAccess.setBlockState(blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), 2);
+                structureWorldAccess.setBlockState(blockPos3, StructurePiece.orientateChest(structureWorldAccess, blockPos3, Blocks.CHEST.getDefaultState()), SetBlockStateFlags.NOTIFY_LISTENERS);
                 LootableContainerBlockEntity.setLootTable(structureWorldAccess, random, blockPos3, LootTables.SIMPLE_DUNGEON_CHEST);
                 continue block6;
             }
         }
-        structureWorldAccess.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), 2);
+        structureWorldAccess.setBlockState(blockPos, Blocks.SPAWNER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
         BlockEntity blockEntity = structureWorldAccess.getBlockEntity(blockPos);
         if (blockEntity instanceof MobSpawnerBlockEntity) {
             ((MobSpawnerBlockEntity)blockEntity).getLogic().setEntityId(this.getMobSpawnerEntity(random));

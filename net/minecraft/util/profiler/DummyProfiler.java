@@ -8,7 +8,9 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.util.profiler.EmptyProfileResult;
 import net.minecraft.util.profiler.ProfileResult;
+import net.minecraft.util.profiler.ProfilerSystem;
 import net.minecraft.util.profiler.ReadableProfiler;
+import org.jetbrains.annotations.Nullable;
 
 public class DummyProfiler
 implements ReadableProfiler {
@@ -57,6 +59,13 @@ implements ReadableProfiler {
     @Override
     public ProfileResult getResult() {
         return EmptyProfileResult.INSTANCE;
+    }
+
+    @Override
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    public ProfilerSystem.LocatedInfo method_34696(String string) {
+        return null;
     }
 }
 

@@ -6,7 +6,7 @@ package net.minecraft.entity;
 import java.util.Random;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 
 public class SaddledComponent {
     private final DataTracker dataTracker;
@@ -39,11 +39,11 @@ public class SaddledComponent {
         return true;
     }
 
-    public void writeNbt(CompoundTag tag) {
+    public void writeNbt(NbtCompound tag) {
         tag.putBoolean("Saddle", this.isSaddled());
     }
 
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         this.setSaddled(tag.getBoolean("Saddle"));
     }
 

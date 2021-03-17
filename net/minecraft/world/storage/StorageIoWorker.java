@@ -15,7 +15,7 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Unit;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.ChunkPos;
@@ -40,7 +40,7 @@ implements AutoCloseable {
         this.executor = new TaskExecutor<TaskQueue.PrioritizedTask>(new TaskQueue.Prioritized(Priority.values().length), Util.getIoWorkerExecutor(), "IOWorker-" + name);
     }
 
-    public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable CompoundTag nbt) {
+    public CompletableFuture<Void> setResult(ChunkPos pos, @Nullable NbtCompound nbt) {
         return this.run(() -> {
             Result result = this.results.computeIfAbsent(pos, chunkPos -> new Result(nbt));
             result.nbt = nbt;
@@ -49,8 +49,8 @@ implements AutoCloseable {
     }
 
     @Nullable
-    public CompoundTag getNbt(ChunkPos pos) throws IOException {
-        CompletableFuture<CompoundTag> completableFuture = this.readChunkData(pos);
+    public NbtCompound getNbt(ChunkPos pos) throws IOException {
+        CompletableFuture<NbtCompound> completableFuture = this.readChunkData(pos);
         try {
             return completableFuture.join();
         } catch (CompletionException completionException) {
@@ -61,15 +61,15 @@ implements AutoCloseable {
         }
     }
 
-    protected CompletableFuture<CompoundTag> readChunkData(ChunkPos pos) {
+    protected CompletableFuture<NbtCompound> readChunkData(ChunkPos pos) {
         return this.run(() -> {
             Result result = this.results.get(pos);
             if (result != null) {
                 return Either.left(result.nbt);
             }
             try {
-                CompoundTag compoundTag = this.storage.getTagAt(pos);
-                return Either.left(compoundTag);
+                NbtCompound nbtCompound = this.storage.getTagAt(pos);
+                return Either.left(nbtCompound);
             } catch (Exception exception) {
                 LOGGER.warn("Failed to read chunk {}", (Object)pos, (Object)exception);
                 return Either.right(exception);
@@ -81,7 +81,7 @@ implements AutoCloseable {
         CompletionStage completableFuture = this.run(() -> Either.left(CompletableFuture.allOf((CompletableFuture[])this.results.values().stream().map(result -> ((Result)result).future).toArray(CompletableFuture[]::new)))).thenCompose(Function.identity());
         return ((CompletableFuture)completableFuture).thenCompose(void_ -> this.run(() -> {
             try {
-                this.storage.method_26982();
+                this.storage.sync();
                 return Either.left(null);
             } catch (Exception exception) {
                 LOGGER.warn("Failed to synchronized chunks", (Throwable)exception);
@@ -142,10 +142,10 @@ implements AutoCloseable {
 
     static class Result {
         @Nullable
-        private CompoundTag nbt;
+        private NbtCompound nbt;
         private final CompletableFuture<Void> future = new CompletableFuture();
 
-        public Result(@Nullable CompoundTag nbt) {
+        public Result(@Nullable NbtCompound nbt) {
             this.nbt = nbt;
         }
     }

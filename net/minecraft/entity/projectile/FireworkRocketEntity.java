@@ -9,6 +9,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvironmentInterface;
 import net.fabricmc.api.EnvironmentInterfaces;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.FlyingItemEntity;
@@ -22,8 +23,8 @@ import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -184,23 +185,23 @@ implements FlyingItemEntity {
 
     private boolean hasExplosionEffects() {
         ItemStack itemStack = this.dataTracker.get(ITEM);
-        CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
-        ListTag listTag = compoundTag != null ? compoundTag.getList("Explosions", 10) : null;
-        return listTag != null && !listTag.isEmpty();
+        NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+        NbtList nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtTypeIds.COMPOUND) : null;
+        return nbtList != null && !nbtList.isEmpty();
     }
 
     private void explode() {
-        ListTag listTag;
+        NbtList nbtList;
         float f = 0.0f;
         ItemStack itemStack = this.dataTracker.get(ITEM);
-        CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
-        ListTag listTag2 = listTag = compoundTag != null ? compoundTag.getList("Explosions", 10) : null;
-        if (listTag != null && !listTag.isEmpty()) {
-            f = 5.0f + (float)(listTag.size() * 2);
+        NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+        NbtList nbtList2 = nbtList = nbtCompound != null ? nbtCompound.getList("Explosions", NbtTypeIds.COMPOUND) : null;
+        if (nbtList != null && !nbtList.isEmpty()) {
+            f = 5.0f + (float)(nbtList.size() * 2);
         }
         if (f > 0.0f) {
             if (this.shooter != null) {
-                this.shooter.damage(DamageSource.firework(this, this.getOwner()), 5.0f + (float)(listTag.size() * 2));
+                this.shooter.damage(DamageSource.firework(this, this.getOwner()), 5.0f + (float)(nbtList.size() * 2));
             }
             double d = 5.0;
             Vec3d vec3d = this.getPos();
@@ -240,28 +241,28 @@ implements FlyingItemEntity {
                 }
             } else {
                 ItemStack itemStack = this.dataTracker.get(ITEM);
-                CompoundTag compoundTag = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
+                NbtCompound nbtCompound = itemStack.isEmpty() ? null : itemStack.getSubTag("Fireworks");
                 Vec3d vec3d = this.getVelocity();
-                this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, compoundTag);
+                this.world.addFireworkParticle(this.getX(), this.getY(), this.getZ(), vec3d.x, vec3d.y, vec3d.z, nbtCompound);
             }
         }
         super.handleStatus(status);
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putInt("Life", this.life);
         tag.putInt("LifeTime", this.lifeTime);
         ItemStack itemStack = this.dataTracker.get(ITEM);
         if (!itemStack.isEmpty()) {
-            tag.put("FireworksItem", itemStack.writeNbt(new CompoundTag()));
+            tag.put("FireworksItem", itemStack.writeNbt(new NbtCompound()));
         }
         tag.putBoolean("ShotAtAngle", this.dataTracker.get(SHOT_AT_ANGLE));
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.life = tag.getInt("Life");
         this.lifeTime = tag.getInt("LifeTime");

@@ -25,7 +25,7 @@ extends AbstractPhase {
 
     @Override
     public void clientTick() {
-        Vec3d vec3d = this.dragon.method_6834(1.0f).normalize();
+        Vec3d vec3d = this.dragon.getRotationVectorFromPhase(1.0f).normalize();
         vec3d.rotateY(-0.7853982f);
         double d = this.dragon.partHead.getX();
         double e = this.dragon.partHead.getBodyY(0.5);
@@ -47,7 +47,7 @@ extends AbstractPhase {
             this.target = Vec3d.ofBottomCenter(this.dragon.world.getTopPosition(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, EndPortalFeature.ORIGIN));
         }
         if (this.target.squaredDistanceTo(this.dragon.getX(), this.dragon.getY(), this.dragon.getZ()) < 1.0) {
-            this.dragon.getPhaseManager().create(PhaseType.SITTING_FLAMING).method_6857();
+            this.dragon.getPhaseManager().create(PhaseType.SITTING_FLAMING).reset();
             this.dragon.getPhaseManager().setPhase(PhaseType.SITTING_SCANNING);
         }
     }
@@ -58,7 +58,7 @@ extends AbstractPhase {
     }
 
     @Override
-    public float method_6847() {
+    public float getYawAcceleration() {
         float f = MathHelper.sqrt(Entity.squaredHorizontalLength(this.dragon.getVelocity())) + 1.0f;
         float g = Math.min(f, 40.0f);
         return g / f;
@@ -71,7 +71,7 @@ extends AbstractPhase {
 
     @Override
     @Nullable
-    public Vec3d getTarget() {
+    public Vec3d getPathTarget() {
         return this.target;
     }
 

@@ -5,7 +5,8 @@ package net.minecraft.world;
 
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.nbt.CompoundTag;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.world.PersistentState;
 
 public class IdCountsState
@@ -16,17 +17,17 @@ extends PersistentState {
         this.idCounts.defaultReturnValue(-1);
     }
 
-    public static IdCountsState fromNbt(CompoundTag tag) {
+    public static IdCountsState fromNbt(NbtCompound tag) {
         IdCountsState idCountsState = new IdCountsState();
         for (String string : tag.getKeys()) {
-            if (!tag.contains(string, 99)) continue;
+            if (!tag.contains(string, NbtTypeIds.NUMBER)) continue;
             idCountsState.idCounts.put(string, tag.getInt(string));
         }
         return idCountsState;
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         for (Object2IntMap.Entry entry : this.idCounts.object2IntEntrySet()) {
             tag.putInt((String)entry.getKey(), entry.getIntValue());
         }

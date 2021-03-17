@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -36,7 +37,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -169,7 +170,7 @@ extends BlockWithEntity {
     }
 
     public void takeHoney(World world, BlockState state, BlockPos pos) {
-        world.setBlockState(pos, (BlockState)state.with(HONEY_LEVEL, 0), 3);
+        world.setBlockState(pos, (BlockState)state.with(HONEY_LEVEL, 0), SetBlockStateFlags.DEFAULT);
     }
 
     @Override
@@ -252,15 +253,15 @@ extends BlockWithEntity {
             int i = state.get(HONEY_LEVEL);
             boolean bl2 = bl = !beehiveBlockEntity.hasNoBees();
             if (bl || i > 0) {
-                CompoundTag compoundTag;
+                NbtCompound nbtCompound;
                 if (bl) {
-                    compoundTag = new CompoundTag();
-                    compoundTag.put("Bees", beehiveBlockEntity.getBees());
-                    itemStack.putSubTag("BlockEntityTag", compoundTag);
+                    nbtCompound = new NbtCompound();
+                    nbtCompound.put("Bees", beehiveBlockEntity.getBees());
+                    itemStack.putSubTag("BlockEntityTag", nbtCompound);
                 }
-                compoundTag = new CompoundTag();
-                compoundTag.putInt("honey_level", i);
-                itemStack.putSubTag("BlockStateTag", compoundTag);
+                nbtCompound = new NbtCompound();
+                nbtCompound.putInt("honey_level", i);
+                itemStack.putSubTag("BlockStateTag", nbtCompound);
                 ItemEntity itemEntity = new ItemEntity(world, pos.getX(), pos.getY(), pos.getZ(), itemStack);
                 itemEntity.setToDefaultPickupDelay();
                 world.spawnEntity(itemEntity);

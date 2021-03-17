@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -21,7 +22,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.sound.SoundCategory;
@@ -53,13 +54,13 @@ extends BlockEntity {
     }
 
     @Override
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         this.targetUuid = tag.containsUuid("Target") ? tag.getUuid("Target") : null;
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         if (this.targetEntity != null) {
             tag.putUuid("Target", this.targetEntity.getUuid());
@@ -74,8 +75,8 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toInitialChunkDataNbt() {
-        return this.writeNbt(new CompoundTag());
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.writeNbt(new NbtCompound());
     }
 
     public static void clientTick(World world, BlockPos pos, BlockState state, ConduitBlockEntity blockEntity) {
@@ -196,7 +197,7 @@ extends BlockEntity {
             blockEntity.targetEntity.damage(DamageSource.MAGIC, 4.0f);
         }
         if (livingEntity2 != blockEntity.targetEntity) {
-            world.updateListeners(pos, state, state, 2);
+            world.updateListeners(pos, state, state, SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 

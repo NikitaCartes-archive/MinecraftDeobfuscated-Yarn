@@ -57,7 +57,7 @@ extends ToggleButtonWidget {
             matrices.translate(-(this.x + 8), -(this.y + 12), 0.0);
         }
         MinecraftClient minecraftClient = MinecraftClient.getInstance();
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, this.texture);
         RenderSystem.disableDepthTest();
         int i = this.u;

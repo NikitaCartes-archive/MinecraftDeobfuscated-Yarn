@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.CatTypes;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -55,7 +57,7 @@ import net.minecraft.loot.LootTables;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
@@ -180,17 +182,17 @@ extends TameableEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putInt("CatType", this.getCatType());
         tag.putByte("CollarColor", (byte)this.getCollarColor().getId());
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.setCatType(tag.getInt("CatType"));
-        if (tag.contains("CollarColor", 99)) {
+        if (tag.contains("CollarColor", NbtTypeIds.NUMBER)) {
             this.setCollarColor(DyeColor.byId(tag.getInt("CollarColor")));
         }
     }
@@ -360,7 +362,7 @@ extends TameableEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         entityData = super.initialize(world, difficulty, spawnReason, entityData, entityTag);
         if (world.getMoonSize() > 0.9f) {
             this.setCatType(this.random.nextInt(11));
@@ -369,7 +371,7 @@ extends TameableEntity {
         }
         ServerWorld world2 = world.toServerWorld();
         if (world2 instanceof ServerWorld && world2.getStructureAccessor().getStructureAt(this.getBlockPos(), true, StructureFeature.SWAMP_HUT).hasChildren()) {
-            this.setCatType(10);
+            this.setCatType(CatTypes.ALL_BLACK);
             this.setPersistent();
         }
         return entityData;

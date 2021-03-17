@@ -72,7 +72,7 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    protected void updateSize() {
+    protected void updatePose() {
     }
 
     @Override

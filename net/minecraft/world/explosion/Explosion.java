@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -208,20 +209,23 @@ public class Explosion {
         }
     }
 
-    public void affectWorld(boolean bl) {
-        boolean bl2;
+    /**
+     * @param particles whether this explosion should emit explosion or explosion emitter particles around the source of the explosion
+     */
+    public void affectWorld(boolean particles) {
+        boolean bl;
         if (this.world.isClient) {
             this.world.playSound(this.x, this.y, this.z, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0f, (1.0f + (this.world.random.nextFloat() - this.world.random.nextFloat()) * 0.2f) * 0.7f, false);
         }
-        boolean bl3 = bl2 = this.destructionType != DestructionType.NONE;
-        if (bl) {
-            if (this.power < 2.0f || !bl2) {
+        boolean bl2 = bl = this.destructionType != DestructionType.NONE;
+        if (particles) {
+            if (this.power < 2.0f || !bl) {
                 this.world.addParticle(ParticleTypes.EXPLOSION, this.x, this.y, this.z, 1.0, 0.0, 0.0);
             } else {
                 this.world.addParticle(ParticleTypes.EXPLOSION_EMITTER, this.x, this.y, this.z, 1.0, 0.0, 0.0);
             }
         }
-        if (bl2) {
+        if (bl) {
             ObjectArrayList objectArrayList = new ObjectArrayList();
             Collections.shuffle(this.affectedBlocks, this.world.random);
             for (BlockPos blockPos : this.affectedBlocks) {
@@ -238,7 +242,7 @@ public class Explosion {
                     }
                     blockState.getDroppedStacks(builder).forEach(stack -> Explosion.tryMergeStack(objectArrayList, stack, blockPos2));
                 }
-                this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), 3);
+                this.world.setBlockState(blockPos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT);
                 block.onDestroyedByExplosion(this.world, blockPos, this);
                 this.world.getProfiler().pop();
             }

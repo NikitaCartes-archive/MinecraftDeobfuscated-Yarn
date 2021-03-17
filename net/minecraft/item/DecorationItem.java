@@ -13,7 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -50,9 +50,9 @@ extends Item {
         } else {
             return ActionResult.success(world.isClient);
         }
-        CompoundTag compoundTag = itemStack.getTag();
-        if (compoundTag != null) {
-            EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, compoundTag);
+        NbtCompound nbtCompound = itemStack.getTag();
+        if (nbtCompound != null) {
+            EntityType.loadFromEntityNbt(world, playerEntity, abstractDecorationEntity, nbtCompound);
         }
         if (abstractDecorationEntity.canStayAttached()) {
             if (!world.isClient) {

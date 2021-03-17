@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -49,7 +50,7 @@ import net.minecraft.inventory.InventoryChangedListener;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.DefaultParticleType;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.Ingredient;
@@ -700,7 +701,7 @@ Saddleable {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putBoolean("EatingHaystack", this.isEatingGrass());
         tag.putBoolean("Bred", this.isBred());
@@ -710,12 +711,12 @@ Saddleable {
             tag.putUuid("Owner", this.getOwnerUuid());
         }
         if (!this.items.getStack(0).isEmpty()) {
-            tag.put("SaddleItem", this.items.getStack(0).writeNbt(new CompoundTag()));
+            tag.put("SaddleItem", this.items.getStack(0).writeNbt(new NbtCompound()));
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         ItemStack itemStack;
         UUID uUID;
         super.readCustomDataFromNbt(tag);
@@ -732,7 +733,7 @@ Saddleable {
         if (uUID != null) {
             this.setOwnerUuid(uUID);
         }
-        if (tag.contains("SaddleItem", 10) && (itemStack = ItemStack.fromNbt(tag.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
+        if (tag.contains("SaddleItem", NbtTypeIds.COMPOUND) && (itemStack = ItemStack.fromNbt(tag.getCompound("SaddleItem"))).isOf(Items.SADDLE)) {
             this.items.setStack(0, itemStack);
         }
         this.updateSaddle();
@@ -1001,7 +1002,7 @@ Saddleable {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         if (entityData == null) {
             entityData = new PassiveEntity.PassiveData(0.2f);
         }

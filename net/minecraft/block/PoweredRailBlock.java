@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
@@ -131,7 +132,7 @@ extends AbstractRailBlock {
         boolean bl = state.get(POWERED);
         boolean bl3 = bl2 = world.isReceivingRedstonePower(pos) || this.isPoweredByOtherRails(world, pos, state, true, 0) || this.isPoweredByOtherRails(world, pos, state, false, 0);
         if (bl2 != bl) {
-            world.setBlockState(pos, (BlockState)state.with(POWERED, bl2), 3);
+            world.setBlockState(pos, (BlockState)state.with(POWERED, bl2), SetBlockStateFlags.DEFAULT);
             world.updateNeighborsAlways(pos.down(), this);
             if (state.get(SHAPE).isAscending()) {
                 world.updateNeighborsAlways(pos.up(), this);

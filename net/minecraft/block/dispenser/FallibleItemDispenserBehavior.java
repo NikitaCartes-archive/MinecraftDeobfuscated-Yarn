@@ -3,6 +3,7 @@
  */
 package net.minecraft.block.dispenser;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.util.math.BlockPointer;
 
@@ -20,7 +21,7 @@ extends ItemDispenserBehavior {
 
     @Override
     protected void playSound(BlockPointer pointer) {
-        pointer.getWorld().syncWorldEvent(this.isSuccess() ? 1000 : 1001, pointer.getBlockPos(), 0);
+        pointer.getWorld().syncWorldEvent(this.isSuccess() ? WorldEvents.DISPENSER_DISPENSES : WorldEvents.DISPENSER_FAILS, pointer.getBlockPos(), 0);
     }
 }
 

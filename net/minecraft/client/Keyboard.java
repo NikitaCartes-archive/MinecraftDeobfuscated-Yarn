@@ -4,7 +4,9 @@
 package net.minecraft.client;
 
 import com.google.common.base.MoreObjects;
+import java.nio.file.Path;
 import java.util.Locale;
+import java.util.function.Consumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
@@ -27,7 +29,7 @@ import net.minecraft.client.util.NarratorManager;
 import net.minecraft.client.util.ScreenshotUtils;
 import net.minecraft.command.argument.BlockArgumentParser;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -46,6 +48,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class Keyboard {
@@ -152,6 +155,7 @@ public class Keyboard {
                 chatHud.addMessage(new TranslatableText("debug.pause_focus.help"));
                 chatHud.addMessage(new TranslatableText("debug.help.help"));
                 chatHud.addMessage(new TranslatableText("debug.reload_resourcepacks.help"));
+                chatHud.addMessage(new TranslatableText("debug.profiling.help"));
                 chatHud.addMessage(new TranslatableText("debug.pause.help"));
                 chatHud.addMessage(new TranslatableText("debug.gamemodes.help"));
                 return true;
@@ -159,6 +163,12 @@ public class Keyboard {
             case 84: {
                 this.debugWarn("debug.reload_resourcepacks.message", new Object[0]);
                 this.client.reloadResources();
+                return true;
+            }
+            case 76: {
+                Runnable runnable = () -> this.debugWarn("debug.profiling.start", 10);
+                Consumer<Path> consumer = path -> this.debugWarn("debug.profiling.stop", path.toAbsolutePath());
+                this.client.method_34745(runnable, consumer);
                 return true;
             }
             case 67: {
@@ -188,15 +198,15 @@ public class Keyboard {
                 BlockState blockState = this.client.player.world.getBlockState(blockPos);
                 if (bl) {
                     if (bl2) {
-                        this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, compoundTag -> {
-                            this.copyBlock(blockState, blockPos, (CompoundTag)compoundTag);
+                        this.client.player.networkHandler.getDataQueryHandler().queryBlockNbt(blockPos, nbtCompound -> {
+                            this.copyBlock(blockState, blockPos, (NbtCompound)nbtCompound);
                             this.debugWarn("debug.inspect.server.block", new Object[0]);
                         });
                         break;
                     }
                     BlockEntity blockEntity = this.client.player.world.getBlockEntity(blockPos);
-                    CompoundTag compoundTag2 = blockEntity != null ? blockEntity.writeNbt(new CompoundTag()) : null;
-                    this.copyBlock(blockState, blockPos, compoundTag2);
+                    NbtCompound nbtCompound2 = blockEntity != null ? blockEntity.writeNbt(new NbtCompound()) : null;
+                    this.copyBlock(blockState, blockPos, nbtCompound2);
                     this.debugWarn("debug.inspect.client.block", new Object[0]);
                     break;
                 }
@@ -209,14 +219,14 @@ public class Keyboard {
                 Identifier identifier = Registry.ENTITY_TYPE.getId(entity.getType());
                 if (bl) {
                     if (bl2) {
-                        this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), compoundTag -> {
-                            this.copyEntity(identifier, entity.getPos(), (CompoundTag)compoundTag);
+                        this.client.player.networkHandler.getDataQueryHandler().queryEntityNbt(entity.getId(), nbtCompound -> {
+                            this.copyEntity(identifier, entity.getPos(), (NbtCompound)nbtCompound);
                             this.debugWarn("debug.inspect.server.entity", new Object[0]);
                         });
                         break;
                     }
-                    CompoundTag compoundTag2 = entity.writeNbt(new CompoundTag());
-                    this.copyEntity(identifier, entity.getPos(), compoundTag2);
+                    NbtCompound nbtCompound2 = entity.writeNbt(new NbtCompound());
+                    this.copyEntity(identifier, entity.getPos(), nbtCompound2);
                     this.debugWarn("debug.inspect.client.entity", new Object[0]);
                     break;
                 }
@@ -227,7 +237,7 @@ public class Keyboard {
         }
     }
 
-    private void copyBlock(BlockState state, BlockPos pos, @Nullable CompoundTag tag) {
+    private void copyBlock(BlockState state, BlockPos pos, @Nullable NbtCompound tag) {
         if (tag != null) {
             tag.remove("x");
             tag.remove("y");
@@ -242,7 +252,7 @@ public class Keyboard {
         this.setClipboard(string);
     }
 
-    private void copyEntity(Identifier id, Vec3d pos, @Nullable CompoundTag tag) {
+    private void copyEntity(Identifier id, Vec3d pos, @Nullable NbtCompound tag) {
         String string2;
         if (tag != null) {
             tag.remove("UUID");
@@ -261,10 +271,10 @@ public class Keyboard {
             return;
         }
         if (this.debugCrashStartTime > 0L) {
-            if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 67) || !InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292)) {
+            if (!InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C) || !InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3)) {
                 this.debugCrashStartTime = -1L;
             }
-        } else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 67) && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292)) {
+        } else if (InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_C) && InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3)) {
             this.switchF3State = true;
             this.debugCrashStartTime = Util.getMeasuringTimeMs();
             this.debugCrashLastLogTime = Util.getMeasuringTimeMs();
@@ -289,7 +299,7 @@ public class Keyboard {
         if (NarratorManager.INSTANCE.isActive()) {
             boolean bl;
             boolean bl2 = bl = parentElement == null || !(parentElement.getFocused() instanceof TextFieldWidget) || !((TextFieldWidget)parentElement.getFocused()).isActive();
-            if (i != 0 && key == 66 && Screen.hasControlDown() && bl) {
+            if (i != 0 && key == GLFW.GLFW_KEY_B && Screen.hasControlDown() && bl) {
                 this.client.options.narrator = NarratorMode.byId(this.client.options.narrator.getId() + 1);
                 NarratorManager.INSTANCE.addToast(this.client.options.narrator);
                 if (parentElement instanceof NarratorOptionsScreen) {
@@ -314,7 +324,7 @@ public class Keyboard {
             InputUtil.Key key2 = InputUtil.fromKeyCode(key, scancode);
             if (i == 0) {
                 KeyBinding.setKeyPressed(key2, false);
-                if (key == 292) {
+                if (key == GLFW.GLFW_KEY_F3) {
                     if (this.switchF3State) {
                         this.switchF3State = false;
                     } else {
@@ -324,18 +334,18 @@ public class Keyboard {
                     }
                 }
             } else {
-                if (key == 293 && this.client.gameRenderer != null) {
+                if (key == GLFW.GLFW_KEY_F4 && this.client.gameRenderer != null) {
                     this.client.gameRenderer.toggleShadersEnabled();
                 }
                 boolean bl2 = false;
                 if (this.client.currentScreen == null) {
-                    if (key == 256) {
-                        boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292);
+                    if (key == GLFW.GLFW_KEY_ESCAPE) {
+                        boolean bl3 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3);
                         this.client.openPauseMenu(bl3);
                     }
-                    bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), 292) && this.processF3(key);
+                    bl2 = InputUtil.isKeyPressed(MinecraftClient.getInstance().getWindow().getHandle(), GLFW.GLFW_KEY_F3) && this.processF3(key);
                     this.switchF3State |= bl2;
-                    if (key == 290) {
+                    if (key == GLFW.GLFW_KEY_F1) {
                         boolean bl = this.client.options.hudHidden = !this.client.options.hudHidden;
                     }
                 }
@@ -345,8 +355,8 @@ public class Keyboard {
                     KeyBinding.setKeyPressed(key2, true);
                     KeyBinding.onKeyPressed(key2);
                 }
-                if (this.client.options.debugProfilerEnabled && key >= 48 && key <= 57) {
-                    this.client.handleProfilerKeyPress(key - 48);
+                if (this.client.options.debugProfilerEnabled && key >= GLFW.GLFW_KEY_0 && key <= GLFW.GLFW_KEY_9) {
+                    this.client.handleProfilerKeyPress(key - GLFW.GLFW_KEY_0);
                 }
             }
         }

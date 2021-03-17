@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,9 +17,10 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.entity.DispenserBlockEntity;
 import net.minecraft.fluid.FluidState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.BlockMirror;
 import net.minecraft.util.BlockRotation;
@@ -57,7 +59,7 @@ public abstract class StructurePiece {
         this.chainLength = length;
     }
 
-    public StructurePiece(StructurePieceType type, CompoundTag tag) {
+    public StructurePiece(StructurePieceType type, NbtCompound tag) {
         this(type, tag.getInt("GD"));
         int i;
         if (tag.contains("BB")) {
@@ -66,18 +68,18 @@ public abstract class StructurePiece {
         this.setOrientation((i = tag.getInt("O")) == -1 ? null : Direction.fromHorizontal(i));
     }
 
-    public final CompoundTag toNbt() {
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
-        BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(field_29327::error).ifPresent(tag -> compoundTag.put("BB", (Tag)tag));
+    public final NbtCompound toNbt(ServerWorld world) {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putString("id", Registry.STRUCTURE_PIECE.getId(this.getType()).toString());
+        BlockBox.CODEC.encodeStart(NbtOps.INSTANCE, this.boundingBox).resultOrPartial(field_29327::error).ifPresent(nbtElement -> nbtCompound.put("BB", (NbtElement)nbtElement));
         Direction direction = this.getFacing();
-        compoundTag.putInt("O", direction == null ? -1 : direction.getHorizontal());
-        compoundTag.putInt("GD", this.chainLength);
-        this.writeNbt(compoundTag);
-        return compoundTag;
+        nbtCompound.putInt("O", direction == null ? -1 : direction.getHorizontal());
+        nbtCompound.putInt("GD", this.chainLength);
+        this.writeNbt(world, nbtCompound);
+        return nbtCompound;
     }
 
-    protected abstract void writeNbt(CompoundTag var1);
+    protected abstract void writeNbt(ServerWorld var1, NbtCompound var2);
 
     public StructureWeightType method_33882() {
         return StructureWeightType.BEARD;
@@ -110,8 +112,8 @@ public abstract class StructurePiece {
         return null;
     }
 
-    protected BlockPos method_33781(int i, int j, int k) {
-        return new BlockPos(this.applyXTransform(i, k), this.applyYTransform(j), this.applyZTransform(i, k));
+    protected BlockPos offsetPos(int x, int y, int z) {
+        return new BlockPos(this.applyXTransform(x, z), this.applyYTransform(y), this.applyZTransform(x, z));
     }
 
     protected int applyXTransform(int x, int z) {
@@ -175,7 +177,7 @@ public abstract class StructurePiece {
         if (this.rotation != BlockRotation.NONE) {
             block = block.rotate(this.rotation);
         }
-        world.setBlockState(blockPos, block, 2);
+        world.setBlockState(blockPos, block, SetBlockStateFlags.NOTIFY_LISTENERS);
         FluidState fluidState = world.getFluidState(blockPos);
         if (!fluidState.isEmpty()) {
             world.getFluidTickScheduler().schedule(blockPos, fluidState.getFluid(), 0);
@@ -270,7 +272,7 @@ public abstract class StructurePiece {
                 return;
             }
             Direction[] directions = Direction.values();
-            BlockPos.Mutable mutable = this.method_33781(x, y, z).mutableCopy();
+            BlockPos.Mutable mutable = this.offsetPos(x, y, z).mutableCopy();
             for (Direction direction : directions) {
                 mutable.move(direction);
                 if (bounds.contains(mutable) && !world.isAir(mutable)) {
@@ -310,14 +312,14 @@ public abstract class StructurePiece {
         if (!box.contains(mutable)) {
             return;
         }
-        while (this.method_33881(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
-            world.setBlockState(mutable, state, 2);
+        while (this.canReplace(world.getBlockState(mutable)) && mutable.getY() > world.getBottomY() + 1) {
+            world.setBlockState(mutable, state, SetBlockStateFlags.NOTIFY_LISTENERS);
             mutable.move(Direction.DOWN);
         }
     }
 
-    protected boolean method_33881(BlockState blockState) {
-        return blockState.isAir() || blockState.getMaterial().isLiquid() || blockState.isOf(Blocks.GLOW_LICHEN) || blockState.isOf(Blocks.SEAGRASS) || blockState.isOf(Blocks.TALL_SEAGRASS);
+    protected boolean canReplace(BlockState state) {
+        return state.isAir() || state.getMaterial().isLiquid() || state.isOf(Blocks.GLOW_LICHEN) || state.isOf(Blocks.SEAGRASS) || state.isOf(Blocks.TALL_SEAGRASS);
     }
 
     protected boolean addChest(StructureWorldAccess world, BlockBox boundingBox, Random random, int x, int y, int z, Identifier lootTableId) {
@@ -368,7 +370,7 @@ public abstract class StructurePiece {
         if (block == null) {
             block = StructurePiece.orientateChest(world, pos, Blocks.CHEST.getDefaultState());
         }
-        world.setBlockState(pos, block, 2);
+        world.setBlockState(pos, block, SetBlockStateFlags.NOTIFY_LISTENERS);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof ChestBlockEntity) {
             ((ChestBlockEntity)blockEntity).setLootTable(lootTableId, random.nextLong());

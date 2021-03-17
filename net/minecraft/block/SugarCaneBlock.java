@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -55,9 +56,9 @@ extends Block {
                 int j = state.get(AGE);
                 if (j == 15) {
                     world.setBlockState(pos.up(), this.getDefaultState());
-                    world.setBlockState(pos, (BlockState)state.with(AGE, 0), 4);
+                    world.setBlockState(pos, (BlockState)state.with(AGE, 0), SetBlockStateFlags.NO_REDRAW);
                 } else {
-                    world.setBlockState(pos, (BlockState)state.with(AGE, j + 1), 4);
+                    world.setBlockState(pos, (BlockState)state.with(AGE, j + 1), SetBlockStateFlags.NO_REDRAW);
                 }
             }
         }

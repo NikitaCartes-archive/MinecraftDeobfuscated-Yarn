@@ -3,6 +3,7 @@
  */
 package net.minecraft.block.dispenser;
 
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
 import net.minecraft.entity.projectile.ProjectileEntity;
@@ -29,7 +30,7 @@ extends ItemDispenserBehavior {
 
     @Override
     protected void playSound(BlockPointer pointer) {
-        pointer.getWorld().syncWorldEvent(1002, pointer.getBlockPos(), 0);
+        pointer.getWorld().syncWorldEvent(WorldEvents.DISPENSER_LAUNCHES_PROJECTILE, pointer.getBlockPos(), 0);
     }
 
     protected abstract ProjectileEntity createProjectile(World var1, Position var2, ItemStack var3);

@@ -100,6 +100,10 @@ public class ParticleTypes {
     public static final DefaultParticleType FALLING_DRIPSTONE_WATER = ParticleTypes.register("falling_dripstone_water", false);
     public static final DefaultParticleType GLOW_SQUID_INK = ParticleTypes.register("glow_squid_ink", true);
     public static final DefaultParticleType GLOW = ParticleTypes.register("glow", true);
+    public static final DefaultParticleType WAX_ON = ParticleTypes.register("wax_on", true);
+    public static final DefaultParticleType WAX_OFF = ParticleTypes.register("wax_off", true);
+    public static final DefaultParticleType ELECTRIC_SPARK = ParticleTypes.register("electric_spark", true);
+    public static final DefaultParticleType SCRAPE = ParticleTypes.register("scrape", true);
     public static final Codec<ParticleEffect> TYPE_CODEC = Registry.PARTICLE_TYPE.dispatch("type", ParticleEffect::getType, ParticleType::getCodec);
 
     private static DefaultParticleType register(String name, boolean alwaysShow) {

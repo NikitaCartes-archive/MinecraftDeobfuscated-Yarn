@@ -5,6 +5,8 @@ package net.minecraft.block;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -121,11 +123,11 @@ extends Block {
     }
 
     private int getOpenSoundEventId() {
-        return this.material == Material.METAL ? 1011 : 1012;
+        return this.material == Material.METAL ? WorldEvents.IRON_DOOR_CLOSES : WorldEvents.WOODEN_DOOR_CLOSES;
     }
 
     private int getCloseSoundEventId() {
-        return this.material == Material.METAL ? 1005 : 1006;
+        return this.material == Material.METAL ? WorldEvents.IRON_DOOR_OPENS : WorldEvents.WOODEN_DOOR_OPENS;
     }
 
     @Override
@@ -142,7 +144,7 @@ extends Block {
 
     @Override
     public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack itemStack) {
-        world.setBlockState(pos.up(), (BlockState)state.with(HALF, DoubleBlockHalf.UPPER), 3);
+        world.setBlockState(pos.up(), (BlockState)state.with(HALF, DoubleBlockHalf.UPPER), SetBlockStateFlags.DEFAULT);
     }
 
     private DoorHinge getHinge(ItemPlacementContext ctx) {
@@ -184,7 +186,7 @@ extends Block {
             return ActionResult.PASS;
         }
         state = (BlockState)state.cycle(OPEN);
-        world.setBlockState(pos, state, 10);
+        world.setBlockState(pos, state, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
         world.syncWorldEvent(player, state.get(OPEN) != false ? this.getCloseSoundEventId() : this.getOpenSoundEventId(), pos, 0);
         world.emitGameEvent((Entity)player, this.isOpen(state) ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
         return ActionResult.success(world.isClient);
@@ -198,7 +200,7 @@ extends Block {
         if (!state.isOf(this) || state.get(OPEN) == open) {
             return;
         }
-        world.setBlockState(pos, (BlockState)state.with(OPEN, open), 10);
+        world.setBlockState(pos, (BlockState)state.with(OPEN, open), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
         this.playOpenCloseSound(world, pos, open);
         world.emitGameEvent(entity, open ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
     }
@@ -212,7 +214,7 @@ extends Block {
                 this.playOpenCloseSound(world, pos, bl);
                 world.emitGameEvent(bl ? GameEvent.BLOCK_OPEN : GameEvent.BLOCK_CLOSE, pos);
             }
-            world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), 2);
+            world.setBlockState(pos, (BlockState)((BlockState)state.with(POWERED, bl)).with(OPEN, bl), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 

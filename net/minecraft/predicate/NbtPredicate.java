@@ -11,19 +11,19 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.StringNbtReader;
-import net.minecraft.nbt.Tag;
 import net.minecraft.util.JsonHelper;
 import org.jetbrains.annotations.Nullable;
 
 public class NbtPredicate {
     public static final NbtPredicate ANY = new NbtPredicate(null);
     @Nullable
-    private final CompoundTag tag;
+    private final NbtCompound tag;
 
-    public NbtPredicate(@Nullable CompoundTag tag) {
+    public NbtPredicate(@Nullable NbtCompound tag) {
         this.tag = tag;
     }
 
@@ -41,7 +41,7 @@ public class NbtPredicate {
         return this.test(NbtPredicate.entityToNbt(entity));
     }
 
-    public boolean test(@Nullable Tag tag) {
+    public boolean test(@Nullable NbtElement tag) {
         if (tag == null) {
             return this == ANY;
         }
@@ -56,25 +56,25 @@ public class NbtPredicate {
     }
 
     public static NbtPredicate fromJson(@Nullable JsonElement json) {
-        CompoundTag compoundTag;
+        NbtCompound nbtCompound;
         if (json == null || json.isJsonNull()) {
             return ANY;
         }
         try {
-            compoundTag = StringNbtReader.parse(JsonHelper.asString(json, "nbt"));
+            nbtCompound = StringNbtReader.parse(JsonHelper.asString(json, "nbt"));
         } catch (CommandSyntaxException commandSyntaxException) {
             throw new JsonSyntaxException("Invalid nbt tag: " + commandSyntaxException.getMessage());
         }
-        return new NbtPredicate(compoundTag);
+        return new NbtPredicate(nbtCompound);
     }
 
-    public static CompoundTag entityToNbt(Entity entity) {
+    public static NbtCompound entityToNbt(Entity entity) {
         ItemStack itemStack;
-        CompoundTag compoundTag = entity.writeNbt(new CompoundTag());
+        NbtCompound nbtCompound = entity.writeNbt(new NbtCompound());
         if (entity instanceof PlayerEntity && !(itemStack = ((PlayerEntity)entity).getInventory().getMainHandStack()).isEmpty()) {
-            compoundTag.put("SelectedItem", itemStack.writeNbt(new CompoundTag()));
+            nbtCompound.put("SelectedItem", itemStack.writeNbt(new NbtCompound()));
         }
-        return compoundTag;
+        return nbtCompound;
     }
 }
 

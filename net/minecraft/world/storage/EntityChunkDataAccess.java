@@ -13,14 +13,15 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.SharedConstants;
 import net.minecraft.datafixer.DataFixTypes;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtIntArray;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.ChunkDataAccess;
@@ -50,33 +51,33 @@ implements ChunkDataAccess<Entity> {
         if (this.emptyChunks.contains(pos.toLong())) {
             return CompletableFuture.completedFuture(EntityChunkDataAccess.emptyDataList(pos));
         }
-        return this.dataLoadWorker.readChunkData(pos).thenApplyAsync(compoundTag -> {
-            if (compoundTag == null) {
+        return this.dataLoadWorker.readChunkData(pos).thenApplyAsync(nbtCompound -> {
+            if (nbtCompound == null) {
                 this.emptyChunks.add(pos.toLong());
                 return EntityChunkDataAccess.emptyDataList(pos);
             }
             try {
-                ChunkPos chunkPos2 = EntityChunkDataAccess.getChunkPos(compoundTag);
+                ChunkPos chunkPos2 = EntityChunkDataAccess.getChunkPos(nbtCompound);
                 if (!Objects.equals(pos, chunkPos2)) {
                     LOGGER.error("Chunk file at {} is in the wrong location. (Expected {}, got {})", (Object)pos, (Object)pos, (Object)chunkPos2);
                 }
             } catch (Exception exception) {
                 LOGGER.warn("Failed to parse chunk {} position info", (Object)pos, (Object)exception);
             }
-            CompoundTag compoundTag2 = this.fixChunkData((CompoundTag)compoundTag);
-            ListTag listTag = compoundTag2.getList("Entities", 10);
-            List list = EntityType.streamFromNbt(listTag, this.world).collect(ImmutableList.toImmutableList());
+            NbtCompound nbtCompound2 = this.fixChunkData((NbtCompound)nbtCompound);
+            NbtList nbtList = nbtCompound2.getList("Entities", NbtTypeIds.COMPOUND);
+            List list = EntityType.streamFromNbt(nbtList, this.world).collect(ImmutableList.toImmutableList());
             return new ChunkDataList(pos, list);
         }, this.executor);
     }
 
-    private static ChunkPos getChunkPos(CompoundTag chunkTag) {
+    private static ChunkPos getChunkPos(NbtCompound chunkTag) {
         int[] is = chunkTag.getIntArray("Position");
         return new ChunkPos(is[0], is[1]);
     }
 
-    private static void putChunkPos(CompoundTag chunkTag, ChunkPos pos) {
-        chunkTag.put("Position", new IntArrayTag(new int[]{pos.x, pos.z}));
+    private static void putChunkPos(NbtCompound chunkTag, ChunkPos pos) {
+        chunkTag.put("Position", new NbtIntArray(new int[]{pos.x, pos.z}));
     }
 
     private static ChunkDataList<Entity> emptyDataList(ChunkPos pos) {
@@ -92,18 +93,18 @@ implements ChunkDataAccess<Entity> {
             }
             return;
         }
-        ListTag listTag = new ListTag();
+        NbtList nbtList = new NbtList();
         dataList.stream().forEach(entity -> {
-            CompoundTag compoundTag = new CompoundTag();
-            if (entity.saveToTag(compoundTag)) {
-                listTag.add(compoundTag);
+            NbtCompound nbtCompound = new NbtCompound();
+            if (entity.saveToTag(nbtCompound)) {
+                nbtList.add(nbtCompound);
             }
         });
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
-        compoundTag.put("Entities", listTag);
-        EntityChunkDataAccess.putChunkPos(compoundTag, chunkPos);
-        this.dataLoadWorker.setResult(chunkPos, compoundTag).exceptionally(throwable -> {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putInt("DataVersion", SharedConstants.getGameVersion().getWorldVersion());
+        nbtCompound.put("Entities", nbtList);
+        EntityChunkDataAccess.putChunkPos(nbtCompound, chunkPos);
+        this.dataLoadWorker.setResult(chunkPos, nbtCompound).exceptionally(throwable -> {
             LOGGER.error("Failed to store chunk {}", (Object)chunkPos, throwable);
             return null;
         });
@@ -115,13 +116,13 @@ implements ChunkDataAccess<Entity> {
         this.dataLoadWorker.completeAll().join();
     }
 
-    private CompoundTag fixChunkData(CompoundTag chunkTag) {
+    private NbtCompound fixChunkData(NbtCompound chunkTag) {
         int i = EntityChunkDataAccess.getChunkDataVersion(chunkTag);
         return NbtHelper.update(this.dataFixer, DataFixTypes.ENTITY_CHUNK, chunkTag, i);
     }
 
-    public static int getChunkDataVersion(CompoundTag chunkTag) {
-        return chunkTag.contains("DataVersion", 99) ? chunkTag.getInt("DataVersion") : -1;
+    public static int getChunkDataVersion(NbtCompound chunkTag) {
+        return chunkTag.contains("DataVersion", NbtTypeIds.NUMBER) ? chunkTag.getInt("DataVersion") : -1;
     }
 
     @Override

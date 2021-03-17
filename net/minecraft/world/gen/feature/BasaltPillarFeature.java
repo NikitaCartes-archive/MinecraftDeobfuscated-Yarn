@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -39,7 +40,7 @@ extends Feature<DefaultFeatureConfig> {
             if (structureWorldAccess.isOutOfHeightLimit(mutable)) {
                 return true;
             }
-            structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), 2);
+            structureWorldAccess.setBlockState(mutable, Blocks.BASALT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
             bl = bl && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.NORTH));
             bl2 = bl2 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.SOUTH));
             bl3 = bl3 && this.stopOrPlaceBasalt(structureWorldAccess, random, mutable2.set(mutable, Direction.WEST));
@@ -64,7 +65,7 @@ extends Feature<DefaultFeatureConfig> {
                     if (--l > 0) continue;
                 }
                 if (structureWorldAccess.isAir(mutable2.set(mutable3, Direction.DOWN))) continue;
-                structureWorldAccess.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), 2);
+                structureWorldAccess.setBlockState(mutable3, Blocks.BASALT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
             }
         }
         return true;
@@ -72,13 +73,13 @@ extends Feature<DefaultFeatureConfig> {
 
     private void tryPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
         if (random.nextBoolean()) {
-            world.setBlockState(pos, Blocks.BASALT.getDefaultState(), 2);
+            world.setBlockState(pos, Blocks.BASALT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 
     private boolean stopOrPlaceBasalt(WorldAccess world, Random random, BlockPos pos) {
         if (random.nextInt(10) != 0) {
-            world.setBlockState(pos, Blocks.BASALT.getDefaultState(), 2);
+            world.setBlockState(pos, Blocks.BASALT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
             return true;
         }
         return false;

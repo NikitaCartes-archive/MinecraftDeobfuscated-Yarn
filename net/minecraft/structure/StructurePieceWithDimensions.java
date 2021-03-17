@@ -4,7 +4,8 @@
 package net.minecraft.structure;
 
 import java.util.Random;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.math.BlockBox;
@@ -29,20 +30,20 @@ extends StructurePiece {
         this.boundingBox = this.getFacing().getAxis() == Direction.Axis.Z ? new BlockBox(x, y, z, x + width - 1, y + height - 1, z + depth - 1) : new BlockBox(x, y, z, x + depth - 1, y + height - 1, z + width - 1);
     }
 
-    protected StructurePieceWithDimensions(StructurePieceType structurePieceType, CompoundTag compoundTag) {
-        super(structurePieceType, compoundTag);
-        this.width = compoundTag.getInt("Width");
-        this.height = compoundTag.getInt("Height");
-        this.depth = compoundTag.getInt("Depth");
-        this.hPos = compoundTag.getInt("HPos");
+    protected StructurePieceWithDimensions(StructurePieceType structurePieceType, NbtCompound nbtCompound) {
+        super(structurePieceType, nbtCompound);
+        this.width = nbtCompound.getInt("Width");
+        this.height = nbtCompound.getInt("Height");
+        this.depth = nbtCompound.getInt("Depth");
+        this.hPos = nbtCompound.getInt("HPos");
     }
 
     @Override
-    protected void writeNbt(CompoundTag tag) {
-        tag.putInt("Width", this.width);
-        tag.putInt("Height", this.height);
-        tag.putInt("Depth", this.depth);
-        tag.putInt("HPos", this.hPos);
+    protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+        nbt.putInt("Width", this.width);
+        nbt.putInt("Height", this.height);
+        nbt.putInt("Depth", this.depth);
+        nbt.putInt("HPos", this.hPos);
     }
 
     protected boolean method_14839(WorldAccess world, BlockBox boundingBox, int i) {

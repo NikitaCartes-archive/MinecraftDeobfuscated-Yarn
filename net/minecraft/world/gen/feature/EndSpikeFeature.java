@@ -127,8 +127,8 @@ extends Feature<EndSpikeFeatureConfig> {
         }
 
         @Override
-        public /* synthetic */ Object load(Object object) throws Exception {
-            return this.load((Long)object);
+        public /* synthetic */ Object load(Object seed) throws Exception {
+            return this.load((Long)seed);
         }
     }
 

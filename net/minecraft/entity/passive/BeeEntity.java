@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -67,7 +68,7 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -168,7 +169,7 @@ Flutterer {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         if (this.hasHive()) {
             tag.put("HivePos", NbtHelper.fromBlockPos(this.getHivePos()));
@@ -185,7 +186,7 @@ Flutterer {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         this.hivePos = null;
         if (tag.contains("HivePos")) {
             this.hivePos = NbtHelper.toBlockPos(tag.getCompound("HivePos"));
@@ -705,7 +706,7 @@ Flutterer {
                     intProperty = SweetBerryBushBlock.AGE;
                 }
                 if (!bl) continue;
-                BeeEntity.this.world.syncWorldEvent(2005, blockPos, 0);
+                BeeEntity.this.world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, blockPos, 0);
                 BeeEntity.this.world.setBlockState(blockPos, (BlockState)blockState.with(intProperty, blockState.get(intProperty) + 1));
                 BeeEntity.this.addCropCounter();
             }

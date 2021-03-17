@@ -4,6 +4,7 @@
 package net.minecraft.screen;
 
 import java.util.List;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,7 +53,7 @@ extends ForgingScreenHandler {
         this.output.unlockLastRecipe(player);
         this.method_29539(0);
         this.method_29539(1);
-        this.context.run((world, blockPos) -> world.syncWorldEvent(1044, (BlockPos)blockPos, 0));
+        this.context.run((world, blockPos) -> world.syncWorldEvent(WorldEvents.SMITHING_TABLE_USED, (BlockPos)blockPos, 0));
     }
 
     private void method_29539(int i) {

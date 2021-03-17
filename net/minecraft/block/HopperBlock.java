@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -165,7 +166,7 @@ extends BlockWithEntity {
         boolean bl;
         boolean bl2 = bl = !world.isReceivingRedstonePower(pos);
         if (bl != state.get(ENABLED)) {
-            world.setBlockState(pos, (BlockState)state.with(ENABLED, bl), 4);
+            world.setBlockState(pos, (BlockState)state.with(ENABLED, bl), SetBlockStateFlags.NO_REDRAW);
         }
     }
 

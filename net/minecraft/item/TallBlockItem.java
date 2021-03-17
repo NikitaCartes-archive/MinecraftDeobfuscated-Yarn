@@ -3,6 +3,7 @@
  */
 package net.minecraft.item;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -18,7 +19,7 @@ extends BlockItem {
 
     @Override
     protected boolean place(ItemPlacementContext context, BlockState state) {
-        context.getWorld().setBlockState(context.getBlockPos().up(), Blocks.AIR.getDefaultState(), 27);
+        context.getWorld().setBlockState(context.getBlockPos().up(), Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD | SetBlockStateFlags.FORCE_STATE);
         return super.place(context, state);
     }
 }

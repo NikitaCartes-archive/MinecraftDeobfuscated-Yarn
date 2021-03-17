@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -56,7 +57,7 @@ extends Block {
             if (bl) {
                 this.playNote(world, pos);
             }
-            world.setBlockState(pos, (BlockState)state.with(POWERED, bl), 3);
+            world.setBlockState(pos, (BlockState)state.with(POWERED, bl), SetBlockStateFlags.DEFAULT);
         }
     }
 
@@ -72,7 +73,7 @@ extends Block {
             return ActionResult.SUCCESS;
         }
         state = (BlockState)state.cycle(NOTE);
-        world.setBlockState(pos, state, 3);
+        world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
         this.playNote(world, pos);
         player.incrementStat(Stats.TUNE_NOTEBLOCK);
         return ActionResult.CONSUME;

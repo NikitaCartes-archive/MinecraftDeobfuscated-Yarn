@@ -74,7 +74,7 @@ extends Screen {
         this.addressField.setTextPredicate(this.addressTextFilter);
         this.addressField.setChangedListener(this::onClose);
         this.children.add(this.addressField);
-        this.addButton(CyclingButtonWidget.builder(ServerInfo.ResourcePackState::getName).values((ServerInfo.ResourcePackState[])ServerInfo.ResourcePackState.values()).initially(this.server.getResourcePack()).build(this.width / 2 - 100, this.height / 4 + 72, 200, 20, new TranslatableText("addServer.resourcePack"), (cyclingButtonWidget, resourcePackState) -> this.server.setResourcePackState((ServerInfo.ResourcePackState)((Object)resourcePackState))));
+        this.addButton(CyclingButtonWidget.builder(ServerInfo.ResourcePackPolicy::getName).values((ServerInfo.ResourcePackPolicy[])ServerInfo.ResourcePackPolicy.values()).initially(this.server.getResourcePackPolicy()).build(this.width / 2 - 100, this.height / 4 + 72, 200, 20, new TranslatableText("addServer.resourcePack"), (cyclingButtonWidget, resourcePackPolicy) -> this.server.setResourcePackPolicy((ServerInfo.ResourcePackPolicy)((Object)resourcePackPolicy))));
         this.buttonAdd = this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 96 + 18, 200, 20, new TranslatableText("addServer.add"), buttonWidget -> this.addAndClose()));
         this.addButton(new ButtonWidget(this.width / 2 - 100, this.height / 4 + 120 + 18, 200, 20, ScreenTexts.CANCEL, buttonWidget -> this.callback.accept(false)));
         this.updateButtonActiveState();

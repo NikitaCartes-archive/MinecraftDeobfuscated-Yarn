@@ -4,13 +4,14 @@
 package net.minecraft.item;
 
 import java.util.Collection;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.MessageType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.state.StateManager;
@@ -68,20 +69,20 @@ extends Item {
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".empty", string));
             return;
         }
-        CompoundTag compoundTag = stack.getOrCreateSubTag("DebugProperty");
-        String string2 = compoundTag.getString(string);
+        NbtCompound nbtCompound = stack.getOrCreateSubTag("DebugProperty");
+        String string2 = nbtCompound.getString(string);
         Property<?> property = stateManager.getProperty(string2);
         if (update) {
             if (property == null) {
                 property = collection.iterator().next();
             }
             BlockState blockState = DebugStickItem.cycle(state, property, player.shouldCancelInteraction());
-            world.setBlockState(pos, blockState, 18);
+            world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".update", property.getName(), DebugStickItem.getValueString(blockState, property)));
         } else {
             property = DebugStickItem.cycle(collection, property, player.shouldCancelInteraction());
             String string3 = property.getName();
-            compoundTag.putString(string, string3);
+            nbtCompound.putString(string, string3);
             DebugStickItem.sendMessage(player, new TranslatableText(this.getTranslationKey() + ".select", string3, DebugStickItem.getValueString(state, property)));
         }
     }

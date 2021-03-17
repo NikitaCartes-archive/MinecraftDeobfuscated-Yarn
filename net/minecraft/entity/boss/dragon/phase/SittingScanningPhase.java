@@ -38,13 +38,13 @@ extends AbstractSittingPhase {
                     double d = livingEntity.getX() - this.dragon.partHead.getX();
                     double e = livingEntity.getZ() - this.dragon.partHead.getZ();
                     double h = MathHelper.clamp(MathHelper.wrapDegrees(180.0 - MathHelper.atan2(d, e) * 57.2957763671875 - (double)this.dragon.yaw), -100.0, 100.0);
-                    this.dragon.field_20865 *= 0.8f;
+                    this.dragon.yawAcceleration *= 0.8f;
                     float j = i = MathHelper.sqrt(d * d + e * e) + 1.0f;
                     if (i > 40.0f) {
                         i = 40.0f;
                     }
-                    this.dragon.field_20865 = (float)((double)this.dragon.field_20865 + h * (double)(0.7f / i / j));
-                    this.dragon.yaw += this.dragon.field_20865;
+                    this.dragon.yawAcceleration = (float)((double)this.dragon.yawAcceleration + h * (double)(0.7f / i / j));
+                    this.dragon.yaw += this.dragon.yawAcceleration;
                 }
             }
         } else if (this.ticks >= 100) {
@@ -52,7 +52,7 @@ extends AbstractSittingPhase {
             this.dragon.getPhaseManager().setPhase(PhaseType.TAKEOFF);
             if (livingEntity != null) {
                 this.dragon.getPhaseManager().setPhase(PhaseType.CHARGING_PLAYER);
-                this.dragon.getPhaseManager().create(PhaseType.CHARGING_PLAYER).setTarget(new Vec3d(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ()));
+                this.dragon.getPhaseManager().create(PhaseType.CHARGING_PLAYER).setPathTarget(new Vec3d(livingEntity.getX(), livingEntity.getY(), livingEntity.getZ()));
             }
         }
     }

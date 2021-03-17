@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Material;
 import net.minecraft.entity.Entity;
@@ -36,7 +37,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.MobSpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -81,14 +82,14 @@ implements Monster {
     public float wingPosition;
     public boolean slowedDownByBlock;
     public int ticksSinceDeath;
-    public float field_20865;
+    public float yawAcceleration;
     @Nullable
     public EndCrystalEntity connectedCrystal;
     @Nullable
     private final EnderDragonFight fight;
     private final PhaseManager phaseManager;
     private int ticksUntilNextGrowl = 100;
-    private int field_7029;
+    private int damageDuringSitting;
     /**
      * The first 12 path nodes are used for end crystals; the others are not tied to them.
      */
@@ -225,7 +226,7 @@ implements Monster {
                 phase = this.phaseManager.getCurrent();
                 phase.serverTick();
             }
-            if ((vec3d2 = phase.getTarget()) != null) {
+            if ((vec3d2 = phase.getPathTarget()) != null) {
                 e = vec3d2.x - this.getX();
                 j = vec3d2.y - this.getY();
                 k = vec3d2.z - this.getZ();
@@ -241,9 +242,9 @@ implements Monster {
                 Vec3d vec3d3 = vec3d2.subtract(this.getX(), this.getY(), this.getZ()).normalize();
                 Vec3d vec3d4 = new Vec3d(MathHelper.sin(this.yaw * ((float)Math.PI / 180)), this.getVelocity().y, -MathHelper.cos(this.yaw * ((float)Math.PI / 180))).normalize();
                 p = Math.max(((float)vec3d4.dotProduct(vec3d3) + 0.5f) / 1.5f, 0.0f);
-                this.field_20865 *= 0.8f;
-                this.field_20865 = (float)((double)this.field_20865 + o * (double)phase.method_6847());
-                this.yaw += this.field_20865 * 0.1f;
+                this.yawAcceleration *= 0.8f;
+                this.yawAcceleration = (float)((double)this.yawAcceleration + o * (double)phase.getYawAcceleration());
+                this.yaw += this.yawAcceleration * 0.1f;
                 q = (float)(2.0 / (l + 1.0));
                 float r = 0.06f;
                 this.updateVelocity(0.06f * (p * q + (1.0f - q)), new Vec3d(0.0, 0.0, -1.0));
@@ -277,9 +278,9 @@ implements Monster {
             this.damageLivingEntities(this.world.getOtherEntities(this, this.partHead.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
             this.damageLivingEntities(this.world.getOtherEntities(this, this.partNeck.getBoundingBox().expand(1.0), EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR));
         }
-        float aa = MathHelper.sin(this.yaw * ((float)Math.PI / 180) - this.field_20865 * 0.01f);
-        float ab = MathHelper.cos(this.yaw * ((float)Math.PI / 180) - this.field_20865 * 0.01f);
-        float ac = this.method_6820();
+        float aa = MathHelper.sin(this.yaw * ((float)Math.PI / 180) - this.yawAcceleration * 0.01f);
+        float ab = MathHelper.cos(this.yaw * ((float)Math.PI / 180) - this.yawAcceleration * 0.01f);
+        float ac = this.getHeadVerticalMovement();
         this.movePart(this.partHead, aa * 6.5f * v, ac + w * 6.5f, -ab * 6.5f * v);
         this.movePart(this.partNeck, aa * 5.5f * v, ac + w * 5.5f, -ab * 5.5f * v);
         double[] ds = this.getSegmentProperties(5, 1.0f);
@@ -322,7 +323,7 @@ implements Monster {
         enderDragonPart.setPosition(this.getX() + dx, this.getY() + dy, this.getZ() + dz);
     }
 
-    private float method_6820() {
+    private float getHeadVerticalMovement() {
         if (this.phaseManager.getCurrent().isSittingOrHovering()) {
             return -1.0f;
         }
@@ -412,7 +413,7 @@ implements Monster {
         }
         if (bl2) {
             BlockPos blockPos2 = new BlockPos(i + this.random.nextInt(l - i + 1), j + this.random.nextInt(m - j + 1), k + this.random.nextInt(n - k + 1));
-            this.world.syncWorldEvent(2008, blockPos2, 0);
+            this.world.syncWorldEvent(WorldEvents.ENDER_DRAGON_BREAKS_BLOCK, blockPos2, 0);
         }
         return bl;
     }
@@ -436,9 +437,9 @@ implements Monster {
                 this.phaseManager.setPhase(PhaseType.DYING);
             }
             if (this.phaseManager.getCurrent().isSittingOrHovering()) {
-                this.field_7029 = (int)((float)this.field_7029 + (f - this.getHealth()));
-                if ((float)this.field_7029 > 0.25f * this.getMaxHealth()) {
-                    this.field_7029 = 0;
+                this.damageDuringSitting = (int)((float)this.damageDuringSitting + (f - this.getHealth()));
+                if ((float)this.damageDuringSitting > 0.25f * this.getMaxHealth()) {
+                    this.damageDuringSitting = 0;
                     this.phaseManager.setPhase(PhaseType.TAKEOFF);
                 }
             }
@@ -489,7 +490,7 @@ implements Monster {
                 ExperienceOrbEntity.spawn((ServerWorld)this.world, this.getPos(), MathHelper.floor((float)i * 0.08f));
             }
             if (this.ticksSinceDeath == 1 && !this.isSilent()) {
-                this.world.syncGlobalEvent(1028, this.getBlockPos(), 0);
+                this.world.syncGlobalEvent(WorldEvents.ENDER_DRAGON_DIES, this.getBlockPos(), 0);
             }
         }
         this.move(MovementType.SELF, new Vec3d(0.0, 0.1f, 0.0));
@@ -655,13 +656,13 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putInt("DragonPhase", this.phaseManager.getCurrent().getType().getTypeId());
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         if (tag.contains("DragonPhase")) {
             this.phaseManager.setPhase(PhaseType.getFromId(tag.getInt("DragonPhase")));
@@ -702,7 +703,7 @@ implements Monster {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public float method_6823(int segmentOffset, double[] segment1, double[] segment2) {
+    public float getChangeInNeckPitch(int segmentOffset, double[] segment1, double[] segment2) {
         double d;
         Phase phase = this.phaseManager.getCurrent();
         PhaseType<? extends Phase> phaseType = phase.getType();
@@ -716,7 +717,7 @@ implements Monster {
         return (float)d;
     }
 
-    public Vec3d method_6834(float tickDelta) {
+    public Vec3d getRotationVectorFromPhase(float tickDelta) {
         Vec3d vec3d;
         Phase phase = this.phaseManager.getCurrent();
         PhaseType<? extends Phase> phaseType = phase.getType();
@@ -783,11 +784,11 @@ implements Monster {
 
     @Override
     @Environment(value=EnvType.CLIENT)
-    public void method_33579(MobSpawnS2CPacket mobSpawnS2CPacket) {
-        super.method_33579(mobSpawnS2CPacket);
+    public void readFromPacket(MobSpawnS2CPacket packet) {
+        super.readFromPacket(packet);
         EnderDragonPart[] enderDragonParts = this.getBodyParts();
         for (int i = 0; i < enderDragonParts.length; ++i) {
-            enderDragonParts[i].setEntityId(i + mobSpawnS2CPacket.getId());
+            enderDragonParts[i].setEntityId(i + packet.getId());
         }
     }
 }

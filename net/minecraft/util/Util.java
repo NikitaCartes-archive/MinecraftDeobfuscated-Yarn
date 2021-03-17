@@ -5,10 +5,12 @@ package net.minecraft.util;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.mojang.datafixers.DSL;
 import com.mojang.datafixers.DataFixUtils;
 import com.mojang.datafixers.types.Type;
+import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
 import it.unimi.dsi.fastutil.Hash;
 import java.io.File;
@@ -46,8 +48,10 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -84,8 +88,8 @@ public class Util {
         return Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue);
     }
 
-    public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object object) {
-        return property.name((Comparable)object);
+    public static <T extends Comparable<T>> String getValueAsString(Property<T> property, Object value) {
+        return property.name((Comparable)value);
     }
 
     public static String createTranslationKey(String type, @Nullable Identifier id) {
@@ -256,7 +260,7 @@ public class Util {
 
     public static Stream<String> getJVMFlags() {
         RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-        return runtimeMXBean.getInputArguments().stream().filter(string -> string.startsWith("-X"));
+        return runtimeMXBean.getInputArguments().stream().filter(runtimeArg -> runtimeArg.startsWith("-X"));
     }
 
     public static <T> T getLast(List<T> list) {
@@ -351,10 +355,10 @@ public class Util {
         ArrayList list = Lists.newArrayListWithCapacity(futures.size());
         CompletableFuture[] completableFutures = new CompletableFuture[futures.size()];
         CompletableFuture completableFuture = new CompletableFuture();
-        futures.forEach(completableFuture2 -> {
+        futures.forEach(future -> {
             int i = list.size();
             list.add(null);
-            completableFutures[i] = completableFuture2.whenComplete((object, throwable) -> {
+            completableFutures[i] = future.whenComplete((object, throwable) -> {
                 if (throwable != null) {
                     completableFuture.completeExceptionally((Throwable)throwable);
                 } else {
@@ -498,8 +502,8 @@ public class Util {
         };
     }
 
-    private static boolean attemptTasks(BooleanSupplier ... booleanSuppliers) {
-        for (BooleanSupplier booleanSupplier : booleanSuppliers) {
+    private static boolean attemptTasks(BooleanSupplier ... tasks) {
+        for (BooleanSupplier booleanSupplier : tasks) {
             if (booleanSupplier.getAsBoolean()) continue;
             LOGGER.warn("Failed to execute {}", (Object)booleanSupplier);
             return false;
@@ -560,7 +564,7 @@ public class Util {
     }
 
     public static Consumer<String> addPrefix(String prefix, Consumer<String> consumer) {
-        return string2 -> consumer.accept(prefix + string2);
+        return string -> consumer.accept(prefix + string);
     }
 
     public static DataResult<int[]> toArray(IntStream stream, int length) {
@@ -620,7 +624,39 @@ public class Util {
 
     @Environment(value=EnvType.CLIENT)
     public static String replaceInvalidChars(String string, CharPredicate predicate) {
-        return string.toLowerCase(Locale.ROOT).chars().mapToObj(i -> predicate.test((char)i) ? Character.toString((char)i) : "_").collect(Collectors.joining());
+        return string.toLowerCase(Locale.ROOT).chars().mapToObj(charCode -> predicate.test((char)charCode) ? Character.toString((char)charCode) : "_").collect(Collectors.joining());
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static <T, R> Function<T, R> memoize(final Function<T, R> function) {
+        return new Function<T, R>(){
+            private final Map<T, R> cache = Maps.newHashMap();
+
+            @Override
+            public R apply(T object) {
+                return this.cache.computeIfAbsent(object, function);
+            }
+
+            public String toString() {
+                return "memoize/1[function=" + function + ", size=" + this.cache.size() + "]";
+            }
+        };
+    }
+
+    @Environment(value=EnvType.CLIENT)
+    public static <T, U, R> BiFunction<T, U, R> memoize(final BiFunction<T, U, R> biFunction) {
+        return new BiFunction<T, U, R>(){
+            private final Map<Pair<T, U>, R> cache = Maps.newHashMap();
+
+            @Override
+            public R apply(T object, U object2) {
+                return this.cache.computeIfAbsent(Pair.of(object, object2), pair -> biFunction.apply(pair.getFirst(), pair.getSecond()));
+            }
+
+            public String toString() {
+                return "memoize/2[function=" + biFunction + ", size=" + this.cache.size() + "]";
+            }
+        };
     }
 
     static enum IdentityHashStrategy implements Hash.Strategy<Object>
@@ -679,11 +715,11 @@ public class Util {
         }
 
         @Environment(value=EnvType.CLIENT)
-        public void open(URI uRI) {
+        public void open(URI uri) {
             try {
-                this.open(uRI.toURL());
+                this.open(uri.toURL());
             } catch (MalformedURLException malformedURLException) {
-                LOGGER.error("Couldn't open uri '{}'", (Object)uRI, (Object)malformedURLException);
+                LOGGER.error("Couldn't open uri '{}'", (Object)uri, (Object)malformedURLException);
             }
         }
 
@@ -706,11 +742,11 @@ public class Util {
         }
 
         @Environment(value=EnvType.CLIENT)
-        public void open(String string) {
+        public void open(String uri) {
             try {
-                this.open(new URI(string).toURL());
+                this.open(new URI(uri).toURL());
             } catch (IllegalArgumentException | MalformedURLException | URISyntaxException exception) {
-                LOGGER.error("Couldn't open uri '{}'", (Object)string, (Object)exception);
+                LOGGER.error("Couldn't open uri '{}'", (Object)uri, (Object)exception);
             }
         }
     }

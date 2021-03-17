@@ -16,6 +16,9 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -70,9 +73,9 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
@@ -254,7 +257,7 @@ extends AnimalEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         Optional<RegistryKey<Biome>> optional = world.getBiomeKey(this.getBlockPos());
         Type type = Type.fromBiome(optional);
         boolean bl = false;
@@ -329,15 +332,15 @@ extends AnimalEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         List<UUID> list = this.getTrustedUuids();
-        ListTag listTag = new ListTag();
+        NbtList nbtList = new NbtList();
         for (UUID uUID : list) {
             if (uUID == null) continue;
-            listTag.add(NbtHelper.fromUuid(uUID));
+            nbtList.add(NbtHelper.fromUuid(uUID));
         }
-        tag.put("Trusted", listTag);
+        tag.put("Trusted", nbtList);
         tag.putBoolean("Sleeping", this.isSleeping());
         tag.putString("Type", this.getFoxType().getKey());
         tag.putBoolean("Sitting", this.isSitting());
@@ -345,11 +348,11 @@ extends AnimalEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
-        ListTag listTag = tag.getList("Trusted", 11);
-        for (int i = 0; i < listTag.size(); ++i) {
-            this.addTrustedUuid(NbtHelper.toUuid(listTag.get(i)));
+        NbtList nbtList = tag.getList("Trusted", NbtTypeIds.INT_ARRAY);
+        for (int i = 0; i < nbtList.size(); ++i) {
+            this.addTrustedUuid(NbtHelper.toUuid(nbtList.get(i)));
         }
         this.setSleeping(tag.getBoolean("Sleeping"));
         this.setType(Type.byName(tag.getString("Type")));
@@ -469,7 +472,7 @@ extends AnimalEntity {
             if (this.isWalking() && this.world.random.nextFloat() < 0.2f) {
                 BlockPos blockPos = this.getBlockPos();
                 BlockState blockState = this.world.getBlockState(blockPos);
-                this.world.syncWorldEvent(2001, blockPos, Block.getRawIdFromState(blockState));
+                this.world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, blockPos, Block.getRawIdFromState(blockState));
             }
         }
         this.lastHeadRollProgress = this.headRollProgress;
@@ -955,7 +958,7 @@ extends AnimalEntity {
                 Block.dropStack(FoxEntity.this.world, this.targetPos, new ItemStack(Items.SWEET_BERRIES, j));
             }
             FoxEntity.this.playSound(SoundEvents.ITEM_SWEET_BERRIES_PICK_FROM_BUSH, 1.0f, 1.0f);
-            FoxEntity.this.world.setBlockState(this.targetPos, (BlockState)blockState.with(SweetBerryBushBlock.AGE, 1), 2);
+            FoxEntity.this.world.setBlockState(this.targetPos, (BlockState)blockState.with(SweetBerryBushBlock.AGE, 1), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
 
         @Override

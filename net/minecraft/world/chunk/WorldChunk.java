@@ -23,6 +23,8 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
@@ -35,7 +37,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerTickScheduler;
@@ -99,7 +101,7 @@ implements Chunk {
     public static final ChunkSection EMPTY_SECTION = null;
     private final ChunkSection[] sections;
     private BiomeArray biomeArray;
-    private final Map<BlockPos, CompoundTag> pendingBlockEntityTags = Maps.newHashMap();
+    private final Map<BlockPos, NbtCompound> pendingBlockEntityTags = Maps.newHashMap();
     private final Map<BlockPos, WrappedBlockEntityTickInvoker> blockEntityTickers = Maps.newHashMap();
     private boolean loadedToWorld;
     private final World world;
@@ -332,9 +334,9 @@ implements Chunk {
     @Nullable
     public BlockEntity getBlockEntity(BlockPos pos, CreationType creationType) {
         BlockEntity blockEntity2;
-        CompoundTag compoundTag;
+        NbtCompound nbtCompound;
         BlockEntity blockEntity = this.blockEntities.get(pos);
-        if (blockEntity == null && (compoundTag = this.pendingBlockEntityTags.remove(pos)) != null && (blockEntity2 = this.loadBlockEntity(pos, compoundTag)) != null) {
+        if (blockEntity == null && (nbtCompound = this.pendingBlockEntityTags.remove(pos)) != null && (blockEntity2 = this.loadBlockEntity(pos, nbtCompound)) != null) {
             return blockEntity2;
         }
         if (blockEntity == null) {
@@ -379,25 +381,25 @@ implements Chunk {
     }
 
     @Override
-    public void addPendingBlockEntityNbt(CompoundTag tag) {
+    public void addPendingBlockEntityNbt(NbtCompound tag) {
         this.pendingBlockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
     }
 
     @Override
     @Nullable
-    public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
+    public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
         BlockEntity blockEntity = this.getBlockEntity(pos);
         if (blockEntity != null && !blockEntity.isRemoved()) {
-            CompoundTag compoundTag = blockEntity.writeNbt(new CompoundTag());
-            compoundTag.putBoolean("keepPacked", false);
-            return compoundTag;
+            NbtCompound nbtCompound = blockEntity.writeNbt(new NbtCompound());
+            nbtCompound.putBoolean("keepPacked", false);
+            return nbtCompound;
         }
-        CompoundTag compoundTag = this.pendingBlockEntityTags.get(pos);
-        if (compoundTag != null) {
-            compoundTag = compoundTag.copy();
-            compoundTag.putBoolean("keepPacked", true);
+        NbtCompound nbtCompound = this.pendingBlockEntityTags.get(pos);
+        if (nbtCompound != null) {
+            nbtCompound = nbtCompound.copy();
+            nbtCompound.putBoolean("keepPacked", true);
         }
-        return compoundTag;
+        return nbtCompound;
     }
 
     @Override
@@ -454,7 +456,7 @@ implements Chunk {
     }
 
     @Environment(value=EnvType.CLIENT)
-    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, CompoundTag tag, BitSet bitSet) {
+    public void loadFromPacket(@Nullable BiomeArray biomes, PacketByteBuf buf, NbtCompound tag, BitSet bitSet) {
         boolean bl;
         boolean bl2 = bl = biomes != null;
         if (bl) {
@@ -487,7 +489,7 @@ implements Chunk {
         }
         for (Heightmap.Type type : Heightmap.Type.values()) {
             String string = type.getName();
-            if (!tag.contains(string, 12)) continue;
+            if (!tag.contains(string, NbtTypeIds.LONG_ARRAY)) continue;
             this.setHeightmap(type, tag.getLongArray(string));
         }
     }
@@ -520,7 +522,7 @@ implements Chunk {
     }
 
     @Override
-    public CompoundTag getBlockEntityNbt(BlockPos pos) {
+    public NbtCompound getBlockEntityNbt(BlockPos pos) {
         return this.pendingBlockEntityTags.get(pos);
     }
 
@@ -610,7 +612,7 @@ implements Chunk {
                 BlockPos blockPos = ProtoChunk.joinBlockPos(short_, this.sectionIndexToCoord(i), chunkPos);
                 BlockState blockState = this.getBlockState(blockPos);
                 BlockState blockState2 = Block.postProcessState(blockState, this.world, blockPos);
-                this.world.setBlockState(blockPos, blockState2, 20);
+                this.world.setBlockState(blockPos, blockState2, SetBlockStateFlags.NO_REDRAW | SetBlockStateFlags.FORCE_STATE);
             }
             this.postProcessingLists[i].clear();
         }
@@ -623,7 +625,7 @@ implements Chunk {
     }
 
     @Nullable
-    private BlockEntity loadBlockEntity(BlockPos pos, CompoundTag tag) {
+    private BlockEntity loadBlockEntity(BlockPos pos, NbtCompound tag) {
         BlockEntity blockEntity;
         BlockState blockState = this.getBlockState(pos);
         if ("DUMMY".equals(tag.getString("id"))) {

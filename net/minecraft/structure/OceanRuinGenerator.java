@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -17,7 +18,8 @@ import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.DrownedEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.SimpleStructurePiece;
 import net.minecraft.structure.Structure;
 import net.minecraft.structure.StructureManager;
@@ -140,14 +142,14 @@ public class OceanRuinGenerator {
             this.initialize(structureManager);
         }
 
-        public Piece(StructureManager manager, CompoundTag tag) {
+        public Piece(ServerWorld serverWorld, NbtCompound tag) {
             super(StructurePieceType.OCEAN_TEMPLE, tag);
             this.template = new Identifier(tag.getString("Template"));
             this.rotation = BlockRotation.valueOf(tag.getString("Rot"));
             this.integrity = tag.getFloat("Integrity");
             this.biomeType = OceanRuinFeature.BiomeType.valueOf(tag.getString("BiomeType"));
             this.large = tag.getBoolean("IsLarge");
-            this.initialize(manager);
+            this.initialize(serverWorld.getStructureManager());
         }
 
         private void initialize(StructureManager structureManager) {
@@ -157,19 +159,19 @@ public class OceanRuinGenerator {
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
-            super.writeNbt(tag);
-            tag.putString("Template", this.template.toString());
-            tag.putString("Rot", this.rotation.name());
-            tag.putFloat("Integrity", this.integrity);
-            tag.putString("BiomeType", this.biomeType.toString());
-            tag.putBoolean("IsLarge", this.large);
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
+            super.writeNbt(world, nbt);
+            nbt.putString("Template", this.template.toString());
+            nbt.putString("Rot", this.rotation.name());
+            nbt.putFloat("Integrity", this.integrity);
+            nbt.putString("BiomeType", this.biomeType.toString());
+            nbt.putBoolean("IsLarge", this.large);
         }
 
         @Override
         protected void handleMetadata(String metadata, BlockPos pos, ServerWorldAccess world, Random random, BlockBox boundingBox) {
             if ("chest".equals(metadata)) {
-                world.setBlockState(pos, (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, world.getFluidState(pos).isIn(FluidTags.WATER)), 2);
+                world.setBlockState(pos, (BlockState)Blocks.CHEST.getDefaultState().with(ChestBlock.WATERLOGGED, world.getFluidState(pos).isIn(FluidTags.WATER)), SetBlockStateFlags.NOTIFY_LISTENERS);
                 BlockEntity blockEntity = world.getBlockEntity(pos);
                 if (blockEntity instanceof ChestBlockEntity) {
                     ((ChestBlockEntity)blockEntity).setLootTable(this.large ? LootTables.UNDERWATER_RUIN_BIG_CHEST : LootTables.UNDERWATER_RUIN_SMALL_CHEST, random.nextLong());
@@ -181,9 +183,9 @@ public class OceanRuinGenerator {
                 drownedEntity.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
                 world.spawnEntityAndPassengers(drownedEntity);
                 if (pos.getY() > world.getSeaLevel()) {
-                    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+                    world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                 } else {
-                    world.setBlockState(pos, Blocks.WATER.getDefaultState(), 2);
+                    world.setBlockState(pos, Blocks.WATER.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
                 }
             }
         }

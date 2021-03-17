@@ -10,6 +10,8 @@ import java.util.Random;
 import java.util.WeakHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -72,14 +74,14 @@ extends TorchBlock {
         }
         if (state.get(LIT).booleanValue()) {
             if (bl) {
-                world.setBlockState(pos, (BlockState)state.with(LIT, false), 3);
+                world.setBlockState(pos, (BlockState)state.with(LIT, false), SetBlockStateFlags.DEFAULT);
                 if (RedstoneTorchBlock.isBurnedOut(world, pos, true)) {
-                    world.syncWorldEvent(1502, pos, 0);
+                    world.syncWorldEvent(WorldEvents.REDSTONE_TORCH_BURNS_OUT, pos, 0);
                     world.getBlockTickScheduler().schedule(pos, world.getBlockState(pos).getBlock(), 160);
                 }
             }
         } else if (!bl && !RedstoneTorchBlock.isBurnedOut(world, pos, false)) {
-            world.setBlockState(pos, (BlockState)state.with(LIT, true), 3);
+            world.setBlockState(pos, (BlockState)state.with(LIT, true), SetBlockStateFlags.DEFAULT);
         }
     }
 
@@ -120,10 +122,10 @@ extends TorchBlock {
         builder.add(LIT);
     }
 
-    private static boolean isBurnedOut(World world, BlockPos pos, boolean addNew) {
-        List list = BURNOUT_MAP.computeIfAbsent(world, blockView -> Lists.newArrayList());
+    private static boolean isBurnedOut(World world2, BlockPos pos, boolean addNew) {
+        List list = BURNOUT_MAP.computeIfAbsent(world2, world -> Lists.newArrayList());
         if (addNew) {
-            list.add(new BurnoutEntry(pos.toImmutable(), world.getTime()));
+            list.add(new BurnoutEntry(pos.toImmutable(), world2.getTime()));
         }
         int i = 0;
         for (int j = 0; j < list.size(); ++j) {

@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.function.Predicate;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractCauldronBlock;
 import net.minecraft.block.Block;
@@ -179,7 +180,7 @@ Waterloggable {
         if (blockPos2 == null) {
             return;
         }
-        world.syncWorldEvent(1504, blockPos, 0);
+        world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_DRIPS, blockPos, 0);
         int i = blockPos.getY() - blockPos2.getY();
         int j = 50 + i;
         BlockState blockState = world.getBlockState(blockPos2);
@@ -243,7 +244,7 @@ Waterloggable {
     @Override
     public void onDestroyedOnLanding(World world, BlockPos pos, FallingBlockEntity fallingBlockEntity) {
         if (!fallingBlockEntity.isSilent()) {
-            world.syncWorldEvent(1045, pos, 0);
+            world.syncWorldEvent(WorldEvents.POINTED_DRIPSTONE_LANDS, pos, 0);
         }
     }
 
@@ -409,11 +410,11 @@ Waterloggable {
         return PointedDripstoneBlock.getFluid(world, pos, world.getBlockState(pos)).filter(PointedDripstoneBlock::isFluidLiquid).orElse(Fluids.EMPTY);
     }
 
-    private static Optional<Fluid> getFluid(World world, BlockPos pos, BlockState state) {
+    private static Optional<Fluid> getFluid(World world, BlockPos pos2, BlockState state) {
         if (!PointedDripstoneBlock.isPointingDown(state)) {
             return Optional.empty();
         }
-        return PointedDripstoneBlock.getSupportingPos(world, pos, state, 10).map(blockPos -> world.getFluidState(blockPos.up()).getFluid());
+        return PointedDripstoneBlock.getSupportingPos(world, pos2, state, 10).map(pos -> world.getFluidState(pos.up()).getFluid());
     }
 
     /**

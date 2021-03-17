@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -62,7 +63,7 @@ extends Block {
         boolean bl = blockState.isOf(Blocks.AIR);
         if (bl != (bl2 = this.isEmpty())) {
             if (bl2) {
-                world.setBlockState(pos, blockState, 3);
+                world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
                 player.incrementStat(Stats.POT_FLOWER);
                 if (!player.getAbilities().creativeMode) {
                     itemStack.decrement(1);
@@ -74,7 +75,7 @@ extends Block {
                 } else if (!player.giveItemStack(itemStack2)) {
                     player.dropItem(itemStack2, false);
                 }
-                world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), 3);
+                world.setBlockState(pos, Blocks.FLOWER_POT.getDefaultState(), SetBlockStateFlags.DEFAULT);
             }
             world.emitGameEvent((Entity)player, GameEvent.BLOCK_CHANGE, pos);
             return ActionResult.success(world.isClient);

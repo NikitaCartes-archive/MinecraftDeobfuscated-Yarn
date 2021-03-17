@@ -29,8 +29,8 @@ implements FeatureConfig {
     }
 
     @Override
-    public Stream<ConfiguredFeature<?, ?>> method_30649() {
-        return Stream.concat(this.features.stream().flatMap(randomFeatureEntry -> randomFeatureEntry.feature.get().method_30648()), this.defaultFeature.get().method_30648());
+    public Stream<ConfiguredFeature<?, ?>> getDecoratedFeatures() {
+        return Stream.concat(this.features.stream().flatMap(randomFeatureEntry -> randomFeatureEntry.feature.get().getDecoratedFeatures()), this.defaultFeature.get().getDecoratedFeatures());
     }
 }
 

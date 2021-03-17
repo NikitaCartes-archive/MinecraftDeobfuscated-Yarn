@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
@@ -67,14 +68,14 @@ extends Block {
     }
 
     private static void setPower(WorldAccess world, BlockState state, int power, BlockPos pos, int delay) {
-        world.setBlockState(pos, (BlockState)state.with(POWER, power), 3);
+        world.setBlockState(pos, (BlockState)state.with(POWER, power), SetBlockStateFlags.DEFAULT);
         world.getBlockTickScheduler().schedule(pos, state.getBlock(), delay);
     }
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (state.get(POWER) != 0) {
-            world.setBlockState(pos, (BlockState)state.with(POWER, 0), 3);
+            world.setBlockState(pos, (BlockState)state.with(POWER, 0), SetBlockStateFlags.DEFAULT);
         }
     }
 
@@ -99,7 +100,7 @@ extends Block {
             return;
         }
         if (state.get(POWER) > 0 && !world.getBlockTickScheduler().isScheduled(pos, this)) {
-            world.setBlockState(pos, (BlockState)state.with(POWER, 0), 18);
+            world.setBlockState(pos, (BlockState)state.with(POWER, 0), SetBlockStateFlags.NOTIFY_LISTENERS | SetBlockStateFlags.FORCE_STATE);
         }
     }
 }

@@ -6,6 +6,8 @@ package net.minecraft.screen;
 import java.util.Map;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.Enchantment;
@@ -76,13 +78,13 @@ extends ForgingScreenHandler {
                 BlockState blockState2 = AnvilBlock.getLandingState(blockState);
                 if (blockState2 == null) {
                     world.removeBlock((BlockPos)blockPos, false);
-                    world.syncWorldEvent(1029, (BlockPos)blockPos, 0);
+                    world.syncWorldEvent(WorldEvents.ANVIL_DESTROYED, (BlockPos)blockPos, 0);
                 } else {
-                    world.setBlockState((BlockPos)blockPos, blockState2, 2);
-                    world.syncWorldEvent(1030, (BlockPos)blockPos, 0);
+                    world.setBlockState((BlockPos)blockPos, blockState2, SetBlockStateFlags.NOTIFY_LISTENERS);
+                    world.syncWorldEvent(WorldEvents.ANVIL_USED, (BlockPos)blockPos, 0);
                 }
             } else {
-                world.syncWorldEvent(1030, (BlockPos)blockPos, 0);
+                world.syncWorldEvent(WorldEvents.ANVIL_USED, (BlockPos)blockPos, 0);
             }
         });
     }

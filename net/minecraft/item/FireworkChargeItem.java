@@ -10,7 +10,7 @@ import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.FireworkItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -29,14 +29,14 @@ extends Item {
     @Override
     @Environment(value=EnvType.CLIENT)
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
-        CompoundTag compoundTag = stack.getSubTag("Explosion");
-        if (compoundTag != null) {
-            FireworkChargeItem.appendFireworkTooltip(compoundTag, tooltip);
+        NbtCompound nbtCompound = stack.getSubTag("Explosion");
+        if (nbtCompound != null) {
+            FireworkChargeItem.appendFireworkTooltip(nbtCompound, tooltip);
         }
     }
 
     @Environment(value=EnvType.CLIENT)
-    public static void appendFireworkTooltip(CompoundTag tag, List<Text> tooltip) {
+    public static void appendFireworkTooltip(NbtCompound tag, List<Text> tooltip) {
         int[] js;
         FireworkItem.Type type = FireworkItem.Type.byId(tag.getByte("Type"));
         tooltip.add(new TranslatableText("item.minecraft.firework_star.shape." + type.getName()).formatted(Formatting.GRAY));

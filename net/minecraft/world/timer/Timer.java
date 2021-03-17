@@ -14,9 +14,9 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.stream.Stream;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.Tag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.world.timer.TimerCallback;
 import net.minecraft.world.timer.TimerCallbackSerializer;
 import org.apache.logging.log4j.LogManager;
@@ -33,17 +33,17 @@ public class Timer<T> {
         return Comparator.comparingLong(event -> event.triggerTime).thenComparing(event -> event.id);
     }
 
-    public Timer(TimerCallbackSerializer<T> timerCallbackSerializer, Stream<Dynamic<Tag>> stream) {
+    public Timer(TimerCallbackSerializer<T> timerCallbackSerializer, Stream<Dynamic<NbtElement>> stream) {
         this(timerCallbackSerializer);
         this.events.clear();
         this.eventsByName.clear();
         this.eventCounter = UnsignedLong.ZERO;
         stream.forEach(dynamic -> {
-            if (!(dynamic.getValue() instanceof CompoundTag)) {
+            if (!(dynamic.getValue() instanceof NbtCompound)) {
                 LOGGER.warn("Invalid format of events: {}", dynamic);
                 return;
             }
-            this.addEvent((CompoundTag)dynamic.getValue());
+            this.addEvent((NbtCompound)dynamic.getValue());
         });
     }
 
@@ -82,9 +82,9 @@ public class Timer<T> {
         return Collections.unmodifiableSet(this.eventsByName.rowKeySet());
     }
 
-    private void addEvent(CompoundTag tag) {
-        CompoundTag compoundTag = tag.getCompound("Callback");
-        TimerCallback<T> timerCallback = this.callback.deserialize(compoundTag);
+    private void addEvent(NbtCompound tag) {
+        NbtCompound nbtCompound = tag.getCompound("Callback");
+        TimerCallback<T> timerCallback = this.callback.deserialize(nbtCompound);
         if (timerCallback != null) {
             String string = tag.getString("Name");
             long l = tag.getLong("TriggerTime");
@@ -92,18 +92,18 @@ public class Timer<T> {
         }
     }
 
-    private CompoundTag serialize(Event<T> event) {
-        CompoundTag compoundTag = new CompoundTag();
-        compoundTag.putString("Name", event.name);
-        compoundTag.putLong("TriggerTime", event.triggerTime);
-        compoundTag.put("Callback", this.callback.serialize(event.callback));
-        return compoundTag;
+    private NbtCompound serialize(Event<T> event) {
+        NbtCompound nbtCompound = new NbtCompound();
+        nbtCompound.putString("Name", event.name);
+        nbtCompound.putLong("TriggerTime", event.triggerTime);
+        nbtCompound.put("Callback", this.callback.serialize(event.callback));
+        return nbtCompound;
     }
 
-    public ListTag toNbt() {
-        ListTag listTag = new ListTag();
-        this.events.stream().sorted(Timer.createEventComparator()).map(this::serialize).forEach(listTag::add);
-        return listTag;
+    public NbtList toNbt() {
+        NbtList nbtList = new NbtList();
+        this.events.stream().sorted(Timer.createEventComparator()).map(this::serialize).forEach(nbtList::add);
+        return nbtList;
     }
 
     public static class Event<T> {

@@ -9,7 +9,7 @@ import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Util;
 import net.minecraft.util.function.BooleanBiFunction;
 import net.minecraft.util.math.BlockPos;
@@ -354,7 +354,7 @@ public class WorldBorder {
             return new Properties(d, e, i, h, j, k, f, l, g);
         }
 
-        public void writeNbt(CompoundTag tag) {
+        public void writeNbt(NbtCompound tag) {
             tag.putDouble("BorderCenterX", this.centerX);
             tag.putDouble("BorderCenterZ", this.centerZ);
             tag.putDouble("BorderSize", this.size);

@@ -16,14 +16,14 @@ import net.minecraft.server.function.CommandFunctionManager;
 import net.minecraft.text.TranslatableText;
 
 public class FunctionCommand {
-    public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (commandContext, suggestionsBuilder) -> {
-        CommandFunctionManager commandFunctionManager = ((ServerCommandSource)commandContext.getSource()).getMinecraftServer().getCommandFunctionManager();
-        CommandSource.suggestIdentifiers(commandFunctionManager.getFunctionTags(), suggestionsBuilder, "#");
-        return CommandSource.suggestIdentifiers(commandFunctionManager.getAllFunctions(), suggestionsBuilder);
+    public static final SuggestionProvider<ServerCommandSource> SUGGESTION_PROVIDER = (context, builder) -> {
+        CommandFunctionManager commandFunctionManager = ((ServerCommandSource)context.getSource()).getMinecraftServer().getCommandFunctionManager();
+        CommandSource.suggestIdentifiers(commandFunctionManager.getFunctionTags(), builder, "#");
+        return CommandSource.suggestIdentifiers(commandFunctionManager.getAllFunctions(), builder);
     };
 
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("function").requires(serverCommandSource -> serverCommandSource.hasPermissionLevel(2))).then(CommandManager.argument("name", CommandFunctionArgumentType.commandFunction()).suggests(SUGGESTION_PROVIDER).executes(commandContext -> FunctionCommand.execute((ServerCommandSource)commandContext.getSource(), CommandFunctionArgumentType.getFunctions(commandContext, "name")))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("function").requires(source -> source.hasPermissionLevel(2))).then(CommandManager.argument("name", CommandFunctionArgumentType.commandFunction()).suggests(SUGGESTION_PROVIDER).executes(context -> FunctionCommand.execute((ServerCommandSource)context.getSource(), CommandFunctionArgumentType.getFunctions(context, "name")))));
     }
 
     private static int execute(ServerCommandSource source, Collection<CommandFunction> functions) {

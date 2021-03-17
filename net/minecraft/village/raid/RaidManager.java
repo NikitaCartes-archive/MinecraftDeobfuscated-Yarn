@@ -8,11 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.raid.RaiderEntity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.network.packet.s2c.play.EntityStatusS2CPacket;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -132,30 +133,30 @@ extends PersistentState {
         return raid != null ? raid : new Raid(this.nextId(), world, pos);
     }
 
-    public static RaidManager fromNbt(ServerWorld world, CompoundTag nbt) {
+    public static RaidManager fromNbt(ServerWorld world, NbtCompound nbt) {
         RaidManager raidManager = new RaidManager(world);
         raidManager.nextAvailableId = nbt.getInt("NextAvailableID");
         raidManager.currentTime = nbt.getInt("Tick");
-        ListTag listTag = nbt.getList("Raids", 10);
-        for (int i = 0; i < listTag.size(); ++i) {
-            CompoundTag compoundTag = listTag.getCompound(i);
-            Raid raid = new Raid(world, compoundTag);
+        NbtList nbtList = nbt.getList("Raids", NbtTypeIds.COMPOUND);
+        for (int i = 0; i < nbtList.size(); ++i) {
+            NbtCompound nbtCompound = nbtList.getCompound(i);
+            Raid raid = new Raid(world, nbtCompound);
             raidManager.raids.put(raid.getRaidId(), raid);
         }
         return raidManager;
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         tag.putInt("NextAvailableID", this.nextAvailableId);
         tag.putInt("Tick", this.currentTime);
-        ListTag listTag = new ListTag();
+        NbtList nbtList = new NbtList();
         for (Raid raid : this.raids.values()) {
-            CompoundTag compoundTag = new CompoundTag();
-            raid.writeNbt(compoundTag);
-            listTag.add(compoundTag);
+            NbtCompound nbtCompound = new NbtCompound();
+            raid.writeNbt(nbtCompound);
+            nbtList.add(nbtCompound);
         }
-        tag.put("Raids", listTag);
+        tag.put("Raids", nbtList);
         return tag;
     }
 

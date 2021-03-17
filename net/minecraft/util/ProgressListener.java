@@ -8,12 +8,12 @@ import net.fabricmc.api.Environment;
 import net.minecraft.text.Text;
 
 public interface ProgressListener {
-    public void method_15412(Text var1);
+    public void setTitle(Text var1);
 
     @Environment(value=EnvType.CLIENT)
-    public void method_15413(Text var1);
+    public void setTitleAndTask(Text var1);
 
-    public void method_15414(Text var1);
+    public void setTask(Text var1);
 
     public void progressStagePercentage(int var1);
 

@@ -568,7 +568,7 @@ extends AbstractClientPlayerEntity {
     }
 
     @Override
-    public void openEditBookScreen(ItemStack book, Hand hand) {
+    public void useBook(ItemStack book, Hand hand) {
         if (book.isOf(Items.WRITABLE_BOOK)) {
             this.client.openScreen(new BookEditScreen(this, book, hand));
         }

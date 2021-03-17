@@ -6,6 +6,8 @@ package net.minecraft.block;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import java.util.Map;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -84,7 +86,7 @@ extends BlockWithEntity {
         DispenserBlockEntity dispenserBlockEntity = (DispenserBlockEntity)blockPointerImpl.getBlockEntity();
         int i = dispenserBlockEntity.chooseNonEmptySlot();
         if (i < 0) {
-            world.syncWorldEvent(1001, pos, 0);
+            world.syncWorldEvent(WorldEvents.DISPENSER_FAILS, pos, 0);
             world.emitGameEvent(GameEvent.DISPENSE_FAIL, pos);
             return;
         }
@@ -105,9 +107,9 @@ extends BlockWithEntity {
         boolean bl2 = state.get(TRIGGERED);
         if (bl && !bl2) {
             world.getBlockTickScheduler().schedule(pos, this, 4);
-            world.setBlockState(pos, (BlockState)state.with(TRIGGERED, true), 4);
+            world.setBlockState(pos, (BlockState)state.with(TRIGGERED, true), SetBlockStateFlags.NO_REDRAW);
         } else if (!bl && bl2) {
-            world.setBlockState(pos, (BlockState)state.with(TRIGGERED, false), 4);
+            world.setBlockState(pos, (BlockState)state.with(TRIGGERED, false), SetBlockStateFlags.NO_REDRAW);
         }
     }
 

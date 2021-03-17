@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -65,7 +66,7 @@ implements FluidDrainable {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        BubbleColumnBlock.method_34267(world, pos, state, world.getBlockState(pos.down()));
+        BubbleColumnBlock.update(world, pos, state, world.getBlockState(pos.down()));
     }
 
     @Override
@@ -73,37 +74,37 @@ implements FluidDrainable {
         return Fluids.WATER.getStill(false);
     }
 
-    public static void method_34268(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState) {
-        BubbleColumnBlock.method_34267(worldAccess, blockPos, worldAccess.getBlockState(blockPos), blockState);
+    public static void update(WorldAccess world, BlockPos pos, BlockState state) {
+        BubbleColumnBlock.update(world, pos, world.getBlockState(pos), state);
     }
 
-    public static void method_34267(WorldAccess worldAccess, BlockPos blockPos, BlockState blockState, BlockState blockState2) {
-        if (!BubbleColumnBlock.isStillWater(blockState)) {
+    public static void update(WorldAccess world, BlockPos pos, BlockState water, BlockState bubbleSource) {
+        if (!BubbleColumnBlock.isStillWater(water)) {
             return;
         }
-        BlockState blockState3 = BubbleColumnBlock.method_34269(blockState2);
-        worldAccess.setBlockState(blockPos, blockState3, 2);
-        BlockPos.Mutable mutable = blockPos.mutableCopy().move(Direction.UP);
-        while (BubbleColumnBlock.isStillWater(worldAccess.getBlockState(mutable))) {
-            if (!worldAccess.setBlockState(mutable, blockState3, 2)) {
+        BlockState blockState = BubbleColumnBlock.getBubbleState(bubbleSource);
+        world.setBlockState(pos, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
+        BlockPos.Mutable mutable = pos.mutableCopy().move(Direction.UP);
+        while (BubbleColumnBlock.isStillWater(world.getBlockState(mutable))) {
+            if (!world.setBlockState(mutable, blockState, SetBlockStateFlags.NOTIFY_LISTENERS)) {
                 return;
             }
             mutable.move(Direction.UP);
         }
     }
 
-    private static boolean isStillWater(BlockState blockState) {
-        return blockState.isOf(Blocks.BUBBLE_COLUMN) || blockState.isOf(Blocks.WATER) && blockState.getFluidState().getLevel() >= 8 && blockState.getFluidState().isStill();
+    private static boolean isStillWater(BlockState state) {
+        return state.isOf(Blocks.BUBBLE_COLUMN) || state.isOf(Blocks.WATER) && state.getFluidState().getLevel() >= 8 && state.getFluidState().isStill();
     }
 
-    private static BlockState method_34269(BlockState blockState) {
-        if (blockState.isOf(Blocks.BUBBLE_COLUMN)) {
-            return blockState;
+    private static BlockState getBubbleState(BlockState state) {
+        if (state.isOf(Blocks.BUBBLE_COLUMN)) {
+            return state;
         }
-        if (blockState.isOf(Blocks.SOUL_SAND)) {
+        if (state.isOf(Blocks.SOUL_SAND)) {
             return (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, false);
         }
-        if (blockState.isOf(Blocks.MAGMA_BLOCK)) {
+        if (state.isOf(Blocks.MAGMA_BLOCK)) {
             return (BlockState)Blocks.BUBBLE_COLUMN.getDefaultState().with(DRAG, true);
         }
         return Blocks.WATER.getDefaultState();
@@ -161,7 +162,7 @@ implements FluidDrainable {
 
     @Override
     public ItemStack tryDrainFluid(WorldAccess world, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 11);
+        world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.REDRAW_ON_MAIN_THREAD);
         return new ItemStack(Items.WATER_BUCKET);
     }
 

@@ -4,16 +4,19 @@
 package net.minecraft.entity;
 
 import java.util.List;
+import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LightningRodBlock;
+import net.minecraft.block.Oxidizable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -69,12 +72,13 @@ extends Entity {
     @Override
     public void tick() {
         super.tick();
-        if (this.ambientTick == 2) {
+        if (this.ambientTick == 2 && !this.world.isClient) {
             Difficulty difficulty = this.world.getDifficulty();
             if (difficulty == Difficulty.NORMAL || difficulty == Difficulty.HARD) {
                 this.spawnFire(4);
             }
             this.powerLightningRod();
+            LightningEntity.cleanOxidization(this.world, this.getBlockPos().down());
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_THUNDER, SoundCategory.WEATHER, 10000.0f, 0.8f + this.random.nextFloat() * 0.2f);
             this.world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.WEATHER, 2.0f, 0.5f + this.random.nextFloat() * 0.2f);
             this.emitGameEvent(GameEvent.LIGHTNING_STRIKE);
@@ -123,6 +127,48 @@ extends Entity {
         }
     }
 
+    private static void cleanOxidization(World world, BlockPos pos) {
+        BlockState blockState2;
+        BlockPos blockPos;
+        BlockState blockState = world.getBlockState(pos);
+        if (blockState.isOf(Blocks.LIGHTNING_ROD)) {
+            blockPos = pos.offset(blockState.get(LightningRodBlock.FACING).getOpposite());
+            blockState2 = world.getBlockState(blockPos);
+        } else {
+            blockPos = pos;
+            blockState2 = blockState;
+        }
+        if (!(blockState2.getBlock() instanceof Oxidizable)) {
+            return;
+        }
+        world.setBlockState(blockPos, Oxidizable.getUnaffectedOxidationState(world.getBlockState(blockPos)));
+        BlockPos.Mutable mutable = pos.mutableCopy();
+        int i = world.random.nextInt(3) + 3;
+        for (int j = 0; j < i; ++j) {
+            int k = world.random.nextInt(8) + 1;
+            LightningEntity.cleanOxidizationAround(world, blockPos, mutable, k);
+        }
+    }
+
+    private static void cleanOxidizationAround(World world, BlockPos pos, BlockPos.Mutable mutablePos, int count) {
+        Optional<BlockPos> optional;
+        mutablePos.set(pos);
+        for (int i = 0; i < count && (optional = LightningEntity.cleanOxidizationAround(world, mutablePos)).isPresent(); ++i) {
+            mutablePos.set(optional.get());
+        }
+    }
+
+    private static Optional<BlockPos> cleanOxidizationAround(World world, BlockPos pos) {
+        for (BlockPos blockPos : BlockPos.iterateRandomly(world.random, 10, pos, 1)) {
+            BlockState blockState = world.getBlockState(blockPos);
+            if (!(blockState.getBlock() instanceof Oxidizable)) continue;
+            Oxidizable.getDecreasedOxidationState(blockState).ifPresent(state -> world.setBlockState(blockPos, (BlockState)state));
+            world.syncWorldEvent(WorldEvents.ELECTRICITY_SPARKS, blockPos, -1);
+            return Optional.of(blockPos);
+        }
+        return Optional.empty();
+    }
+
     @Override
     @Environment(value=EnvType.CLIENT)
     public boolean shouldRender(double distance) {
@@ -135,11 +181,11 @@ extends Entity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(CompoundTag tag) {
+    protected void readCustomDataFromNbt(NbtCompound tag) {
     }
 
     @Override
-    protected void writeCustomDataToNbt(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound tag) {
     }
 
     @Override

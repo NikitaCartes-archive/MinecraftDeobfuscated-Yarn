@@ -21,7 +21,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.pattern.CachedBlockPosition;
 import net.minecraft.command.argument.BlockArgumentParser;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.state.property.Property;
@@ -87,10 +87,10 @@ implements ArgumentType<BlockPredicate> {
     implements Predicate<CachedBlockPosition> {
         private final Tag<Block> tag;
         @Nullable
-        private final CompoundTag nbt;
+        private final NbtCompound nbt;
         private final Map<String, String> properties;
 
-        private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable CompoundTag nbt) {
+        private TagPredicate(Tag<Block> tag, Map<String, String> map, @Nullable NbtCompound nbt) {
             this.tag = tag;
             this.properties = map;
             this.nbt = nbt;
@@ -116,7 +116,7 @@ implements ArgumentType<BlockPredicate> {
             }
             if (this.nbt != null) {
                 BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new CompoundTag()), true);
+                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new NbtCompound()), true);
             }
             return true;
         }
@@ -132,9 +132,9 @@ implements ArgumentType<BlockPredicate> {
         private final BlockState state;
         private final Set<Property<?>> properties;
         @Nullable
-        private final CompoundTag nbt;
+        private final NbtCompound nbt;
 
-        public StatePredicate(BlockState state, Set<Property<?>> properties, @Nullable CompoundTag nbt) {
+        public StatePredicate(BlockState state, Set<Property<?>> properties, @Nullable NbtCompound nbt) {
             this.state = state;
             this.properties = properties;
             this.nbt = nbt;
@@ -152,7 +152,7 @@ implements ArgumentType<BlockPredicate> {
             }
             if (this.nbt != null) {
                 BlockEntity blockEntity = cachedBlockPosition.getBlockEntity();
-                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new CompoundTag()), true);
+                return blockEntity != null && NbtHelper.matches(this.nbt, blockEntity.writeNbt(new NbtCompound()), true);
             }
             return true;
         }

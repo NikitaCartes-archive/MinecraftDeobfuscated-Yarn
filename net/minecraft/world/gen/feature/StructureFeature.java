@@ -13,9 +13,11 @@ import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructureManager;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -115,11 +117,11 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         return STRUCTURE_TO_GENERATION_STEP.get(this);
     }
 
-    public static void method_28664() {
+    public static void init() {
     }
 
     @Nullable
-    public static StructureStart<?> readStructureStart(StructureManager manager, CompoundTag tag, long worldSeed) {
+    public static StructureStart<?> readStructureStart(ServerWorld world, NbtCompound tag, long worldSeed) {
         String string = tag.getString("id");
         if ("INVALID".equals(string)) {
             return StructureStart.DEFAULT;
@@ -132,12 +134,12 @@ public abstract class StructureFeature<C extends FeatureConfig> {
         ChunkPos chunkPos = new ChunkPos(tag.getInt("ChunkX"), tag.getInt("ChunkZ"));
         int i = tag.getInt("references");
         BlockBox blockBox = tag.contains("BB") ? BlockBox.CODEC.parse(NbtOps.INSTANCE, tag.get("BB")).resultOrPartial(LOGGER::error).orElse(new BlockBox(BlockPos.ORIGIN)) : BlockBox.empty();
-        ListTag listTag = tag.getList("Children", 10);
+        NbtList nbtList = tag.getList("Children", NbtTypeIds.COMPOUND);
         try {
             StructureStart<?> structureStart = super.createStart(chunkPos, blockBox, i, worldSeed);
-            for (int j = 0; j < listTag.size(); ++j) {
-                CompoundTag compoundTag = listTag.getCompound(j);
-                String string2 = compoundTag.getString("id").toLowerCase(Locale.ROOT);
+            for (int j = 0; j < nbtList.size(); ++j) {
+                NbtCompound nbtCompound = nbtList.getCompound(j);
+                String string2 = nbtCompound.getString("id").toLowerCase(Locale.ROOT);
                 Identifier identifier = new Identifier(string2);
                 Identifier identifier2 = field_25839.getOrDefault(identifier, identifier);
                 StructurePieceType structurePieceType = Registry.STRUCTURE_PIECE.get(identifier2);
@@ -146,7 +148,7 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     continue;
                 }
                 try {
-                    StructurePiece structurePiece = structurePieceType.load(manager, compoundTag);
+                    StructurePiece structurePiece = structurePieceType.load(world, nbtCompound);
                     structureStart.getChildren().add(structurePiece);
                     continue;
                 } catch (Exception exception) {
@@ -202,10 +204,10 @@ public abstract class StructureFeature<C extends FeatureConfig> {
                     if (bl32 && (structureStart = structureAccessor.getStructureStart(ChunkSectionPos.from(chunk = world.getChunk(chunkPos.x, chunkPos.z, ChunkStatus.STRUCTURE_STARTS)), this, chunk)) != null && structureStart.hasChildren()) {
                         if (skipExistingChunks && structureStart.isInExistingChunk()) {
                             structureStart.incrementReferences();
-                            return structureStart.getPos();
+                            return structureStart.getBlockPos();
                         }
                         if (!skipExistingChunks) {
-                            return structureStart.getPos();
+                            return structureStart.getBlockPos();
                         }
                     }
                     if (l == 0) break;
@@ -259,12 +261,12 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * {@link #getStartChunk}. Specific structures override this method to reduce the spawn probability or
      * restrict the spawn in some other way.
      */
-    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom random, ChunkPos chunkPos, Biome biome, ChunkPos chunkPos2, C featureConfig, HeightLimitView heightLimitView) {
+    protected boolean shouldStartAt(ChunkGenerator chunkGenerator, BiomeSource biomeSource, long worldSeed, ChunkRandom random, ChunkPos pos, Biome biome, ChunkPos chunkPos, C config, HeightLimitView world) {
         return true;
     }
 
-    private StructureStart<C> createStart(ChunkPos chunkPos, BlockBox blockBox, int i, long l) {
-        return this.getStructureStartFactory().create(this, chunkPos, blockBox, i, l);
+    private StructureStart<C> createStart(ChunkPos pos, BlockBox box, int references, long worldSeed) {
+        return this.getStructureStartFactory().create(this, pos, box, references, worldSeed);
     }
 
     /**
@@ -273,11 +275,11 @@ public abstract class StructureFeature<C extends FeatureConfig> {
      * If this structure doesn't have a starting point in the chunk, {@link StructureStart#DEFAULT}
      * will be returned.
      */
-    public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator chunkGenerator, BiomeSource biomeSource, StructureManager structureManager, long worldSeed, ChunkPos chunkPos, Biome biome, int referenceCount, ChunkRandom chunkRandom, StructureConfig structureConfig, C featureConfig, HeightLimitView heightLimitView) {
-        ChunkPos chunkPos2 = this.getStartChunk(structureConfig, worldSeed, chunkRandom, chunkPos.x, chunkPos.z);
-        if (chunkPos.x == chunkPos2.x && chunkPos.z == chunkPos2.z && this.shouldStartAt(chunkGenerator, biomeSource, worldSeed, chunkRandom, chunkPos, biome, chunkPos2, featureConfig, heightLimitView)) {
-            StructureStart<C> structureStart = this.createStart(chunkPos, BlockBox.empty(), referenceCount, worldSeed);
-            structureStart.init(dynamicRegistryManager, chunkGenerator, structureManager, chunkPos, biome, featureConfig, heightLimitView);
+    public StructureStart<?> tryPlaceStart(DynamicRegistryManager dynamicRegistryManager, ChunkGenerator generator, BiomeSource biomeSource, StructureManager manager, long worldSeed, ChunkPos pos, Biome biome, int referenceCount, ChunkRandom random, StructureConfig structureConfig, C config, HeightLimitView world) {
+        ChunkPos chunkPos = this.getStartChunk(structureConfig, worldSeed, random, pos.x, pos.z);
+        if (pos.x == chunkPos.x && pos.z == chunkPos.z && this.shouldStartAt(generator, biomeSource, worldSeed, random, pos, biome, chunkPos, config, world)) {
+            StructureStart<C> structureStart = this.createStart(pos, BlockBox.empty(), referenceCount, worldSeed);
+            structureStart.init(dynamicRegistryManager, generator, manager, pos, biome, config, world);
             if (structureStart.hasChildren()) {
                 return structureStart;
             }

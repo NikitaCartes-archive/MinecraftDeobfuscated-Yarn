@@ -8,6 +8,7 @@ import com.mojang.serialization.MapCodec;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.ModifiableTestableWorld;
@@ -62,7 +63,7 @@ extends TreeDecorator {
         for (int i = 2; i >= -3; --i) {
             BlockPos blockPos = pos.up(i);
             if (Feature.isSoil(world, blockPos)) {
-                world.setBlockState(blockPos, this.provider.getBlockState(random, pos), 19);
+                world.setBlockState(blockPos, this.provider.getBlockState(random, pos), SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE);
                 break;
             }
             if (!Feature.isAir(world, blockPos) && i < 0) break;

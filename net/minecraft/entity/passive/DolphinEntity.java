@@ -51,7 +51,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.WaterCreatureEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -92,7 +92,7 @@ extends WaterCreatureEntity {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         this.setAir(this.getMaxAir());
         this.pitch = 0.0f;
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
@@ -140,7 +140,7 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putInt("TreasurePosX", this.getTreasurePos().getX());
         tag.putInt("TreasurePosY", this.getTreasurePos().getY());
@@ -150,7 +150,7 @@ extends WaterCreatureEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         int i = tag.getInt("TreasurePosX");
         int j = tag.getInt("TreasurePosY");
         int k = tag.getInt("TreasurePosZ");

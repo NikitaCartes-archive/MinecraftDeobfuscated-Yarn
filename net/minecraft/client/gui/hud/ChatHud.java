@@ -64,7 +64,7 @@ extends DrawableHelper {
         float f = (float)this.getChatScale();
         int k = MathHelper.ceil((float)this.getWidth() / f);
         matrices.push();
-        matrices.translate(2.0, 8.0, 0.0);
+        matrices.translate(4.0, 8.0, 0.0);
         matrices.scale(f, f, 1.0f);
         double d = this.client.options.chatOpacity * (double)0.9f + (double)0.1f;
         double e = this.client.options.textBackgroundOpacity;
@@ -83,7 +83,7 @@ extends DrawableHelper {
             double s = (double)(-m) * g;
             matrices.push();
             matrices.translate(0.0, 0.0, 50.0);
-            ChatHud.fill(matrices, -2, (int)(s - g), 0 + k + 4, (int)s, q << 24);
+            ChatHud.fill(matrices, -4, (int)(s - g), 0 + k + 4, (int)s, q << 24);
             RenderSystem.enableBlend();
             matrices.translate(0.0, 0.0, 50.0);
             this.client.textRenderer.drawWithShadow(matrices, chatHudLine.getText(), 0.0f, (float)((int)(s + h)), 0xFFFFFF + (p << 24));
@@ -104,13 +104,14 @@ extends DrawableHelper {
         }
         if (bl) {
             m = this.client.textRenderer.fontHeight;
-            int t = j * m + j;
-            n = l * m + l;
+            int t = j * m;
+            n = l * m;
             int u = this.scrolledLines * n / j;
             int v = n * n / t;
             if (t != n) {
                 p = u > 0 ? 170 : 96;
                 q = this.hasUnreadNewMessages ? 0xCC3333 : 0x3333AA;
+                matrices.translate(-4.0, 0.0, 0.0);
                 ChatHud.fill(matrices, 0, -u, 2, -u - v, q + (p << 24));
                 ChatHud.fill(matrices, 2, -u, 1, -u - v, 0xCCCCCC + (p << 24));
             }

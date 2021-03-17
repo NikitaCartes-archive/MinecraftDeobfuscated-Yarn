@@ -10,7 +10,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.GameRules;
@@ -29,14 +29,14 @@ public interface Angerable {
 
     public void chooseRandomAngerTime();
 
-    default public void writeAngerToNbt(CompoundTag tag) {
+    default public void writeAngerToNbt(NbtCompound tag) {
         tag.putInt("AngerTime", this.getAngerTime());
         if (this.getAngryAt() != null) {
             tag.putUuid("AngryAt", this.getAngryAt());
         }
     }
 
-    default public void readAngerFromNbt(World world, CompoundTag tag) {
+    default public void readAngerFromNbt(World world, NbtCompound tag) {
         this.setAngerTime(tag.getInt("AngerTime"));
         if (!(world instanceof ServerWorld)) {
             return;

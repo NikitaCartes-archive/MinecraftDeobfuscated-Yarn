@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractPlantStemBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -43,7 +44,7 @@ extends Feature<DefaultFeatureConfig> {
     }
 
     private void generateNetherWartBlocksInArea(WorldAccess world, Random random, BlockPos pos) {
-        world.setBlockState(pos, Blocks.NETHER_WART_BLOCK.getDefaultState(), 2);
+        world.setBlockState(pos, Blocks.NETHER_WART_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         BlockPos.Mutable mutable2 = new BlockPos.Mutable();
         for (int i = 0; i < 200; ++i) {
@@ -58,7 +59,7 @@ extends Feature<DefaultFeatureConfig> {
                 if (j > 1) break;
             }
             if (j != true) continue;
-            world.setBlockState(mutable, Blocks.NETHER_WART_BLOCK.getDefaultState(), 2);
+            world.setBlockState(mutable, Blocks.NETHER_WART_BLOCK.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 
@@ -85,10 +86,10 @@ extends Feature<DefaultFeatureConfig> {
         for (int i = 0; i <= length; ++i) {
             if (world.isAir(pos)) {
                 if (i == length || !world.isAir((BlockPos)pos.down())) {
-                    world.setBlockState(pos, (BlockState)Blocks.WEEPING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, MathHelper.nextInt(random, minAge, maxAge)), 2);
+                    world.setBlockState(pos, (BlockState)Blocks.WEEPING_VINES.getDefaultState().with(AbstractPlantStemBlock.AGE, MathHelper.nextInt(random, minAge, maxAge)), SetBlockStateFlags.NOTIFY_LISTENERS);
                     break;
                 }
-                world.setBlockState(pos, Blocks.WEEPING_VINES_PLANT.getDefaultState(), 2);
+                world.setBlockState(pos, Blocks.WEEPING_VINES_PLANT.getDefaultState(), SetBlockStateFlags.NOTIFY_LISTENERS);
             }
             pos.move(Direction.DOWN);
         }

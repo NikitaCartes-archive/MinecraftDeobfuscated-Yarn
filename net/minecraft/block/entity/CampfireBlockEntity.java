@@ -5,6 +5,8 @@ package net.minecraft.block.entity;
 
 import java.util.Optional;
 import java.util.Random;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.entity.BlockEntity;
@@ -12,7 +14,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.recipe.CampfireCookingRecipe;
@@ -50,7 +52,7 @@ implements Clearable {
             ItemStack itemStack2 = world.getRecipeManager().getFirstMatch(RecipeType.CAMPFIRE_COOKING, inventory, world).map(campfireCookingRecipe -> campfireCookingRecipe.craft(inventory)).orElse(itemStack);
             ItemScatterer.spawn(world, (double)pos.getX(), (double)pos.getY(), (double)pos.getZ(), itemStack2);
             campfire.itemsBeingCooked.set(i, ItemStack.EMPTY);
-            world.updateListeners(pos, state, state, 3);
+            world.updateListeners(pos, state, state, SetBlockStateFlags.DEFAULT);
         }
         if (bl) {
             CampfireBlockEntity.markDirty(world, pos, state);
@@ -96,30 +98,30 @@ implements Clearable {
     }
 
     @Override
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         int[] is;
         super.readNbt(tag);
         this.itemsBeingCooked.clear();
         Inventories.readNbt(tag, this.itemsBeingCooked);
-        if (tag.contains("CookingTimes", 11)) {
+        if (tag.contains("CookingTimes", NbtTypeIds.INT_ARRAY)) {
             is = tag.getIntArray("CookingTimes");
             System.arraycopy(is, 0, this.cookingTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
-        if (tag.contains("CookingTotalTimes", 11)) {
+        if (tag.contains("CookingTotalTimes", NbtTypeIds.INT_ARRAY)) {
             is = tag.getIntArray("CookingTotalTimes");
             System.arraycopy(is, 0, this.cookingTotalTimes, 0, Math.min(this.cookingTotalTimes.length, is.length));
         }
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         this.saveInitialChunkData(tag);
         tag.putIntArray("CookingTimes", this.cookingTimes);
         tag.putIntArray("CookingTotalTimes", this.cookingTotalTimes);
         return tag;
     }
 
-    private CompoundTag saveInitialChunkData(CompoundTag tag) {
+    private NbtCompound saveInitialChunkData(NbtCompound tag) {
         super.writeNbt(tag);
         Inventories.writeNbt(tag, this.itemsBeingCooked, true);
         return tag;
@@ -132,8 +134,8 @@ implements Clearable {
     }
 
     @Override
-    public CompoundTag toInitialChunkDataNbt() {
-        return this.saveInitialChunkData(new CompoundTag());
+    public NbtCompound toInitialChunkDataNbt() {
+        return this.saveInitialChunkData(new NbtCompound());
     }
 
     public Optional<CampfireCookingRecipe> getRecipeFor(ItemStack item) {
@@ -158,7 +160,7 @@ implements Clearable {
 
     private void updateListeners() {
         this.markDirty();
-        this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), 3);
+        this.getWorld().updateListeners(this.getPos(), this.getCachedState(), this.getCachedState(), SetBlockStateFlags.DEFAULT);
     }
 
     @Override

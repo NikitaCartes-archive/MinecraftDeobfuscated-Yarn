@@ -4,11 +4,12 @@
 package net.minecraft.structure;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.loot.LootTables;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.structure.StructureManager;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.math.BlockBox;
@@ -29,12 +30,12 @@ public class BuriedTreasureGenerator {
             this.boundingBox = new BlockBox(pos);
         }
 
-        public Piece(StructureManager manager, CompoundTag tag) {
+        public Piece(ServerWorld serverWorld, NbtCompound tag) {
             super(StructurePieceType.BURIED_TREASURE, tag);
         }
 
         @Override
-        protected void writeNbt(CompoundTag tag) {
+        protected void writeNbt(ServerWorld world, NbtCompound nbt) {
         }
 
         @Override
@@ -53,10 +54,10 @@ public class BuriedTreasureGenerator {
                         BlockPos blockPos2 = blockPos.down();
                         BlockState blockState5 = world.getBlockState(blockPos2);
                         if ((blockState5.isAir() || this.isLiquid(blockState5)) && direction != Direction.UP) {
-                            world.setBlockState(blockPos, blockState2, 3);
+                            world.setBlockState(blockPos, blockState2, SetBlockStateFlags.DEFAULT);
                             continue;
                         }
-                        world.setBlockState(blockPos, blockState3, 3);
+                        world.setBlockState(blockPos, blockState3, SetBlockStateFlags.DEFAULT);
                     }
                     this.boundingBox = new BlockBox(mutable);
                     return this.addChest(world, boundingBox, random, mutable, LootTables.BURIED_TREASURE_CHEST, null);

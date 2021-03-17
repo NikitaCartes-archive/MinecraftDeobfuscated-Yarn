@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -100,7 +101,7 @@ extends WallMountedBlock {
 
     public BlockState togglePower(BlockState state, World world, BlockPos pos) {
         state = (BlockState)state.cycle(POWERED);
-        world.setBlockState(pos, state, 3);
+        world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
         this.updateNeighbors(state, world, pos);
         return state;
     }

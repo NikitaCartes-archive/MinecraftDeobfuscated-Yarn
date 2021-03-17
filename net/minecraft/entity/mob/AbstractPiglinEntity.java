@@ -21,7 +21,7 @@ import net.minecraft.entity.mob.PiglinActivity;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.item.ToolItem;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.DebugInfoSender;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
@@ -63,7 +63,7 @@ extends HostileEntity {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         if (this.isImmuneToZombification()) {
             tag.putBoolean("IsImmuneToZombification", true);
@@ -77,7 +77,7 @@ extends HostileEntity {
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.setImmuneToZombification(tag.getBoolean("IsImmuneToZombification"));
         this.timeInOverworld = tag.getInt("TimeInOverworld");

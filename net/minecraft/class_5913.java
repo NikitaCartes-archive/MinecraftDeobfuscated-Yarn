@@ -50,7 +50,7 @@ public abstract class class_5913 {
             if (!Strings.isEmpty(string7)) {
                 arg.field_29203 = arg.field_29203 + 1;
                 k = arg.field_29203;
-                List<String> list2 = this.method_34232(string7, arg, bl ? FileNameUtil.method_34675(string6) : "");
+                List<String> list2 = this.method_34232(string7, arg, bl ? FileNameUtil.getPosixFullPath(string6) : "");
                 list2.set(0, String.format("#line %d %d\n%s", 0, k, this.method_34231(list2.get(0), arg)));
                 if (!StringUtils.isBlank(string5)) {
                     list.add(string5);
@@ -60,7 +60,7 @@ public abstract class class_5913 {
                 String string8 = bl ? String.format("/*#moj_import \"%s\"*/", string4) : String.format("/*#moj_import <%s>*/", string4);
                 list.add(string3 + string5 + string8);
             }
-            k = ChatUtil.method_34238(string.substring(0, matcher.end(1)));
+            k = ChatUtil.countLines(string.substring(0, matcher.end(1)));
             string3 = String.format("#line %d %d", k, i);
             j = matcher.end(1);
         }

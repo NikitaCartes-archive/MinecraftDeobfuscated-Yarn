@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -75,7 +76,7 @@ extends BlockWithEntity {
             if (bl) {
                 this.ring(world, pos, null);
             }
-            world.setBlockState(pos, (BlockState)state.with(POWERED, bl), 3);
+            world.setBlockState(pos, (BlockState)state.with(POWERED, bl), SetBlockStateFlags.DEFAULT);
         }
     }
 

@@ -139,7 +139,7 @@ implements Comparable<LevelSummary> {
      * <p>This includes world versions {@code 2692} and earlier (21w05b and earlier).
      */
     public boolean isPreWorldHeightChangeVersion() {
-        return this.versionInfo.getVersionId() <= 2692;
+        return false != this.versionInfo.getVersionId() <= 2692;
     }
 
     @Environment(value=EnvType.CLIENT)

@@ -9,7 +9,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.server.world.ServerWorld;
@@ -25,7 +25,6 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ProjectileEntity
 extends Entity {
     private UUID ownerUuid;
-    private int ownerEntityId;
     private boolean leftOwner;
     private boolean shot;
 
@@ -36,7 +35,6 @@ extends Entity {
     public void setOwner(@Nullable Entity entity) {
         if (entity != null) {
             this.ownerUuid = entity.getUuid();
-            this.ownerEntityId = entity.getId();
         }
     }
 
@@ -45,14 +43,11 @@ extends Entity {
         if (this.ownerUuid != null && this.world instanceof ServerWorld) {
             return ((ServerWorld)this.world).getEntity(this.ownerUuid);
         }
-        if (this.ownerEntityId != 0) {
-            return this.world.getEntityById(this.ownerEntityId);
-        }
         return null;
     }
 
     @Override
-    protected void writeCustomDataToNbt(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound tag) {
         if (this.ownerUuid != null) {
             tag.putUuid("Owner", this.ownerUuid);
         }
@@ -62,8 +57,12 @@ extends Entity {
         tag.putBoolean("HasBeenShot", this.shot);
     }
 
+    protected boolean method_34714(Entity entity) {
+        return entity.getUuid().equals(this.ownerUuid);
+    }
+
     @Override
-    protected void readCustomDataFromNbt(CompoundTag tag) {
+    protected void readCustomDataFromNbt(NbtCompound tag) {
         if (tag.containsUuid("Owner")) {
             this.ownerUuid = tag.getUuid("Owner");
         }

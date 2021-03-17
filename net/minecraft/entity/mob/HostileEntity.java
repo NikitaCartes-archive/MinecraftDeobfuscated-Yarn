@@ -114,7 +114,7 @@ implements Monster {
     }
 
     @Override
-    protected boolean canDropLootAndXp() {
+    protected boolean shouldDropXp() {
         return true;
     }
 

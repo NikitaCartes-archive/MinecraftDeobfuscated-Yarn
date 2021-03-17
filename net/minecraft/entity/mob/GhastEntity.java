@@ -7,6 +7,8 @@ import java.util.EnumSet;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.EntityDimensions;
 import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
@@ -26,7 +28,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
@@ -133,15 +135,15 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putInt("ExplosionPower", this.fireballStrength);
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
-        if (tag.contains("ExplosionPower", 99)) {
+        if (tag.contains("ExplosionPower", NbtTypeIds.NUMBER)) {
             this.fireballStrength = tag.getInt("ExplosionPower");
         }
     }
@@ -183,7 +185,7 @@ implements Monster {
                 World world = this.ghast.world;
                 ++this.cooldown;
                 if (this.cooldown == 10 && !this.ghast.isSilent()) {
-                    world.syncWorldEvent(null, 1015, this.ghast.getBlockPos(), 0);
+                    world.syncWorldEvent(null, WorldEvents.GHAST_WARNS, this.ghast.getBlockPos(), 0);
                 }
                 if (this.cooldown == 20) {
                     double e = 4.0;
@@ -192,7 +194,7 @@ implements Monster {
                     double g = livingEntity.getBodyY(0.5) - (0.5 + this.ghast.getBodyY(0.5));
                     double h = livingEntity.getZ() - (this.ghast.getZ() + vec3d.z * 4.0);
                     if (!this.ghast.isSilent()) {
-                        world.syncWorldEvent(null, 1016, this.ghast.getBlockPos(), 0);
+                        world.syncWorldEvent(null, WorldEvents.GHAST_SHOOTS, this.ghast.getBlockPos(), 0);
                     }
                     FireballEntity fireballEntity = new FireballEntity(world, this.ghast, f, g, h);
                     fireballEntity.explosionPower = this.ghast.getFireballStrength();

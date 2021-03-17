@@ -70,7 +70,7 @@ public class RaycastContext {
     {
         COLLIDER(AbstractBlock.AbstractBlockState::getCollisionShape),
         OUTLINE(AbstractBlock.AbstractBlockState::getOutlineShape),
-        VISUAL(AbstractBlock.AbstractBlockState::getVisualShape);
+        VISUAL(AbstractBlock.AbstractBlockState::getCameraCollisionShape);
 
         private final ShapeProvider provider;
 

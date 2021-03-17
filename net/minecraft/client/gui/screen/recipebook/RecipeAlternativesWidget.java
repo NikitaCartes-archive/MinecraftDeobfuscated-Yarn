@@ -227,6 +227,7 @@ Element {
             float f = 0.42f;
             MatrixStack matrixStack = RenderSystem.getModelViewStack();
             matrixStack.push();
+            matrixStack.translate(0.0, 0.0, 125.0);
             matrixStack.scale(0.42f, 0.42f, 1.0f);
             RenderSystem.applyModelViewMatrix();
             for (InputSlot inputSlot : this.slots) {

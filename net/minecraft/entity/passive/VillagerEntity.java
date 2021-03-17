@@ -18,6 +18,7 @@ import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
@@ -57,10 +58,10 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.DebugInfoSender;
@@ -392,36 +393,36 @@ VillagerDataContainer {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag2) {
-        super.writeCustomDataToNbt(tag2);
-        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("VillagerData", (Tag)tag));
-        tag2.putByte("FoodLevel", this.foodLevel);
-        tag2.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
-        tag2.putInt("Xp", this.experience);
-        tag2.putLong("LastRestock", this.lastRestockTime);
-        tag2.putLong("LastGossipDecay", this.lastGossipDecayTime);
-        tag2.putInt("RestocksToday", this.restocksToday);
+    public void writeCustomDataToNbt(NbtCompound tag) {
+        super.writeCustomDataToNbt(tag);
+        VillagerData.CODEC.encodeStart(NbtOps.INSTANCE, this.getVillagerData()).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> tag.put("VillagerData", (NbtElement)nbtElement));
+        tag.putByte("FoodLevel", this.foodLevel);
+        tag.put("Gossips", this.gossip.serialize(NbtOps.INSTANCE).getValue());
+        tag.putInt("Xp", this.experience);
+        tag.putLong("LastRestock", this.lastRestockTime);
+        tag.putLong("LastGossipDecay", this.lastGossipDecayTime);
+        tag.putInt("RestocksToday", this.restocksToday);
         if (this.natural) {
-            tag2.putBoolean("AssignProfessionWhenSpawned", true);
+            tag.putBoolean("AssignProfessionWhenSpawned", true);
         }
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
-        if (tag.contains("VillagerData", 10)) {
-            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<Tag>(NbtOps.INSTANCE, tag.get("VillagerData")));
+        if (tag.contains("VillagerData", NbtTypeIds.COMPOUND)) {
+            DataResult dataResult = VillagerData.CODEC.parse(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag.get("VillagerData")));
             dataResult.resultOrPartial(LOGGER::error).ifPresent(this::setVillagerData);
         }
-        if (tag.contains("Offers", 10)) {
+        if (tag.contains("Offers", NbtTypeIds.COMPOUND)) {
             this.offers = new TradeOfferList(tag.getCompound("Offers"));
         }
-        if (tag.contains("FoodLevel", 1)) {
+        if (tag.contains("FoodLevel", NbtTypeIds.BYTE)) {
             this.foodLevel = tag.getByte("FoodLevel");
         }
-        ListTag listTag = tag.getList("Gossips", 10);
-        this.gossip.deserialize(new Dynamic<ListTag>(NbtOps.INSTANCE, listTag));
-        if (tag.contains("Xp", 3)) {
+        NbtList nbtList = tag.getList("Gossips", NbtTypeIds.COMPOUND);
+        this.gossip.deserialize(new Dynamic<NbtList>(NbtOps.INSTANCE, nbtList));
+        if (tag.contains("Xp", NbtTypeIds.INT)) {
             this.experience = tag.getInt("Xp");
         }
         this.lastRestockTime = tag.getLong("LastRestock");
@@ -636,7 +637,7 @@ VillagerDataContainer {
 
     @Override
     @Nullable
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         if (spawnReason == SpawnReason.BREEDING) {
             this.setVillagerData(this.getVillagerData().withProfession(VillagerProfession.NONE));
         }
@@ -850,8 +851,8 @@ VillagerDataContainer {
         return this.gossip;
     }
 
-    public void setGossipDataFromNbt(Tag tag) {
-        this.gossip.deserialize(new Dynamic<Tag>(NbtOps.INSTANCE, tag));
+    public void setGossipDataFromNbt(NbtElement tag) {
+        this.gossip.deserialize(new Dynamic<NbtElement>(NbtOps.INSTANCE, tag));
     }
 
     @Override

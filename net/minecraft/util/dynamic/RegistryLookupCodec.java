@@ -33,7 +33,7 @@ extends MapCodec<Registry<E>> {
     @Override
     public <T> DataResult<Registry<E>> decode(DynamicOps<T> dynamicOps, MapLike<T> mapLike) {
         if (dynamicOps instanceof RegistryOps) {
-            return ((RegistryOps)dynamicOps).method_31152(this.registryKey);
+            return ((RegistryOps)dynamicOps).getRegistry(this.registryKey);
         }
         return DataResult.error("Not a registry ops");
     }

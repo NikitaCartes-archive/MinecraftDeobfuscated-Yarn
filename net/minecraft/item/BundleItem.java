@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.client.item.BundleTooltipData;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.client.item.TooltipData;
@@ -18,8 +19,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsage;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.stat.Stats;
@@ -53,7 +54,7 @@ extends Item {
         }
         ItemStack itemStack = slot.getStack();
         if (itemStack.isEmpty()) {
-            BundleItem.removeFirstStack(stack).ifPresent(itemStack2 -> BundleItem.addToBundle(stack, slot.insertStack((ItemStack)itemStack2)));
+            BundleItem.removeFirstStack(stack).ifPresent(removedStack -> BundleItem.addToBundle(stack, slot.insertStack((ItemStack)removedStack)));
         } else if (itemStack.getItem().canBeNested()) {
             int i = (64 - BundleItem.getBundleOccupancy(stack)) / BundleItem.getItemOccupancy(itemStack);
             BundleItem.addToBundle(stack, slot.takeStackRange(itemStack.getCount(), i, player));
@@ -106,9 +107,9 @@ extends Item {
         if (stack.isEmpty() || !stack.getItem().canBeNested()) {
             return 0;
         }
-        CompoundTag compoundTag = bundle.getOrCreateTag();
-        if (!compoundTag.contains("Items")) {
-            compoundTag.put("Items", new ListTag());
+        NbtCompound nbtCompound = bundle.getOrCreateTag();
+        if (!nbtCompound.contains("Items")) {
+            nbtCompound.put("Items", new NbtList());
         }
         int i = BundleItem.getBundleOccupancy(bundle);
         int j = BundleItem.getItemOccupancy(stack);
@@ -116,30 +117,30 @@ extends Item {
         if (k == 0) {
             return 0;
         }
-        ListTag listTag = compoundTag.getList("Items", 10);
-        Optional<CompoundTag> optional = BundleItem.method_32344(stack, listTag);
+        NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+        Optional<NbtCompound> optional = BundleItem.canMergeStack(stack, nbtList);
         if (optional.isPresent()) {
-            CompoundTag compoundTag2 = optional.get();
-            ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
+            NbtCompound nbtCompound2 = optional.get();
+            ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
             itemStack.increment(k);
-            itemStack.writeNbt(compoundTag2);
-            listTag.remove(compoundTag2);
-            listTag.add(0, compoundTag2);
+            itemStack.writeNbt(nbtCompound2);
+            nbtList.remove(nbtCompound2);
+            nbtList.add(0, nbtCompound2);
         } else {
             ItemStack itemStack2 = stack.copy();
             itemStack2.setCount(k);
-            CompoundTag compoundTag3 = new CompoundTag();
-            itemStack2.writeNbt(compoundTag3);
-            listTag.add(0, compoundTag3);
+            NbtCompound nbtCompound3 = new NbtCompound();
+            itemStack2.writeNbt(nbtCompound3);
+            nbtList.add(0, nbtCompound3);
         }
         return k;
     }
 
-    private static Optional<CompoundTag> method_32344(ItemStack itemStack, ListTag listTag) {
-        if (itemStack.isOf(Items.BUNDLE)) {
+    private static Optional<NbtCompound> canMergeStack(ItemStack stack, NbtList items) {
+        if (stack.isOf(Items.BUNDLE)) {
             return Optional.empty();
         }
-        return listTag.stream().filter(CompoundTag.class::isInstance).map(CompoundTag.class::cast).filter(compoundTag -> ItemStack.canCombine(ItemStack.fromNbt(compoundTag), itemStack)).findFirst();
+        return items.stream().filter(NbtCompound.class::isInstance).map(NbtCompound.class::cast).filter(item -> ItemStack.canCombine(ItemStack.fromNbt(item), stack)).findFirst();
     }
 
     private static int getItemOccupancy(ItemStack stack) {
@@ -154,34 +155,34 @@ extends Item {
     }
 
     private static Optional<ItemStack> removeFirstStack(ItemStack stack) {
-        CompoundTag compoundTag = stack.getOrCreateTag();
-        if (!compoundTag.contains("Items")) {
+        NbtCompound nbtCompound = stack.getOrCreateTag();
+        if (!nbtCompound.contains("Items")) {
             return Optional.empty();
         }
-        ListTag listTag = compoundTag.getList("Items", 10);
-        if (listTag.isEmpty()) {
+        NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+        if (nbtList.isEmpty()) {
             return Optional.empty();
         }
         boolean i = false;
-        CompoundTag compoundTag2 = listTag.getCompound(0);
-        ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
-        listTag.remove(0);
-        if (listTag.isEmpty()) {
+        NbtCompound nbtCompound2 = nbtList.getCompound(0);
+        ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
+        nbtList.remove(0);
+        if (nbtList.isEmpty()) {
             stack.removeSubTag("Items");
         }
         return Optional.of(itemStack);
     }
 
     private static boolean dropAllBundledItems(ItemStack stack, PlayerEntity player) {
-        CompoundTag compoundTag = stack.getOrCreateTag();
-        if (!compoundTag.contains("Items")) {
+        NbtCompound nbtCompound = stack.getOrCreateTag();
+        if (!nbtCompound.contains("Items")) {
             return false;
         }
         if (player instanceof ServerPlayerEntity) {
-            ListTag listTag = compoundTag.getList("Items", 10);
-            for (int i = 0; i < listTag.size(); ++i) {
-                CompoundTag compoundTag2 = listTag.getCompound(i);
-                ItemStack itemStack = ItemStack.fromNbt(compoundTag2);
+            NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+            for (int i = 0; i < nbtList.size(); ++i) {
+                NbtCompound nbtCompound2 = nbtList.getCompound(i);
+                ItemStack itemStack = ItemStack.fromNbt(nbtCompound2);
                 player.dropItem(itemStack, true);
             }
         }
@@ -190,12 +191,12 @@ extends Item {
     }
 
     private static Stream<ItemStack> getBundledStacks(ItemStack stack) {
-        CompoundTag compoundTag = stack.getTag();
-        if (compoundTag == null) {
+        NbtCompound nbtCompound = stack.getTag();
+        if (nbtCompound == null) {
             return Stream.empty();
         }
-        ListTag listTag = compoundTag.getList("Items", 10);
-        return listTag.stream().map(CompoundTag.class::cast).map(ItemStack::fromNbt);
+        NbtList nbtList = nbtCompound.getList("Items", NbtTypeIds.COMPOUND);
+        return nbtList.stream().map(NbtCompound.class::cast).map(ItemStack::fromNbt);
     }
 
     @Override

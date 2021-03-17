@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -17,7 +18,7 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.EntitySpawnS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
@@ -70,7 +71,7 @@ extends ProjectileEntity {
     }
 
     @Override
-    protected void writeCustomDataToNbt(CompoundTag tag) {
+    protected void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         if (this.target != null) {
             tag.putUuid("Target", this.target.getUuid());
@@ -85,13 +86,13 @@ extends ProjectileEntity {
     }
 
     @Override
-    protected void readCustomDataFromNbt(CompoundTag tag) {
+    protected void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         this.stepCount = tag.getInt("Steps");
         this.targetX = tag.getDouble("TXD");
         this.targetY = tag.getDouble("TYD");
         this.targetZ = tag.getDouble("TZD");
-        if (tag.contains("Dir", 99)) {
+        if (tag.contains("Dir", NbtTypeIds.NUMBER)) {
             this.direction = Direction.byId(tag.getInt("Dir"));
         }
         if (tag.containsUuid("Target")) {

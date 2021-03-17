@@ -45,6 +45,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class RecipeBookWidget
@@ -226,7 +227,7 @@ RecipeGridAligner<Ingredient> {
         }
         matrices.push();
         matrices.translate(0.0, 0.0, 100.0);
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         int i = (this.parentWidth - 147) / 2 - this.leftOffset;
@@ -350,7 +351,7 @@ RecipeGridAligner<Ingredient> {
         if (!this.isOpen() || this.client.player.isSpectator()) {
             return false;
         }
-        if (keyCode == 256 && !this.isWide()) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE && !this.isWide()) {
             this.setOpen(false);
             return true;
         }
@@ -358,7 +359,7 @@ RecipeGridAligner<Ingredient> {
             this.refreshSearchResults();
             return true;
         }
-        if (this.searchField.isFocused() && this.searchField.isVisible() && keyCode != 256) {
+        if (this.searchField.isFocused() && this.searchField.isVisible() && keyCode != GLFW.GLFW_KEY_ESCAPE) {
             return true;
         }
         if (this.client.options.keyChat.matchesKey(keyCode, scanCode) && !this.searchField.isFocused()) {

@@ -41,20 +41,20 @@ extends JigsawFeature {
         if (chunkRandom.nextInt(5) != 0) {
             return false;
         }
-        return !this.method_30845(chunkGenerator, l, chunkRandom, chunkPos);
+        return !this.isVillageNearby(chunkGenerator, l, chunkRandom, chunkPos);
     }
 
-    private boolean method_30845(ChunkGenerator chunkGenerator, long l, ChunkRandom chunkRandom, ChunkPos chunkPos) {
-        StructureConfig structureConfig = chunkGenerator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
+    private boolean isVillageNearby(ChunkGenerator generator, long worldSeed, ChunkRandom random, ChunkPos pos) {
+        StructureConfig structureConfig = generator.getStructuresConfig().getForType(StructureFeature.VILLAGE);
         if (structureConfig == null) {
             return false;
         }
-        int i = chunkPos.x;
-        int j = chunkPos.z;
+        int i = pos.x;
+        int j = pos.z;
         for (int k = i - 10; k <= i + 10; ++k) {
-            for (int m = j - 10; m <= j + 10; ++m) {
-                ChunkPos chunkPos2 = StructureFeature.VILLAGE.getStartChunk(structureConfig, l, chunkRandom, k, m);
-                if (k != chunkPos2.x || m != chunkPos2.z) continue;
+            for (int l = j - 10; l <= j + 10; ++l) {
+                ChunkPos chunkPos = StructureFeature.VILLAGE.getStartChunk(structureConfig, worldSeed, random, k, l);
+                if (k != chunkPos.x || l != chunkPos.z) continue;
                 return true;
             }
         }

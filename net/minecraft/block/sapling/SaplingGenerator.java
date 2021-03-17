@@ -4,6 +4,7 @@
 package net.minecraft.block.sapling;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.server.world.ServerWorld;
@@ -24,11 +25,11 @@ public abstract class SaplingGenerator {
         if (configuredFeature == null) {
             return false;
         }
-        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 4);
+        world.setBlockState(pos, Blocks.AIR.getDefaultState(), SetBlockStateFlags.NO_REDRAW);
         if (configuredFeature.generate(world, chunkGenerator, random, pos)) {
             return true;
         }
-        world.setBlockState(pos, state, 4);
+        world.setBlockState(pos, state, SetBlockStateFlags.NO_REDRAW);
         return false;
     }
 

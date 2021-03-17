@@ -4,11 +4,12 @@
 package net.minecraft.block.entity;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.NbtTypeIds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Nameable;
@@ -38,7 +39,7 @@ implements Nameable {
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         if (this.hasCustomName()) {
             tag.putString("CustomName", Text.Serializer.toJson(this.customName));
@@ -47,9 +48,9 @@ implements Nameable {
     }
 
     @Override
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
-        if (tag.contains("CustomName", 8)) {
+        if (tag.contains("CustomName", NbtTypeIds.STRING)) {
             this.customName = Text.Serializer.fromJson(tag.getString("CustomName"));
         }
     }

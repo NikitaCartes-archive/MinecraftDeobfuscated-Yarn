@@ -5,7 +5,7 @@ package net.minecraft.world.gen.chunk;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import net.fabricmc.api.EnvType;
@@ -53,25 +53,18 @@ extends ChunkGenerator {
     }
 
     @Override
-    public int getSpawnHeight() {
-        BlockState[] blockStates = this.config.getLayerBlocks();
-        for (int i = 0; i < blockStates.length; ++i) {
-            BlockState blockState;
-            BlockState blockState2 = blockState = blockStates[i] == null ? Blocks.AIR.getDefaultState() : blockStates[i];
-            if (Heightmap.Type.MOTION_BLOCKING.getBlockPredicate().test(blockState)) continue;
-            return this.config.getBottomY() + i - 1;
-        }
-        return this.config.getBottomY() + blockStates.length;
+    public int getSpawnHeight(HeightLimitView heightLimitView) {
+        return heightLimitView.getBottomY() + Math.min(heightLimitView.getHeight(), this.config.getLayerBlocks().size());
     }
 
     @Override
     public CompletableFuture<Chunk> populateNoise(Executor executor, StructureAccessor accessor, Chunk chunk) {
-        BlockState[] blockStates = this.config.getLayerBlocks();
+        List<BlockState> list = this.config.getLayerBlocks();
         BlockPos.Mutable mutable = new BlockPos.Mutable();
         Heightmap heightmap = chunk.getHeightmap(Heightmap.Type.OCEAN_FLOOR_WG);
         Heightmap heightmap2 = chunk.getHeightmap(Heightmap.Type.WORLD_SURFACE_WG);
-        for (int i = 0; i < blockStates.length; ++i) {
-            BlockState blockState = blockStates[i];
+        for (int i = 0; i < Math.min(chunk.getHeight(), list.size()); ++i) {
+            BlockState blockState = list.get(i);
             if (blockState == null) continue;
             int j = chunk.getBottomY() + i;
             for (int k = 0; k < 16; ++k) {
@@ -87,9 +80,9 @@ extends ChunkGenerator {
 
     @Override
     public int getHeight(int x, int z, Heightmap.Type heightmap, HeightLimitView world) {
-        BlockState[] blockStates = this.config.getLayerBlocks();
-        for (int i = blockStates.length - 1; i >= 0; --i) {
-            BlockState blockState = blockStates[i];
+        List<BlockState> list = this.config.getLayerBlocks();
+        for (int i = Math.min(list.size(), world.getTopY()) - 1; i >= 0; --i) {
+            BlockState blockState = list.get(i);
             if (blockState == null || !heightmap.getBlockPredicate().test(blockState)) continue;
             return world.getBottomY() + i + 1;
         }
@@ -98,7 +91,7 @@ extends ChunkGenerator {
 
     @Override
     public VerticalBlockSample getColumnSample(int x, int z, HeightLimitView world) {
-        return new VerticalBlockSample(0, (BlockState[])Arrays.stream(this.config.getLayerBlocks()).map(state -> state == null ? Blocks.AIR.getDefaultState() : state).toArray(BlockState[]::new));
+        return new VerticalBlockSample(world.getBottomY(), (BlockState[])this.config.getLayerBlocks().stream().limit(world.getHeight()).map(state -> state == null ? Blocks.AIR.getDefaultState() : state).toArray(BlockState[]::new));
     }
 }
 

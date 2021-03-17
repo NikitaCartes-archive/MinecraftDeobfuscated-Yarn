@@ -80,6 +80,7 @@ public final class ItemTags {
     public static final Tag.Identified<Item> FREEZE_IMMUNE_WEARABLES = ItemTags.register("freeze_immune_wearables");
     public static final Tag.Identified<Item> AXOLOTL_TEMPT_ITEMS = ItemTags.register("axolotl_tempt_items");
     public static final Tag.Identified<Item> OCCLUDES_VIBRATION_SIGNALS = ItemTags.register("occludes_vibration_signals");
+    public static final Tag.Identified<Item> CLUSTER_MAX_HARVESTABLES = ItemTags.register("cluster_max_harvestables");
 
     private static Tag.Identified<Item> register(String id) {
         return REQUIRED_TAGS.add(id);

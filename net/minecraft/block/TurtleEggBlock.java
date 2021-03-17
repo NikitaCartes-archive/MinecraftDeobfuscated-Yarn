@@ -4,6 +4,8 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -75,8 +77,8 @@ extends Block {
         if (i <= 1) {
             world.breakBlock(pos, false);
         } else {
-            world.setBlockState(pos, (BlockState)state.with(EGGS, i - 1), 2);
-            world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
+            world.setBlockState(pos, (BlockState)state.with(EGGS, i - 1), SetBlockStateFlags.NOTIFY_LISTENERS);
+            world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
         }
     }
 
@@ -86,12 +88,12 @@ extends Block {
             int i = state.get(HATCH);
             if (i < 2) {
                 world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
-                world.setBlockState(pos, (BlockState)state.with(HATCH, i + 1), 2);
+                world.setBlockState(pos, (BlockState)state.with(HATCH, i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
             } else {
                 world.playSound(null, pos, SoundEvents.ENTITY_TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 0.7f, 0.9f + random.nextFloat() * 0.2f);
                 world.removeBlock(pos, false);
                 for (int j = 0; j < state.get(EGGS); ++j) {
-                    world.syncWorldEvent(2001, pos, Block.getRawIdFromState(state));
+                    world.syncWorldEvent(WorldEvents.BLOCK_BROKEN, pos, Block.getRawIdFromState(state));
                     TurtleEntity turtleEntity = EntityType.TURTLE.create(world);
                     turtleEntity.setBreedingAge(-24000);
                     turtleEntity.setHomePos(pos);
@@ -113,7 +115,7 @@ extends Block {
     @Override
     public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify) {
         if (TurtleEggBlock.isSandBelow(world, pos) && !world.isClient) {
-            world.syncWorldEvent(2005, pos, 0);
+            world.syncWorldEvent(WorldEvents.PLANT_FERTILIZED, pos, 0);
         }
     }
 

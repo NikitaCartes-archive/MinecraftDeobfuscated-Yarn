@@ -3,7 +3,9 @@
  */
 package net.minecraft.util.thread;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Queues;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -12,12 +14,18 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.class_5948;
+import net.minecraft.class_5949;
+import net.minecraft.class_5950;
+import net.minecraft.class_5951;
+import net.minecraft.class_5952;
 import net.minecraft.util.thread.MessageListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public abstract class ThreadExecutor<R extends Runnable>
-implements MessageListener<R>,
+implements class_5952,
+MessageListener<R>,
 Executor {
     private final String name;
     private static final Logger LOGGER = LogManager.getLogger();
@@ -26,6 +34,7 @@ Executor {
 
     protected ThreadExecutor(String name) {
         this.name = name;
+        class_5950.field_29555.method_34702(this);
     }
 
     protected abstract R createTask(Runnable var1);
@@ -142,6 +151,12 @@ Executor {
         } catch (Exception exception) {
             LOGGER.fatal("Error executing task on {}", (Object)this.getName(), (Object)exception);
         }
+    }
+
+    @Override
+    @Environment(value=EnvType.CLIENT)
+    public List<class_5948> method_34705() {
+        return ImmutableList.of(new class_5948(new class_5951(this.name + "-tasks-pending"), this::getTaskCount, class_5949.field_29551));
     }
 
     @Override

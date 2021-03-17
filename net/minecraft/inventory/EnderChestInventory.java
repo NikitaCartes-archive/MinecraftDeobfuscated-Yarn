@@ -7,8 +7,8 @@ import net.minecraft.block.entity.EnderChestBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
 import org.jetbrains.annotations.Nullable;
 
 public class EnderChestInventory
@@ -29,31 +29,31 @@ extends SimpleInventory {
     }
 
     @Override
-    public void readTags(ListTag tags) {
+    public void readTags(NbtList tags) {
         int i;
         for (i = 0; i < this.size(); ++i) {
             this.setStack(i, ItemStack.EMPTY);
         }
         for (i = 0; i < tags.size(); ++i) {
-            CompoundTag compoundTag = tags.getCompound(i);
-            int j = compoundTag.getByte("Slot") & 0xFF;
+            NbtCompound nbtCompound = tags.getCompound(i);
+            int j = nbtCompound.getByte("Slot") & 0xFF;
             if (j < 0 || j >= this.size()) continue;
-            this.setStack(j, ItemStack.fromNbt(compoundTag));
+            this.setStack(j, ItemStack.fromNbt(nbtCompound));
         }
     }
 
     @Override
-    public ListTag getTags() {
-        ListTag listTag = new ListTag();
+    public NbtList getTags() {
+        NbtList nbtList = new NbtList();
         for (int i = 0; i < this.size(); ++i) {
             ItemStack itemStack = this.getStack(i);
             if (itemStack.isEmpty()) continue;
-            CompoundTag compoundTag = new CompoundTag();
-            compoundTag.putByte("Slot", (byte)i);
-            itemStack.writeNbt(compoundTag);
-            listTag.add(compoundTag);
+            NbtCompound nbtCompound = new NbtCompound();
+            nbtCompound.putByte("Slot", (byte)i);
+            itemStack.writeNbt(nbtCompound);
+            nbtList.add(nbtCompound);
         }
-        return listTag;
+        return nbtList;
     }
 
     @Override

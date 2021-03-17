@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.List;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -107,7 +108,7 @@ extends WallMountedBlock {
     }
 
     public void powerOn(BlockState state, World world, BlockPos pos) {
-        world.setBlockState(pos, (BlockState)state.with(POWERED, true), 3);
+        world.setBlockState(pos, (BlockState)state.with(POWERED, true), SetBlockStateFlags.DEFAULT);
         this.updateNeighbors(state, world, pos);
         world.getBlockTickScheduler().schedule(pos, this, this.getPressTicks());
     }
@@ -155,7 +156,7 @@ extends WallMountedBlock {
         if (this.wooden) {
             this.tryPowerWithProjectiles(state, world, pos);
         } else {
-            world.setBlockState(pos, (BlockState)state.with(POWERED, false), 3);
+            world.setBlockState(pos, (BlockState)state.with(POWERED, false), SetBlockStateFlags.DEFAULT);
             this.updateNeighbors(state, world, pos);
             this.playClickSound(null, world, pos, false);
             world.emitGameEvent(GameEvent.BLOCK_UNPRESS, pos);
@@ -175,7 +176,7 @@ extends WallMountedBlock {
         List<PersistentProjectileEntity> list = world.getNonSpectatingEntities(PersistentProjectileEntity.class, state.getOutlineShape(world, pos).getBoundingBox().offset(pos));
         boolean bl = !list.isEmpty();
         if (bl != (bl2 = state.get(POWERED).booleanValue())) {
-            world.setBlockState(pos, (BlockState)state.with(POWERED, bl), 3);
+            world.setBlockState(pos, (BlockState)state.with(POWERED, bl), SetBlockStateFlags.DEFAULT);
             this.updateNeighbors(state, world, pos);
             this.playClickSound(null, world, pos, bl);
             world.emitGameEvent((Entity)list.stream().findFirst().orElse(null), bl ? GameEvent.BLOCK_PRESS : GameEvent.BLOCK_UNPRESS, pos);

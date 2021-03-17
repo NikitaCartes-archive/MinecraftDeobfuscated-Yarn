@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -162,7 +163,7 @@ extends Block {
     @Override
     public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
         if (!world.isClient()) {
-            world.syncWorldEvent(null, 1009, pos, 0);
+            world.syncWorldEvent(null, WorldEvents.FIRE_EXTINGUISHED, pos, 0);
         }
         super.onBreak(world, pos, state, player);
     }

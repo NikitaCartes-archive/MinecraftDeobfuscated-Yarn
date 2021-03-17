@@ -14,7 +14,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -126,15 +126,15 @@ StructureHolder {
         Chunk.getList(this.getPostProcessingLists(), index).add(packedPos);
     }
 
-    default public void addPendingBlockEntityNbt(CompoundTag tag) {
+    default public void addPendingBlockEntityNbt(NbtCompound tag) {
         LogManager.getLogger().warn("Trying to set a BlockEntity, but this operation is not supported.");
     }
 
     @Nullable
-    public CompoundTag getBlockEntityNbt(BlockPos var1);
+    public NbtCompound getBlockEntityNbt(BlockPos var1);
 
     @Nullable
-    public CompoundTag getPackedBlockEntityNbt(BlockPos var1);
+    public NbtCompound getPackedBlockEntityNbt(BlockPos var1);
 
     public Stream<BlockPos> getLightSourcesStream();
 

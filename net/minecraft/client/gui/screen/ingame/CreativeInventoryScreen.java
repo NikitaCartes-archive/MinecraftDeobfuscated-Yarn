@@ -56,6 +56,7 @@ import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.registry.Registry;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class CreativeInventoryScreen
@@ -310,7 +311,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
             }
             return true;
         }
-        if (this.searchBox.isFocused() && this.searchBox.isVisible() && keyCode != 256) {
+        if (this.searchBox.isFocused() && this.searchBox.isVisible() && keyCode != GLFW.GLFW_KEY_ESCAPE) {
             return true;
         }
         return super.keyPressed(keyCode, scanCode, modifiers);
@@ -585,12 +586,12 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         ItemGroup itemGroup = ItemGroup.GROUPS[selectedTab];
         for (ItemGroup itemGroup2 : ItemGroup.GROUPS) {
-            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderTexture(0, TEXTURE);
             if (itemGroup2.getIndex() == selectedTab) continue;
             this.renderTabIcon(matrices, itemGroup2);
         }
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, new Identifier("textures/gui/container/creative_inventory/tab_" + itemGroup.getTexture()));
         this.drawTexture(matrices, this.x, this.y, 0, 0, this.backgroundWidth, this.backgroundHeight);
         this.searchBox.render(matrices, mouseX, mouseY, delta);
@@ -598,7 +599,7 @@ extends AbstractInventoryScreen<CreativeScreenHandler> {
         int i = this.x + 175;
         int j = this.y + 18;
         int k = j + 112;
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, TEXTURE);
         if (itemGroup.hasScrollbar()) {
             this.drawTexture(matrices, i, j + (int)((float)(k - j - 17) * this.scrollPosition), 232 + (this.hasScrollbar() ? 0 : 12), 0, 12, 15);

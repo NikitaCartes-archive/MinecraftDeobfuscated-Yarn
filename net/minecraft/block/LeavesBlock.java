@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -55,7 +56,7 @@ extends Block {
 
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        world.setBlockState(pos, LeavesBlock.updateDistanceFromLogs(state, world, pos), 3);
+        world.setBlockState(pos, LeavesBlock.updateDistanceFromLogs(state, world, pos), SetBlockStateFlags.DEFAULT);
     }
 
     @Override

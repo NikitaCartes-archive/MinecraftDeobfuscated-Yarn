@@ -8,6 +8,7 @@ import java.util.EnumSet;
 import java.util.List;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.WorldEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityDimensions;
@@ -31,7 +32,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.CatEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.sound.SoundCategory;
@@ -153,14 +154,14 @@ implements Monster {
     }
 
     @Override
-    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable CompoundTag entityTag) {
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason, @Nullable EntityData entityData, @Nullable NbtCompound entityTag) {
         this.circlingCenter = this.getBlockPos().up(5);
         this.setPhantomSize(0);
         return super.initialize(world, difficulty, spawnReason, entityData, entityTag);
     }
 
     @Override
-    public void readCustomDataFromNbt(CompoundTag tag) {
+    public void readCustomDataFromNbt(NbtCompound tag) {
         super.readCustomDataFromNbt(tag);
         if (tag.contains("AX")) {
             this.circlingCenter = new BlockPos(tag.getInt("AX"), tag.getInt("AY"), tag.getInt("AZ"));
@@ -169,7 +170,7 @@ implements Monster {
     }
 
     @Override
-    public void writeCustomDataToNbt(CompoundTag tag) {
+    public void writeCustomDataToNbt(NbtCompound tag) {
         super.writeCustomDataToNbt(tag);
         tag.putInt("AX", this.circlingCenter.getX());
         tag.putInt("AY", this.circlingCenter.getY());
@@ -365,7 +366,7 @@ implements Monster {
                 PhantomEntity.this.tryAttack(livingEntity);
                 PhantomEntity.this.movementType = PhantomMovementType.CIRCLE;
                 if (!PhantomEntity.this.isSilent()) {
-                    PhantomEntity.this.world.syncWorldEvent(1039, PhantomEntity.this.getBlockPos(), 0);
+                    PhantomEntity.this.world.syncWorldEvent(WorldEvents.PHANTOM_BITES, PhantomEntity.this.getBlockPos(), 0);
                 }
             } else if (PhantomEntity.this.horizontalCollision || PhantomEntity.this.hurtTime > 0) {
                 PhantomEntity.this.movementType = PhantomMovementType.CIRCLE;

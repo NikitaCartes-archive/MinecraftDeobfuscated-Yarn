@@ -44,6 +44,7 @@ import org.apache.commons.lang3.Validate;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class MultiplayerServerListWidget
@@ -203,7 +204,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
                 text2 = PINGING_TEXT;
                 list2 = Collections.emptyList();
             }
-            RenderSystem.setShader(GameRenderer::method_34542);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
             DrawableHelper.drawTexture(matrices, x + entryWidth - 15, y, k * 10, 176 + l * 8, 10, 8, 256, 256);
@@ -231,7 +232,7 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             if (this.client.options.touchscreen || hovered) {
                 RenderSystem.setShaderTexture(0, SERVER_SELECTION_TEXTURE);
                 DrawableHelper.fill(matrices, x, y, x + 32, y + 32, -1601138544);
-                RenderSystem.setShader(GameRenderer::method_34542);
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
                 RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
                 int o = mouseX - x;
                 int p = mouseY - y;
@@ -306,8 +307,8 @@ extends AlwaysSelectedEntryListWidget<Entry> {
             if (Screen.hasShiftDown()) {
                 MultiplayerServerListWidget multiplayerServerListWidget = this.screen.serverListWidget;
                 int i = multiplayerServerListWidget.children().indexOf(this);
-                if (keyCode == 264 && i < this.screen.getServerList().size() - 1 || keyCode == 265 && i > 0) {
-                    this.swapEntries(i, keyCode == 264 ? i + 1 : i - 1);
+                if (keyCode == GLFW.GLFW_KEY_DOWN && i < this.screen.getServerList().size() - 1 || keyCode == GLFW.GLFW_KEY_UP && i > 0) {
+                    this.swapEntries(i, keyCode == GLFW.GLFW_KEY_DOWN ? i + 1 : i - 1);
                     return true;
                 }
             }

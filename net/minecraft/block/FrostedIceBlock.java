@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.Random;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -53,7 +54,7 @@ extends IceBlock {
     private boolean increaseAge(BlockState state, World world, BlockPos pos) {
         int i = state.get(AGE);
         if (i < 3) {
-            world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), 2);
+            world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
             return false;
         }
         this.melt(state, world, pos);

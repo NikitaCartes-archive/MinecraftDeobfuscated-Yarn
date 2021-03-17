@@ -112,7 +112,7 @@ public abstract class DynamicRegistryManager {
         for (Info<?> info : INFOS.values()) {
             DynamicRegistryManager.method_31141(impl, impl2, info);
         }
-        RegistryOps.of(JsonOps.INSTANCE, impl2, impl);
+        RegistryOps.of(JsonOps.INSTANCE, impl2, (DynamicRegistryManager)impl);
         return impl;
     }
 
@@ -157,9 +157,9 @@ public abstract class DynamicRegistryManager {
     /**
      * Loads a dynamic registry manager from the resource manager's data files.
      */
-    public static void load(Impl registryManager, RegistryOps<?> registryOps) {
+    public static void load(DynamicRegistryManager dynamicRegistryManager, RegistryOps<?> registryOps) {
         for (Info<?> info : INFOS.values()) {
-            DynamicRegistryManager.load(registryOps, registryManager, info);
+            DynamicRegistryManager.load(registryOps, dynamicRegistryManager, info);
         }
     }
 
@@ -168,10 +168,10 @@ public abstract class DynamicRegistryManager {
      * info} within the {@code manager}. Note that the resource manager instance
      * is kept within the {@code ops}.
      */
-    private static <E> void load(RegistryOps<?> ops, Impl manager, Info<E> info) {
-        RegistryKey registryKey = info.getRegistry();
-        SimpleRegistry simpleRegistry2 = Optional.ofNullable(manager.registries.get(registryKey)).map(simpleRegistry -> simpleRegistry).orElseThrow(() -> new IllegalStateException("Missing registry: " + registryKey));
-        DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry2, info.getRegistry(), info.getEntryCodec());
+    private static <E> void load(RegistryOps<?> ops, DynamicRegistryManager dynamicRegistryManager, Info<E> info) {
+        RegistryKey<Registry<E>> registryKey = info.getRegistry();
+        SimpleRegistry simpleRegistry = (SimpleRegistry)dynamicRegistryManager.getMutable(registryKey);
+        DataResult<SimpleRegistry<E>> dataResult = ops.loadToRegistry(simpleRegistry, info.getRegistry(), info.getEntryCodec());
         dataResult.error().ifPresent(partialResult -> LOGGER.error("Error loading registry data: {}", (Object)partialResult.message()));
     }
 

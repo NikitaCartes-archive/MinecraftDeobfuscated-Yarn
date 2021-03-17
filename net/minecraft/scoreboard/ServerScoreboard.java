@@ -8,7 +8,7 @@ import com.google.common.collect.Sets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.Packet;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.network.packet.s2c.play.ScoreboardObjectiveUpdateS2CPacket;
@@ -209,7 +209,7 @@ extends Scoreboard {
         return scoreboardState;
     }
 
-    public ScoreboardState stateFromNbt(CompoundTag nbt) {
+    public ScoreboardState stateFromNbt(NbtCompound nbt) {
         return this.createState().readNbt(nbt);
     }
 

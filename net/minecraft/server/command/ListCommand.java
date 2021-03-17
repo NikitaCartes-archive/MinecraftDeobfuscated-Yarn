@@ -19,7 +19,7 @@ import net.minecraft.text.TranslatableText;
 
 public class ListCommand {
     public static void register(CommandDispatcher<ServerCommandSource> dispatcher) {
-        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("list").executes(commandContext -> ListCommand.executeNames((ServerCommandSource)commandContext.getSource()))).then(CommandManager.literal("uuids").executes(commandContext -> ListCommand.executeUuids((ServerCommandSource)commandContext.getSource()))));
+        dispatcher.register((LiteralArgumentBuilder)((LiteralArgumentBuilder)CommandManager.literal("list").executes(context -> ListCommand.executeNames((ServerCommandSource)context.getSource()))).then(CommandManager.literal("uuids").executes(context -> ListCommand.executeUuids((ServerCommandSource)context.getSource()))));
     }
 
     private static int executeNames(ServerCommandSource source) {

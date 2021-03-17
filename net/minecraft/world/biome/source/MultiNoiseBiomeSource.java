@@ -108,7 +108,7 @@ extends BiomeSource {
 
     public static class Preset {
         private static final Map<Identifier, Preset> BY_IDENTIFIER = Maps.newHashMap();
-        public static final Preset NETHER = new Preset(new Identifier("nether"), (preset, registry, long_) -> new MultiNoiseBiomeSource((long)long_, ImmutableList.of(Pair.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.NETHER_WASTES)), Pair.of(new Biome.MixedNoisePoint(0.0f, -0.5f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(new Biome.MixedNoisePoint(0.4f, 0.0f, 0.0f, 0.0f, 0.0f), () -> registry.getOrThrow(BiomeKeys.CRIMSON_FOREST)), Pair.of(new Biome.MixedNoisePoint(0.0f, 0.5f, 0.0f, 0.0f, 0.375f), () -> registry.getOrThrow(BiomeKeys.WARPED_FOREST)), Pair.of(new Biome.MixedNoisePoint(-0.5f, 0.0f, 0.0f, 0.0f, 0.175f), () -> registry.getOrThrow(BiomeKeys.BASALT_DELTAS))), Optional.of(Pair.of(registry, preset))));
+        public static final Preset NETHER = new Preset(new Identifier("nether"), (preset, biomeRegistry, seed) -> new MultiNoiseBiomeSource((long)seed, ImmutableList.of(Pair.of(new Biome.MixedNoisePoint(0.0f, 0.0f, 0.0f, 0.0f, 0.0f), () -> biomeRegistry.getOrThrow(BiomeKeys.NETHER_WASTES)), Pair.of(new Biome.MixedNoisePoint(0.0f, -0.5f, 0.0f, 0.0f, 0.0f), () -> biomeRegistry.getOrThrow(BiomeKeys.SOUL_SAND_VALLEY)), Pair.of(new Biome.MixedNoisePoint(0.4f, 0.0f, 0.0f, 0.0f, 0.0f), () -> biomeRegistry.getOrThrow(BiomeKeys.CRIMSON_FOREST)), Pair.of(new Biome.MixedNoisePoint(0.0f, 0.5f, 0.0f, 0.0f, 0.375f), () -> biomeRegistry.getOrThrow(BiomeKeys.WARPED_FOREST)), Pair.of(new Biome.MixedNoisePoint(-0.5f, 0.0f, 0.0f, 0.0f, 0.175f), () -> biomeRegistry.getOrThrow(BiomeKeys.BASALT_DELTAS))), Optional.of(Pair.of(biomeRegistry, preset))));
         private final Identifier id;
         private final Function3<Preset, Registry<Biome>, Long, MultiNoiseBiomeSource> biomeSourceFunction;
 
@@ -124,7 +124,7 @@ extends BiomeSource {
     }
 
     static final class Instance {
-        public static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(identifier -> Optional.ofNullable(Preset.BY_IDENTIFIER.get(identifier)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + identifier)), preset -> DataResult.success(((Preset)preset).id)).fieldOf("preset")).stable().forGetter(Instance::getPreset), RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(Instance::getBiomeRegistry), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(Instance::getSeed)).apply((Applicative<Instance, ?>)instance, instance.stable(Instance::new)));
+        public static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(((MapCodec)Identifier.CODEC.flatXmap(id -> Optional.ofNullable(Preset.BY_IDENTIFIER.get(id)).map(DataResult::success).orElseGet(() -> DataResult.error("Unknown preset: " + id)), preset -> DataResult.success(((Preset)preset).id)).fieldOf("preset")).stable().forGetter(Instance::getPreset), RegistryLookupCodec.of(Registry.BIOME_KEY).forGetter(Instance::getBiomeRegistry), ((MapCodec)Codec.LONG.fieldOf("seed")).stable().forGetter(Instance::getSeed)).apply((Applicative<Instance, ?>)instance, instance.stable(Instance::new)));
         private final Preset preset;
         private final Registry<Biome> biomeRegistry;
         private final long seed;

@@ -36,7 +36,7 @@ public class InGameOverlayRenderer {
         BlockState blockState;
         ClientPlayerEntity playerEntity = client.player;
         if (!playerEntity.noClip && (blockState = InGameOverlayRenderer.getInWallBlockState(playerEntity)) != null) {
-            InGameOverlayRenderer.renderInWallOverlay(client, client.getBlockRenderManager().getModels().getSprite(blockState), matrices);
+            InGameOverlayRenderer.renderInWallOverlay(client.getBlockRenderManager().getModels().getSprite(blockState), matrices);
         }
         if (!client.player.isSpectator()) {
             if (client.player.isSubmergedIn(FluidTags.WATER)) {
@@ -63,8 +63,9 @@ public class InGameOverlayRenderer {
         return null;
     }
 
-    private static void renderInWallOverlay(MinecraftClient client, Sprite sprite, MatrixStack matrices) {
+    private static void renderInWallOverlay(Sprite sprite, MatrixStack matrixStack) {
         RenderSystem.setShaderTexture(0, sprite.getAtlas().getId());
+        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
         float f = 0.1f;
         float g = -1.0f;
@@ -76,7 +77,7 @@ public class InGameOverlayRenderer {
         float m = sprite.getMaxU();
         float n = sprite.getMinV();
         float o = sprite.getMaxV();
-        Matrix4f matrix4f = matrices.peek().getModel();
+        Matrix4f matrix4f = matrixStack.peek().getModel();
         bufferBuilder.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_COLOR_TEXTURE);
         bufferBuilder.vertex(matrix4f, -1.0f, -1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(m, o).next();
         bufferBuilder.vertex(matrix4f, 1.0f, -1.0f, -0.5f).color(0.1f, 0.1f, 0.1f, 1.0f).texture(l, o).next();
@@ -87,7 +88,7 @@ public class InGameOverlayRenderer {
     }
 
     private static void renderUnderwaterOverlay(MinecraftClient minecraftClient, MatrixStack matrixStack) {
-        RenderSystem.setShader(GameRenderer::method_34542);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.enableTexture();
         RenderSystem.setShaderTexture(0, UNDERWATER_TEXTURE);
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
@@ -116,7 +117,7 @@ public class InGameOverlayRenderer {
 
     private static void renderFireOverlay(MinecraftClient client, MatrixStack matrices) {
         BufferBuilder bufferBuilder = Tessellator.getInstance().getBuffer();
-        RenderSystem.setShader(GameRenderer::method_34541);
+        RenderSystem.setShader(GameRenderer::getPositionColorTexShader);
         RenderSystem.depthFunc(519);
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();

@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -55,11 +56,11 @@ implements Fertilizable {
             break;
         }
         if (bl2 && bl) {
-            world.setBlockState(pos, random.nextBoolean() ? Blocks.WARPED_NYLIUM.getDefaultState() : Blocks.CRIMSON_NYLIUM.getDefaultState(), 3);
+            world.setBlockState(pos, random.nextBoolean() ? Blocks.WARPED_NYLIUM.getDefaultState() : Blocks.CRIMSON_NYLIUM.getDefaultState(), SetBlockStateFlags.DEFAULT);
         } else if (bl2) {
-            world.setBlockState(pos, Blocks.WARPED_NYLIUM.getDefaultState(), 3);
+            world.setBlockState(pos, Blocks.WARPED_NYLIUM.getDefaultState(), SetBlockStateFlags.DEFAULT);
         } else if (bl) {
-            world.setBlockState(pos, Blocks.CRIMSON_NYLIUM.getDefaultState(), 3);
+            world.setBlockState(pos, Blocks.CRIMSON_NYLIUM.getDefaultState(), SetBlockStateFlags.DEFAULT);
         }
     }
 }

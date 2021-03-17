@@ -4,6 +4,7 @@
 package net.minecraft.block;
 
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -50,7 +51,7 @@ implements Fertilizable {
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         int i;
         if (world.random.nextInt(5) == 0 && (i = state.get(AGE).intValue()) < 2) {
-            world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), 2);
+            world.setBlockState(pos, (BlockState)state.with(AGE, i + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
         }
     }
 
@@ -111,7 +112,7 @@ implements Fertilizable {
 
     @Override
     public void grow(ServerWorld world, Random random, BlockPos pos, BlockState state) {
-        world.setBlockState(pos, (BlockState)state.with(AGE, state.get(AGE) + 1), 2);
+        world.setBlockState(pos, (BlockState)state.with(AGE, state.get(AGE) + 1), SetBlockStateFlags.NOTIFY_LISTENERS);
     }
 
     @Override

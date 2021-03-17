@@ -156,14 +156,18 @@ implements ReadableProfiler {
         return new ProfileResultImpl(this.locationInfos, this.startTime, this.startTick, this.timeGetter.getAsLong(), this.endTickGetter.getAsInt());
     }
 
-    static class LocatedInfo
+    @Override
+    @Nullable
+    @Environment(value=EnvType.CLIENT)
+    public LocatedInfo method_34696(String string) {
+        return this.locationInfos.get(string);
+    }
+
+    public static class LocatedInfo
     implements ProfileLocationInfo {
         private long time;
         private long visits;
         private final Object2LongOpenHashMap<String> counts = new Object2LongOpenHashMap();
-
-        private LocatedInfo() {
-        }
 
         @Override
         public long getTotalTime() {

@@ -10,6 +10,8 @@ import java.util.Objects;
 import java.util.Optional;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.NbtTypeIds;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FluidBlock;
@@ -24,7 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.stat.Stats;
 import net.minecraft.util.ActionResult;
@@ -72,7 +74,7 @@ extends Item {
             EntityType<?> entityType = this.getEntityType(itemStack.getTag());
             mobSpawnerLogic.setEntityId(entityType);
             blockEntity.markDirty();
-            world.updateListeners(blockPos, blockState, blockState, 3);
+            world.updateListeners(blockPos, blockState, blockState, SetBlockStateFlags.DEFAULT);
             itemStack.decrement(1);
             return ActionResult.CONSUME;
         }
@@ -115,7 +117,7 @@ extends Item {
         return TypedActionResult.consume(itemStack);
     }
 
-    public boolean isOfSameEntityType(@Nullable CompoundTag tag, EntityType<?> type) {
+    public boolean isOfSameEntityType(@Nullable NbtCompound tag, EntityType<?> type) {
         return Objects.equals(this.getEntityType(tag), type);
     }
 
@@ -134,10 +136,10 @@ extends Item {
         return Iterables.unmodifiableIterable(SPAWN_EGGS.values());
     }
 
-    public EntityType<?> getEntityType(@Nullable CompoundTag tag) {
-        CompoundTag compoundTag;
-        if (tag != null && tag.contains("EntityTag", 10) && (compoundTag = tag.getCompound("EntityTag")).contains("id", 8)) {
-            return EntityType.get(compoundTag.getString("id")).orElse(this.type);
+    public EntityType<?> getEntityType(@Nullable NbtCompound tag) {
+        NbtCompound nbtCompound;
+        if (tag != null && tag.contains("EntityTag", NbtTypeIds.COMPOUND) && (nbtCompound = tag.getCompound("EntityTag")).contains("id", NbtTypeIds.STRING)) {
+            return EntityType.get(nbtCompound.getString("id")).orElse(this.type);
         }
         return this.type;
     }

@@ -6,6 +6,7 @@ package net.minecraft.block;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Predicate;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.AbstractRailBlock;
 import net.minecraft.block.Block;
@@ -92,7 +93,7 @@ extends AbstractRailBlock {
         }
         if (bl2 && !bl) {
             blockState = (BlockState)state.with(POWERED, true);
-            world.setBlockState(pos, blockState, 3);
+            world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
             this.updateNearbyRails(world, pos, blockState, true);
             world.updateNeighborsAlways(pos, this);
             world.updateNeighborsAlways(pos.down(), this);
@@ -100,7 +101,7 @@ extends AbstractRailBlock {
         }
         if (!bl2 && bl) {
             blockState = (BlockState)state.with(POWERED, false);
-            world.setBlockState(pos, blockState, 3);
+            world.setBlockState(pos, blockState, SetBlockStateFlags.DEFAULT);
             this.updateNearbyRails(world, pos, blockState, false);
             world.updateNeighborsAlways(pos, this);
             world.updateNeighborsAlways(pos.down(), this);

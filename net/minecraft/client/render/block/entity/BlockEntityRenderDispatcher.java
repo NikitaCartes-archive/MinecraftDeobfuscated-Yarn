@@ -23,7 +23,7 @@ import net.minecraft.client.render.block.entity.BlockEntityRendererFactory;
 import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.resource.ResourceManager;
-import net.minecraft.resource.SynchronousResourceReloadListener;
+import net.minecraft.resource.SynchronousResourceReloader;
 import net.minecraft.util.crash.CrashException;
 import net.minecraft.util.crash.CrashReport;
 import net.minecraft.util.crash.CrashReportSection;
@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(value=EnvType.CLIENT)
 public class BlockEntityRenderDispatcher
-implements SynchronousResourceReloadListener {
+implements SynchronousResourceReloader {
     private Map<BlockEntityType<?>, BlockEntityRenderer<?>> renderers = ImmutableMap.of();
     private final BufferBuilder bufferBuilder = new BufferBuilder(256);
     private final TextRenderer textRenderer;
@@ -110,7 +110,7 @@ implements SynchronousResourceReloadListener {
     }
 
     @Override
-    public void apply(ResourceManager manager) {
+    public void reload(ResourceManager manager) {
         BlockEntityRendererFactory.Context context = new BlockEntityRendererFactory.Context(this, this.field_27747.get(), this.entityModelLoader, this.textRenderer);
         this.renderers = BlockEntityRendererFactories.reload(context);
     }

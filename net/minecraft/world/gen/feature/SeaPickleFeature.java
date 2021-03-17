@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SeaPickleBlock;
@@ -35,7 +36,7 @@ extends Feature<CountConfig> {
             BlockPos blockPos2 = new BlockPos(blockPos.getX() + l, n, blockPos.getZ() + m);
             BlockState blockState = (BlockState)Blocks.SEA_PICKLE.getDefaultState().with(SeaPickleBlock.PICKLES, random.nextInt(4) + 1);
             if (!structureWorldAccess.getBlockState(blockPos2).isOf(Blocks.WATER) || !blockState.canPlaceAt(structureWorldAccess, blockPos2)) continue;
-            structureWorldAccess.setBlockState(blockPos2, blockState, 2);
+            structureWorldAccess.setBlockState(blockPos2, blockState, SetBlockStateFlags.NOTIFY_LISTENERS);
             ++i;
         }
         return i > 0;

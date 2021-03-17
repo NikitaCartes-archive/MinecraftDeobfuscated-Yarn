@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import java.util.Random;
 import java.util.function.Supplier;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -53,7 +54,7 @@ implements Fertilizable {
                 blockPos2 = pos.add(random.nextInt(3) - 1, random.nextInt(2) - random.nextInt(2), random.nextInt(3) - 1);
             }
             if (world.isAir(blockPos2) && state.canPlaceAt(world, blockPos2)) {
-                world.setBlockState(blockPos2, state, 2);
+                world.setBlockState(blockPos2, state, SetBlockStateFlags.NOTIFY_LISTENERS);
             }
         }
     }
@@ -78,7 +79,7 @@ implements Fertilizable {
         if (this.feature.get().generate(world, world.getChunkManager().getChunkGenerator(), random, pos)) {
             return true;
         }
-        world.setBlockState(pos, state, 3);
+        world.setBlockState(pos, state, SetBlockStateFlags.DEFAULT);
         return false;
     }
 

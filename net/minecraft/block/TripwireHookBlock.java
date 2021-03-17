@@ -5,6 +5,7 @@ package net.minecraft.block;
 
 import com.google.common.base.MoreObjects;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -139,13 +140,13 @@ extends Block {
         if (j > 0) {
             blockPos = pos.offset(direction, j);
             Direction direction2 = direction.getOpposite();
-            world.setBlockState(blockPos, (BlockState)blockState3.with(FACING, direction2), 3);
+            world.setBlockState(blockPos, (BlockState)blockState3.with(FACING, direction2), SetBlockStateFlags.DEFAULT);
             this.updateNeighborsOnAxis(world, blockPos, direction2);
             this.playSound(world, blockPos, bl4, bl5, bl2, bl3);
         }
         this.playSound(world, pos, bl4, bl5, bl2, bl3);
         if (!beingRemoved) {
-            world.setBlockState(pos, (BlockState)blockState3.with(FACING, direction), 3);
+            world.setBlockState(pos, (BlockState)blockState3.with(FACING, direction), SetBlockStateFlags.DEFAULT);
             if (bl) {
                 this.updateNeighborsOnAxis(world, pos, direction);
             }
@@ -155,7 +156,7 @@ extends Block {
                 BlockPos blockPos2 = pos.offset(direction, l);
                 BlockState blockState4 = blockStates[l];
                 if (blockState4 == null) continue;
-                world.setBlockState(blockPos2, (BlockState)blockState4.with(ATTACHED, bl4), 3);
+                world.setBlockState(blockPos2, (BlockState)blockState4.with(ATTACHED, bl4), SetBlockStateFlags.DEFAULT);
                 if (world.getBlockState(blockPos2).isAir()) continue;
             }
         }

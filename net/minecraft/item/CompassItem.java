@@ -12,10 +12,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.item.Items;
 import net.minecraft.item.Vanishable;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.nbt.Tag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -37,8 +37,8 @@ implements Vanishable {
     }
 
     public static boolean hasLodestone(ItemStack stack) {
-        CompoundTag compoundTag = stack.getTag();
-        return compoundTag != null && (compoundTag.contains("LodestoneDimension") || compoundTag.contains("LodestonePos"));
+        NbtCompound nbtCompound = stack.getTag();
+        return nbtCompound != null && (nbtCompound.contains("LodestoneDimension") || nbtCompound.contains("LodestonePos"));
     }
 
     @Override
@@ -46,7 +46,7 @@ implements Vanishable {
         return CompassItem.hasLodestone(stack) || super.hasGlint(stack);
     }
 
-    public static Optional<RegistryKey<World>> getLodestoneDimension(CompoundTag tag) {
+    public static Optional<RegistryKey<World>> getLodestoneDimension(NbtCompound tag) {
         return World.CODEC.parse(NbtOps.INSTANCE, tag.get("LodestoneDimension")).result();
     }
 
@@ -57,13 +57,13 @@ implements Vanishable {
         }
         if (CompassItem.hasLodestone(stack)) {
             BlockPos blockPos;
-            CompoundTag compoundTag = stack.getOrCreateTag();
-            if (compoundTag.contains("LodestoneTracked") && !compoundTag.getBoolean("LodestoneTracked")) {
+            NbtCompound nbtCompound = stack.getOrCreateTag();
+            if (nbtCompound.contains("LodestoneTracked") && !nbtCompound.getBoolean("LodestoneTracked")) {
                 return;
             }
-            Optional<RegistryKey<World>> optional = CompassItem.getLodestoneDimension(compoundTag);
-            if (optional.isPresent() && optional.get() == world.getRegistryKey() && compoundTag.contains("LodestonePos") && (!world.isInBuildLimit(blockPos = NbtHelper.toBlockPos(compoundTag.getCompound("LodestonePos"))) || !((ServerWorld)world).getPointOfInterestStorage().hasTypeAt(PointOfInterestType.LODESTONE, blockPos))) {
-                compoundTag.remove("LodestonePos");
+            Optional<RegistryKey<World>> optional = CompassItem.getLodestoneDimension(nbtCompound);
+            if (optional.isPresent() && optional.get() == world.getRegistryKey() && nbtCompound.contains("LodestonePos") && (!world.isInBuildLimit(blockPos = NbtHelper.toBlockPos(nbtCompound.getCompound("LodestonePos"))) || !((ServerWorld)world).getPointOfInterestStorage().hasTypeAt(PointOfInterestType.LODESTONE, blockPos))) {
+                nbtCompound.remove("LodestonePos");
             }
         }
     }
@@ -82,12 +82,12 @@ implements Vanishable {
                 this.writeToNbt(world.getRegistryKey(), blockPos, itemStack.getOrCreateTag());
             } else {
                 ItemStack itemStack2 = new ItemStack(Items.COMPASS, 1);
-                CompoundTag compoundTag = itemStack.hasTag() ? itemStack.getTag().copy() : new CompoundTag();
-                itemStack2.setTag(compoundTag);
+                NbtCompound nbtCompound = itemStack.hasTag() ? itemStack.getTag().copy() : new NbtCompound();
+                itemStack2.setTag(nbtCompound);
                 if (!playerEntity.getAbilities().creativeMode) {
                     itemStack.decrement(1);
                 }
-                this.writeToNbt(world.getRegistryKey(), blockPos, compoundTag);
+                this.writeToNbt(world.getRegistryKey(), blockPos, nbtCompound);
                 if (!playerEntity.getInventory().insertStack(itemStack2)) {
                     playerEntity.dropItem(itemStack2, false);
                 }
@@ -97,10 +97,10 @@ implements Vanishable {
         return super.useOnBlock(context);
     }
 
-    private void writeToNbt(RegistryKey<World> worldKey, BlockPos pos, CompoundTag tag2) {
-        tag2.put("LodestonePos", NbtHelper.fromBlockPos(pos));
-        World.CODEC.encodeStart(NbtOps.INSTANCE, worldKey).resultOrPartial(LOGGER::error).ifPresent(tag -> tag2.put("LodestoneDimension", (Tag)tag));
-        tag2.putBoolean("LodestoneTracked", true);
+    private void writeToNbt(RegistryKey<World> worldKey, BlockPos pos, NbtCompound tag) {
+        tag.put("LodestonePos", NbtHelper.fromBlockPos(pos));
+        World.CODEC.encodeStart(NbtOps.INSTANCE, worldKey).resultOrPartial(LOGGER::error).ifPresent(nbtElement -> tag.put("LodestoneDimension", (NbtElement)nbtElement));
+        tag.putBoolean("LodestoneTracked", true);
     }
 
     @Override

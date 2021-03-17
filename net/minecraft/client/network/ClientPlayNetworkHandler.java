@@ -30,6 +30,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BannerBlockEntity;
@@ -127,7 +128,7 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapState;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkThreadUtils;
 import net.minecraft.network.Packet;
@@ -601,7 +602,7 @@ implements ClientPlayPacketListener {
     @Override
     public void onChunkDeltaUpdate(ChunkDeltaUpdateS2CPacket packet) {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
-        int i = 0x13 | (packet.method_31179() ? 128 : 0);
+        int i = SetBlockStateFlags.DEFAULT | SetBlockStateFlags.FORCE_STATE | (packet.method_31179() ? SetBlockStateFlags.SKIP_LIGHTING_UPDATES : 0);
         packet.visitUpdates((blockPos, blockState) -> this.world.setBlockState((BlockPos)blockPos, (BlockState)blockState, i));
     }
 
@@ -616,11 +617,11 @@ implements ClientPlayPacketListener {
             this.world.scheduleBlockRenders(i, k, j);
         }
         if (worldChunk != null) {
-            for (CompoundTag compoundTag : packet.getBlockEntityTagList()) {
-                BlockPos blockPos = new BlockPos(compoundTag.getInt("x"), compoundTag.getInt("y"), compoundTag.getInt("z"));
+            for (NbtCompound nbtCompound : packet.getBlockEntityTagList()) {
+                BlockPos blockPos = new BlockPos(nbtCompound.getInt("x"), nbtCompound.getInt("y"), nbtCompound.getInt("z"));
                 BlockEntity blockEntity = worldChunk.getBlockEntity(blockPos, WorldChunk.CreationType.IMMEDIATE);
                 if (blockEntity == null) continue;
-                blockEntity.readNbt(compoundTag);
+                blockEntity.readNbt(nbtCompound);
             }
         }
     }
@@ -738,7 +739,7 @@ implements ClientPlayPacketListener {
         NetworkThreadUtils.forceMainThread(packet, this, this.client);
         LivingEntity livingEntity = (LivingEntity)EntityType.createInstanceFromId(packet.getEntityTypeId(), this.world);
         if (livingEntity != null) {
-            livingEntity.method_33579(packet);
+            livingEntity.readFromPacket(packet);
             this.world.addEntity(packet.getId(), livingEntity);
             if (livingEntity instanceof BeeEntity) {
                 boolean bl = ((BeeEntity)livingEntity).hasAngerTime();
@@ -1477,16 +1478,16 @@ implements ClientPlayPacketListener {
             return;
         }
         ServerInfo serverInfo = this.client.getCurrentServerEntry();
-        if (serverInfo != null && serverInfo.getResourcePack() == ServerInfo.ResourcePackState.ENABLED) {
+        if (serverInfo != null && serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.ENABLED) {
             this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
             this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
-        } else if (serverInfo == null || serverInfo.getResourcePack() == ServerInfo.ResourcePackState.PROMPT) {
+        } else if (serverInfo == null || serverInfo.getResourcePackPolicy() == ServerInfo.ResourcePackPolicy.PROMPT) {
             this.client.execute(() -> this.client.openScreen(new ConfirmScreen(bl2 -> {
                 this.client.openScreen(null);
                 ServerInfo serverInfo = this.client.getCurrentServerEntry();
                 if (bl2) {
                     if (serverInfo != null) {
-                        serverInfo.setResourcePackState(ServerInfo.ResourcePackState.ENABLED);
+                        serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.ENABLED);
                     }
                     this.sendResourcePackStatus(ResourcePackStatusC2SPacket.Status.ACCEPTED);
                     this.feedbackAfterDownload(this.client.getResourcePackProvider().download(string, string2));
@@ -1495,7 +1496,7 @@ implements ClientPlayPacketListener {
                     if (bl) {
                         this.connection.disconnect(new TranslatableText("multiplayer.requiredTexturePrompt.disconnect"));
                     } else if (serverInfo != null) {
-                        serverInfo.setResourcePackState(ServerInfo.ResourcePackState.DISABLED);
+                        serverInfo.setResourcePackPolicy(ServerInfo.ResourcePackPolicy.DISABLED);
                     }
                 }
                 if (serverInfo != null) {

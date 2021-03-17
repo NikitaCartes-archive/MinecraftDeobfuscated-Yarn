@@ -4,6 +4,7 @@
 package net.minecraft.server.network;
 
 import java.util.Objects;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -220,7 +221,7 @@ public class ServerPlayerInteractionManager {
         BlockEntity blockEntity = this.world.getBlockEntity(pos);
         Block block = blockState.getBlock();
         if (block instanceof OperatorBlock && !this.player.isCreativeLevelTwoOp()) {
-            this.world.updateListeners(pos, blockState, blockState, 3);
+            this.world.updateListeners(pos, blockState, blockState, SetBlockStateFlags.DEFAULT);
             return false;
         }
         if (this.player.isBlockBreakingRestricted(this.world, pos, this.gameMode)) {

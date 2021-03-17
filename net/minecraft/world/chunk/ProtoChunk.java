@@ -27,7 +27,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -61,9 +61,9 @@ implements Chunk {
     private final Map<Heightmap.Type, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Type.class);
     private volatile ChunkStatus status = ChunkStatus.EMPTY;
     private final Map<BlockPos, BlockEntity> blockEntities = Maps.newHashMap();
-    private final Map<BlockPos, CompoundTag> blockEntityTags = Maps.newHashMap();
+    private final Map<BlockPos, NbtCompound> blockEntityTags = Maps.newHashMap();
     private final ChunkSection[] sections;
-    private final List<CompoundTag> entities = Lists.newArrayList();
+    private final List<NbtCompound> entities = Lists.newArrayList();
     private final List<BlockPos> lightSources = Lists.newArrayList();
     private final ShortList[] postProcessingLists;
     private final Map<StructureFeature<?>, StructureStart<?>> structureStarts = Maps.newHashMap();
@@ -206,7 +206,7 @@ implements Chunk {
         return this.blockEntities;
     }
 
-    public void addEntity(CompoundTag entityTag) {
+    public void addEntity(NbtCompound entityTag) {
         this.entities.add(entityTag);
     }
 
@@ -215,12 +215,12 @@ implements Chunk {
         if (entity.hasVehicle()) {
             return;
         }
-        CompoundTag compoundTag = new CompoundTag();
-        entity.saveToTag(compoundTag);
-        this.addEntity(compoundTag);
+        NbtCompound nbtCompound = new NbtCompound();
+        entity.saveToTag(nbtCompound);
+        this.addEntity(nbtCompound);
     }
 
-    public List<CompoundTag> getEntities() {
+    public List<NbtCompound> getEntities() {
         return this.entities;
     }
 
@@ -394,25 +394,25 @@ implements Chunk {
     }
 
     @Override
-    public void addPendingBlockEntityNbt(CompoundTag tag) {
+    public void addPendingBlockEntityNbt(NbtCompound tag) {
         this.blockEntityTags.put(new BlockPos(tag.getInt("x"), tag.getInt("y"), tag.getInt("z")), tag);
     }
 
-    public Map<BlockPos, CompoundTag> getBlockEntityTags() {
+    public Map<BlockPos, NbtCompound> getBlockEntityTags() {
         return Collections.unmodifiableMap(this.blockEntityTags);
     }
 
     @Override
-    public CompoundTag getBlockEntityNbt(BlockPos pos) {
+    public NbtCompound getBlockEntityNbt(BlockPos pos) {
         return this.blockEntityTags.get(pos);
     }
 
     @Override
     @Nullable
-    public CompoundTag getPackedBlockEntityNbt(BlockPos pos) {
+    public NbtCompound getPackedBlockEntityNbt(BlockPos pos) {
         BlockEntity blockEntity = this.getBlockEntity(pos);
         if (blockEntity != null) {
-            return blockEntity.writeNbt(new CompoundTag());
+            return blockEntity.writeNbt(new NbtCompound());
         }
         return this.blockEntityTags.get(pos);
     }

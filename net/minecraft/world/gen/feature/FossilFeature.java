@@ -5,6 +5,7 @@ package net.minecraft.world.gen.feature;
 
 import com.mojang.serialization.Codec;
 import java.util.Random;
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.structure.Structure;
@@ -62,10 +63,10 @@ extends Feature<FossilFeatureConfig> {
         }
         structurePlacementData.clearProcessors();
         fossilFeatureConfig.fossilProcessors.get().getList().forEach(structureProcessor -> structurePlacementData.addProcessor((StructureProcessor)structureProcessor));
-        structure.place(structureWorldAccess, blockPos2, blockPos2, structurePlacementData, random, 4);
+        structure.place(structureWorldAccess, blockPos2, blockPos2, structurePlacementData, random, SetBlockStateFlags.NO_REDRAW);
         structurePlacementData.clearProcessors();
         fossilFeatureConfig.overlayProcessors.get().getList().forEach(structureProcessor -> structurePlacementData.addProcessor((StructureProcessor)structureProcessor));
-        structure2.place(structureWorldAccess, blockPos2, blockPos2, structurePlacementData, random, 4);
+        structure2.place(structureWorldAccess, blockPos2, blockPos2, structurePlacementData, random, SetBlockStateFlags.NO_REDRAW);
         return true;
     }
 

@@ -17,7 +17,6 @@ public class QueueingWorldGenerationProgressListener
 implements WorldGenerationProgressListener {
     private final WorldGenerationProgressListener progressListener;
     private final TaskExecutor<Runnable> queue;
-    private volatile boolean field_29184;
 
     private QueueingWorldGenerationProgressListener(WorldGenerationProgressListener progressListener, Executor executor) {
         this.progressListener = progressListener;
@@ -32,35 +31,21 @@ implements WorldGenerationProgressListener {
 
     @Override
     public void start(ChunkPos spawnPos) {
-        if (!this.field_29184) {
-            return;
-        }
         this.queue.send(() -> this.progressListener.start(spawnPos));
     }
 
     @Override
     public void setChunkStatus(ChunkPos pos, @Nullable ChunkStatus status) {
-        if (!this.field_29184) {
-            return;
-        }
         this.queue.send(() -> this.progressListener.setChunkStatus(pos, status));
     }
 
     @Override
     public void start() {
-        if (this.field_29184) {
-            return;
-        }
-        this.field_29184 = true;
         this.queue.send(this.progressListener::start);
     }
 
     @Override
     public void stop() {
-        if (!this.field_29184) {
-            return;
-        }
-        this.field_29184 = false;
         this.queue.send(this.progressListener::stop);
     }
 }

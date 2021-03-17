@@ -17,6 +17,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.math.MathHelper;
+import org.lwjgl.glfw.GLFW;
 
 @Environment(value=EnvType.CLIENT)
 public class ChatScreen
@@ -86,11 +87,11 @@ extends Screen {
         if (super.keyPressed(keyCode, scanCode, modifiers)) {
             return true;
         }
-        if (keyCode == 256) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             this.client.openScreen(null);
             return true;
         }
-        if (keyCode == 257 || keyCode == 335) {
+        if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
             String string = this.chatField.getText().trim();
             if (!string.isEmpty()) {
                 this.sendMessage(string);
@@ -98,19 +99,19 @@ extends Screen {
             this.client.openScreen(null);
             return true;
         }
-        if (keyCode == 265) {
+        if (keyCode == GLFW.GLFW_KEY_UP) {
             this.setChatFromHistory(-1);
             return true;
         }
-        if (keyCode == 264) {
+        if (keyCode == GLFW.GLFW_KEY_DOWN) {
             this.setChatFromHistory(1);
             return true;
         }
-        if (keyCode == 266) {
+        if (keyCode == GLFW.GLFW_KEY_PAGE_UP) {
             this.client.inGameHud.getChatHud().scroll(this.client.inGameHud.getChatHud().getVisibleLineCount() - 1);
             return true;
         }
-        if (keyCode == 267) {
+        if (keyCode == GLFW.GLFW_KEY_PAGE_DOWN) {
             this.client.inGameHud.getChatHud().scroll(-this.client.inGameHud.getChatHud().getVisibleLineCount() + 1);
             return true;
         }

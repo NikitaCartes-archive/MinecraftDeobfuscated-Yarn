@@ -3,11 +3,12 @@
  */
 package net.minecraft.block.entity;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +31,7 @@ extends BlockEntity {
             super.setSpawnEntry(world, pos, spawnEntry);
             if (world != null) {
                 BlockState blockState = world.getBlockState(pos);
-                world.updateListeners(pos, blockState, blockState, 4);
+                world.updateListeners(pos, blockState, blockState, SetBlockStateFlags.NO_REDRAW);
             }
         }
     };
@@ -40,13 +41,13 @@ extends BlockEntity {
     }
 
     @Override
-    public void readNbt(CompoundTag tag) {
+    public void readNbt(NbtCompound tag) {
         super.readNbt(tag);
         this.logic.readNbt(this.world, this.pos, tag);
     }
 
     @Override
-    public CompoundTag writeNbt(CompoundTag tag) {
+    public NbtCompound writeNbt(NbtCompound tag) {
         super.writeNbt(tag);
         this.logic.writeNbt(this.world, this.pos, tag);
         return tag;
@@ -67,10 +68,10 @@ extends BlockEntity {
     }
 
     @Override
-    public CompoundTag toInitialChunkDataNbt() {
-        CompoundTag compoundTag = this.writeNbt(new CompoundTag());
-        compoundTag.remove("SpawnPotentials");
-        return compoundTag;
+    public NbtCompound toInitialChunkDataNbt() {
+        NbtCompound nbtCompound = this.writeNbt(new NbtCompound());
+        nbtCompound.remove("SpawnPotentials");
+        return nbtCompound;
     }
 
     @Override

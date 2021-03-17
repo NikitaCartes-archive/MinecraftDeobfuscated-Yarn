@@ -3,6 +3,7 @@
  */
 package net.minecraft.block;
 
+import net.fabricmc.yarn.constants.SetBlockStateFlags;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
@@ -26,7 +27,7 @@ public interface CaveVines {
             Block.dropStack(world, pos, new ItemStack(Items.GLOW_BERRIES, 1));
             float f = MathHelper.nextBetween(world.random, 0.8f, 1.2f);
             world.playSound(null, pos, SoundEvents.BLOCK_CAVE_VINES_PICK_BERRIES, SoundCategory.BLOCKS, 1.0f, f);
-            world.setBlockState(pos, (BlockState)state.with(BERRIES, false), 2);
+            world.setBlockState(pos, (BlockState)state.with(BERRIES, false), SetBlockStateFlags.NOTIFY_LISTENERS);
             return ActionResult.success(world.isClient);
         }
         return ActionResult.PASS;
